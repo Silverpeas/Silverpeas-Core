@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -28,6 +25,10 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
+import com.silverpeas.interestCenter.model.InterestCenter;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,23 +38,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
-
-import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-
 public class InterestCenterDAO {
 
-  /** Interest_Center_Axes table name */
+  /**
+   * Interest_Center_Axes table name
+   */
   public final static String ICENTER_AXES_TABLE_NAME = "SB_Interest_Center_Axis";
-  /** Date format pattern constatnt. This patters is used in db operations */
+  /**
+   * Date format pattern constatnt. This patters is used in db operations
+   */
   public final static String DATE_FORMAT = "yyyy/MM/dd";
-
-  /** getICByUserID sql query constant */
+  /**
+   * getICByUserID sql query constant
+   */
   public final static String GET_IC_BY_USERID_QUERY =
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-          + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interest_Center a WHERE a.ownerId = ? ";
+      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interest_Center a WHERE a.ownerId = ? ";
 
   /**
    * @param con
@@ -86,8 +86,9 @@ public class InterestCenterDAO {
       DBUtil.close(rs, prepStmt);
     }
   }
-
-  /** getICByPK sql query constant */
+  /**
+   * getICByPK sql query constant
+   */
   public final static String GET_IC_BY_PK_QUERY =
       "SELECT id, name, criteria, workSpaceId, peasId, "
       + "authorId, afterDate, beforeDate, ownerId FROM SB_Interest_Center WHERE id = ? ";
@@ -164,11 +165,12 @@ public class InterestCenterDAO {
     ic.setPdcContext(pdcContext);
     return ic;
   }
-
-  /** createIC sql query constant */
+  /**
+   * createIC sql query constant
+   */
   public final static String CREATE_IC_QUERY =
-      "INSERT  INTO SB_Interest_Center (id, name, criteria, workSpaceId, peasId, authorId, " +
-      "afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+      "INSERT  INTO SB_Interest_Center (id, name, criteria, workSpaceId, peasId, authorId, "
+      + "afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
    * @return id of <code>InterestCenter</code> created
@@ -222,8 +224,8 @@ public class InterestCenterDAO {
             + ". DataObject: " + interestCenter);
       }
 
-      List<Criteria> list = interestCenter.getPdcContext();
-      if (list != null && list.size() != 0) {
+      List<? extends Criteria> list = interestCenter.getPdcContext();
+      if (list != null && !list.isEmpty()) {
         appendPdcContext(con, list, newId);
       }
 
@@ -234,11 +236,12 @@ public class InterestCenterDAO {
 
     return newId;
   }
-
-  /** updateIC sql query constant */
+  /**
+   * updateIC sql query constant
+   */
   public final static String UPDATE_IC_QUERY =
-      "UPDATE SB_Interest_Center SET name = ?, criteria = ?, workSpaceId = ?, peasId = ?, " +
-      "authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
+      "UPDATE SB_Interest_Center SET name = ?, criteria = ?, workSpaceId = ?, peasId = ?, "
+      + "authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
 
   /**
    * perform updates of provided InterestCenter
@@ -279,8 +282,8 @@ public class InterestCenterDAO {
             .toString());
       }
 
-      List<Criteria> list = interestCenter.getPdcContext();
-      if (list != null && list.size() != 0) {
+      List<? extends Criteria> list = interestCenter.getPdcContext();
+      if (list != null && !list.isEmpty()) {
         updatePdcContext(con, list, interestCenter.getId());
       }
 
@@ -298,8 +301,9 @@ public class InterestCenterDAO {
       removeICByPK(con, pk);
     }
   }
-
-  /** removeICByPK sql query constant */
+  /**
+   * removeICByPK sql query constant
+   */
   public final static String REMOVE_IC_BY_PKS_LIST_QUERY =
       "DELETE FROM SB_Interest_Center WHERE id = ?";
 
@@ -330,8 +334,9 @@ public class InterestCenterDAO {
       DBUtil.close(prepStmt);
     }
   }
-
-  /** loadPdcContext sql query constant */
+  /**
+   * loadPdcContext sql query constant
+   */
   public final static String LOAD_PDC_PK_QUERY = "SELECT a.axisId, a.value "
       + "  FROM " + ICENTER_AXES_TABLE_NAME + " a WHERE a.icId = ? ";
 
@@ -368,17 +373,19 @@ public class InterestCenterDAO {
 
     return result;
   }
-
-  /** appendPdcContext sql query constant */
+  /**
+   * appendPdcContext sql query constant
+   */
   public final static String CREATE_PDC_CONTEXT_QUERY = "INSERT  INTO "
       + ICENTER_AXES_TABLE_NAME + " ( "
       + " id, icId, axisId, value) VALUES (?, ?, ?, ?) ";
 
   /**
    * Appends a list of SearchCriteria to the InterestCenter by InterestCenterID
+   *
    * @param icId InterestCenterID
    */
-  public static int[] appendPdcContext(Connection con, List<Criteria> pdcContext,
+  public static int[] appendPdcContext(Connection con, List<? extends Criteria> pdcContext,
       int icId) throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.appendPdcContext",
@@ -429,9 +436,10 @@ public class InterestCenterDAO {
 
   /**
    * Updates SearchCriterias list for interestCenter by InterestCenterID
+   *
    * @param icId InterestCenterID
    */
-  public static void updatePdcContext(Connection con, List<Criteria> list, int icId)
+  public static void updatePdcContext(Connection con, List<? extends Criteria> list, int icId)
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.updatePdcContext",
@@ -444,13 +452,15 @@ public class InterestCenterDAO {
     removePdcContext(con, icId);
     appendPdcContext(con, list, icId);
   }
-
-  /** removePdcContext sql query constant */
+  /**
+   * removePdcContext sql query constant
+   */
   public final static String REMOVE_IC_CONTEXT_QUERY = "delete from "
       + ICENTER_AXES_TABLE_NAME + " where icId = ?";
 
   /**
    * Remove all SearchCriterias for provided interestCenterID
+   *
    * @param icId InterestCenterID
    */
   public static void removePdcContext(Connection con, int icId)
@@ -474,5 +484,4 @@ public class InterestCenterDAO {
       DBUtil.close(prepStmt);
     }
   }
-
 }

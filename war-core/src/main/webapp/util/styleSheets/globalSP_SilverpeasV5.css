@@ -791,7 +791,7 @@ Style Utilise par le ViewGenerator
 /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
 .ongletOn {
   background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif)
-;
+    ;
   background-repeat: repeat-x;
   font-weight: bold;
 }
@@ -1261,9 +1261,9 @@ td.browsebar a:hover {
   border-color: #C9C9C9;
   border-bottom-width: none;
   z-index:0;
-.width:100%;
-_width:100%;
-  }
+  .width:100%;
+  _width:100%;
+}
 
 .tabSpace {
   padding:3px;
@@ -1275,8 +1275,8 @@ _width:100%;
   position:relative;
   float:right;
   padding-right:1px;
-/position:absolute;
-/right:0px;
+  /position:absolute;
+  /right:0px;
   _position:absolute;
   _right:0px;
 }
@@ -1585,7 +1585,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   width: 5px;
 }
 
-/* pour encadrer les boutons et remplacer la balise center utilisée dans les anciennes pages */
+/* pour encadrer les boutons et remplacer la balise center utilis�e dans les anciennes pages */
 .buttonPane {
   text-align:center;
 }
@@ -2587,7 +2587,7 @@ caption {
 }
 */
 
-/* Par défaut, 2 colonnes */
+/* Par d�faut, 2 colonnes */
 #directory .aff_colonnes li {
   float:left;
   margin-right:1%;
@@ -3490,7 +3490,7 @@ caption {
 
 #publicProfileContenu  address { font-style:normal;}
 
-/* IMAGE  bg_tri.png à chercher dans corps dans fleche */
+/* IMAGE  bg_tri.png � chercher dans corps dans fleche */
 .sousNavBulle, .container-filter {
   background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
   float:left;
@@ -3688,7 +3688,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
   height:auto;
 }
 
-/* Par défaut 1 colonne */
+/* Par d�faut 1 colonne */
 .aff_colonnes .a_contact {
 
 
@@ -3808,7 +3808,7 @@ hr.sep  {
   color:#3A5998;
 }
 
-/* class actuellement utilisée dans l'annuaire expert à généraliser */
+/* class actuellement utilis�e dans l'annuaire expert � g�n�raliser */
 .linkMore {
   background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
   border-bottom: 1px solid #CCCCCC;
@@ -4217,7 +4217,7 @@ button {
   color: #FFFFFF;
 }
 
-/** Css pour présentation pdc dans formsOnline **/
+/** Css pour pr�sentation pdc dans formsOnline **/
 .pdc_position {
   display:block;
   background-color:#e9e9e9;
@@ -4547,14 +4547,14 @@ li.application {
   -moz-background-size: 100%;
 }
 
-/* pour ie8 je veux mettre le pie et virer le bord qui déconne*/
+/* pour ie8 je veux mettre le pie et virer le bord qui d�conne*/
 li.application {
   -pie-background: linear-gradient(#f5f5f5, #EAEAEA);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   border:0px;
 }
 
-/* pour tout le monde sauf ie 6 à 8*/
+/* pour tout le monde sauf ie 6 � 8*/
 :root *> li.application {
   border:1px solid #dfdfdf;
   behavior: url();
@@ -5371,74 +5371,74 @@ input.search:focus {
 }
 
 .ui-dialog .label-ui-dialog {
-        float:left;
-        clear:both;
-        width:30%;
-        margin-bottom:14px;
+  float:left;
+  clear:both;
+  width:30%;
+  margin-bottom:14px;
 }
 
 .ui-dialog .champs-ui-dialog {
-    float:right;
-    width:65%;
-    margin-bottom:14px;
+  float:right;
+  width:65%;
+  margin-bottom:14px;
 }
 
 /*******************************/
 /** created action bar **/
 /*******************************/
 #menubar-creation-actions {
-	display: none;
+  display: none;
 }
 
 #menubar-creation-actions,
 #attachment-creation-actions {
-    background-color:#fff4eb;
-    border-top:1px solid #f1790f;
-    border-bottom:1px solid #f1790f;
-    vertical-align:middle;
-    text-align:center;
-    height:auto;
-    margin:1em;
+  background-color:#fff4eb;
+  border-top:1px solid #f1790f;
+  border-bottom:1px solid #f1790f;
+  vertical-align:middle;
+  text-align:center;
+  height:auto;
+  margin:1em;
 }
 
 #attachment-creation-actions {
-    margin:0;
+  margin:0;
 }
 
 #menubar-creation-actions .menubar-creation-actions-item,
 #attachment-creation-actions .menubar-creation-actions-item{
-    padding:10px 30px;
-    color:#4c4c4c;
-    font-size:12px;
-    display:inline-block;
-    width:auto;
-    line-height:12px;
-    height:18px;
-    white-space:nowrap;
+  padding:10px 30px;
+  color:#4c4c4c;
+  font-size:12px;
+  display:inline-block;
+  width:auto;
+  line-height:12px;
+  height:18px;
+  white-space:nowrap;
 }
 
 #attachment-creation-actions .menubar-creation-actions-item{
-    padding:6px 20px;
-    font-size:11px;
-    line-height:11px;
-    height:18px;
+  padding:6px 20px;
+  font-size:11px;
+  line-height:11px;
+  height:18px;
 }
 
 #menubar-creation-actions .menubar-creation-actions-item:hover,
 #attachment-creation-actions .menubar-creation-actions-item:hover {
-    background-color:#F1790F;
-    color:#fff;
+  background-color:#F1790F;
+  color:#fff;
 }
 
 #menubar-creation-actions .menubar-creation-actions-item img,
 #attachment-creation-actions .menubar-creation-actions-item img {
-    vertical-align:middle;
-    margin:0;
-    border:0;
+  vertical-align:middle;
+  margin:0;
+  border:0;
 }
 
 #attachment-creation-actions .menubar-creation-actions-item img {
-    margin-right:4px;
+  margin-right:4px;
 }
 
 /*******************************/
@@ -5667,9 +5667,9 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 
 .ui-dialog .champ-ui-dialog {
- float:right;
- width:70%;
- margin-bottom: 14px;
+  float:right;
+  width:70%;
+  margin-bottom: 14px;
 }
 
 .ui-dialog .champ-ui-dialog input[type=text],
@@ -5759,4 +5759,51 @@ ul.tagit li.tagit-choice a.tagit-close {
 	margin:0 0 1em 0;
 	text-align:center;
 	clear: both;
+}
+
+/*******************************/
+/* Advanced search plugin */
+/*******************************/
+#advanced-search div.tableFrame {
+  width:98%;
+  padding:5px;
+  margin:0 auto;
+}
+#advanced-search div.tableBoard {
+  padding:5px;
+}
+
+#used_pdc {
+  padding:0;
+  margin:0;
+  border:0;
+}
+
+#used_pdc .field{
+  position:relative;
+  padding-left:18px;
+  clear:left;
+}
+
+#used_pdc .field label{
+  display:block;
+  float:left;
+  width:162px;
+  padding:5px;
+  padding-right: 50px;
+}
+
+#used_pdc .field .champs{
+  display:block;
+  float:left;
+  padding:5px;
+}
+#used_pdc .field .champs.pdcAxis img{
+  position:absolute;
+  top:3px;
+  left:0;
+}
+
+#advanced-search table.tableBoard tr td:first-child {
+  width:180px;
 }

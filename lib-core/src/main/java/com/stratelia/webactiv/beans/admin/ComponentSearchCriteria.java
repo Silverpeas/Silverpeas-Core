@@ -21,40 +21,56 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.model.constraints;
-
-import com.silverpeas.pdc.model.PdcPosition;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+package com.stratelia.webactiv.beans.admin;
 
 /**
- * The validator associated with the {@link UniquePositions} constraint.
+ * Criteria used to search some component instances in Silverpeas. The component instances must be
+ * searchable.
  *
  * @author mmoquillon
  */
-public class UniquePositionsValidator implements
-    ConstraintValidator<UniquePositions, Set<PdcPosition>> {
+public class ComponentSearchCriteria {
 
-  @Override
-  public void initialize(UniquePositions constraintAnnotation) {
+  private String componentInstanceId;
+  private String workspaceId;
+  private UserDetail user;
+
+  public ComponentSearchCriteria onWorkspace(String workspaceId) {
+    this.workspaceId = workspaceId;
+    return this;
   }
 
-  @Override
-  public boolean isValid(Set<PdcPosition> pdcPositions, ConstraintValidatorContext context) {
-    List<PdcPosition> positions = new ArrayList<PdcPosition>(pdcPositions);
-    for (int p = 0; p < positions.size(); p++) {
-      PdcPosition currentPosition = positions.get(p);
-      for (int i = 0; i < positions.size(); i++) {
-        if (p != i && currentPosition.getValues().size() == positions.get(i).getValues().size()) {
-          if (currentPosition.getValues().containsAll(positions.get(i).getValues())) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
+  public ComponentSearchCriteria onComponentInstance(String instanceId) {
+    this.componentInstanceId = instanceId;
+    return this;
+  }
+
+  public ComponentSearchCriteria onUser(final UserDetail user) {
+    this.user = user;
+    return this;
+  }
+
+  public boolean hasCriterionOnComponentInstance() {
+    return this.componentInstanceId != null;
+  }
+
+  public boolean hasCriterionOnWorkspace() {
+    return this.workspaceId != null;
+  }
+
+  public boolean hasCriterionOnUser() {
+    return this.user != null;
+  }
+
+  public String getComponentInstanceId() {
+    return componentInstanceId;
+  }
+
+  public String getWorkspaceId() {
+    return workspaceId;
+  }
+
+  public UserDetail getUser() {
+    return this.user;
   }
 }

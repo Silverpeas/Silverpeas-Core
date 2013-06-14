@@ -1,73 +1,136 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.web.beans;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.Translation;
-
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 import static com.silverpeas.pdc.web.TestConstants.COMPONENT_INSTANCE_ID;
 import static com.silverpeas.pdc.web.TestConstants.FRENCH;
 
 /**
- * It represents the PdC to use in the tests. As such it defines the differents axis and their values.
- * Axis values can be either some single terms or some hierarchical semantic trees.
+ * It represents the PdC to use in the tests. As such it defines the differents axis and their
+ * values. Axis values can be either some single terms or some hierarchical semantic trees.
  */
 public class ClassificationPlan {
 
   private static final ClassificationPlan instance = new ClassificationPlan();
   private List<UsedAxis> pdcAxis = new ArrayList<UsedAxis>();
 
-  /**
-   * Gets an instance of the classification plan to use in the tests.
-   * @return a ClassificationPlan instance.
-   */
-  public static ClassificationPlan aClassificationPlan() {
-    ClassificationPlan pdc = new ClassificationPlan();
-    pdc.fill();
-    return pdc;
+  static {
+    instance.fill();
   }
 
   /**
-   * Gets the axis of this classification plan.
+   * Gets an instance of the classification plan to use in the tests.
+   *
+   * @return a ClassificationPlan instance.
+   */
+  public static ClassificationPlan aClassificationPlan() {
+    return instance;
+  }
+
+  /**
+   * Gets the axis of this classification plan ready to be used in a classification.
+   *
    * @return an unmodifiable list with the axis of this classification plan.
    */
-  public List<UsedAxis> getAxis() {
+  public List<UsedAxis> getUsedAxis() {
     return Collections.unmodifiableList(pdcAxis);
   }
 
   /**
+   * Gets the axis of this classification plan.
+   *
+   * @return an unmodifiable list with the axis of this classification plan.
+   */
+  public List<Axis> getAxis() {
+    List<Axis> axis = new ArrayList<Axis>(pdcAxis.size());
+    for (UsedAxis aUsedAxis : pdcAxis) {
+      String axisId = String.valueOf(aUsedAxis.getAxisId());
+      List<Value> values = getValuesOfAxisById(axisId);
+      Axis anAxis = new Axis(getAxisHeader(axisId), values);
+      axis.add(anAxis);
+    }
+    return Collections.unmodifiableList(axis);
+  }
+
+  /**
+   * Gets the axis of this classification plan that are used in the classification of a content.
+   *
+   * @return the axis used in a classification of contents.
+   */
+  public List<UsedAxis> getAxisUsedInClassification() {
+    List<UsedAxis> allUsedAxis = new ArrayList<UsedAxis>();
+    List<AxisHeader> headers = getAxisHeaders(null);
+    for (AxisHeader aHeader : headers) {
+      List<Value> usedValues = getValuesUsedInClassification(aHeader.getPK().getId());
+      if (!usedValues.isEmpty()) {
+        UsedAxis usedAxis = new UsedAxis(aHeader.getPK().getId(), "", aHeader.getRootId(), 0, 0, 1);
+        usedAxis._setAxisHeader(aHeader);
+        usedAxis._setAxisName(aHeader.getName());
+        usedAxis._setAxisType(aHeader.getAxisType());
+        usedAxis._setBaseValueName(aHeader.getName());
+        usedAxis._setAxisRootId(0);
+        usedAxis._setAxisValues(usedValues);
+        allUsedAxis.add(usedAxis);
+      }
+    }
+    return allUsedAxis;
+  }
+
+  public UsedAxis getAxis(String axisId) {
+    int index = Integer.valueOf(axisId) - 1;
+    return pdcAxis.get(index);
+  }
+
+  /**
+   * Gets the headers of the axis of this classification plan.
+   *
+   * @param type the type of axis: primary or secondary. If null, both are taken into account.
+   * @return a list of AxisHeader instances.
+   */
+  public List<AxisHeader> getAxisHeaders(String type) {
+    List<AxisHeader> axisHeaders = new ArrayList<AxisHeader>(pdcAxis.size());
+    for (UsedAxis usedAxis : pdcAxis) {
+      if (!StringUtil.isDefined(type) || usedAxis._getAxisType().equals(type)) {
+        axisHeaders.add(getAxisHeader(String.valueOf(usedAxis.getAxisId())));
+      }
+    }
+    return axisHeaders;
+  }
+
+  /**
    * Gets some meta information about the specified axis.
+   *
    * @param axisId the unique identifier of the axis in the classification plan.
    * @return an AxisHeader instance.
    */
@@ -75,15 +138,27 @@ public class ClassificationPlan {
     int index = Integer.valueOf(axisId) - 1;
     UsedAxis axis = pdcAxis.get(index);
     AxisHeader header = new AxisHeader(axisId, axis._getAxisName(), axis._getAxisType(),
-            axis.getAxisId(), axis.getAxisId());
+        axis.getAxisId(), axis.getAxisId());
     Translation translationInFrench = new AxisHeaderI18N(axis.getAxisId(), FRENCH,
-            axis._getAxisName(), "");
+        axis._getAxisName(), "");
     header.addTranslation(translationInFrench);
     return header;
   }
 
+  public List<Value> getValuesUsedInClassification(String axisId) {
+    List<Value> usedValues = new ArrayList<Value>();
+    List<Value> allValues = getValuesOfAxisById(axisId);
+    for (Value value : allValues) {
+      if (value.getNbObjects() > 0) {
+        usedValues.add(value);
+      }
+    }
+    return usedValues;
+  }
+
   /**
    * Gets the values of the axis identified by the specified name.
+   *
    * @param axisName the name of the axis.
    * @return an unmodifiable list of the axis' values or null if no such axis exists with the
    * specified name.
@@ -101,24 +176,20 @@ public class ClassificationPlan {
 
   /**
    * Gets the values of the axis identified by the specified identifier.
+   *
    * @param anAxisId the unique identifier of the axis.
    * @return a unmodifiable list of the axis' values or null if no such axis exists with the
    * specified identifier.
    */
   public List<Value> getValuesOfAxisById(String anAxisId) {
-    List<Value> axisValues = null;
-    for (UsedAxis axis : pdcAxis) {
-      String id = String.valueOf(axis.getAxisId());
-      if (id.equals(anAxisId)) {
-        axisValues = Collections.unmodifiableList(axis._getAxisValues());
-        break;
-      }
-    }
-    return axisValues;
+    int index = Integer.valueOf(anAxisId) - 1;
+    UsedAxis axis = pdcAxis.get(index);
+    return Collections.unmodifiableList(axis._getAxisValues());
   }
 
   /**
    * Gets the path in the hierarchic tree of the specified value.
+   *
    * @param aValue the value.
    * @return a list of values, each of them representing a node in the path in the tree upto the
    * specified value.
@@ -138,10 +209,12 @@ public class ClassificationPlan {
   }
 
   protected static Value aValue(String id, String treeId, String name, String path, int level,
-          int order, String fatherId) {
+      int order, String fatherId) {
+    Random random = new Random();
     Value value = new Value(id, treeId, name, "2011/06/14", "0", path, level, order, fatherId);
     value.setAxisId(Integer.valueOf(treeId));
     value.setLanguage(FRENCH);
+    value.setNbObjects(random.nextInt(10));
     int nodeId = Integer.valueOf(id);
     TreeNodeI18N translation = new TreeNodeI18N(nodeId, FRENCH, name, "");
     value.addTranslation(translation);

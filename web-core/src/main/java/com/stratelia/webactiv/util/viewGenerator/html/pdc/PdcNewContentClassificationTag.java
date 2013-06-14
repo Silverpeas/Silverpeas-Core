@@ -26,7 +26,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
-import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
+import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**
  * A tag that renders an HTML/javascript section with which a classification onto the PdC can be

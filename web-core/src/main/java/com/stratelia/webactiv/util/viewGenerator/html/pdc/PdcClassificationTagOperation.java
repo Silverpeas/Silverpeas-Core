@@ -27,7 +27,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 /**
  * The operations the tags on the PdC classification supports.
  */
-public enum PdcTagOperation {
+public enum PdcClassificationTagOperation {
 
   /**
    * Previews the classification on the PdC of a given content.
@@ -54,7 +54,7 @@ public enum PdcTagOperation {
 
   private String pluginFunction;
 
-  private PdcTagOperation(String pluginFunction) {
+  private PdcClassificationTagOperation(String pluginFunction) {
     this.pluginFunction = pluginFunction;
   }
 

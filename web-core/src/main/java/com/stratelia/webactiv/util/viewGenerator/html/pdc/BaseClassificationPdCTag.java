@@ -20,14 +20,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
-import java.text.MessageFormat;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
-
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -39,7 +31,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
+import java.text.MessageFormat;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
@@ -48,7 +45,8 @@ import org.apache.ecs.xhtml.script;
 
 import static com.silverpeas.util.StringUtil.getBooleanValue;
 import static com.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
+
+import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**
  * The base tag for all concrete tags on the PdC classification of a content.
@@ -164,7 +162,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @return the HTML elements container with the code to render.
    * @throws JspException
    */
-  public ElementContainer invoke(final PdcTagOperation operation) throws JspException {
+  public ElementContainer invoke(final PdcClassificationTagOperation operation) throws JspException {
     ElementContainer container;
     if (isPdcUsed()) {
       container = initWidget(operation);
@@ -182,7 +180,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
-  private ElementContainer initWidget(PdcTagOperation operation) throws JspException {
+  private ElementContainer initWidget(PdcClassificationTagOperation operation) throws JspException {
     ElementContainer xhtmlcontainer = new ElementContainer();
     MultiPartElement classification;
     if (operation == PREVIEW_CLASSIFICATION || operation == PREDEFINE_CLASSIFICATION) {
@@ -199,7 +197,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     script pluginDependency1 = new script().setType("text/javascript").
         setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
     script pluginDependency2 = new script().setType("text/javascript").
-        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc.js");
+        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-classification.js");
     script pluginExecution = new script().setType("text/javascript").
         addElement(executePlugin(operation));
     xhtmlcontainer.addElement(pluginDependency1).
@@ -217,14 +215,15 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @return the javascript code to handle the classification onto the PdC.
    * @throws if an error occurs during the processing of the plugin.
    */
-  private String executePlugin(PdcTagOperation operation) throws JspTagException {
+  private String executePlugin(PdcClassificationTagOperation operation) throws JspTagException {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String function = operation.getPluginFunction();
     String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)
         || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
         "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
-    String script = "$('#" + pdcWidgetId + "').pdc('" + function + "', {resource: {context: '"
+    String script = "$('#" + pdcWidgetId + "').pdcClassification('" + function
+        + "', {resource: {context: '"
         + context
         + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
         + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(

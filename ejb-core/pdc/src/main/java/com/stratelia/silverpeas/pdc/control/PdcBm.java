@@ -1,32 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdc.control;
-
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.List;
 
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
@@ -38,14 +30,28 @@ import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.List;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 
 public interface PdcBm {
+
+  /**
+   * The primary axis that made a PdC.
+   */
+  public static final String PRIMARY_AXIS = "P";
+  /**
+   * The secondary axis, often hiden or not used, that made a PdC and that provide more accurate
+   * classification information.
+   */
+  public static final String SECONDARY_AXIS = "S";
 
   public List<AxisHeader> getAxisByType(String type) throws PdcException;
 
   /**
    * Method declaration
+   *
    * @return
    * @throws PdcException
    * @see
@@ -54,6 +60,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @return
    * @throws PdcException
    * @see
@@ -64,6 +71,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param axisHeader
    * @return
    * @throws PdcException
@@ -73,6 +81,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param axisHeader
    * @return
    * @throws PdcException
@@ -82,6 +91,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param axisId
    * @throws PdcException
    * @see
@@ -90,6 +100,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param axisId
    * @return
    * @throws PdcException
@@ -102,6 +113,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param axisId
    * @return
    * @throws PdcException
@@ -113,6 +125,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueId
    * @return
    * @throws PdcException
@@ -122,6 +135,7 @@ public interface PdcBm {
 
   /**
    * Return a list of axis values having the value name in parameter
+   *
    * @param valueName
    * @return List
    * @throws PdcException
@@ -131,6 +145,7 @@ public interface PdcBm {
 
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
+   *
    * @param axisId
    * @param valueId
    * @return List
@@ -142,6 +157,7 @@ public interface PdcBm {
 
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
+   *
    * @param axisId
    * @param valueId
    * @return List
@@ -153,6 +169,7 @@ public interface PdcBm {
 
   /**
    * Return the Value corresponding to the axis done
+   *
    * @param axisId
    * @return Value
    * @throws PdcException
@@ -168,6 +185,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueToInsert
    * @param refValue
    * @param axisId
@@ -180,6 +198,7 @@ public interface PdcBm {
 
   /**
    * Déplace une valeur et ses sous-valeurs sous un nouveau père
+   *
    * @param axis
    * @param valueToMove
    * @param newFatherId
@@ -191,6 +210,7 @@ public interface PdcBm {
 
   /**
    * retourne les droits sur la valeur
+   *
    * @param current value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
@@ -201,6 +221,7 @@ public interface PdcBm {
 
   /**
    * retourne les droits hérités sur la valeur
+   *
    * @param current value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
@@ -209,6 +230,7 @@ public interface PdcBm {
 
   /**
    * met à jour les droits sur la valeur
+   *
    * @param ArrayList ( ArrayList UsersId, ArrayList GroupsId), current value
    * @return
    * @throws PdcException
@@ -218,6 +240,7 @@ public interface PdcBm {
 
   /**
    * supprime tous les droits sur la valeur
+   *
    * @param current value
    * @return
    * @throws PdcException
@@ -230,6 +253,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueToInsert
    * @param refValue
    * @return status
@@ -241,6 +265,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueToInsert
    * @param refValue
    * @return daughterid
@@ -252,6 +277,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param value
    * @return
    * @throws PdcException
@@ -261,6 +287,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueId
    * @throws PdcException
    * @see
@@ -270,6 +297,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueId
    * @throws PdcException
    * @see
@@ -279,6 +307,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param valueId
    * @return
    * @throws PdcException
@@ -292,15 +321,14 @@ public interface PdcBm {
    * ****************************************************************
    */
   /* Methods used by the use case 'settings of using of the taxinomy' */
-
   /**
    * ****************************************************************
    */
-
   public UsedAxis getUsedAxis(String usedAxisId) throws PdcException;
 
   /**
    * Method declaration
+   *
    * @param instanceId
    * @return
    * @throws PdcException
@@ -310,6 +338,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param usedAxis
    * @return
    * @throws PdcException
@@ -319,6 +348,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param usedAxis
    * @return
    * @throws PdcException
@@ -328,6 +358,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param usedAxisId
    * @throws PdcException
    * @see
@@ -336,6 +367,7 @@ public interface PdcBm {
 
   /**
    * Method declaration
+   *
    * @param usedAxisIds
    * @throws PdcException
    * @see
@@ -347,6 +379,7 @@ public interface PdcBm {
    * object. If there is no axis configured to be used in the component instance, then all PdC axis
    * are returned as axis that can be used for classifying a content. If the content is already
    * classified, then the values on invariant axis are used as invariant values.
+   *
    * @param instanceId the unique identifier of the component instance.
    * @param silverObjectId the Silverpeas object identifier representing the content to classify.
    * @return a list of axis to use in the classification of a content.
@@ -370,7 +403,7 @@ public interface PdcBm {
 
   public void deletePosition(int positionId, String sComponentId)
       throws PdcException;
-  
+
   public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
       throws PdcException;
 
@@ -382,7 +415,9 @@ public interface PdcBm {
 
   public boolean isClassifyingMandatory(String componentId) throws PdcException;
 
-  /** Search methods */
+  /**
+   * Search methods
+   */
   public List<SearchAxis> getPertinentAxis(SearchContext searchContext, String axisType)
       throws PdcException;
 
@@ -401,7 +436,6 @@ public interface PdcBm {
 
   // public List getFirstLevelAxisValues(SearchContext searchContext, String
   // axisId) throws PdcException;
-
   public List<Value> getFirstLevelAxisValuesByInstanceId(SearchContext searchContext,
       String axisId, String instanceId) throws PdcException;
 
@@ -411,7 +445,6 @@ public interface PdcBm {
   // recherche globale
   // public List getPertinentDaughterValues(SearchContext searchContext, String
   // axisId, String valueId) throws PdcException;
-
   // recherche à l'intérieur d'une instance
   public List<Value> getPertinentDaughterValuesByInstanceId(
       SearchContext searchContext, String axisId, String valueId,
@@ -434,14 +467,18 @@ public interface PdcBm {
       String authorId, String afterDate, String beforeDate)
       throws ContainerManagerException;
 
-  /** Find all the SilverContentId with the given position */
+  /**
+   * Find all the SilverContentId with the given position
+   */
   public List<Integer> findSilverContentIdByPosition(
       ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive)
       throws ContainerManagerException;
 
-  /** Find all the SilverContentId with the given position */
+  /**
+   * Find all the SilverContentId with the given position
+   */
   public List<Integer> findSilverContentIdByPosition(
       ContainerPositionInterface containerPosition, List<String> alComponentId)
       throws ContainerManagerException;
@@ -456,5 +493,4 @@ public interface PdcBm {
   public List<Value> getSubAxisValues(String axisId, String valueId);
 
   public void indexAllAxis() throws PdcException;
-
 }
