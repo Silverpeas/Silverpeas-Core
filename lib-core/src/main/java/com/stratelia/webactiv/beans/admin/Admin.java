@@ -5871,7 +5871,8 @@ public final class Admin {
       ud.setAccessLevel(theUserDetail.getAccessLevel());
       ud.setDomainId(theUserDetail.getDomainId());
       if (!ud.equals(theUserDetail)) {
-        userManager.updateUser(domainDriverManager, ud);
+        copyDistantUserIntoSilverpeasUser(ud, theUserDetail);
+        userManager.updateUser(domainDriverManager, theUserDetail);
         cache.opUpdateUser(userManager.getUserDetail(domainDriverManager, userId));
       }
       // Synchro manuelle : Ajoute ou Met à jour l'utilisateur
@@ -6093,6 +6094,24 @@ public final class Admin {
   }
 
   /**
+   * Merge the data of a distant user into the data of a silverpeas user :
+   * - user identifier (the distant one)
+   * - first name
+   * - last name
+   * - e-mail
+   * - login
+   * @param distantUser
+   * @param silverpeasUser
+   */
+  private void copyDistantUserIntoSilverpeasUser(UserDetail distantUser, UserDetail silverpeasUser) {
+    silverpeasUser.setSpecificId(distantUser.getSpecificId());
+    silverpeasUser.setFirstName(distantUser.getFirstName());
+    silverpeasUser.setLastName(distantUser.getLastName());
+    silverpeasUser.seteMail(distantUser.geteMail());
+    silverpeasUser.setLogin(distantUser.getLogin());
+  }
+
+  /**
    * Synchronize users between cache and domain's datastore
    */
   private String synchronizeUsers(String domainId, String fromTimeStamp, String toTimeStamp,
@@ -6133,11 +6152,7 @@ public final class Admin {
           if (silverpeasUD.getSpecificId().equals(specificId) ||
               (shouldFallbackUserLogins && silverpeasUD.getLogin().equals(distantUD.getLogin()))) {
             userToUpdateFromDistantUser = silverpeasUD;
-            userToUpdateFromDistantUser.setSpecificId(distantUD.getSpecificId());
-            userToUpdateFromDistantUser.setFirstName(distantUD.getFirstName());
-            userToUpdateFromDistantUser.setLastName(distantUD.getLastName());
-            userToUpdateFromDistantUser.seteMail(distantUD.geteMail());
-            userToUpdateFromDistantUser.setLogin(distantUD.getLogin());
+            copyDistantUserIntoSilverpeasUser(distantUD, userToUpdateFromDistantUser);
             break;
           }
         }
