@@ -6095,7 +6095,6 @@ public final class Admin {
    */
   private String synchronizeUsers(String domainId, String fromTimeStamp, String toTimeStamp,
       boolean threaded, boolean importUsers) throws AdminException {
-    boolean bFound;
     String specificId;
     String sReport = "User synchronization : \n";
     String message;
@@ -6122,31 +6121,32 @@ public final class Admin {
 
       // Add new users or update existing ones from distant datasource
       for (UserDetail distantUD : distantUDs) {
-        bFound = false;
+        UserDetail userToUpdateFromDistantUser = null;
         specificId = distantUD.getSpecificId();
         SilverTrace.info("admin", "admin.synchronizeUsers", PARAM_MSG_KEY,
             "%%%%FULLSYNCHRO%%%%>Deal with user : " + specificId);
 
         // search for user in Silverpeas database
-        for (int nJ = 0; nJ < silverpeasUDs.length && !bFound; nJ++) {
-          if (silverpeasUDs[nJ].getSpecificId().equals(specificId) || (shouldFallbackUserLogins
-              && silverpeasUDs[nJ].getLogin().equals(
-              distantUD.getLogin()))) {
-            bFound = true;
-            distantUD.setId(silverpeasUDs[nJ].getId());
-            distantUD.setAccessLevel(silverpeasUDs[nJ].getAccessLevel());
-            distantUD.setLoginQuestion(silverpeasUDs[nJ].getLoginQuestion());
-            distantUD.setLoginAnswer(silverpeasUDs[nJ].getLoginAnswer());
+        for (final UserDetail silverpeasUD : silverpeasUDs) {
+          if (silverpeasUD.getSpecificId().equals(specificId) ||
+              (shouldFallbackUserLogins && silverpeasUD.getLogin().equals(distantUD.getLogin()))) {
+            userToUpdateFromDistantUser = silverpeasUD;
+            userToUpdateFromDistantUser.setSpecificId(distantUD.getSpecificId());
+            userToUpdateFromDistantUser.setFirstName(distantUD.getFirstName());
+            userToUpdateFromDistantUser.setLastName(distantUD.getLastName());
+            userToUpdateFromDistantUser.seteMail(distantUD.geteMail());
+            userToUpdateFromDistantUser.setLogin(distantUD.getLogin());
+            break;
           }
         }
 
-        distantUD.setDomainId(domainId);
-
-        if (bFound) {
+        if (userToUpdateFromDistantUser != null) {
           // update user
-          updateUserDuringSynchronization(domainDriverManager, distantUD, updateUsers, sReport);
+          updateUserDuringSynchronization(domainDriverManager, userToUpdateFromDistantUser,
+              updateUsers, sReport);
         } else if (importUsers) {
           // add user
+          distantUD.setDomainId(domainId);
           addUserDuringSynchronization(domainDriverManager, distantUD, addedUsers, sReport);
         }
       }
@@ -6156,15 +6156,15 @@ public final class Admin {
         SynchroReport.info("admin.synchronizeUsers", "Removing users from database...", null);
         distantUDs = domainDriverManager.getAllUsers(domainId);
         for (UserDetail silverpeasUD : silverpeasUDs) {
-          bFound = false;
+          boolean bFound = false;
           specificId = silverpeasUD.getSpecificId();
 
           // search for user in distant datasource
-          for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
-            if (distantUDs[nJ].getSpecificId().equals(specificId) || (shouldFallbackUserLogins
-                && silverpeasUD.getLogin().equals(
-                distantUDs[nJ].getLogin()))) {
+          for (final UserDetail distantUD : distantUDs) {
+            if (distantUD.getSpecificId().equals(specificId) || (shouldFallbackUserLogins &&
+                silverpeasUD.getLogin().equals(distantUD.getLogin()))) {
               bFound = true;
+              break;
             }
           }
 
