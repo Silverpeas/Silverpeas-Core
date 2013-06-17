@@ -76,6 +76,15 @@
     operationPane
         .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
             "displayUserMS?Iduser=" + thisUserId);
+    if (userObject.isBlockedState()) {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
+              "userUnblock?Iduser=" + thisUserId);
+    } else {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
+              "userBlock?Iduser=" + thisUserId);
+    }
     operationPane
         .addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
             "userSynchro?Iduser=" + thisUserId);
