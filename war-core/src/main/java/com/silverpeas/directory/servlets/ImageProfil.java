@@ -60,8 +60,21 @@ public class ImageProfil {
    */
   public void saveImage(InputStream data) throws IOException {
     File image = getImageFile();
-    image.getParentFile().mkdir();
-    FileUtil.writeFile(image, data);
+    image.getParentFile().mkdir();// crée le répertoire avatar s'il n'existait pas déjà
+    FileUtil.writeFile(image, data);// ajoute l'image uploadée ou bien remplace l'image existante
+                                    // par l'image uploadée
+  }
+
+  /**
+   * remove existing image
+   */
+  public void removeImage() {
+    File image = getImageFile();
+    if (image.exists()) {
+      image.delete(); // supprime la dernière image uploadée
+      File avatarDirectory = new File(FileRepositoryManager.getAvatarPath());
+      avatarDirectory.delete();// supprime le répertoire avatar s'il ne contient plus de photo
+    }
   }
 
   public InputStream getImage() throws IOException {
