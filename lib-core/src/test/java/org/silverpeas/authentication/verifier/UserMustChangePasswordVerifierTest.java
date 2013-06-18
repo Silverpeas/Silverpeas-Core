@@ -140,7 +140,7 @@ public class UserMustChangePasswordVerifierTest {
       int nbSuccessfulUserConnectionsBeforeProposingToChangePassword) {
     UserMustChangePasswordVerifierForTest verifier =
         new UserMustChangePasswordVerifierForTest(user);
-    verifier.initialize(userMustChangePasswordOnFirstLogin,
+    verifier.initialize(userMustChangePasswordOnFirstLogin, false,
         nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
         nbSuccessfulUserConnectionsBeforeProposingToChangePassword);
     return verifier;
@@ -172,9 +172,10 @@ public class UserMustChangePasswordVerifierTest {
     }
 
     public void initialize(boolean userMustChangePasswordOnFirstLogin,
+        boolean userMustFillEmailAddressOnFirstLogin,
         int nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
         int nbSuccessfulUserConnectionsBeforeProposingToChangePassword) {
-      setup(userMustChangePasswordOnFirstLogin,
+      setup(userMustChangePasswordOnFirstLogin, userMustFillEmailAddressOnFirstLogin,
           nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
           nbSuccessfulUserConnectionsBeforeProposingToChangePassword);
     }

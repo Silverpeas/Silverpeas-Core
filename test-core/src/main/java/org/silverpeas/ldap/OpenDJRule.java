@@ -113,8 +113,7 @@ public class OpenDJRule implements TestRule {
    * @throws URISyntaxException
    */
   private void startLdapServer(String serverHome, String ldifConfigFile) throws
-      InitializationException, ConfigException, FileNotFoundException, DirectoryException,
-      URISyntaxException {
+      InitializationException, ConfigException, URISyntaxException {
     File directoryServerRoot = getServerRoot(serverHome);
     new File(directoryServerRoot, "locks").mkdir();
     new File(directoryServerRoot, "logs").mkdir();

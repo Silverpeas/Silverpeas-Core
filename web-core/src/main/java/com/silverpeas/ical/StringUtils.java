@@ -32,6 +32,7 @@
 package com.silverpeas.ical;
 
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.Charsets;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
@@ -39,8 +40,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-
-import org.silverpeas.util.Charsets;
 
 /**
  * Common String utilities (formatters, converters, etc).
@@ -71,19 +70,16 @@ public final class StringUtils {
     return array;
   }
 
-  public static String decodeToString(byte[] bytes, String encoding)
-      throws UnsupportedEncodingException {
+  public static String decodeToString(byte[] bytes, String encoding) {
     return new String(decodeToArray(bytes, Charsets.toCharset(encoding)));
   }
 
 
-  public static String decodeToString(byte[] bytes, Charset encoding)
-      throws UnsupportedEncodingException {
+  public static String decodeToString(byte[] bytes, Charset encoding) {
     return new String(decodeToArray(bytes, encoding));
   }
 
-  static char[] decodeToArray(byte[] bytes, Charset encoding)
-      throws UnsupportedEncodingException {
+  static char[] decodeToArray(byte[] bytes, Charset encoding) {
     if (CharEncoding.US_ASCII.equals(encoding.name())) {
       char[] array = new char[bytes.length];
       for (int i = 0; i < array.length; i++) {
@@ -197,7 +193,7 @@ public final class StringUtils {
    * @return String the decoded bytes
    * @throws UnsupportedEncodingException
    */
-  public static String decodeBASE64(String string) throws UnsupportedEncodingException {
+  public static String decodeBASE64(String string) {
     return decodeToString(DatatypeConverter.parseBase64Binary(string), CharEncoding.UTF_8);
   }
 

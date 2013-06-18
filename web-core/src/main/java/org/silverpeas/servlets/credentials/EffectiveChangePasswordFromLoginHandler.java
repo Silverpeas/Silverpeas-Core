@@ -23,6 +23,7 @@
  */
 package org.silverpeas.servlets.credentials;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.authentication.AuthenticationCredential;
@@ -42,16 +43,23 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
     String domainId = request.getParameter("domainId");
     String oldPassword = request.getParameter("oldPassword");
     String newPassword = request.getParameter("newPassword");
+    String email = request.getParameter("emailAddress");
     AuthenticationCredential credential =
         AuthenticationCredential.newWithAsLogin(login).withAsPassword(oldPassword)
             .withAsDomainId(domainId);
     try {
       // Change password.
       AuthenticationService authenticator = new AuthenticationService();
-      authenticator.changePassword(credential, newPassword);
+      authenticator.changePasswordAndEmail(credential, newPassword, email);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
           domainId;
     } catch (AuthenticationException e) {
+      if (StringUtil.isDefined(email)) {
+        // If an email is defined, this is indicating that the user had to fill its email. After
+        // an error, the user could yet fill its email
+        request.setAttribute("isThatUserMustFillEmailAddressOnFirstLogin", true);
+        request.setAttribute("emailAddress", email);
+      }
       // Error : go back to page
       SilverTrace.error("peasCore", "ChangePasswordFromLoginHandler.doAction()",
           "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login, e);

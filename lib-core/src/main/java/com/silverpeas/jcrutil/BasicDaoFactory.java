@@ -27,21 +27,12 @@ import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.LoginException;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
+import javax.jcr.*;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
@@ -58,7 +49,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -353,8 +343,8 @@ public class BasicDaoFactory implements ApplicationContextAware {
     return prefix + DBUtil.getNextId(tableName, null);
   }
 
-  public static void setContent(Node fileNode, InputStream content,
-      String mimeType) throws RepositoryException, IOException {
+  public static void setContent(Node fileNode, InputStream content, String mimeType)
+      throws RepositoryException {
     Node contentNode;
     if (fileNode.hasNode(JcrConstants.JCR_CONTENT)) {
       contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);

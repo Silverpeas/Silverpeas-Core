@@ -25,12 +25,12 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.apache.ecs.ElementContainer;
+import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-import java.io.IOException;
+import org.apache.ecs.ElementContainer;
 
 import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
 
@@ -80,6 +80,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case wysiwyg:
           includeWysiwygEditor(xhtml);
           break;
+        case responsibles:
+          includeResponsibles(xhtml, getLanguage());
+          break;
         case popup:
           includePopup(xhtml);
           break;
@@ -103,6 +106,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           break;
         case tags:
           includeTags(xhtml);
+          break;
+        case pdc:
+          includePdc(xhtml);
           break;
       }
     } catch (IllegalArgumentException ex) {

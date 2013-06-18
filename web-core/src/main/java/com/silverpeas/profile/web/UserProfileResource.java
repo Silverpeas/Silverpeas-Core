@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Inject;
@@ -121,11 +122,12 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getUsers(@QueryParam("ids") Set<String> userIds,
+  public Response getUsers(@QueryParam("id") Set<String> userIds,
       @QueryParam("group") String groupId,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
-      @QueryParam("domain") String domain) {
+      @QueryParam("domain") String domain,
+      @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels) {
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -140,6 +142,10 @@ public class UserProfileResource extends RESTWebService {
         withPaginationPage(fromPage(page));
     if (CollectionUtil.isNotEmpty(userIds)) {
       criteriaBuilder.withUserIds(userIds.toArray(new String[userIds.size()]));
+    }
+    if (CollectionUtil.isNotEmpty(accessLevels)) {
+      criteriaBuilder
+          .withAccessLevels(accessLevels.toArray(new UserAccessLevel[accessLevels.size()]));
     }
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(

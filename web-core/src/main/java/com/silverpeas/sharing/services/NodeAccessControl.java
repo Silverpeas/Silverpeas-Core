@@ -126,7 +126,7 @@ public class NodeAccessControl implements ShareableAccessControl {
     return false;
   }
 
-  private PublicationBm findPublicationBm() throws CreateException, RemoteException {
+  private PublicationBm findPublicationBm() {
     if (publicationBm == null) {
       publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBm.class);
@@ -134,7 +134,7 @@ public class NodeAccessControl implements ShareableAccessControl {
     return publicationBm;
   }
 
-  private NodeBm findNodeBm() throws CreateException, RemoteException {
+  private NodeBm findNodeBm() {
     if (nodeBm == null) {
       nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     }

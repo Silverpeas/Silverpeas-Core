@@ -24,11 +24,35 @@
 
 package com.stratelia.webactiv;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public enum SilverpeasRole {
-  admin, publisher, writer, user, reader, supervisor, privilegedUser;
+  admin, Manager, publisher, writer, user, reader, supervisor, privilegedUser;
+
+  @JsonValue
+  public String getName() {
+    return name();
+  }
+
+  @JsonCreator
+  public static SilverpeasRole from(String name) {
+    if (name != null) {
+      for (SilverpeasRole silverpeasRole : SilverpeasRole.values()) {
+        if (name.equals(silverpeasRole.name())) {
+          return silverpeasRole;
+        }
+      }
+    }
+    return null;
+  }
+
+  public static boolean exists(String name) {
+    return from(name) != null;
+  }
 
   public static Set<SilverpeasRole> from(String[] roles) {
     Set<SilverpeasRole> result = new HashSet<SilverpeasRole>();

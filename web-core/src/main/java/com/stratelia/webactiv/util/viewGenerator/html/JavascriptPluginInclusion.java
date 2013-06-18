@@ -24,24 +24,24 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 
-import java.text.MessageFormat;
-
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
- *
+ * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
- *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
+  private static final String stylesheetPath =
+      URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
@@ -60,9 +60,12 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
+  private static final String SILVERPEAS_RESPONSIBLES = "silverpeas-responsibles.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
   private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
+  private static final String SILVERPEAS_PDC_WIDGET = "silverpeas-pdc-widgets.js";
+  private static final String SILVERPEAS_PDC = "silverpeas-pdc.js";
   private static final String flexPaperPath = javascriptPath + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String jqueryNotifierPath = jqueryPath + "noty/";
@@ -81,179 +84,153 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
 
+  /**
+   * Centralization of script instantiation.
+   * @param src
+   * @return
+   */
+  private static script script(String src) {
+    return new script().setType(JAVASCRIPT_TYPE).setSrc(src);
+  }
+
+  /**
+   * Centralization of script instantiation.
+   * @param content
+   * @return
+   */
+  private static script scriptContent(String content) {
+    return new script().setType(JAVASCRIPT_TYPE).addElement(content);
+  }
+
+  /**
+   * Centralization of link instantiation.
+   * @param href
+   * @return
+   */
+  private static link link(String href) {
+    return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
+  }
+
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    script qtip = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_QTIP);
-    script silverpeasQtip = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-            + SILVERPEAS_QTIP);
-    xhtml.addElement(qtip);
-    xhtml.addElement(silverpeasQtip);
+    xhtml.addElement(script(jqueryPath + JQUERY_QTIP));
+    xhtml.addElement(script(jqueryPath + SILVERPEAS_QTIP));
     return xhtml;
   }
-  
+
   public static ElementContainer includeIFramePost(final ElementContainer xhtml) {
-    script iframePost = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_IFRAME_POST);
-    xhtml.addElement(iframePost);
+    xhtml.addElement(script((jqueryPath + JQUERY_IFRAME_POST)));
+    return xhtml;
+  }
+
+  public static ElementContainer includePdc(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
     return xhtml;
   }
 
   public static ElementContainer includeDatePicker(final ElementContainer xhtml, String language) {
-    script datePicker = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-            + MessageFormat.format(JQUERY_DATEPICKER, language));
-    script silverpeasDatePicker = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_DATEPICKER);
-    script silverpeasDateUtils = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_DATE_UTILS);
-    script silverpeasDateChecker = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-        + SILVERPEAS_DATECHECKER);
-    script silverpeasDateCheckerLang = new script().setType(JAVASCRIPT_TYPE).addElement(
-        new StringBuilder("$.datechecker.settings.language = '").append(language).append("';")
-                                                                .toString());
-    xhtml.addElement(datePicker);
-    xhtml.addElement(silverpeasDatePicker);
-    xhtml.addElement(silverpeasDateUtils);
-    xhtml.addElement(silverpeasDateChecker);
-    xhtml.addElement(silverpeasDateCheckerLang);
+    xhtml.addElement(script(jqueryPath + MessageFormat.format(JQUERY_DATEPICKER, language)));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_DATEPICKER));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_DATE_UTILS));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_DATECHECKER));
+    xhtml.addElement(scriptContent("$.datechecker.settings.language = '" + language + "';"));
     return xhtml;
   }
 
   public static ElementContainer includePagination(final ElementContainer xhtml) {
-    script pagination = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + PAGINATION_TOOL
-            + ".js");
-    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
-        .setHref(jqueryCssPath + PAGINATION_TOOL + ".css");
-    xhtml.addElement(css);
-    xhtml.addElement(pagination);
+    xhtml.addElement(link(jqueryCssPath + PAGINATION_TOOL + ".css"));
+    xhtml.addElement(script((jqueryPath + PAGINATION_TOOL + ".js")));
     return xhtml;
   }
 
   public static ElementContainer includeBreadCrumb(final ElementContainer xhtml) {
-    script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_BREADCRUMB);
-    xhtml.addElement(breadcrumb);
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_BREADCRUMB));
     return xhtml;
   }
 
   public static ElementContainer includeUserZoom(final ElementContainer xhtml) {
-    script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_PROFILE);
-    script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_MESSAGEME);
-    script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_INVITME);
-    script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_USERZOOM);
-    xhtml.addElement(profile);
-    xhtml.addElement(messageMe);
-    xhtml.addElement(invitMe);
-    xhtml.addElement(userZoom);
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_USERZOOM));
     return xhtml;
   }
 
   public static ElementContainer includeInvitMe(final ElementContainer xhtml) {
-    script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_PROFILE);
-    script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_INVITME);
-    xhtml.addElement(profile);
-    xhtml.addElement(invitMe);
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
     return xhtml;
   }
 
   public static ElementContainer includeMessageMe(final ElementContainer xhtml) {
-    script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_PROFILE);
-    script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_MESSAGEME);
-    xhtml.addElement(profile);
-    xhtml.addElement(messageMe);
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
     return xhtml;
   }
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
-    script wysiwyg = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath
-            + JAVASCRIPT_CKEDITOR);
-    xhtml.addElement(wysiwyg);
+    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
+    return xhtml;
+  }
+
+  public static ElementContainer includeResponsibles(final ElementContainer xhtml,
+      String language) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_RESPONSIBLES));
+    StringBuilder responsiblePluginLabels = new StringBuilder();
+    responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
+        GeneralPropertiesManager.getGeneralMultilang(language)
+            .getString("GML.platform.responsibles", "")).append("';");
+    responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
+        GeneralPropertiesManager.getGeneralMultilang(language)
+            .getString("GML.notification.send", "")).append("';");
+    xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }
 
   public static ElementContainer includePopup(final ElementContainer xhtml) {
-    script popupViewGeneratorIconPath =
-        new script().setType(JAVASCRIPT_TYPE).addElement(
-            new StringBuilder("var popupViewGeneratorIconPath='")
-                .append(GraphicElementFactory.getIconsPath()).append("';").toString());
-    xhtml.addElement(popupViewGeneratorIconPath);
-    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_POPUP);
-    xhtml.addElement(popup);
+    xhtml.addElement(scriptContent(
+        "var popupViewGeneratorIconPath='" + GraphicElementFactory.getIconsPath() + "';"));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_POPUP));
     return xhtml;
   }
 
   public static ElementContainer includePreview(final ElementContainer xhtml) {
-    script popup =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PREVIEW);
-    xhtml.addElement(popup);
-    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_VIEW);
-    xhtml.addElement(popup);
-    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_FLASH);
-    xhtml.addElement(popup);
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PREVIEW));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_VIEW));
+    xhtml.addElement(script(flexPaperPath + FLEXPAPER_FLASH));
     return xhtml;
   }
 
   public static ElementContainer includeNotifier(final ElementContainer xhtml) {
-    script notifier =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_NOTIFIER_BASE);
-    xhtml.addElement(notifier);
-    notifier =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryNotifierPath + JQUERY_NOTIFIER_TOP);
-    xhtml.addElement(notifier);
-    notifier =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER);
-    xhtml.addElement(notifier);
-    notifier =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryNotifierPath + JQUERY_NOTIFIER_THEME);
-    xhtml.addElement(notifier);
-    notifier =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_NOTIFIER);
-    xhtml.addElement(notifier);
+    xhtml.addElement(script(jqueryPath + JQUERY_NOTIFIER_BASE));
+    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOP));
+    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER));
+    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_THEME));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_NOTIFIER));
     return xhtml;
   }
 
   public static ElementContainer includePassword(final ElementContainer xhtml) {
-    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
-        .setHref(stylesheetPath + STYLESHEET_PASSWORD);
-    script password =
-        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PASSWORD);
-    xhtml.addElement(css);
-    xhtml.addElement(password);
+    xhtml.addElement(link(stylesheetPath + STYLESHEET_PASSWORD));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PASSWORD));
     return xhtml;
   }
 
   public static ElementContainer includeCalendar(final ElementContainer xhtml) {
-    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(jqueryCssPath
-            + STYLESHEET_CALENDAR);
-    script jqueryCalendar = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-            + JQUERY_CALENDAR);
-    script sivlerpeasCalendar = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_CALENDAR);
-    xhtml.addElement(css);
-    xhtml.addElement(jqueryCalendar);
-    xhtml.addElement(sivlerpeasCalendar);
+    xhtml.addElement(link(jqueryCssPath + STYLESHEET_CALENDAR));
+    xhtml.addElement(script(jqueryPath + JQUERY_CALENDAR));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_CALENDAR));
     return xhtml;
   }
 
   public static ElementContainer includeJQuery(final ElementContainer xhtml) {
-    script jquery = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-        + GraphicElementFactory.JQUERY_JS);
-    xhtml.addElement(jquery);
+    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
     return xhtml;
   }
-  
+
   public static ElementContainer includeTags(final ElementContainer xhtml) {
-    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(jqueryPath
-            + STYLESHEET_TAGS);
-    script jqueryTags = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-            + JQUERY_TAGS);
-    xhtml.addElement(css);
-    xhtml.addElement(jqueryTags);
+    xhtml.addElement(link(jqueryPath + STYLESHEET_TAGS));
+    xhtml.addElement(script(jqueryPath + JQUERY_TAGS));
     return xhtml;
   }
 }

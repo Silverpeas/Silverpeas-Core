@@ -33,7 +33,7 @@ import javax.jms.*;
  * It adds additional attributes in order to facilitate the JMS sessions management.
  */
 class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> implements TopicSubscriber {
-  
+
   private String id;
   private String topicName;
   private MessageListener messageListener;
@@ -71,7 +71,7 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
   public Topic getTopic() throws JMSException {
     return new Topic() {
       @Override
-      public String getTopicName() throws JMSException {
+      public String getTopicName() {
         return topicName;
       }
     };

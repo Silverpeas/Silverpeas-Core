@@ -24,25 +24,8 @@
 
 package com.silverpeas.node.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.RestRequest;
-
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -52,9 +35,21 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -100,22 +95,14 @@ public class GetNodes extends HttpServlet {
 
       if (availableComponentIds.size() == 1) {
         // only one instance is available, root must be expanded by default
-        try {
           NodeDetail node = getRoot(availableComponentIds.get(0), mainSessionCtrl);
           JSONObject root = getNodeAsJSTreeObject(node, mainSessionCtrl, "open");
           writer.write(root.toString());
-        } catch (CreateException e) {
-          writer.write("Silverpeas Node Service is unavailable");
-        }
       } else {
         // at least two instances are available, only root of instances have to be displayed
         List<NodeDetail> nodes = new ArrayList<NodeDetail>();
         for (String componentId : availableComponentIds) {
-          try {
             nodes.add(getRoot(componentId, mainSessionCtrl));
-          } catch (CreateException e) {
-            writer.write("Silverpeas Node Service is unavailable");
-          }
         }
         writer.write(getListAsJSONArray(nodes, mainSessionCtrl));
       }
@@ -134,17 +121,12 @@ public class GetNodes extends HttpServlet {
 
   private void getChildren(NodePK pk, MainSessionController session, Writer writer)
       throws IOException {
-    try {
       NodeDetail node = getNodeBm().getDetail(pk);
       List<NodeDetail> availableChildren = getAvailableChildren(node.getChildrenDetails(), session);
       writer.write(getListAsJSONArray(availableChildren, session));
-    } catch (CreateException e) {
-      writer.write("Silverpeas Node Service is unavailable");
-    }
   }
 
-  private NodeDetail getRoot(String componentId, MainSessionController session)
-      throws RemoteException, CreateException {
+  private NodeDetail getRoot(String componentId, MainSessionController session) {
     NodeDetail node = getNodeBm().getHeader(new NodePK("0", componentId));
     ComponentInstLight component =
         session.getOrganisationController().getComponentInstLight(componentId);
@@ -155,7 +137,7 @@ public class GetNodes extends HttpServlet {
   }
 
   private List<NodeDetail> getAvailableChildren(Collection<NodeDetail> children,
-      MainSessionController session) throws RemoteException, CreateException {
+      MainSessionController session) {
     List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
     for (NodeDetail child : children) {
       String childId = child.getNodePK().getId();
@@ -276,7 +258,7 @@ public class GetNodes extends HttpServlet {
     return flag.toString();
   }
 
-  private NodeBm getNodeBm() throws RemoteException, CreateException {
+  private NodeBm getNodeBm() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 

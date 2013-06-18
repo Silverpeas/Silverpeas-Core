@@ -91,7 +91,7 @@ public class NotificationServer {
    * Send the NotificationMessage in a JMS Queue
    */
   private static void jmsSendToQueue(String notificationMessage, String jmsFactory, String jmsQueue,
-      Map<String, String> p_JmsHeaders) throws JMSException, NamingException, IOException {
+      Map<String, String> p_JmsHeaders) throws JMSException, NamingException {
     QueueConnection qcon = null;
     QueueSession qsession = null;
     QueueSender qsender = null;

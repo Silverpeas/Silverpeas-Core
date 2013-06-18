@@ -24,96 +24,99 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <!--Load the resource bundle for the page -->
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
 <c:set var="disableMove" value="${requestScope['DisableMove']}"/>
 
 <c:choose>
-	<c:when test="${disableMove==true}">
-		<dt style="cursor:default">
-	</c:when>
-	<c:otherwise>
-		<dt>
-    </c:otherwise>
+  <c:when test="${disableMove==true}">
+    <dt style="cursor:default">
+  </c:when>
+  <c:otherwise>
+    <dt>
+  </c:otherwise>
 </c:choose>
-	<div>
-		<h2 class="portlet-title"><c:out value="${portlet.title}" escapeXml="false"/></h2>
-		<ul class="portlet-options">
-	      <c:if test="${portlet.minimized==true}">
-	        <li>
-	          <a href="<c:out value="${portlet.normalizedURL}"/>">
-	            <img src="/silverpeas/portlet/jsp/jsr/images/set2/unminimize_button.gif" alt="<fmt:message key="portlets.window.unminimize"/>" title="<fmt:message key="portlets.window.unminimize"/>" />
-	          </a>
-	        </li>
-	      </c:if>
-	      <c:if test="${portlet.minimized==false}">
-	          <li>
-	            <a href="<c:out value="${portlet.minimizedURL}"/>">
-	              <img src="/silverpeas/portlet/jsp/jsr/images/set2/minimize_button.gif" alt="<fmt:message key="portlets.window.minimize"/>" title="<fmt:message key="portlets.window.minimize"/>" />
-	            </a>
-	          </li>
-	      </c:if>
-	      <c:if test="${portlet.maximized==true}">
-	          <li>
-	            <a href="<c:out value="${portlet.normalizedURL}"/>">
-	              <img src="/silverpeas/portlet/jsp/jsr/images/set2/unmaximize_button.gif" alt="<fmt:message key="portlets.window.unmaximize"/>" title="<fmt:message key="portlets.window.unmaximize"/>" />
-	            </a>
-	          </li>
-	      </c:if>
-	      <c:if test="${portlet.maximized==false}">
-	          <li>
-	            <a href="<c:out value="${portlet.maximizedURL}"/>">
-	              <img src="/silverpeas/portlet/jsp/jsr/images/set2/maximize_button.gif" alt="<fmt:message key="portlets.window.maximize"/>" title="<fmt:message key="portlets.window.maximize"/>" />
-	            </a>
-	          </li>
-	      </c:if>
-	      <c:if test="${portlet.help==true}">
-	        <li>
-	          <a href="<c:out value="${portlet.helpURL}"/>">
-	            <img src="/silverpeas/portlet/jsp/jsr/images/set2/help_button.gif" alt="<fmt:message key="portlets.window.help"/>" title="<fmt:message key="portlets.window.help"/>" />
-	          </a>
-	        </li>
-	      </c:if>
-	      <c:if test="${portlet.edit==true}">
-	        <li>
-	          <a href="<c:out value="${portlet.editURL}"/>">
-	            <img src="/silverpeas/portlet/jsp/jsr/images/set2/edit_button.gif" alt="<fmt:message key="portlets.window.edit"/>" title="<fmt:message key="portlets.window.edit"/>" />
-	          </a>
-	        </li>
-	      </c:if>
-	      <!--<c:if test="${portlet.view==true}">
+
+<div>
+  <h2 class="portlet-title"><c:out value="${portlet.title}" escapeXml="false"/></h2>
+  <ul class="portlet-options">
+    <c:if test="${portlet.minimized==true}">
+      <li>
+        <a href="<c:out value="${portlet.normalizedURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/unminimize_button.gif" alt="<fmt:message key="portlets.window.unminimize"/>" title="<fmt:message key="portlets.window.unminimize"/>"/>
+        </a>
+      </li>
+    </c:if>
+    <c:if test="${portlet.minimized==false}">
+      <li>
+        <a href="<c:out value="${portlet.minimizedURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/minimize_button.gif" alt="<fmt:message key="portlets.window.minimize"/>" title="<fmt:message key="portlets.window.minimize"/>"/>
+        </a>
+      </li>
+    </c:if>
+    <c:if test="${portlet.maximized==true}">
+      <li>
+        <a href="<c:out value="${portlet.normalizedURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/unmaximize_button.gif" alt="<fmt:message key="portlets.window.unmaximize"/>" title="<fmt:message key="portlets.window.unmaximize"/>"/>
+        </a>
+      </li>
+    </c:if>
+    <c:if test="${portlet.maximized==false}">
+      <li>
+        <a href="<c:out value="${portlet.maximizedURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/maximize_button.gif" alt="<fmt:message key="portlets.window.maximize"/>" title="<fmt:message key="portlets.window.maximize"/>"/>
+        </a>
+      </li>
+    </c:if>
+    <c:if test="${portlet.help==true}">
+      <li>
+        <a href="<c:out value="${portlet.helpURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/help_button.gif" alt="<fmt:message key="portlets.window.help"/>" title="<fmt:message key="portlets.window.help"/>"/>
+        </a>
+      </li>
+    </c:if>
+    <c:if test="${portlet.edit==true}">
+      <li>
+        <a href="<c:out value="${portlet.editURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/edit_button.gif" alt="<fmt:message key="portlets.window.edit"/>" title="<fmt:message key="portlets.window.edit"/>"/>
+        </a>
+      </li>
+    </c:if>
+    <!--<c:if test="${portlet.view==true}">
 	        <li>
 	          <a href="<c:out value="${portlet.viewURL}"/>">
 	            <img src="/silverpeas/portlet/jsp/jsr/images/set2/view_button.gif" alt="<fmt:message key="portlets.window.view"/>" title="<fmt:message key="portlets.window.view"/>" />
 	          </a>
 	        </li>
 	      </c:if>-->
-		  <c:if test="${portlet.remove==true}">
-		      <li>
-		        <a href="<c:out value="${portlet.removeURL}"/>">
-		          <img src="/silverpeas/portlet/jsp/jsr/images/set2/remove_button.gif" alt="<fmt:message key="portlets.window.remove"/>" title="<fmt:message key="portlets.window.remove"/>" />
-		        </a>
-		      </li>
-		  </c:if>
-	    </ul>
-	</div>
+    <c:if test="${portlet.remove==true}">
+      <li>
+        <a href="<c:out value="${portlet.removeURL}"/>">
+          <img src="/silverpeas/portlet/jsp/jsr/images/set2/remove_button.gif" alt="<fmt:message key="portlets.window.remove"/>" title="<fmt:message key="portlets.window.remove"/>"/>
+        </a>
+      </li>
+    </c:if>
+  </ul>
+</div>
 </dt>
 <dd>
-	<c:choose>
+  <c:choose>
     <c:when test="${portlet.minimized==false}">
       <div class="portlet-content">
         <c:out value="${portlet.content}" escapeXml="false"/>
-      </div> <!-- closes portlet-content -->
+      </div>
+      <!-- closes portlet-content -->
     </c:when>
     <c:otherwise>
-      <div class="portlet-content-minimized"></div> <!-- portlet content minimized -->
+      <div class="portlet-content-minimized"></div>
+      <!-- portlet content minimized -->
     </c:otherwise>
   </c:choose>
 </dd>

@@ -18,17 +18,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPConstraints;
-import com.novell.ldap.LDAPSearchConstraints;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.util.LdapConfiguration;
+
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPConstraints;
+import com.novell.ldap.LDAPSearchConstraints;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions
@@ -37,17 +42,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @version 1.0
  */
 public class LDAPSettings extends DriverSettings {
-  
+
   public final static String TIME_STAMP_MSAD = "uSNChanged";
   public final static String TIME_STAMP_MSAD_TT = "whenChanged";
   public final static String TIME_STAMP_NDS = "modifyTimeStamp";
-  protected String LDAPHost = null;
+  protected final LdapConfiguration configuration = new LdapConfiguration();
   protected String LDAPImpl = null;
-  protected int LDAPPort = 389;
   protected int LDAPProtocolVer = LDAPConnection.LDAP_V3;
   protected boolean LDAPOpAttributesUsed = false;
-  protected String LDAPAccessLoginDN = null;
-  protected String LDAPAccessPasswd = null;
   protected String LDAPUserBaseDN = null;
   protected boolean LDAPSearchRecurs = false;
   protected LDAPConstraints LDAPDefaultConstraints = null;
@@ -57,9 +59,7 @@ public class LDAPSettings extends DriverSettings {
   protected int LDAPMaxNbEntryReturned = 5000;
   protected int LDAPMaxNbReferrals = 0;
   protected int LDAPBatchSize = 1;
-  protected boolean LDAPSecured = false;
   protected boolean sortControlSupported = true;
-  protected int LDAPPortSecured = 636;
   protected boolean SYNCHROautomatic = false;
   protected boolean SYNCHRORecursToGroups = true;
   protected boolean SYNCHROthreaded = false;
@@ -101,15 +101,15 @@ public class LDAPSettings extends DriverSettings {
     // Database Settings
     // -----------------
     LDAPImpl = rs.getString("database.LDAPImpl", null);
-    LDAPHost = rs.getString("database.LDAPHost", null);
-    LDAPPort = getIntValue(rs, "database.LDAPPort", LDAPPort);
-    LDAPProtocolVer = getIntValue(rs, "database.LDAPProtocolVer",
-        LDAPProtocolVer);
+    configuration.setLdapHost(rs.getString("database.LDAPHost", null));
+    configuration.setLdapPort(getIntValue(rs, "database.LDAPPort", configuration.getLdapPort()));
+    LDAPProtocolVer = getIntValue(rs, "database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
     LDAPOpAttributesUsed = getBooleanValue(rs, "database.LDAPOpAttributesUsed",
         LDAPOpAttributesUsed);
     LDAPProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
-    LDAPAccessLoginDN = rs.getString("database.LDAPAccessLoginDN", null);
-    LDAPAccessPasswd = rs.getString("database.LDAPAccessPasswd", null);
+    configuration.setUsername(rs.getString("database.LDAPAccessLoginDN", null));
+    configuration
+        .setPassword(rs.getString("database.LDAPAccessPasswd", "").getBytes(Charsets.UTF_8));
     LDAPUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
     LDAPMaxMsClientTimeLimit = getIntValue(rs,
         "database.LDAPMaxMsClientTimeLimit", LDAPMaxMsClientTimeLimit);
@@ -122,10 +122,11 @@ public class LDAPSettings extends DriverSettings {
     LDAPBatchSize = getIntValue(rs, "database.LDAPBatchSize", LDAPBatchSize);
     LDAPSearchRecurs = getBooleanValue(rs, "database.LDAPSearchRecurs",
         LDAPSearchRecurs);
-    LDAPSecured = getBooleanValue(rs, "database.LDAPSecured", LDAPSecured);
-    LDAPPortSecured = getIntValue(rs, "database.LDAPPortSecured",
-        LDAPPortSecured);
-    sortControlSupported = getBooleanValue(rs, "database.SortControlSupported", ! "openldap".
+    configuration.setSecure(getBooleanValue(rs, "database.LDAPSecured", false));
+    if (configuration.isSecure()) {
+      configuration.setLdapPort(getIntValue(rs, "database.LDAPPortSecured", 636));
+    }
+    sortControlSupported = getBooleanValue(rs, "database.SortControlSupported", !"openldap".
         equalsIgnoreCase(LDAPImpl));
     LDAPDefaultSearchConstraints = getSearchConstraints(true);
     LDAPDefaultConstraints = getConstraints(true);
@@ -183,27 +184,27 @@ public class LDAPSettings extends DriverSettings {
   public boolean isSynchroAutomatic() {
     return SYNCHROautomatic;
   }
-  
+
   public boolean isSynchroRecursToGroups() {
     return SYNCHRORecursToGroups;
   }
-  
+
   public boolean isSynchroThreaded() {
     return SYNCHROthreaded;
   }
-  
+
   public String getTimeStampVar() {
     return SYNCHROtimeStampVar;
   }
-  
+
   public boolean isSynchroCacheEnabled() {
     return SYNCHROCacheEnabled;
   }
-  
+
   public boolean mustImportUsers() {
     return SYNCHROImportUsers;
   }
-  
+
   public AbstractLDAPTimeStamp newLDAPTimeStamp(String theValue) {
     if (TIME_STAMP_MSAD.equalsIgnoreCase(getTimeStampVar())) {
       return new LDAPTimeStampMSAD(this, theValue);
@@ -211,55 +212,54 @@ public class LDAPSettings extends DriverSettings {
       return new LDAPTimeStampNDS(this, theValue);
     }
   }
-  
+
   public String getLDAPImpl() {
     return LDAPImpl;
   }
-  
+
   public String getLDAPHost() {
-    return LDAPHost;
+    return configuration.getLdapHost();
   }
-  
+
   public int getLDAPPort() {
-    return ((LDAPSecured) ? LDAPPortSecured : LDAPPort);
+    return configuration.getLdapPort();
   }
-  
+
   public int getLDAPProtocolVer() {
     return LDAPProtocolVer;
   }
-  
+
   public boolean isLDAPOpAttributesUsed() {
     return LDAPOpAttributesUsed;
   }
-  
+
   public String getLDAPAccessLoginDN() {
-    return LDAPAccessLoginDN;
+    return configuration.getUsername();
   }
-  
-  public String getLDAPAccessPasswd() {
-    return LDAPAccessPasswd;
+
+  public byte[] getLDAPAccessPasswd() {
+    return configuration.getPassword();
   }
-  
+
   public String getLDAPUserBaseDN() {
     return LDAPUserBaseDN;
   }
-  
+
   public boolean getLDAPSearchRecurs() {
     return LDAPSearchRecurs;
   }
-  
+
   public boolean isLDAPSecured() {
-    return LDAPSecured;
+    return configuration.isSecure();
   }
-  
+
   public int getScope() {
     if (LDAPSearchRecurs) {
       return LDAPConnection.SCOPE_SUB;
-    } else {
-      return LDAPConnection.SCOPE_ONE;
     }
+    return LDAPConnection.SCOPE_ONE;
   }
-  
+
   public LDAPSearchConstraints getSearchConstraints(boolean allocateNew) {
     if (allocateNew) {
       boolean doReferrals = true;
@@ -272,9 +272,8 @@ public class LDAPSettings extends DriverSettings {
     }
     return LDAPDefaultSearchConstraints;
   }
-  
+
   public LDAPConstraints getConstraints(boolean allocateNew) {
-    LDAPConstraints theConstraints;
     if (allocateNew) {
       boolean doReferrals = true;
       if (LDAPMaxNbReferrals == 0) {
@@ -298,15 +297,15 @@ public class LDAPSettings extends DriverSettings {
           "admin.EX_ERR_CANT_INSTANCIATE_USER_CLASS", usersType, e);
     }
   }
-  
+
   public String getUsersClassName() {
     return usersClassName;
   }
-  
+
   public String getUsersFilter() {
     return usersFilter;
   }
-  
+
   public String getUsersFullFilter() {
     if (StringUtil.isDefined(usersFilter)) {
       return "(&(objectClass=" + usersClassName + ")" + usersFilter + ")";
@@ -318,30 +317,30 @@ public class LDAPSettings extends DriverSettings {
   public String getUsersIdField() {
     return usersIdField;
   }
-  
+
   public String getUsersLoginField() {
     return usersLoginField;
   }
-  
+
   public String getUsersFirstNameField() {
     return usersFirstNameField;
   }
-  
+
   public String getUsersLastNameField() {
     return usersLastNameField;
   }
-  
+
   public String getUsersEmailField() {
     return usersEmailField;
   }
-  
+
   public String getUsersIdFilter(String value) {
     if (LDAPUtility.isAGuid(getUsersIdField()) && (value != null)) {
       // Replace all "\\" by "\"
       StringBuilder singleSlashValue = new StringBuilder(value.length());
       boolean bIsFirst = true;
       char[] vca = value.toCharArray();
-      
+
       for (char aVca : vca) {
         if (aVca == '\\') {
           if (bIsFirst) {
@@ -360,10 +359,9 @@ public class LDAPSettings extends DriverSettings {
           + LDAPUtility.normalizeFilterValue(value) + "))";
     }
   }
-  
+
   public String getUsersLoginFilter(String value) {
-    return "(&" + getUsersFullFilter() + "(" + getUsersLoginField() + "="
-        + value + "))";
+    return "(&" + getUsersFullFilter() + "(" + getUsersLoginField() + "=" + value + "))";
   }
 
   // GROUP FIELDS
@@ -372,74 +370,72 @@ public class LDAPSettings extends DriverSettings {
     try {
       return (AbstractLDAPGroup) Class.forName(groupsType).newInstance();
     } catch (Exception e) {
-      throw new AdminException("LDAPSettings.newLDAPGroup",
-          SilverpeasException.ERROR,
+      throw new AdminException("LDAPSettings.newLDAPGroup", SilverpeasException.ERROR,
           "admin.EX_ERR_CANT_INSTANCIATE_GROUP_CLASS", groupsType, e);
     }
   }
-  
+
   public String getGroupsClassName() {
     return groupsClassName;
   }
-  
+
   public boolean isGroupsInheritProfiles() {
     return groupsInheritProfiles;
   }
-  
+
   public String getGroupsFilter() {
     return groupsFilter;
   }
-  
+
   public int getGroupsNamingDepth() {
     return groupsNamingDepth;
   }
-  
+
   public String getGroupsFullFilter() {
     if (groupsFilter != null && groupsFilter.length() > 0) {
       return "(&(objectClass=" + groupsClassName + ")" + groupsFilter + ")";
-    } else {
-      return "(objectClass=" + groupsClassName + ")";
     }
+    return "(objectClass=" + groupsClassName + ")";
   }
-  
+
   public String getGroupsMemberField() {
     return groupsMemberField;
   }
-  
+
   public String getGroupsSpecificGroupsBaseDN() {
     if (!StringUtil.isDefined(groupsSpecificGroupsBaseDN)) {
       return LDAPUserBaseDN;
-    } else if (groupsSpecificGroupsBaseDN.equalsIgnoreCase("root")) {
-      return "";
-    } else {
-      return groupsSpecificGroupsBaseDN;
     }
+    if (groupsSpecificGroupsBaseDN.equalsIgnoreCase("root")) {
+      return "";
+    }
+    return groupsSpecificGroupsBaseDN;
   }
 
   // Group fields
   public String getGroupsIdField() {
     return groupsIdField;
   }
-  
+
   public boolean getGroupsIncludeEmptyGroups() {
     return groupsIncludeEmptyGroups;
   }
-  
+
   public String getGroupsNameField() {
     return groupsNameField;
   }
-  
+
   public String getGroupsDescriptionField() {
     return groupsDescriptionField;
   }
-  
+
   public String getGroupsIdFilter(String value) {
     if (LDAPUtility.isAGuid(getGroupsIdField()) && (value != null)) {
       // Replace all "\\" by "\"
       StringBuilder singleSlashValue = new StringBuilder(value.length());
       boolean bIsFirst = true;
       char[] vca = value.toCharArray();
-      
+
       for (char aVca : vca) {
         if (aVca == '\\') {
           if (bIsFirst) {
@@ -458,12 +454,12 @@ public class LDAPSettings extends DriverSettings {
           + LDAPUtility.normalizeFilterValue(value) + "))";
     }
   }
-  
+
   public String getGroupsNameFilter(String value) {
     return "(&" + getGroupsFullFilter() + "(" + getGroupsNameField() + "="
         + value + "))";
   }
-  
+
   protected String[] getUserAttributes() {
     if (isLDAPOpAttributesUsed()) {
       String[] attrs = new String[5];
@@ -473,11 +469,10 @@ public class LDAPSettings extends DriverSettings {
       attrs[3] = getUsersLastNameField();
       attrs[4] = getUsersLoginField();
       return attrs;
-    } else {
-      return null;
     }
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
-  
+
   protected String[] getGroupAttributes() {
     if (isLDAPOpAttributesUsed()) {
       String[] attrs = new String[4];
@@ -486,19 +481,18 @@ public class LDAPSettings extends DriverSettings {
       attrs[2] = getGroupsMemberField();
       attrs[3] = getGroupsNameField();
       return attrs;
-    } else {
-      return null;
     }
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
-  
+
   public boolean displayImportUsers() {
     return ihmImportUsers;
   }
-  
+
   public boolean displayImportGroups() {
     return ihmImportGroups;
   }
-  
+
   public boolean isSortControlSupported() {
     return sortControlSupported;
   }

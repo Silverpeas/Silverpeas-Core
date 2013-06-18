@@ -23,20 +23,22 @@
  */
 package com.silverpeas.bundle.web;
 
-import static com.silverpeas.bundle.web.BundleTestResources.JAVA_PACKAGE;
-import static com.silverpeas.bundle.web.BundleTestResources.SPRING_CONTEXT;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import static com.silverpeas.bundle.web.BundleTestResources.JAVA_PACKAGE;
+import static com.silverpeas.bundle.web.BundleTestResources.SPRING_CONTEXT;
 
 /**
  * The bundle resource represents in the WEB a localized bundle of messages. This WEB service is an
@@ -112,7 +114,7 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   @Test
   public void getAnExistingBundleByItsNameAndExtension() {
     String messages = getAt(aResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
-            getWebEntityClass());
+        getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
 
     messages = getAt(aOrgResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
@@ -141,16 +143,23 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   }
 
   @Test
-  public void getAComponentSettings() {
+  public void getAComponentSettingsInPlaceOfLocalizedBundle() {
     try {
       String settingsURI = "bundles/com/silverpeas/bundle/web/componentSettings";
       getAt(settingsURI, MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
       fail("A user shouldn't get a bundle with component settings");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
-      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      int forbidden = Response.Status.BAD_REQUEST.getStatusCode();
       assertThat(receivedStatus, is(forbidden));
     }
+  }
+
+  @Test
+  public void getAComponentSettings() {
+    String messages =
+        getAt(aSettingsResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.parametre=1"), is(true));
   }
 
   @Override
@@ -165,6 +174,10 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
 
   public String aOrgResourceURI() {
     return "bundles/org/silverpeas/bundle/web/multilang/mytranslations";
+  }
+
+  public String aSettingsResourceURI() {
+    return "bundles/settings/com/silverpeas/bundle/web/componentSettings";
   }
 
   @Override

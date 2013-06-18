@@ -278,7 +278,7 @@ public class StringUtil extends StringUtils {
     return declaredEncoding;
   }
 
-  private static boolean checkEncoding(String value) throws UnsupportedEncodingException {
+  private static boolean checkEncoding(String value) {
     if (value != null) {
       char[] chars = value.toCharArray();
       for (char currentChar : chars) {

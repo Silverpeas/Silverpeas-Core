@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.silverpeas.util.Charsets;
 
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
@@ -92,8 +89,7 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public LDAPConnection getConnection(String connectionId)
-      throws AdminException {
+  static public LDAPConnection getConnection(String connectionId) {
     return (connectInfos.get(connectionId)).connection;
   }
 
@@ -106,8 +102,7 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public boolean recoverConnection(String connectionId, LDAPException ex)
-      throws AdminException {
+  static public boolean recoverConnection(String connectionId, LDAPException ex) {
     int nbRetry = 0;
     boolean reOpened = false;
 
@@ -171,12 +166,9 @@ public class LDAPUtility {
     }
     try {
       valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
-      byte[] passwd = null;
-      if (StringUtil.isDefined(driverSettings.getLDAPAccessPasswd())) {
-        passwd = driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8);
-      }
-      valret.
-          bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), passwd);
+      byte[] passwd = driverSettings.getLDAPAccessPasswd();
+      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
+          passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -186,17 +178,14 @@ public class LDAPUtility {
         }
       } catch (LDAPException ee) {
         SilverTrace.error("admin", "LDAPUtility.openConnection", "admin.EX_ERR_LDAP_GENERAL",
-            "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId
-            + " Error LDAP #" + Integer.toString(e.getResultCode()) + " "
-            + e.getLDAPErrorMessage(), ee);
+            "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId + " Error LDAP #"
+            + e.getResultCode() + " " + e.getLDAPErrorMessage(), ee);
       }
       throw new AdminException("LDAPUtility.openConnection",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "Host : "
-          + driverSettings.getLDAPHost() + " Port : "
-          + Integer.toString(driverSettings.getLDAPPort())
-          + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN()
-          + " ProtocolVer : "
-          + Integer.toString(driverSettings.getLDAPProtocolVer()), e);
+          + driverSettings.getLDAPHost() + " Port : " + driverSettings.getLDAPPort()
+          + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN() + " ProtocolVer : "
+          + driverSettings.getLDAPProtocolVer(), e);
     }
   }
 

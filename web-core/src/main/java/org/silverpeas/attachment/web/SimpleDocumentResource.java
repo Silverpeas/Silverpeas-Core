@@ -328,7 +328,7 @@ public class SimpleDocumentResource extends RESTWebService {
     }
     StreamingOutput stream = new StreamingOutput() {
       @Override
-      public void write(OutputStream output) throws IOException, WebApplicationException {
+      public void write(OutputStream output) throws WebApplicationException {
         try {
           AttachmentServiceFactory.getAttachmentService().getBinaryContent(output,
               new SimpleDocumentPK(getSimpleDocumentId()), language);
@@ -410,30 +410,6 @@ public class SimpleDocumentResource extends RESTWebService {
     Collections.swap(docs, position, position + 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
     return MessageFormat.format("'{'\"status\":{0}}", true);
-  }
-
-  /**
-   * Unlock the specified document for exclusive edition.
-   *
-   * @param force
-   * @param webdav
-   * @param privateVersion
-   * @param comment
-   * @return XML status to true if the document was locked successfully - XML status to false
-   * otherwise..
-   */
-  @POST
-  @Path("unlock")
-  @Produces(MediaType.APPLICATION_XHTML_XML)
-  public String unlockDocumentForInternetExplorer(@FormParam("force") final boolean force,
-      @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
-      @FormParam("comment") final String comment) {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
-    boolean result = unlock(document, force, webdav, privateVersion, comment);
-    return MessageFormat.format("<result><status>{0}</status><id>{1}</id>"
-        + "<attachmentId>{2}</attachmentId></result>", result, document.getOldSilverpeasId(),
-        document.getId());
   }
 
   protected boolean unlock(final SimpleDocument document, final boolean force, final boolean webdav,

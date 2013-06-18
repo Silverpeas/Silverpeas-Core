@@ -98,8 +98,7 @@ public class UploadServlet extends HttpServlet {
    * This method below is for use with commons-fileupload version 1.1
    */
   private void uploadFile(HttpServletRequest request,
-      HttpServletResponse response) throws FileUploadException, IOException,
-      PortletRegistryException {
+      HttpServletResponse response) throws FileUploadException, PortletRegistryException {
 
     HttpSession session = AdminUtils.getClearedSession(request);
 

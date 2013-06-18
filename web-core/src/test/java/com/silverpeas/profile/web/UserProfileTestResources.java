@@ -128,6 +128,18 @@ public class UserProfileTestResources extends TestResources {
                 && !passedCriteria.isCriterionOnGroupIdsSet())) {
           return emptyUsers;
         }
+        if (criteria.isCriterionOnAccessLevelsSet() &&
+            passedCriteria.isCriterionOnAccessLevelsSet()) {
+          if (!Arrays.equals(criteria.getCriterionOnAccessLevels(),
+              passedCriteria.getCriterionOnAccessLevels())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnAccessLevelsSet() &&
+            passedCriteria.isCriterionOnAccessLevelsSet()) ||
+            (criteria.isCriterionOnAccessLevelsSet() &&
+                !passedCriteria.isCriterionOnAccessLevelsSet())) {
+          return emptyUsers;
+        }
         if (criteria.isCriterionOnNameSet() && passedCriteria.isCriterionOnNameSet()) {
           if (!criteria.getCriterionOnName().equals(passedCriteria.getCriterionOnName())) {
             return emptyUsers;

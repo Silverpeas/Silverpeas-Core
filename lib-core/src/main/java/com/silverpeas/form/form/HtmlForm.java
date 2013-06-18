@@ -209,7 +209,7 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    * @throws IOException if an error occurs while printing the field.
    */
-  private void printField(PrintWriter out, String fieldName, PagesContext pc) throws IOException {
+  private void printField(PrintWriter out, String fieldName, PagesContext pc) {
     try {
       Field field = record.getField(fieldName);
       String currentFieldName = fieldName;
@@ -249,8 +249,7 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    * @throws IOException if an error occurs while printing the field label.
    */
-  private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc)
-      throws IOException {
+  private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) {
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
       if (fieldTemplate != null && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
         out.print(fieldTemplate.getLabel(pc.getLanguage()));
