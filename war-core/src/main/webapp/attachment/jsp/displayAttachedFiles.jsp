@@ -1143,7 +1143,7 @@
         <div id="languages">
           <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
             <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
-          </c:forEach>data("isVersioned", isVersioned)
+          </c:forEach>
         </div>
       </div>
     </c:if>
