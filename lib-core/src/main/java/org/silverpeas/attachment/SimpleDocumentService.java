@@ -382,13 +382,15 @@ public class SimpleDocumentService implements AttachmentService {
           document.getLanguage());
       repository.fillNodeName(session, document);
       repository.updateDocument(session, document);
-      if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
-        // le fichier est renommé
-        if (!oldAttachment.getFilename().equals(document.getFilename())) {
-          webdavRepository.deleteAttachmentNode(session, oldAttachment);
-          webdavRepository.createAttachmentNode(session, document);
-        } else {
-          webdavRepository.updateNodeAttachment(session, document);
+      if (!oldAttachment.isVersioned()) {
+        if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
+          // le fichier est renommé
+          if (!oldAttachment.getFilename().equals(document.getFilename())) {
+            webdavRepository.deleteAttachmentNode(session, oldAttachment);
+            webdavRepository.createAttachmentNode(session, document);
+          } else {
+            webdavRepository.updateAttachment(session, document);
+          }
         }
       }
       String userId = document.getUpdatedBy();
@@ -840,12 +842,13 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public void changeVersionState(SimpleDocumentPK pk) {
+  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      repository.changeVersionState(session, pk);
+      SimpleDocumentPK updatedPk = repository.changeVersionState(session, pk, comment);
       session.save();
+      return updatedPk;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {

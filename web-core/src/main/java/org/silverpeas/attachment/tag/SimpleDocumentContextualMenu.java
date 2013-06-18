@@ -164,8 +164,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     if (attachment.isVersioned()) {
       message = resources.getString("attachment.switchState.toSimple");
     }
-    prepareMenuItem(builder, "switchState('" + attachment.getId() + "');", message);
-
+    prepareMenuItem(builder, "switchState('" + attachment.getId() + "', " + attachment.isVersioned()
+        + ");", message);
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(

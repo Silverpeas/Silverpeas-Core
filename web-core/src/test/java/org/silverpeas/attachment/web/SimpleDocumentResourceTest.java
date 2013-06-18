@@ -215,9 +215,8 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.field("fileDescription", "This test is trying to simulate the update of a content");
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
-        .header(
-        HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(MULTIPART_FORM_DATA)
-        .post(SimpleDocumentEntity.class, form);
+        .header(HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(
+        MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),
@@ -276,18 +275,21 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     SimpleDocument document = new SimpleDocument(pk, "18", 10, false, new SimpleAttachment(
         "test.pdf", lang, "Test", "Ceci est un test.", 500L, MimeTypes.PDF_MIME_TYPE,
         USER_ID_IN_TEST, creationDate, null));
+    Form form = new Form();
     AttachmentService service = mock(AttachmentService.class);
     when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
         thenReturn(document);
-    when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
+    when(service.searchDocumentById(eq(pk), eq(lang))).thenReturn(document);
+    when(service.changeVersionState(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).thenReturn(
+        pk);
     getTestResources().setAttachmentService(service);
     WebResource webResource = resource();
     String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/switchState").header(
-        HTTP_SESSIONKEY, getSessionKey()).put(String.class);
+        HTTP_SESSIONKEY, getSessionKey()).put(String.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result, is(
         "{\"status\":true, \"id\":56, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
-    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID));
+    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), null);
   }
 
   @Override

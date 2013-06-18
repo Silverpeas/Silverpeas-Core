@@ -516,7 +516,18 @@
       checkout(id, oldId, true, true, false);
     }
 
-    function switchState(id) {
+    function switchState(id, isVersioned) {
+      <fmt:message key="attachment.switch.warning.simple" var="warningSimple"/>
+      <fmt:message key="attachment.switch.warning.versioned" var="warningVersioned"/>
+      if(isVersioned) {
+        $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
+        $("#attachment-switch-versioned").hide();
+        $("#attachment-switch-simple").show();
+      } else {
+        $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
+        $("#attachment-switch-simple").hide();
+        $("#attachment-switch-versioned").show();
+      }
       $("#dialog-attachment-switch").data("id", id).dialog("open");
       pageMustBeReloadingAfterSorting = true;
     }
@@ -914,6 +925,7 @@
             $.ajax(submitUrl, {
               type: 'PUT',
               dataType: "json",
+              data: $("#attachment-switch-form").serialize(),
               success:function(result) {
                 reloadIncludingPage();
                 $(this).dialog("close");
@@ -1137,9 +1149,22 @@
     </c:if>
 </div>
 
-<div id="dialog-attachment-switch" style="display:none">
-  <span>Prout</span>
-</div>
+  <div id="dialog-attachment-switch" style="display:none">
+    <p id="attachment-switch-warning-message">Prout</p>
+    <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
+      <div id="attachment-switch-simple" style="display:none">
+        <label for="switch-version-major" class="label-ui-dialog"><fmt:message key="attachment.switch.version.major" /></label>
+        <span id="attachment-switch-major" class="champ-ui-dialog"><input value="lastMajor" type="radio" name="switch-version" id="switch-version-major"/></span>
+        <label for="switch-version-last" class="label-ui-dialog"><fmt:message key="attachment.switch.version.last" /></label>
+        <span id="attachment-switch-last" class="champ-ui-dialog"><input value="last" type="radio" name="switch-version" id="switch-version-last"/></span>
+      </div>
+      <div id="attachment-switch-versioned" style="display:none">
+       <label for="switch-version-comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
+      <span class="champ-ui-dialog"><textarea name="switch-version-comment" cols="60" rows="3" id="switch-version-comment"></textarea></span>
+      </div>
+      <input type="submit" value="Submit" style="display:none" />
+    </form>
+  </div>
 
  <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">

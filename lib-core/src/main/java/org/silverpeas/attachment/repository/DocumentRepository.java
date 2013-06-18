@@ -327,17 +327,31 @@ public class DocumentRepository {
    *
    * @param session
    * @param documentPk the id of the document.
+   * @param comment
    * @throws RepositoryException
    * @throws IOException
    */
-  public void changeVersionState(Session session, SimpleDocumentPK documentPk) throws
-      RepositoryException, IOException {
+  public SimpleDocumentPK changeVersionState(Session session, SimpleDocumentPK documentPk,
+      String comment) throws RepositoryException, IOException {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+      boolean versionedNode = documentNode.getParent() instanceof Version || converter.isVersioned(
+          documentNode);
+      Node parent = documentNode.getParent();
+      if (parent instanceof Version) {
+        Version selectedVersion = (Version) parent;
+        VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
+        versionManager.restore(selectedVersion, true);
+        documentNode = session.getNodeByIdentifier(selectedVersion.getContainingHistory()
+            .getVersionableIdentifier());
+      }
       if (!documentNode.isCheckedOut()) {
         checkoutNode(documentNode, null);
       }
-      if (converter.isVersioned(documentNode)) {
+      if (StringUtil.isDefined(comment)) {
+        documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
+      }
+      if (versionedNode) {
         removeHistory(documentNode);
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
@@ -357,13 +371,16 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
         SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+
         VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
         documentNode.getSession().save();
         moveMultilangContent(origin, target);
         versionManager.checkin(documentNode.getPath());
       }
+      return new SimpleDocumentPK(documentNode.getIdentifier(), documentPk);
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
+      return documentPk;
     }
   }
 

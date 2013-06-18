@@ -70,6 +70,8 @@ import com.sun.jersey.multipart.FormDataParam;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+
 @Service
 @RequestScoped
 @Path("documents/{componentId}/document/{id}")
@@ -230,6 +232,7 @@ public class SimpleDocumentResource extends RESTWebService {
     if (StringUtil.isNotDefined(filename)) {
       uploadedFilename = fileDetail.getFileName();
     }
+    boolean isWebdav = false;
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)
         && !"no_file".equalsIgnoreCase(uploadedFilename)) {
       document.setFilename(uploadedFilename);
@@ -241,12 +244,13 @@ public class SimpleDocumentResource extends RESTWebService {
       if (!StringUtil.isDefined(document.getEditedBy())) {
         document.edit(getUserDetail().getId());
       }
-      AttachmentServiceFactory.getAttachmentService().
-          updateAttachment(document, content, true, true);
+      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
+          true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
       if (document.isVersioned()) {
+        isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
         File content = new File(document.getAttachmentPath());
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), getUserDetail()
             .getId(), document.getLanguage());
@@ -258,7 +262,11 @@ public class SimpleDocumentResource extends RESTWebService {
     }
     UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(),
         lang, comment);
-    unlockContext.addOption(UnlockOption.UPLOAD);
+    if (isWebdav) {
+      unlockContext.addOption(UnlockOption.WEBDAV);
+    } else {
+      unlockContext.addOption(UnlockOption.UPLOAD);
+    }
     if (!isPublic) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
@@ -356,7 +364,7 @@ public class SimpleDocumentResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public String lock() {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -375,14 +383,14 @@ public class SimpleDocumentResource extends RESTWebService {
   @Path("moveUp")
   @Produces(MediaType.APPLICATION_JSON)
   public String moveSimpleDocumentUp() {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(
-        new ForeignPK(document.getForeignId(), componentId), I18NHelper.defaultLanguage);
+        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), componentId),
+        defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position - 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
@@ -400,13 +408,13 @@ public class SimpleDocumentResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public String moveSimpleDocumentDown() {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
         .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), componentId),
-        I18NHelper.defaultLanguage);
+        defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position + 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
@@ -430,12 +438,12 @@ public class SimpleDocumentResource extends RESTWebService {
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUserDetail().getId(),
-        I18NHelper.defaultLanguage, comment);
+        defaultLanguage, comment);
     if (force) {
       unlockContext.addOption(UnlockOption.FORCE);
     }
@@ -453,22 +461,29 @@ public class SimpleDocumentResource extends RESTWebService {
   /**
    * Change the document version state.
    *
+   * @param comment
+   * @param version
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
    */
   @PUT
   @Path("switchState")
   @Produces(MediaType.APPLICATION_JSON)
-  public String switchDocumentVersionState() {
+  public String switchDocumentVersionState(@FormParam("switch-version-comment") final String comment,
+      @FormParam("switch-version") final String version) {
+    boolean useMajor = "lastMajor".equalsIgnoreCase(version);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     SimpleDocumentPK pk = new SimpleDocumentPK(getSimpleDocumentId());
-    AttachmentServiceFactory.getAttachmentService().changeVersionState(pk);
+    if (document.isVersioned() && useMajor) {
+      pk = document.getLastPublicVersion().getPk();
+    }
+    pk = AttachmentServiceFactory.getAttachmentService().changeVersionState(pk, comment);
     document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
-        I18NHelper.defaultLanguage);
+        defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
   }
