@@ -424,8 +424,8 @@ public class WysiwygController {
       callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, foreignKey.getInstanceId(),
           foreignKey.getId());
     }
-    AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),
-        userId, document.getLanguage()));
+    AttachmentServiceFactory.getAttachmentService()
+        .unlock(new UnlockContext(document.getId(), userId, document.getLanguage()));
   }
 
   /**
@@ -440,6 +440,26 @@ public class WysiwygController {
   public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String userId, String contentLanguage) {
     createFileAndAttachment(textHtml, foreignKey, WYSIWYG_CONTEXT, userId, contentLanguage);
+  }
+
+  /**
+   * Add all elements attached to object identified by the given index into the given index
+   *
+   * @param indexEntry the index of the related resource.
+   * @param language the language.
+   */
+  public static void addToIndex(FullIndexEntry indexEntry, String language) {
+    ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKeyAndType(pk, DocumentType.wysiwyg, language);
+    if (!docs.isEmpty()) {
+      String wysiwygPath = docs.get(0).getAttachmentPath();
+      indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
+      String wysiwygContent = loadContent(docs.get(0), language);
+      // index embedded linked attachment (links presents in wysiwyg content)
+      List<String> embeddedAttachmentIds = getEmbeddedAttachmentIds(wysiwygContent);
+      indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+    }
   }
 
   /**
