@@ -47,6 +47,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 @Named("sqlDomainService")
@@ -64,41 +65,62 @@ public class SQLDomainService extends AbstractDomainService {
         new ResourceLocator("org.silverpeas.domains.templateDomainSQL", "");
     adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
+  
+   private void checkFileName(String fileDomainName) throws DomainAuthenticationPropertiesAlreadyExistsException, DomainPropertiesAlreadyExistsException {
+     // Check properties files availability
+     // org.silverpeas.domains.domain<domainName>.properties
+     // org.silverpeas.authentication.autDomain<domainName>.properties
+     String authenticationPropertiesPath =
+         FileRepositoryManager.getDomainAuthenticationPropertiesPath(fileDomainName);
+     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(fileDomainName);
 
-  @Override
-  protected void checkDomainName(String domainName) throws DomainConflictException, AdminException {
+     if (new File(authenticationPropertiesPath).exists()) {
+       throw new DomainAuthenticationPropertiesAlreadyExistsException(fileDomainName);
+     }
 
-    // Commons checks
-    super.checkDomainName(domainName);
-
-    // Check properties files availability
-    // org.silverpeas.domains.domain<domainName>.properties
-    // org.silverpeas.authentication.autDomain<domainName>.properties
-    String authenticationPropertiesPath =
-        FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainName);
-    String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
-
-    if (new File(authenticationPropertiesPath).exists()) {
-      throw new DomainAuthenticationPropertiesAlreadyExistsException(domainName);
-    }
-
-    if (new File(domainPropertiesPath).exists()) {
-      throw new DomainPropertiesAlreadyExistsException(domainName);
-    }
-  }
+     if (new File(domainPropertiesPath).exists()) {
+       throw new DomainPropertiesAlreadyExistsException(fileDomainName);
+     }
+   }
+   
+   //transformation du nom du domaine, nécessaire pour pouvoir créer les fichiers sur le fileSystem 
+   //et créer les tables dans la BD
+   private String getCorrectDomainFileName(String domainName) {
+     //remplace les caractères accentués non compatibles avec les fichiers fileSystem et les noms de tables BD par les caractères non accentués correspondants
+     String fileDomainName = FileServerUtils.replaceAccentChars(domainName);
+     
+     //remplace les caractères spéciaux et les espaces non compatibles avec les fichiers fileSystem et les noms de tables BD par caractère '_'
+     fileDomainName =  fileDomainName.replaceAll("[^A-Za-z0-9]", "_");
+     
+     //tronque le nom à 42 caractères pour être compatible avec les noms de tables BD
+     if (fileDomainName.length()>42) {
+       fileDomainName = fileDomainName.substring(0, 42);
+     }
+     
+     return fileDomainName;
+   }
 
   @Override
   public String createDomain(Domain domainToCreate) throws DomainConflictException,
       DomainCreationException {
 
     // Check domain name
-    String domainName = domainToCreate.getName();
+    String initialDomainName = domainToCreate.getName();
     try {
-      checkDomainName(domainName);
+      checkDomainName(initialDomainName);
     } catch (AdminException e) {
       throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
     }
+    
+    //file domain name
+    String fileDomainName = getCorrectDomainFileName(initialDomainName);
+    
+    //check fileSystem
+    checkFileName(fileDomainName);
+    
+    //set nouveau nom pour le fileSystem et la BD
+    domainToCreate.setName(fileDomainName);
 
     // Generates domain properties file
     generateDomainPropertiesFile(domainToCreate);
@@ -110,7 +132,7 @@ public class SQLDomainService extends AbstractDomainService {
     try {
       dao.createDomainStorage(domainToCreate);
     } catch (Exception e) {
-      removePropertiesFiles(domainName);
+      removePropertiesFiles(fileDomainName);
       throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
     }
@@ -120,17 +142,24 @@ public class SQLDomainService extends AbstractDomainService {
     if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
       domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
     }
-    domainToCreate.setPropFileName("org.silverpeas.domains.domain" + domainName);
-    domainToCreate.setAuthenticationServer("autDomain" + domainName);
+    domainToCreate.setPropFileName("org.silverpeas.domains.domain" + fileDomainName);
+    domainToCreate.setAuthenticationServer("autDomain" + fileDomainName);
     domainToCreate.setTheTimeStamp("0");
+    
+    // Enregistre le nom initial dans la table st_domain
+    domainToCreate.setName(initialDomainName);
     String domainId = registerDomain(domainToCreate);
+    
+    //set nouveau nom pour le fileSystem et la BD
+    domainToCreate.setName(fileDomainName);
+    
     if (!StringUtil.isDefined(domainId)) {
       try {
         dao.deleteDomainStorage(domainToCreate);
       } catch (Exception e) {
-        removePropertiesFiles(domainName);
+        removePropertiesFiles(fileDomainName);
       }
-      removePropertiesFiles(domainName);
+      removePropertiesFiles(fileDomainName);
     }
 
     return domainId;
@@ -139,12 +168,17 @@ public class SQLDomainService extends AbstractDomainService {
   @Override
   public String deleteDomain(Domain domainToRemove) throws DomainDeletionException {
 
-    // unregister new Domain
+    //set nouveau nom pour le fileSystem et la BD
+    String domainPropertiesPath = domainToRemove.getPropFileName();
+    String fileDomainName = domainPropertiesPath.substring(29); //supprime org.silverpeas.domains.domain
+    domainToRemove.setName(fileDomainName);
+    
+    // unregister new Domain dans st_domain
     String domainId = unRegisterDomain(domainToRemove);
     if (!StringUtil.isDefined(domainId)) {
       throw new DomainDeletionException("SQLDomainService.deleteDomain");
     }
-
+    
     // Remove storage
     try {
       dao.deleteDomainStorage(domainToRemove);
@@ -183,6 +217,7 @@ public class SQLDomainService extends AbstractDomainService {
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToCreate.getName();
+    
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
 
     SilverpeasTemplate template = getNewTemplate();

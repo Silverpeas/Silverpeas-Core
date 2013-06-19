@@ -1637,7 +1637,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException =
           new JobDomainPeasTrappedException("JobDomainPeasSessionController.createDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+          SilverpeasException.ERROR, "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DATABASE", e);
       trappedException.setGoBackPage("displayDomainCreate");
       throw trappedException;
     }
@@ -1687,7 +1687,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException =
           new JobDomainPeasTrappedException("JobDomainPeasSessionController.createSQLDomain()",
-              SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+              SilverpeasException.ERROR, "admin.MSG_ERR_DOMAIN_ALREADY_EXIST", e);
       trappedException.setGoBackPage("displayDomainSQLCreate");
       throw trappedException;
     }

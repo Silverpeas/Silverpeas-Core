@@ -33,7 +33,7 @@ public class DomainAuthenticationPropertiesAlreadyExistsException extends Domain
   private static final long serialVersionUID = -1196587632333002256L;
 
   public DomainAuthenticationPropertiesAlreadyExistsException(String domainName) {
-    super("AbstractDomainService", "admin.DOMAIN_AUTHENTICATION_PROPERTIES_ALREADY_EXISTS",
+    super("AbstractDomainService", "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_AUTHENTICATION_PROPERTIES",
         domainName);
   }
 }

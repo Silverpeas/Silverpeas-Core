@@ -33,6 +33,6 @@ public class DomainPropertiesAlreadyExistsException extends DomainConflictExcept
   private static final long serialVersionUID = -1196587632333002256L;
 
   public DomainPropertiesAlreadyExistsException(String domainName) {
-    super("AbstractDomainService", "admin.DOMAIN_PROPERTIES_ALREADY_EXISTS", domainName);
+    super("AbstractDomainService", "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", domainName);
   }
 }
