@@ -49,6 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -249,6 +250,7 @@ public class SimpleDocumentResource extends RESTWebService {
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
+      isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
       if (document.isVersioned()) {
         isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
         File content = new File(document.getAttachmentPath());
@@ -257,6 +259,9 @@ public class SimpleDocumentResource extends RESTWebService {
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
             true);
       } else {
+        if (isWebdav) {
+          WebdavServiceFactory.getWebdavService().getUpdatedDocument(document);
+        }
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
       }
     }

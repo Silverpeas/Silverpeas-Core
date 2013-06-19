@@ -26,7 +26,7 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
   <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean" destroy-method="destroy">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:repository.xml" />
@@ -72,7 +72,10 @@
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
 
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
-          factory-method="getInstance" />
+        factory-method="getInstance" />
+
+  <bean id="webdavServiceFactory" class="org.silverpeas.attachment.WebdavServiceFactory"
+        factory-method="getInstance" />
 
 
   <!-- Node -->
