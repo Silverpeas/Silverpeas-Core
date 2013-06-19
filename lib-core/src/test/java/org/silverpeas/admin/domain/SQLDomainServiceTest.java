@@ -53,8 +53,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
-import org.silverpeas.admin.domain.exception.NonAlphaNumericDetectedException;
-import org.silverpeas.admin.domain.exception.WhiteSpacesDetectedException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -224,37 +222,11 @@ public class SQLDomainServiceTest {
 
   @Test
   @Transactional
-  public void testCreateDomainWithWhiteSpaces() throws Exception {
-    Domain domain = new Domain();
-    domain.setName("Test Creation");
-    try {
-      String domainId = service.createDomain(domain);
-      fail("Exception must have been thrown");
-    } catch (Exception e) {
-      assertThat(e instanceof WhiteSpacesDetectedException, is(true));
-    }
-  }
-
-  @Test
-  @Transactional
-  public void testCreateDomainWithNonAlphaChars() throws Exception {
-    Domain domain = new Domain();
-    domain.setName("Test+Creation");
-    try {
-      String domainId = service.createDomain(domain);
-      fail("Exception must have been thrown");
-    } catch (Exception e) {
-      assertThat(e instanceof NonAlphaNumericDetectedException, is(true));
-    }
-  }
-
-  @Test
-  @Transactional
   public void testCreateDomainAlreadyInDB() throws Exception {
     Domain domain = new Domain();
     domain.setName("Customers");
     try {
-      String domainId = service.createDomain(domain);
+      service.createDomain(domain);
       fail("Exception must have been thrown");
     } catch (Exception e) {
       assertThat(e instanceof NameAlreadyExistsInDatabaseException, is(true));
@@ -271,7 +243,7 @@ public class SQLDomainServiceTest {
     FileUtils.touch(conflictousPropertiesFile);
     conflictousPropertiesFile.deleteOnExit();
     try {
-      String domainId = service.createDomain(domain);
+      service.createDomain(domain);
       fail("Exception must have been thrown");
     } catch (Exception e) {
       assertThat(e instanceof DomainPropertiesAlreadyExistsException, is(true));
@@ -282,7 +254,7 @@ public class SQLDomainServiceTest {
     FileUtils.touch(conflictousPropertiesFile);
     // create domain
     try {
-      String domainId = service.createDomain(domain);
+      service.createDomain(domain);
       fail("Exception must have been thrown");
     } catch (Exception e) {
       assertThat(e instanceof DomainAuthenticationPropertiesAlreadyExistsException, is(true));
