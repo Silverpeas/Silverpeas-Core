@@ -20,24 +20,9 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.MessageListener;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
@@ -45,10 +30,26 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.MessageListener;
+import javax.mail.MessagingException;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.CharEncoding;
 
 import static com.silverpeas.util.MailUtil.*;
+
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SECURE_TRANSPORT;
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SIMPLE_TRANSPORT;
 
@@ -205,6 +206,10 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       }
 
       transport.sendMessage(email, toAddress);
+    } catch (MessagingException e) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
+    } catch (UnsupportedEncodingException e) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
     } catch (Exception e) {
       throw new NotificationServerException("SMTPListner.sendEmail()", SilverpeasException.ERROR,
           "smtp.EX_CANT_SEND_SMTP_MESSAGE", e);
