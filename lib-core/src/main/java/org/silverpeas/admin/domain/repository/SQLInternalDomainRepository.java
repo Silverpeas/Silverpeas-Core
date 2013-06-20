@@ -26,18 +26,20 @@ package org.silverpeas.admin.domain.repository;
 
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-import javax.inject.Named;
-import javax.sql.DataSource;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 @Repository
 @Named("sqlInternalDomainRepository")
@@ -117,7 +119,13 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   private String generateUserTableCreateStatement(String domainName) throws FileNotFoundException,
       IOException {
     Properties props = new Properties();
-    props.load(new FileInputStream(FileRepositoryManager.getDomainPropertiesPath(domainName)));
+    FileInputStream fis = null;
+    try {
+      fis = new FileInputStream(FileRepositoryManager.getDomainPropertiesPath(domainName));
+      props.load(fis);
+    } finally {
+      IOUtils.closeQuietly(fis);
+    }
     int numberOfColumns = Integer.parseInt(props.getProperty("property.Number"));
 
     StringBuilder createStatement = new StringBuilder();

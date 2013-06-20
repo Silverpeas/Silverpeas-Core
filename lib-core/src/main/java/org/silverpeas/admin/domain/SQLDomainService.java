@@ -24,15 +24,16 @@
 
 package org.silverpeas.admin.domain;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
@@ -40,15 +41,14 @@ import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.repository.SQLDomainRepository;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.Normalizer;
 
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
@@ -66,7 +66,9 @@ public class SQLDomainService extends AbstractDomainService {
     adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
   
-   private void checkFileName(String fileDomainName) throws DomainAuthenticationPropertiesAlreadyExistsException, DomainPropertiesAlreadyExistsException {
+  private void checkFileName(String fileDomainName)
+      throws DomainAuthenticationPropertiesAlreadyExistsException,
+      DomainPropertiesAlreadyExistsException {
      // Check properties files availability
      // org.silverpeas.domains.domain<domainName>.properties
      // org.silverpeas.authentication.autDomain<domainName>.properties
@@ -83,23 +85,25 @@ public class SQLDomainService extends AbstractDomainService {
      }
    }
    
-   //transformation du nom du domaine, nécessaire pour pouvoir créer les fichiers sur le fileSystem 
-   //et créer les tables dans la BD
+  /**
+   * Gets a file name without special characters and without accentued characters in the aim to
+   * create domain property files safely on file system.
+   * @param domainName domain name with maybe some special characters and/or accentued characters
+   * @return
+   */
    private String getCorrectDomainFileName(String domainName) {
-     //remplace les caractères accentués non compatibles avec les fichiers fileSystem et les noms de tables BD par les caractères non accentués correspondants
+
+    // Normalizing (accents, puissance, ...)
      String fileDomainName = FileServerUtils.replaceAccentChars(domainName);
+    fileDomainName = Normalizer.normalize(fileDomainName, Normalizer.Form.NFKD);
      
-     //remplace les caractères spéciaux et les espaces non compatibles avec les fichiers fileSystem et les noms de tables BD par caractère '_'
-     fileDomainName =  fileDomainName.replaceAll("[^A-Za-z0-9]", "_");
+    // Replacing of each sequence of special characters by one underscore
+    fileDomainName = fileDomainName.replaceAll("[^\\p{Alnum}]+", "_");
      
-     //tronque le nom à 42 caractères pour être compatible avec les noms de tables BD
-     if (fileDomainName.length()>42) {
-       fileDomainName = fileDomainName.substring(0, 42);
+    // Limitations of some databases on length of table or column names
+    return StringUtil.left(fileDomainName, SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH);
      }
      
-     return fileDomainName;
-   }
-
   @Override
   public String createDomain(Domain domainToCreate) throws DomainConflictException,
       DomainCreationException {
@@ -168,9 +172,16 @@ public class SQLDomainService extends AbstractDomainService {
   @Override
   public String deleteDomain(Domain domainToRemove) throws DomainDeletionException {
 
-    //set nouveau nom pour le fileSystem et la BD
-    String domainPropertiesPath = domainToRemove.getPropFileName();
-    String fileDomainName = domainPropertiesPath.substring(29); //supprime org.silverpeas.domains.domain
+    // Retrieve the prefix of a domain property file name
+    String separator = "#@#@#@#@#";
+    String domainPropertyPrefix = new File(
+        FileRepositoryManager.getDomainPropertiesPath(separator).replaceAll(separator + ".*$", ""))
+        .getName();
+    // Get the domain property file name without the package
+    String domainPropertyFileName =
+        domainToRemove.getPropFileName().replaceAll("[\\p{Alnum}]+\\.+", "");
+    // Compute the common property file name by removing the prefix of a domain property file name
+    String fileDomainName = domainPropertyFileName.replaceFirst(domainPropertyPrefix, "");
     domainToRemove.setName(fileDomainName);
     
     // unregister new Domain dans st_domain
@@ -210,10 +221,7 @@ public class SQLDomainService extends AbstractDomainService {
    * @throws DomainCreationException
    */
   private void generateDomainPropertiesFile(Domain domainToCreate) throws DomainCreationException {
-    SilverTrace
-        .info(
-        "admin",
-        "SQLDomainService.generateDomainPropertiesFile()",
+    SilverTrace.info("admin", "SQLDomainService.generateDomainPropertiesFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToCreate.getName();
@@ -252,10 +260,7 @@ public class SQLDomainService extends AbstractDomainService {
    */
   private void generateDomainAuthenticationPropertiesFile(Domain domainToCreate)
       throws DomainCreationException {
-    SilverTrace
-        .info(
-        "admin",
-        "SQLDomainService.generateDomainAuthenticationPropertiesFile()",
+    SilverTrace.info("admin", "SQLDomainService.generateDomainAuthenticationPropertiesFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToCreate.getName();
@@ -287,8 +292,10 @@ public class SQLDomainService extends AbstractDomainService {
           "SQLDomainService.generateDomainAuthenticationPropertiesFile()", domainToCreate
           .toString(), e);
     } finally {
+      if (out != null) {
       out.close();
     }
+  }
   }
 
   /**
@@ -297,10 +304,7 @@ public class SQLDomainService extends AbstractDomainService {
    * @throws DomainDeletionException
    */
   private void removeDomainPropertiesFile(Domain domainToRemove) {
-    SilverTrace
-        .info(
-        "admin",
-        "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
+    SilverTrace.info("admin", "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToRemove.getName();
@@ -314,11 +318,8 @@ public class SQLDomainService extends AbstractDomainService {
     boolean domainPropertiesFileDeleted = domainPropertiesFile.delete();
     boolean authenticationPropertiesFileDeleted = authenticationPropertiesFile.delete();
 
-    if ((!domainPropertiesFileDeleted) || (!authenticationPropertiesFileDeleted)) {
-      SilverTrace
-          .warn(
-          "admin",
-          "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
+    if (!(domainPropertiesFileDeleted && authenticationPropertiesFileDeleted)) {
+      SilverTrace.warn("admin", "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
           "admin.EX_DELETE_DOMAIN_PROPERTIES", "domainPropertiesFileDeleted:" +
           domainPropertiesFileDeleted + ", authenticationPropertiesFileDeleted:" +
           authenticationPropertiesFileDeleted);
