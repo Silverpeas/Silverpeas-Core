@@ -75,7 +75,7 @@
     </style>
   </head>
     <body class="userPanel">
-    <div class="container_userPanel" ng-controller="mainController">
+    <div class="container_userPanel" ng-controller="mainController"  ng-cloak>
 
       <div id="filter_userPanel">
         <h4 class="title"><fmt:message key="selection.Filter"/></h4>
@@ -229,8 +229,11 @@
                       return UserGroup.get(arguments[0]);
                     },
                     users: function() {
-                      return User.get(arguments[0]);
-                    } };
+                      var params = (arguments.length > 0 & arguments[0] ? arguments[0]:{});
+                      params.group = 'all';
+                      return User.get(params);
+                    }
+             };
 
             /* size of a page (items in a listing) within a pagination */
             var userPageSize = PageSize;
@@ -408,7 +411,7 @@
               $("#selection").submit();
         </c:otherwise>
       </c:choose>
-            }
+            };
 
             // cancel the selection and go back to the caller.
             $scope.cancel = function() {
@@ -422,7 +425,7 @@
             $("#selection").submit();
         </c:otherwise>
       </c:choose>
-            }
+            };
 
             /* breadcrumb on the user groups. It initializes also the app and it performs the change
              *  coming from the navigation on the groups */
