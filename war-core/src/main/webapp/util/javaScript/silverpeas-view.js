@@ -138,11 +138,7 @@
       // Getting view
       var url = $.view.webServiceContext;
       url += "/view/" + options.componentInstanceId;
-      if (options.versioned) {
-    	  url += "/version/" + options.attachmentId;
-      } else {
-    	  url += "/attachment/" + options.attachmentId;
-      }
+    	url += "/attachment/" + options.attachmentId;
       $.ajax({
         url : url,
         type : 'GET',
