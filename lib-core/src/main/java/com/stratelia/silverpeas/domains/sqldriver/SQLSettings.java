@@ -35,6 +35,11 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 
 public class SQLSettings extends DriverSettings {
+
+  // Definitions of max lengths due to limitations on Oracle databases
+  public static final int DATABASE_TABLE_NAME_MAX_LENGTH = 30;
+  public static final int DATABASE_COLUMN_NAME_MAX_LENGTH = 30;
+
   // For DB Access
   protected String SQLClassName = "";
   protected String SQLJDBCUrl = "";
