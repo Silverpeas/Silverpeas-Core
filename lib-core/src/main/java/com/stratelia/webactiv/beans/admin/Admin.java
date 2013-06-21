@@ -3719,6 +3719,20 @@ public final class Admin {
   /**
    * Create a new domain
    */
+  public String getNextDomainId() throws AdminException {
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    try {
+      return domainDriverManager.getNextDomainId();
+    } catch (Exception e) {
+      throw new AdminException("Admin.getNextDomainId", SilverpeasException.ERROR,
+          "admin.EX_ERR_ADD_DOMAIN", e);
+    }
+  }
+
+  /**
+   * Create a new domain
+   */
   public String addDomain(Domain theDomain) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
