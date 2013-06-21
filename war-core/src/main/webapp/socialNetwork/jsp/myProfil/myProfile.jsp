@@ -48,6 +48,7 @@
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
     String language = request.getLocale().getLanguage();
+    ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
     ResourceLocator multilang = new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle", language);
     ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
@@ -58,10 +59,11 @@
     boolean showAllContactLink = !contacts.isEmpty();
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String pathAvatar = userFull.getAvatar();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
@@ -97,6 +99,54 @@ function editStatus() {
 
 function updateAvatar() {
 	$("#avatarDialog").dialog("open");
+}
+
+function getExtension(filename) {
+  var indexPoint = filename.lastIndexOf(".");
+  // on verifie qu il existe une extension au nom du fichier
+  if (indexPoint != -1) {
+    // le fichier contient une extension. On recupere l extension
+    var ext = filename.substring(indexPoint + 1);
+    return ext;
+  }
+  return null;
+}
+
+function isFileCorrect(image) {
+  var errorMsg = "";
+  var errorNb = 0;
+
+  if (!isWhitespace(image)) {
+    var extension = getExtension(image);
+
+    if (extension == null) {
+      errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
+      errorNb++;
+    } else {
+      extension = extension.toLowerCase();
+      if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
+        errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
+        errorNb++;
+      }
+    }
+  }
+
+  switch(errorNb) {
+    case 0 :
+      result = true;
+      break;
+     case 1 :
+      errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+     default :
+      errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;
 }
 
 $(document).ready(function(){
@@ -137,11 +187,14 @@ $(document).ready(function(){
             modal: true,
             autoOpen: false,
             height: "auto",
-            width: 500,
+            width: 650,
             title: "<fmt:message key="profil.actions.changePhoto" />",
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
-					document.photoForm.submit();
+					var imageNewFile = $("#avatarDialog #ImageNewFile").val();
+					if (isFileCorrect(imageNewFile)) {
+						document.photoForm.submit();
+					}
 				},
 				"<fmt:message key="GML.cancel"/>": function() {
 					$(this).dialog( "close" );
@@ -182,6 +235,11 @@ $(document).ready(function(){
     $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
 
 });
+
+function hideImageFile() {
+  $("#avatarDialog #ImageFile").hide();
+  document.photoForm.removeImageFile.value = "yes";
+}
 </script>
 </head>
 <body id="myProfile">
@@ -210,7 +268,7 @@ $(document).ready(function(){
 			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>
         </div>
         <div class="profilPhoto">
-			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
+			<img src="<%=m_context + pathAvatar%>" alt="viewUser" class="avatar"/>
         </div>
         <br clear="all" />
  	</div>
@@ -224,8 +282,18 @@ $(document).ready(function(){
 	<div id="avatarDialog">
 		<form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 	        <div>
-	          <div class="txtlibform">Image :</div>
-	          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
+	          <div class="txtlibform"><fmt:message key="profil.image" /> :</div>
+	          <% if(! "/directory/jsp/icons/avatar.png".equals(pathAvatar)) { %>
+               <div id="ImageFile">
+                 <a href="<%=m_context + pathAvatar%>" target="_blank"><%=userFull.getAvatarFileName()%></a>
+                 <a href="javascript:onclick=hideImageFile();"><img src="<%=resources.getIcon("socialNetwork.smallDelete")%>" border="0"/></a>
+                 <br/>
+               </div>
+              <% } %>
+	          <div>
+			<input type="file" name="WAIMGVAR0" id="ImageNewFile" size="60"/> <i>(.gif/.jpg/.png)</i>
+			<input type="hidden" name="removeImageFile" value="no"/>
+	          </div>
 	        </div>
 	      </form>
 	</div>
