@@ -55,6 +55,11 @@ public class SQLDomainService extends AbstractDomainService {
   ResourceLocator templateSettings;
   ResourceLocator adminSettings;
 
+  private final static String DATABASE_TABLE_NAME_DOMAIN_PREFIX = "Domain";
+  private final static String DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX = "_User";
+  private final static String DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX = "_Group";
+  private final static String DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX = "_Group_User_Rel";
+
   @Inject
   @Named("sqlInternalDomainRepository")
   SQLDomainRepository dao;
@@ -77,93 +82,127 @@ public class SQLDomainService extends AbstractDomainService {
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(fileDomainName);
 
     if (new File(authenticationPropertiesPath).exists()) {
+      SilverTrace.error("admin", "SQLDomainService.checkFileName",
+          "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", fileDomainName);
       throw new DomainAuthenticationPropertiesAlreadyExistsException(fileDomainName);
     }
 
-     if (new File(domainPropertiesPath).exists()) {
-       throw new DomainPropertiesAlreadyExistsException(fileDomainName);
-     }
-   }
+    if (new File(domainPropertiesPath).exists()) {
+      SilverTrace.error("admin", "SQLDomainService.checkFileName",
+          "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", fileDomainName);
+      throw new DomainPropertiesAlreadyExistsException(fileDomainName);
+    }
+  }
 
   /**
    * Gets a file name without special characters and without accentued characters in the aim to
    * create domain property files safely on file system.
-   * @param domainName domain name with maybe some special characters and/or accentued characters
+   * @param domain with a name that may contain some special characters and/or accentued characters
    * @return
    */
-  private String getCorrectDomainFileName(String domainName) {
+  protected String getTechnicalDomainName(Domain domain) {
 
-    // Normalizing (accents, puissance, ...)
-    String fileDomainName = FileServerUtils.replaceAccentChars(domainName);
+    // Normalizing the name (accents, puissance, ...)
+    String fileDomainName = FileServerUtils.replaceAccentChars(domain.getName());
     fileDomainName = Normalizer.normalize(fileDomainName, Normalizer.Form.NFKD);
 
-    // Replacing of each sequence of special characters by one underscore
-    fileDomainName = fileDomainName.replaceAll("[^\\p{Alnum}]+", "_");
+    // Replacing of each sequence of special characters by nothing
+    fileDomainName = fileDomainName.replaceAll("[^\\p{Alnum}]+", "");
 
-    // Limitations of some databases on length of table or column names
-    return StringUtil.left(fileDomainName, SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH);
+    // Limitations of some databases on length of table or column names : compute max length
+    int maxTableNameSuffixLength = Math.max(DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX.length(),
+        DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX.length());
+    maxTableNameSuffixLength =
+        Math.max(maxTableNameSuffixLength, DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX.length());
+    int maxLength =
+        SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - DATABASE_TABLE_NAME_DOMAIN_PREFIX.length() -
+            maxTableNameSuffixLength - domain.getId().length();
+
+    // The technical name is the addition of the part of the domain id and the part of the
+    // normalized (and resized) domain name. The domain name is unique by this way
+    return domain.getId() + StringUtil.left(fileDomainName, maxLength);
   }
 
   @Override
-  public String createDomain(Domain domainToCreate) throws DomainConflictException,
-      DomainCreationException {
+  public String createDomain(Domain domainToCreate)
+      throws DomainConflictException, DomainCreationException {
 
     // Check domain name
     String initialDomainName = domainToCreate.getName();
     try {
       checkDomainName(initialDomainName);
     } catch (AdminException e) {
-      throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
+      throw new DomainConflictException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
     }
 
-    //file domain name
-    String fileDomainName = getCorrectDomainFileName(initialDomainName);
+    // Get the next domain identifier to work on it
+    String domainId = getNextDomainId();
+    domainToCreate.setId(domainId);
 
-    //check fileSystem
-    checkFileName(fileDomainName);
+    // Get the technical name of the domain
+    String technicalDomainName = getTechnicalDomainName(domainToCreate);
 
-    //set nouveau nom pour le fileSystem et la BD
-    domainToCreate.setName(fileDomainName);
+    // Check that it doesn't exist a file with the computed technical name
+    checkFileName(technicalDomainName);
 
-    // Generates domain properties file
-    generateDomainPropertiesFile(domainToCreate);
-
-    // Generates domain authentication properties file
-    generateDomainAuthenticationPropertiesFile(domainToCreate);
-
-    // Create storage
     try {
+
+      // Set the technical name to the domain for technical treatments
+      domainToCreate.setName(technicalDomainName);
+
+      // Generates domain properties file
+      generateDomainPropertiesFile(domainToCreate);
+
+      // Generates domain authentication properties file
+      generateDomainAuthenticationPropertiesFile(domainToCreate);
+
+      // Create storage
       dao.createDomainStorage(domainToCreate);
+
+      // SQL Driver might be override for some purpose
+      if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
+        domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
+      }
+      domainToCreate.setPropFileName("org.silverpeas.domains.domain" + technicalDomainName);
+      domainToCreate.setAuthenticationServer("autDomain" + technicalDomainName);
+      domainToCreate.setTheTimeStamp("0");
+
+      // Enregistre le nom initial dans la table st_domain
+      domainToCreate.setName(initialDomainName);
+      registerDomain(domainToCreate);
+
     } catch (Exception e) {
-      removePropertiesFiles(fileDomainName);
+
+      /*
+      Roll back all things that have been created
+       */
+
+      try {
+        removePropertiesFiles(technicalDomainName);
+      } catch (Exception anyE) {
+        // Nothing to do ...
+      }
+
+      try {
+        domainToCreate.setName(technicalDomainName);
+        dao.deleteDomainStorage(domainToCreate);
+      } catch (Exception anyE) {
+        // Nothing to do ...
+      }
+
+      try {
+        domainToCreate.setName(initialDomainName);
+        unRegisterDomain(domainToCreate);
+      } catch (Exception anyE) {
+        // Nothing to do ...
+      }
+
+      if (e instanceof DomainCreationException) {
+        throw (DomainCreationException) e;
+      }
       throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
-    }
-
-    // register new Domain
-    // SQL Driver might be override for some purpose
-    if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
-      domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
-    }
-    domainToCreate.setPropFileName("org.silverpeas.domains.domain" + fileDomainName);
-    domainToCreate.setAuthenticationServer("autDomain" + fileDomainName);
-    domainToCreate.setTheTimeStamp("0");
-
-    // Enregistre le nom initial dans la table st_domain
-    domainToCreate.setName(initialDomainName);
-    String domainId = registerDomain(domainToCreate);
-
-    //set nouveau nom pour le fileSystem et la BD
-    domainToCreate.setName(fileDomainName);
-
-    if (!StringUtil.isDefined(domainId)) {
-      try {
-        dao.deleteDomainStorage(domainToCreate);
-      } catch (Exception e) {
-        removePropertiesFiles(fileDomainName);
-      }
-      removePropertiesFiles(fileDomainName);
     }
 
     return domainId;
@@ -233,9 +272,12 @@ public class SQLDomainService extends AbstractDomainService {
     template.setAttribute("SQLJDBCUrl", adminSettings.getString("WaProductionDb"));
     template.setAttribute("SQLAccessLogin", adminSettings.getString("WaProductionUser"));
     template.setAttribute("SQLAccessPasswd", adminSettings.getString("WaProductionPswd"));
-    template.setAttribute("SQLUserTableName", "Domain" + domainName + "_User");
-    template.setAttribute("SQLGroupTableName", "Domain" + domainName + "_Group");
-    template.setAttribute("SQLUserGroupTableName", "Domain" + domainName + "_Group_User_Rel");
+    template.setAttribute("SQLUserTableName",
+        DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX);
+    template.setAttribute("SQLGroupTableName",
+        DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX);
+    template.setAttribute("SQLUserGroupTableName", DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName +
+        DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX);
 
     File domainPropertiesFile = new File(domainPropertiesPath);
     PrintWriter out = null;
@@ -277,7 +319,8 @@ public class SQLDomainService extends AbstractDomainService {
     template.setAttribute("SQLJDBCUrl", adminSettings.getString("WaProductionDb"));
     template.setAttribute("SQLAccessLogin", adminSettings.getString("WaProductionUser"));
     template.setAttribute("SQLAccessPasswd", adminSettings.getString("WaProductionPswd"));
-    template.setAttribute("SQLUserTableName", "Domain" + domainName + "_User");
+    template.setAttribute("SQLUserTableName",
+        DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX);
 
     File domainPropertiesFile = new File(domainPropertiesPath);
     File authenticationPropertiesFile = new File(authenticationPropertiesPath);

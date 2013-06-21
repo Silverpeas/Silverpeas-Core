@@ -25,14 +25,25 @@ import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
-import com.stratelia.webactiv.organization.*;
+import com.stratelia.webactiv.organization.AdminPersistenceException;
+import com.stratelia.webactiv.organization.DomainRow;
+import com.stratelia.webactiv.organization.GroupRow;
+import com.stratelia.webactiv.organization.KeyStoreRow;
+import com.stratelia.webactiv.organization.OrganizationSchema;
+import com.stratelia.webactiv.organization.OrganizationSchemaPool;
+import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DomainDriverManager extends AbstractDomainDriver {
@@ -893,12 +904,32 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return getDomainDriver(idAsInt(domainId)).getDriverActions();
   }
 
+  public String getNextDomainId() throws Exception {
+    try {
+      startTransaction(false);
+      int domainId = getOrganization().domain.getNextId();
+      this.commit();
+      return idAsString(domainId);
+    } catch (AdminException e) {
+      try {
+        rollback();
+      } catch (Exception e1) {
+        SilverTrace
+            .error("admin", "DomainDriverManager.getNextDomainId", "root.EX_ERR_ROLLBACK", e1);
+      }
+      throw new AdminException("DomainDriverManager.getNextDomainId", SilverpeasException.ERROR,
+          "admin.EX_ERR_ADD_DOMAIN", e);
+    } finally {
+      releaseOrganizationSchema();
+    }
+  }
+
   public String createDomain(Domain theDomain) throws Exception {
     try {
       startTransaction(false);
 
       DomainRow dr = new DomainRow();
-      dr.id = -1;
+      dr.id = (StringUtil.isInteger(theDomain.getId())) ? Integer.valueOf(theDomain.getId()) : -1;
       dr.name = theDomain.getName();
       dr.description = theDomain.getDescription();
       dr.className = theDomain.getDriverClassName();

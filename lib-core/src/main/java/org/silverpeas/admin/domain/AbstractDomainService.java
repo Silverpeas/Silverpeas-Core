@@ -24,16 +24,16 @@
 
 package org.silverpeas.admin.domain;
 
-import org.silverpeas.admin.domain.exception.DomainConflictException;
-import org.silverpeas.admin.domain.exception.DomainCreationException;
-import org.silverpeas.admin.domain.exception.DomainDeletionException;
-import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.admin.domain.exception.DomainConflictException;
+import org.silverpeas.admin.domain.exception.DomainCreationException;
+import org.silverpeas.admin.domain.exception.DomainDeletionException;
+import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 
 public abstract class AbstractDomainService implements DomainService {
 
@@ -58,6 +58,24 @@ public abstract class AbstractDomainService implements DomainService {
   }
 
   /**
+   * Get the next domain id
+   * @return new domain id
+   * @throws DomainDeletionException
+   */
+  protected String getNextDomainId() throws DomainCreationException {
+    SilverTrace
+        .info("admin", "AbstractDomainService.getNextDomainId()", "root.MSG_GEN_ENTER_METHOD");
+    Admin adminService = AdminReference.getAdminService();
+    try {
+      return adminService.getNextDomainId();
+    } catch (AdminException e) {
+      SilverTrace
+          .error("admin", "AAbstractDomainService.getNextDomainId()", "admin.EX_ADD_DOMAIN", e);
+      throw new DomainCreationException("AbstractDomainService.getNextDomainId()", e);
+    }
+  }
+
+  /**
    * Register domain into Silverpeas domains directory
    * @param domainToCreate the domain to be created
    * @return new domain id
@@ -68,15 +86,16 @@ public abstract class AbstractDomainService implements DomainService {
         "AbstractDomainService.registerDomain()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    domainToCreate.setId("-1");
+    if (StringUtil.isNotDefined(domainToCreate.getId())) {
+      domainToCreate.setId("-1");
+    }
     Admin adminService = AdminReference.getAdminService();
 
     try {
       return adminService.addDomain(domainToCreate);
     } catch (AdminException e) {
-      SilverTrace.error("admin",
-          "AAbstractDomainService.registerDomain()",
-          "admin.EX_ADD_DOMAIN", e);
+      SilverTrace
+          .error("admin", "AAbstractDomainService.registerDomain()", "admin.EX_ADD_DOMAIN", e);
       throw new DomainCreationException("AbstractDomainService.registerDomain()", e);
     }
   }
