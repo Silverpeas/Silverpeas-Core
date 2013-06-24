@@ -23,20 +23,22 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import com.silverpeas.util.ForeignPK;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  *
@@ -366,8 +368,11 @@ public interface AttachmentService {
    * created and the document becomes a document with a version history management. F
    *
    * @param pk the id of the document.
+   * @param comment the comment of the versioned documetn if we are switching from simple to
+   * versioned.
+   * @return the pk to the document after is state change.
    */
-  public void changeVersionState(SimpleDocumentPK pk);
+  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment);
 
   /**
    * Find documents with the same name attached to the specified foreign id.

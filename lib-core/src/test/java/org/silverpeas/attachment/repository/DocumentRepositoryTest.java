@@ -327,7 +327,7 @@ public class DocumentRepositoryTest {
       assertThat(doc.getOrder(), is(15));
       assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(doc.getSize(), is(28L));
-      documentRepository.changeVersionState(session, result);
+      documentRepository.changeVersionState(session, result, "To versioned document");
       session.save();
       HistorisedDocument historisedDocument = (HistorisedDocument) documentRepository.
           findDocumentById(session, result, "fr");
@@ -340,6 +340,7 @@ public class DocumentRepositoryTest {
       assertThat(historisedDocument.getMajorVersion(), is(1));
       assertThat(historisedDocument.getMinorVersion(), is(0));
       assertThat(historisedDocument.isVersioned(), is(true));
+      assertThat(historisedDocument.getComment(), is("To versioned document"));
     } finally {
       BasicDaoFactory.logout(session);
     }
