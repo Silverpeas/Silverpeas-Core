@@ -20,14 +20,17 @@
  */
 package org.silverpeas.attachment.web;
 
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -37,19 +40,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.HEAD;
-
 import org.apache.commons.lang3.CharEncoding;
-
-
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author ehugonnet
@@ -89,7 +80,7 @@ public class LaunchWebdavEdition extends HttpServlet {
       String login = mainSessionController.getCurrentUserDetail().getLogin();
       String password = (String) request.getSession().getAttribute("Silverpeas_pwdForHyperlink");
       String encPassword = "";
-      if(StringUtil.isDefined(password)) {
+      if (StringUtil.isDefined(password)) {
         Cipher cipher = Cipher.getInstance(ALGORITHME);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(KEY, ALGORITHME));
         byte[] cipherText = cipher.doFinal(password.getBytes(CharEncoding.UTF_8));
@@ -150,7 +141,7 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t</security>");
     out.println("\t<update check=\"timeout\" policy=\"always\"/>");
     out.println("\t<resources>");
-    out.println("\t\t<j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.6+\" />");
+    out.println("\t\t<j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.7+\" />");
     out.println("\t\t<jar href=\"OpenOfficeLauncher.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xercesImpl-2.10.0.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-codec-1.7.jar\" download=\"eager\"/>");
@@ -171,13 +162,13 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"),
         CharEncoding.UTF_8));
     out.println("</argument>");
-        out.print("\t\t<argument>");
+    out.print("\t\t<argument>");
     out.print(resources.getBoolean("deconnectedMode", false));
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
     out.println("</argument>");
-    if(StringUtil.isDefined(password)) {
+    if (StringUtil.isDefined(password)) {
       out.print("\t\t<argument>");
       out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
       out.println("</argument>");
