@@ -649,8 +649,8 @@ public class HistorisedDocumentRepositoryTest {
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
-      SimpleDocument expiringDoc1 =
-          new HistorisedDocument(emptyId, foreignId, 10, owner, attachment);
+      SimpleDocument expiringDoc1
+          = new HistorisedDocument(emptyId, foreignId, 10, owner, attachment);
       expiringDoc1.setExpiry(today.getTime());
       createVersionedDocument(session, expiringDoc1, content);
       expiringDoc1.setMajorVersion(1);
@@ -785,8 +785,8 @@ public class HistorisedDocumentRepositoryTest {
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionnedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocument docToUnlock2 =
-          new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
+      SimpleDocument docToUnlock2
+          = new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       createVersionedDocument(session, docToUnlock2, content);
       docToUnlock2.setMajorVersion(1);
@@ -1001,7 +1001,7 @@ public class HistorisedDocumentRepositoryTest {
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
       createVersionedDocument(session, document, content);
-      document =  documentRepository.findDocumentById(session, document.getPk(), language);
+      document = documentRepository.findDocumentById(session, document.getPk(), language);
       session.save();
       foreignId = "node36";
       SimpleDocumentPK result = documentRepository.copyDocument(session, document, new ForeignPK(
@@ -1190,7 +1190,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getHistory().get(0).getOrder(), is(0));
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(2));
-      documentRepository.changeVersionState(session, result);
+      documentRepository.changeVersionState(session, result, "To simple document");
       SimpleDocument simplifiedDocument = documentRepository.findDocumentById(session, result, "fr");
       assertThat(simplifiedDocument, is(notNullValue()));
       assertThat(simplifiedDocument.getClass().getName(), is(SimpleDocument.class.getName()));
@@ -1198,8 +1198,9 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(simplifiedDocument.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(simplifiedDocument.getSize(), is(28L));
       assertThat(simplifiedDocument.getMajorVersion(), is(0));
-      assertThat(simplifiedDocument.getMinorVersion(), is(2));
+      assertThat(simplifiedDocument.getMinorVersion(), is(0));
       assertThat(simplifiedDocument.isVersioned(), is(false));
+      assertThat(simplifiedDocument.getComment(), is("To simple document"));
     } finally {
       BasicDaoFactory.logout(session);
     }
