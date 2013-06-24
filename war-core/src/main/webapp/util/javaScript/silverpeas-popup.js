@@ -531,3 +531,38 @@
   }
 
 })( jQuery );
+
+
+/**
+ * Some helpers
+ */
+
+/**
+ * Load html from URL and display it in a popup.
+ * @param url
+ * @param options
+ */
+function getHtmlAndDisplayInPopup(url, options) {
+  $.popup.showWaiting();
+  $.ajax({
+    url : url,
+    type : 'GET',
+    dataType : 'html',
+    cache : false,
+    async : false,
+    success : function(data, status, jqXHR) {
+      var $popup = $('#popupHelperContainer');
+      if ($popup.length == 0) {
+        $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+        $popup.appendTo(document.body);
+      }
+      $popup.empty();
+      $popup.append(data);
+      $popup.popup('free', options);
+    },
+    error : function(jqXHR, textStatus, errorThrown) {
+      alert(errorThrown);
+    }
+  });
+  $.popup.hideWaiting();
+}
