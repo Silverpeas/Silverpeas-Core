@@ -1198,7 +1198,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(simplifiedDocument.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(simplifiedDocument.getSize(), is(28L));
       assertThat(simplifiedDocument.getMajorVersion(), is(0));
-      assertThat(simplifiedDocument.getMinorVersion(), is(2));
+      assertThat(simplifiedDocument.getMinorVersion(), is(0));
       assertThat(simplifiedDocument.isVersioned(), is(false));
       assertThat(simplifiedDocument.getComment(), is("To simple document"));
     } finally {

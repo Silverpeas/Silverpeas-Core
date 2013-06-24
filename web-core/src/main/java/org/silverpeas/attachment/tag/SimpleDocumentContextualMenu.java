@@ -150,22 +150,21 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "updateAttachment('" + attachment.getId() + "','" + language + "');",
         resources.getString("GML.modify"));
-    if (useXMLForm) {
-      prepareMenuItem(builder, "EditXmlForm('" + attachment.getId() + "','" + language + "');",
-          resources.getString("attachment.xmlForm.Edit"));
-    }
-    prepareMenuItem(builder, "deleteAttachment('" + attachment.getId() + "','" + StringEscapeUtils
-        .escapeEcmaScript(attachment.getFilename()) + "');", resources.getString("GML.delete"));
-    builder.append("</ul>").append(newline);
-    builder.append("<ul>").append(newline);
-    prepareMenuItem(builder, "ShareAttachment('" + attachment.getId() + "');", resources.getString(
-        "attachment.share"));
+    prepareMenuItem(builder, "EditXmlForm('" + attachment.getId() + "','" + language + "');",
+        resources.getString("attachment.xmlForm.Edit"));
     String message = resources.getString("attachment.switchState.toVersioned");
     if (attachment.isVersioned()) {
       message = resources.getString("attachment.switchState.toSimple");
     }
     prepareMenuItem(builder, "switchState('" + attachment.getId() + "', " + attachment.isVersioned()
         + ");", message);
+    prepareMenuItem(builder, "deleteAttachment('" + attachment.getId() + "','" + StringEscapeUtils
+        .escapeEcmaScript(attachment.getFilename()) + "');", resources.getString("GML.delete"));
+    builder.append("</ul>").append(newline);
+    builder.append("<ul>").append(newline);
+    prepareMenuItem(builder, "ShareAttachment('" + attachment.getId() + "');", resources.getString(
+        "attachment.share"));
+
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(
@@ -202,14 +201,12 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       builder.append(configureCheckin(attachmentId, !isWorker(userId, attachment)
           && !isAdmin(userId)));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
-      builder.append(configureDelete(attachmentId, useXMLForm, true));
+      builder.append(configureDelete(attachmentId, true));
       if (!userId.equals(attachment.getEditedBy())) {
-        // disable xmlForm
-        if (useXMLForm) {
-          builder.append(configureXmlForm(attachmentId, true));
-        }
+        builder.append(configureXmlForm(attachmentId, true));
       }
     } else {
+      builder.append(configureXmlForm(attachmentId, !useXMLForm));
       builder.append(configureCheckin(attachmentId, true));
       builder.append(configureCheckoutAndEdit(attachmentId, !useWebDAV || !attachment.
           isOpenOfficeCompatible()));
@@ -261,11 +258,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     return String.format(template, attachmentId, "0, 1", disable);
   }
 
-  String configureDelete(String attachmentId, boolean useXmlForm, boolean disable) {
-    if (useXmlForm) {
-      return String.format(template, attachmentId, "2, 1", disable);
-    }
-    return String.format(template, attachmentId, "1, 1", disable);
+  String configureDelete(String attachmentId, boolean disable) {
+    return String.format(template, attachmentId, "4, 1", disable);
   }
 
   String configureXmlForm(String attachmentId, boolean disable) {
@@ -277,7 +271,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String configureSwitchState(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "1, 2", disable);
+    return String.format(template, attachmentId, "3, 1", disable);
   }
 
   String configureNotify(String attachmentId, boolean disable) {

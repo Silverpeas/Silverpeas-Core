@@ -485,11 +485,8 @@
               oMenu.getItem(2).cfg.setProperty("disabled", true);
             }
             //disable delete
-            <c:choose>
-              <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", true);</c:when>
-              <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", true);</c:otherwise>
-            </c:choose>
-            oMenu.getItem(1,2).cfg.setProperty("disabled", true);
+            oMenu.getItem(4, 1).cfg.setProperty("disabled", true);
+            oMenu.getItem(3, 1).cfg.setProperty("disabled", true);
             $('#worker' + oldId).html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $('#worker' + oldId).css({'visibility':'visible'});
             if (edit) {
@@ -519,11 +516,15 @@
     function switchState(id, isVersioned) {
       <fmt:message key="attachment.switch.warning.simple" var="warningSimple"/>
       <fmt:message key="attachment.switch.warning.versioned" var="warningVersioned"/>
+      <fmt:message key="attachment.switchState.toVersioned" var="warningTitleSimple"/>
+      <fmt:message key="attachment.switchState.toSimple" var="warningTitleVersioned"/>
       if(isVersioned) {
+        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
         $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
         $("#attachment-switch-versioned").hide();
         $("#attachment-switch-simple").show();
       } else {
+        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
         $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
         $("#attachment-switch-simple").hide();
         $("#attachment-switch-versioned").show();
@@ -550,12 +551,8 @@
       oMenu.getItem(0).cfg.setProperty("disabled", false);
       oMenu.getItem(1).cfg.setProperty("disabled", false);
       oMenu.getItem(2).cfg.setProperty("disabled", false);
-      //enable delete
-      <c:choose>
-        <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", false);</c:when>
-        <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", false);</c:otherwise>
-      </c:choose>
-      oMenu.getItem(1,2).cfg.setProperty("disabled", false);
+      oMenu.getItem(4, 1).cfg.setProperty("disabled", false)
+      oMenu.getItem(3, 1).cfg.setProperty("disabled", false);
       $('#worker' + id).html("");
       $('#worker' + id).css({'visibility':'hidden'});
       if (pageMustBeReloadingAfterSorting) {
@@ -1154,7 +1151,7 @@
     <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
       <div id="attachment-switch-simple" style="display:none">
         <label for="switch-version-major" class="label-ui-dialog"><fmt:message key="attachment.switch.version.major" /></label>
-        <span id="attachment-switch-major" class="champ-ui-dialog"><input value="lastMajor" type="radio" name="switch-version" id="switch-version-major"/></span>
+        <span id="attachment-switch-major" class="champ-ui-dialog"><input value="lastMajor" type="radio" name="switch-version" id="switch-version-major" checked="checked"/></span>
         <label for="switch-version-last" class="label-ui-dialog"><fmt:message key="attachment.switch.version.last" /></label>
         <span id="attachment-switch-last" class="champ-ui-dialog"><input value="last" type="radio" name="switch-version" id="switch-version-last"/></span>
       </div>
