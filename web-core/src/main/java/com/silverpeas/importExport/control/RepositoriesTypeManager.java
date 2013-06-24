@@ -76,7 +76,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * @author sdevolder
  */
 public class RepositoriesTypeManager {
-  
+
   public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
       EntityArrays.ISO8859_1_ESCAPE());
 
@@ -148,8 +148,7 @@ public class RepositoriesTypeManager {
                     // Traitement récursif spécifique
                     settings.setPathToImport(file.getAbsolutePath());
                     settings.setFolderId(nodeDetail.getNodePK().getId());
-                    processImportRecursiveReplicate(massiveReport, gedIE, attachmentIE,
-                        versioningIE, pdcIE, settings);
+                    processImportRecursiveReplicate(massiveReport, gedIE, pdcIE, settings);
                   } catch (ImportExportException ex) {
                     massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
                   }
@@ -182,22 +181,21 @@ public class RepositoriesTypeManager {
         pubDetailToCreate.setStatusMustBeChecked(false);
       }
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = "
-          + pubDetailToCreate.getStatus());
+          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = " + pubDetailToCreate.getStatus());
 
       // Création de la publication
-      pubDetailToCreate =
-          gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate, settings);
-      
+      pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate,
+          settings);
+
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
-      
+
       if (FileUtil.isMail(file.getName())) {
         // if imported file is an e-mail, its textual content is saved in a dedicated form
         // and attached files are attached to newly created publication
         processMailContent(pubDetailToCreate, file, unitReport, gedIE, settings.isVersioningUsed());
       }
-      
+
       // add attachment
       SimpleDocument document;
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
@@ -217,7 +215,7 @@ public class RepositoriesTypeManager {
       document.setContentType(FileUtil.getMimeType(file.getName()));
       if (document.getSize() > 0L) {
         AttachmentServiceFactory.getAttachmentService()
-            .createAttachment(document, file, pubDetailToCreate.isIndexable());
+            .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
         ImportReportManager.addNumberOfFilesProcessed(1);
         ImportReportManager.addImportedFileSize(document.getSize(), componentId);
       } else {
@@ -231,7 +229,7 @@ public class RepositoriesTypeManager {
     }
     return pubDetailToCreate;
   }
-  
+
   private void processMailContent(PublicationDetail pubDetail, File file, UnitReport unitReport,
       GEDImportExport gedIE, boolean isVersioningUsed) throws ImportExportException {
 
@@ -293,7 +291,7 @@ public class RepositoriesTypeManager {
       // extract each file from mail...
       try {
         List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
-        
+
         List<MailAttachment> attachments = extractor.getAttachments();
         for (MailAttachment attachment : attachments) {
           if (attachment != null) {
@@ -305,7 +303,7 @@ public class RepositoriesTypeManager {
             attDetail.setSize(attachment.getSize());
             attDetail.setPK(pk);
 
-            documents.add(attDetail);            
+            documents.add(attDetail);
           }
         }
 
@@ -374,8 +372,7 @@ public class RepositoriesTypeManager {
    * @throws ImportExportException
    */
   public List<PublicationDetail> processImportRecursiveReplicate(MassiveReport massiveReport,
-      GEDImportExport gedIE, AttachmentImportExport attachmentIE,
-      VersioningImportExport versioningIE, PdcImportExport pdcIE, ImportSettings settings)
+      GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings)
       throws ImportExportException {
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     File path = new File(settings.getPathToImport());
@@ -394,9 +391,7 @@ public class RepositoriesTypeManager {
         // Traitement récursif spécifique
         settings.setPathToImport(file.getAbsolutePath());
         settings.setFolderId(nodeDetail.getNodePK().getId());
-        publications.addAll(
-            processImportRecursiveReplicate(massiveReport, gedIE, attachmentIE,
-            versioningIE, pdcIE, settings));
+        publications.addAll(processImportRecursiveReplicate(massiveReport, gedIE, pdcIE, settings));
       }
     }
     return publications;

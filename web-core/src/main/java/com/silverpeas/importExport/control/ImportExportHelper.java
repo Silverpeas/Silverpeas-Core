@@ -23,6 +23,7 @@ package com.silverpeas.importExport.control;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -32,9 +33,13 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  */
 public class ImportExportHelper {
 
+  public static boolean isVersioningUsed(final String componentId) {
+    return isVersioningUsed(OrganisationControllerFactory.getOrganisationController()
+        .getComponentInst(componentId));
+  }
 
-  public static boolean isVersioningUsed(ComponentInst componentInst) {
-    return StringUtil.getBooleanValue(componentInst.getParameterValue("versionControl"));
+  public static boolean isVersioningUsed(final ComponentInst component) {
+    return StringUtil.getBooleanValue(component.getParameterValue("versionControl"));
   }
 
   public static boolean isDraftUsed(ComponentInst componentInst) {
