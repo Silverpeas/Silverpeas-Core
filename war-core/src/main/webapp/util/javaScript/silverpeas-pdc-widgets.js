@@ -1115,9 +1115,10 @@ function removePosition(position, positions) {
       }).appendTo($axisDiv);
     }
 
-    if (!selectedPositions.at(i, anAxis.id)) {
+    var aSelectedPosition = selectedPositions.at(i, anAxis.id);
+    if (!aSelectedPosition) {
       option.attr('selected', true);
-    } else {
+    } else if (aSelectedPosition.synonyms && aSelectedPosition.synonyms.length > 0) {
       $('<span>').html('<i>' + selectedPositions.at(i, anAxis.id).synonyms.join(', ') + '</i>&nbsp;').appendTo($axisDiv);
     }
   }
