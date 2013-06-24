@@ -24,6 +24,14 @@
 
 package com.stratelia.webactiv.util.publication.control;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.Alias;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,14 +43,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * This is the Publication Father Data Access Object.
@@ -70,15 +70,15 @@ public class PublicationFatherDAO {
    */
   public static void addFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    StringBuffer insertStatement = new StringBuffer(128);
+    StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(publicationFatherTableName)
         .append(" values (?, ?, ?, ?, ?, ?)");
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(insertStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+      prepStmt.setInt(1, new Integer(pubPK.getId()));
+      prepStmt.setInt(2, new Integer(fatherPK.getId()));
       prepStmt.setString(3, pubPK.getInstanceId());
       prepStmt.setNull(4, Types.INTEGER);
       prepStmt.setNull(5, Types.VARCHAR);
@@ -91,7 +91,7 @@ public class PublicationFatherDAO {
 
   public static void updateOrder(Connection con, PublicationPK pubPK,
       NodePK fatherPK, int order) throws SQLException {
-    StringBuffer statement = new StringBuffer(128);
+    StringBuilder statement = new StringBuilder(128);
     statement.append("update ").append(publicationFatherTableName).append(
         " set pubOrder = ? where pubId = ? and nodeId = ? and instanceId = ? ");
     PreparedStatement prepStmt = null;
@@ -111,15 +111,15 @@ public class PublicationFatherDAO {
   public static void addAlias(Connection con, PublicationPK pubPK, Alias alias)
       throws SQLException {
 
-    StringBuffer insertStatement = new StringBuffer(128);
+    StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(publicationFatherTableName).
         append(" values (?, ?, ?, ?, ?, ?)");
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(insertStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(alias.getId()).intValue());
+      prepStmt.setInt(1, new Integer(pubPK.getId()));
+      prepStmt.setInt(2, new Integer(alias.getId()));
       prepStmt.setString(3, alias.getInstanceId());
       if (alias.getUserId() != null) {
         prepStmt.setInt(4, Integer.parseInt(alias.getUserId()));
@@ -137,7 +137,7 @@ public class PublicationFatherDAO {
 
   public static void removeAlias(Connection con, PublicationPK pubPK,
       Alias alias) throws SQLException {
-    StringBuffer statement = new StringBuffer(128);
+    StringBuilder statement = new StringBuilder(128);
     statement.append("delete from ").append(publicationFatherTableName).append(
         " where pubId = ? and nodeId = ? and instanceId = ? ");
     PreparedStatement prepStmt = null;
@@ -157,9 +157,8 @@ public class PublicationFatherDAO {
 
   public static List<Alias> getAlias(Connection con, PublicationPK pubPK)
       throws SQLException {
-    List<Alias> list = null;
 
-    StringBuffer selectQuery = new StringBuffer(128);
+    StringBuilder selectQuery = new StringBuilder(128);
     selectQuery.append(
         "select nodeId, instanceId, aliasUserId, aliasDate, pubOrder from ").
         append(publicationFatherTableName).append(" where pubId = ").append(pubPK.
@@ -170,25 +169,20 @@ public class PublicationFatherDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery.toString());
-      String id = null;
-      String instanceId = null;
-      String userId = null;
-      Date date = null;
-      list = new ArrayList<Alias>();
-      Alias alias = null;
+      List<Alias>  list = new ArrayList<Alias>();
 
       while (rs.next()) {
-        id = Integer.toString(rs.getInt(1));
-        instanceId = rs.getString(2);
-        int iUserId = rs.getInt(3);
-        userId = Integer.toString(iUserId);
+        String id = Integer.toString(rs.getInt(1));
+        String instanceId = rs.getString(2);
+        String userId = Integer.toString(rs.getInt(3));
         String sDate = rs.getString(4);
+        Date date = null;
         if (StringUtil.isDefined(sDate)) {
           date = new Date(Long.parseLong(sDate));
         }
         int pubOrder = rs.getInt(5);
 
-        alias = new Alias(id, instanceId);
+        Alias alias = new Alias(id, instanceId);
         alias.setUserId(userId);
         alias.setDate(date);
         alias.setPubOrder(pubOrder);
@@ -214,15 +208,15 @@ public class PublicationFatherDAO {
    */
   public static void removeFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(publicationFatherTableName)
         .append(" where pubId = ? and nodeId = ? ");
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(deleteStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+      prepStmt.setInt(1, new Integer(pubPK.getId()));
+      prepStmt.setInt(2, new Integer(fatherPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -244,14 +238,11 @@ public class PublicationFatherDAO {
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
         + ", fatherPK = " + fatherPK.toString());
 
-    PublicationPK publicationPK = null;
-
     // get all publications linked to fatherPK
     List<PublicationPK> pubPKs = (List<PublicationPK>) getPubPKsInFatherPK(con, fatherPK);
 
     // for each publication, remove link into table
-    for (int i = 0; i < pubPKs.size(); i++) {
-      publicationPK = (PublicationPK) pubPKs.get(i);
+    for (PublicationPK publicationPK : pubPKs) {
       removeLink(con, publicationPK, fatherPK);
     }
   }
@@ -262,15 +253,15 @@ public class PublicationFatherDAO {
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
         + ", fatherPK = " + fatherPK.toString());
 
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(publicationFatherTableName)
         .append(" where nodeId = ? and pubId = ? ");
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(deleteStatement.toString());
-      prepStmt.setInt(1, new Integer(fatherPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(pubPK.getId()).intValue());
+      prepStmt.setInt(1, new Integer(fatherPK.getId()));
+      prepStmt.setInt(2, new Integer(pubPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -292,16 +283,9 @@ public class PublicationFatherDAO {
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
         + ", fatherIds = " + fatherIds.toString());
 
-    if (fatherIds != null && fatherIds.size() > 0) {
-      String fatherId = "";
-      NodePK fatherPK = null;
-      Iterator<String> it = fatherIds.iterator();
-
-      while (it.hasNext()) {
-        fatherId = it.next();
-        fatherPK = new NodePK(fatherId, pubPK);
-        removeFatherToPublications(con, pubPK, fatherPK);
-      }
+    for (final String fatherId : fatherIds) {
+      NodePK fatherPK = new NodePK(fatherId, pubPK);
+      removeFatherToPublications(con, pubPK, fatherPK);
     }
   }
 
@@ -315,14 +299,14 @@ public class PublicationFatherDAO {
    */
   public static void removeAllFather(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(publicationFatherTableName)
         .append(" where pubId = ? ");
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(deleteStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
+      prepStmt.setInt(1, new Integer(pubPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -334,7 +318,6 @@ public class PublicationFatherDAO {
    * descendant of a node
    * @param con Connection to database
    * @param pubPK the publication PublicationPK
-   * @param originPK the node which is deleted
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.publication.model.PublicationPK
    * @exception java.sql.SQLException
@@ -347,13 +330,11 @@ public class PublicationFatherDAO {
 
   public static Collection<NodePK> getAllFatherPK(Connection con, PublicationPK pubPK,
       String order) throws SQLException {
-    List<NodePK> list = null;
 
-    StringBuffer selectQuery = new StringBuffer(128);
-    selectQuery.append("select nodeId from ")
-        .append(publicationFatherTableName).append(" where pubId = ").append(
-        pubPK.getId()).append(
-        " and instanceId = '" + pubPK.getInstanceId() + "'");
+    StringBuilder selectQuery = new StringBuilder(128);
+    selectQuery.append("select nodeId from ").append(publicationFatherTableName)
+        .append(" where pubId = ").append(pubPK.getId())
+        .append(" and instanceId = '" + pubPK.getInstanceId() + "'");
     if (order != null) {
       selectQuery.append(" order by ").append(order);
     }
@@ -363,10 +344,9 @@ public class PublicationFatherDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery.toString());
-      String id = "";
-      list = new ArrayList<NodePK>();
+      List<NodePK> list = new ArrayList<NodePK>();
       while (rs.next()) {
-        id = new Integer(rs.getInt(1)).toString();
+        String id = Integer.toString(rs.getInt(1));
         NodePK nodePK = new NodePK(id, pubPK);
         list.add(nodePK);
       }
@@ -402,7 +382,7 @@ public class PublicationFatherDAO {
         fatherId = fatherPK.getId();
       }
 
-      StringBuffer selectStatement = new StringBuffer(128);
+      StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append("select F.pubId from ").append(
           publicationFatherTableName).append(" F, ").append(
           pubPK.getTableName()).append(" P ");
@@ -425,7 +405,7 @@ public class PublicationFatherDAO {
         String id = "";
 
         while (rs.next()) {
-          id = new Integer(rs.getInt(1)).toString();
+          id = Integer.toString(rs.getInt(1));
           pubPK = new PublicationPK(id, fatherPK);
           list.add(pubPK);
         }
@@ -447,7 +427,7 @@ public class PublicationFatherDAO {
   public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select P.pubId, P.instanceId from ").append(
         publicationFatherTableName).append(" F, ").append(pubPK.getTableName())
         .append(" P ");
