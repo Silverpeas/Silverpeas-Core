@@ -23,11 +23,15 @@
  */
 package org.silverpeas.attachment.mock;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.Default;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.mockito.Mockito;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Named;
+
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.DocumentType;
@@ -36,13 +40,13 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import javax.inject.Named;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.Default;
+import com.silverpeas.util.ForeignPK;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.mockito.Mockito;
 
 @Default
 @Service
@@ -90,8 +94,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
 
   @Override
   public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
-                                            DocumentType type) {
-    return realService.mergeDocuments(originalForeignKey,cloneForeignKey, type);
+      DocumentType type) {
+    return realService.mergeDocuments(originalForeignKey, cloneForeignKey, type);
   }
 
   @Override
@@ -227,8 +231,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public void changeVersionState(SimpleDocumentPK pk) {
-    realService.changeVersionState(pk);
+  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
+    return realService.changeVersionState(pk, comment);
   }
 
   @Override
@@ -271,6 +275,6 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
 
   @Override
   public void deleteIndex(SimpleDocument document) {
-     realService.deleteIndex(document);
+    realService.deleteIndex(document);
   }
 }
