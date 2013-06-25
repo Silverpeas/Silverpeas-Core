@@ -351,11 +351,15 @@ public class DocumentRepository {
       if (StringUtil.isDefined(comment)) {
         documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       }
+      SimpleDocument origin = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
       if (versionedNode) {
         removeHistory(documentNode);
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
+        documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
+        documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+        moveMultilangContent(origin, target);
         File currentDocumentDir = new File(target.getDirectoryPath(I18NHelper.defaultLanguage))
             .getParentFile();
         File[] contents = currentDocumentDir.getParentFile().listFiles();
@@ -365,13 +369,11 @@ public class DocumentRepository {
           }
         }
       } else {
-        SimpleDocument origin = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
         SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
-
         VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
         documentNode.getSession().save();
         moveMultilangContent(origin, target);
