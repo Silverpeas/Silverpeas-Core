@@ -87,9 +87,10 @@
           <li id="filter_groups">
             <div class="filter" id="breadcrumb"></div>
             <ul class="listing_groups_filter">
-              <li ng-repeat="group in groups">
+              <li ng-repeat="group in groupsFilter">
                 <a href="#" ng-click="goToGroup(group)" class="filter">{{ group.name }}<span class="nb_results_by_filter"> ({{ group.userCount }})</span></a>
               </li>
+              <li><a href="#" ng-show="groupsFilter.length < groupsFilter.maxlength" ng-click="displayNextGroups()" class="filter"><fmt:message key='selection.NextGroups'/></a></li>
             </ul>
           </li>
         </ul>
@@ -218,6 +219,7 @@
             /* some constants */
             PageSize = 6;
             PageMaxSize = 10;
+            GroupsFilterSizeStep = 3;
             GroupSearchDefaultText = '<fmt:message key="selection.searchUserGroups"/>';
             UserSearchDefaultText = '<fmt:message key="selection.searchUsers"/>';
             UsersInGroup = 0;
@@ -229,18 +231,32 @@
                       return UserGroup.get(arguments[0]);
                     },
                     users: function() {
-                      var params = (arguments.length > 0 & arguments[0] ? arguments[0]:{});
+                      var params = (arguments.length > 0 && arguments[0] ? arguments[0]:{});
                       params.group = 'all';
                       return User.get(params);
                     }
              };
 
             /* size of a page (items in a listing) within a pagination */
-            var userPageSize = PageSize;
-            var groupPageSize = PageSize;
+            var userPageSize = (context.selectionScope === 'user'? PageMaxSize:PageSize);
+            var groupPageSize = (context.selectionScope === 'group'? PageMaxSize:PageSize);
 
-            /** the type of users displayed in the user listing: relationships or users in a group */
+            /* the type of users displayed in the user listing: relationships or users in a group */
             var displayedUserType;
+
+            /* sets the specified array of groups for the filter on the groups */
+            function setGroupsFilter(groups) {
+              $scope.groupsFilter = groups;
+            }
+
+             /* update the groups in the filter on the groups */
+            function updateGroupsFilter(groups) {
+              if ($scope.groupsFilter)
+                for (var i = 0; i < groups.length; i++)
+                  $scope.groupsFilter.push(groups[i]);
+              else
+                $scope.groupsFilter = groups;
+            }
 
             /* updates the groups listing with the specified ones */
             function updateGroupsListing(groups) {
@@ -298,11 +314,19 @@
               $scope.users = $scope.currentGroup.users({name: name + '*', page: {number: 1, size: userPageSize}});
             }
 
+            /* maximize the the listing of groups over the listing of users */
+            function maximizeGroupsListingPanel() {
+              groupPageSize = PageMaxSize;
+              $('.users_results_userPanel').hide();
+            }
+
+            /* maximize the the listing of users over the listing of groups */
             function maximizeUsersListingPanel() {
               userPageSize = PageMaxSize;
               $('.groups_results_userPanel').hide();
             }
 
+            /* unmaximize the the listing of users and the listing of groups reappears */
             function unmaximizeUsersListingPanel() {
               userPageSize = PageSize;
               $('.groups_results_userPanel').show();
@@ -311,9 +335,14 @@
             /* initialize the userSelection app by filling it with some values */
             function init() {
               maximizeUsersListingPanel();
+              if (context.selectionScope === 'group')
+                maximizeGroupsListingPanel();
+              else
+                maximizeUsersListingPanel();
               displayedUserType = UsersInGroup;
               groupPageSize = PageSize;
-              UserGroup.get({page: {number:1, size: userPageSize}}).then(updateGroupsListing);
+              UserGroup.get({page: {number: 1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
+              UserGroup.get({page: {number:1, size: groupPageSize}}).then(updateGroupsListing);
               $scope.currentGroup = rootGroup;
               User.get({page: {number:1, size: userPageSize}}).then(updateUsersListing);
               User.get(${currentUserId}).then(function(user) {
@@ -323,6 +352,12 @@
               $scope.selectedGroups = new Selection(context.multiSelection, PageSize);
               resetSearchFieldTexts();
             }
+
+            /* displays the nexts given number of groups in the filter of groups */
+            $scope.displayNextGroups = function() {
+              var pageNumber = ($scope.groupsFilter.length / GroupsFilterSizeStep) + 1;
+              $scope.currentGroup.subgroups({page: {number: pageNumber, size: GroupsFilterSizeStep}}).then(updateGroupsFilter);
+            };
 
             /* select all the user groups present in the corresponding listing panel */
             $scope.selectAllGroups = function() {
@@ -436,6 +471,7 @@
               onchange: function(group) {
                 unmaximizeUsersListingPanel();
                 displayedUserType = UsersInGroup;
+                group.subgroups({page: {number:1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
                 group.subgroups({page: {number:1, size: groupPageSize}}).then(updateGroupsListing);
                 group.users({page: {number:1, size: userPageSize}}).then(updateUsersListing);
                 $scope.currentGroup = group;

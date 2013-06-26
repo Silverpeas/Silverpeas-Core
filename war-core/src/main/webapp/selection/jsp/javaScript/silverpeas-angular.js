@@ -67,7 +67,7 @@ silverpeas.factory('User', function(context, $http, $q) {
         if (arguments[0].name)
           filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
       }
-      $http.get(rootURL + '/' + this.id + '/contacts' + filter).
+      $http.get(this.contactsUri + filter).
               error(function(data, status) {
         alert(status);
       }).
@@ -150,7 +150,7 @@ silverpeas.factory('UserGroup', function(context, User, $http, $q) {
           filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
       }
 
-      $http.get(rootURL + '/' + this.id + '/groups' + filter).
+      $http.get(this.childrenUri + filter).
               error(function(data, status) {
         alert(status);
       }).
