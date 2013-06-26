@@ -478,15 +478,15 @@
         $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(data) {
           if (data == 'ok') {
             var oMenu = eval("oMenu" + oldId);
-            oMenu.getItem(3).cfg.setProperty("disabled", false);
-            oMenu.getItem(0).cfg.setProperty("disabled", true);
-            oMenu.getItem(1).cfg.setProperty("disabled", true);
+            oMenu.getItem(3).cfg.setProperty("disabled", false); // checkin
+            oMenu.getItem(0).cfg.setProperty("disabled", true); // checkout
+            oMenu.getItem(1).cfg.setProperty("disabled", true);	// checkout and download
             if (!webdav) {
-              oMenu.getItem(2).cfg.setProperty("disabled", true);
+              oMenu.getItem(2).cfg.setProperty("disabled", true);  // edit online
             }
             //disable delete
-            oMenu.getItem(4, 1).cfg.setProperty("disabled", true);
-            oMenu.getItem(3, 1).cfg.setProperty("disabled", true);
+            oMenu.getItem(3, 1).cfg.setProperty("disabled", true); // delete
+            oMenu.getItem(2, 1).cfg.setProperty("disabled", true); // switch
             $('#worker' + oldId).html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $('#worker' + oldId).css({'visibility':'visible'});
             if (edit) {
@@ -551,8 +551,8 @@
       oMenu.getItem(0).cfg.setProperty("disabled", false);
       oMenu.getItem(1).cfg.setProperty("disabled", false);
       oMenu.getItem(2).cfg.setProperty("disabled", false);
-      oMenu.getItem(4, 1).cfg.setProperty("disabled", false)
-      oMenu.getItem(3, 1).cfg.setProperty("disabled", false);
+      oMenu.getItem(3, 1).cfg.setProperty("disabled", false)
+      oMenu.getItem(2, 1).cfg.setProperty("disabled", false);
       $('#worker' + id).html("");
       $('#worker' + id).css({'visibility':'hidden'});
       if (pageMustBeReloadingAfterSorting) {

@@ -259,7 +259,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String configureDelete(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "4, 1", disable);
+    return String.format(template, attachmentId, "3, 1", disable);
   }
 
   String configureXmlForm(String attachmentId, boolean disable) {
@@ -271,7 +271,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String configureSwitchState(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "3, 1", disable);
+    return String.format(template, attachmentId, "2, 1", disable);
   }
 
   String configureNotify(String attachmentId, boolean disable) {
