@@ -89,7 +89,6 @@ out.println(gef.getLookStyleSheet());
 %>
 <!-- Add JQuery mask plugin css -->
 <link href="<%=m_sContext%>/util/styleSheets/jquery.loadmask.css" rel="stylesheet" type="text/css" />
-<link href="<%=m_sContext%>/util/styleSheets/jquery.autocomplete.css" rel="stylesheet" type="text/css" media="screen"/>
 
 <!-- Add RICO javascript library -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
@@ -99,7 +98,6 @@ out.println(gef.getLookStyleSheet());
 
 <!-- Add jQuery javascript library -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 
 <!-- Custom domains bar javascript -->
@@ -263,13 +261,9 @@ out.println(gef.getLookStyleSheet());
   //used by keyword autocompletion
   <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
   jQuery(document).ready(function() {
-    jQuery("#query").autocomplete("<%=m_sContext%>/AutocompleteServlet", {
-      minChars : <%=autocompletionMinChars%>,
-      max : 50,
-      autoFill : false,
-      mustMatch : false,
-      matchContains : false,
-      scrollHeight : 220
+    jQuery("#query").autocomplete({
+      source: "<%=m_sContext%>/AutocompleteServlet",
+      minLength : <%=autocompletionMinChars%>
     });
   });
   <%}%>

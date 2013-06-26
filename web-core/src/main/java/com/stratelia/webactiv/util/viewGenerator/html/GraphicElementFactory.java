@@ -59,16 +59,15 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -105,10 +104,9 @@ public class GraphicElementFactory {
   private String spaceId = null;
   private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
-  protected static final String JQUERY_JS = "jquery-1.7.1.min.js";
-  private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
-  private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
-  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
+  protected static final String JQUERY_JS = "jquery-1.10.1.min.js";
+  private static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
+  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   private static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
@@ -367,8 +365,6 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_INCLUDE_JS).append("\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
@@ -384,7 +380,7 @@ public class GraphicElementFactory {
       code.append(getYahooElements());
       code.append(
           JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), getLanguage())
-              .toString()).append("\n");
+          .toString()).append("\n");
     }
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
@@ -878,6 +874,7 @@ public class GraphicElementFactory {
 
   /**
    * Build a new SilverpeasCalendar.
+   *
    * @param language : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
@@ -890,7 +887,7 @@ public class GraphicElementFactory {
     pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
     return pagination;
   }
-  
+
   public Pagination getPagination() {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination;
