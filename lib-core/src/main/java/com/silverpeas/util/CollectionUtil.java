@@ -23,6 +23,9 @@
  */
 package com.silverpeas.util;
 
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,9 +36,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Yohann Chastagnier
@@ -72,7 +72,7 @@ public class CollectionUtil {
    * @return
    */
   public static <T> Collection<Collection<T>> split(final Collection<T> collection) {
-    return split(collection, 5000);
+    return split(collection, 500);
   }
 
   /**
