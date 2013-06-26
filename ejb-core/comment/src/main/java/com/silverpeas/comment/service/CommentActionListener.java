@@ -29,8 +29,9 @@ import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.silverpeas.notification.NotificationTopic.*;
-import static com.silverpeas.comment.service.CommentActionNotifier.*;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
 
 /**
  * A Listener of actions on comments. The listener is a subscriber for notifications coming from the
@@ -41,12 +42,12 @@ public abstract class CommentActionListener extends DefaultNotificationSubscribe
 
   @Override
   public void subscribeOnTopics() {
-    subscribeForNotifications(onTopic(TOPIC_NAME));
+    subscribeForNotifications(onTopic(COMMENT_TOPIC));
   }
 
   @Override
   public void unsubscribeOnTopics() {
-    unsubscribeForNotifications(onTopic(TOPIC_NAME));
+    unsubscribeForNotifications(onTopic(COMMENT_TOPIC));
   }
 
   @Override

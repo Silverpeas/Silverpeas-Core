@@ -522,6 +522,22 @@ public class DocumentRepository {
   }
 
   /**
+   * Search all the documents in an instance with the specified type.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param type thetype of required documents.
+   * @param language the language in which the documents are required.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  public List<SimpleDocument> listDocumentsByComponentdAndType(Session session, String instanceId,
+      DocumentType type, String language) throws RepositoryException {
+    NodeIterator iter = selectDocumentsByComponentIdAndType(session, instanceId, type);
+    return converter.convertNodeIterator(iter, language);
+  }
+
+  /**
    * Search all the documents in an instance with the specified owner.
    *
    * @param session the current JCR session.
@@ -621,6 +637,30 @@ public class DocumentRepository {
         SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
+    QueryResult result = query.execute();
+    return result.getNodes();
+  }
+
+  /**
+   * Search all the documents of the specified type in an instance with the specified foreignId.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  NodeIterator selectDocumentsByComponentIdAndType(Session session, String instanceId,
+      DocumentType type) throws RepositoryException {
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+        getPath() + instanceId + '/' + type.getFolderName());
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, childNodeConstraint, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }

@@ -27,6 +27,7 @@ package com.silverpeas.comment.service;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.SilverpeasNotificationCause;
 
 /**
  *
@@ -35,6 +36,6 @@ public class CommentRemovalNotification extends SilverpeasNotification {
   private static final long serialVersionUID = -581350545681556054L;
 
   public CommentRemovalNotification(NotificationSource source, Comment object) {
-    super(source, object);
+    super(source, SilverpeasNotificationCause.DELETION, object);
   }
 }
