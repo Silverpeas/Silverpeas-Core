@@ -66,8 +66,8 @@
     <view:looknfeel />
     <view:includePlugin name="pagination"/>
     <view:includePlugin name="breadcrumb"/>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/handlebars.js"></script>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/ember.min.js"></script>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/handlebars-1.0.0-rc.4.js"></script>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/ember-1.0.0-rc.6.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/ember-data-latest.min.js"></script>
     <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/silverpeas-ember.js"></script>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
