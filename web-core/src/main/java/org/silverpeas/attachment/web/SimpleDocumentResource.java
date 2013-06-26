@@ -49,6 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -227,6 +228,7 @@ public class SimpleDocumentResource extends RESTWebService {
     if (StringUtil.isNotDefined(filename)) {
       uploadedFilename = fileDetail.getFileName();
     }
+    boolean isWebdav = false;
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)
         && !"no_file".equalsIgnoreCase(uploadedFilename)) {
       document.setFilename(uploadedFilename);
@@ -243,6 +245,7 @@ public class SimpleDocumentResource extends RESTWebService {
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
+      isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
       if (document.isVersioned()) {
         File content = new File(document.getAttachmentPath());
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), getUserDetail()
@@ -250,12 +253,19 @@ public class SimpleDocumentResource extends RESTWebService {
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
             true);
       } else {
+        if (isWebdav) {
+          WebdavServiceFactory.getWebdavService().getUpdatedDocument(document);
+        }
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
       }
     }
     UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(),
         lang, comment);
-    unlockContext.addOption(UnlockOption.UPLOAD);
+    if (isWebdav) {
+      unlockContext.addOption(UnlockOption.WEBDAV);
+    } else {
+      unlockContext.addOption(UnlockOption.UPLOAD);
+    }
     if (!isPublic) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
