@@ -20,20 +20,13 @@
  */
 package com.silverpeas.attachment.web;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.ZipManager;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.StringTokenizer;
+import java.util.UUID;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,15 +37,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.Date;
-import java.util.StringTokenizer;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.ZipManager;
+import com.silverpeas.web.RESTWebService;
+
+import com.stratelia.webactiv.util.FileRepositoryManager;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 @Service
 @RequestScoped
@@ -96,11 +99,9 @@ public class AttachmentRessource extends RESTWebService {
   @Path("{ids}/zip")
   @Produces(MediaType.APPLICATION_JSON)
   public ZipEntity zipFiles(@PathParam("ids") String attachmentIds) {
-    ZipEntity zip = null;
     StringTokenizer tokenizer = new StringTokenizer(attachmentIds, ",");
-    String subDirName = Long.toString(new Date().getTime());
-    String zipFileName = subDirName + ".zip";
-    String exportDir = FileRepositoryManager.getTemporaryPath() + subDirName;
+    File folderToZip = FileUtils.getFile(FileRepositoryManager.getTemporaryPath(), UUID.randomUUID()
+        .toString());
     while (tokenizer.hasMoreTokens()) {
       SimpleDocumentPK pk = new SimpleDocumentPK(tokenizer.nextToken());
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
@@ -108,11 +109,9 @@ public class AttachmentRessource extends RESTWebService {
       if (!isFileReadable(attachment)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
-      File destFile = new File(exportDir + File.separator + attachment.getFilename());
-      destFile.mkdirs();
       OutputStream out = null;
       try {
-        out = new BufferedOutputStream(new FileOutputStream(destFile));
+        out = FileUtils.openOutputStream(FileUtils.getFile(folderToZip, attachment.getFilename()));
         AttachmentServiceFactory.getAttachmentService().getBinaryContent(out, pk, token);
       } catch (IOException e) {
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
@@ -121,14 +120,16 @@ public class AttachmentRessource extends RESTWebService {
       }
     }
     try {
+      File zipFile = FileUtils.getFile(folderToZip.getPath() + ".zip");
       URI downloadUri = getUriInfo().getBaseUriBuilder().path("attachments").path(componentId).path(
-          token).path("zipcontent/" + zipFileName).build();
-      long size = ZipManager.compressPathToZip(exportDir, exportDir + ".zip");
-      zip = new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
+          token).path("zipcontent").path(zipFile.getName()).build();
+      long size = ZipManager.compressPathToZip(folderToZip, zipFile);
+      return new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    } finally {
+      FileUtils.deleteQuietly(folderToZip);
     }
-    return zip;
   }
 
   @GET
