@@ -32,6 +32,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
+import static com.silverpeas.notification.SilverpeasNotificationCause.CREATION;
+import static com.silverpeas.notification.SilverpeasNotificationCause.DELETION;
 
 /**
  * A Listener of actions on comments. The listener is a subscriber for notifications coming from the
@@ -54,9 +56,9 @@ public abstract class CommentActionListener extends DefaultNotificationSubscribe
   public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
     try {
       Comment comment = (Comment) notification.getObject();
-      if (notification instanceof CommentAddingNotification) {
+      if (notification.getCause() == CREATION) {
         commentAdded(comment);
-      } else if (notification instanceof CommentRemovalNotification) {
+      } else if (notification.getCause() == DELETION) {
         commentRemoved(comment);
       }
     } catch (ClassCastException ex) {

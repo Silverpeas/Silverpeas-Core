@@ -20,16 +20,16 @@
  */
 package com.silverpeas.personalization.notification;
 
-import javax.inject.Named;
-
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.admin.notification.SpaceLogicalDeletionNotification;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 
+import javax.inject.Named;
+
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.ADMIN_SPACE_TOPIC;
+import static com.silverpeas.notification.SilverpeasNotificationCause.DELETION;
 
 /**
  * Listener of notifications about some events that can have an impact on the user preferences.
@@ -49,9 +49,8 @@ public class PersonalizationNotificationListener extends DefaultNotificationSubs
 
   @Override
   public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
-    if (ADMIN_SPACE_TOPIC.getTopicName().equals(onTopic.getName())) {
-      SpaceLogicalDeletionNotification deletion = (SpaceLogicalDeletionNotification) notification;
-      SilverpeasServiceProvider.getPersonalizationService().resetDefaultSpace(deletion.getSpaceId());
+    if (ADMIN_SPACE_TOPIC == onTopic.getRegisteredTopic() && notification.getCause() == DELETION) {
+      SilverpeasServiceProvider.getPersonalizationService().resetDefaultSpace((String) notification.getObject());
     }
   }
 }

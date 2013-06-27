@@ -65,4 +65,13 @@ public class NotificationTopic {
     return name;
   }
 
+  /**
+   * Gets the name of this topic.
+   *
+   * @return the topic name.
+   */
+  public RegisteredTopics getRegisteredTopic() {
+    return RegisteredTopics.fromName(name);
+  }
+
 }

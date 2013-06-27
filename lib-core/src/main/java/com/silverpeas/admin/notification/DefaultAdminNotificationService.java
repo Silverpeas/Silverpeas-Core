@@ -20,13 +20,13 @@
  */
 package com.silverpeas.admin.notification;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.notification.SilverpeasNotificationCause;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.ADMIN_COMPONENT_TOPIC;
@@ -50,9 +50,9 @@ public class DefaultAdminNotificationService implements AdminNotificationService
    */
   @Override
   public void notifyOnDeletionOf(final String spaceId, String userId) {
-    SpaceLogicalDeletionNotification deletion
-        = new SpaceLogicalDeletionNotification(spaceId, userId);
-    publisher.publish(deletion, onTopic(ADMIN_SPACE_TOPIC));
+    SilverpeasNotification notification = new SilverpeasNotification(new NotificationSource()
+        .withUserId(userId), SilverpeasNotificationCause.DELETION, spaceId);
+    publisher.publish(notification, onTopic(ADMIN_SPACE_TOPIC));
   }
 
   @Override

@@ -100,7 +100,10 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
         ci.addProfileInst((ProfileInst) profile.clone());
       }
     }
-    ci.parameters = new ArrayList<Parameter>(this.parameters);
+    ci.parameters = new ArrayList<Parameter>(this.parameters.size());
+    for (Parameter param : this.parameters) {
+      ci.parameters.add(param.clone());
+    }
     return ci;
   }
 
