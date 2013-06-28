@@ -9,7 +9,7 @@
 # As a special exception to the terms and conditions of version 3.0 of
 # the GPL, you may redistribute this Program in connection with Free/Libre
 # Open Source Software ("FLOSS") applications as described in Silverpeas's
-# FLOSS exception.  You should have recieved a copy of the text describing
+# FLOSS exception.  You should have received a copy of the text describing
 # the FLOSS exception, and it is also available here:
 # "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 #
@@ -72,7 +72,7 @@ ExternalSynchroClass =
 # Property number : from 1 to N
 
 property.Number = 9
-property.ResourceFile = com.stratelia.silverpeas.domains.multilang.templateDomainSQLBundle
+property.ResourceFile = org.silverpeas.domains.multilang.templateDomainSQLBundle
 
 property_1.Name = title
 property_1.Type = STRING
@@ -81,33 +81,41 @@ property_1.MapParameter = title
 property_2.Name = company
 property_2.Type = STRING
 property_2.MapParameter = company
+property_2.MaxLength = 100
 
 property_3.Name = position
 property_3.Type = STRING
 property_3.MapParameter = position
+property_3.MaxLength = 100
 
 property_4.Name = boss
 property_4.Type = USERID
 property_4.MapParameter = boss
+property_4.MaxLength = 100
 
 property_5.Name = phone
 property_5.Type = STRING
 property_5.MapParameter = phone
+property_5.MaxLength = 20
 
 property_6.Name = homePhone
 property_6.Type = STRING
 property_6.MapParameter = homePhone
+property_6.MaxLength = 20
 
 property_7.Name = fax
 property_7.Type = STRING
 property_7.MapParameter = fax
+property_7.MaxLength = 20
 
 property_8.Name = cellularPhone
 property_8.Type = STRING
 property_8.MapParameter = cellPhone
+property_8.MaxLength = 20
 
 property_9.Name = address
 property_9.Type = STRING
 property_9.MapParameter = address
+property_9.MaxLength = 500
 
 property.Grouping =

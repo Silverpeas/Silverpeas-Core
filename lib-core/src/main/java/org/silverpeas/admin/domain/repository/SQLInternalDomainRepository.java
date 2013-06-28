@@ -24,7 +24,9 @@
 
 package org.silverpeas.admin.domain.repository;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
@@ -116,8 +118,7 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     return dropStatement.toString();
   }
 
-  private String generateUserTableCreateStatement(String domainName) throws FileNotFoundException,
-      IOException {
+  private String generateUserTableCreateStatement(String domainName) throws IOException {
     Properties props = new Properties();
     FileInputStream fis = null;
     try {
@@ -142,15 +143,23 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     // Domain specific columns
     String specificColumnName;
     String specificColumnType;
+    int specificColumnMaxLength;
     for (int i = 1; i <= numberOfColumns; i++) {
       specificColumnType = props.getProperty("property_" + String.valueOf(i) + ".Type");
       specificColumnName = props.getProperty("property_" + String.valueOf(i) + ".MapParameter");
+      String maxLengthPropertyValue =
+          props.getProperty("property_" + String.valueOf(i) + ".MaxLength");
+      if (StringUtil.isInteger(maxLengthPropertyValue)) {
+        specificColumnMaxLength = Integer.parseInt(maxLengthPropertyValue);
+      } else {
+        specificColumnMaxLength = DomainProperty.DEFAULT_MAX_LENGTH;
+      }
 
       createStatement.append(specificColumnName);
       if ("BOOLEAN".equals(specificColumnType)) {
         createStatement.append(" int NOT NULL DEFAULT (0) ");
       } else {
-        createStatement.append(" varchar(50) NULL ");
+        createStatement.append(" varchar(").append(specificColumnMaxLength).append(") NULL ");
       }
 
       if (i != numberOfColumns) {
