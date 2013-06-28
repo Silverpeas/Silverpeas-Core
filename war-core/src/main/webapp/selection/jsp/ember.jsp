@@ -60,7 +60,7 @@
 <fmt:message key="selection.RemoveFromSelection" var="deselectText"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="userSelector">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
@@ -68,7 +68,7 @@
     <view:includePlugin name="breadcrumb"/>
     <script type="text/javascript" src="/silverpeas/util/javaScript/handlebars-1.0.0-rc.4.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/ember-1.0.0-rc.6.js"></script>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/ember-data-latest.min.js"></script>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/ember-data-latest.js"></script>
     <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/silverpeas-ember.js"></script>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
@@ -77,36 +77,31 @@
     </style>
   </head>
   <body class="userPanel">
-    <div class="container_userPanel" ng-controller="mainController">
+    <div class="container_userPanel">
 
-      <script type="text/x-handlebars" data-template-name="userselector">
-        <section id="filter">
+      <script type="text/x-handlebars">
 
-        </section>
-        <section id="listing">
-        </section>
-
-        <section id="selection">
-        </section>
-      </script>
-
-      <div id="filter_userPanel">
-        <h4 class="title"><fmt:message key="selection.Filter"/></h4>
-        <ul class="listing_filter">
+        <div id="filter_userPanel">
+          <h4 class="title"><fmt:message key="selection.Filter"/></h4>
+          <ul class="listing_filter">
           <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-            <li><a href="#" ng-click="goToMyContacts()" id="filter_contact" class="filter"><fmt:message key="selection.MyContacts"/></a></li>
-            <li><a href="#" ng-click="goToAllUsers()" id="filter_users" class="filter select"><fmt:message key="selection.AllUsers"/></a></li>
+            <li><a href="#" id="filter_contact" class="filter" {{ action 'swithToMyContacts' }} ><fmt:message key="selection.MyContacts"/></a></li>
+            <li><a href="#" id="filter_users" class="filter select" {{ action 'switchToAllUsers' }} ><fmt:message key="selection.AllUsers"/></a></li>
             </c:if>
-          <li id="filter_groups">
-            <div class="filter" id="breadcrumb"></div>
-            <ul class="listing_groups_filter">
-              <li ng-repeat="group in groups">
-                <a href="#" ng-click="goToGroup(group)" class="filter">{{ group.name }}<span class="nb_results_by_filter"> ({{ group.userCount }})</span></a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+            <li id="filter_groups">
+              <div class="filter" id="breadcrumb"></div>
+              <ul class="listing_groups_filter">
+                {{#each scope.groupsFilter}}
+                <li>
+                  <a href="#" class="filter" {{ action 'switchToGroup' this }}>{{ name }}<span class="nb_results_by_filter"> ({{ userCount }})</span></a>
+                </li>
+                {{/each}}
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+      </script>
 
       <div id="results_userPanel">
         <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
@@ -115,15 +110,25 @@
               <input type="text" class="search autocompletion" id="group_search" ng-model="searchedGroups"/>
             </div>
             <div class="listing_groups">
-              <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
-              <a href="#" ng-show="selectedGroups.multipleSelection" ng-click="selectAllGroups()" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all"><fmt:message key="selection.AddAllGroups"/></a>
+              <p class="nb_results" id="group_result_count">{{ scope.groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
+              {{#if scope.multipleSelection }}
+              <a href="#" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all" {{ action 'selectAllGroups' }} ><fmt:message key="selection.AddAllGroups"/></a>
+              {{/if}}
               <ul id="group_list">
-                <li ng-repeat="group in groups" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                {{#each group in scope.groups}}
+                {{#if scope.groups.indexOf(group) % 2 === 0}}
+                <li class="line even">
+                {{else}
+                <li class="line odd">
+                {{/if}}
                   <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"></img></div>
                   <span class="name_group">{{ group.name }}</span><span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
                   <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
-                  <a href="#" ng-show="selectedGroups.indexOf(group) < 0" ng-click="selectGroup(group)" id="{{ 'add_group_' + group.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add group"><fmt:message key="selection.AddToSelection"/></a>
+                  {{#if selectedGroups.indexOf(group) < 0}}
+                  <a href="#" title="<fmt:message key='selection.AddToSelection'/>" class="add group" {{ action 'selectGroup' group }}"><fmt:message key="selection.AddToSelection"/></a>
+                  {{/if}}
                 </li>
+                {{/each}}
               </ul>
               <div id="group_list_pagination" class="pageNav_results_userPanel"></div>
             </div>
@@ -135,15 +140,25 @@
               <input type="text" class="search autocompletion" id="user_search" ng-model="searchedUsers"/>
             </div>
             <div class="listing_users">
-              <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
-              <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
+              <p class="nb_results" id="user_result_count">{{ scope.users.maxlength }} <fmt:message key='selection.usersFound'/></p>
+              {{#if scope.multipleSelection}}
+              <a href="#" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all" {{ action 'selectAllUsers' }}><fmt:message key="selection.AddAllUsers"/></a>
+              {{/if}}
               <ul id="user_list">
-                <li ng-repeat="user in users" ng-class-odd="'line odd'" ng-class-even="'line even'">
-                  <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
+                {{#each user in users}}
+                {{#if scope.users.indexOf(user) % 2 === 0}}
+                <li class="line odd">
+                {{else}}
+                <li class="line even">
+                {{/if}}
+                  <div class="avatar"><img {{ attrBind src="user.avatar" }} alt="avatar"/></div>
                   <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
                   <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                  <a href="#" ng-show="selectedUsers.indexOf(user) < 0" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
+                  {{#if scope.selectedUsers.indexOf(user) < 0}}
+                  <a href="#" title="<fmt:message key='selection.AddToSelection'/>" class="add user" {{ action 'selectUser' user}}><fmt:message key="selection.AddToSelection"/></a>
+                  {{/if}}
                 </li>
+                {{/each}}
               </ul>
               <div id="user_list_pagination" class="pageNav_results_userPanel"></div>
             </div>
@@ -212,19 +227,74 @@
     </div>
 
     <script type="text/javascript">
+      /* some global parameters */
+      PageSize = 6;
+      PageMaxSize = 10;
 
-      window.UserSelector = Ember.Application.create();
-      UserSelector.Router.map(function() {
+      /* the user selector as an Ember application */
+      window.app = Ember.Application.create();
+      /*UserSelector.Router.map(function() {
         this.resource('userselector', { path: '/' });
-      });
+      });*/
 
-      UserSelector.MainController = Ember.Controller.extend({
+      /* the main controller between the view and the data (users and groups) */
+      App.ApplicationController = Ember.Controller.extend({
+        scope: {
+          me: User.find('${currentUserId}'),
+          users: User.find(),
+          groups: [],
+          groupsFilter: UserGroup.find(),
+          currentGroup: null,
+          multipleSelection: ${multipleSelection},
+          selectedGroups: [],
+          renderedUsers: 'ALL'
+        },
         groups: function() {
-          return UserGroup.find();
-        }.property(),
+          return this.scope.groups;
+        }.property('scope.groups'),
         users: function() {
-          return User.find(arguments);
-        }.property()
+          return this.scope.users;
+        }.property('scope.users'),
+        swithToMyContacts: function() {
+          this.scope.users = this.scope.me.relationships({page: '1;' + PageMaxSize});
+          this.scope.renderedUsers = 'RELATIONSHIPS';
+        },
+        switchToAllUsers: function() {
+          this.scope.users = User.find({page: '1;' + PageMaxSize});
+          this.scope.renderedUsers = 'ALL';
+        },
+        switchToGroup: function(group) {
+          this.scope.currentGroup = group;
+          this.scope.groupsFilter = group.subgroups();
+          this.scope.groups = this.scope.groupsFilter.slice(0, PageSize);
+          this.scope.renderedUsers = 'GROUP_USERS';
+        },
+        selectAllGroups: function() {
+          if (this.scope.currentGroup)
+            this.scope.selectedGroups = this.scope.currentGroup.subgroups();
+          else
+            this.scope.selectedGroups = UserGroup.find();
+        }.property('scope.selectedGroups'),
+        selectGroup: function(group) {
+          if (this.scope.multipleSelection)
+            this.scope.selectedGroups.push(group);
+          else
+            this.scope.selectedGroups[0] = group;
+        }.property('scope.selectedGroups'),
+        selectAllUsers: function() {
+          if (this.scope.renderedUsers === 'GROUP_USERS')
+            this.scope.selectedUsers = this.scope.currentGroup.users();
+          else if (this.scope.renderedUsers = 'ALL')
+            this.scope.selectedUsers = User.find();
+          else
+            this.scope.selectedUsers =  this.scope.me.relationships();
+        }.property('scope.selectedUsers'),
+        selectUser: function(user) {
+          if (this.scope.multipleSelection)
+            this.scope.selectedUsers.push(user);
+          else
+            this.scope.selectedUsers[0] = user;
+        }.property('scope.selectedUsers')
       });
 
       /* highlight the specified HTML element */

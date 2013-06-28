@@ -24,31 +24,84 @@
 
 (function() {
   ProfileAdapter = DS.RESTAdapter.extend({
-    namespace: webContext + '/services/profile',
-    findByURL: function(store, type, type, url, params, array) {
-      var adapter = this, data = undefined;
-      if (params)
-        data = {data: params};
-      return this.ajax(url, "GET", data).then(function(json) {
-        adapter.didFindQuery(store, type, json, array);
+    namespace : webContext + '/services/profile',
+
+    findByURL : function(store, type, type, url, params, array) {
+      var $adapter = this, data = undefined;
+      if (params) {
+        data = {data : params};
+      }
+      return this.ajax(url, "GET", data).then(function(json, headers) {
+        $adapter.didFindQuery(store, type, json, headers, array);
       }).then(null, DS.rejectionHandler);
+    },
+
+    findQuery : function(store, type, query, recordArray) {
+      var root = this.rootForType(type), adapter = this;
+
+      return this.ajax(this.buildURL(root), "GET", {
+        data : query
+      }).then(function(json, headers) {
+            adapter.didFindQuery(store, type, json, headers, recordArray);
+          }).then(null, DS.rejectionHandler);
+    },
+
+    didFindQuery : function(store, type, payload, headers, recordArray) {
+      var loader = DS.loaderFor(store);
+
+      loader.populateArray = function(data) {
+        data.maxlength = headers['X-Silverpeas-GroupSize'];
+        recordArray.load(data);
+      };
+
+      get(this, 'serializer').extractMany(loader, payload, type);
+    },
+
+    ajax : function(url, type, hash) {
+      var adapter = this;
+
+      return new Ember.RSVP.Promise(function(resolve, reject) {
+        hash = hash || {};
+        hash.url = url;
+        hash.type = type;
+        hash.dataType = 'json';
+        hash.context = adapter;
+
+        if (hash.data && type !== 'GET') {
+          hash.contentType = 'application/json; charset=utf-8';
+          hash.data = JSON.stringify(hash.data);
+        }
+
+        hash.success = function(json, status, jqXHR) {
+          Ember.run(null, resolve, json, jqXHR.getAllResponseHeaders());
+        };
+
+        hash.error = function(jqXHR, textStatus, errorThrown) {
+          Ember.run(null, reject, jqXHR);
+        };
+
+        Ember.$.ajax(hash);
+      });
     }
   });
 
   ProfileStore = DS.Store.extend({
-    adapter: ProfileAdapter,
-    find: function(type, query) {
+    adapter : ProfileAdapter,
+    find : function(type, query) {
       if (query && typeof query === 'object' && query.url) {
         return this.findByURL(type, query.url, query.filter);
       }
       return this._super(type, query);
     },
-    findByURL: function(type, url, params) {
-      var array = DS.AdapterPopulatedRecordArray.create({type: type, url: url, content: Ember.A([]), store: this});
+
+    findByURL : function(type, url, params) {
+      var array = DS.AdapterPopulatedRecordArray.create({type : type, url : url, content : Ember.A(
+          []), store : this});
       var adapter = this.adapterForType(type);
 
       Ember.assert("You tried to load an URL but you have no adapter (for " + type + ")", adapter);
-      Ember.assert("You tried to load an URL but your adapter does not implement `findByURL`", adapter.findByURL);
+      Ember.assert("You tried to load an URL but your adapter does not implement `findByURL`",
+          adapter.findByURL);
 
       adapter.findByURL(this, type, url, params, array);
 
@@ -57,54 +110,57 @@
   });
 
   User = DS.Model.extend({
-    id: DS.attr('string'),
-    firstName: DS.attr('string'),
-    lastName: DS.attr('string'),
-    avatar: DS.attr('string'),
-    eMail: DS.attr('string'),
-    domainName: DS.attr('string'),
-    specificId: DS.attr('string'),
-    domainId: DS.attr('string'),
-    login: DS.attr('string'),
-    accessLevel: DS.attr('string'),
-    uri: DS.attr('string'),
-    webPage: DS.attr('string'),
-    tchatPage: DS.attr('string'),
-    fullName: DS.attr('string'),
-    language: DS.attr('string'),
-    connected: DS.attr('boolean'),
-    anonymous: DS.attr('bolean'),
-    status: DS.attr('string'),
-    relationships: function() {
-      if (arguments.length > 0)
-        return User.find({url: this.get('contactsUri'), filter: arguments[0]});
-      else
-        return User.find({url: this.get('contactsUri')});
+    id : DS.attr('string'),
+    firstName : DS.attr('string'),
+    lastName : DS.attr('string'),
+    avatar : DS.attr('string'),
+    eMail : DS.attr('string'),
+    domainName : DS.attr('string'),
+    specificId : DS.attr('string'),
+    domainId : DS.attr('string'),
+    login : DS.attr('string'),
+    accessLevel : DS.attr('string'),
+    uri : DS.attr('string'),
+    webPage : DS.attr('string'),
+    tchatPage : DS.attr('string'),
+    fullName : DS.attr('string'),
+    language : DS.attr('string'),
+    connected : DS.attr('boolean'),
+    anonymous : DS.attr('bolean'),
+    status : DS.attr('string'),
+    relationships : function() {
+      if (arguments.length > 0) {
+        return User.find({url : this.get('contactsUri'), filter : arguments[0]});
+      } else {
+        return User.find({url : this.get('contactsUri')});
+      }
     }
   });
 
   UserGroup = DS.Model.extend({
-    id: DS.attr('string'),
-    name: DS.attr('string'),
-    description: DS.attr('string'),
-    domainName: DS.attr('string'),
-    specificId: DS.attr('string'),
-    domainId: DS.attr('string'),
-    uri: DS.attr('string'),
-    childrenUri: DS.attr('string'),
-    usersUri: DS.attr('string'),
-    userCount: DS.attr('number'),
-    subgroups: function() {
-      if (arguments.length > 0)
-        return UserGroup.find({url: this.get('childrenUri'), filter: arguments[0]});
-      else
-        return UserGroup.find({url: this.get('childrenUri')});
+    id : DS.attr('string'),
+    name : DS.attr('string'),
+    description : DS.attr('string'),
+    domainName : DS.attr('string'),
+    specificId : DS.attr('string'),
+    domainId : DS.attr('string'),
+    uri : DS.attr('string'),
+    childrenUri : DS.attr('string'),
+    usersUri : DS.attr('string'),
+    userCount : DS.attr('number'),
+    subgroups : function() {
+      if (arguments.length > 0) {
+        return UserGroup.find({url : this.get('childrenUri'), filter : arguments[0]});
+      } else {
+        return UserGroup.find({url : this.get('childrenUri')});
+      }
     },
-    users: function() {
-      if (arguments.length > 0)
-        return User.find({group: this.get('id'), filter: arguments[0]});
-      else
-        return User.find({group: this.get('id')});
+    users : function() {
+      if (arguments.length > 0) {
+        return User.find({group : this.get('id'), filter : arguments[0]});
+      } else {
+        return User.find({group : this.get('id')});
+      }
     }
   });
 })();
