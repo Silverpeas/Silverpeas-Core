@@ -37,7 +37,7 @@ import com.silverpeas.notification.delayed.model.DelayedNotificationData;
  * @author Yohann Chastagnier
  */
 public interface DelayedNotificationRepository extends
-    JpaRepository<DelayedNotificationData, Integer>, DelayedNotificationRepositoryCustom {
+    JpaRepository<DelayedNotificationData, Long>, DelayedNotificationRepositoryCustom {
 
   @Query("select distinct userId from DelayedNotificationData where channel in (:channels)")
   List<Integer> findAllUsersToBeNotified(@Param("channels") Collection<Integer> aimedChannels);
