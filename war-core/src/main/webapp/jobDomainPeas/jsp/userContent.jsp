@@ -30,6 +30,7 @@
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 
 <%@ include file="check.jsp" %>
 <%
@@ -100,7 +101,8 @@
 %>
 <html>
 <head>
-<view:looknfeel/>
+  <view:looknfeel/>
+  <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
   <script language="JavaScript">
     function ConfirmAndSend(textToDisplay, targetURL) {
       if (window.confirm(textToDisplay)) {
@@ -110,11 +112,19 @@
   </script>
 </head>
 <body>
+
+<style type="text/css">
+  .txtlibform {
+    width: 300px;
+  }
+</style>
+
 <%
   out.println(window.printBefore());
 %>
 <view:frame>
-<view:board>
+<fieldset id="identity-main" class="skinFieldset">
+  <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
   <table cellpadding="5" cellspacing="0" border="0" width="100%">
     <tr>
       <td class="txtlibform"><%=resource.getString("GML.lastName") %> :</td>
@@ -173,48 +183,53 @@
         %>
       </td>
     </tr>
-
-    <%
-      //if (isUserRW)
-      //{
-      String[] properties = userObject.getPropertiesNames();
-      for (final String property : properties) {
-        if (!property.startsWith("password")) {
-    %>
-    <tr>
-      <td class="txtlibform">
-        <%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
-      </td>
-
-      <td>
-        <%
-          if ("STRING".equals(userObject.getPropertyType(property)) ||
-              "USERID".equals(userObject.getPropertyType(property))) {
-
-            out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
-
-          } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-
-            if (userObject.getValue(property) != null &&
-                "1".equals(userObject.getValue(property))) {
-              out.print(resource.getString("GML.yes"));
-            } else if (userObject.getValue(property) == null ||
-                "".equals(userObject.getValue(property)) ||
-                "0".equals(userObject.getValue(property))) {
-              out.print(resource.getString("GML.no"));
-            }
-          }
-        %>
-      </td>
-    </tr>
-    <%
-        }
-      }
-      //}
-    %>
-
   </table>
-  </view:board>
+</fieldset>
+  <fieldset id="identity-extra" class="skinFieldset">
+    <legend class="without-img">
+      <fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+    <table border="0" cellspacing="0" cellpadding="5" width="100%">
+      <%
+        //if (isUserRW)
+        //{
+        String[] properties = userObject.getPropertiesNames();
+        for (final String property : properties) {
+          if (!property.startsWith("password")) {
+      %>
+      <tr>
+        <td class="txtlibform">
+          <%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
+        </td>
+
+        <td>
+          <%
+            if ("STRING".equals(userObject.getPropertyType(property)) ||
+                "USERID".equals(userObject.getPropertyType(property))) {
+
+              out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
+
+            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
+
+              if (userObject.getValue(property) != null &&
+                  "1".equals(userObject.getValue(property))) {
+                out.print(resource.getString("GML.yes"));
+              } else if (userObject.getValue(property) == null ||
+                  "".equals(userObject.getValue(property)) ||
+                  "0".equals(userObject.getValue(property))) {
+                out.print(resource.getString("GML.no"));
+              }
+            }
+          %>
+        </td>
+      </tr>
+      <%
+          }
+        }
+        //}
+      %>
+
+    </table>
+  </fieldset>
   </view:frame>
 <%
   out.println(window.printAfter());

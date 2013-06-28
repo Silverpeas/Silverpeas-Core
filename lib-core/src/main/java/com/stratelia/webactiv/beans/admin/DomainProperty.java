@@ -31,13 +31,16 @@ public class DomainProperty {
   final static public String PROPERTY_TYPE_USERID = "USERID";
   final static public String PROPERTY_TYPE_BOOLEAN = "BOOLEAN";
 
+  final static public int DEFAULT_MAX_LENGTH = 50;
+
   final static public String PROPERTY_UPDATEALLOWED_ADMIN = "A";
   final static public String PROPERTY_UPDATEALLOWED_USER = "U";
   final static public String PROPERTY_UPDATE_NOT_ALLOWED = "N";
 
-  private String m_sName = null;
-  private String m_iType = PROPERTY_TYPE_STRING;
-  private String m_sMapParameter = null;
+  private String name = null;
+  private String type = PROPERTY_TYPE_STRING;
+  private int maxLength = DEFAULT_MAX_LENGTH;
+  private String mapParameter = null;
   private boolean usedToImport = false;
   private String redirectOU = null;
   private String redirectAttribute = null;
@@ -52,17 +55,18 @@ public class DomainProperty {
   public DomainProperty(ResourceLocator rs, String num) {
     String s;
 
-    m_sName = rs.getString("property_" + num + ".Name");
-    m_iType = PROPERTY_TYPE_STRING;
+    name = rs.getString("property_" + num + ".Name");
+    type = PROPERTY_TYPE_STRING;
     s = rs.getString("property_" + num + ".Type");
     if ((s != null) && (s.length() > 0)) {
       if (s.equalsIgnoreCase("USERID")) {
-        m_iType = PROPERTY_TYPE_USERID;
+        type = PROPERTY_TYPE_USERID;
       } else if (s.equalsIgnoreCase("BOOLEAN")) {
-        m_iType = PROPERTY_TYPE_BOOLEAN;
+        type = PROPERTY_TYPE_BOOLEAN;
       }
     }
-    m_sMapParameter = rs.getString("property_" + num + ".MapParameter");
+    maxLength = rs.getInteger("property_" + num + ".MaxLength", DEFAULT_MAX_LENGTH);
+    mapParameter = rs.getString("property_" + num + ".MapParameter");
     usedToImport = rs.getBoolean("property_" + num + ".UsedToImport", false);
     redirectOU = rs.getString("property_" + num + ".RedirectOU");
     redirectAttribute = rs.getString("property_" + num + ".RedirectAttribute");
@@ -71,27 +75,35 @@ public class DomainProperty {
   }
 
   public void setName(String propertyName) {
-    m_sName = propertyName;
+    name = propertyName;
   }
 
   public String getName() {
-    return m_sName;
+    return name;
   }
 
   public void setType(String propertyType) {
-    m_iType = propertyType;
+    type = propertyType;
   }
 
   public String getType() {
-    return m_iType;
+    return type;
+  }
+
+  public void setMaxLength(final int maxLength) {
+    this.maxLength = maxLength;
+  }
+
+  public int getMaxLength() {
+    return maxLength;
   }
 
   public void setMapParameter(String mapParameter) {
-    m_sMapParameter = mapParameter;
+    this.mapParameter = mapParameter;
   }
 
   public String getMapParameter() {
-    return m_sMapParameter;
+    return mapParameter;
   }
 
   public boolean isUsedToImport() {

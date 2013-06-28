@@ -45,9 +45,6 @@
   boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
   boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
   boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
-  String action = (String) request.getAttribute("Action");
-  String messageOK = (String) request.getAttribute("MessageOK");
-  String messageNOK = (String) request.getAttribute("MessageNOK");
 
   String fieldAttribute = " disabled=\"disabled\" ";
   if (updateIsAllowed) {
@@ -60,25 +57,31 @@
   boolean displayInfosLDAP = rs.getBoolean("displayInfosLDAP", false);
 %>
 
+<c:set var="messageOK" value="${requestScope.MessageOK}"/>
+<c:set var="messageNOK" value="${requestScope.MessageNOK}"/>
+<c:set var="action" value="${requestScope.Action}"/>
+<c:set var="displayInfosLDAP" value="<%=displayInfosLDAP%>"/>
+
 <style type="text/css">
-.txtlibform {
-	width: 230px;
-}
+  .txtlibform {
+    width: 230px;
+  }
+  .message-addon {
+    float: left;
+    width: 96%;
+  }
 </style>
 
 <div class="sousNavBulle">
 	<p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
 </div>
 
-<% if (StringUtil.isDefined(messageOK)) { %>
-<div class="inlineMessage-ok">
-	<%=messageOK %>
-</div>
-<% } else if (StringUtil.isDefined(messageNOK)) {%>
-<div class="inlineMessage-nok">
-	<%=messageNOK %>
-</div>
-<% } %>
+<c:if test="${not empty messageOK}">
+  <div class="inlineMessage-ok message-addon">${messageOK}</div>
+</c:if>
+<c:if test="${not empty messageNOK}">
+  <div class="inlineMessage-nok message-addon">${messageNOK}</div>
+</c:if>
 
 <div id="identity">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
@@ -172,33 +175,47 @@
 %>
 </table>
 </fieldset>
-
-<fieldset id="identity-extra" class="skinFieldset">
-<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" /></legend>
-<table border="0" cellspacing="0" cellpadding="5" width="100%">
-	<%//rajout des champs LDAP complémentaires
-	 if (displayInfosLDAP || action.equals("userModify")) {
-		//rajout des champs Silverpeas custom complémentaires
-		String[] properties = userFull.getPropertiesNames();
-		for (String propertyName : properties) {
-			DomainProperty property=userFull.getProperty(propertyName);
-			if (!propertyName.startsWith("password")) {
-			%>
-			<tr id="<%=propertyName%>">
-				<td class="txtlibform"><%=userFull.getSpecificLabel(resource.getLanguage(), propertyName) %> :</td>
-				<% if (userFull.isPropertyUpdatableByUser(propertyName) || (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName)) ) { %>
-					<td><input type="text" name="prop_<%=propertyName%>" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%>"></td>
-				<% } else { %>
-					<td><%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%></td>
-				<% } %>
-			</tr>
-			<%
-			}
-		}
-	}
-	%>
- </table>
- </fieldset>
+  <c:if test="${displayInfosLDAP and action eq 'userModify'}">
+    <fieldset id="identity-extra" class="skinFieldset">
+      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
+      <table border="0" cellspacing="0" cellpadding="5" width="100%">
+        <%
+          //rajout des champs Silverpeas custom complémentaires
+          String[] properties = userFull.getPropertiesNames();
+          for (String propertyName : properties) {
+            if (!propertyName.startsWith("password")) {
+        %>
+        <c:set var="propertyName" value="<%=propertyName%>"/>
+        <c:set var="domainProperty" value="<%=userFull.getProperty(propertyName)%>"/>
+        <c:set var="propertyValue" value="<%=userFull.getValue(propertyName)%>"/>
+        <tr id="${propertyName}">
+          <td class="txtlibform"><%=userFull
+              .getSpecificLabel(resource.getLanguage(), propertyName) %>
+            :
+          </td>
+          <% if (userFull.isPropertyUpdatableByUser(propertyName) ||
+              (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName))) { %>
+          <td>
+            <c:choose>
+              <c:when test="${domainProperty.maxLength gt 100}">
+                <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
+              </c:when>
+              <c:otherwise>
+                <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
+              </c:otherwise>
+            </c:choose>
+          </td>
+          <% } else { %>
+          <td>${silfn:escapeHtml(propertyValue)}</td>
+          <% } %>
+        </tr>
+        <%
+            }
+          }
+        %>
+      </table>
+    </fieldset>
+  </c:if>
  </form>
  </div>
  <br clear="all"/>
