@@ -161,9 +161,10 @@ function selectUnselect()
     width: 300px;
   }
 </style>
-
-<view:window>
-<view:frame>
+<%
+out.println(window.printBefore());
+out.println(frame.printBefore());
+%>
   <form name="userForm" action="<%=action%>" method="post">
     <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) {
         out.print(userObject.getId());
@@ -367,11 +368,12 @@ function selectUnselect()
 <br/>
 <%
   ButtonPane bouton = gef.getButtonPane();
-  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
-  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
   out.println("<center>"+bouton.print()+"</center>");
+
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
-</view:frame>
-</view:window>
 </body>
 </html>
