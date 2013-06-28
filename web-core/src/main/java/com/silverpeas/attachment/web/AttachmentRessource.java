@@ -23,6 +23,7 @@ package com.silverpeas.attachment.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.StringTokenizer;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriBuilderException;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -125,7 +127,11 @@ public class AttachmentRessource extends RESTWebService {
           token).path("zipcontent").path(zipFile.getName()).build();
       long size = ZipManager.compressPathToZip(folderToZip, zipFile);
       return new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
-    } catch (Exception e) {
+    } catch (IllegalArgumentException e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    } catch (UriBuilderException e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    } catch (IOException e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     } finally {
       FileUtils.deleteQuietly(folderToZip);
@@ -142,13 +148,19 @@ public class AttachmentRessource extends RESTWebService {
       return Response.ok().build();
     } else {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
+      InputStream in = null;
       try {
-        output.write(new FileInputStream(realFile));
-      } catch (Exception e) {
+        in = new FileInputStream(realFile);
+        output.write(in);
+        return Response.ok().entity(output.toByteArray()).type(MimeTypes.SHORT_ARCHIVE_MIME_TYPE).
+            build();
+      } catch (IOException e) {
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      } finally {
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(output);
       }
-      return Response.ok().entity(output.toByteArray()).type(MimeTypes.SHORT_ARCHIVE_MIME_TYPE).
-          build();
+
     }
   }
 
