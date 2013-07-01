@@ -24,29 +24,26 @@
 
 (function() {
   ProfileAdapter = DS.RESTAdapter.extend({
-    namespace : webContext + '/services/profile',
-
-    findByURL : function(store, type, type, url, params, array) {
+    namespace: webContext + '/services/profile',
+    findByURL: function(store, type, type, url, params, array) {
       var $adapter = this, data = undefined;
       if (params) {
-        data = {data : params};
+        data = {data: params};
       }
       return this.ajax(url, "GET", data).then(function(json, headers) {
         $adapter.didFindQuery(store, type, json, headers, array);
       }).then(null, DS.rejectionHandler);
     },
-
-    findQuery : function(store, type, query, recordArray) {
+    findQuery: function(store, type, query, recordArray) {
       var root = this.rootForType(type), adapter = this;
 
       return this.ajax(this.buildURL(root), "GET", {
-        data : query
+        data: query
       }).then(function(json, headers) {
-            adapter.didFindQuery(store, type, json, headers, recordArray);
-          }).then(null, DS.rejectionHandler);
+        adapter.didFindQuery(store, type, json, headers, recordArray);
+      }).then(null, DS.rejectionHandler);
     },
-
-    didFindQuery : function(store, type, payload, headers, recordArray) {
+    didFindQuery: function(store, type, payload, headers, recordArray) {
       var loader = DS.loaderFor(store);
 
       loader.populateArray = function(data) {
@@ -56,8 +53,7 @@
 
       get(this, 'serializer').extractMany(loader, payload, type);
     },
-
-    ajax : function(url, type, hash) {
+    ajax: function(url, type, hash) {
       var adapter = this;
 
       return new Ember.RSVP.Promise(function(resolve, reject) {
@@ -86,22 +82,21 @@
   });
 
   ProfileStore = DS.Store.extend({
-    adapter : ProfileAdapter,
-    find : function(type, query) {
+    adapter: ProfileAdapter,
+    find: function(type, query) {
       if (query && typeof query === 'object' && query.url) {
         return this.findByURL(type, query.url, query.filter);
       }
       return this._super(type, query);
     },
-
-    findByURL : function(type, url, params) {
-      var array = DS.AdapterPopulatedRecordArray.create({type : type, url : url, content : Ember.A(
-          []), store : this});
+    findByURL: function(type, url, params) {
+      var array = DS.AdapterPopulatedRecordArray.create({type: type, url: url, content: Ember.A(
+                []), store: this});
       var adapter = this.adapterForType(type);
 
       Ember.assert("You tried to load an URL but you have no adapter (for " + type + ")", adapter);
       Ember.assert("You tried to load an URL but your adapter does not implement `findByURL`",
-          adapter.findByURL);
+              adapter.findByURL);
 
       adapter.findByURL(this, type, url, params, array);
 
@@ -110,57 +105,115 @@
   });
 
   User = DS.Model.extend({
-    id : DS.attr('string'),
-    firstName : DS.attr('string'),
-    lastName : DS.attr('string'),
-    avatar : DS.attr('string'),
-    eMail : DS.attr('string'),
-    domainName : DS.attr('string'),
-    specificId : DS.attr('string'),
-    domainId : DS.attr('string'),
-    login : DS.attr('string'),
-    accessLevel : DS.attr('string'),
-    uri : DS.attr('string'),
-    webPage : DS.attr('string'),
-    tchatPage : DS.attr('string'),
-    fullName : DS.attr('string'),
-    language : DS.attr('string'),
-    connected : DS.attr('boolean'),
-    anonymous : DS.attr('bolean'),
-    status : DS.attr('string'),
-    relationships : function() {
+    id: DS.attr('string'),
+    firstName: DS.attr('string'),
+    lastName: DS.attr('string'),
+    avatar: DS.attr('string'),
+    eMail: DS.attr('string'),
+    domainName: DS.attr('string'),
+    specificId: DS.attr('string'),
+    domainId: DS.attr('string'),
+    login: DS.attr('string'),
+    accessLevel: DS.attr('string'),
+    uri: DS.attr('string'),
+    webPage: DS.attr('string'),
+    tchatPage: DS.attr('string'),
+    fullName: DS.attr('string'),
+    language: DS.attr('string'),
+    connected: DS.attr('boolean'),
+    anonymous: DS.attr('bolean'),
+    status: DS.attr('string'),
+    relationships: function() {
       if (arguments.length > 0) {
-        return User.find({url : this.get('contactsUri'), filter : arguments[0]});
+        return User.find({url: this.get('contactsUri'), filter: arguments[0]});
       } else {
-        return User.find({url : this.get('contactsUri')});
+        return User.find({url: this.get('contactsUri')});
       }
     }
   });
 
   UserGroup = DS.Model.extend({
-    id : DS.attr('string'),
-    name : DS.attr('string'),
-    description : DS.attr('string'),
-    domainName : DS.attr('string'),
-    specificId : DS.attr('string'),
-    domainId : DS.attr('string'),
-    uri : DS.attr('string'),
-    childrenUri : DS.attr('string'),
-    usersUri : DS.attr('string'),
-    userCount : DS.attr('number'),
-    subgroups : function() {
+    id: DS.attr('string'),
+    name: DS.attr('string'),
+    description: DS.attr('string'),
+    domainName: DS.attr('string'),
+    specificId: DS.attr('string'),
+    domainId: DS.attr('string'),
+    uri: DS.attr('string'),
+    childrenUri: DS.attr('string'),
+    usersUri: DS.attr('string'),
+    userCount: DS.attr('number'),
+    subgroups: function() {
       if (arguments.length > 0) {
-        return UserGroup.find({url : this.get('childrenUri'), filter : arguments[0]});
+        return UserGroup.find({url: this.get('childrenUri'), filter: arguments[0]});
       } else {
-        return UserGroup.find({url : this.get('childrenUri')});
+        return UserGroup.find({url: this.get('childrenUri')});
       }
     },
-    users : function() {
+    users: function() {
       if (arguments.length > 0) {
-        return User.find({group : this.get('id'), filter : arguments[0]});
+        return User.find({group: this.get('id'), filter: arguments[0]});
       } else {
-        return User.find({group : this.get('id')});
+        return User.find({group: this.get('id')});
       }
     }
+  });
+})();
+
+(function() {
+  Selection = Ember.Object.extend({
+    item: [],
+    multipleSelection: false,
+    pagesize: 6,
+    startpage: 0,
+    currentpage: function() {
+      return (this.pagesize === 0 ? this.items : this.items.slice(this.startpage, this.startpage + this.pagesize));
+    }.property(),
+    page: function(pagenumber) {
+      this.startpage = (pagenumber - 1) * this.pagesize;
+    }.property(),
+    add: function(item) {
+      if (this.multipleSelection) {
+        if (item instanceof Array)
+          this.items = item;
+        else
+          this.items.push(item);
+      } else {
+        this.items.splice(0, 1);
+        this.items[0] = (item instanceof Array ? item[0] : item);
+      }
+    },
+    remove: function(item) {
+      var index = this.indexOf(item);
+      this.items.splice(index, 1);
+    },
+    clear: function() {
+      this.items = [];
+    },
+    indexOf: function(item) {
+      for (var i = 0; i < this.items.length; i++)
+        if (item.id === this.items[i].id)
+          return i;
+      return -1;
+    },
+    length: function() {
+      return this.items.length;
+    },
+    itemIdsAsString: function() {
+      var ids = '';
+      for (var i = 0; i < this.items.length - 1; i++)
+        ids += this.items[i].id + ',';
+      if (this.items.length > 0)
+        ids += this.items[this.items.length - 1].id;
+      return ids;
+    }.property(),
+    itemNamesAsString: function() {
+      var names = '';
+      for (var i = 0; i < this.items.length - 1; i++)
+        names += this.items[i].name + ',';
+      if (this.items.length > 0)
+        names += this.items[this.items.length - 1].name;
+      return names;
+    }.property()
   });
 })();

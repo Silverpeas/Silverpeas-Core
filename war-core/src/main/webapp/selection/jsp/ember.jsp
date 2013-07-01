@@ -91,9 +91,9 @@
             <li id="filter_groups">
               <div class="filter" id="breadcrumb"></div>
               <ul class="listing_groups_filter">
-                {{#each scope.groupsFilter}}
+                {{#each group in groupsFilter}}
                 <li>
-                  <a href="#" class="filter" {{ action 'switchToGroup' this }}>{{ name }}<span class="nb_results_by_filter"> ({{ userCount }})</span></a>
+                  <a href="#" class="filter" {{ action 'switchToGroup' group }}>{{ name }}<span class="nb_results_by_filter"> ({{ group.userCount }})</span></a>
                 </li>
                 {{/each}}
               </ul>
@@ -101,22 +101,20 @@
           </ul>
         </div>
 
-      </script>
-
-      <div id="results_userPanel">
+        <div id="results_userPanel">
         <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
           <div class="groups_results_userPanel">
             <div class="container_input_search">
-              <input type="text" class="search autocompletion" id="group_search" ng-model="searchedGroups"/>
+              <input type="text" class="search autocompletion" id="group_search"/>
             </div>
             <div class="listing_groups">
-              <p class="nb_results" id="group_result_count">{{ scope.groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
+              <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
               {{#if scope.multipleSelection }}
               <a href="#" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all" {{ action 'selectAllGroups' }} ><fmt:message key="selection.AddAllGroups"/></a>
               {{/if}}
               <ul id="group_list">
-                {{#each group in scope.groups}}
-                {{#if scope.groups.indexOf(group) % 2 === 0}}
+                {{#each group in groups}}
+                {{#if groups.indexOf(group) % 2 === 0}}
                 <li class="line even">
                 {{else}
                 <li class="line odd">
@@ -137,16 +135,16 @@
         <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
           <div class="users_results_userPanel">
             <div class="container_input_search">
-              <input type="text" class="search autocompletion" id="user_search" ng-model="searchedUsers"/>
+              <input type="text" class="search autocompletion" id="user_search"/>
             </div>
             <div class="listing_users">
-              <p class="nb_results" id="user_result_count">{{ scope.users.maxlength }} <fmt:message key='selection.usersFound'/></p>
+              <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
               {{#if scope.multipleSelection}}
               <a href="#" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all" {{ action 'selectAllUsers' }}><fmt:message key="selection.AddAllUsers"/></a>
               {{/if}}
               <ul id="user_list">
                 {{#each user in users}}
-                {{#if scope.users.indexOf(user) % 2 === 0}}
+                {{#if users.indexOf(user) % 2 === 0}}
                 <li class="line odd">
                 {{else}}
                 <li class="line even">
@@ -154,7 +152,7 @@
                   <div class="avatar"><img {{ attrBind src="user.avatar" }} alt="avatar"/></div>
                   <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
                   <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                  {{#if scope.selectedUsers.indexOf(user) < 0}}
+                  {{#if selectedUsers.indexOf(user) < 0}}
                   <a href="#" title="<fmt:message key='selection.AddToSelection'/>" class="add user" {{ action 'selectUser' user}}><fmt:message key="selection.AddToSelection"/></a>
                   {{/if}}
                 </li>
@@ -173,15 +171,23 @@
             <div class="groups_selected_userPanel">
               <div class="listing_groups">
                 <p class="nb_results" id="group_selected_count">{{ selectedGroups.length }} ${selectedGroupText}</p>
-                <a href="#" ng-show="selectedGroups.multipleSelection" ng-click="deselectAllGroups()" title="${removeAllGroupsFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
+                {{#if scope.multipleSelection}}
+                <a href="#" title="${removeAllGroupsFromSelectionText}" class="remove_all" {{ action "deselectAllGroups" }><fmt:message key="selection.Empty"/></a>
+                {{/if}}
                 <ul id="selected_group_list">
-                  <li ng-repeat="group in selectedGroups.currentpage()" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                  {{#each group in selectedGroups.currentpage}}
+                  {{#if selectedGroups.indexOf(group) % 2 === 0}}
+                  <li class="line odd">
+                  {{else}}
+                  <li class="line even">
+                  {{/if}}
                     <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
                     <span class="name_group">{{ group.name }}</span>
                     <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
                     <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
-                    <a ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
+                    <a title="${deselectText}" href="#" class="remove group" {{ action "deselectGroup" group }}>${deselectText}</a>
                   </li>
+                  {{/each}}
                 </ul>
                 <div class="pageNav_results_userPanel" id="selected_group_list_pagination">
                 </div>
@@ -193,13 +199,20 @@
             <div class="users_selected_userPanel">
               <div class="listing_users">
                 <p class="nb_results" id="user_selected_count">{{ selectedUsers.length }} ${selectedUserText}</p>
-                <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="deselectAllUsers()" title="${removeAllUsersFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
+                {{#if scope.multipleSelection}}
+                <a href="#" {{ action "deselectAllUsers" }} title="${removeAllUsersFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
+                {{/if}}
                 <ul id="selected_user_list">
-                  <li ng-repeat="user in selectedUsers.currentpage()" ng-class-odd="'line odd'" ng-class-even="'line even'">
-                    <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
+                  {{#each group in selectedUsers.currentpage}}
+                  {{#if selectedUsers.indexOf(group) % 2 === 0}}
+                  <li class="line odd">
+                  {{else}}
+                  <li class="line even">
+                  {{/if}}
+                    <div class="avatar"><img {{ attrBind src="user.avatar" }} alt="avatar"/></div>
                     <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
                     <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                    <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
+                    <a {{ action "deselectUser" user }} title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                   </li>
                 </ul>
                 <div class="pageNav_results_userPanel" id="selected_user_list_pagination">
@@ -216,20 +229,23 @@
             <div id="validate">
               <fmt:message var="selectLabel" key="GML.validate"/>
               <fmt:message var="cancelLabel" key="GML.cancel"/>
-              <a href="#" class="milieuBoutonV5" ng-click="validate()">${selectLabel}</a>
+              <a href="#" class="milieuBoutonV5" {{ action "validate" }}>${selectLabel}</a>
               <c:if test='${not fn:endsWith(cancelationURL, "userpanel.jsp")}'>
-                <a href="#" class="milieuBoutonV5" ng-click="cancel()">${cancelLabel}</a>
+                <a href="#" class="milieuBoutonV5" {{ action "cancel" }}>${cancelLabel}</a>
               </c:if>
             </div>
           </form>
         </div>
       </div>
+      </script>
+
     </div>
 
     <script type="text/javascript">
       /* some global parameters */
       PageSize = 6;
       PageMaxSize = 10;
+      RenderingUserType = { all: 0, relationships: 1, group: 2 };
 
       /* the user selector as an Ember application */
       window.app = Ember.Application.create();
@@ -237,64 +253,108 @@
         this.resource('userselector', { path: '/' });
       });*/
 
+      App.Scope = Ember.Object.extend({
+        me: User.find('${currentUserId}'),
+        currentGroup: null,
+        multipleSelection: ${multipleSelection},
+        renderedUsers: RenderingUserType.all,
+        myrelationships: function() {
+          var me = this.get('me');
+          return me.relationships(arguments);
+        }
+      });
+
       /* the main controller between the view and the data (users and groups) */
       App.ApplicationController = Ember.Controller.extend({
-        scope: {
-          me: User.find('${currentUserId}'),
-          users: User.find(),
-          groups: [],
-          groupsFilter: UserGroup.find(),
-          currentGroup: null,
-          multipleSelection: ${multipleSelection},
-          selectedGroups: [],
-          renderedUsers: 'ALL'
-        },
-        groups: function() {
-          return this.scope.groups;
-        }.property('scope.groups'),
-        users: function() {
-          return this.scope.users;
-        }.property('scope.users'),
+        scope: App.Scope.create(),
+        selectedGroups: Selection.create({pagesize: PageSize, multipleSelection: ${multipleSelection}}),
+        selectedUsers : Selection.create({pagesize: PageSize, multipleSelection: ${multipleSelection}}),
+        users: User.find(),
+        groups: [],
+        groupsFilter: UserGroup.find(),
         swithToMyContacts: function() {
-          this.scope.users = this.scope.me.relationships({page: '1;' + PageMaxSize});
-          this.scope.renderedUsers = 'RELATIONSHIPS';
+          var appScope = this.get('scope');
+          this.set('users', appScope.myrelationships({page: '1;' + PageMaxSize}));
+          this.get('scope').set('renderedUsers', RenderingUserType.all);
         },
         switchToAllUsers: function() {
-          this.scope.users = User.find({page: '1;' + PageMaxSize});
-          this.scope.renderedUsers = 'ALL';
+          var appScope = this.get('scope');
+          this.set('users', User.find({page: '1;' + PageMaxSize}));
+          appScope.set('renderedUsers', RenderingUserType.all);
         },
         switchToGroup: function(group) {
-          this.scope.currentGroup = group;
-          this.scope.groupsFilter = group.subgroups();
-          this.scope.groups = this.scope.groupsFilter.slice(0, PageSize);
-          this.scope.renderedUsers = 'GROUP_USERS';
+          var appScope = this.get('scope');
+          appScope.set('currentGroup', group);
+          this.set('groupsFilter', group.subgroups());
+          this.set('groups', this.get('groupsFilter').slice(0, PageSize));
+          this.set('renderedUsers', RenderingUserType.group);
         },
         selectAllGroups: function() {
-          if (this.scope.currentGroup)
-            this.scope.selectedGroups = this.scope.currentGroup.subgroups();
+          var appScope = this.get('scope');
+          if (appScope.get('currentGroup'))
+            this.get('selectedGroups').add(appScope.get('currentGroup').subgroups());
           else
-            this.scope.selectedGroups = UserGroup.find();
-        }.property('scope.selectedGroups'),
+            this.get('selectedGroups').add(UserGroup.find());
+        },
         selectGroup: function(group) {
-          if (this.scope.multipleSelection)
-            this.scope.selectedGroups.push(group);
-          else
-            this.scope.selectedGroups[0] = group;
-        }.property('scope.selectedGroups'),
+          this.get('selectedGroups').add(group);
+        },
         selectAllUsers: function() {
-          if (this.scope.renderedUsers === 'GROUP_USERS')
-            this.scope.selectedUsers = this.scope.currentGroup.users();
-          else if (this.scope.renderedUsers = 'ALL')
-            this.scope.selectedUsers = User.find();
+          var appScope = this.get('scope');
+          if (this.get('renderedUsers') === RenderingUserType.group)
+            this.get('selectedUsers').add(appScope.get('currentGroup').users());
+          else if (this.scope.renderedUsers === RenderingUserType.all)
+            this.get('selectedUsers').add(User.find());
           else
-            this.scope.selectedUsers =  this.scope.me.relationships();
-        }.property('scope.selectedUsers'),
+            this.get('selectedUsers').add(appScope.myrelationships());
+        },
         selectUser: function(user) {
-          if (this.scope.multipleSelection)
-            this.scope.selectedUsers.push(user);
-          else
-            this.scope.selectedUsers[0] = user;
-        }.property('scope.selectedUsers')
+          this.get('selectedUsers').add(user);
+        },
+        deselectAllGroups: function() {
+          this.get('selectedGroups').clear();
+        },
+        deselectGroup: function(group) {
+          this.get('selectedGroups').remove(group);
+        },
+        deselectAllUsers: function() {
+          this.get('selectedUsers').clear();
+        },
+        deselectUser: function(group) {
+          this.get('selectedUsers').remove(group);
+        },
+        validate: function() {
+          var selectedGroupIds = this.get('selectedGroups').get('itemIdsAsString');
+          var selectedUserIds = this.get('selectedUsers').get('itemIdsAsString');
+      <c:choose>
+        <c:when test="${hotSetting}">
+          var selectedGroupNames = this.get('selectedGroups').get('itemNamesAsString');
+          var selectedUserNames = this.get('selectedUsers').get('itemNamesAsString');
+          var selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
+          var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
+          window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds));
+          window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames));
+          window.close();
+       </c:when>
+        <c:otherwise>
+          $("input#group-selection").val(selectedGroupIds);
+          $("input#user-selection").val(selectedUserIds);
+          $("#selection").submit();
+        </c:otherwise>
+      </c:choose>
+        },
+        cancel: function() {
+      <c:choose>
+        <c:when test="${hotSetting}">
+          window.close();
+        </c:when>
+        <c:otherwise>
+          $('input[name="UserOrGroupSelection"]').val('false');
+          $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
+          $("#selection").submit();
+        </c:otherwise>
+      </c:choose>
+        }
       });
 
       /* highlight the specified HTML element */
