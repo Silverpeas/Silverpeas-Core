@@ -36,8 +36,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -45,11 +43,13 @@ import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
@@ -389,7 +389,15 @@ public class PublicationBmEJB implements PublicationBm {
       if (useTagCloud) {
         updateTagCloud(detail);
       }
-    } catch (Exception re) {
+    } catch (FormException re) {
+      throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
+          SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
+          "detail = " + detail, re);
+    } catch (PublicationTemplateException re) {
+      throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
+          SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
+          "detail = " + detail, re);
+    } catch (SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
           SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
           "detail = " + detail, re);
@@ -516,7 +524,10 @@ public class PublicationBmEJB implements PublicationBm {
               } else {
                 PublicationI18NDAO.addTranslation(con, translation);
               }
-            } catch (Exception e) {
+            } catch (UtilException e) {
+              throw new PublicationRuntimeException("PublicationEJB.setDetail()",
+                  SilverpeasRuntimeException.ERROR, "publication.CANNOT_MANAGE_TRANSLATIONS", e);
+            } catch (SQLException e) {
               throw new PublicationRuntimeException("PublicationEJB.setDetail()",
                   SilverpeasRuntimeException.ERROR, "publication.CANNOT_MANAGE_TRANSLATIONS", e);
             }
@@ -1285,12 +1296,10 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationDAO.getNbPubInFatherPKs(con, fatherPKs);
-    } catch (Exception e) {
-      throw new PublicationRuntimeException(
-          "PublicationBmEJB.getNbPubInFatherPKs()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED", "fatherPKs = "
-          + fatherPKs.toString(), e);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getNbPubInFatherPKs()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED",
+          "fatherPKs = " + fatherPKs, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1302,7 +1311,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationDAO.getDistributionTree(con, instanceId, statusSubQuery, checkVisibility);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDistributionTree()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED",
           "instanceId = " + instanceId, e);
@@ -1316,7 +1325,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getNbPubByFatherPath()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED",
           "fatherPath = " + fatherPath, e);
@@ -1349,7 +1358,7 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationPK pubPK, String sorting, String status) {
     ArrayList<String> statusList = null;
     if (status != null) {
-      statusList = new ArrayList<String>();
+      statusList = new ArrayList<String>(1);
       statusList.add(status);
     }
     return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, sorting, statusList);
@@ -1373,7 +1382,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, detailList);
       }
       return detailList;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByFatherIdsAndStatus()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
           "fatherIds = " + fatherIds, e);
@@ -1387,7 +1396,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationFatherDAO.getPubPKsInFatherPKs(con, fatherPKs);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getPubPKsInFatherPKs()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_PK_FAILED",
           "fatherPKs = " + fatherPKs, e);
@@ -1401,7 +1410,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationFatherDAO.getPubPKsInFatherPK(con, fatherPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getPubPKsInFatherPK()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_PK_FAILED",
           "fatherPK = " + fatherPK.getId(), e);
@@ -1439,19 +1448,7 @@ public class PublicationBmEJB implements PublicationBm {
             "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry + ", pubPK = " + pubPK);
         Iterator<String> languages = pubDetail.getLanguages();
         while (languages.hasNext()) {
-          String language = languages.next();
-          ForeignPK foreignPk = new ForeignPK(pubPK);
-          List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-              .listDocumentsByForeignKeyAndType(foreignPk, DocumentType.wysiwyg, language);
-          if (!docs.isEmpty()) {
-            String wysiwygPath = docs.get(0).getAttachmentPath();
-            indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
-            String wysiwygContent = WysiwygController.loadContent(docs.get(0), language);
-            // index embedded linked attachment (links presents in wysiwyg content)
-            List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(
-                wysiwygContent);
-            WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
-          }
+          WysiwygController.addToIndex(indexEntry, new ForeignPK(pubPK), languages.next());
         }
       }
     } catch (Exception e) {
@@ -1470,7 +1467,10 @@ public class PublicationBmEJB implements PublicationBm {
             pubDetail.getPK().getInstanceId() + ':' + pubDetail.getInfoId());
         RecordSet set = pub.getRecordSet();
         set.indexRecord(pubDetail.getPK().getId(), pubDetail.getInfoId(), indexEntry);
-      } catch (Exception e) {
+      } catch (FormException e) {
+        SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "",
+            e);
+      } catch (PublicationTemplateException e) {
         SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "",
             e);
       }
@@ -1479,9 +1479,8 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void createIndex(PublicationDetail pubDetail) {
-    SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "pubDetail.getIndexOperation() = "
-        + pubDetail.getIndexOperation());
+    SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+        "pubDetail.getIndexOperation() = " + pubDetail.getIndexOperation());
     if (pubDetail.getIndexOperation() == IndexManager.ADD
         || pubDetail.getIndexOperation() == IndexManager.READD) {
       SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
@@ -1632,7 +1631,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationDAO.selectAllPublications(con, pubPK, sorting);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getAllPublications()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", e);
     } finally {
@@ -1661,7 +1660,11 @@ public class PublicationBmEJB implements PublicationBm {
             SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
             "pubPK = " + pubPK + ", pubName = " + pubName);
       }
-    } catch (Exception re) {
+    } catch (PublicationRuntimeException re) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getDetailByName()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
+          "pubPK = " + pubPK + ", pubName = " + pubName, re);
+    } catch (SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailByName()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
           "pubPK = " + pubPK + ", pubName = " + pubName, re);
@@ -1711,7 +1714,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, result);
       }
       return result;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailBetweenDate()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "", e);
     } finally {
@@ -1749,15 +1752,13 @@ public class PublicationBmEJB implements PublicationBm {
       TagCloud tagCloud = new TagCloud(pubDetail.getInstanceId(), pubDetail.getId(),
           TagCloud.TYPE_PUBLICATION);
       StringTokenizer st = new StringTokenizer(keywords, " ");
-      String tag;
-      String tagKey;
       ArrayList<String> tagList = new ArrayList<String>();
       while (st.hasMoreElements()) {
-        tag = (String) st.nextElement();
-        tagKey = TagCloudUtil.getTag(tag);
+        String tag = (String) st.nextElement();
+        String tagKey = TagCloudUtil.getTag(tag);
         if (!tagList.contains(tagKey)) {
           tagCloud.setTag(tagKey);
-          tagCloud.setLabel(tag.toLowerCase());
+          tagCloud.setLabel(tag.toLowerCase(I18NHelper.defaultLocale));
           tagCloudBm.createTagCloud(tagCloud);
           tagList.add(tagKey);
         }
@@ -1862,7 +1863,7 @@ public class PublicationBmEJB implements PublicationBm {
           SeeAlsoDAO.addLink(con, pubPK, targetPK);
         }
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.addLinks()",
           SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED", "pubId = "
           + pubPK.getId(), e);
@@ -1952,7 +1953,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       return PublicationDAO.selectUpdatedPublicationsSince(con, componentIds, status, since,
           maxSize);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getPublicationPKsByStatus()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "status = "
           + status + ", componentIds = " + componentIds, e);

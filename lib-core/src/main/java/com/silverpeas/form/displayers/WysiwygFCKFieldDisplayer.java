@@ -20,18 +20,7 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
+import au.id.jericho.lib.html.Source;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -44,7 +33,6 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -53,8 +41,17 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import au.id.jericho.lib.html.Source;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -80,6 +77,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   /**
    * Returns the name of the managed types.
+   *
+   * @return the name of the managed types.
    */
   public String[] getManagedTypes() {
     return new String[]{TextField.TYPE};
@@ -91,10 +90,15 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
    * template. <LI>the field type is not a managed type. </UL>
+   *
+   * @param out
+   * @param template
+   * @param PagesContext
+   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
-      throws java.io.IOException {
+      throws IOException {
     String fieldName = template.getFieldName();
     String language = PagesContext.getLanguage();
 
@@ -125,22 +129,22 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL> <LI>the field type is not a managed type. </UL>
    *
+   * @param out
+   * @param field
+   * @param template
    * @param pageContext
+   * @throws com.silverpeas.form.FormException
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-
     String code = "";
-
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "WysiwygFCKFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-
     if (!field.isNull()) {
       code = field.getValue(pageContext.getLanguage());
     }
@@ -363,7 +367,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (field.acceptValue(newValue, pageContext.getLanguage())) {
-      // field.setValue(newValue, PagesContext.getLanguage());
       try {
         String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
 
@@ -397,10 +400,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       String language, boolean store) {
     String fieldValue = field.getValue();
     String fieldValueIndex = "";
-    if (fieldValue != null && fieldValue.trim().length() > 0) {
+    if (StringUtil.isDefined(fieldValue)) {
       if (fieldValue.startsWith(dbKey)) {
-        String file = WysiwygFCKFieldDisplayer.getFile(indexEntry.getComponent(), indexEntry.
-            getObjectId(), fieldName, language);
+        String file = getFile(indexEntry.getComponent(), indexEntry.getObjectId(), fieldName,
+            language);
         try {
           Source source = new Source(new FileInputStream(file));
           if (source != null) {
@@ -419,8 +422,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
       // index embedded linked attachment (links presents in wysiwyg content)
       try {
-        String content = WysiwygFCKFieldDisplayer.getContentFromFile(indexEntry.getComponent(),
-            indexEntry.getObjectId(), fieldName, language);
+        String content = getContentFromFile(indexEntry.getComponent(), indexEntry.getObjectId(),
+            fieldName, language);
         List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(content);
         WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
       } catch (UtilException e) {
@@ -464,8 +467,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       FileRepositoryManager.createAbsolutePath(componentId, dir);
     } catch (Exception e) {
     }
-    String[] dirs = new String[1];
-    dirs[0] = dir;
+    String[] dirs = new String[]{dir};
     String path = FileRepositoryManager.getAbsolutePath(componentId, dirs);
     String fileName = getFileName(fieldName, objectId, language);
 
