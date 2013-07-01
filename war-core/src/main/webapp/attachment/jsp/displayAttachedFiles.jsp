@@ -416,40 +416,36 @@
     // Use the each() method to gain access to each elements attributes
     $('a[rel]').each(function() {
       $(this).qtip({
-        content: {
+	content: {
           // Set the text to an image HTML string with the correct src URL to the loading image you want to use
-          text: '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
-          url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
-          title: {
-            text: '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-            button: '<fmt:message key="GML.close" />' // Show a close link in the title
-          }
-        },
-        position: {
-          corner: {
-            target: 'leftMiddle', // Position the tooltip above the link
-            tooltip: 'rightMiddle'
-          },
-          adjust: {
-            screen: true // Keep the tooltip on-screen at all times
-          }
-        },
-        show: {
-          when: 'click',
-          solo: true // Only show one tooltip at a time
-        },
-        hide: 'unfocus',
-        style: {
-          tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
-          border: {
-            width: 0,
-            radius: 4
-          },
-          name: 'light', // Use the default light style
-          width: 570 // Set the tooltip width
-        }
-      })
-    });
+		text: '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
+		url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
+		title: {
+			text: '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+			button: '<fmt:message key="GML.close" />' // Show a close link in the title
+		}
+	},
+	position: {
+		adjust: {
+			method: "flip flip"
+		},
+		at: "left center",
+		my: "right center",
+		viewport: $(window) // Keep the tooltip on-screen at all times
+	},
+	show: {
+		solo: true,
+		event: "click"
+	},
+	hide: {
+		event: "unfocus"
+	},
+	style: {
+		tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+		width: 570,
+		classes: "qtip-shadow qtip-light"
+	}
+      });
 
     // function to transform insecable string into secable one
     $(".lineMain a").html(function() {

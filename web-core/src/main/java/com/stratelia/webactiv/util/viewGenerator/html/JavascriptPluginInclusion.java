@@ -44,9 +44,8 @@ public class JavascriptPluginInclusion {
       URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
-  private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
+  private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_POST = "jquery.iframe-post-form.js";
-  private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
@@ -83,6 +82,7 @@ public class JavascriptPluginInclusion {
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
+  private static final String JQUERY_MIGRATION = "jquery-migrate-1.2.1.min.js";
 
   /**
    * Centralization of script instantiation.
@@ -112,8 +112,9 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    xhtml.addElement(script(jqueryPath + JQUERY_QTIP));
-    xhtml.addElement(script(jqueryPath + SILVERPEAS_QTIP));
+    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
+    xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
+    xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
     return xhtml;
   }
 

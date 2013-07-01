@@ -90,38 +90,28 @@
       if ($emailMessage.length > 0 && $emailMessage.html().trim()) {
         var $emailAddress = $('#emailAddress');
         $emailAddress.qtip({
-          content : $emailMessage,
-          style : {
-            width : 'auto',
-            color : 'black',
-            border : {
-              width : 1,
-              radius : 1
-            },
-            padding : 7,
-            textAlign : 'left',
-            tip : true,
-            name : 'cream'
-          },
-          position : {
-            adjust : {
-              screen : true
-            },
-            corner : {
-              target : 'bottomLeft',
-              tooltip : 'topRight'
-            }
-          },
-          show : {
-            delay : 0,
-            when : {
-              event : 'displayQTip'
-            }
-          },
-          hide : {
-            when : 'hideQTip',
-            fixed : true
-          }
+		content: $emailMessage,
+		style: {
+			width: "auto",
+			tip: true,
+			classes: "qtip-shadow qtip-cream"
+		},
+		position: {
+			adjust: {
+				method: "flip flip"
+			},
+			viewport: $(window),
+			at: "bottom left",
+			my: "top right"
+		},
+		show: {
+			delay: 0,
+			event: "displayQTip"
+		},
+		hide: {
+			fixed: true,
+			event: "hideQTip"
+		}
         });
         $emailAddress.trigger("displayQTip");
       }

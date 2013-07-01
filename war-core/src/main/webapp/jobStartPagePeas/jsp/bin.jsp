@@ -79,22 +79,24 @@ $(document).ready(function()
 {
    // By suppling no content attribute, the library uses each elements title attribute by default
    $('.item-path').qtip({
-      content: {
-         text: false,
-         title: {
-             text: "<%=resource.getString("GML.path")%>"
-         }
-      },
-      style: 'silverpeas',
-	  position: {
-		  corner: {
-			target: 'bottomMiddle',
-			tooltip: 'topLeft'
-		  },
-		  adjust: {
-			  screen: true
-		  }
-	  }
+	content: {
+		text: false,
+		title: {
+			text: "<%=resource.getString("GML.path")%>"
+		}
+	},
+	style: {
+		tip: true,
+		classes: "qtip-shadow qtip-green"
+	},
+	position: {
+		adjust: {
+			method: "flip flip"
+		},
+		at: "bottom center",
+		my: "top left",
+		viewport: $(window)
+	}
    });
 });
 -->

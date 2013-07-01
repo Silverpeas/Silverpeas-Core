@@ -390,28 +390,34 @@
         // Use the each() method to gain access to each elements attributes
         $('#content a[rel]').each(function()
         {
-          $(this).qtip(
-                  {
-                    content: {
-                      // Set the text to an image HTML string with the correct src URL
-                      url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
-                    },
-                    position: {
-                      corner: {
-                        target: 'bottomMiddle', // Position the tooltip above the link
-                        tooltip: 'topMiddle'
-                      },
-                      adjust: {
-                        screen: true // Keep the tooltip on-screen at all times
-                      }
-                    },
-                    show: {
-                      when: {event: 'mouseover'},
-                      solo: true // Only show one tooltip at a time
-                    },
-                    hide: {when: 'mouseout'},
-                    style: 'silverpeas'
-                  })
+          $(this).qtip({
+		content: {
+              // Set the text to an image HTML string with the correct src URL
+			ajax: {
+				url: $(this).attr('rel') // Use the rel attribute of each element for the url to load
+			},
+			text: "Loading..."
+		},
+		position: {
+			adjust: {
+				method: "flip flip"
+			},
+			at: "bottom center", // Position the tooltip above the link
+			my: "top center",
+			viewport: $(window) // Keep the tooltip on-screen at all times
+		},
+		show: {
+			solo: true, // Only show one tooltip at a time
+			event: "mouseover"
+		},
+		hide: {
+			event: "mouseout"
+		},
+		style: {
+			tip: true,
+			classes: "qtip-shadow qtip-green"
+		}
+          });
         });
       });
     </script>
