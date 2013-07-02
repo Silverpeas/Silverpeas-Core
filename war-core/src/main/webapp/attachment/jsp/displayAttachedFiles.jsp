@@ -267,7 +267,7 @@
               <c:if test="${silfn:isDefined(currentAttachment.xmlFormId)}">
                 <br/><a rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>
-                        <c:param name="ObjectId" value="${currentAttachment.oldSilverpeasId}"/>
+                        <c:param name="ObjectId" value="${currentAttachment.id}"/>
                         <c:param name="ObjectLanguage" value="${contentLanguage}"/>
                         <c:param name="ComponentId" value="${componentId}"/>
                         <c:param name="ObjectType" value="${'Attachment'}"/>
@@ -349,7 +349,7 @@
 <c:if test="${spinfireViewerEnable}">
   <script type="text/javascript">
   if (navigator.appName=='Microsoft Internet Explorer') {
-    for (i = 0; i < document.getElementsByName("switchView").length; i++) {
+    for (var i = 0; i < document.getElementsByName("switchView").length; i++) {
       document.getElementsByName("switchView")[i].style.display = '';
     }
   }
@@ -370,12 +370,13 @@
   <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
     <c:param name="ComponentId" value="${componentId}" />
     <c:param name="fromAlias" value="${silfn:booleanValue(param.Alias)}"/>
+    <c:param name="Language" value="${contentLanguage}"/>
   </c:url>
   var publicVersionsWindow = window;
   function viewPublicVersions(docId) {
-      url = '<c:out value="${allVersionsUrl}" />&DocId=' + docId;
-      windowName = "publicVersionsWindow";
-      windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
+      var url = '${allVersionsUrl}&DocId=' + docId;
+      var windowName = "publicVersionsWindow";
+      var windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
       if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {
         publicVersionsWindow.close();
       }
@@ -416,36 +417,39 @@
     // Use the each() method to gain access to each elements attributes
     $('a[rel]').each(function() {
       $(this).qtip({
-	content: {
+        content : {
           // Set the text to an image HTML string with the correct src URL to the loading image you want to use
-		text: '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
-		url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
-		title: {
-			text: '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-			button: '<fmt:message key="GML.close" />' // Show a close link in the title
-		}
-	},
-	position: {
-		adjust: {
-			method: "flip flip"
-		},
-		at: "left center",
-		my: "right center",
-		viewport: $(window) // Keep the tooltip on-screen at all times
-	},
-	show: {
-		solo: true,
-		event: "click"
-	},
-	hide: {
-		event: "unfocus"
-	},
-	style: {
-		tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
-		width: 570,
-		classes: "qtip-shadow qtip-light"
-	}
-      });
+          text : '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
+          ajax: {
+            url : $(this).attr('rel') // Use the rel attribute of each element for the url to load
+          },
+          title : {
+            text : '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+            button : '<fmt:message key="GML.close" />' // Show a close link in the title
+          }
+        },
+        position : {
+          adjust : {
+            method : "flip flip"
+          },
+          at : "left center",
+          my : "right center",
+          viewport : $(window) // Keep the tooltip on-screen at all times
+        },
+        show : {
+          solo : true,
+          event : "click"
+        },
+        hide : {
+          event : "unfocus"
+        },
+        style : {
+          tip : true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+          width : 570,
+          classes : "qtip-shadow qtip-light"
+        }
+      })
+    });
 
     // function to transform insecable string into secable one
     $(".lineMain a").html(function() {
@@ -483,8 +487,9 @@
             //disable delete
             oMenu.getItem(3, 1).cfg.setProperty("disabled", true); // delete
             oMenu.getItem(2, 1).cfg.setProperty("disabled", true); // switch
-            $('#worker' + oldId).html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
-            $('#worker' + oldId).css({'visibility':'visible'});
+            var $worker = $('#worker' + oldId);
+            $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
+            $worker.css({'visibility':'visible'});
             if (edit) {
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               window.open(url, '_self');
@@ -549,8 +554,9 @@
       oMenu.getItem(2).cfg.setProperty("disabled", false);
       oMenu.getItem(3, 1).cfg.setProperty("disabled", false)
       oMenu.getItem(2, 1).cfg.setProperty("disabled", false);
-      $('#worker' + id).html("");
-      $('#worker' + id).css({'visibility':'hidden'});
+      var $worker = $('#worker' + id);
+      $worker.html("");
+      $worker.css({'visibility':'hidden'});
       if (pageMustBeReloadingAfterSorting) {
         reloadIncludingPage();
       }
@@ -571,7 +577,7 @@
     }
 
     function deleteContent(id, lang) {
-      deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + lang;
+      var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + lang;
       $.ajax({
         url: deleteUrl,
         type: "DELETE",
@@ -589,7 +595,7 @@
         if ((nbBox == null) && (boxItems.checked)) {
           sLanguages += boxItems.value + ",";
         } else {
-          for (i = 0; i < boxItems.length; i++) {
+          for (var i = 0; i < boxItems.length; i++) {
             if (boxItems[i].checked){
               sLanguages += boxItems[i].value + ",";
             }
@@ -682,10 +688,10 @@
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
       open:function() {
-    	  var filename = $(this).data("filename");
-    	  $("#button-delete-all").hide();
+        var filename = $(this).data("filename");
+        $("#button-delete-all").hide();
       <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
-        translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
+        var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
           url: translationsUrl,
           type: "GET",
@@ -717,14 +723,14 @@
       modal: true,
       buttons: {
         '<fmt:message key="GML.delete"/>': {
-        	id: "button-delete-content",
-        	text: "<fmt:message key="GML.delete"/>",
-        	click: function() {
+          id: "button-delete-content",
+          text: "<fmt:message key="GML.delete"/>",
+          click: function() {
             var attachmentId = $(this).data("id");
             <c:choose>
               <c:when test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
                 $("input[name='languagesToDelete']").filter(':checked').each(function() {
-                  deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
+                  var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
                   $.ajax({
                     url: deleteUrl,
                     type: "DELETE",
@@ -740,7 +746,7 @@
                 $("#dialog-attachment-delete").dialog("close");
               </c:when>
               <c:otherwise>
-                  deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+                  var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
                   $.ajax({
                     url: deleteUrl,
                     type: "DELETE",
@@ -759,11 +765,11 @@
            }
         },
         '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
-        	id: "button-delete-all",
-        	text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
-        	click: function() {
+          id: "button-delete-all",
+          text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
+          click: function() {
             var attachmentId = $(this).data("id");
-        		deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+            var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
                 $.ajax({
                   url: deleteUrl,
                   type: "DELETE",
@@ -774,7 +780,7 @@
                     $(this).dialog("close");
                   }
                 });
-        	}
+          }
         },
         '<fmt:message key="GML.cancel"/>': function() {
           $(this).dialog("close");
@@ -973,7 +979,7 @@
         var param = "";
         for (var i = 0; i < tableau.length; i++) {
           if (i != 0) {
-            param += ","
+            param += ",";
           }
           param += tableau[i].substring(3, tableau[i].length - 1);
         }
@@ -1015,7 +1021,7 @@
        $('#versioned_fields_attachment-update').show();
     } else {
       $('#versioned_fields_attachment-update').hide();
-      $('#fileName_label').text('<fmt:message key="GML.file"/>')
+      $('#fileName_label').text('<fmt:message key="GML.file"/>');
       $('#file_upload_label').text('<fmt:message key="fichierJoint" />');
     }
   }
@@ -1035,7 +1041,7 @@
   }
 
   function loadAttachment(id, lang) {
-    translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
+    var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
       url: translationsUrl,
       type: "GET",

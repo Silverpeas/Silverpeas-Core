@@ -105,10 +105,10 @@ public class GraphicElementFactory {
   private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
   protected static final String JQUERY_JS = "jquery-1.10.1.min.js";
-  private static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
-  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
-  private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
-  private static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
+  protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
+  protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
+  protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
+  protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**

@@ -33,6 +33,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ page import="
 				 com.silverpeas.util.StringUtil,
@@ -67,6 +68,7 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
 <view:setBundle basename="org.silverpeas.versioningPeas.multilang.versioning"/>
+<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachmentBundle" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
 <%
   ResourceLocator messages =
@@ -80,7 +82,9 @@
   String componentId = document.getPk().getInstanceId();
   String id = document.getPk().getId();
   boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
+  String contentLanguage = (String) request.getAttribute("ContentLanguage");
 %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -176,9 +180,10 @@
       String xtraData = "";
       if (StringUtil.isDefined(publicVersion.getXmlFormId())) {
         String xmlURL = URLManager.getApplicationURL() + "/RformTemplate/jsp/View?ObjectId=" +
-            publicVersion.getPk().getId() + "&ComponentId=" + componentId +
-            "&ObjectType=Versioning&XMLFormName=" +
-            URLEncoder.encode(publicVersion.getXmlFormId(), CharEncoding.UTF_8);
+            publicVersion.getId() + "&ComponentId=" + componentId +
+            "&ObjectType=Attachment&XMLFormName=" +
+            URLEncoder.encode(publicVersion.getXmlFormId(), CharEncoding.UTF_8) +
+            "&ObjectLanguage=" + contentLanguage;
         xtraData = "<a rel=\"" + xmlURL + "\" href=\"#\" title=\"" + document.getFilename() + " " +
             publicVersion.getMajorVersion() + "." + publicVersion.getMinorVersion() +
             "\"><img src=\"" + URLManager.getApplicationURL() +
@@ -221,10 +226,11 @@
         content : {
           // Set the text to an image HTML string with the correct src URL to the loading image you want to use
           text : '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
-          url : $(this).attr('rel'), // Use the rel attribute of each element for the url to load
+          ajax: {
+            url : $(this).attr('rel') // Use the rel attribute of each element for the url to load
+          },
           title : {
-            text : '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') +
-                "\"", // Give the tooltip a title using each elements text
+            text : '<fmt:message key="attachment.xmlForm.ToolTip" bundle="${attachmentBundle}"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
             button : '<fmt:message key="GML.close" />' // Show a close link in the title
           }
         },

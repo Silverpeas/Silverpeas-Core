@@ -225,7 +225,11 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeJQuery(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryCssPath + GraphicElementFactory.JQUERYUI_CSS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
+    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYUI_JS));
+    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYJSON_JS));
+    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_i18N_JS));
     return xhtml;
   }
 

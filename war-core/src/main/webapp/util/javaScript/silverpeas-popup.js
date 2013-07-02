@@ -356,7 +356,7 @@
         closeOnEscape : false,
         buttonDisplayed : false,
         width : "32px",
-        height : 32
+        height : 39
       }));
 
       // Waiting animation
@@ -467,7 +467,7 @@
             click : function() {
               var isok = true;
               if (options.callback) {
-                isok = options.callback();
+                isok = options.callback.call(this);
               }
               if (isok) {
                 $_this.dialog("close");
@@ -491,7 +491,7 @@
       // Callback on close
       if (options.callbackOnClose) {
         $_this.dialog("option", "close", function(event, ui) {
-          options.callbackOnClose();
+          options.callbackOnClose.call(this);
         });
       }
 
@@ -517,7 +517,7 @@
       // keydown
       if (options.keydown) {
         $_this.dialog("widget").keydown(function(e) {
-          options.keydown(e);
+          options.keydown.call(this, e);
         });
       }
 

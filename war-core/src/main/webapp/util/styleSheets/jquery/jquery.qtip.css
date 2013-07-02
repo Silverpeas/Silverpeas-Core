@@ -606,3 +606,8 @@
 .qtipmodal-ie6fix{
 	position: absolute !important;
 }
+
+/* ADDED BY SILVERPEAS TEAM */
+.qtip-title {
+  margin-right: 15px;
+}

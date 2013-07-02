@@ -169,7 +169,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(
         "GML.notify"));
-    builder.append("</a></li>");
     builder.append("</ul>").append(newline);
     builder.append("</div>").append(newline);
     builder.append("</div>").append(newline);

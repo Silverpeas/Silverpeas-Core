@@ -40,7 +40,7 @@
 <title><fmt:message key="GML.popupTitle" /></title>
 <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
-<style>
+<style type="text/css">
 .titre {
     left: 375px;
 }
@@ -52,13 +52,10 @@
 }
 </style>
 
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.7.1.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.json-2.2.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-include.js"/>"></script>
+<view:includePlugin name="jquery"/>
 
-<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen"></link>
-<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.css"/>" media="screen"></link>
+<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
+<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.css"/>" media="screen" />
 
 <!-- jQuery files -->
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>" type="text/javascript" charset="utf-8"></script>
