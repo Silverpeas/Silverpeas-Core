@@ -64,7 +64,6 @@
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>" type="text/javascript" charset="utf-8"></script>
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
-
 <script type="text/javascript">
 
 //whitespace characters
@@ -223,7 +222,6 @@ $(document).ready(function(){
 			PHPfile : '<c:url value="/Qaptcha"/>'
 		});
 });
--->
 </script>
 
 </head>

@@ -31,19 +31,17 @@ import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.util.ResourceLocator;
-
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.springframework.social.connect.UserProfile;
-
+import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.servlets.credentials.RegistrationSettings;
+import org.springframework.social.connect.UserProfile;
 
 /**
  * Controller to log remote social network users into Silverpeas
@@ -54,7 +52,7 @@ public class SocialNetworkLoginController extends HttpServlet {
 
   private static final long serialVersionUID = 3019716885114707069L;
   private UserService userService = null;
-  private ResourceLocator authenticationSettings = null;
+  private RegistrationSettings registrationSettings = null;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -72,8 +70,7 @@ public class SocialNetworkLoginController extends HttpServlet {
   public void init() throws ServletException {
     super.init();
     userService = UserServiceProvider.getInstance().getService();
-    authenticationSettings = new ResourceLocator(
-        "com.silverpeas.authentication.settings.authenticationSettings", "");
+    registrationSettings = RegistrationSettings.getSettings();
   }
 
   /**
@@ -134,7 +131,7 @@ public class SocialNetworkLoginController extends HttpServlet {
       if (account == null) {
 
         // if new registration is enabled on platform, redirects user to registration
-        if (authenticationSettings.getBoolean("newRegistrationEnabled", false)) {
+        if (registrationSettings.isUserSelfRegistrationEnabled()) {
           UserProfile profile = connector.getUserProfile(authorizationToken);
           req.setAttribute("userProfile", profile);
           req.setAttribute("networkId", networkId);
