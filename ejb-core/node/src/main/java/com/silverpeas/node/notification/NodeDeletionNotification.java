@@ -26,6 +26,7 @@ package com.silverpeas.node.notification;
 
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.SilverpeasNotificationCause;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
@@ -36,7 +37,8 @@ public class NodeDeletionNotification extends SilverpeasNotification {
   private static final long serialVersionUID = -5651929204480502420L;
 
   protected NodeDeletionNotification(final NodePK node) {
-    super(new NotificationSource().withComponentInstanceId(node.getInstanceId()), node);
+    super(new NotificationSource().withComponentInstanceId(node.getInstanceId()),
+        SilverpeasNotificationCause.DELETION, node);
   }
 
   public NodePK getNodePK() {

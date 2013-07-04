@@ -29,8 +29,11 @@ import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.silverpeas.notification.NotificationTopic.*;
-import static com.silverpeas.comment.service.CommentActionNotifier.*;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
+import static com.silverpeas.notification.SilverpeasNotificationCause.CREATION;
+import static com.silverpeas.notification.SilverpeasNotificationCause.DELETION;
 
 /**
  * A Listener of actions on comments. The listener is a subscriber for notifications coming from the
@@ -41,21 +44,21 @@ public abstract class CommentActionListener extends DefaultNotificationSubscribe
 
   @Override
   public void subscribeOnTopics() {
-    subscribeForNotifications(onTopic(TOPIC_NAME));
+    subscribeForNotifications(onTopic(COMMENT_TOPIC));
   }
 
   @Override
   public void unsubscribeOnTopics() {
-    unsubscribeForNotifications(onTopic(TOPIC_NAME));
+    unsubscribeForNotifications(onTopic(COMMENT_TOPIC));
   }
 
   @Override
   public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
     try {
       Comment comment = (Comment) notification.getObject();
-      if (notification instanceof CommentAddingNotification) {
+      if (notification.getCause() == CREATION) {
         commentAdded(comment);
-      } else if (notification instanceof CommentRemovalNotification) {
+      } else if (notification.getCause() == DELETION) {
         commentRemoved(comment);
       }
     } catch (ClassCastException ex) {

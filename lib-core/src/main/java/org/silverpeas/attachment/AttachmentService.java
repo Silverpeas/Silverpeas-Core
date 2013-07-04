@@ -46,6 +46,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public interface AttachmentService {
 
+  public static final String VERSION_MODE = "versionControl";
+
   String NO_UPDATE_MODE = "0";
   String UPDATE_DIRECT_MODE = "1";
   String UPDATE_SHORTCUT_MODE = "2";
@@ -410,4 +412,17 @@ public interface AttachmentService {
    * @param endOfVisibilityPeriod can be null.
    */
   void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod);
+
+  /**
+   * Change the management of versions of the documents of a whole component (only attachments are
+   * taken into account). If the document is currently with version management, then all history is
+   * removed and the document becomes a simple document with no more version management. If the
+   * document has no version management then a new public version is created and the document
+   * becomes a document with a version history management.
+   *
+   * @param componentId : the id of the component switching its behaviour.
+   * @param toVersionning: if set to true all simple attachments become versioned, if false all
+   * versioned attachments become simple attachments.
+   */
+  public void switchComponentBehaviour(String componentId, boolean toVersionning);
 }
