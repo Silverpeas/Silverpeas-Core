@@ -20,7 +20,6 @@
  */
 package org.silverpeas.servlets.credentials;
 
-import com.stratelia.webactiv.util.ResourceLocator;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -28,14 +27,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class NewRegistrationHandler extends FunctionHandler {
 
-  private static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.authentication.settings.authenticationSettings", "");
-  private static String SELF_AUTHENTICATION_ACTIVATION = "newRegistrationEnabled";
+  private RegistrationSettings settings = RegistrationSettings.getSettings();
 
   @Override
   public String doAction(HttpServletRequest request) {
     String destination = "";
-    if (settings.getBoolean(SELF_AUTHENTICATION_ACTIVATION, false)) {
+    if (settings.isUserSelfRegistrationEnabled()) {
       destination = "/admin/jsp/newRegistration.jsp";
     }
     return destination;
