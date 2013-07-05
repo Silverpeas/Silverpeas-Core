@@ -22,6 +22,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@page import="org.silverpeas.servlets.credentials.RegistrationSettings"%>
 <%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
@@ -41,6 +42,7 @@
 
 <%
   String m_context = request.getContextPath();
+  RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
 
 // Get the authentication settings
   ResourceLocator authenticationSettings =
@@ -65,8 +67,7 @@
   boolean changePwdFromLoginPageActive =
       authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
   boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
-  boolean newRegistrationActive =
-      authenticationSettings.getBoolean("newRegistrationEnabled", false);
+  boolean newRegistrationActive = registrationSettings.isUserSelfRegistrationEnabled();
 
 // active social networks
   boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();

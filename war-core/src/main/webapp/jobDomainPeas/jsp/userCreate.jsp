@@ -29,12 +29,15 @@
 
 <%@ include file="check.jsp" %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle"/>
+<view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 
 
 <%
@@ -59,6 +62,7 @@
 <head>
 <view:looknfeel />
 <view:includePlugin name="password"/>
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 
@@ -152,17 +156,25 @@ function selectUnselect()
 </head>
 <body onload="selectUnselect();">
 
-<view:window>
-<view:frame>
-<view:board>
+<style type="text/css">
+  .txtlibform {
+    width: 300px;
+  }
+</style>
+<%
+out.println(window.printBefore());
+out.println(frame.printBefore());
+%>
   <form name="userForm" action="<%=action%>" method="post">
     <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) {
         out.print(userObject.getId());
       } %>"/>
+    <fieldset id="identity-main" class="skinFieldset">
+      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
     <table cellpadding="5" cellspacing="0" border="0" width="100%">
       <tr>
-          <td class="txtlibform" width="40%"><fmt:message key="GML.lastName"/> :</td>
-            <td width="60%">
+          <td class="txtlibform"><fmt:message key="GML.lastName"/> :</td>
+            <td>
               <% if (action.equals("userMS")) { %>
                 <%= userObject.getLastName()%>
               <% } else { %>
@@ -260,92 +272,108 @@ function selectUnselect()
                 </td>
             </tr>
 
-        <% } %>
+        <% }
 
-        <%
-            String[] properties = userObject.getPropertiesNames();
-        String property = null;
-        for (int p=0; p<properties.length; p++) {
-          property = (String) properties[p];
-          if (!property.startsWith("password")) {
-    %>
-          <tr>
-            <td class="txtlibform"><%=userObject.getSpecificLabel(resource.getLanguage(), property) %> :</td>
-            <td>
-            <% if (bUserRW || userObject.isPropertyUpdatableByAdmin(property)) { %>
-              <% if("STRING".equals(userObject.getPropertyType(property)) || "USERID".equals(userObject.getPropertyType(property))) { %>
-                <input type="text" name="prop_<%=property%>" size="50" maxlength="100" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>"/>
-              <% } else if("BOOLEAN".equals(userObject.getPropertyType(property))) { %>
-                <input type="radio" name="prop_<%=property%>" value="1" <%
-                  if (userObject.getValue(property) != null &&
-                      "1".equals(userObject.getValue(property))) {
-                    out.print("checked");
-                  } %>/><fmt:message key="GML.yes"/>
-                <input type="radio" name="prop_<%=property%>" value="0" <%
-                  if (userObject.getValue(property) == null ||
-                      "".equals(userObject.getValue(property)) ||
-                      "0".equals(userObject.getValue(property))) {
-                    out.print("checked");
-                  } %>/><fmt:message key="GML.no"/>
-              <% } %>
-            <% } else { %>
-              <% if("STRING".equals(userObject.getPropertyType(property)) || "USERID".equals(userObject.getPropertyType(property))) { %>
-                <%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
-              <% } else if("BOOLEAN".equals(userObject.getPropertyType(property))) {
-                if (StringUtil.getBooleanValue(userObject.getValue(property))) {
-                  out.print(resource.getString("GML.yes"));
-                } else {
-                  out.print(resource.getString("GML.no"));
-                }
-               } %>
+        //in case of group manager, the added user must be set to one group
+        //if user manages only once group, user will be added to it
+        //else if he manages several groups, manager chooses one group
+        if (groups != null && groups.size() > 0) {
+      %>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.groupe"/> :</td>
+        <td valign="baseline">
+          <% if (groups.size() == 1) {
+            Group group = groups.get(0);
+          %>
+          <%=group.getName() %> <input type="hidden" name="GroupId" id="GroupId" value="<%=group.getId()%>"/>
+          <% } else { %>
+          <select id="GroupId" name="GroupId">
+            <% for (Group group : groups) {
+            %>
+            <option value="<%=group.getId()%>"><%=group.getName()%>
+            </option>
             <% } %>
-            </td>
-          </tr>
-        <%
-          }
-        }
-        %>
-
-        <%
-          //in case of group manager, the added user must be set to one group
-          //if user manages only once group, user will be added to it
-          //else if he manages several groups, manager chooses one group
-          if (groups != null && groups.size() > 0) {
-        %>
-            <tr>
-              <td class="txtlibform"><fmt:message key="GML.groupe"/> :</td>
-              <td valign="baseline">
-                <% if (groups.size() == 1) {
-                    Group group = groups.get(0);
-                %>
-                  <%=group.getName() %> <input type="hidden" name="GroupId" id="GroupId" value="<%=group.getId()%>"/>
-                <% } else { %>
-                  <select id="GroupId" name="GroupId">
-                    <% for (Group group : groups) {
-                    %>
-                    <option value="<%=group.getId()%>"><%=group.getName()%>
-                    </option>
-                    <% } %>
-                  </select>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
-                <% } %>
-              </td>
-            </tr>
+          </select>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+          <% } %>
+        </td>
+      </tr>
       <% } %>
 
       <tr>
         <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>)</td>
       </tr>
     </table>
+    </fieldset>
+    <fieldset id="identity-extra" class="skinFieldset">
+      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+      <table border="0" cellspacing="0" cellpadding="5" width="100%">
+        <%
+          String[] properties = userObject.getPropertiesNames();
+          for (final String property : properties) {
+            if (!property.startsWith("password")) {
+        %>
+      <c:set var="propertyName" value="<%=property%>"/>
+      <c:set var="domainProperty" value="<%=userObject.getProperty(property)%>"/>
+      <c:set var="propertyValue" value="<%=userObject.getValue(property)%>"/>
+      <tr>
+        <td class="txtlibform"><%=userObject.getSpecificLabel(resource.getLanguage(), property) %>
+          :
+        </td>
+        <td>
+          <% if (bUserRW || userObject.isPropertyUpdatableByAdmin(property)) { %>
+          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
+              "USERID".equals(userObject.getPropertyType(property))) { %>
+          <c:choose>
+            <c:when test="${domainProperty.maxLength gt 100}">
+              <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
+            </c:when>
+            <c:otherwise>
+              <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
+            </c:otherwise>
+          </c:choose>
+          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) { %>
+          <input type="radio" name="prop_<%=property%>" value="1" <%
+            if (userObject.getValue(property) != null &&
+                "1".equals(userObject.getValue(property))) {
+              out.print("checked");
+            } %>/><fmt:message key="GML.yes"/>
+          <input type="radio" name="prop_<%=property%>" value="0" <%
+            if (userObject.getValue(property) == null ||
+                "".equals(userObject.getValue(property)) ||
+                "0".equals(userObject.getValue(property))) {
+              out.print("checked");
+            } %>/><fmt:message key="GML.no"/>
+          <% } %>
+          <% } else { %>
+          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
+              "USERID".equals(userObject.getPropertyType(property))) { %>
+          <%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
+          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
+            if (StringUtil.getBooleanValue(userObject.getValue(property))) {
+              out.print(resource.getString("GML.yes"));
+            } else {
+              out.print(resource.getString("GML.no"));
+            }
+          } %>
+          <% } %>
+        </td>
+      </tr>
+      <%
+          }
+        }
+        %>
+    </table>
+    </fieldset>
   </form>
-</view:board>
 <br/>
 <%
   ButtonPane bouton = gef.getButtonPane();
-  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
-  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
   out.println("<center>"+bouton.print()+"</center>");
+
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
-</view:frame>
-</view:window>
 </body>
 </html>

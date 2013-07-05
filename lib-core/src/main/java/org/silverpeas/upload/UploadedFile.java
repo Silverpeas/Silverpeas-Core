@@ -23,67 +23,78 @@
  */
 package org.silverpeas.upload;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
+import java.io.File;
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.util.Collection;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 
 /**
- * Representation of an uploaded file.
- * User: Yohann Chastagnier
- * Date: 18/03/13
+ * Representation of an uploaded file. User: Yohann Chastagnier Date: 18/03/13
  */
 public class UploadedFile {
+
   private String fileUploadId;
   private File file;
   private String title;
   private String description;
+  private String uploader;
 
   /**
    * Creates a representation of an uploaded file from HttpServletRequest and a given uploaded file
    * identifier.
+   *
    * @param request
    * @param uploadedFileId
+   * @param uploader
    * @return
    */
-  public static UploadedFile from(HttpServletRequest request, String uploadedFileId) {
-    return new UploadedFile(uploadedFileId, getUploadedFileFromUploadId(uploadedFileId),
-        request.getParameter(uploadedFileId + "-title"),
-        request.getParameter(uploadedFileId + "-description"));
+  public static UploadedFile from(HttpServletRequest request, String uploadedFileId,
+      UserDetail uploader) {
+    return new UploadedFile(uploadedFileId, getUploadedFileFromUploadId(uploadedFileId), request
+        .getParameter(uploadedFileId + "-title"), request.getParameter(uploadedFileId
+        + "-description"), uploader.getId());
   }
 
   /**
    * Default constructor.
+   *
    * @param fileUploadId
    * @param file
    * @param title
    * @param description
    */
   private UploadedFile(final String fileUploadId, final File file, final String title,
-      final String description) {
+      final String description, String uploader) {
     this.fileUploadId = fileUploadId;
     this.file = file;
     this.title = title;
     this.description = description;
+    this.uploader = uploader;
   }
 
   /**
    * Gets the identifier of the uploaded file.
+   *
    * @return
    */
   public String getFileUploadId() {
@@ -92,6 +103,7 @@ public class UploadedFile {
 
   /**
    * Gets the uploaded file.
+   *
    * @return
    */
   public File getFile() {
@@ -100,6 +112,7 @@ public class UploadedFile {
 
   /**
    * Gets the title filled by the user for the uploaded file.
+   *
    * @return
    */
   public String getTitle() {
@@ -108,6 +121,7 @@ public class UploadedFile {
 
   /**
    * Gets the description filled by the user for the uploaded file.
+   *
    * @return
    */
   public String getDescription() {
@@ -115,47 +129,43 @@ public class UploadedFile {
   }
 
   /**
-   * Indicates that the uploaded file has been processed.
-   * Uploaded physical file is deleted from its temporary upload repository.
+   * Indicates that the uploaded file has been processed. Uploaded physical file is deleted from its
+   * temporary upload repository.
    */
   private void markAsProcessed() {
     FileUtils.deleteQuietly(file);
   }
 
   /**
-   * Register an attachment attached in relation to the given contribution identifiers.
-   * Please notice that the original content is deleted from its original location.
-   * For now, as this method is exclusively used for contribution creations,
-   * the treatment doesn't search for existing attachments. In the future and if updates will be
-   * handled, the treatment must evolve to search for existing attachments ...
-   * @param resourceId
-   * @param componentInstanceId
-   * @param user
+   * Register an attachment attached in relation to the given contribution identifiers. Please
+   * notice that the original content is deleted from its original location. For now, as this method
+   * is exclusively used for contribution creations, the treatment doesn't search for existing
+   * attachments. In the future and if updates will be handled, the treatment must evolve to search
+   * for existing attachments ...
+   *
+   * @param resourcePk
    * @param contributionLanguage
    */
-  public void registerAttachment(String resourceId, String componentInstanceId, UserDetail user,
-      String contributionLanguage) {
-    registerAttachment(resourceId, componentInstanceId, user, contributionLanguage, true);
+  public void registerAttachment(WAPrimaryKey resourcePk, String contributionLanguage) {
+    registerAttachment(resourcePk, contributionLanguage, true);
   }
 
   /**
-   * Register an attachment in relation to the given contribution identifiers.
-   * Please notice that the original content is deleted from its original location.
-   * For now, as this method is exclusively used for contribution creations,
-   * the treatment doesn't search for existing attachments. In the future and if updates will be
-   * handled, the treatment must evolve to search for existing attachments ...
-   * @param resourceId
-   * @param componentInstanceId
-   * @param user
+   * Register an attachment in relation to the given contribution identifiers. Please notice that
+   * the original content is deleted from its original location. For now, as this method is
+   * exclusively used for contribution creations, the treatment doesn't search for existing
+   * attachments. In the future and if updates will be handled, the treatment must evolve to search
+   * for existing attachments ...
+   *
+   * @param resourcePk
    * @param contributionLanguage
    * @param indexIt
    */
-  public void registerAttachment(String resourceId, String componentInstanceId, UserDetail user,
-      String contributionLanguage, boolean indexIt) {
+  public void registerAttachment(WAPrimaryKey resourcePk, String contributionLanguage,
+      boolean indexIt) {
 
     // Retrieve the simple document
-    SimpleDocument document =
-        retrieveSimpleDocument(resourceId, componentInstanceId, user, contributionLanguage);
+    SimpleDocument document = retrieveSimpleDocument(resourcePk, contributionLanguage);
 
     // Create attachment (please read the method documentation ...)
     AttachmentServiceFactory.getAttachmentService().createAttachment(document, getFile(), indexIt);
@@ -165,16 +175,15 @@ public class UploadedFile {
   }
 
   /**
-   * Retrieve the SimpleDocument in relation with uploaded file.
-   * For now, as this method is exclusively used for contribution creations,
-   * the treatment doesn't search for existing attachments. In the future and if updates will be
-   * handled, the treatment must evolve to search for existing attachments ...
-   * @param user
+   * Retrieve the SimpleDocument in relation with uploaded file. For now, as this method is
+   * exclusively used for contribution creations, the treatment doesn't search for existing
+   * attachments. In the future and if updates will be handled, the treatment must evolve to search
+   * for existing attachments ...
+   *
    * @param contributionLanguage (be careful, not the user language ...)
    * @return
    */
-  public SimpleDocument retrieveSimpleDocument(String resourceId, String componentInstanceId,
-      UserDetail user, String contributionLanguage) {
+  public SimpleDocument retrieveSimpleDocument(WAPrimaryKey resourcePk, String contributionLanguage) {
 
     // Contribution language
     String lang = I18NHelper.checkLanguage(contributionLanguage);
@@ -199,13 +208,13 @@ public class UploadedFile {
     }
 
     // Simple document PK
-    SimpleDocumentPK pk = new SimpleDocumentPK(null, componentInstanceId);
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, resourcePk);
 
     // Simple document
-    SimpleDocument document = new SimpleDocument(pk, resourceId, 0, false, null,
+    SimpleDocument document = new SimpleDocument(pk, resourcePk.getId(), 0, false, null,
         new SimpleAttachment(getFile().getName().substring(getFileUploadId().length() + 1), lang,
-            title, description, getFile().length(), FileUtil.getMimeType(getFile().getPath()),
-            user.getId(), DateUtil.getNow(), null));
+        title, description, getFile().length(), FileUtil.getMimeType(getFile().getPath()),
+        uploader, DateUtil.getNow(), null));
 
     // Simple document details
     document.setLanguage(lang);
@@ -219,13 +228,14 @@ public class UploadedFile {
 
   /**
    * Gets an uploaded file from a given uploaded file identifier.
+   *
    * @param uploadedFileId
    * @return
    */
   private static File getUploadedFileFromUploadId(String uploadedFileId) {
     File tempDir = new File(FileRepositoryManager.getTemporaryPath());
-    Collection<File> files =
-        FileUtils.listFiles(tempDir, new PrefixFileFilter(uploadedFileId), FalseFileFilter.FALSE);
+    Collection<File> files = FileUtils.listFiles(tempDir, new PrefixFileFilter(uploadedFileId),
+        FalseFileFilter.FALSE);
     if (files.isEmpty() || files.size() > 1) {
       return new File(tempDir, "unexistingFile");
     }

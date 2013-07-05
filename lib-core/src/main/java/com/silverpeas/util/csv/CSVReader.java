@@ -25,6 +25,7 @@
 package com.silverpeas.util.csv;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -51,6 +52,7 @@ public class CSVReader {
   // properties specifiques eventuellement en plus
   protected int m_specificNbCols = 0;
   protected String[] m_specificColNames;
+  protected int[] m_specificColMaxLengthes;
   protected String[] m_specificColTypes;
   protected String[] m_specificColMandatory;
   protected String[] m_specificParameterNames;
@@ -110,7 +112,9 @@ public class CSVReader {
 
     m_specificColTypes = specificRs.getStringArray(specificRootPropertyName,
         ".Type", m_specificNbCols);
+    m_specificColMaxLengthes = new int[m_specificNbCols];
     for (int i = 0; i < m_specificNbCols; i++) {
+      // Type
       if (!Variant.TYPE_STRING.equals(m_specificColTypes[i])
           && !Variant.TYPE_INT.equals(m_specificColTypes[i])
           && !Variant.TYPE_BOOLEAN.equals(m_specificColTypes[i])
@@ -122,6 +126,10 @@ public class CSVReader {
 
         m_specificColTypes[i] = Variant.TYPE_STRING;
       }
+      // Max Length
+      m_specificColMaxLengthes[i] = specificRs
+          .getInteger(specificRootPropertyName + (i + 1) + ".MaxLength",
+              DomainProperty.DEFAULT_MAX_LENGTH);
     }
 
     m_specificColMandatory = specificRs.getStringArray(specificRootPropertyName, ".Mandatory",
@@ -479,5 +487,19 @@ public class CSVReader {
    */
   public String getM_specificParameterName(int i) {
     return m_specificParameterNames[i];
+  }
+
+  /**
+   * @return Returns the m_specificColMaxLengthes.
+   */
+  public int[] getM_specificColMaxLengthes() {
+    return m_specificColMaxLengthes;
+  }
+
+  /**
+   * @return Returns the m_specificColMaxLengthes[i].
+   */
+  public int getM_specificColMaxLength(int i) {
+    return m_specificColMaxLengthes[i];
   }
 }

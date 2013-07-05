@@ -160,7 +160,7 @@ public class WysiwygController {
         images[j][1] = image.getName();
       }
       return images;
-    } catch (Exception e) {
+    } catch (UtilException e) {
       throw new WysiwygException("WebSiteSessionController.getWebsiteImages()",
           SilverpeasException.ERROR, "wysisyg.EX_GET_ALL_IMAGES_FAIL", e);
     }
@@ -192,7 +192,7 @@ public class WysiwygController {
         pages[j][1] = page.getName();
       }
       return pages;
-    } catch (Exception e) {
+    } catch (UtilException e) {
       throw new WysiwygException("WebSiteSessionController.getWebsitePages()",
           SilverpeasException.ERROR, "wysisyg.EX_GET_ALL_PAGES_FAIL", e);
     }
@@ -443,34 +443,40 @@ public class WysiwygController {
   }
 
   /**
-   * Add all elements attached to object identified by the given index into the given index
+   * Method declaration creation of the file and its attachment.
    *
-   * @param indexEntry the index of the related resource.
-   * @param language the language.
+   *
+   * @param textHtml String : contains the text published by the wysiwyg
+   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param userId the author of the content.
+   * @param contentLanguage the language of the content.
    */
-  public static void addToIndex(FullIndexEntry indexEntry, String language) {
-    ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
-    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(pk, DocumentType.wysiwyg, language);
-    if (!docs.isEmpty()) {
-      String wysiwygPath = docs.get(0).getAttachmentPath();
-      indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
-      String wysiwygContent = loadContent(docs.get(0), language);
-      // index embedded linked attachment (links presents in wysiwyg content)
-      List<String> embeddedAttachmentIds = getEmbeddedAttachmentIds(wysiwygContent);
-      indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
-    }
+  public static void createUnindexedFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+      String userId, String contentLanguage) {
+    createFileAndAttachment(textHtml, foreignKey, DocumentType.wysiwyg, userId, contentLanguage,
+        false, false);
   }
 
   /**
-   * Index all elements attached to object identified by <id, componentId>
+   * Add all elements attached to object identified by the given index into the given index
    *
-   * @param componentId for example, the id of the application.
-   * @param id for example, the id of the publication.
+   * @param indexEntry the index of the related resource.
+   * @param pk the primary key of the container of the wysiwyg.
+   * @param language the language.
    */
-  public static void index(String componentId, String id) {
-    ForeignPK foreignPK = new ForeignPK(id, componentId);
-    AttachmentServiceFactory.getAttachmentService().indexAllDocuments(foreignPK, null, null);
+  public static void addToIndex(FullIndexEntry indexEntry, ForeignPK pk, String language) {
+    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKeyAndType(pk, DocumentType.wysiwyg, language);
+    if (!docs.isEmpty()) {
+      for (SimpleDocument wysiwyg : docs) {
+        String wysiwygPath = wysiwyg.getAttachmentPath();
+        indexEntry.addFileContent(wysiwygPath, null, MimeTypes.HTML_MIME_TYPE, language);
+        String wysiwygContent = loadContent(docs.get(0), language);
+        // index embedded linked attachment (links presents in wysiwyg content)
+        List<String> embeddedAttachmentIds = getEmbeddedAttachmentIds(wysiwygContent);
+        indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+      }
+    }
   }
 
   /**
@@ -508,6 +514,7 @@ public class WysiwygController {
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    * @param userId
+   * @param language the language of the content.
    */
   public static void updateFileAndAttachment(String textHtml, String componentId,
       String objectId, String userId, String language) {
@@ -555,6 +562,7 @@ public class WysiwygController {
    * @param spaceId
    * @param componentId
    * @param objectId
+   * @throws org.silverpeas.wysiwyg.WysiwygException
    */
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
       String objectId) throws WysiwygException {
@@ -636,7 +644,6 @@ public class WysiwygController {
    *
    * @param content
    * @return
-   * @throws WysiwygException
    */
   public static List<String> getEmbeddedAttachmentIds(String content) {
     List<String> attachmentIds = new ArrayList<String>();
@@ -721,7 +728,9 @@ public class WysiwygController {
    * c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
    * contenuFichier = code du fichier : "<HTML><TITLE>...."
    *
-   * @throws WysiwygException
+   * @param cheminFichier
+   * @param contenuFichier
+   * @param nomFichier
    */
   public static void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier) {
     SilverTrace.info("wysiwyg", "WysiwygController.updateWebsite()", "root.MSG_GEN_PARAM_VALUE",
@@ -736,7 +745,6 @@ public class WysiwygController {
    * @param nomFichier the name of the file.
    * @param contenuFichier the content of the file.
    * @return the created file.
-   * @throws WysiwygException
    */
   protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier) {
     SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_ENTER_METHOD",
@@ -758,8 +766,8 @@ public class WysiwygController {
    * @param userId
    * @see
    */
-  public static void copy(String oldComponentId, String oldObjectId,
-      String componentId, String objectId, String userId) {
+  public static void copy(String oldComponentId, String oldObjectId, String componentId,
+      String objectId, String userId) {
     SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().

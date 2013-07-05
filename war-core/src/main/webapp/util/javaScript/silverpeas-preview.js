@@ -42,7 +42,7 @@
         $.preview.initialized = true;
       }
     }
-  }
+  };
 
   /**
    * The different preview methods handled by the plugin.
@@ -117,11 +117,7 @@
       // Getting preview
       var url = $.preview.webServiceContext;
       url += "/preview/" + options.componentInstanceId;
-      if (options.versioned) {
-    	  url += "/version/" + options.attachmentId;
-      } else {
-    	  url += "/attachment/" + options.attachmentId;
-      }
+      url += "/attachment/" + options.attachmentId;
       $.ajax({
         url : url,
         type : 'GET',
@@ -156,8 +152,6 @@
                         .css('text-align', 'center')
                         .css('background-color', 'white');
       $baseContainer.insertAfter($this);
-    } else {
-      $baseContainer.dialog("destroy");
     }
 
     // Getting previous and next
