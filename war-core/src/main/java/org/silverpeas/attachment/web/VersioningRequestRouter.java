@@ -20,18 +20,18 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.repository.HistoryDocumentSorter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
 import java.util.List;
-
-import org.silverpeas.attachment.repository.HistoryDocumentSorter;
 
 public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSessionController> {
 
@@ -57,6 +57,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
     String rootDestination = "/versioningPeas/jsp/";
     try {
       String flag = versioningSC.getProfile();
+
+      // Handle the content language.
+      String contentLanguage = request.getParameter("Language");
+      request.setAttribute("ContentLanguage",
+          (StringUtil.isDefined(contentLanguage) ? contentLanguage : null));
 
       request.setAttribute("Profile", flag);
       if ("ListPublicVersionsOfDocument".equals(function)) {

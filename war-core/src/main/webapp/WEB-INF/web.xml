@@ -1008,28 +1008,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       <web-resource-name>Authentification</web-resource-name>
       <description/>
       <url-pattern>/AuthenticationServlet</url-pattern>
-      <http-method>DELETE</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <http-method>PUT</http-method>
     </web-resource-collection>
     <web-resource-collection>
       <web-resource-name>Default Login page</web-resource-name>
       <description/>
       <url-pattern>/defaultLogin.jsp</url-pattern>
-      <http-method>DELETE</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <http-method>PUT</http-method>
     </web-resource-collection>
     <web-resource-collection>
       <web-resource-name>Login page</web-resource-name>
       <description/>
       <url-pattern>/Login.jsp</url-pattern>
-      <http-method>DELETE</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <http-method>PUT</http-method>
     </web-resource-collection>
     <user-data-constraint>
       <description>SSL</description>
@@ -1041,5 +1029,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       <http-only>true</http-only>
       <secure>false</secure>
     </cookie-config>
+    <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 </web-app>

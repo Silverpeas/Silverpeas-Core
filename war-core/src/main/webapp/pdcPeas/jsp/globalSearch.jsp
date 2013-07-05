@@ -292,14 +292,12 @@ QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 <view:includePlugin name="datepicker"/>
-<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="javascript/formUtil.js"></script>
 <!--[if IE 6]>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc-widgets.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
@@ -528,13 +526,9 @@ function deleteUser()
  $(document).ready(function(){
     <% if(resource.getSetting("enableAutocompletion", false)){ %>
   		//used for keywords autocompletion
-	    $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
-	            minChars: <%=autocompletionMinChars%>,
-	            max: 50,
-	            autoFill: false,
-	            mustMatch: false,
-	            matchContains: false,
-	            scrollHeight: 220
+	    $("#query").autocomplete({
+        source: "<%=m_context%>/AutocompleteServlet",
+        minLength: <%=autocompletionMinChars%>
 	    });
 	<%}%>
 	

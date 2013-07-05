@@ -36,7 +36,7 @@
       if (! $.view.initialized) {
         $.view.initialized = true;
         // FlexPaper languages
-        $.view.languages = new Array();
+        $.view.languages = [];
         $.view.languages["en"] = "en_US";
         $.view.languages["us"] = "en_US";
         $.view.languages["fr"] = "fr_FR";
@@ -63,19 +63,19 @@
         $.view.languages["pv"] = "pv_FN";
       }
     }
-  }
+  };
 
   /**
    * The different view methods handled by the plugin.
    */
   var methods = {
 
-      /**
-       * Does nothing
-       */
-      init : function( options ) {
-        // Nothing to do at all
-      },
+    /**
+     * Does nothing
+     */
+    init : function( options ) {
+      // Nothing to do at all
+    },
 
     /**
      * Handles the document view.
@@ -138,7 +138,7 @@
       // Getting view
       var url = $.view.webServiceContext;
       url += "/view/" + options.componentInstanceId;
-    	url += "/attachment/" + options.attachmentId;
+      url += "/attachment/" + options.attachmentId;
       $.ajax({
         url : url,
         type : 'GET',
@@ -174,8 +174,6 @@
                         .css('text-align', 'center')
                         .css('background-color', 'white');
       $baseContainer.insertAfter($this);
-    } else {
-      $baseContainer.dialog("destroy");
     }
 
     // Settings
