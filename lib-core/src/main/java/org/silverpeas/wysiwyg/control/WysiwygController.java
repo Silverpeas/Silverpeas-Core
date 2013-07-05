@@ -471,7 +471,7 @@ public class WysiwygController {
       for (SimpleDocument wysiwyg : docs) {
         String wysiwygPath = wysiwyg.getAttachmentPath();
         indexEntry.addFileContent(wysiwygPath, null, MimeTypes.HTML_MIME_TYPE, language);
-        String wysiwygContent = loadContent(docs.get(0), language);
+        String wysiwygContent = loadContent(wysiwyg, language);
         // index embedded linked attachment (links presents in wysiwyg content)
         List<String> embeddedAttachmentIds = getEmbeddedAttachmentIds(wysiwygContent);
         indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
