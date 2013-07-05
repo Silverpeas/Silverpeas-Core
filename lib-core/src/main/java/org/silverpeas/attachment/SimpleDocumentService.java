@@ -1008,4 +1008,28 @@ public class SimpleDocumentService implements AttachmentService {
     }
     return result;
   }
+
+  @Override
+  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      // On part des fichiers d'origine
+      List<SimpleDocument> attachments = repository.listDocumentsByComponentdAndType(session,
+          componentId, DocumentType.attachment, I18NHelper.defaultLanguage);
+      for (SimpleDocument attachment : attachments) {
+        if (attachment.isVersioned() != toVersionning) {
+          repository.changeVersionState(session, attachment.getPk(), "");
+        }
+      }
+      session.save();
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+
+  }
 }
