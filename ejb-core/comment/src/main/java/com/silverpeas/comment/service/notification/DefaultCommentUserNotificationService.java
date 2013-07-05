@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.service.notification;
 
+import com.silverpeas.comment.service.CommentUserNotificationService;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
