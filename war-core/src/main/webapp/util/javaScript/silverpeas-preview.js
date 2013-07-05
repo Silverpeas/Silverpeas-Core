@@ -42,7 +42,7 @@
         $.preview.initialized = true;
       }
     }
-  }
+  };
 
   /**
    * The different preview methods handled by the plugin.
@@ -152,8 +152,6 @@
                         .css('text-align', 'center')
                         .css('background-color', 'white');
       $baseContainer.insertAfter($this);
-    } else {
-      $baseContainer.dialog("destroy");
     }
 
     // Getting previous and next

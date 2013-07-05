@@ -28,8 +28,8 @@
 <head>
   <title>Unit Tests of siverpeas-datechecker.js</title>
   <link href="./../styleSheets/common/assert.css" type="text/css" rel="stylesheet">
-  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
-  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery-1.10.1.min.js" type="text/javascript"></script>
+  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
   <script src="./../../../../main/webapp/util/javaScript/jquery/jquery.ui.datepicker-fr.js" type="text/javascript"></script>
   <script src="./../../../../main/webapp/util/javaScript/silverpeas-datechecker.js" type="text/javascript"></script>
   <script src="./common/assert.js" type="text/javascript"></script>
@@ -184,11 +184,11 @@
       date.date = '2/29/2012';
       title = "D: '" + date.date +
           "', H: none : bad format (this February 29 exists, missing 0 at begin)";
-      expected = NO_ERROR;
+      expected = "myDate GML.MustContainsCorrectDate";
       assertIsDateValid(title, expected, date);
       date.date = '01/01/0';
       title = "D: '" + date.date + "', H: none : bad format (year 0!)";
-      expected = NO_ERROR;
+      expected = "myDate GML.MustContainsCorrectDate";
       assertIsDateValid(title, expected, date);
       date.date = '01/01/9999';
       title = "D: '" + date.date + "', H: none : bad format (year 9999!)";

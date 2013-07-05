@@ -26,17 +26,17 @@
  * Silverpeas plugin build upon JQuery to display a modal dialog box.
  * It uses the JQuery UI framework.
  */
-(function( $ ){
+(function($) {
 
   $.popup = {
-    initialized: false,
+    initialized : false,
     doInitialize : function() {
-      if (! $.popup.initialized) {
+      if (!$.popup.initialized) {
         $.i18n.properties({
-          name: 'generalMultilang',
-          path: webContext + '/services/bundles/org/silverpeas/multilang/',
-          language: '$$', /* by default the language of the user in the current session */
-          mode: 'map'
+          name : 'generalMultilang',
+          path : webContext + '/services/bundles/org/silverpeas/multilang/',
+          language : '$$', /* by default the language of the user in the current session */
+          mode : 'map'
         });
         $.popup.initialized = true;
       }
@@ -55,9 +55,9 @@
       // Little hack to prevent some unexpected errors when escape key is
       // pressed during an ajax request
       $waiting.dialog("widget").keydown(function(e) {
-         if(e.keyCode == 27) {
-           e.preventDefault();
-         }
+        if (e.keyCode == 27) {
+          e.preventDefault();
+        }
       });
     },
     hideWaiting : function() {
@@ -112,7 +112,7 @@
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
-    basic : function( options ) {
+    basic : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
@@ -147,7 +147,7 @@
      * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    information : function( options ) {
+    information : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
@@ -164,7 +164,7 @@
       // Dialog
       return __openPopup($(this), settings);
     },
-    
+
     /**
      * The modal help dialog.
      * It accepts one parameter that is an object with following attributes:
@@ -174,7 +174,7 @@
      * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    help : function( options ) {
+    help : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
@@ -202,7 +202,7 @@
      * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    validation : function( options ) {
+    validation : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
@@ -228,7 +228,7 @@
      * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    confirmation : function( options ) {
+    confirmation : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
@@ -240,10 +240,10 @@
       $title.append($titleRow);
       var $icon = $('<span>').addClass('ui-icon ui-icon-alert');
       $icon.attr('style', 'float:left; margin:0 7px 0 0;');
-      var $titleText = $('<div>').attr('style','display: table-cell;vertical-align: bottom;');
+      var $titleText = $('<div>').attr('style', 'display: table-cell;vertical-align: bottom;');
       $titleText.html(settings.title);
-      $titleRow.append($('<div>').attr('style', 'display: table-cell;vertical-align: middle;')
-                       .append($icon));
+      $titleRow.append($('<div>').attr('style',
+          'display: table-cell;vertical-align: middle;').append($icon));
       $titleRow.append($titleText);
       settings.title = $('<div>').append($title).html();
 
@@ -269,14 +269,14 @@
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
-    preview : function( options ) {
+    preview : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
       settings.title = $.i18n.prop('GML.preview.dialog.title');
       if (options.title && options.title.length > 0) {
-        settings.title = settings.title + " "
-            + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+        settings.title =
+            settings.title + " " + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
@@ -310,14 +310,14 @@
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
-    view : function( options ) {
+    view : function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
       settings.title = $.i18n.prop('GML.view.dialog.title');
       if (options.title && options.title.length > 0) {
-        settings.title = settings.title + " "
-            + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
+        settings.title =
+            settings.title + " " + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
@@ -356,7 +356,7 @@
         closeOnEscape : false,
         buttonDisplayed : false,
         width : "32px",
-        height : 32
+        height : 39
       }));
 
       // Waiting animation
@@ -375,14 +375,14 @@
    *
    * Here the popup namespace in JQuery in which methods on messages are provided.
    */
-  $.fn.popup = function( method ) {
+  $.fn.popup = function(method) {
     $.popup.doInitialize();
-    if ( methods[method] ) {
-      return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-    } else if ( typeof method === 'object' || ! method ) {
-      return methods.validation.apply( this, arguments );
+    if (methods[method]) {
+      return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
+    } else if (typeof method === 'object' || !method) {
+      return methods.validation.apply(this, arguments);
     } else {
-      return $.error( 'Method ' +  method + ' does not exist on jQuery.popup' );
+      return $.error('Method ' + method + ' does not exist on jQuery.popup');
     }
   };
 
@@ -437,8 +437,9 @@
    */
   function __openPopup($this, options) {
 
-    if (!$this.length)
+    if (!$this.length) {
       return $this;
+    }
 
     return $this.each(function() {
       var $_this = $(this);
@@ -466,7 +467,7 @@
             click : function() {
               var isok = true;
               if (options.callback) {
-                isok = options.callback();
+                isok = options.callback.call(this);
               }
               if (isok) {
                 $_this.dialog("close");
@@ -489,17 +490,17 @@
 
       // Callback on close
       if (options.callbackOnClose) {
-        $_this.dialog("option", "close", function(event, ui){
-          options.callbackOnClose();
+        $_this.dialog("option", "close", function(event, ui) {
+          options.callbackOnClose.call(this);
         });
       }
 
       // Scroll
       if (options.disabledParentScroll) {
-        $_this.dialog("option", "open", function(event, ui){
+        $_this.dialog("option", "open", function(event, ui) {
           $("html,body").css("overflow", "hidden");
         });
-        $_this.dialog("option", "beforeClose", function(event, ui){
+        $_this.dialog("option", "beforeClose", function(event, ui) {
           $("html,body").css("overflow", "auto");
         });
       }
@@ -516,12 +517,22 @@
       // keydown
       if (options.keydown) {
         $_this.dialog("widget").keydown(function(e) {
-          options.keydown(e);
+          options.keydown.call(this, e);
         });
       }
 
       // Dialog opening
-      $_this.dialog('open');
+      var $dialog = $_this.dialog('open');
+
+      // Since JQuery upgrade (jquery-1.10.1.min.js), HTML code in title is escaped.
+      // The below code surrounds this problem.
+      // For new version of jquery, please verify if it can be removed.
+      $dialog.data("uiDialog")._title = function(title) {
+        title.html(this.options.title);
+      };
+      $dialog.dialog('option', 'title', options.title);
+
+      // This below code handles the width of the dialog after it has been displayed.
       if (options.isMaxWidth) {
         // If max width is required, resizing and repositioning after the dialog open
         $_this.dialog("widget").css('max-width', width);
@@ -530,8 +541,7 @@
     })
   }
 
-})( jQuery );
-
+})(jQuery);
 
 /**
  * Some helpers

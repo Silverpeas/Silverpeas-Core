@@ -911,7 +911,7 @@ function removePosition(position, positions) {
         alert(settings.mandatoryAxisError);
       } else {
         if (settings.dialogBox)
-          $thisPdcAxisValuesSelector.dialog("destroy");
+          $thisPdcAxisValuesSelector.dialog("close");
         else
           refreshAxis(settings, selectedPositions);
         settings.onValuesSelected(positions);
@@ -991,10 +991,6 @@ function removePosition(position, positions) {
           selectedPositions.put(0, anAxis.id, aValue);
           option.attr('disabled', true);
         }
-        if (selectedPositions.size() === 1 && selectedPositions.at(0, anAxis.id) &&
-                aValue.id === selectedPositions.at(0, anAxis.id).id) {
-          option.attr('selected', true);
-        }
 
         // in the case of a duplicate select, disable any options that were previously selected for the
         // same axis
@@ -1006,6 +1002,11 @@ function removePosition(position, positions) {
               break;
             }
           }
+        }
+        var selectedAxisValue = selectedPositions.at(0, anAxis.id);
+        if (selectedPositions.size() === 1 && selectedAxisValue &&
+                aValue.id === selectedAxisValue.id && !option.attr('disabled')) {
+          option.attr('selected', true);
         }
       }
     });
@@ -1231,12 +1232,12 @@ function removePosition(position, positions) {
             }, {
               text: settings.labelCancel,
               click: function() {
-                $thisPdcAxisValuesSelector.dialog("destroy");
+                $thisPdcAxisValuesSelector.dialog("close");
               }
             }
           ],
           close: function() {
-            $thisPdcAxisValuesSelector.dialog("destroy");
+            $thisPdcAxisValuesSelector.dialog("close");
           }
         });
       }

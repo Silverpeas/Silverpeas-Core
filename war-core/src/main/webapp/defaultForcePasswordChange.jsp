@@ -24,6 +24,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="headLog.jsp" %>
 
@@ -35,14 +36,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%>
-  </title>
+  <title><%=generalMultilang.getString("GML.popupTitle")%></title>
   <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
-  <script src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
-  <script src="<%=m_context%>/util/javaScript/jquery/jquery.json-2.3.min.js" type="text/javascript"></script>
-  <script src="<%=m_context%>/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+  <view:includePlugin name="jquery"/>
   <script src="<%=m_context%>/password.js" type="text/javascript"></script>
   <!--[if lt IE 8]>
   <style type="text/css">
