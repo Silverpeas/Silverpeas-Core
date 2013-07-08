@@ -63,7 +63,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         try {
           parameters = FileUploadUtil.parseRequest(request);
         } catch (UtilException e) {
-          SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.getAction",
+          SilverTrace.error("thumbnail", "ThumbnailRequestRouter.getAction",
               "root.MSG_GEN_PARAM_VALUE", e);
         }
         action = FileUploadUtil.getParameter(parameters, "Action");
@@ -163,7 +163,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     try {
       result = ThumbnailController.getCompleteThumbnail(thumbToUpdate);
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("Thumbnail",
+      SilverTrace.error("thumbnail",
           "ThumbnailRequestRouter.updateThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
     }
@@ -196,7 +196,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
           .parseInt(thumbnailHeight));
       return null;
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("Thumbnail",
+      SilverTrace.error("thumbnail",
           "ThumbnailRequestRouter.updateThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
     }
@@ -229,7 +229,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
           .parseInt(thumbnailHeight));
       return null;
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("Thumbnail",
+      SilverTrace.error("thumbnail",
           "ThumbnailRequestRouter.updateThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
     }
@@ -245,11 +245,11 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       thumb = saveFile(req, parameters, thumbnailSC);
     } catch (ThumbnailRuntimeException e) {
       // only one case -> no .type for the file
-      SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
+      SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
       return "EX_MSG_NO_TYPE_ERROR";
     } catch (Exception exp) {
-      SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
+      SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail",
           "root.MSG_GEN_PARAM_VALUE", exp);
       return "EX_MSG_SAVE_FILE_ERROR";
     }
@@ -273,13 +273,13 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       }
       return "error";
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
+      SilverTrace.error("thumbnail", "ThumbnailRequestRouter.addThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
       // need remove the file on disk
       try {
         ThumbnailController.deleteThumbnail(thumb);
       } catch (Exception exp) {
-        SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail - remove after error",
+        SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail - remove after error",
             "root.MSG_GEN_PARAM_VALUE", exp);
       }
       return "EX_MSG_NOT_AN_IMAGE";

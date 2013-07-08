@@ -43,7 +43,7 @@ public class ImageUtil {
   // Extension of jpg image file
   public static final String JPG_IMAGE_EXTENSION = "jpg";
   // Extension of jepg image file
-  public static final String JPEG_IMAGE_EXTENSION = "jepg";
+  public static final String JPEG_IMAGE_EXTENSION = "jpeg";
   // Extension of pcd image file
   public static final String PCD_IMAGE_EXTENSION = "pcd";
   // Extension of png image file
