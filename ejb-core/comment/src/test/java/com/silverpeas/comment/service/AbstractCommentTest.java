@@ -30,6 +30,8 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
+
 /**
  * An abstract test case on the comments. It sets up the test context within which a test case on
  * the comments run. All more concrete test cases should extends this abstract class.
@@ -45,7 +47,7 @@ public abstract class AbstractCommentTest {
     if (jmsTestFacade == null) {
       jmsTestFacade = new JMSTestFacade();
       jmsTestFacade.bootstrap();
-      jmsTestFacade.newTopic(CommentActionNotifier.TOPIC_NAME);
+      jmsTestFacade.newTopic(COMMENT_TOPIC.getTopicName());
     }
   }
 }

@@ -1,50 +1,50 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
-
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.util.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.silverpeas.notification.jsondiff.Operation;
+
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.admin.notification.ComponentJsonPatch;
+import com.silverpeas.util.i18n.AbstractI18NBean;
 
 public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
     Comparable<ComponentInst> {
 
   private static final long serialVersionUID = 1L;
   public final static String STATUS_REMOVED = "R";
-  private String m_sId;
-  private String m_sName;
-  private String m_sLabel;
-  private String m_sDescription;
-  private String m_sDomainFatherId;
-  private int m_iOrderNum;
+  private String id;
+  private String name;
+  private String label;
+  private String description;
+  private String domainFatherId;
+  private int order;
   private Date createDate = null;
   private Date updateDate = null;
   private Date removeDate = null;
@@ -58,50 +58,52 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   private boolean isPublic = false;
   private boolean isHidden = false;
   private boolean isInheritanceBlocked = false;
-  private List<ProfileInst> m_alProfileInst;
+  private List<ProfileInst> profiles;
   private List<Parameter> parameters = null;
 
-  /** Creates new ComponentInst */
+  /**
+   * Creates new ComponentInst
+   */
   public ComponentInst() {
-    m_sId = "";
-    m_sName = "";
-    m_sLabel = "";
-    m_sDescription = "";
-    m_sDomainFatherId = "";
-    m_iOrderNum = 0;
-    m_alProfileInst = new ArrayList<ProfileInst>();
+    id = "";
+    name = "";
+    label = "";
+    description = "";
+    domainFatherId = "";
+    order = 0;
+    profiles = new ArrayList<ProfileInst>();
     isPublic = false;
     isHidden = false;
   }
 
+  @Override
   public int compareTo(ComponentInst o) {
-    return m_iOrderNum - o.m_iOrderNum;
+    return order - o.getOrderNum();
   }
 
+  @Override
   public Object clone() {
     ComponentInst ci = new ComponentInst();
-    Iterator<ProfileInst> it;
-
-    ci.m_sId = m_sId;
-    ci.m_sName = m_sName;
-    ci.m_sLabel = m_sLabel;
-    ci.m_sDescription = m_sDescription;
-    ci.m_sDomainFatherId = m_sDomainFatherId;
-    ci.m_iOrderNum = m_iOrderNum;
-    ci.isPublic = isPublic;
-    ci.isHidden = isHidden;
-    ci.isInheritanceBlocked = isInheritanceBlocked;
-
-    if (m_alProfileInst == null) {
-      ci.m_alProfileInst = null;
+    ci.setId(id);
+    ci.setName(name);
+    ci.setLabel(label);
+    ci.setDescription(description);
+    ci.setDomainFatherId(domainFatherId);
+    ci.setOrderNum(order);
+    ci.setPublic(isPublic);
+    ci.setHidden(isHidden);
+    ci.setInheritanceBlocked(isInheritanceBlocked);
+    if (profiles == null) {
+      ci.profiles = null;
     } else {
-      ci.m_alProfileInst = new ArrayList<ProfileInst>();
-      it = m_alProfileInst.iterator();
-      while (it.hasNext()) {
-        ci.m_alProfileInst.add((ProfileInst) it.next().clone());
+      for (ProfileInst profile : profiles) {
+        ci.addProfileInst((ProfileInst) profile.clone());
       }
     }
-    ci.parameters = new ArrayList<Parameter>(this.parameters);
+    ci.parameters = new ArrayList<Parameter>(this.parameters.size());
+    for (Parameter param : this.parameters) {
+      ci.parameters.add(param.clone());
+    }
     return ci;
   }
 
@@ -115,51 +117,51 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public void setId(String sId) {
-    m_sId = sId;
+    id = sId;
   }
 
   public String getId() {
-    return m_sId;
+    return id;
   }
 
   public void setName(String sName) {
-    m_sName = sName;
+    name = sName;
   }
 
   public String getName() {
-    return m_sName;
+    return name;
   }
 
   public void setLabel(String sLabel) {
-    m_sLabel = sLabel;
+    label = sLabel;
   }
 
   public String getLabel() {
-    return m_sLabel;
+    return label;
   }
 
   public void setDescription(String sDescription) {
-    m_sDescription = sDescription;
+    description = sDescription;
   }
 
   public String getDescription() {
-    return m_sDescription;
+    return description;
   }
 
   public void setDomainFatherId(String sDomainFatherId) {
-    m_sDomainFatherId = sDomainFatherId;
+    domainFatherId = sDomainFatherId;
   }
 
   public String getDomainFatherId() {
-    return m_sDomainFatherId;
+    return domainFatherId;
   }
 
   public void setOrderNum(int iOrderNum) {
-    m_iOrderNum = iOrderNum;
+    order = iOrderNum;
   }
 
   public int getOrderNum() {
-    return m_iOrderNum;
+    return order;
   }
 
   public Date getCreateDate() {
@@ -211,28 +213,28 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public int getNumProfileInst() {
-    return m_alProfileInst.size();
+    return profiles.size();
   }
 
   public void addProfileInst(ProfileInst profileInst) {
-    m_alProfileInst.add(profileInst);
+    profiles.add(profileInst);
   }
 
   public void deleteProfileInst(ProfileInst profileInst) {
-    for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      if (m_alProfileInst.get(nI).getName().equals(profileInst.getName())) {
-        m_alProfileInst.remove(nI);
+    for (int nI = 0; nI < profiles.size(); nI++) {
+      if (profiles.get(nI).getName().equals(profileInst.getName())) {
+        profiles.remove(nI);
       }
     }
   }
 
   public List<ProfileInst> getAllProfilesInst() {
-    return m_alProfileInst;
+    return profiles;
   }
 
   public List<ProfileInst> getInheritedProfiles() {
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
-    for (ProfileInst profile : m_alProfileInst) {
+    for (ProfileInst profile : profiles) {
       if (profile.isInherited()) {
         profiles.add(profile);
       }
@@ -243,7 +245,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public List<ProfileInst> getProfiles() {
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
-    for (ProfileInst profile : m_alProfileInst) {
+    for (ProfileInst profile : profiles) {
       if (!profile.isInherited()) {
         profiles.add(profile);
       }
@@ -253,11 +255,11 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public void removeAllProfilesInst() {
-    m_alProfileInst = new ArrayList<ProfileInst>();
+    profiles.clear();
   }
 
   public ProfileInst getProfileInst(String profileName) {
-    for (ProfileInst profile : m_alProfileInst) {
+    for (ProfileInst profile : profiles) {
       if (!profile.isInherited() && profile.getName().equals(profileName)) {
         return profile;
       }
@@ -266,7 +268,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public ProfileInst getInheritedProfileInst(String profileName) {
-    for (ProfileInst profile : m_alProfileInst) {
+    for (ProfileInst profile : profiles) {
       if (profile.isInherited() && profile.getName().equals(profileName)) {
         return profile;
       }
@@ -275,7 +277,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public ProfileInst getProfileInst(int nIndex) {
-    return m_alProfileInst.get(nIndex);
+    return profiles.get(nIndex);
   }
 
   public List<Parameter> getParameters() {
@@ -381,15 +383,49 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public void removeInheritedProfiles() {
     ArrayList<ProfileInst> newProfiles = new ArrayList<ProfileInst>();
-    for (ProfileInst profile : m_alProfileInst) {
+    for (ProfileInst profile : profiles) {
       if (!profile.isInherited()) {
         newProfiles.add(profile);
       }
     }
-    m_alProfileInst = newProfiles;
+    profiles = newProfiles;
   }
-  
+
   public boolean isWorkflow() {
     return Instanciateur.isWorkflow(getName());
+  }
+
+  public ComponentJsonPatch diff(ComponentInst newComponent) {
+    ComponentJsonPatch patch = new ComponentJsonPatch();
+    patch.setComponentType(getName());
+    List<Operation> operations = new ArrayList<Operation>(10 + parameters.size());
+    patch.addOperation(Operation.determineOperation("name", name, newComponent.getName()));
+    patch.addOperation(Operation.determineOperation("label", label, newComponent.getLabel()));
+    patch.addOperation(Operation.determineOperation("description", description, newComponent
+        .getDescription()));
+    patch.addOperation(Operation.determineOperation("domainFatherId", domainFatherId, newComponent
+        .getDomainFatherId()));
+    patch.addOperation(Operation.determineOperation("order", String.valueOf(order), String.valueOf(
+        newComponent.getOrderNum())));
+    patch.addOperation(Operation.determineOperation("public", String.valueOf(isPublic), String
+        .valueOf(newComponent.isPublic())));
+    patch.addOperation(Operation.determineOperation("hidden", String.valueOf(isHidden), String
+        .valueOf(newComponent.isHidden())));
+    patch.addOperation(Operation.determineOperation("inheritanceBlocked", String.valueOf(
+        isInheritanceBlocked), String.valueOf(newComponent.isInheritanceBlocked())));
+    Set<String> newParameters = new HashSet<String>(newComponent.getParameters().size());
+    for (Parameter parameter : newComponent.getParameters()) {
+      newParameters.add(parameter.getName());
+    }
+    for (Parameter parameter : parameters) {
+      patch.addOperation(Operation.determineOperation(parameter.getName(), parameter.getValue(),
+          newComponent.getParameterValue(parameter.getName())));
+      newParameters.remove(parameter.getName());
+    }
+    for (String newParameter : newParameters) {
+      patch.addOperation(Operation.determineOperation(newParameter, null, newComponent
+          .getParameterValue(newParameter)));
+    }
+    return patch;
   }
 }
