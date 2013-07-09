@@ -1579,7 +1579,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
-  
+
   <tag>
     <description>
       Establishes a scoped variable that contains the value of the defined settings.
@@ -1593,7 +1593,7 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-    </attribute> 
+    </attribute>
     <attribute>
       <description>The key of the wanted settings.</description>
       <name>key</name>
@@ -1607,7 +1607,7 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Object</type>
-    </attribute>    
+    </attribute>
     <attribute>
       <description>The name of the scoped variable to create.</description>
       <name>var</name>
@@ -1675,7 +1675,7 @@
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
-  </function>  
+  </function>
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>

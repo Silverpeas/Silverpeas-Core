@@ -50,7 +50,7 @@ public class StatusService {
    * @throws UtilException
    * @throws SQLException
    */
-  private Connection getConnection() throws UtilException, SQLException {
+  private Connection getConnection() throws UtilException {
     return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }
 

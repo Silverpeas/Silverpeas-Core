@@ -23,22 +23,16 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.jcr.NodeIterable;
-import org.silverpeas.util.jcr.PropertyIterable;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
@@ -60,16 +54,26 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.jcr.NodeIterable;
+import org.silverpeas.util.jcr.PropertyIterable;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.apache.commons.io.FileUtils;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
@@ -323,22 +327,48 @@ public class DocumentRepository {
    *
    * @param session
    * @param documentPk the id of the document.
+   * @param comment
    * @throws RepositoryException
    * @throws IOException
    */
-  public void changeVersionState(Session session, SimpleDocumentPK documentPk) throws
-      RepositoryException, IOException {
+  public SimpleDocumentPK changeVersionState(Session session, SimpleDocumentPK documentPk,
+      String comment) throws RepositoryException, IOException {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+      boolean versionedNode = documentNode.getParent() instanceof Version || converter.isVersioned(
+          documentNode);
+      Node parent = documentNode.getParent();
+      if (parent instanceof Version) {
+        Version selectedVersion = (Version) parent;
+        VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
+        versionManager.restore(selectedVersion, true);
+        documentNode = session.getNodeByIdentifier(selectedVersion.getContainingHistory()
+            .getVersionableIdentifier());
+      }
       if (!documentNode.isCheckedOut()) {
         checkoutNode(documentNode, null);
       }
-      if (converter.isVersioned(documentNode)) {
+      if (StringUtil.isDefined(comment)) {
+        documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
+      }
+      SimpleDocument origin = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+      if (versionedNode) {
         removeHistory(documentNode);
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
+        documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
+        documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
+        SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+        moveMultilangContent(origin, target);
+        File currentDocumentDir = new File(target.getDirectoryPath(I18NHelper.defaultLanguage))
+            .getParentFile();
+        File[] contents = currentDocumentDir.getParentFile().listFiles();
+        for (File versionDirectory : contents) {
+          if (!versionDirectory.equals(currentDocumentDir)) {
+            FileUtils.deleteDirectory(versionDirectory);
+          }
+        }
       } else {
-        SimpleDocument origin = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
@@ -349,8 +379,10 @@ public class DocumentRepository {
         moveMultilangContent(origin, target);
         versionManager.checkin(documentNode.getPath());
       }
+      return new SimpleDocumentPK(documentNode.getIdentifier(), documentPk);
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
+      return documentPk;
     }
   }
 
@@ -490,6 +522,22 @@ public class DocumentRepository {
   }
 
   /**
+   * Search all the documents in an instance with the specified type.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param type thetype of required documents.
+   * @param language the language in which the documents are required.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  public List<SimpleDocument> listDocumentsByComponentdAndType(Session session, String instanceId,
+      DocumentType type, String language) throws RepositoryException {
+    NodeIterator iter = selectDocumentsByComponentIdAndType(session, instanceId, type);
+    return converter.convertNodeIterator(iter, language);
+  }
+
+  /**
    * Search all the documents in an instance with the specified owner.
    *
    * @param session the current JCR session.
@@ -589,6 +637,30 @@ public class DocumentRepository {
         SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
+    QueryResult result = query.execute();
+    return result.getNodes();
+  }
+
+  /**
+   * Search all the documents of the specified type in an instance with the specified foreignId.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  NodeIterator selectDocumentsByComponentIdAndType(Session session, String instanceId,
+      DocumentType type) throws RepositoryException {
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+        getPath() + instanceId + '/' + type.getFolderName());
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, childNodeConstraint, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }

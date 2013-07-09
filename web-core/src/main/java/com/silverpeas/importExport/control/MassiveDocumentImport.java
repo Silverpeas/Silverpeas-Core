@@ -20,20 +20,17 @@
  */
 package com.silverpeas.importExport.control;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class MassiveDocumentImport {
 
@@ -41,33 +38,22 @@ public class MassiveDocumentImport {
       MassiveReport massiveReport) throws ImportExportException {
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     try {
-      AttachmentImportExport attachmentIE = new AttachmentImportExport();
-      VersioningImportExport versioningIE = new VersioningImportExport(importSettings.getUser());
       PdcImportExport pdcIE = new PdcImportExport();
       ImportReportManager.init();
-
       massiveReport.setRepositoryPath(importSettings.getPathToImport());
       ImportReportManager.addMassiveReport(massiveReport, importSettings.getComponentId());
-      GEDImportExport gedIE =
-          ImportExportFactory.createGEDImportExport(importSettings.getUser(),
-              importSettings.getComponentId());
+      GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(importSettings.getUser(),
+          importSettings.getComponentId());
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
-      importSettings.setVersioningUsed(isVersioningUsed(importSettings.getComponentId()));
-      publicationDetails =
-          rtm.processImportRecursiveReplicate(massiveReport, gedIE, attachmentIE, versioningIE,
-              pdcIE, importSettings);
+      importSettings.setVersioningUsed(ImportExportHelper.isVersioningUsed(importSettings
+          .getComponentId()));
+      publicationDetails = rtm.processImportRecursiveReplicate(massiveReport, gedIE, pdcIE,
+          importSettings);
       ImportReportManager.setEndDate(new Date());
-
     } finally {
       FileFolderManager.deleteFolder(importSettings.getPathToImport());
     }
     return publicationDetails;
   }
 
-  private boolean isVersioningUsed(String componentId) {
-    ComponentInst componentInst =
-        OrganisationControllerFactory.getOrganisationController().getComponentInst(componentId);
-    return ImportExportHelper.isVersioningUsed(componentInst);
-
-  }
 }

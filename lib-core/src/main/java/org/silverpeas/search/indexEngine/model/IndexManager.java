@@ -323,8 +323,13 @@ public class IndexManager {
       SilverTrace.debug("indexEngine", "IndexManager.indexDocs",
           "indexEngine.INFO_ADD_REQUEST_SUCCEED", indexEntry.toString());
     } catch (Exception e) {
-      SilverTrace.error("indexEngine", "IndexManager.indexDocs",
-          "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.getTitle(), e);
+      if (StringUtil.isDefined(indexEntry.getFilename())) {
+        SilverTrace.error("indexEngine", "IndexManager.indexDocs",
+            "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.getFilename() + " ", e);
+      } else {
+        SilverTrace.error("indexEngine", "IndexManager.indexDocs",
+            "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.getTitle() + " ", e);
+      }
     }
   }
 

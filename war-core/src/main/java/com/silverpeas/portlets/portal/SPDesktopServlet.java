@@ -20,29 +20,7 @@
  */
 package com.silverpeas.portlets.portal;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -62,10 +40,31 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import org.silverpeas.core.admin.OrganisationController;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static com.silverpeas.util.MimeTypes.*;
-import static com.silverpeas.util.StringUtil.*;
+import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class SPDesktopServlet extends HttpServlet {
 
@@ -123,14 +122,15 @@ public class SPDesktopServlet extends HttpServlet {
       response.sendRedirect(spaceHomePage);
     } else {
       spaceId = getSpaceId(request);
-      String userId = getMainSessionController(request).getUserId();
+      MainSessionController mainSessionController = getMainSessionController(request);
+      String userId = mainSessionController.getUserId();
       String spContext = userId;
       if (isDefined(spaceId)) {
         spContext = spaceId;
       }
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
-      DesktopMessages.init(request);
+      DesktopMessages.init(mainSessionController.getFavoriteLanguage());
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
           "DesktopMessages initialized !");
       DriverUtil.init(request);
@@ -282,7 +282,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the initialized portlet content.
    */
   private PortletContent initPortletContent(final PortletContent portletContent,
-      final HttpServletRequest request) throws InvokerException {
+      final HttpServletRequest request) {
     String portletWindowName = portletContent.getPortletWindowName();
     portletContent.setPortletWindowMode(getPortletWindowMode(request, portletWindowName));
     portletContent.setPortletWindowState(getPortletWindowState(request, portletWindowName));
@@ -328,6 +328,7 @@ public class SPDesktopServlet extends HttpServlet {
       try {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContent, portletRegistryContext, spContext);
+
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
         } else if (portletWindowData.isThick()) {
@@ -481,6 +482,7 @@ public class SPDesktopServlet extends HttpServlet {
       String spContext) throws PortletRegistryException {
     PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
     portletWindowData.init(request, portletRegistryContext, portletContent.getPortletWindowName());
+
     if (!portletContent.isInMinimizedWindowState()) {
       portletWindowData.setContent(portletContent.getContent());
     }

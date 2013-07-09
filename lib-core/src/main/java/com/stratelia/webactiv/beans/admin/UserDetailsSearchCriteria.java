@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public static String[] ANY_GROUPS = ANY;
 
+  private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
   private static final String ROLE_NAMES = "roleIds";
@@ -84,6 +87,12 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
+    criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    return this;
+  }
+
+  @Override
   public UserDetailsSearchCriteria onResourceId(String resourceId) {
     if (isDefined(resourceId)) {
       criteria.put(RESOURCE_ID, resourceId);
@@ -121,6 +130,10 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnDomainIdSet() {
     return criteria.containsKey(DOMAIN_IDS);
+  }
+
+  public boolean isCriterionOnAccessLevelsSet() {
+    return criteria.containsKey(USER_ACCESS_LEVELS);
   }
 
   public boolean isCriterionOnNameSet() {
@@ -177,6 +190,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
    */
   public String getCriterionOnDomainId() {
     return (String) criteria.get(DOMAIN_IDS);
+  }
+
+  /**
+   * Gets access level criterion.
+   * @return the access level criterion.
+   */
+  public UserAccessLevel[] getCriterionOnAccessLevels() {
+    return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
   }
 
   /**

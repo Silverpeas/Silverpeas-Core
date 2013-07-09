@@ -81,6 +81,8 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       setSpaceJavascriptCallback("goSpace");
     }
     result.append("<div id=\"breadCrumb\">");
+    
+    boolean emptyBreadCrumb = true;
 
     // Display spaces path from root to component
     String language = (getMainSessionController() == null) ? "" : getMainSessionController()
@@ -117,6 +119,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append("</a>");
 
         firstSpace = false;
+        emptyBreadCrumb = false;
       }
 
       if (StringUtil.isDefined(getComponentId())) {
@@ -147,11 +150,13 @@ public class BrowseBarComplete extends AbstractBrowseBar {
           result.append(">");
           result.append(componentInstLight.getLabel(language));
           result.append("</a>");
+          emptyBreadCrumb = false;
         }
       }
     } else {
       if (getDomainName() != null) {
         result.append(getDomainName());
+        emptyBreadCrumb = false;
       }
       if (getComponentName() != null) {
         if (getDomainName() != null) {
@@ -163,6 +168,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         } else {
           result.append(getComponentName());
         }
+        emptyBreadCrumb = false;
       }
     }
 
@@ -170,7 +176,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     List<BrowseBarElement> elements = getElements();
     if (!elements.isEmpty()) {
       for (BrowseBarElement element : elements) {
-        result.append(CONNECTOR);
+        if (!emptyBreadCrumb) {
+          result.append(CONNECTOR);
+        }
         result.append("<a href=\"").append(element.getLink()).append("\"");
         result.append(" class=\"element\"");
         if (StringUtil.isDefined(element.getId())) {
@@ -179,9 +187,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append(">");
         result.append(EncodeHelper.javaStringToHtmlString(element.getLabel()));
         result.append("</a>");
+        emptyBreadCrumb = false;
       }
     } else if (StringUtil.isDefined(path)) {
-      result.append(CONNECTOR);
+      if (!emptyBreadCrumb) {
+        result.append(CONNECTOR);
+      }
       result.append("<span class=\"path\">");
       result.append(path);
       result.append("</span>");
@@ -189,7 +200,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
     // Display extra information
     if (StringUtil.isDefined(information)) {
-      result.append(CONNECTOR);
+      if (!emptyBreadCrumb) {
+        result.append(CONNECTOR);
+      }
       result.append("<span class=\"information\">");
       result.append(information);
       result.append("</span>");

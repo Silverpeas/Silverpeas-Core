@@ -115,6 +115,16 @@ function UserProfile(user) {
   };
 
   /**
+   * Sets this user as having the specified access level (a string of comma-separated list of access level)
+   * @param {String} accessLevels the access levels the user should have.
+   * @return {UserProfile} itself.
+   */
+  this.withAccessLevels = function (accessLevels) {
+    usermgt.filter.accessLevels = accessLevels;
+    return self;
+  };
+
+  /**
    * Sets this user as playing the specified roles (a string of comma-separated list of roles)
    * @param {String} roles the roles the user should play.
    * @return {UserProfile} itself.
@@ -415,6 +425,7 @@ var rootUserGroup = new UserGroup({
  * service on user profiles.
  * @param [params] the policy parameters on the user fetch.
  * @param [params.async=true] the asynchronous property of the communication with the WEB service.
+ * @property {String} [ids] requested user identifiers (array or string of comma-separated of user identifiers).
  * @param [params.id] the unique identifier of a user profile
  * @param [params.extended=false] a boolean indicating if the complete user profiles has to be taken into account.
  * @param [params.contacts=false] a boolean indicating if the relationships of the user has to be taken into account.
@@ -423,6 +434,7 @@ var rootUserGroup = new UserGroup({
  * @param [params.component] a unique identifier of a component instance to which the users must have right accesses.
  * @param [params.domain] an unique identifier of a domain the users should belong to.
  * @param [params.resource] an unique identifier of a resource in a component instance the users must have right accesses.
+ * @param [params.accessLevels] the access levels the users should have (array or string of comma-separated of access level names).
  * @param [params.roles] a String of comma-separated of role names. The roles the users should play.
  * @param [params.pagination] the pagination parameters on the users to fetch.
  * @param params.pagination.page the page number.
@@ -437,7 +449,7 @@ function UserProfileManagement(params) {
 
   /**
    * The filtering parameters to consider in the user profile fetch. Any of its property is optional:
-   * @property {String} [ids] requested user identifiers
+   * @property {String} [ids] requested user identifiers (array or string of comma-separated of user identifiers).
    * @property {String} [id] the unique identifier of a user profile
    * @property {Boolean} [extended=false] a boolean indicating if the complete user profiles has to be taken into account.
    * @property {Boolean} [contacts=false] a boolean indicating if the relationships of the user has to be taken into account.
@@ -446,6 +458,7 @@ function UserProfileManagement(params) {
    * @property {String} [component] a unique identifier of a component instance to which the users must have right accesses.
    * @property {String} [domain] an unique identifier of a domain the users should belong to.
    * @property {String} [resource] an unique identifier of a resource in a component instance the users must have right accesses.
+   * @property {String} [accessLevels] the access levels the users should have (array or string of comma-separated of access level names).
    * @property {String} [roles] a String of comma-separated of role names. The roles the users should play.
    * @property [pagination] the pagination parameters on the users to fetch.
    * @property {Number} pagination.page the page number.
@@ -453,7 +466,7 @@ function UserProfileManagement(params) {
    * @type {{id: null, extended: false, contacts: false, group: null, name: null, component: null, domain: null, resource: null, roles: null, pagination: null}
    */
   this.filter = {
-    ids: null, // user identifiers
+    ids: null, // user identifiers (array or string of comma-separated of user identifiers)
     id: null, // the unique identifier of a user to get,
     extended: false, // a flag to load user full details
     contacts: false, // the contacts of the referred user. The id must be set to be taken into account
@@ -463,6 +476,7 @@ function UserProfileManagement(params) {
     domain: null, // an identifier of the user domain the user belongs to
     resource: null, // an identifier of a resource belonging to a component instance (the identifier
     // must be set the resource type following by resource identifier in Silverpeas).
+    accessLevels: null, // an array or a string of comma-separated of access level names
     roles: null, // a string with a comma-separated role names
     pagination: null // pagination data in the form of
     // { page: <number of the page>, count: <count of users to fetch> }
@@ -517,7 +531,7 @@ function UserProfileManagement(params) {
    * The method returns the object itself.
    * @param [params] the parameters to consider when getting the users.
    * @param [params.async=true] the asynchronous property of the communication with the WEB service.
-   * @param [params.ids] requested user identifiers.
+   * @param [params.ids] requested user identifiers (array or string of comma-separated of user identifiers).
    * @param [params.id] the unique identifier of a user profile
    * @param [params.extended=false] a boolean indicating if the complete user profiles has to be taken into account.
    * @param [params.contacts=false] a boolean indicating if the relationships of the user has to be taken into account.
@@ -526,6 +540,7 @@ function UserProfileManagement(params) {
    * @param [params.component] a unique identifier of a component instance to which the users must have right accesses.
    * @param [params.domain] an unique identifier of a domain the users should belong to.
    * @param [params.resource] an unique identifier of a resource in a component instance the users must have right accesses.
+   * @param [params.accessLevels] the access levels the users should have (array or string of comma-separated of access level names).
    * @param [params.roles] a String of comma-separated of role names. The roles the users should play.
    * @param [params.pagination] the pagination parameters on the users to fetch.
    * @param params.pagination.page the page number.
@@ -541,8 +556,12 @@ function UserProfileManagement(params) {
     }
     setUpFilter(params);
     if (self.filter.ids) {
-      $(self.filter.ids).each(function(index, id) {
-        urlOfUsers += separator + 'ids=' + id;
+      var ids = self.filter.ids;
+      if (typeof ids === 'string') {
+        ids = self.filter.ids.split(',');
+      }
+      $(ids).each(function(index, id) {
+        urlOfUsers += separator + 'id=' + id;
         separator = '&';
       });
     }
@@ -572,6 +591,16 @@ function UserProfileManagement(params) {
     if (self.filter.domain) {
       urlOfUsers += separator + 'domain=' + self.filter.domain;
       separator = '&';
+    }
+    if (self.filter.accessLevels) {
+      var accessLevels = self.filter.accessLevels;
+      if (typeof accessLevels === 'string') {
+        accessLevels = self.filter.accessLevels.split(',');
+      }
+      $.each(accessLevels, function(index, accessLevel) {
+        urlOfUsers += separator + 'accessLevel=' + accessLevel;
+        separator = '&';
+      });
     }
     if (self.filter.group) {
       urlOfUsers += separator + 'group=' + self.filter.group;

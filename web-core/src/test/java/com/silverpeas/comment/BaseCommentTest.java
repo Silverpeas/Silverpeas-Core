@@ -24,11 +24,12 @@
 
 package com.silverpeas.comment;
 
-import com.silverpeas.comment.service.CommentActionNotifier;
 import com.silverpeas.jms.JMSTestFacade;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
 
 /**
  * The base class of all of the test cases in which are involved the comment service.
@@ -46,7 +47,7 @@ public abstract class BaseCommentTest {
       jmsTestFacade = new JMSTestFacade();
     }
     jmsTestFacade.bootstrap();
-    jmsTestFacade.newTopic(CommentActionNotifier.TOPIC_NAME);
+    jmsTestFacade.newTopic(COMMENT_TOPIC.getTopicName());
   }
 
   public static void shutdownMessagingSystem() throws Exception {

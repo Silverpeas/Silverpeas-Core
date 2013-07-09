@@ -1,33 +1,30 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPModification;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -40,18 +37,20 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPModification;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
  * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or
  * remove an user. However, it is possible to update an user...
+ *
  * @author tleroi
  */
 public class LDAPDriver extends AbstractDomainDriver {
+
   LDAPSettings driverSettings = new LDAPSettings();
   LDAPSynchroCache synchroCache = new LDAPSynchroCache();
   LDAPUser userTranslator = null;
@@ -61,6 +60,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the
    * class who need it.
+   *
    * @param rs name of resource file
    * @throws AdminException
    */
@@ -100,6 +100,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Called when Admin starts the synchronization
+   *
    * @return
    */
   @Override
@@ -206,7 +207,7 @@ public class LDAPDriver extends AbstractDomainDriver {
         usersReturned = userTranslator.getAllUsers(ld, "(|(&("
             + driverSettings.getTimeStampVar() + ">=" + fromTimeStamp + ")("
             + driverSettings.getTimeStampVar() + "<=" + toTimeStamp + "))"
-            + "(!("+driverSettings.getTimeStampVar()+"=*)))");
+            + "(!(" + driverSettings.getTimeStampVar() + "=*)))");
       } else {
         usersReturned = userTranslator.getAllUsers(ld, "");
       }
@@ -268,6 +269,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given user in Database from the reference
+   *
    * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
@@ -286,6 +288,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given user from database
+   *
    * @param userId The user id To remove synchro
    */
   @Override
@@ -295,6 +298,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update user information in database
+   *
    * @param userId The User Id to synchronize
    * @return The User object that contain new user information
    */
@@ -312,7 +316,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public void deleteUser(String userId) throws Exception {
-
   }
 
   @Override
@@ -323,25 +326,22 @@ public class LDAPDriver extends AbstractDomainDriver {
       ld = LDAPUtility.openConnection(driverSettings);
       LDAPConnection connection = LDAPUtility.getConnection(ld);
 
-      LDAPEntry theEntry = null;
-      theEntry = LDAPUtility.getFirstEntryFromSearch(ld, driverSettings
-          .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
-          .getUsersIdFilter(user.getSpecificId()), driverSettings.getUserAttributes());
+      LDAPEntry theEntry = LDAPUtility.getFirstEntryFromSearch(ld,
+          driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
+          driverSettings.getUsersIdFilter(user.getSpecificId()), driverSettings.getUserAttributes());
 
       if (theEntry == null) {
-        throw new AuthenticationBadCredentialException(
-            "LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
-            "admin.EX_USER_NOT_FOUND", "User=" + user.getSpecificId()
+        throw new AuthenticationBadCredentialException("LDAPDriver.updateUserFull()",
+            SilverpeasException.ERROR, "admin.EX_USER_NOT_FOUND", "User=" + user.getSpecificId()
             + ";IdField=" + driverSettings.getUsersIdField());
       }
 
       String userFullDN = theEntry.getDN();
-
       List<LDAPModification> modifications = new ArrayList<LDAPModification>();
 
       // update basic informations (first name, last name and email)
-      LDAPAttribute attribute =
-          new LDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
+      LDAPAttribute attribute = new LDAPAttribute(driverSettings.getUsersFirstNameField(), user
+          .getFirstName());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
       attribute = new LDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
@@ -361,20 +361,18 @@ public class LDAPDriver extends AbstractDomainDriver {
       }
 
       // Perform the update
-      connection
-          .modify(userFullDN, modifications.toArray(new LDAPModification[modifications.size()]));
+      connection.modify(userFullDN, modifications.toArray(
+          new LDAPModification[modifications.size()]));
     } catch (Exception ex) {
-      throw new AdminException(
-          "LDAPDriver.updateUserFull()",
-          SilverpeasException.ERROR, "admin.EX_LDAP_ACCESS_ERROR", ex);
+      throw new AdminException("LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
+          "admin.EX_LDAP_ACCESS_ERROR", ex);
     } finally {
       try {
         if (ld != null) {
           LDAPUtility.closeConnection(ld);
         }
       } catch (AdminException closeEx) {
-        // The exception that could
-        // occur in the emergency stop is not interesting
+        // The exception that could occur in the emergency stop is not interesting
         SilverTrace.error("admin", "LDAPDriver.updateUserFull",
             "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
       }
@@ -384,20 +382,20 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public void updateUserDetail(UserDetail user) throws Exception {
-
   }
 
   /**
    * Retrieve user information from database
+   *
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
   @Override
   public UserFull getUserFull(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-
-    SilverTrace.info("admin", "LDAPDriver.getUser",
-        "root.MSG_GEN_ENTER_METHOD", "UserId = " + userId);
+    SilverTrace.info("admin", "LDAPDriver.getUser", "root.MSG_GEN_ENTER_METHOD",
+        "UserId = " + userId);
     try {
       return userTranslator.getUserFull(ld, userId);
     } finally {
@@ -407,8 +405,10 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
+   *
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
   @Override
   public UserDetail getUser(String userId) throws AdminException {
@@ -425,14 +425,14 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all users from the database
+   *
    * @return User[] An array of User Objects that contain users information
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
   @Override
   public UserDetail[] getAllUsers() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-
-    SilverTrace.info("admin", "LDAPDriver.getAllUsers()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("admin", "LDAPDriver.getAllUsers()", "root.MSG_GEN_ENTER_METHOD");
     try {
       return userTranslator.getAllUsers(ld, "");
     } finally {
@@ -450,8 +450,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     } else {
       String ld = LDAPUtility.openConnection(driverSettings);
       try {
-        String extraFilter = "(" + property.getMapParameter() + "="
-            + propertyValue + ")";
+        String extraFilter = "(" + property.getMapParameter() + "=" + propertyValue + ")";
         return userTranslator.getAllUsers(ld, extraFilter);
       } finally {
         LDAPUtility.closeConnection(ld);
@@ -476,6 +475,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user's groups
+   *
    * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
@@ -494,6 +494,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given group in Database from the reference
+   *
    * @param groupName The group name to import
    * @return The group object that contain new group information
    */
@@ -511,6 +512,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given group from database
+   *
    * @param groupId The group id To remove synchro
    */
   @Override
@@ -520,6 +522,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update group information in database
+   *
    * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
@@ -537,16 +540,15 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public void deleteGroup(String groupId) throws AdminException {
-
   }
 
   @Override
   public void updateGroup(Group m_Group) throws AdminException {
-
   }
 
   /**
    * Retrieve group information from database
+   *
    * @param groupId The group id as stored in the database
    * @return The Group object that contains user information
    */
@@ -570,6 +572,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups contained in the given group
+   *
    * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
@@ -588,6 +591,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups from the database
+   *
    * @return Group[] An array of Group Objects that contain groups information
    */
   @Override
@@ -605,6 +609,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all root groups from the database
+   *
    * @return Group[] An array of Group Objects that contain root groups information
    */
   @Override
@@ -635,6 +640,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Start a new transaction
+   *
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
    * 'commit' statement)
    */
@@ -673,7 +679,5 @@ public class LDAPDriver extends AbstractDomainDriver {
   public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
     // Access in read only
   }
-
-
 
 }

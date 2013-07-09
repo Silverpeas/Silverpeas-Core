@@ -645,15 +645,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           }
         } else {// domaine SQL
 
-          // informations spécifiques
           for (int j = 0; j < csvReader.getM_specificNbCols(); j++) {
             if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
-              informationSpecifiqueString = csvValues[i][j + 6].getValueString(); // verifier 50
-              // char max
-              if (informationSpecifiqueString.length() > 50) {
+              informationSpecifiqueString = csvValues[i][j + 6].getValueString();
+              // verify the length
+              if (informationSpecifiqueString.length() > csvReader.getM_specificColMaxLength(j)) {
                 listErrors.append(getErrorMessage(i + 1, j + 6, informationSpecifiqueString));
-                listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
-                    "JDP.caracteres")).append("<br/>");
+                listErrors.append(getString("JDP.nbCarMax")).append(" ")
+                    .append(csvReader.getM_specificColMaxLength(j)).append(" ")
+                    .append(getString("JDP.caracteres")).append("<br/>");
               }
             }
           }
@@ -775,7 +775,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     StringBuilder str = new StringBuilder();
     str.append(getString("JDP.ligne")).append(" = ").append(line).append(", ");
     str.append(getString("JDP.colonne")).append(" = ").append(column).append(", ");
-    str.append(getString("JDP.valeur")).append(" = ").append(value).append(", ");
+    str.append(getString("JDP.valeur")).append(" = ").append(StringUtil.truncate(value, 100))
+        .append(", ");
     return str.toString();
   }
 
@@ -1637,7 +1638,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException =
           new JobDomainPeasTrappedException("JobDomainPeasSessionController.createDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+          SilverpeasException.ERROR, "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DATABASE", e);
       trappedException.setGoBackPage("displayDomainCreate");
       throw trappedException;
     }
@@ -1687,7 +1688,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException =
           new JobDomainPeasTrappedException("JobDomainPeasSessionController.createSQLDomain()",
-              SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+              SilverpeasException.ERROR, "admin.MSG_ERR_DOMAIN_ALREADY_EXIST", e);
       trappedException.setGoBackPage("displayDomainSQLCreate");
       throw trappedException;
     }

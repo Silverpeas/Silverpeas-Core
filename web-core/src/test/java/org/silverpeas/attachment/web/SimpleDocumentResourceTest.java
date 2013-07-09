@@ -32,17 +32,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.representation.Form;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
-import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -59,15 +48,23 @@ import com.silverpeas.web.ResourceGettingTest;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.representation.Form;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
+import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static com.silverpeas.web.WebResourceTesting.HTTP_SESSIONKEY;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
 
 /**
@@ -78,7 +75,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
 
   private UserDetail user;
   private String sessionKey;
-  private Date creationDate = RandomGenerator.getOutdatedCalendar().getTime();
+  private final Date creationDate = RandomGenerator.getOutdatedCalendar().getTime();
 
   public SimpleDocumentResourceTest() {
     super("org.silverpeas.attachment.web", "spring-jcr-webservice.xml");
@@ -192,9 +189,9 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         .getBytes(Charsets.UTF_8)), MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
     WebResource webResource = resource();
-    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf").header(
-        HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(MULTIPART_FORM_DATA)
-        .post(SimpleDocumentEntity.class, form);
+    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
+        .header(HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(
+        MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),
@@ -217,9 +214,9 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.field("fileTitle", "Upload test");
     form.field("fileDescription", "This test is trying to simulate the update of a content");
     WebResource webResource = resource();
-    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf").header(
-        HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(MULTIPART_FORM_DATA)
-        .post(SimpleDocumentEntity.class, form);
+    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
+        .header(HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(
+        MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),
@@ -246,7 +243,6 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
   }
 
   @Test
-  @Ignore
   public void testUnlockDocument() {
     String lang = "fr";
     String comment = "Déverrouillage";
@@ -267,7 +263,33 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/unlock").header(
         HTTP_SESSIONKEY, getSessionKey()).post(String.class, form);
     assertThat(result, is(notNullValue()));
-    assertThat(result, is("{\"status\":true}"));
+    assertThat(result, is(
+        "{\"status\":true, \"id\":-1, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
+  }
+
+  @Test
+  public void testSwitchDocumentVersionState() {
+    String lang = "fr";
+    SimpleDocumentPK pk = new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID);
+    pk.setOldSilverpeasId(56);
+    SimpleDocument document = new SimpleDocument(pk, "18", 10, false, new SimpleAttachment(
+        "test.pdf", lang, "Test", "Ceci est un test.", 500L, MimeTypes.PDF_MIME_TYPE,
+        USER_ID_IN_TEST, creationDate, null));
+    Form form = new Form();
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+        thenReturn(document);
+    when(service.searchDocumentById(eq(pk), eq(lang))).thenReturn(document);
+    when(service.changeVersionState(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).thenReturn(
+        pk);
+    getTestResources().setAttachmentService(service);
+    WebResource webResource = resource();
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/switchState").header(
+        HTTP_SESSIONKEY, getSessionKey()).put(String.class, form);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is(
+        "{\"status\":true, \"id\":56, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
+    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), null);
   }
 
   @Override

@@ -77,6 +77,7 @@
   <ctx:component-scan base-package="com.silverpeas.util.security"/>
   <ctx:component-scan base-package="org.silverpeas.security.web"/>
   <ctx:component-scan base-package="org.silverpeas.upload"/>
+  <ctx:component-scan base-package="org.silverpeas.contribution"/>
 
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
         factory-method="getDomainDriverFactory"/>

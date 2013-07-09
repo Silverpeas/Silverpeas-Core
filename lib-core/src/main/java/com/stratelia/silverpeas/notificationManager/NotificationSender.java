@@ -227,8 +227,7 @@ public class NotificationSender implements java.io.Serializable {
     return result;
   }
 
-  private Set<GroupRecipient> getGroupSet(NotificationMetaData metaData, ResourceLocator settings)
-      throws NotificationManagerException {
+  private Set<GroupRecipient> getGroupSet(NotificationMetaData metaData, ResourceLocator settings) {
     HashSet<GroupRecipient> groupsSet = new HashSet<GroupRecipient>();
     Collection<GroupRecipient> groupRecipients = metaData.getGroupRecipients();
     for (GroupRecipient group : groupRecipients) {

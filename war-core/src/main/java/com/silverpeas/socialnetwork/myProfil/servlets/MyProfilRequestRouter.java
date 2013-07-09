@@ -58,7 +58,9 @@ import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 import org.apache.commons.fileupload.FileItem;
@@ -154,7 +156,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         socialNetworkHelper.publishStatus(myProfilSC, request);
         request.setAttribute("View", MyNetworks.name());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      }  else if (route == MyInvitations) {
+      } else if (route == MyInvitations) {
         MyInvitationsHelper helper = new MyInvitationsHelper();
         helper.getAllInvitationsReceived(myProfilSC, request);
         request.setAttribute("View", function);
@@ -207,15 +209,37 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    * @param request
    * @param nameAvatar
    * @return String
-   * @throws IOException
    * @throws UtilException
    */
   protected String saveAvatar(HttpServletRequest request, String nameAvatar)
-      throws IOException, UtilException {
+      throws UtilException {
     List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+    String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     ImageProfil img = new ImageProfil(nameAvatar);
-    img.saveImage(file.getInputStream());
+    if (file != null && StringUtil.isDefined(file.getName())) {// Create or Update
+      // extension
+      String extension = FileRepositoryManager.getFileExtension(file.getName());
+      if (extension != null && extension.equalsIgnoreCase("jpeg")) {
+        extension = "jpg";
+      }
+
+      if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
+          equalsIgnoreCase(extension)) {
+        throw new UtilException("MyProfilRequestRouter.saveAvatar()",
+            SilverpeasRuntimeException.ERROR,
+            "", "Bad extension, .gif or .jpg or .png expected.");
+      }
+      try {
+        img.saveImage(file.getInputStream());
+      } catch (IOException e) {
+        throw new UtilException("MyProfilRequestRouter.saveAvatar()",
+            SilverpeasRuntimeException.ERROR,
+            "", "Problem while saving image.");
+      }
+    } else if ("yes".equals(removeImageFile)) {// Remove
+      img.removeImage();
+    }
     return nameAvatar;
   }
 
@@ -266,8 +290,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       SilverTrace.info(getSessionControlBeanName(),
           "PersoPeasRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-          + " - userLastName=" + userLastName + " userEmail="
-          + userEmail);
+              + " - userLastName=" + userLastName + " userEmail="
+              + userEmail);
 
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion = (userLoginQuestion != null
@@ -320,8 +344,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc)
-      throws PeasCoreException {
+  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc) {
     request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
     request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
@@ -338,8 +361,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)
-      throws PeasCoreException {
+  private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc) {
     UserPreferences preferences = sc.getPreferences();
     preferences.setLanguage(request.getParameter("SelectedLanguage"));
     preferences.setLook(request.getParameter("SelectedLook"));

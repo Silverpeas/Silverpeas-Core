@@ -71,7 +71,7 @@ public class PKS12KeyStore {
    * the PKS#12 key store file.
    */
   public PKS12KeyStore(String p12FilePath, String password)
-      throws KeyStoreException, FileNotFoundException, CryptoException {
+      throws KeyStoreException, CryptoException {
     // CHARGEMENT DU FICHIER PKCS#12
     KeyStore ks = null;
     Security.addProvider(new BouncyCastleProvider());

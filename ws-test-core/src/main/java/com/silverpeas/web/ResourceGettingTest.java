@@ -23,14 +23,14 @@
  */
 package com.silverpeas.web;
 
+import com.silverpeas.util.StringUtil;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
 import java.util.UUID;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
-
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -46,6 +46,14 @@ import static org.junit.Assert.fail;
  */
 public abstract class ResourceGettingTest<T extends TestResources> extends RESTWebServiceTest<T>
     implements WebResourceTesting {
+
+  public static String withAsSessionKey(String sessionKey) {
+    return sessionKey;
+  }
+
+  public static MediaType asMediaType(MediaType mediaType) {
+    return mediaType;
+  }
 
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
@@ -65,7 +73,7 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
    * @return the web entity representing the resource at the specified URI.
    */
   public <C> C getAt(String uri, Class<C> c) {
-    return getAt(uri, MediaType.APPLICATION_JSON_TYPE, c);
+    return getAt(uri, asMediaType(MediaType.APPLICATION_JSON_TYPE), c);
   }
 
   /**
@@ -80,22 +88,14 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
    * @return the web entity representing the resource at the specified URI.
    */
   public <C> C getAt(String uri, MediaType mediaType, Class<C> c) {
-    String thePath = uri;
-    WebResource resource = resource();
-    if (thePath.contains("?")) {
-      String[] pathParts = thePath.split("\\?");
-      String query = pathParts[1];
-      thePath = pathParts[0];
-      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
-      resource = resource.queryParams(parameters);
-    }
-    return resource.path(thePath).header(HTTP_SESSIONKEY, getSessionKey()).accept(mediaType).get(c);
+    return getAt(uri, withAsSessionKey(getSessionKey()), asMediaType(mediaType), c);
   }
 
   @Test
   public void gettingAResourceByANonAuthenticatedUser() {
     try {
-      resource().path(aResourceURI()).accept(MediaType.APPLICATION_JSON).get(getWebEntityClass());
+      getAt(aResourceURI(), withAsSessionKey(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
+          getWebEntityClass());
       fail("A non authenticated user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -107,8 +107,8 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
   @Test
   public void gettingAResourceWithAnExpiredSession() {
     try {
-      resource().path(aResourceURI()).header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-          accept(MediaType.APPLICATION_JSON).get(getWebEntityClass());
+      getAt(aResourceURI(), withAsSessionKey(UUID.randomUUID().toString()),
+          asMediaType(MediaType.APPLICATION_JSON_TYPE), getWebEntityClass());
       fail("A non authenticated user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -140,5 +140,22 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
       int notFound = Status.NOT_FOUND.getStatusCode();
       assertThat(receivedStatus, is(notFound));
     }
+  }
+
+  private <C> C getAt(String uri, String sessionKey, MediaType mediaType, Class<C> c) {
+    String thePath = uri;
+    WebResource resource = resource();
+    if (thePath.contains("?")) {
+      String[] pathParts = thePath.split("\\?");
+      String query = pathParts[1];
+      thePath = pathParts[0];
+      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
+      resource = resource.queryParams(parameters);
+    }
+    Builder requestBuilder = resource.path(thePath).accept(mediaType);
+    if (StringUtil.isDefined(sessionKey)) {
+      requestBuilder = requestBuilder.header(HTTP_SESSIONKEY, sessionKey);
+    }
+    return requestBuilder.get(c);
   }
 }

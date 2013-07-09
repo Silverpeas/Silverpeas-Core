@@ -76,6 +76,8 @@ public class SimpleDocumentEntity implements Exposable {
   private String downloadUrl;
   @XmlElement(defaultValue = "")
   private String comment;
+  @XmlElement(defaultValue = "false")
+  private String versioned;
 
   public static SimpleDocumentEntity fromAttachment(SimpleDocument document) {
     SimpleDocumentEntity entity = new SimpleDocumentEntity();
@@ -103,6 +105,7 @@ public class SimpleDocumentEntity implements Exposable {
     entity.downloadUrl = document.getAttachmentURL();
     entity.lang = document.getLanguage();
     entity.comment = document.getComment();
+    entity.versioned = String.valueOf(document.isVersioned());
     return entity;
   }
 
@@ -185,4 +188,9 @@ public class SimpleDocumentEntity implements Exposable {
   public String getComment() {
     return comment;
   }
+
+  public String getVersioned() {
+    return versioned;
+  }
+
 }

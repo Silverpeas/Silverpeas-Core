@@ -552,8 +552,7 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws SQLException
    * @see
    */
-  static String[] buildConnectionStatistics(String name, long count, long duration, String id)
-      throws SQLException {
+  static String[] buildConnectionStatistics(String name, long count, long duration, String id) {
     String[] stat = new String[4];
     stat[INDICE_LIB] = name;
     stat[INDICE_COUNTCONNEXION] = String.valueOf(count);

@@ -866,20 +866,19 @@ public class ContentManager implements Serializable {
     return instanceId;
   }
 
-  private Map<String, String> getAsso() throws ContentManagerException {
+  private Map<String, String> getAsso() {
     return assoComponentIdInstanceId;
   }
 
-  private String getInstanceId(String componentId) throws ContentManagerException {
+  private String getInstanceId(String componentId) {
     return getAsso().get(componentId);
   }
 
-  private void addAsso(String componentId, int instanceId)
-      throws ContentManagerException {
+  private void addAsso(String componentId, int instanceId) {
     getAsso().put(componentId, java.lang.Integer.toString(instanceId));
   }
 
-  private void removeAsso(String componentId) throws ContentManagerException {
+  private void removeAsso(String componentId) {
     getAsso().remove(componentId);
   }
 

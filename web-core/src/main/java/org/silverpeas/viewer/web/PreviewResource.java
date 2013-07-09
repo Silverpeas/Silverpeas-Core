@@ -64,7 +64,7 @@ public class PreviewResource extends RESTWebService {
    * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
    *
-   * @param id 
+   * @param id
    * @return the response to the HTTP GET request with the JSON representation of preview
    * information.
    */
@@ -72,43 +72,6 @@ public class PreviewResource extends RESTWebService {
   @Path("attachment/{id}")
   @Produces(APPLICATION_JSON)
   public PreviewEntity getAttachmentPreview(@PathParam("id") final String id) {
-    try {
-
-      // Retrieve attachment data
-      final SimpleDocument attachment = attachmentService.searchDocumentById(new SimpleDocumentPK(
-          id, getComponentId()), getUserPreferences().getLanguage());
-
-      // Checking availability
-      if (attachment == null) {
-        throw new PreviewException("ATTACHMENT DOESN'T EXIST");
-      }
-
-      // Computing the preview entity
-      return asWebEntity(previewService.getPreview(attachment.getFilename(), new File(attachment.
-          getAttachmentPath())));
-
-    } catch (final PreviewException pe) {
-      throw new WebApplicationException(pe, Status.NOT_FOUND);
-    } catch (final WebApplicationException ex) {
-      throw ex;
-    } catch (final Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
-  }
-
-  /**
-   * Gets the JSON representation of preview information. If it doesn't exist, a 404 HTTP code is
-   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
-   * processing the request, a 503 HTTP code is returned.
-   *
-   * @param id 
-   * @return the response to the HTTP GET request with the JSON representation of preview
-   * information.
-   */
-  @GET
-  @Path("version/{id}")
-  @Produces(APPLICATION_JSON)
-  public PreviewEntity getVersionPreview(@PathParam("id") final String id) {
     try {
 
       // Retrieve attachment data

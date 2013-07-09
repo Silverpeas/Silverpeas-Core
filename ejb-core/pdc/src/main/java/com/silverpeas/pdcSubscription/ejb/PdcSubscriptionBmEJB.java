@@ -25,25 +25,9 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
-
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
@@ -61,6 +45,18 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 @Stateless(name = "PdcSubscription", description = "Stateless bean to manage pdc subscription.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -254,7 +250,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
       List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo) {
     Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    List<PDCSubscription> subscriptions = null;
+    List<PDCSubscription> subscriptions;
     try {
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
@@ -428,7 +424,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    */
   protected boolean checkSubscriptionRemove(PDCSubscription subscription,
       int axisId, List<String> oldPath, List<String> newPath) {
-    List<Criteria> subscriptionCtx = subscription.getPdcContext();
+    List<? extends Criteria> subscriptionCtx = subscription.getPdcContext();
     for (Criteria criteria : subscriptionCtx) {
       if (criteria.getAxisId() == axisId) {
         // check if criterias value has been removed from axis
@@ -495,7 +491,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.isCorrespondingSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = " + subscription + ", classifyValues = "
         + classifyValues);
-    List<Criteria> searchCriterias = subscription.getPdcContext();
+    List<? extends Criteria> searchCriterias = subscription.getPdcContext();
     if (searchCriterias == null || classifyValues == null || searchCriterias.isEmpty()
         || classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {
       return false;

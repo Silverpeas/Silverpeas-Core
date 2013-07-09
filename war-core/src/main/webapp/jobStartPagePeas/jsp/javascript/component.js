@@ -28,18 +28,20 @@ $(document).ready(function()
 {
    // By suppling no content attribute, the library uses each elements title attribute by default
    $('img[title]').qtip({
-      content: {
-         text: false // Use each elements title attribute
-      },
-      style: 'silverpeas',
-	  position: {
-		  corner: {
-			target: 'topRight',
-			tooltip: 'bottomLeft'
-		  },
-		  adjust: {
-			  screen: true
-		  }
-	  }
+	content: {
+		text: false
+	},
+	style: {
+		tip: true,
+		classes: "qtip-shadow qtip-green"
+	},
+	position: {
+		adjust: {
+			method: "flip flip"
+		},
+		at: "top right",
+		my: "bottom left",
+		viewport: $(window)
+	}
    });
 });

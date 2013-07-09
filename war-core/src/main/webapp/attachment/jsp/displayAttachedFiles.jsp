@@ -30,7 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
@@ -183,7 +183,6 @@
     </c:otherwise>
   </c:choose>
   <c:set var="componentId" value="${param.ComponentId}" />
-
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
@@ -212,12 +211,9 @@
             <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
           <c:if test="${contextualMenuEnabled}">
-            <%com.silverpeas.attachment.MenuHelper.displayActions((SimpleDocument) pageContext.
-                    getAttribute("currentAttachment"), (Boolean) pageContext.getAttribute("useXMLForm"),
-                    (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
-                    getAttribute("webdavEditingEnable"), userId, (String) pageContext.getAttribute(
-                    "contentLanguage"), attResources, URLManager.getServerURL(request),
-                    (Boolean) pageContext.getAttribute("showMenuNotif"), (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>
+            <menu:simpleDocument attachment="${currentAttachment}" contentLanguage="${contentLanguage}"
+                                 showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
+                                 useFileSharing="${useFileSharing}" useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           </c:if>
           <span class="lineMain">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
@@ -271,7 +267,7 @@
               <c:if test="${silfn:isDefined(currentAttachment.xmlFormId)}">
                 <br/><a rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>
-                        <c:param name="ObjectId" value="${currentAttachment.oldSilverpeasId}"/>
+                        <c:param name="ObjectId" value="${currentAttachment.id}"/>
                         <c:param name="ObjectLanguage" value="${contentLanguage}"/>
                         <c:param name="ComponentId" value="${componentId}"/>
                         <c:param name="ObjectType" value="${'Attachment'}"/>
@@ -353,7 +349,7 @@
 <c:if test="${spinfireViewerEnable}">
   <script type="text/javascript">
   if (navigator.appName=='Microsoft Internet Explorer') {
-    for (i = 0; i < document.getElementsByName("switchView").length; i++) {
+    for (var i = 0; i < document.getElementsByName("switchView").length; i++) {
       document.getElementsByName("switchView")[i].style.display = '';
     }
   }
@@ -374,18 +370,18 @@
   <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
     <c:param name="ComponentId" value="${componentId}" />
     <c:param name="fromAlias" value="${silfn:booleanValue(param.Alias)}"/>
+    <c:param name="Language" value="${contentLanguage}"/>
   </c:url>
   var publicVersionsWindow = window;
   function viewPublicVersions(docId) {
-      url = '<c:out value="${allVersionsUrl}" />&DocId=' + docId;
-      windowName = "publicVersionsWindow";
-      larg = "800";
-      haut = "475";
-      windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
+      var url = '${allVersionsUrl}&DocId=' + docId;
+      var windowName = "publicVersionsWindow";
+      var windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
       if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {
         publicVersionsWindow.close();
       }
-      publicVersionsWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+      publicVersionsWindow = SP_openWindow(url,windowName, "800", "475",
+      "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised");
     }
 
   <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
@@ -421,37 +417,36 @@
     // Use the each() method to gain access to each elements attributes
     $('a[rel]').each(function() {
       $(this).qtip({
-        content: {
+        content : {
           // Set the text to an image HTML string with the correct src URL to the loading image you want to use
-          text: '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
-          url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
-          title: {
-            text: '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-            button: '<fmt:message key="GML.close" />' // Show a close link in the title
+          text : '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
+          ajax: {
+            url : $(this).attr('rel') // Use the rel attribute of each element for the url to load
+          },
+          title : {
+            text : '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+            button : '<fmt:message key="GML.close" />' // Show a close link in the title
           }
         },
-        position: {
-          corner: {
-            target: 'leftMiddle', // Position the tooltip above the link
-            tooltip: 'rightMiddle'
+        position : {
+          adjust : {
+            method : "flip flip"
           },
-          adjust: {
-            screen: true // Keep the tooltip on-screen at all times
-          }
+          at : "left center",
+          my : "right center",
+          viewport : $(window) // Keep the tooltip on-screen at all times
         },
-        show: {
-          when: 'click',
-          solo: true // Only show one tooltip at a time
+        show : {
+          solo : true,
+          event : "click"
         },
-        hide: 'unfocus',
-        style: {
-          tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
-          border: {
-            width: 0,
-            radius: 4
-          },
-          name: 'light', // Use the default light style
-          width: 570 // Set the tooltip width
+        hide : {
+          event : "unfocus"
+        },
+        style : {
+          tip : true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+          width : 570,
+          classes : "qtip-shadow qtip-light"
         }
       })
     });
@@ -483,24 +478,23 @@
         $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(data) {
           if (data == 'ok') {
             var oMenu = eval("oMenu" + oldId);
-            oMenu.getItem(3).cfg.setProperty("disabled", false);
-            oMenu.getItem(0).cfg.setProperty("disabled", true);
-            oMenu.getItem(1).cfg.setProperty("disabled", true);
+            oMenu.getItem(3).cfg.setProperty("disabled", false); // checkin
+            oMenu.getItem(0).cfg.setProperty("disabled", true); // checkout
+            oMenu.getItem(1).cfg.setProperty("disabled", true);	// checkout and download
             if (!webdav) {
-              oMenu.getItem(2).cfg.setProperty("disabled", true);
+              oMenu.getItem(2).cfg.setProperty("disabled", true);  // edit online
             }
             //disable delete
-            <c:choose>
-              <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", true);</c:when>
-              <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", true);</c:otherwise>
-            </c:choose>
-            $('#worker' + oldId).html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
-            $('#worker' + oldId).css({'visibility':'visible'});
+            oMenu.getItem(3, 1).cfg.setProperty("disabled", true); // delete
+            oMenu.getItem(2, 1).cfg.setProperty("disabled", true); // switch
+            var $worker = $('#worker' + oldId);
+            $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
+            $worker.css({'visibility':'visible'});
             if (edit) {
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               window.open(url, '_self');
             } else if (download) {
-              var url = $('#url' + oldId).attr('href');
+              var url = $('#url_' + oldId).attr('href');
               window.open(url);
             }
           } else {
@@ -520,7 +514,34 @@
       checkout(id, oldId, true, true, false);
     }
 
-    function checkin(id, oldId, webdav, forceRelease) {
+    function switchState(id, isVersioned) {
+      <fmt:message key="attachment.switch.warning.simple" var="warningSimple"/>
+      <fmt:message key="attachment.switch.warning.versioned" var="warningVersioned"/>
+      <fmt:message key="attachment.switchState.toVersioned" var="warningTitleSimple"/>
+      <fmt:message key="attachment.switchState.toSimple" var="warningTitleVersioned"/>
+      if(isVersioned) {
+        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
+        $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
+        $("#attachment-switch-versioned").hide();
+        $("#attachment-switch-simple").show();
+      } else {
+        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
+        $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
+        $("#attachment-switch-simple").hide();
+        $("#attachment-switch-versioned").show();
+      }
+      $("#dialog-attachment-switch").data("id", id).dialog("open");
+      pageMustBeReloadingAfterSorting = true;
+    }
+
+    function checkin(id, oldId, webdav, forceRelease, isVersioned) {
+      if(isVersioned === true) {
+        $("#simple_fields_attachment-checkin").hide();
+        $("#versioned_fields_attachment-checkin").show();
+      }else {
+        $("#versioned_fields_attachment-checkin").hide();
+        $("#simple_fields_attachment-checkin").show();
+      }
       $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
       pageMustBeReloadingAfterSorting = true;
     }
@@ -531,13 +552,11 @@
       oMenu.getItem(0).cfg.setProperty("disabled", false);
       oMenu.getItem(1).cfg.setProperty("disabled", false);
       oMenu.getItem(2).cfg.setProperty("disabled", false);
-      //enable delete
-      <c:choose>
-        <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", false);</c:when>
-        <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", false);</c:otherwise>
-      </c:choose>
-      $('#worker' + id).html("");
-      $('#worker' + id).css({'visibility':'hidden'});
+      oMenu.getItem(3, 1).cfg.setProperty("disabled", false)
+      oMenu.getItem(2, 1).cfg.setProperty("disabled", false);
+      var $worker = $('#worker' + id);
+      $worker.html("");
+      $worker.css({'visibility':'hidden'});
       if (pageMustBeReloadingAfterSorting) {
         reloadIncludingPage();
       }
@@ -558,7 +577,7 @@
     }
 
     function deleteContent(id, lang) {
-      deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + lang;
+      var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + lang;
       $.ajax({
         url: deleteUrl,
         type: "DELETE",
@@ -576,7 +595,7 @@
         if ((nbBox == null) && (boxItems.checked)) {
           sLanguages += boxItems.value + ",";
         } else {
-          for (i = 0; i < boxItems.length; i++) {
+          for (var i = 0; i < boxItems.length; i++) {
             if (boxItems[i].checked){
               sLanguages += boxItems[i].value + ",";
             }
@@ -669,10 +688,10 @@
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
       open:function() {
-    	  var filename = $(this).data("filename");
-    	  $("#button-delete-all").hide();
+        var filename = $(this).data("filename");
+        $("#button-delete-all").hide();
       <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
-        translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
+        var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
           url: translationsUrl,
           type: "GET",
@@ -704,14 +723,14 @@
       modal: true,
       buttons: {
         '<fmt:message key="GML.delete"/>': {
-        	id: "button-delete-content",
-        	text: "<fmt:message key="GML.delete"/>",
-        	click: function() {
+          id: "button-delete-content",
+          text: "<fmt:message key="GML.delete"/>",
+          click: function() {
             var attachmentId = $(this).data("id");
             <c:choose>
               <c:when test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
                 $("input[name='languagesToDelete']").filter(':checked').each(function() {
-                  deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
+                  var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
                   $.ajax({
                     url: deleteUrl,
                     type: "DELETE",
@@ -727,7 +746,7 @@
                 $("#dialog-attachment-delete").dialog("close");
               </c:when>
               <c:otherwise>
-                  deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+                  var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
                   $.ajax({
                     url: deleteUrl,
                     type: "DELETE",
@@ -746,11 +765,11 @@
            }
         },
         '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
-        	id: "button-delete-all",
-        	text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
-        	click: function() {
+          id: "button-delete-all",
+          text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
+          click: function() {
             var attachmentId = $(this).data("id");
-        		deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+            var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
                 $.ajax({
                   url: deleteUrl,
                   type: "DELETE",
@@ -761,7 +780,7 @@
                     $(this).dialog("close");
                   }
                 });
-        	}
+          }
         },
         '<fmt:message key="GML.cancel"/>': function() {
           $(this).dialog("close");
@@ -879,15 +898,11 @@
         });
 
         function submitCheckin(submitUrl) {
-          if ("FormData" in window) {
-            var formData = new FormData($("#checkin-attachment-form")[0]);
             $.ajax(submitUrl, {
-              processData: false,
-              contentType: false,
               type: 'POST',
               dataType: "json",
-              data: formData,
-              success:function(data) {
+              data: $("#checkin-attachment-form").serialize(),
+              success:function(result) {
                 reloadIncludingPage();
                 $(this).dialog("close");
               },
@@ -895,13 +910,35 @@
                 alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
               }
             });
-          } else {
-            $('#checkin-attachment-form').attr('action', submitUrl);
-            $('#checkin-attachment-form').submit();
-            reloadIncludingPage();
+        }
+
+        $("#dialog-attachment-switch").dialog({
+        autoOpen: false,
+        title: "<fmt:message key="attachment.dialog.switch"/>",
+        height: 'auto',
+        width: 550,
+        modal: true,
+        buttons: {
+          '<fmt:message key="GML.ok"/>': function() {
+            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $("#dialog-attachment-switch").data('id') + '/switchState';
+            $.ajax(submitUrl, {
+              type: 'PUT',
+              dataType: "json",
+              data: $("#attachment-switch-form").serialize(),
+              success:function(result) {
+                reloadIncludingPage();
+                $(this).dialog("close");
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+              }
+            });
+          },
+          '<fmt:message key="GML.cancel"/>': function() {
             $(this).dialog("close");
           }
         }
+      });
 
         $("#dialog-attachment-checkin").dialog({
         autoOpen: false,
@@ -911,9 +948,9 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            $('#force').val($(this).data('forceRelease'));
-            $('#webdav').val($(this).data('webdav'));
-            $('#checkin_oldId').val($(this).data('oldId'));
+            $('#force').val($("#dialog-attachment-checkin").data('forceRelease'));
+            $('#webdav').val($("#dialog-attachment-checkin").data('webdav'));
+            $('#checkin_oldId').val($("#dialog-attachment-checkin").data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
             submitCheckin(submitUrl);
           },
@@ -932,7 +969,7 @@
             clearCheckin();
           }
         });
-      });
+
 
       $('#attachmentList').bind('sortupdate', function(event, ui) {
         var reg = new RegExp("attachment", "g");
@@ -942,12 +979,15 @@
         var param = "";
         for (var i = 0; i < tableau.length; i++) {
           if (i != 0) {
-            param += ","
+            param += ",";
           }
           param += tableau[i].substring(3, tableau[i].length - 1);
         }
         sortAttachments(param);
       });
+
+      });
+
 
       function sortAttachments(orderedList) {
         $.post('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
@@ -975,12 +1015,22 @@
     $('#fileName').text(attachment.fileName);
     $('#fileTitle').val(attachment.title);
     $('#fileDescription').val(attachment.description);
+    if(attachment.versioned === 'true') {
+       $('#fileName_label').text('<fmt:message key="attachment.version.actual" />');
+       $('#file_upload_label').text('<fmt:message key="attachment.version.new" />');
+       $('#versioned_fields_attachment-update').show();
+    } else {
+      $('#versioned_fields_attachment-update').hide();
+      $('#fileName_label').text('<fmt:message key="GML.file"/>');
+      $('#file_upload_label').text('<fmt:message key="fichierJoint" />');
+    }
   }
 
   function clearAttachment() {
     $('#fileName').html('');
     $('#fileTitle').val('');
     $('#fileDescription').val('');
+    $('#versioned_fields_attachment-update').hide();
   }
 
   function clearCheckin() {
@@ -991,7 +1041,7 @@
   }
 
   function loadAttachment(id, lang) {
-    translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
+    var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
       url: translationsUrl,
       type: "GET",
@@ -1032,41 +1082,30 @@
 <div id="dialog-attachment-update" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
-    <c:choose>
-		<c:when test="${not isVersionActive}">
-			<c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
-		    	<label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
-		    	<span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
-		    </c:if>
-			<label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
-		    <span id="fileName" class="champ-ui-dialog"></span>
-		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
+        <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
+          <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+          <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
+        </c:if>
+        <label id="fileName_label" for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
+        <span id="fileName" class="champ-ui-dialog"></span>
 
-			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
-		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
-		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
-		</c:when>
-		<c:otherwise>
-			<label for="fileName" class="label-ui-dialog"><fmt:message key="attachment.version.actual" /></label>
-		    <span id="fileName" class="champ-ui-dialog"></span>
+        <label id="file_upload_label" for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
+        <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
 
-		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="attachment.version.new" /></label>
-		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
+        <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
+        <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
 
-			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
-		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
-		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
+        <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+        <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
 
-		    <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-		    <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-		    <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
-		    <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
-		    <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
-	    </c:otherwise>
-    </c:choose>
+        <div id="versioned_fields_attachment-update" style="display:none">
+          <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+          <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+          <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
+
+          <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
+          <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
+        </div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
@@ -1075,12 +1114,10 @@
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-
     <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
       <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
-
     <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
     <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" /></span>
     <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
@@ -1100,7 +1137,7 @@
 
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-    <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
       <div id="attachment-delete-select-lang" style="display:none">
         <div id="languages">
           <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
@@ -1111,23 +1148,37 @@
     </c:if>
 </div>
 
+  <div id="dialog-attachment-switch" style="display:none">
+    <p id="attachment-switch-warning-message">Prout</p>
+    <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
+      <div id="attachment-switch-simple" style="display:none">
+        <label for="switch-version-major" class="label-ui-dialog"><fmt:message key="attachment.switch.version.major" /></label>
+        <span id="attachment-switch-major" class="champ-ui-dialog"><input value="lastMajor" type="radio" name="switch-version" id="switch-version-major" checked="checked"/></span>
+        <label for="switch-version-last" class="label-ui-dialog"><fmt:message key="attachment.switch.version.last" /></label>
+        <span id="attachment-switch-last" class="champ-ui-dialog"><input value="last" type="radio" name="switch-version" id="switch-version-last"/></span>
+      </div>
+      <div id="attachment-switch-versioned" style="display:none">
+       <label for="switch-version-comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
+      <span class="champ-ui-dialog"><textarea name="switch-version-comment" cols="60" rows="3" id="switch-version-comment"></textarea></span>
+      </div>
+      <input type="submit" value="Submit" style="display:none" />
+    </form>
+  </div>
+
  <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
-    <c:choose>
-        <c:when test="${isVersionActive}">
-          <label for="private" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-	      <span class="champ-ui-dialog"><input value="false" type="radio" name="private" id="private" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-	      <input value="true" type="radio" name="private" id="private"/><fmt:message key="attachment.version_wip.label"/></span>
-	      <label for="comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
-	      <span class="champ-ui-dialog"><textarea name="comment" cols="60" rows="3" id="comment"></textarea></span>
-        </c:when>
-        <c:otherwise>
-          <fmt:message key="confirm.checkin.message" />
-        </c:otherwise>
-    </c:choose>
+    <div id="versioned_fields_attachment-checkin" style="display:none">
+      <label for="private" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+      <span class="champ-ui-dialog"><input value="false" type="radio" name="private" id="private" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+        <input value="true" type="radio" name="private" id="private"/><fmt:message key="attachment.version_wip.label"/></span>
+
+      <label for="comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
+      <span class="champ-ui-dialog"><textarea name="comment" cols="60" rows="3" id="comment"></textarea></span>
+    </div>
+    <div id="simple_fields_attachment-checkin" style="display:none"><fmt:message key="confirm.checkin.message" /></div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>

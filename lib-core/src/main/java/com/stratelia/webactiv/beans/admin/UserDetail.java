@@ -20,27 +20,33 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.File;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+
 import org.apache.commons.beanutils.BeanUtils;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -49,10 +55,10 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
-  private static final String AVATAR_PROPERTY =
-      GeneralPropertiesManager.getString("avatar.property", "login");
-  private static final String AVATAR_EXTENSION =
-      GeneralPropertiesManager.getString("avatar.extension", "jpg");
+  private static final String AVATAR_PROPERTY = GeneralPropertiesManager
+      .getString("avatar.property", "login");
+  private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString(
+      "avatar.extension", "jpg");
   private static final ResourceLocator generalSettings = new ResourceLocator(
       "org.silverpeas.lookAndFeel.generalLook", "");
   private String id = null;
@@ -656,32 +662,40 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   @Override
   public int compareTo(UserDetail o) {
     UserDetail other = o;
-    return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.
-        getFirstName()).toLowerCase());
+    return ((getLastName() + getFirstName()).toLowerCase(I18NHelper.defaultLocale)).compareTo(
+        (other.getLastName() + other.getFirstName()).toLowerCase(I18NHelper.defaultLocale));
   }
 
   public String getAvatar() {
     String avatar = getAvatarFileName();
-    File image = new File(FileRepositoryManager.getAvatarPath() + File.separatorChar + avatar);
+    File image = new File(FileRepositoryManager.getAvatarPath(), avatar);
     if (image.exists()) {
       return "/display/avatar/" + avatar;
     }
     return "/directory/jsp/icons/avatar.png";
   }
 
+  public boolean isAvatarPersonnalized() {
+    return new File(FileRepositoryManager.getAvatarPath(), getAvatarFileName()).exists();
+  }
+
   public String getAvatarFileName() {
     String propertyValue = getLogin();
     try {
       propertyValue = BeanUtils.getSimpleProperty(this, AVATAR_PROPERTY);
-    } catch (Exception e) {
+    } catch (IllegalAccessException e) {
+      SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
+    } catch (NoSuchMethodException e) {
+      SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
+    } catch (InvocationTargetException e) {
       SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
     }
     return propertyValue + "." + AVATAR_EXTENSION;
   }
 
   public String getStatus() {
-    String status =
-        new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
+    String status = new StatusService().getLastStatusService(Integer.parseInt(getId()))
+        .getDescription();
     if (isDefined(status)) {
       return status;
     }

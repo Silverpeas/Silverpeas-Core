@@ -1,30 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.web;
 
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.Value;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -32,6 +27,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A value of a PdC's axis. A value of an axis is a term in the vocabulary of the concept
@@ -42,20 +39,27 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlRootElement
 public class PdcAxisValueEntity extends PdcValueEntity {
+
   private static final long serialVersionUID = -1689709605873362349L;
-  
-  @XmlElement(required=true) @NotNull @Size(min=1)
+  @XmlElement(required = true)
+  @NotNull
+  @Size(min = 1)
   private String term;
-  @XmlElement(required=true) @NotNull @Min(0)
+  @XmlElement(required = true)
+  @NotNull
+  @Min(0)
   private int level;
   @XmlElement(defaultValue = "false")
   private boolean ascendant = false;
   @XmlElement(defaultValue = "false")
   private boolean origin = false;
+  @XmlElement(defaultValue = "0")
+  private int classifiedContentsCount = 0;
 
   /**
    * Creates a new value of a PdC axis from the specified business PdC value and expressed in the
    * specified language.
+   *
    * @param value the business PdC value.
    * @param inLanguage the language of the user.
    * @return a PdcAxisValue instance.
@@ -69,12 +73,14 @@ public class PdcAxisValueEntity extends PdcValueEntity {
         withId(value.getFullPath()),
         withTerm(value.getName(inLanguage)),
         inAxis(axisId)).
+        withClassifiedContents(value.getNbObjects()).
         inTree(value.getTreeId(), atLevel(value.getLevelNumber()));
     return axisValue;
   }
 
   /**
    * Gets the translated term represented by this value.
+   *
    * @return the term translated into the user language.
    */
   public String getTerm() {
@@ -84,6 +90,7 @@ public class PdcAxisValueEntity extends PdcValueEntity {
   /**
    * Gets the position level of this value in the semantic tree or 0. 0 means its level is at the
    * axis.
+   *
    * @return the position level or 0 if it doesn't belong to a tree.
    */
   public int getLevel() {
@@ -94,6 +101,7 @@ public class PdcAxisValueEntity extends PdcValueEntity {
    * Is this value is ascendant from the axis origin ? When a PdC is parameterized for a given
    * Silverpeas component instance, the origin of each axis can be refined. As such, values between
    * the default and the new axis origin become ascendant to the latter.
+   *
    * @return true if this value is ascendant to the configured axis origin.
    */
   public boolean isAscendant() {
@@ -101,8 +109,18 @@ public class PdcAxisValueEntity extends PdcValueEntity {
   }
 
   /**
+   * Gets the count of contents that are classified with this value.
+   *
+   * @return the count of contents classified with this value.
+   */
+  public int getClassifiedContentsCount() {
+    return classifiedContentsCount;
+  }
+
+  /**
    * Is this value is the root one of the axis? A value is the root of an axis when its identifier
    * is equal to /0/ where 0 is the node identifier of the root in an axis.
+   *
    * @return true if this value is a root one, false otherwise.
    */
   @XmlTransient
@@ -112,6 +130,7 @@ public class PdcAxisValueEntity extends PdcValueEntity {
 
   /**
    * Is this value the origin of the axis?
+   *
    * @return true if this axis value is the origin of the axis, false otherwise.
    */
   public boolean isOrigin() {
@@ -164,9 +183,10 @@ public class PdcAxisValueEntity extends PdcValueEntity {
     } else {
       synonymArray.append("]");
     }
-    return "PdcAxisValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() +
-        "term=" + getTerm() + ", level=" + getLevel() + ", ascendant=" + isAscendant() +
-        ", origin=" + isOrigin() + ", synonyms=" + synonymArray.toString() + '}';
+    return "PdcAxisValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId()
+        + ", term=" + getTerm() + ", level=" + getLevel() + ", ascendant=" + isAscendant()
+        + ", origin=" + isOrigin() + ", classifiedContentsCount="
+        + getClassifiedContentsCount() + ", synonyms=" + synonymArray.toString() + "}";
   }
 
   private static String withId(String id) {
@@ -213,6 +233,11 @@ public class PdcAxisValueEntity extends PdcValueEntity {
   private PdcAxisValueEntity inTree(String treeId, int levelInTree) {
     setTreeId(treeId);
     this.level = levelInTree;
+    return this;
+  }
+
+  private PdcAxisValueEntity withClassifiedContents(int count) {
+    this.classifiedContentsCount = count;
     return this;
   }
 }

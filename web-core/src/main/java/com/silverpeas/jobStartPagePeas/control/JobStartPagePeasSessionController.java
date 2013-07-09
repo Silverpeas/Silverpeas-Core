@@ -1239,13 +1239,14 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return null;
   }
 
-  public List<LocalizedParameter> getVisibleParameters(List<LocalizedParameter> parameters) {
+  public List<LocalizedParameter> getVisibleParameters(String appName,
+      List<LocalizedParameter> parameters) {
     List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
     for (LocalizedParameter parameter : parameters) {
       if (parameter.isVisible()) {
         if (parameter.isXmlTemplate()) {
           // display only templates allowed according to context
-          parameter.setOptions(getVisibleTemplateOptions(parameter));
+          parameter.setOptions(getVisibleTemplateOptions(appName, parameter));
         }
         visibleParameters.add(parameter);
       }
@@ -1253,8 +1254,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return visibleParameters;
   }
 
-  private List<LocalizedOption> getVisibleTemplateOptions(LocalizedParameter parameter) {
+  private List<LocalizedOption> getVisibleTemplateOptions(String appName, LocalizedParameter parameter) {
     GlobalContext context = new GlobalContext(getManagedSpaceId(), getManagedInstanceId());
+    context.setComponentName(appName);
     PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
     List<LocalizedOption> options = parameter.getOptions();
     List<LocalizedOption> visibleOptions = new ArrayList<LocalizedOption>();

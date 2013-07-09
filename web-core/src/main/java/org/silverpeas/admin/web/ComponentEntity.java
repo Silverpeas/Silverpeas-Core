@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
+import java.net.URI;
+
 /**
  * The component instance light entity is a ComponentInstLight object that is exposed in the web as
  * an entity (web entity). As such, it publishes only some of its attributes. It represents a

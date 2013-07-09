@@ -427,7 +427,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     set.save(data);
   }
-  
+
   /**
    * Methode de creation d'un contenu de type wysiwyg
    *
@@ -437,7 +437,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId,
       WysiwygContentType wysiwygType, String userId, String webContext, String lang)
-      throws UtilException, WysiwygException, ImportExportException {
+      throws UtilException, ImportExportException {
     // Recuperation du nouveau contenu wysiwyg
     File wysiwygFile = null;
     String wysiwygText = "";
@@ -493,8 +493,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return - le contenu wysiwyg mis a  jour
    */
   private String replaceWysiwygImagesPathForImport(UnitReport unitReport, int pubId,
-      String wysiwygImportedPath, String wysiwygText, String imageContext, String webContext)
-      throws ImportExportException {
+      String wysiwygImportedPath, String wysiwygText, String imageContext, String webContext) {
     int finPath = 0;
     int debutPath = 0;
     StringBuilder newWysiwygText = new StringBuilder();

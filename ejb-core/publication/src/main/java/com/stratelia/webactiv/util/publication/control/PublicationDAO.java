@@ -1791,7 +1791,7 @@ public class PublicationDAO {
    * @see
    */
   public static Collection<PublicationDetail> searchByKeywords(Connection con, String query,
-      PublicationPK pubPK) throws SQLException {
+      PublicationPK pubPK) {
     List<PublicationDetail> result = new ArrayList<PublicationDetail>();
     return result;
   }

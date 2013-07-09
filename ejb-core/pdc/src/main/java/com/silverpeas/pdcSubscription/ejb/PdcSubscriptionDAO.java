@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -33,7 +30,6 @@ import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,7 +41,6 @@ public class PdcSubscriptionDAO {
 
   public final static String PDC_SUBSRIPTION_TABLE_NAME = "SB_PDC_Subscription";
   public final static String PDC_SUBSRIPTION_AXIS_TABLE_NAME = "SB_PDC_Subscription_Axis";
-
   public static final String GET_SUBSCRIPTION_BY_USERID_QUERY = "SELECT id, name, ownerId "
       + " FROM " + PDC_SUBSRIPTION_TABLE_NAME + " WHERE ownerId = ? ";
 
@@ -82,7 +77,6 @@ public class PdcSubscriptionDAO {
 
     return result;
   }
-
   public static final String GET_ALL_SUBSCRIPTIONS_QUERY = "SELECT id, name, ownerId FROM "
       + PDC_SUBSRIPTION_TABLE_NAME;
 
@@ -120,7 +114,6 @@ public class PdcSubscriptionDAO {
         .getString("name"), null, rs.getInt("ownerId"));
     return result;
   }
-
   public final static String GET_CRITERIAS_BY_SC_ID_QUERY =
       "SELECT id, pdcSubscriptionId, axisId, value FROM "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
@@ -163,7 +156,6 @@ public class PdcSubscriptionDAO {
     Criteria result = new Criteria(rs.getInt("axisId"), rs.getString("value"));
     return result;
   }
-
   public static final String GET_SUBSCRIPTION_BY_ID_QUERY = "SELECT id, name, ownerId FROM "
       + PDC_SUBSRIPTION_TABLE_NAME + " WHERE id = ? ";
 
@@ -200,7 +192,6 @@ public class PdcSubscriptionDAO {
     }
     return result;
   }
-
   public final static String CREATE_PDCSUBSCR_QUERY = "INSERT INTO "
       + PDC_SUBSRIPTION_TABLE_NAME + " (id, name, ownerId ) VALUES (?, ?, ?)";
 
@@ -244,8 +235,8 @@ public class PdcSubscriptionDAO {
             subscription);
       }
 
-      List<Criteria> ctx = subscription.getPdcContext();
-      if (ctx != null && ctx.size() != 0) {
+      List<? extends Criteria> ctx = subscription.getPdcContext();
+      if (ctx != null && !ctx.isEmpty()) {
         createSearchCriterias(conn, ctx, newId);
       }
 
@@ -255,13 +246,12 @@ public class PdcSubscriptionDAO {
 
     return newId;
   }
-
   public final static String CREATE_PDC_SEARCHCRITERIA_QUERY = "INSERT INTO "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME
       + " (id, pdcSubscriptionId, axisId, value) VALUES (?, ?, ?, ?)";
 
   private static void createSearchCriterias(Connection conn,
-      List<Criteria> searchCriterias, int subscriptionId)
+      List<? extends Criteria> searchCriterias, int subscriptionId)
       throws PdcSubscriptionRuntimeException, SQLException {
     if (conn == null) {
       throw new PdcSubscriptionRuntimeException(
@@ -273,7 +263,7 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.createSearchCriterias",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
-    if (searchCriterias.size() == 0) {
+    if (searchCriterias.isEmpty()) {
       return;
     }
 
@@ -310,7 +300,6 @@ public class PdcSubscriptionDAO {
       DBUtil.close(prepStmt);
     }
   }
-
   public final static String UPDATE_PDC_SUBSCR_QUERY = "UPDATE "
       + PDC_SUBSRIPTION_TABLE_NAME
       + " SET name = ? , ownerId = ? WHERE id = ? ";
@@ -344,9 +333,9 @@ public class PdcSubscriptionDAO {
             subscription);
       }
 
-      List<Criteria> ctx = subscription.getPdcContext();
+      List<? extends Criteria> ctx = subscription.getPdcContext();
       removeSearchCriterias(conn, subscription.getId());
-      if (ctx != null && ctx.size() != 0) {
+      if (ctx != null && !ctx.isEmpty()) {
         createSearchCriterias(conn, ctx, subscription.getId());
       }
 
@@ -354,7 +343,6 @@ public class PdcSubscriptionDAO {
       DBUtil.close(prepStmt);
     }
   }
-
   public final static String REMOVE_SUBSCR_BYID_QUERY = "delete from "
       + PDC_SUBSRIPTION_TABLE_NAME + " where id = ? ";
 
@@ -391,7 +379,6 @@ public class PdcSubscriptionDAO {
       DBUtil.close(prepStmt);
     }
   }
-
   public final static String REMOVE_SCS_QUERY = "delete from "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " where pdcSubscriptionId = ? ";
 
@@ -436,7 +423,6 @@ public class PdcSubscriptionDAO {
       removePDCSubscriptionById(conn, id);
     }
   }
-
   public final static String FIND_SUBSCRIPTION_BY_AXIS_QUERY = "SELECT pdcSubscriptionId FROM "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE axisId = ? ";
 

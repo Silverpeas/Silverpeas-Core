@@ -49,6 +49,9 @@
   <PortletWindowPreference name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" userName="default">
     <Properties/>
   </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
   <PortletWindowPreference name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" userName="default">
     <Properties/>
   </PortletWindowPreference>

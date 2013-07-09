@@ -198,14 +198,12 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 		}
 	</style>
 <% } %>
-<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <!--[if IE 6]>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
@@ -448,14 +446,10 @@ function markAsRead(id) {
 	$(document).ready(function(){
 		//used for keywords autocompletion
 	    <%  if(autoCompletion){ %>
-			        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
-			                    minChars: <%=autocompletionMinChars%>,
-			                    max: 50,
-			                    autoFill: false,
-			                    mustMatch: false,
-			                    matchContains: false,
-			                    scrollHeight: 220
-			            });
+			        $("#query").autocomplete({
+                source: "<%=m_context%>/AutocompleteServlet",
+                minLength: <%=autocompletionMinChars%>
+      });
 	    <%}%>
 	  });
 

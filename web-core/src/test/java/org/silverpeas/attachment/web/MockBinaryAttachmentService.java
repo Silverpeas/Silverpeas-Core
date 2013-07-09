@@ -23,15 +23,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.*;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +32,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -211,7 +218,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public void changeVersionState(SimpleDocumentPK pk) {
+  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -262,5 +269,10 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
       DocumentType type) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

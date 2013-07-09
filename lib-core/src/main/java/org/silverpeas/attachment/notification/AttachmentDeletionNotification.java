@@ -24,6 +24,7 @@
 
 package org.silverpeas.attachment.notification;
 
+import com.silverpeas.notification.SilverpeasNotificationCause;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.notification.NotificationSource;
@@ -38,7 +39,8 @@ public class AttachmentDeletionNotification extends SilverpeasNotification {
   private static final long serialVersionUID = 3354035649186264026L;
 
   protected AttachmentDeletionNotification(final SimpleDocument attachment) {
-    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), new AttachmentRef(attachment));
+    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()),
+        SilverpeasNotificationCause.DELETION, new AttachmentRef(attachment));
   }
 
   public AttachmentRef getAttachment() {

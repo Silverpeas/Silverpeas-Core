@@ -382,13 +382,15 @@ public class SimpleDocumentService implements AttachmentService {
           document.getLanguage());
       repository.fillNodeName(session, document);
       repository.updateDocument(session, document);
-      if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
-        // le fichier est renommé
-        if (!oldAttachment.getFilename().equals(document.getFilename())) {
-          webdavRepository.deleteAttachmentNode(session, oldAttachment);
-          webdavRepository.createAttachmentNode(session, document);
-        } else {
-          webdavRepository.updateNodeAttachment(session, document);
+      if (!oldAttachment.isVersioned()) {
+        if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
+          // le fichier est renommé
+          if (!oldAttachment.getFilename().equals(document.getFilename())) {
+            webdavRepository.deleteAttachmentNode(session, oldAttachment);
+            webdavRepository.createAttachmentNode(session, document);
+          } else {
+            webdavRepository.updateAttachment(session, document);
+          }
         }
       }
       String userId = document.getUpdatedBy();
@@ -840,12 +842,13 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public void changeVersionState(SimpleDocumentPK pk) {
+  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      repository.changeVersionState(session, pk);
+      SimpleDocumentPK updatedPk = repository.changeVersionState(session, pk, comment);
       session.save();
+      return updatedPk;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
@@ -1004,5 +1007,29 @@ public class SimpleDocumentService implements AttachmentService {
       }
     }
     return result;
+  }
+
+  @Override
+  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      // On part des fichiers d'origine
+      List<SimpleDocument> attachments = repository.listDocumentsByComponentdAndType(session,
+          componentId, DocumentType.attachment, I18NHelper.defaultLanguage);
+      for (SimpleDocument attachment : attachments) {
+        if (attachment.isVersioned() != toVersionning) {
+          repository.changeVersionState(session, attachment.getPk(), "");
+        }
+      }
+      session.save();
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+
   }
 }
