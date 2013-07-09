@@ -171,7 +171,7 @@ function jumpToComponent(componentId) {
 }
 
 function areYouSure(){
-    return confirm("<%=todo.getString("todoDeleteSelectConfirm")%>");
+    return confirm("<%=todo.getString("deleteSelectedTodoConfirm")%>");
 }
 
 function deleteSelectedToDo() {
@@ -210,7 +210,7 @@ function deleteSelectedToDo() {
 	OperationPane operationPane = window.getOperationPane();
 	 
 	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
-	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("supprimerTachesSelectionnees"), "javascript:onClick=deleteSelectedToDo()");
+	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("deleteSelectedTodo"), "javascript:onClick=deleteSelectedToDo()");
 
 	out.println(window.printBefore());
 %>

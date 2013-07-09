@@ -272,8 +272,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(new java.util.Date());
     calendarBm.updateToDo(todo);
-    notifyAttendees(id, "Cloture de la tâche '" + todo.getName() + "'",
-        "La tâche intitulée '" + todo.getName() + "' a été cloturée.\n");
+    notifyAttendees(id, getString("closingTodo") +" '" + todo.getName() + "'",
+        getString("todoCalled") +" '" + todo.getName() + "' "+getString("todoClosed")+"\n");
     SilverTrace.info("todo", "ToDoSessionController.closeToDo()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -667,5 +667,4 @@ public class ToDoSessionController extends AbstractComponentSessionController {
           SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
     }
   }
-
 }
