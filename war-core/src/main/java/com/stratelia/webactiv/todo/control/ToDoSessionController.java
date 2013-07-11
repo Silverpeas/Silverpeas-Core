@@ -272,8 +272,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(new java.util.Date());
     calendarBm.updateToDo(todo);
-    notifyAttendees(id, "Cloture de la tache '" + todo.getName() + "'",
-        "La tache intitulé '" + todo.getName() + "' a été cloturée.\n");
+    notifyAttendees(id, getString("closingTodo") +" '" + todo.getName() + "'",
+        getString("todoCalled") +" '" + todo.getName() + "' "+getString("todoClosed")+"\n");
     SilverTrace.info("todo", "ToDoSessionController.closeToDo()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -645,5 +645,26 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       spacesMap.put(spaceId, resultSpace);
     }
     return resultSpace;
+  }
+  
+  /**
+   * Remove all the todo passed in parameter
+   * @param tabTodoId
+   * @throws TodoException
+   * @see
+   */
+  public void removeTabToDo(String[] tabTodoId) throws TodoException {
+    SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
+        "root.MSG_GEN_ENTER_METHOD");
+    try {
+      for(String todoId : tabTodoId) {
+        removeToDo(todoId);
+      }
+      SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
+          "root.MSG_GEN_EXIT_METHOD");
+    } catch (Exception e) {
+      throw new TodoException("ToDoSessionController.removeTabToDo()",
+          SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
+    }
   }
 }
