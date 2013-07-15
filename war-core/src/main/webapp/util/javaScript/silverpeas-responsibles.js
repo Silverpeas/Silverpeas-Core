@@ -123,7 +123,7 @@
         $target.append($newLine);
         if (isSpace) {
           $target.append($('<h5>',{
-        	  'class' : 'textePetitBold title-list-responsible-user'
+            'class' : 'textePetitBold title-list-responsible-user'
           }).append(usersAndGroups.label));
         }
         __prepareRoleResponsibles($target, userId, dataOfUsers);
