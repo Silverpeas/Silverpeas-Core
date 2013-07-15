@@ -528,7 +528,9 @@ public class GenericRecordSetManager {
 
         int nbRowsUpdated = update.executeUpdate();
         if (nbRowsUpdated != 1) {
-          // do something ?
+          SilverTrace.error("form", this.getClass().getName() + ".updateFieldRows()",
+              "root.MSG_GEN_PARAM_VALUE", "Update failed for record " + row.getRecordId() +
+                  " and field '" + row.getFieldName() + "' with value " + row.getFieldValue());
         }
       }
     } finally {
