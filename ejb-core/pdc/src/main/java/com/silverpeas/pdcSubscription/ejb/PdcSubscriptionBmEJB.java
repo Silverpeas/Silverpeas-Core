@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -308,32 +309,40 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     int firstAdminId = -1;
     OrganisationController organizationController = OrganisationControllerFactory
         .getOrganisationController();
+    ContentManager contentManager = null;
+    boolean contentObjectIsVisible = false;
 
     try {
 
-      // load all PDCSubscritions into the memory to perform future check of them
-      List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
-      // loop through all subscription
-      for (PDCSubscription subscription : subscriptions) {
-        // check if current subscription corresponds a list of classify values
-        // provided into the method
-        if (isCorrespondingSubscription(subscription, classifyValues)) {
-          if (silverContent == null) {
-            silverContent = getSilverContent(componentId, silverObjectid);
-            spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
-            firstAdminId = getFirstAdministrator(organizationController,
-                subscription.getOwnerId());
-          }
-          // The current subscription matches the new classification.
-          // Now, we have to test if subscription's owner is allowed to access
-          // the classified item.
-          String userId = String.valueOf(subscription.getOwnerId());
-          String[] roles = organizationController.getUserProfiles(userId, componentId);
-          if (roles.length > 0) {
-            // if user have got at least one role, sends a notification to the
-            // user specified in pdcSubscription
-            sendSubscriptionNotif(subscription, spaceAndInstanceNames,
-                componentId, silverContent, firstAdminId);
+      contentManager = new ContentManager();
+      SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
+      contentObjectIsVisible = (scv.isVisible() == 1 ? true : false);
+      
+      if(contentObjectIsVisible) {
+        // load all PDCSubscritions into the memory to perform future check of them
+        List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
+        // loop through all subscription
+        for (PDCSubscription subscription : subscriptions) {
+          // check if current subscription corresponds a list of classify values
+          // provided into the method
+          if (isCorrespondingSubscription(subscription, classifyValues)) {
+            if (silverContent == null) {
+              silverContent = getSilverContent(componentId, silverObjectid);
+              spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
+              firstAdminId = getFirstAdministrator(organizationController,
+                  subscription.getOwnerId());
+            }
+            // The current subscription matches the new classification.
+            // Now, we have to test if subscription's owner is allowed to access
+            // the classified item.
+            String userId = String.valueOf(subscription.getOwnerId());
+            String[] roles = organizationController.getUserProfiles(userId, componentId);
+            if (roles.length > 0) {
+              // if user have got at least one role, sends a notification to the
+              // user specified in pdcSubscription
+              sendSubscriptionNotif(subscription, spaceAndInstanceNames,
+                  componentId, silverContent, firstAdminId);
+            }
           }
         }
       }
