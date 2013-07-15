@@ -30,7 +30,6 @@ package com.silverpeas.pdcSubscription.ejb;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +48,7 @@ import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -248,7 +248,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @param pathInfo should contains PdcBm.getFullPath data structure
    */
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
-      List<String> newPath, List<List<String>> pathInfo) throws RemoteException {
+      List<String> newPath, List<List<String>> pathInfo) {
     Connection conn = null;
     List<PDCSubscription> subscriptions = null;
 
@@ -302,37 +302,45 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues + ", componentId = "
         + componentId + ", silverObjectid = " + silverObjectid);
 
-    Connection conn = null;
+    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
     SilverContentInterface silverContent = null;
     List<String> spaceAndInstanceNames = null;
     int firstAdminId = -1;
     OrganizationController organizationController = new OrganizationController();
+    ContentManager contentManager = null;
+    boolean contentObjectIsVisible = false;
 
     try {
-      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-      // load all PDCSubscritions into the memory to perform future check of them
-      List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
-      // loop through all subscription
-      for (PDCSubscription subscription : subscriptions) {
-        // check if current subscription corresponds a list of classify values
-        // provided into the method
-        if (isCorrespondingSubscription(subscription, classifyValues)) {
-          if (silverContent == null) {
-            silverContent = getSilverContent(componentId, silverObjectid);
-            spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
-            firstAdminId = getFirstAdministrator(organizationController,
-                subscription.getOwnerId());
-          }
-          // The current subscription matches the new classification.
-          // Now, we have to test if subscription's owner is allowed to access
-          // the classified item.
-          String userId = String.valueOf(subscription.getOwnerId());
-          String[] roles = organizationController.getUserProfiles(userId, componentId);
-          if (roles.length > 0) {
-            // if user have got at least one role, sends a notification to the
-            // user specified in pdcSubscription
-            sendSubscriptionNotif(subscription, spaceAndInstanceNames,
-                componentId, silverContent, firstAdminId);
+      
+      contentManager = new ContentManager();
+      SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
+      contentObjectIsVisible = (scv.isVisible() == 1 ? true : false);
+      
+      if(contentObjectIsVisible) {
+        // load all PDCSubscritions into the memory to perform future check of them
+        List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
+        // loop through all subscription
+        for (PDCSubscription subscription : subscriptions) {
+          // check if current subscription corresponds a list of classify values
+          // provided into the method
+          if (isCorrespondingSubscription(subscription, classifyValues)) {
+            if (silverContent == null) {
+              silverContent = getSilverContent(componentId, silverObjectid);
+              spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
+              firstAdminId = getFirstAdministrator(organizationController,
+                  subscription.getOwnerId());
+            }
+            // The current subscription matches the new classification.
+            // Now, we have to test if subscription's owner is allowed to access
+            // the classified item.
+            String userId = String.valueOf(subscription.getOwnerId());
+            String[] roles = organizationController.getUserProfiles(userId, componentId);
+            if (roles.length > 0) {
+              // if user have got at least one role, sends a notification to the
+              // user specified in pdcSubscription
+              sendSubscriptionNotif(subscription, spaceAndInstanceNames,
+                  componentId, silverContent, firstAdminId);
+            }
           }
         }
       }

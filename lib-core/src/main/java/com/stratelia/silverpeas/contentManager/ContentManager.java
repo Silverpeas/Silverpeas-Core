@@ -1155,4 +1155,46 @@ public class ContentManager implements Serializable {
       // closeStatementAndConnection(prepStmt, con);
     }
   }
+  
+  public SilverContentVisibility getSilverContentVisibility(int silverObjectId) throws ContentManagerException {
+    Connection connection = null;
+    StringBuffer sSQLStatement = new StringBuffer();
+    PreparedStatement prepStmt = null;
+    ResultSet resSet = null;
+    SilverContentVisibility scv = null;
+
+    try {
+      // Open connection
+      connection = DBUtil.makeConnection(m_dbName);
+      
+      // Get the SilverContentVisibility
+      sSQLStatement.append("SELECT beginDate, endDate, isVisible FROM ").append(m_sSilverContentTable);
+      sSQLStatement.append(" WHERE silverContentId = '").append(silverObjectId).append("'");
+
+      SilverTrace.info("contentManager", "ContentManager.getSilverContentVisibility",
+          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+      prepStmt = connection.prepareStatement(sSQLStatement.toString());
+      resSet = prepStmt.executeQuery();
+      
+      // Fetch the result
+      if (resSet.next()) {
+        String beginDate = resSet.getString(1);
+        String endDate = resSet.getString(2);
+        int visibility = resSet.getInt(3);
+        boolean isVisible = true;
+        if(visibility == 0) {
+          isVisible = false;
+        }
+        scv = new SilverContentVisibility(beginDate, endDate, isVisible);
+      }
+    } catch(SQLException e) {
+      throw new ContentManagerException("ContentManager.getSilverContentVisibility",
+          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
+          "sSQLStatement: " + sSQLStatement, e);
+    } finally {
+      DBUtil.close(resSet, prepStmt);
+      closeConnection(connection);
+    }
+    return scv;
+  }
 }
