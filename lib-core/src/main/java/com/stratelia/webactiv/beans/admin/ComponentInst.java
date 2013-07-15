@@ -233,25 +233,25 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public List<ProfileInst> getInheritedProfiles() {
-    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
+    List<ProfileInst> inheritedProfiles = new ArrayList<ProfileInst>();
     for (ProfileInst profile : profiles) {
       if (profile.isInherited()) {
-        profiles.add(profile);
+        inheritedProfiles.add(profile);
       }
     }
 
-    return profiles;
+    return inheritedProfiles;
   }
 
   public List<ProfileInst> getProfiles() {
-    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
+    List<ProfileInst> specificProfiles = new ArrayList<ProfileInst>();
     for (ProfileInst profile : profiles) {
       if (!profile.isInherited()) {
-        profiles.add(profile);
+        specificProfiles.add(profile);
       }
     }
 
-    return profiles;
+    return specificProfiles;
   }
 
   public void removeAllProfilesInst() {
