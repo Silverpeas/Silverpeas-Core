@@ -42,6 +42,9 @@
 <%@ include file="checkAttachment.jsp"%>
 
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
+<view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
+<fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
+<c:set var="maximumFileSizeMo" value="${maximumFileSize / 1048576}" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
@@ -328,7 +331,7 @@
           </div>
         </c:when>
         <c:otherwise>
-          <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
+          <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
           <c:url var="dropUrl" value="/DragAndDrop/drop">
             <c:param name="UserId" value="${mainSessionController.userId}" />
             <c:param name="ComponentId" value="${componentId}" />
@@ -384,7 +387,7 @@
       "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised");
     }
 
-  <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
+  <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
   <c:url var="publicURL" value="/VersioningDragAndDrop/jsp/Drop">
     <c:param name="UserId" value="${mainSessionController.userId}" />
     <c:param name="ComponentId" value="${componentId}" />
@@ -806,8 +809,12 @@
 	                data: formData,
 	                success:function(data) {
 	                  reloadIncludingPage();
-	                  $(this).dialog("close");
-	                }
+	                },
+	                error: function(jqXHR, textStatus, errorThrown) {
+						var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${maximumFileSizeMo} Mo)\n";
+						window.alert(errorMsg);
+						reloadIncludingPage();
+					}
               	});
               } else {
                 $('#add-attachment-form').attr('action', submitUrl);
