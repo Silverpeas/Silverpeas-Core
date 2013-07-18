@@ -28,6 +28,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
@@ -151,11 +152,8 @@ public class FileUploadTag extends TagSupport {
   private void performJsPlugin(ElementContainer xhtmlcontainer) {
     if (!fileUploadContext.jsPluginLoaded) {
       fileUploadContext.jsPluginLoaded = true;
+      JavascriptPluginInclusion.includeIFrameAjaxTransport(xhtmlcontainer);
       script jsPlugin = new script().setType("text/javascript").
-          setSrc(URLManager.getApplicationURL() +
-              "/util/javaScript/jquery/jquery-iframe-transport.js");
-      xhtmlcontainer.addElement(jsPlugin);
-      jsPlugin = new script().setType("text/javascript").
           setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
       xhtmlcontainer.addElement(jsPlugin);
       StringBuilder jQueryStart = new StringBuilder();

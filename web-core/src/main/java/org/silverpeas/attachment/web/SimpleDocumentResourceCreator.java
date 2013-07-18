@@ -23,31 +23,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -58,11 +33,34 @@ import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
-
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  *
@@ -87,6 +85,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    *
    * @param uploadedInputStream
    * @param fileDetail
+   * @param xRequestedWith
    * @param language
    * @param fileTitle
    * @param description
@@ -101,10 +100,9 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
   @POST
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_XHTML_XML)
-  public String createDocumentForInternetExplorer(
-      final @FormDataParam("file_upload") InputStream uploadedInputStream,
+  public Response createDocument(final @FormDataParam("file_upload") InputStream uploadedInputStream,
       final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
+      final @FormDataParam(X_REQUESTED_WITH) String xRequestedWith,
       final @FormDataParam("fileLang") String language,
       final @FormDataParam("fileTitle") String fileTitle,
       final @FormDataParam("fileDescription") String description,
@@ -114,50 +112,23 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("commentMessage") String comment,
       final @FormDataParam("context") String context,
       final @PathParam("filename") String filename) throws IOException {
+
+    // Create the attachment
     SimpleDocumentEntity entity = createSimpleDocument(uploadedInputStream, fileDetail, filename,
         language, fileTitle, description, foreignId, indexIt, type, comment, context);
-    String result = null;
-    if (entity != null) {
-      ObjectMapper mapper = new ObjectMapper();
-      result = mapper.writeValueAsString(entity);
-    }
-    return result;
-  }
 
-  /**
-   * Create the the specified document.
-   *
-   * @param uploadedInputStream
-   * @param fileDetail
-   * @param language
-   * @param fileTitle
-   * @param description
-   * @param foreignId
-   * @param indexIt
-   * @param type
-   * @param comment
-   * @param context
-   * @return
-   * @throws IOException
-   */
-  @POST
-  @Path("{filename}")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_JSON)
-  public SimpleDocumentEntity createDocument(
-      final @FormDataParam("file_upload") InputStream uploadedInputStream,
-      final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
-      final @FormDataParam("fileLang") String language,
-      final @FormDataParam("fileTitle") String fileTitle,
-      final @FormDataParam("fileDescription") String description,
-      final @FormDataParam("foreignId") String foreignId,
-      final @FormDataParam("indexIt") String indexIt,
-      final @FormDataParam("versionType") String type,
-      final @FormDataParam("commentMessage") String comment,
-      final @FormDataParam("context") String context,
-      final @PathParam("filename") String filename) throws IOException {
-    return createSimpleDocument(uploadedInputStream, fileDetail, filename, language, fileTitle,
-        description, foreignId, indexIt, type, comment, context);
+    if (AJAX_IFRAME_TRANSPORT.equals(xRequestedWith)) {
+
+      // In case of file upload performed by Ajax IFrame transport way,
+      // the expected response type is text/html
+      // (when FormData API doesn't exist on client side)
+      return Response.ok().type(MediaType.TEXT_HTML_TYPE)
+          .entity(packObjectToJSonDataWithHtmlContainer(entity)).build();
+    } else {
+
+      // Otherwise JSON response type is expected
+      return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(entity).build();
+    }
   }
 
   protected SimpleDocumentEntity createSimpleDocument(InputStream uploadedInputStream,

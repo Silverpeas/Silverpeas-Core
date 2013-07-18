@@ -32,16 +32,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.MultiPartElement;
-import org.apache.ecs.xhtml.textarea;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.UnitUtil;
@@ -59,12 +54,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packJSonDataWithHtmlContainer;
 
 /**
  * A REST Web resource that permits to upload files. It has to be used with silverpeas-filUpload.js
@@ -109,7 +105,7 @@ public class FileUploadResource extends RESTWebService {
             file.getFormDataContentDisposition().getFileName(),
             file.getValueAs(InputStream.class)));
       }
-      return Response.ok().entity(processJSonResult(jsonFiles)).build();
+      return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFiles)).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -144,9 +140,8 @@ public class FileUploadResource extends RESTWebService {
         throw new WebApplicationException(Response.Status.BAD_REQUEST);
       }
       String fileId = UUID.randomUUID().toString();
-      List<JSONObject> jsonFiles = new ArrayList<JSONObject>();
-      jsonFiles.add(uploadFile(fileId, fileName, inputStream));
-      return Response.ok().entity(processJSonResult(jsonFiles)).build();
+      JSONObject jsonFile = uploadFile(fileId, fileName, inputStream);
+      return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFile)).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -193,28 +188,6 @@ public class FileUploadResource extends RESTWebService {
     fileInfos.put("iconUrl",
         FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(file.getName())));
     return fileInfos;
-  }
-
-  /**
-   * Response expected.
-   * @param jsonObjects
-   * @return
-   */
-  private String processJSonResult(List<JSONObject> jsonObjects) {
-    StringWriter output = new StringWriter();
-    ElementContainer xhtmlcontainer = new ElementContainer();
-    MultiPartElement response = new textarea();
-    response.addAttribute("data-type", MediaType.APPLICATION_JSON);
-    if (CollectionUtils.isNotEmpty(jsonObjects)) {
-      JSONArray jsonArray = new JSONArray();
-      for (JSONObject jsonObject : jsonObjects) {
-        jsonArray.put(jsonObject);
-      }
-      response.addElementToRegistry(jsonArray.toString());
-    }
-    xhtmlcontainer.addElement(response);
-    xhtmlcontainer.output(output);
-    return output.toString();
   }
 
   /**
