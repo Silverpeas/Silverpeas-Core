@@ -94,7 +94,7 @@
 // impossible for the javascript code to determine the HTTP status code of the
 // servers response. Effectively, all of the calls you make will look like they
 // are getting successful responses, and thus invoke the `done()` or
-// `complete()` callbacks. You can only determine communicate problems using
+// `complete()` callbacks. You can only determine communicate problems using
 // the content of the response payload. For example, consider using a JSON
 // response such as the following to indicate a problem with an uploaded file:
 
@@ -120,6 +120,7 @@
   // switches to the "iframe" data type if it is `true`.
   $.ajaxPrefilter(function(options, origOptions, jqXHR) {
     if (options.iframe) {
+      options.originalURL = options.url;
       return "iframe";
     }
   });
@@ -132,17 +133,17 @@
         iframe = null,
         name = "iframe-" + $.now(),
         files = $(options.files).filter(":file:enabled"),
-        markers = null;
+        markers = null,
+        accepts = null;
 
     // This function gets called after a successful submission or an abortion
     // and should revert all changes made to the page to enable the
     // submission via this transport.
     function cleanUp() {
-      markers.replaceWith(function(idx) {
-        return files.get(idx);
-      });
+      markers.prop("disabled", false);
       form.remove();
-      iframe.attr("src", "javascript:false;").remove();
+      iframe.one("load", function() { iframe.remove(); });
+      iframe.attr("src", "javascript:false;");
     }
 
     // Remove "iframe" from the data types list so that further processing is
@@ -150,9 +151,14 @@
     // (unsupported) conversion from "iframe" to the actual type.
     options.dataTypes.shift();
 
+    // Use the data from the original AJAX options, as it doesn't seem to be
+    // copied over since jQuery 1.7.
+    // See https://github.com/cmlenz/jquery-iframe-transport/issues/6
+    options.data = origOptions.data;
+
     if (files.length) {
       form = $("<form enctype='multipart/form-data' method='post'></form>").
-          hide().attr({action: options.url, target: name});
+          hide().attr({action: options.originalURL, target: name});
 
       // If there is any additional data specified via the `data` option,
       // we add it as hidden fields to the form. This (currently) requires
@@ -176,6 +182,18 @@
       $("<input type='hidden' value='IFrame' name='X-Requested-With' />").
           appendTo(form);
 
+      // Borrowed straight from the JQuery source.
+      // Provides a way of specifying the accepted data type similar to the
+      // HTTP "Accept" header
+      if (options.dataTypes[0] && options.accepts[options.dataTypes[0]]) {
+        accepts = options.accepts[options.dataTypes[0]] +
+            (options.dataTypes[0] !== "*" ? ", */*; q=0.01" : "");
+      } else {
+        accepts = options.accepts["*"];
+      }
+      $("<input type='hidden' name='X-HTTP-Accept'>").
+          attr("value", accepts).appendTo(form);
+
       // Move the file fields into the hidden form, but first remember their
       // original locations in the document by replacing them with disabled
       // clones. This should also avoid introducing unwanted changes to the
@@ -195,13 +213,13 @@
 
           // The first load event gets fired after the iframe has been injected
           // into the DOM, and is used to prepare the actual submission.
-          iframe.bind("load", function() {
+          iframe.one("load", function() {
 
             // The second load event gets fired when the response to the form
             // submission is received. The implementation detects whether the
             // actual payload is embedded in a `<textarea>` element, and
             // prepares the required conversions to be made in that case.
-            iframe.unbind("load").bind("load", function() {
+            iframe.one("load", function() {
               var doc = this.contentWindow ? this.contentWindow.document :
                       (this.contentDocument ? this.contentDocument : this.document),
                   root = doc.documentElement ? doc.documentElement : doc.body,

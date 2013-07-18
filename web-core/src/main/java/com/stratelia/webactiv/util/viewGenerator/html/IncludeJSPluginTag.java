@@ -89,8 +89,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case calendar:
           includeCalendar(xhtml);
           break;
-        case iframepost:
-          includeIFramePost(xhtml);
+        case iframeajaxtransport:
+          includeIFrameAjaxTransport(xhtml);
           break;
         case preview:
           includePreview(xhtml);

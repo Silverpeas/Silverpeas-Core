@@ -46,7 +46,7 @@
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
 <view:includePlugin name="qtip"/>
-<view:includePlugin name="iframepost"/>
+<view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <c:choose>
@@ -652,29 +652,20 @@
         });
     });
 
-    $('#update-attachment-form').iframePostForm ({
-      json : true,
-      post : function () {
-      },
-      complete : function (response) {
-        reloadIncludingPage();
-        $(this).dialog("close");
-      }
+    var iframeSendComplete = function() {
+      reloadIncludingPage();
+      $(this).dialog("close");
+    };
+
+    $('#update-attachment-form').iframeAjaxFormSubmit ({
+      complete : iframeSendComplete
     });
 
-    $('#add-attachment-form').iframePostForm ({
-      json : true,
-      post : function () {
-      },
-      complete : function (response) {
-        reloadIncludingPage();
-        $(this).dialog("close");
-      }
+    $('#add-attachment-form').iframeAjaxFormSubmit ({
+      complete : iframeSendComplete
     });
 
-    $('#checkin-attachment-form').iframePostForm ({
-      json : true,
-      post : function () {},
+    $('#checkin-attachment-form').iframeAjaxFormSubmit ({
       complete : function (response) {
         if (response.status) {
           menuCheckin(response.id);
@@ -803,7 +794,7 @@
                 return false;
               }
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-              submitUrl = submitUrl + '/' +encodeURI(filename);
+              submitUrl = submitUrl + '/' +encodeURIComponent(filename);
               $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
@@ -840,7 +831,7 @@
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
               var filename =  $.trim( $("#file_upload").val().split('\\').pop());
               if( filename !== '') {
-                submitUrl = submitUrl + '/' +encodeURI(filename);
+                submitUrl = submitUrl + '/' + encodeURIComponent(filename);
               } else {
                 submitUrl = submitUrl + '/no_file';
               }
@@ -870,7 +861,6 @@
                 type: "DELETE",
                 contentType: "application/json",
                 dataType: "json",
-                class: "deleteLang",
                 cache: false,
                 success: function(data) {
                   reloadIncludingPage();
@@ -1080,7 +1070,7 @@
 </script>
 
 <div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
         <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
           <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
@@ -1111,7 +1101,7 @@
 </div>
 
 <div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
     <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
@@ -1166,7 +1156,7 @@
   </div>
 
  <div id="dialog-attachment-checkin" style="display:none">
-  <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8">
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
