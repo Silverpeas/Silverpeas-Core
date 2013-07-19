@@ -33,7 +33,6 @@ import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 
 import javax.ejb.Local;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;

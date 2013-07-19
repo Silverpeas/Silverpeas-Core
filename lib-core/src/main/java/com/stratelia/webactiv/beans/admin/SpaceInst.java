@@ -18,14 +18,21 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -36,18 +43,6 @@ import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.util.UnitUtil;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 /**
  * The class SpaceInst is the representation in memory of a space
  */
@@ -56,7 +51,6 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public static final String PERSONAL_SPACE_ID = "-10";
   public static final String DEFAULT_SPACE_ID = "-20";
-
   private static final long serialVersionUID = 4695928610067045964L;
   // First page possible types
   final public static int FP_TYPE_STANDARD = 0; // Page d'acueil standard
@@ -112,13 +106,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
-
   /**
    * This data is not used in equals and hashcode process as it is an extra information.
    */
   private Quota componentSpaceQuota = null;
   private Quota componentSpaceQuotaReached = null;
-
   /**
    * This data is not used in equals and hashcode process as it is an extra information.
    */
@@ -145,6 +137,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     isPersonalSpace = false;
   }
 
+  @Override
   public int compareTo(SpaceInst o) {
     return orderNum - o.orderNum;
   }
@@ -333,7 +326,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     if (asSubSpaceIds == null) {
       subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
-      subSpaceIds = asSubSpaceIds;
+      subSpaceIds = asSubSpaceIds.clone();
     }
   }
 
@@ -780,7 +773,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
           UnitUtil.memUnit.MB));
     }
-    SpaceInstLight space = OrganisationControllerFactory.getFactory().getOrganisationController()
+    SpaceInstLight space = OrganisationControllerFactory.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());
     final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "admin/space/quota");
@@ -844,8 +837,8 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     }
 
     // clone components
-    List<ComponentInst> components = getAllComponentsInst();
-    for (ComponentInst component : components) {
+    List<ComponentInst> allComponents = getAllComponentsInst();
+    for (ComponentInst component : allComponents) {
       clone.addComponentInst((ComponentInst) component.clone());
     }
 

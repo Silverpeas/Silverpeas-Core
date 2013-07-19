@@ -277,4 +277,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   public void deleteIndex(SimpleDocument document) {
     realService.deleteIndex(document);
   }
+
+  @Override
+  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
+    realService.switchComponentBehaviour(componentId, toVersionning);
+  }
 }

@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.task;
 
 import com.silverpeas.workflow.api.WorkflowException;
@@ -40,6 +36,7 @@ import com.silverpeas.workflow.api.user.User;
  * assigned activity.
  */
 public class TaskImpl extends AbstractTaskImpl {
+
   /**
    * Builds a TaskImpl.
    */
@@ -59,6 +56,7 @@ public class TaskImpl extends AbstractTaskImpl {
     this.backSteps = null;
   }
 
+  @Override
   public void setProcessInstance(ProcessInstance processInstance) {
     this.processInstance = processInstance;
   }
@@ -73,15 +71,16 @@ public class TaskImpl extends AbstractTaskImpl {
     super(user, roleName, processInstance.getProcessModel());
     this.processInstance = processInstance;
     this.state = state;
-    this.backSteps = backSteps;
-    this.sentQuestions = sentQuestions;
-    this.relevantQuestions = relevantQuestions;
-    this.pendingQuestions = pendingQuestions;
+    this.backSteps = (backSteps != null ? backSteps.clone() : null);
+    this.sentQuestions = (sentQuestions != null ? sentQuestions.clone() : null);
+    this.relevantQuestions = (relevantQuestions != null ? relevantQuestions.clone() : null);
+    this.pendingQuestions = (pendingQuestions != null ? pendingQuestions.clone() : null);
   }
 
   /**
    * Returns the process instance.
    */
+  @Override
   public ProcessInstance getProcessInstance() {
     return processInstance;
   }
@@ -89,6 +88,7 @@ public class TaskImpl extends AbstractTaskImpl {
   /**
    * Returns the state to be resolved by the user.
    */
+  @Override
   public State getState() {
     return state;
   }
@@ -96,6 +96,7 @@ public class TaskImpl extends AbstractTaskImpl {
   /**
    * Returns the history steps that user can discussed (ask a question to the actor of that step).
    */
+  @Override
   public HistoryStep[] getBackSteps() {
     return backSteps;
   }
@@ -103,6 +104,7 @@ public class TaskImpl extends AbstractTaskImpl {
   /**
    * Returns the questions that must be answered
    */
+  @Override
   public Question[] getPendingQuestions() {
     return pendingQuestions;
   }
@@ -110,6 +112,7 @@ public class TaskImpl extends AbstractTaskImpl {
   /**
    * Returns the (non onsolete) questions that have been answered
    */
+  @Override
   public Question[] getRelevantQuestions() {
     return relevantQuestions;
   }
@@ -117,6 +120,7 @@ public class TaskImpl extends AbstractTaskImpl {
   /**
    * Returns the question that have been asked and are waiting for a response
    */
+  @Override
   public Question[] getSentQuestions() {
     return sentQuestions;
   }
@@ -124,6 +128,7 @@ public class TaskImpl extends AbstractTaskImpl {
   /**
    * Returns the action names list from which the user must choose to resolve the activity.
    */
+  @Override
   public String[] getActionNames() {
     Action[] actions = state.getAllowedActions();
     String[] actionNames = new String[actions.length];

@@ -52,7 +52,6 @@ public class LdapConfiguration {
   public void setTimeout(int timeout) {
     this.timeout = timeout;
   }
-
   private boolean secure = false;
 
   /**
@@ -88,7 +87,7 @@ public class LdapConfiguration {
    * @param password new value of password
    */
   public void setPassword(byte[] password) {
-    this.password = password;
+    this.password = (password != null ? password.clone() : null);
   }
 
   /**
@@ -150,5 +149,4 @@ public class LdapConfiguration {
     return "LdapConfiguration{" + "ldapHost=" + ldapHost + ", ldapPort=" + ldapPort + ", username="
         + username + ", password=" + password + ", timeout=" + timeout + ", secure=" + secure + '}';
   }
-
 }

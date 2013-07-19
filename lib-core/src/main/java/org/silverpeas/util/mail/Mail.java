@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
@@ -88,7 +87,8 @@ public class Mail {
   }
 
   public void setTo(Address[] to) {
-    this.to = to;
+    this.to = (to != null ? to.clone() : null);
+
   }
 
   public Address[] getCc() {
@@ -96,15 +96,15 @@ public class Mail {
   }
 
   public void setCc(Address[] cc) {
-    this.cc = cc;
+    this.cc = (cc != null ? cc.clone() : null);
   }
 
-  public Address[] getAllRecipients() {    
+  public Address[] getAllRecipients() {
     List<Address> recipients = new ArrayList<Address>();
-    if (getTo() != null) {
+    if (getTo() != null && getTo().length > 0) {
       recipients.addAll(Arrays.asList(getTo()));
     }
-    if (getCc() != null) {
+    if (getCc() != null && getCc().length > 0) {
       recipients.addAll(Arrays.asList(getCc()));
     }
     return recipients.toArray(new Address[recipients.size()]);

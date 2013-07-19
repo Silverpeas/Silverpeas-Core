@@ -28,6 +28,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+
 /**
  * @author neysseri
  */
@@ -39,7 +41,7 @@ public class ImportExportHelper {
   }
 
   public static boolean isVersioningUsed(final ComponentInst component) {
-    return StringUtil.getBooleanValue(component.getParameterValue("versionControl"));
+    return StringUtil.getBooleanValue(component.getParameterValue(VERSION_MODE));
   }
 
   public static boolean isDraftUsed(ComponentInst componentInst) {

@@ -47,7 +47,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
-@Stateless(name = "Calendar", description = "Claendar EJB to manage calendars in Silverpeas")
+@Stateless(name = "Calendar", description = "Calendar EJB to manage calendars in Silverpeas")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class CalendarEJB implements SilverpeasCalendar {
 
@@ -294,7 +294,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.removeToDo(String id)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
+          SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_TODO", e);
     } finally {
       DBUtil.close(con);
     }
@@ -336,7 +336,7 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) {
-    SilverTrace.info("calendar", "CalendarEJB. removeToDo(String id)",
+    SilverTrace.info("calendar", "CalendarEJB.getDaySchedulablesForUser(String id)",
         "root.MSG_GEN_ENTER_METHOD", "day=" + day + "userId=" + userId
         + "categoryId=" + categoryId + "participation=" + participation);
     Connection con = getConnection();
