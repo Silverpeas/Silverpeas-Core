@@ -155,6 +155,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
       result.append("}");
     }
 
+    // Once the menu is rendered this below event is triggered
+    result.append("$(document).trigger('menuRendered');");
+
     result.append("});");
     result.append("</script>");
 
