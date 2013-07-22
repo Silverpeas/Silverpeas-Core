@@ -31,21 +31,6 @@ import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.WebdavServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,10 +42,22 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.ws.rs.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 
@@ -85,7 +82,7 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Return the specified document in the specified lang.
+   * Returns the specified document in the specified lang.
    *
    * @param lang the wanted language.
    * @return the specified document in the specified lang.
@@ -104,7 +101,7 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Delete the the specified document.
+   * Deletes the the specified document.
    */
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
@@ -114,7 +111,7 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Delete the the specified document.
+   * Deletes the the specified document.
    *
    * @param lang the lang of the content to be deleted.
    */
@@ -127,19 +124,22 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Update the the specified document.
+   * Updates the document identified by the requested URI.
    *
-   * @param uploadedInputStream
-   * @param fileDetail
-   * @param xRequestedWith
-   * @param lang
-   * @param title
-   * @param description
-   * @param versionType
-   * @param comment
-   * @param filename
-   * @return
-   * @throws IOException
+   * @param uploadedInputStream the input stream from which the content of the file can be read.
+   * @param fileDetail detail about the uploaded file like the filename for example.
+   * @param xRequestedWith a parameter indicating from which the upload was performed. It is valued
+   * with the identifier of the HTML or javascript component at the origin of the uploading.
+   * According to his value, the expected response can be different.
+   * @param lang the two-characters code of the language in which the document's content is written.
+   * @param title the title of the document as indicated by the user.
+   * @param description a short description of the document's content as indicated by the user.
+   * @param versionType the scope of the version (public or private) in the case of a versioned
+   * document.
+   * @param comment a comment about the upload.
+   * @return an HTTP response embodied an entity in a format expected by the client (that is
+   * identified by the <code>xRequestedWith</code> parameter).
+   * @throws IOException if an error occurs while updating the document.
    */
   @POST
   @Path("{filename}")
@@ -172,20 +172,6 @@ public class SimpleDocumentResource extends RESTWebService {
     }
   }
 
-  /**
-   * Update the the specified document.
-   *
-   * @param uploadedInputStream
-   * @param fileDetail
-   * @param filename
-   * @param lang
-   * @param title
-   * @param description
-   * @param versionType
-   * @param comment
-   * @return
-   * @throws IOException
-   */
   protected SimpleDocumentEntity updateSimpleDocument(InputStream uploadedInputStream,
       FormDataContentDisposition fileDetail, String filename, String lang, String title,
       String description, String versionType, String comment) throws IOException {
@@ -299,9 +285,9 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Return the content of the specified document in the specified language.
+   * Returns the content of the specified document in the specified language.
    *
-   * @param language
+   * @param language the language of the document's content to get.
    * @return the content of the specified document in the specified language.
    */
   @GET
@@ -330,7 +316,7 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Lock the specified document for exclusive edition.
+   * Locks the specified document for exclusive edition.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
@@ -350,7 +336,7 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Move the specified document up in the list.
+   * Moves the specified document up in the list.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
@@ -374,7 +360,7 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Move the specified document down in the list.
+   * Moves the specified document down in the list.
    *
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
@@ -398,12 +384,12 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Unlock the specified document for exclusive edition.
+   * Unlocks the specified document for exclusive edition.
    *
-   * @param force
-   * @param webdav
-   * @param privateVersion
-   * @param comment
+   * @param force if the unlocking has to be forced.
+   * @param webdav if the unlock is performed while a WebDAV access.
+   * @param privateVersion if the document is a private version.
+   * @param comment a comment about the unlock.
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
    */
@@ -435,10 +421,10 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Change the document version state.
+   * Changes the document version state.
    *
-   * @param comment
-   * @param version
+   * @param comment comment about the version state switching.
+   * @param version the new version state.
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
    */

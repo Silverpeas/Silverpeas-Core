@@ -35,6 +35,19 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -45,20 +58,6 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
 
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
@@ -81,21 +80,28 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
   }
 
   /**
-   * Create the the specified document.
+   * Create the document identified by the requested URI and from the content and some additional
+   * parameters passed within the request.
    *
-   * @param uploadedInputStream
-   * @param fileDetail
-   * @param xRequestedWith
-   * @param language
-   * @param fileTitle
-   * @param description
-   * @param foreignId
-   * @param indexIt
-   * @param type
-   * @param comment
-   * @param context
-   * @return
-   * @throws IOException
+   * @param uploadedInputStream the input stream from which the content of the file can be read.
+   * @param fileDetail detail about the uploaded file like the filename for example.
+   * @param xRequestedWith a parameter indicating from which the upload was performed. It is valued
+   * with the identifier of the HTML or javascript component at the origin of the uploading.
+   * According to his value, the expected response can be different.
+   * @param language the two-characters code of the language in which the document's content is
+   * written.
+   * @param fileTitle the title of the document as indicated by the user.
+   * @param description a short description of the document's content as indicated by the user.
+   * @param foreignId the identifier of the resource to which the document belong (a publication for
+   * example).
+   * @param indexIt flag meaning the indexation or not of the document's content.
+   * @param type the scope of the version (public or private) in the case of a versioned document.
+   * @param comment a comment about the upload.
+   * @param context the context in which the document is created: in the case of a file attachment,
+   * in the case of a WYSIWYG edition, ...
+   * @return an HTTP response embodied an entity in a format expected by the client (that is
+   * identified by the <code>xRequestedWith</code> parameter).
+   * @throws IOException if an error occurs while updating the document.
    */
   @POST
   @Path("{filename}")
@@ -132,8 +138,10 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
   }
 
   protected SimpleDocumentEntity createSimpleDocument(InputStream uploadedInputStream,
-      FormDataContentDisposition fileDetail, String filename, String language, String fileTitle, String fileDescription,
-      String foreignId, String indexIt, String type, String comment, String context) throws IOException {
+      FormDataContentDisposition fileDetail, String filename, String language, String fileTitle,
+      String fileDescription,
+      String foreignId, String indexIt, String type, String comment, String context) throws
+      IOException {
     String uploadedFilename = filename;
     if (StringUtil.isNotDefined(filename)) {
       uploadedFilename = fileDetail.getFileName();
