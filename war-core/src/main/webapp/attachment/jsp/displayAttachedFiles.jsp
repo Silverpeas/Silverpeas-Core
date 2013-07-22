@@ -853,8 +853,12 @@
                 data: formData,
                 success:function(data) {
                   reloadIncludingPage();
-                  $(this).dialog("close");
-                }
+                },
+	            error: function(jqXHR, textStatus, errorThrown) {
+					var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${maximumFileSizeMo} Mo)\n";
+					window.alert(errorMsg);
+					reloadIncludingPage();
+				}
               });
             } else {
               $('#update-attachment-form').attr('action', submitUrl);
