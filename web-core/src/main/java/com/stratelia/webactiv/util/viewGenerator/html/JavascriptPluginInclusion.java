@@ -45,7 +45,7 @@ public class JavascriptPluginInclusion {
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
-  private static final String JQUERY_IFRAME_POST = "jquery.iframe-post-form.js";
+  private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
@@ -89,10 +89,14 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(silverpeasQtip);
     return xhtml;
   }
-  
-  public static ElementContainer includeIFramePost(final ElementContainer xhtml) {
-    script iframePost = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_IFRAME_POST);
-    xhtml.addElement(iframePost);
+
+  public static ElementContainer includeIFrameAjaxTransport(final ElementContainer xhtml) {
+    script iframeAjaxTransport = new script().setType(JAVASCRIPT_TYPE)
+        .setSrc(jqueryPath + JQUERY_IFRAME_AJAX_TRANSPORT + ".js");
+    xhtml.addElement(iframeAjaxTransport);
+    script iframeAjaxTransportHelper = new script().setType(JAVASCRIPT_TYPE)
+        .setSrc(jqueryPath + JQUERY_IFRAME_AJAX_TRANSPORT + "-helper.js");
+    xhtml.addElement(iframeAjaxTransportHelper);
     return xhtml;
   }
 

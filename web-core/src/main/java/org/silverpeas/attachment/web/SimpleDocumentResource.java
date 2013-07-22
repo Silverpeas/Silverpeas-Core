@@ -20,6 +20,32 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,44 +58,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.WebdavServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
 
 @Service
 @RequestScoped
@@ -138,6 +129,7 @@ public class SimpleDocumentResource extends RESTWebService {
    *
    * @param uploadedInputStream
    * @param fileDetail
+   * @param xRequestedWith
    * @param lang
    * @param title
    * @param description
@@ -149,52 +141,32 @@ public class SimpleDocumentResource extends RESTWebService {
   @POST
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_XHTML_XML)
-  public String updateDocumentForInternetExplorer(
+  public Response updateDocument(
       final @FormDataParam("file_upload") InputStream uploadedInputStream,
       final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
+      final @FormDataParam(X_REQUESTED_WITH) String xRequestedWith,
       final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
       final @FormDataParam("fileDescription") String description,
       final @FormDataParam("versionType") String versionType,
       final @FormDataParam("commentMessage") String comment,
       final @PathParam("filename") String filename) throws IOException {
+
+    // Update the attachment
     SimpleDocumentEntity entity = updateSimpleDocument(uploadedInputStream, fileDetail, filename,
         lang, title, description, versionType, comment);
-    String result = null;
-    if (entity != null) {
-      ObjectMapper mapper = new ObjectMapper();
-      result = mapper.writeValueAsString(entity);
-    }
-    return result;
-  }
 
-  /**
-   * Update the the specified document.
-   *
-   * @param uploadedInputStream
-   * @param fileDetail
-   * @param lang
-   * @param title
-   * @param description
-   * @param versionType
-   * @param comment
-   * @return
-   * @throws IOException
-   */
-  @POST
-  @Path("{filename}")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces({MediaType.APPLICATION_JSON})
-  public SimpleDocumentEntity updateDocument(
-      final @FormDataParam("file_upload") InputStream uploadedInputStream,
-      final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
-      final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
-      final @FormDataParam("fileDescription") String description,
-      final @FormDataParam("versionType") String versionType,
-      final @FormDataParam("commentMessage") String comment,
-      final @PathParam("filename") String filename) throws IOException {
-    return updateSimpleDocument(uploadedInputStream, fileDetail, filename, lang, title, description,
-        versionType, comment);
+    if (AJAX_IFRAME_TRANSPORT.equals(xRequestedWith)) {
+
+      // In case of file upload performed by Ajax IFrame transport way,
+      // the expected response type is text/html
+      // (when FormData API doesn't exist on client side)
+      return Response.ok().type(MediaType.TEXT_HTML_TYPE)
+          .entity(packObjectToJSonDataWithHtmlContainer(entity)).build();
+    } else {
+
+      // Otherwise JSON response type is expected
+      return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(entity).build();
+    }
   }
 
   /**
@@ -375,7 +347,6 @@ public class SimpleDocumentResource extends RESTWebService {
   /**
    * Move the specified document up in the list.
    *
-   * @param language
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
    */
@@ -400,7 +371,6 @@ public class SimpleDocumentResource extends RESTWebService {
   /**
    * Move the specified document down in the list.
    *
-   * @param language
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
    */

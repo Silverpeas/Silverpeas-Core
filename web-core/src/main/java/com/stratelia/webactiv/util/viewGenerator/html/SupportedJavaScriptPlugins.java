@@ -83,11 +83,12 @@ public enum SupportedJavaScriptPlugins {
    */
   popup,
   /**
-   * JQuery plugin that post a form to an IFrame and allow for a callback with the iframe content.
-   * @see http://www.jainaewen.com/files/javascript/jquery/iframe-post-form.html#api
+   * JQuery plugin that implements an `<iframe>` transport so that `$.ajax()` calls support the
+   * uploading of files using standard HTML file input fields.
+   * @see http://api.jquery.com/extending-ajax/#Transports
    */
-  iframepost,
-   /**
+  iframeajaxtransport,
+  /**
     * Silverpeas plugin to open document preview dialog.
    */
   preview,

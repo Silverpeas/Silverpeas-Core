@@ -543,22 +543,20 @@
         __renderUploadFile(uploadContext, self, $(":file", $formUploadContainer).val(),
             $waitingEndOfUploadContainer);
         // HTML4 upload way (use of jquery-iframe-transport.js plugin)
-        $("form", $formUploadContainer).submit(function() {
-          $.ajax(uploadContext.uploadUrl, {
-            files : $(":file", this),
-            iframe : true
-          }).complete(function(uploadedFiles) {
-                $formUploadContainer.remove();
-                self.sendComplete($.parseJSON(uploadedFiles.responseText));
-                __triggerUploadedListChanged(uploadContext);
-              }).error(function(jqXHR, textStatus, errorThrown) {
-                uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
-                window.console &&
-                window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
-                    errorThrown && errorThrown.length > 0 ? errorThrown :
-                        'Maybe due to an upload of a wrong type of file...')));
-              });
-          return false;
+        $("form", $formUploadContainer).iframeAjaxFormSubmit({
+          sendFilesOnly : true,
+          complete : function(uploadedFilesAsJson) {
+            $formUploadContainer.remove();
+            self.sendComplete(uploadedFilesAsJson);
+            __triggerUploadedListChanged(uploadContext);
+          },
+          error : function(errorThrown) {
+            uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
+            window.console &&
+            window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
+                errorThrown && errorThrown.length > 0 ? errorThrown :
+                    'Maybe due to an upload of a wrong type of file...')));
+          }
         }).submit();
       } else if (isFileAPI) {
         // HTML5 upload way
