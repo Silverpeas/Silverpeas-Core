@@ -342,8 +342,12 @@
                 data: formData,
                 success:function(data) {
                   reloadPage();
-                  $(this).dialog("close");
-                }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+					var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${maximumFileSizeMo} Mo)\n";
+					window.alert(errorMsg);
+					reloadPage();
+				}
               });
             } else { 
               $('#update-attachment-form').attr('action', submitUrl);
