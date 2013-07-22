@@ -97,7 +97,7 @@
   </c:otherwise>
 </c:choose>
 <view:includePlugin name="qtip"/>
-<view:includePlugin name="iframepost"/>
+<view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
 <c:choose>
@@ -234,24 +234,17 @@
         });
     });
 
-    $('#update-attachment-form').iframePostForm ({
-      json : true,
-      post : function () {
-      },
-      complete : function (response) {
-        reloadPage();
-        $(this).dialog("close");
-      }
+    var iframeSendComplete = function() {
+      reloadPage();
+      $(this).dialog("close");
+    };
+
+    $('#update-attachment-form').iframeAjaxFormSubmit ({
+      complete : iframeSendComplete
     });
 
-    $('#add-attachment-form').iframePostForm ({
-      json : true,
-      post : function () {
-      },
-      complete : function (response) {
-        reloadPage();
-        $(this).dialog("close");
-      }
+    $('#add-attachment-form').iframeAjaxFormSubmit ({
+      complete : iframeSendComplete
     });
 
     $("#dialog-attachment-delete").dialog({
@@ -293,7 +286,7 @@
               return false;
             }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' +encodeURI(filename);
+            submitUrl = submitUrl + '/' +encodeURIComponent(filename);
             if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -329,7 +322,7 @@
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
             var filename =  $.trim( $("#file_upload").val().split('\\').pop());
             if( filename !== '') { 
-              submitUrl = submitUrl + '/' +encodeURI(filename);
+              submitUrl = submitUrl + '/' +encodeURIComponent(filename);
             } else {
               submitUrl = submitUrl + '/no_file';
             }  
@@ -528,7 +521,7 @@
 
 
 <div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <label for="fileName"><fmt:message key="GML.file" /></label><br/>
     <span id="fileName"></span><br/>
     <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
@@ -543,7 +536,7 @@
   </form>
 </div>
 <div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
     <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />
