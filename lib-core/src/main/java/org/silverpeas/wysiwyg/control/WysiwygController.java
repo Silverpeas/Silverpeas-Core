@@ -424,8 +424,8 @@ public class WysiwygController {
       callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, foreignKey.getInstanceId(),
           foreignKey.getId());
     }
-    AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),
-        userId, document.getLanguage()));
+    AttachmentServiceFactory.getAttachmentService()
+        .unlock(new UnlockContext(document.getId(), userId, document.getLanguage()));
   }
 
   /**
@@ -471,7 +471,7 @@ public class WysiwygController {
       for (SimpleDocument wysiwyg : docs) {
         String wysiwygPath = wysiwyg.getAttachmentPath();
         indexEntry.addFileContent(wysiwygPath, null, MimeTypes.HTML_MIME_TYPE, language);
-        String wysiwygContent = loadContent(docs.get(0), language);
+        String wysiwygContent = loadContent(wysiwyg, language);
         // index embedded linked attachment (links presents in wysiwyg content)
         List<String> embeddedAttachmentIds = getEmbeddedAttachmentIds(wysiwygContent);
         indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);

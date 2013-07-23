@@ -21,24 +21,15 @@
 
 package com.silverpeas.subscribe.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -50,6 +41,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -59,6 +57,7 @@ import static org.junit.Assert.assertThat;
 public class SubscriptionDaoTest {
 
   private static final String INSTANCE_ID = "kmelia60";
+  private static final String FORUM_INSTANCE_ID = "forum60";
   private SubscriptionDao subscriptionDao = new SubscriptionDao();
 
   // Spring context
@@ -133,13 +132,32 @@ public class SubscriptionDaoTest {
   @Test
   public void testGetSubscriptionsByComponentResource() throws Exception {
     SubscriptionResource resource = ComponentSubscriptionResource.from(INSTANCE_ID);
-    Collection<Subscription> subscriptions = subscriptionDao.getSubscriptionsByResource(
-        getConnection(), resource, null);
+    Collection<Subscription> subscriptions =
+        subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(9));
 
     resource = NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID));
     subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(3));
+  }
+
+  /**
+   * Test of getSubscriptionsByResource method, of class SubscriptionDao.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetSubscriptionsByPKResource() throws Exception {
+    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    SubscriptionResource resource =
+        PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM_MESSAGE);
+    Collection<Subscription> subscriptions = subscriptionDao.getSubscriptionsByResource(
+        getConnection(), resource, null);
+    assertThat(subscriptions, hasSize(0));
+
+    resource = PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM);
+    subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
+    assertThat(subscriptions, hasSize(1));
   }
 
   /**
@@ -372,6 +390,27 @@ public class SubscriptionDaoTest {
   }
 
   /**
+   * Test of add method, of class SubscriptionDao.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testAddPKSubscriptionForUserBySelfCreation() throws Exception {
+    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    pk.setSpace("100");
+    Subscription subscription =
+        new PKSubscription("200", PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM));
+    assertAddSubscription(subscription);
+    assertThat(subscription.getSubscriber().getId(), is("200"));
+    assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
+    assertThat(subscription.getResource().getId(), is("26"));
+    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.FORUM));
+    assertThat(subscription.getResource().getInstanceId(), is(FORUM_INSTANCE_ID));
+    assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
+    assertThat(subscription.getCreatorId(), is("200"));
+  }
+
+  /**
    * Centralization.
    *
    * @param subscription
@@ -510,6 +549,20 @@ public class SubscriptionDaoTest {
   }
 
   /**
+   * Test of remove method, of class SubscriptionDao.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testRemovePKSubscriptionForUserBySelfCreationMethod() throws Exception {
+    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    String userId = "126";
+    Subscription subscription =
+        new PKSubscription(userId, new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM));
+    assertRemoveSubscription(subscription, 1);
+  }
+
+  /**
    * Centralization.
    *
    * @param subscription
@@ -616,6 +669,18 @@ public class SubscriptionDaoTest {
     assertThat(subscriptionDao.
         existsSubscription(getConnection(), new ComponentSubscription("2", INSTANCE_ID)),
         is(false));
+
+    // PK - User 126 - Forced method
+    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    assertThat(subscriptionDao.
+        existsSubscription(getConnection(),
+            new PKSubscription(UserSubscriptionSubscriber.from("126"),
+                new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM), "999")), is(false));
+
+    // PK - User 126 - Self creation method
+    assertThat(subscriptionDao.
+        existsSubscription(getConnection(), new PKSubscription("126",
+            new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM))), is(true));
   }
 
   /**
@@ -651,7 +716,7 @@ public class SubscriptionDaoTest {
   public void testGetSubscriptionsByUserSubscriberAndComponent() throws Exception {
     Collection<Subscription> result = subscriptionDao.
         getSubscriptionsBySubscriberAndComponent(getConnection(),
-        UserSubscriptionSubscriber.from("1"), INSTANCE_ID);
+            UserSubscriptionSubscriber.from("1"), INSTANCE_ID);
     assertThat(result, hasSize(8));
   }
 
@@ -706,6 +771,24 @@ public class SubscriptionDaoTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+  }
+
+  /**
+   * Test of getSubscribers method, of class SubscriptionDao.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetSubscribersForPKResource() throws Exception {
+    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    Collection<SubscriptionSubscriber> result = subscriptionDao.getSubscribers(getConnection(),
+        PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM_MESSAGE), null);
+    assertThat(result, hasSize(0));
+
+    result = subscriptionDao.getSubscribers(getConnection(),
+        PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM), null);
+    assertThat(result, hasSize(1));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("126")));
   }
 
   /**

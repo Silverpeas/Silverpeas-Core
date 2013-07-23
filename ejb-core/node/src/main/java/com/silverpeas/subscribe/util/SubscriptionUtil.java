@@ -39,6 +39,28 @@ import java.util.Map;
 public class SubscriptionUtil {
 
   /**
+   * Adding containerToAdd into finalContainer.
+   * @param finalContainer
+   * @param containerToAdd
+   */
+  public static void mergeIndexedSubscriberIdsByType(
+      Map<SubscriberType, Collection<String>> finalContainer,
+      Map<SubscriberType, Collection<String>> containerToAdd) {
+    if (finalContainer != null && containerToAdd != null) {
+      for (Map.Entry<SubscriberType, Collection<String>> entry : containerToAdd.entrySet()) {
+        if (entry.getValue() != null) {
+          Collection<String> subscriberIds = finalContainer.get(entry.getKey());
+          if (subscriberIds != null) {
+            subscriberIds.addAll(entry.getValue());
+          } else {
+            finalContainer.put(entry.getKey(), new LinkedHashSet<String>(entry.getValue()));
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Indexes given subscribers by their type.
    * @param subscribers
    * @return a map which has type of subscriber as a key and the corresponding subscriber ids of
