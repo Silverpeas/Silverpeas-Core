@@ -42,6 +42,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.EncryptionContentIterator;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -81,29 +82,41 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
 
   @Override
   public void update(Map<String, String> updatedContent) {
+    SilverTrace.info("form", this.getClass().getName() + ".update()",
+        "root.MSG_GEN_ENTER_METHOD", updatedContent.size() + " items to update");
     // generate structured data to store in database
     List<RecordRow> rowsToUpdate = new ArrayList<RecordRow>();
     for (Entry<String, String> entry : updatedContent.entrySet()) {
       String key = entry.getKey();
-      String[] recordIdAndFieldName = StringUtil.split(key, "$SP$");
+      String[] recordIdAndFieldName = StringUtil.splitByWholeSeparator(key, "$SP$");
       RecordRow rowToUpdate =
           new RecordRow(Integer.parseInt(recordIdAndFieldName[0]), recordIdAndFieldName[1],
               entry.getValue());
       rowsToUpdate.add(rowToUpdate);
     }
     
+    SilverTrace.info("form", this.getClass().getName() + ".update()",
+        "root.MSG_GEN_PARAM_VALUE", rowsToUpdate.size() + " fields to update");
+    
     // update values in database
     try {
       getGenericRecordSetManager().updateFieldRows(getConnection(), rowsToUpdate);
     } catch (Exception e) {
+      SilverTrace.info("form", this.getClass().getName() + ".update()",
+          "form.EXP_UPDATE_FAILED", e);
       rollbackConnection();
       throw new FormRuntimeException("FormEncryptionContentIterator.update",
           SilverpeasException.ERROR, "form.EXP_UPDATE_FAILED", e);
     }
+    
+    SilverTrace.info("form", this.getClass().getName() + ".update()",
+        "root.MSG_GEN_EXIT_METHOD", rowsToUpdate.size() + "Fields updated !");
   }
 
   @Override
   public void onError(Map<String, String> content, CryptoException ex) {
+    SilverTrace.error("form", this.getClass().getName() + ".onError()",
+        "form.ERROR_DURING_ENCRYPTION", ex);
     rollbackConnection();
     throw new FormRuntimeException("FormEncryptionContentIterator", SilverpeasException.ERROR,
         "form.ERROR_DURING_ENCRYPTION", ex);
@@ -148,6 +161,9 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     for (RecordRow row : rows) {
       toProcess.put(row.getRecordId()+"$SP$"+row.getFieldName(), row.getFieldValue());
     }
+    
+    SilverTrace.info("form", this.getClass().getName() + ".getFormData()",
+        "root.MSG_GEN_PARAM_VALUE", toProcess.size() + " rows to process with form " + formName);
     
     return toProcess;
   }
