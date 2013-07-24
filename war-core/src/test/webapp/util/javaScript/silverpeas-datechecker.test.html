@@ -126,6 +126,14 @@
       date.label = 'myDate';
       expected = "myDate GML.MustBeFilled";
       assertIsDateValid("D: none (M), H: none. (Date label)", expected, date);
+      date.isMandatory = false;
+      date.defaultDate = '01/01/2012';
+      expected = NO_ERROR;
+      assertIsDateValid("D: default (M), H: none. (Date label)", expected, date);
+      date.isMandatory = true;
+      date.defaultHour = '12:59';
+      expected = "myDate GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: default. (Date label)", expected, date);
       date.isMandatoryHour = true;
       expected = "myDate GML.MustBeFilled\nmyDate GML.MustBeFilled";
       assertIsDateValid("D: none (M), H: none(M). (Date label)", expected, date);
@@ -184,11 +192,11 @@
       date.date = '2/29/2012';
       title = "D: '" + date.date +
           "', H: none : bad format (this February 29 exists, missing 0 at begin)";
-      expected = NO_ERROR;
+      expected = "myDate GML.MustContainsCorrectDate";
       assertIsDateValid(title, expected, date);
       date.date = '01/01/0';
       title = "D: '" + date.date + "', H: none : bad format (year 0!)";
-      expected = NO_ERROR;
+      expected = "myDate GML.MustContainsCorrectDate";
       assertIsDateValid(title, expected, date);
       date.date = '01/01/9999';
       title = "D: '" + date.date + "', H: none : bad format (year 9999!)";
