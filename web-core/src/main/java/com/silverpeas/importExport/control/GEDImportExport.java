@@ -525,14 +525,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
             attDetail = attachmentIE
                 .importWysiwygAttachment(String.valueOf(pubId), getCurrentComponentId(), attDetail,
                 imageContext);
-            ImportReportManager.addNumberOfFilesProcessed(1);
+            ImportReportManager.getInstance().addNumberOfFilesProcessed(1);
             if (attDetail == null || attDetail.getSize() == 0) {
               unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
               throw new ImportExportException("GEDImportExport.replaceWysiwygImagesPathForImport()",
                   "importExport.EX_CANT_CREATE_CONTENT", "pic = " + imageSrc);
             }
             // On additionne la taille des fichiers importes au niveau du rapport
-            ImportReportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
+            ImportReportManager.getInstance().addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
             //TODO FEATURE 82 newWysiwygText.append(webContext).append(attDetail.getAttachmentURL
             // ());
           } catch (Exception e) {
