@@ -34,7 +34,6 @@ import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -106,7 +105,7 @@ public class RepositoriesTypeManager {
 
       // Création du rapport de repository
       MassiveReport massiveReport = new MassiveReport();
-      ImportReportManager.addMassiveReport(massiveReport, componentId);
+      ImportReportManager.getInstance().addMassiveReport(massiveReport, componentId);
       massiveReport.setRepositoryPath(sPath);
 
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
@@ -115,7 +114,7 @@ public class RepositoriesTypeManager {
         // le composant n'existe pas
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
       } else {
-        ImportReportManager.setComponentName(componentId, componentInst.getLabel());
+        ImportReportManager.getInstance().setComponentName(componentId, componentInst.getLabel());
 
         File path = new File(sPath);
         if (!path.isDirectory()) {
@@ -216,11 +215,11 @@ public class RepositoriesTypeManager {
       if (document.getSize() > 0L) {
         AttachmentServiceFactory.getAttachmentService()
             .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
-        ImportReportManager.addNumberOfFilesProcessed(1);
-        ImportReportManager.addImportedFileSize(document.getSize(), componentId);
+        ImportReportManager.getInstance().addNumberOfFilesProcessed(1);
+        ImportReportManager.getInstance().addImportedFileSize(document.getSize(), componentId);
       } else {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-        ImportReportManager.addNumberOfFilesNotImported(1);
+        ImportReportManager.getInstance().addNumberOfFilesNotImported(1);
       }
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);

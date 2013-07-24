@@ -81,7 +81,7 @@ public class NodeTreesTypeManager {
         gedIE.setCurrentComponentId(componentId);
         // Création du rapport unitaire
         UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
-        ImportReportManager.addUnitReport(unitReport, componentId);
+        ImportReportManager.getInstance().addUnitReport(unitReport, componentId);
 
         ComponentInst component = OrganisationControllerFactory
             .getOrganisationController().getComponentInst(componentId);
@@ -90,7 +90,7 @@ public class NodeTreesTypeManager {
           unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
           unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
         } else {
-          ImportReportManager.setComponentName(componentId, component.getLabel());
+          ImportReportManager.getInstance().setComponentName(componentId, component.getLabel());
           nbTopic = processImportNodeInternal(nodeTreeType.getNodeDetail(), null, gedIE, nbTopic,
               componentId);
           nbTopicTree++;
@@ -126,7 +126,7 @@ public class NodeTreesTypeManager {
 
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport("<topic> #" + nbTopic);
-      ImportReportManager.addUnitReport(unitReport, componentId);
+      ImportReportManager.getInstance().addUnitReport(unitReport, componentId);
 
       // On commence par créer le topic dont la description est passée en
       // paramètre

@@ -581,7 +581,7 @@ public class PublicationsTypeManager {
 
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
-      ImportReportManager.addUnitReport(unitReport, componentId);
+      ImportReportManager.getInstance().addUnitReport(unitReport, componentId);
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
@@ -589,7 +589,7 @@ public class PublicationsTypeManager {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
         unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
       } else {
-        ImportReportManager.setComponentName(componentId, componentInst.getLabel());
+        ImportReportManager.getInstance().setComponentName(componentId, componentInst.getLabel());
 
         PublicationDetail pubDetailToCreate = pubType.getPublicationDetail();
         List<AttachmentDetail> attachments = null;
@@ -733,13 +733,13 @@ public class PublicationsTypeManager {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                   }
                 }
-                ImportReportManager.addNumberOfFilesProcessed(copiedAttachments.size());
-                ImportReportManager
+                ImportReportManager.getInstance().addNumberOfFilesProcessed(copiedAttachments.size());
+                ImportReportManager.getInstance()
                     .addNumberOfFilesNotImported(attachments.size() - copiedAttachments.size());
 
                 // On additionne la taille des fichiers importés au niveau du rapport
                 for (AttachmentDetail attdetail : copiedAttachments) {
-                  ImportReportManager.addImportedFileSize(attdetail.getSize(), componentId);
+                  ImportReportManager.getInstance().addImportedFileSize(attdetail.getSize(), componentId);
                 }
               }
               if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
@@ -754,13 +754,13 @@ public class PublicationsTypeManager {
                     importDocuments(new ForeignPK(pubDetail.getId(), componentId), documents,
                     Integer.parseInt(userDetail.getId()),
                     ImportExportHelper.isIndexable(pubDetail));
-                ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
-                ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
+                ImportReportManager.getInstance().addNumberOfFilesProcessed(copiedFiles.size());
+                ImportReportManager.getInstance().addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
                 // Create documents and versions in DB
                 // On additionne la taille des fichiers importés au niveau du rapport
                 for (SimpleDocument version : copiedFiles) {
-                  ImportReportManager.addImportedFileSize(version.getSize(), componentId);
+                  ImportReportManager.getInstance().addImportedFileSize(version.getSize(), componentId);
                 }
               }
 

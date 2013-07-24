@@ -376,14 +376,13 @@ public class ImportExport {
       throws ImportExportException {
 
     SilverPeasExchangeType silverExType;
-    ImportReportManager.init();
 
     // Cas du nom de fichier null ou vide
     if (!StringUtil.isDefined(xmlFileName)) {
       UnitReport unitReport = new UnitReport("No XML file specified");
       unitReport.setError(UnitReport.ERROR_ERROR);
       unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
-      ImportReportManager.addUnitReport(unitReport, "");
+      ImportReportManager.getInstance().addUnitReport(unitReport, "");
     }
 
     // Chargement du descripteur d'import à partir d'un fichier XML
@@ -416,8 +415,8 @@ public class ImportExport {
           getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
       typeMgr.processImport(silverExType.getRepositoriesType(), settings);
     }
-    ImportReportManager.setEndDate(new Date());
-    return ImportReportManager.getImportReport();
+    ImportReportManager.getInstance().setEndDate(new Date());
+    return ImportReportManager.getInstance().getImportReport();
   }
 
   public ExportReport processExport(UserDetail userDetail, String language,

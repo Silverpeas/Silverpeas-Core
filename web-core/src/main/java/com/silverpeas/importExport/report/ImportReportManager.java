@@ -27,20 +27,49 @@ package com.silverpeas.importExport.report;
 import java.util.Date;
 import java.util.HashMap;
 
-public final class ImportReportManager {
+/**
+ * The singleton ImportReportManager
+ */
+public class ImportReportManager {
   private static ImportReport importReport = null;
   private static HashMap<String, ComponentReport> componentReportMap = null;
+  
+  /**
+   * The singleton instance.
+   */
+  static private ImportReportManager instance = null;
 
+  
+  /**
+   * As a singleton class, the constructor is private. After creation, the init method must
+   * be called.
+   * @see getInstance()
+   * @see init()
+   */
   private ImportReportManager() {
   }
 
-  public static void init() {
+  /**
+   * Creates the singleton instance.
+   */
+  static public ImportReportManager getInstance() {
+    if (instance == null) {
+      instance = new ImportReportManager();
+      instance.init();
+    }
+    return instance;
+  }
+  
+  /**
+   * initialize the objects
+   */
+  private void init() {
     importReport = new ImportReport();
     componentReportMap = new HashMap<String, ComponentReport>();
     importReport.setStartDate(new Date());
   }
 
-  public static ComponentReport getComponentReport(String componentId) {
+  public ComponentReport getComponentReport(String componentId) {
     ComponentReport componentReport = componentReportMap.get(componentId);
     if (componentReport == null) {
       componentReport = new ComponentReport(componentId);
@@ -51,36 +80,36 @@ public final class ImportReportManager {
     return componentReport;
   }
 
-  public static void setComponentName(String componentId, String componentName) {
+  public void setComponentName(String componentId, String componentName) {
     getComponentReport(componentId).setComponentName(componentName);
   }
 
-  public static void addMassiveReport(MassiveReport massiveReport,
+  public void addMassiveReport(MassiveReport massiveReport,
       String componentId) {
     getComponentReport(componentId).addMassiveReport(massiveReport);
   }
 
-  public static void addUnitReport(UnitReport unitReport, String componentId) {
+  public void addUnitReport(UnitReport unitReport, String componentId) {
     getComponentReport(componentId).addUnitReport(unitReport);
   }
 
-  public static void addImportedFileSize(long size, String componentId) {
+  public void addImportedFileSize(long size, String componentId) {
     getComponentReport(componentId).addImportedFileSize(size);
   }
 
-  public static ImportReport getImportReport() {
+  public ImportReport getImportReport() {
     return importReport;
   }
 
-  public static void setEndDate(Date date) {
+  public void setEndDate(Date date) {
     importReport.setEndDate(date);
   }
 
-  public static void addNumberOfFilesProcessed(int n) {
+  public void addNumberOfFilesProcessed(int n) {
     importReport.addNumberOfFilesProcessed(n);
   }
 
-  public static void addNumberOfFilesNotImported(int n) {
+  public void addNumberOfFilesNotImported(int n) {
     importReport.addNbFilesNotImported(n);
   }
 }
