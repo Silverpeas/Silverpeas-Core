@@ -46,8 +46,10 @@
 <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
+<view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
+<fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
+<c:set var="maximumFileSizeMo" value="${maximumFileSize / 1048576}" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
-<view:settings var="maximumFileSize"  settings="org.silverpeas.util.uploads.uploadSettings" defaultValue="10000000" key="MaximumFileSize" />
 <c:set var="id" value="${param.Id}" />
 <c:set var="Silverpeas_Attachment_ObjectId" scope="session" value="${id}" />
 <c:set var="componentId" value="${param.ComponentId}" />
@@ -297,8 +299,12 @@
                 data: formData,
                 success:function(data) {
                   reloadPage();
-                  $(this).dialog("close");
-                }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+					var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${maximumFileSizeMo} Mo)\n";
+					window.alert(errorMsg);
+					reloadPage();
+				}
               });
             } else {              
               $('#add-attachment-form').attr('action', submitUrl);
@@ -336,8 +342,12 @@
                 data: formData,
                 success:function(data) {
                   reloadPage();
-                  $(this).dialog("close");
-                }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+					var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${maximumFileSizeMo} Mo)\n";
+					window.alert(errorMsg);
+					reloadPage();
+				}
               });
             } else { 
               $('#update-attachment-form').attr('action', submitUrl);
@@ -406,7 +416,7 @@
             </div>
           </c:when>
           <c:otherwise>
-            <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
+            <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
             <c:url var="dropUrl" value="/DragAndDrop/drop">
               <c:param name="UserId" value="${mainSessionController.userId}" />
               <c:param name="ComponentId" value="${componentId}" />
