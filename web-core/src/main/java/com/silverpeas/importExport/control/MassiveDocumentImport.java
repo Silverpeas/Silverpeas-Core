@@ -39,9 +39,8 @@ public class MassiveDocumentImport {
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     try {
       PdcImportExport pdcIE = new PdcImportExport();
-      ImportReportManager.init();
       massiveReport.setRepositoryPath(importSettings.getPathToImport());
-      ImportReportManager.addMassiveReport(massiveReport, importSettings.getComponentId());
+      ImportReportManager.getInstance().addMassiveReport(massiveReport, importSettings.getComponentId());
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(importSettings.getUser(),
           importSettings.getComponentId());
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
@@ -49,7 +48,7 @@ public class MassiveDocumentImport {
           .getComponentId()));
       publicationDetails = rtm.processImportRecursiveReplicate(massiveReport, gedIE, pdcIE,
           importSettings);
-      ImportReportManager.setEndDate(new Date());
+      ImportReportManager.getInstance().setEndDate(new Date());
     } finally {
       FileFolderManager.deleteFolder(importSettings.getPathToImport());
     }
