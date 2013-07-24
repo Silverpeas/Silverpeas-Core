@@ -18,28 +18,16 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.BadPdfFormatException;
+import com.lowagie.text.pdf.PRAcroForm;
+import com.lowagie.text.pdf.PdfCopy;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.SimpleBookmark;
 import com.silverpeas.admin.importExport.AdminImportExport;
 import com.silverpeas.coordinates.importExport.CoordinateImportExport;
 import com.silverpeas.coordinates.importExport.CoordinatesPositionsType;
@@ -63,7 +51,6 @@ import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
-
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -82,15 +69,20 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BadPdfFormatException;
-import com.lowagie.text.pdf.PRAcroForm;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.SimpleBookmark;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
@@ -98,6 +90,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -105,6 +99,7 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 import static java.io.File.separator;
+
 import static org.silverpeas.util.Charsets.UTF_8;
 
 /**
@@ -118,7 +113,6 @@ public class ImportExport {
       "org.silverpeas.importExport.settings.mapping", "");
   public final static String iframePublication = "publications";
   public final static String iframeIndexPublications = "indexPublications";
-
   public final static int EXPORT_FULL = 0;
   public final static int EXPORT_FILESONLY = 1;
   public final static int EXPORT_PUBLICATIONSONLY = 2;
@@ -376,13 +370,13 @@ public class ImportExport {
       throws ImportExportException {
 
     SilverPeasExchangeType silverExType;
-
+    ImportReportManager reportManager = new ImportReportManager();
     // Cas du nom de fichier null ou vide
     if (!StringUtil.isDefined(xmlFileName)) {
       UnitReport unitReport = new UnitReport("No XML file specified");
       unitReport.setError(UnitReport.ERROR_ERROR);
       unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
-      ImportReportManager.getInstance().addUnitReport(unitReport, "");
+      reportManager.addUnitReport(unitReport, "");
     }
 
     // Chargement du descripteur d'import à partir d'un fichier XML
@@ -394,7 +388,7 @@ public class ImportExport {
       // Traitement de l'élément <topicTrees>
       NodeTreesTypeManager typeMgr = new NodeTreesTypeManager();
       typeMgr.processImport(userDetail, silverExType.getNodeTreesType(), silverExType.
-          getTargetComponentId());
+          getTargetComponentId(), reportManager);
     }
 
     // Créations unitaires de nouvelles publications ou modifications
@@ -402,21 +396,21 @@ public class ImportExport {
     if (silverExType.getPublicationsType() != null) {
       // Traitement de l'élément <publications>
       PublicationsTypeManager typeMgr = new PublicationsTypeManager();
-      ImportSettings settings = new ImportSettings(null, userDetail, silverExType.
+      ImportSettings importSettings = new ImportSettings(null, userDetail, silverExType.
           getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
-      typeMgr.processImport(silverExType.getPublicationsType(), settings);
+      typeMgr.processImport(silverExType.getPublicationsType(), importSettings, reportManager);
     }
 
     // Cas des imports en masse de thèmes et de publications
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
       RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
-      ImportSettings settings = new ImportSettings(null, userDetail, silverExType.
+      ImportSettings importSettings = new ImportSettings(null, userDetail, silverExType.
           getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
-      typeMgr.processImport(silverExType.getRepositoriesType(), settings);
+      typeMgr.processImport(silverExType.getRepositoriesType(), importSettings, reportManager);
     }
-    ImportReportManager.getInstance().setEndDate(new Date());
-    return ImportReportManager.getInstance().getImportReport();
+    reportManager.reportImportEnd();
+    return reportManager.getImportReport();
   }
 
   public ExportReport processExport(UserDetail userDetail, String language,

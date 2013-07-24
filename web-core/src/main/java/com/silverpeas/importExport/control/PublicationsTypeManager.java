@@ -20,27 +20,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.attachment.AttachmentsType;
-import org.silverpeas.importExport.versioning.Document;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.util.Charsets;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.coordinates.importExport.CoordinateImportExport;
 import com.silverpeas.coordinates.importExport.CoordinatePointType;
 import com.silverpeas.coordinates.importExport.CoordinatesPositionsType;
@@ -64,7 +43,6 @@ import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
-
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -79,8 +57,26 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentsType;
+import org.silverpeas.importExport.versioning.Document;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import static java.io.File.separator;
 
@@ -501,14 +497,14 @@ public class PublicationsTypeManager {
    */
   private String createPathDirectoryForKmaxPublicationExport(String exportPath, String componentId,
       String componentLabel, PublicationDetail pub, boolean useNameForFolders) throws IOException {
-    String pubNameForm = "";
+    String pubNameForm;
     if (useNameForFolders) {
       pubNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(pub.getName());
     } else {
       pubNameForm = pub.getPK().getId();
     }
 
-    String componentLabelForm = "";
+    String componentLabelForm;
     if (useNameForFolders || isKmax(componentId)) {
       componentLabelForm = DirectoryUtils.formatToDirectoryNamingCompliant(componentLabel);
     } else {
@@ -554,7 +550,8 @@ public class PublicationsTypeManager {
    * @param targetComponentId - id du composant dans lequel creer les publications unitaires
    * @param isPOIUsed
    */
-  public void processImport(PublicationsType publicationsType, ImportSettings settings) {
+  public void processImport(PublicationsType publicationsType, ImportSettings settings,
+      ImportReportManager reportManager) {
     GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(settings.getUser(), settings
         .getComponentId());
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -581,7 +578,7 @@ public class PublicationsTypeManager {
 
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
-      ImportReportManager.getInstance().addUnitReport(unitReport, componentId);
+      reportManager.addUnitReport(unitReport, componentId);
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
@@ -589,7 +586,7 @@ public class PublicationsTypeManager {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
         unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
       } else {
-        ImportReportManager.getInstance().setComponentName(componentId, componentInst.getLabel());
+        reportManager.setComponentName(componentId, componentInst.getLabel());
 
         PublicationDetail pubDetailToCreate = pubType.getPublicationDetail();
         List<AttachmentDetail> attachments = null;
@@ -708,9 +705,9 @@ public class PublicationsTypeManager {
               // traitement du contenu de la publi
               if (pubType.getPublicationContentType() != null) {
                 try {
-                  gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getId()),
-                      pubType.getPublicationContentType(), userDetail.getId(), pubDetail
-                      .getLanguage());
+                  gedIE.createPublicationContent(reportManager, unitReport, Integer.parseInt(
+                      pubDetail.getId()), pubType.getPublicationContentType(), userDetail.getId(),
+                      pubDetail.getLanguage());
                 } catch (ImportExportException ex) {
                   if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
                     unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
@@ -733,13 +730,15 @@ public class PublicationsTypeManager {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                   }
                 }
-                ImportReportManager.getInstance().addNumberOfFilesProcessed(copiedAttachments.size());
-                ImportReportManager.getInstance()
+                reportManager.
+                    addNumberOfFilesProcessed(copiedAttachments.size());
+                reportManager
                     .addNumberOfFilesNotImported(attachments.size() - copiedAttachments.size());
 
                 // On additionne la taille des fichiers importés au niveau du rapport
                 for (AttachmentDetail attdetail : copiedAttachments) {
-                  ImportReportManager.getInstance().addImportedFileSize(attdetail.getSize(), componentId);
+                  reportManager.addImportedFileSize(attdetail.getSize(),
+                      componentId);
                 }
               }
               if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
@@ -754,13 +753,15 @@ public class PublicationsTypeManager {
                     importDocuments(new ForeignPK(pubDetail.getId(), componentId), documents,
                     Integer.parseInt(userDetail.getId()),
                     ImportExportHelper.isIndexable(pubDetail));
-                ImportReportManager.getInstance().addNumberOfFilesProcessed(copiedFiles.size());
-                ImportReportManager.getInstance().addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
+                reportManager.addNumberOfFilesProcessed(copiedFiles.size());
+                reportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.
+                    size());
 
                 // Create documents and versions in DB
                 // On additionne la taille des fichiers importés au niveau du rapport
                 for (SimpleDocument version : copiedFiles) {
-                  ImportReportManager.getInstance().addImportedFileSize(version.getSize(), componentId);
+                  reportManager.addImportedFileSize(version.getSize(),
+                      componentId);
                 }
               }
 
@@ -796,7 +797,6 @@ public class PublicationsTypeManager {
             SilverTrace.error("importExport", "PublicationsTypeManager.processImport()",
                 "root.EX_NO_MESSAGE", ex);
           }
-          attachments = null;
         }
       }
       nbItem++;

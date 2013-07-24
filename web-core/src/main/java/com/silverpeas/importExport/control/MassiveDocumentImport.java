@@ -20,17 +20,14 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
-
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MassiveDocumentImport {
 
@@ -38,21 +35,21 @@ public class MassiveDocumentImport {
       MassiveReport massiveReport) throws ImportExportException {
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     try {
+      ImportReportManager reportManager = new ImportReportManager();
       PdcImportExport pdcIE = new PdcImportExport();
       massiveReport.setRepositoryPath(importSettings.getPathToImport());
-      ImportReportManager.getInstance().addMassiveReport(massiveReport, importSettings.getComponentId());
+      reportManager.addMassiveReport(massiveReport, importSettings.getComponentId());
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(importSettings.getUser(),
           importSettings.getComponentId());
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
       importSettings.setVersioningUsed(ImportExportHelper.isVersioningUsed(importSettings
           .getComponentId()));
-      publicationDetails = rtm.processImportRecursiveReplicate(massiveReport, gedIE, pdcIE,
-          importSettings);
-      ImportReportManager.getInstance().setEndDate(new Date());
+      publicationDetails = rtm.processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
+          pdcIE, importSettings);
+      reportManager.reportImportEnd();
     } finally {
       FileFolderManager.deleteFolder(importSettings.getPathToImport());
     }
     return publicationDetails;
   }
-
 }
