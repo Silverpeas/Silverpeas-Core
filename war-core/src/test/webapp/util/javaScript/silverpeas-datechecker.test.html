@@ -126,6 +126,14 @@
       date.label = 'myDate';
       expected = "myDate GML.MustBeFilled";
       assertIsDateValid("D: none (M), H: none. (Date label)", expected, date);
+      date.isMandatory = false;
+      date.defaultDate = '01/01/2012';
+      expected = NO_ERROR;
+      assertIsDateValid("D: default (M), H: none. (Date label)", expected, date);
+      date.isMandatory = true;
+      date.defaultHour = '12:59';
+      expected = "myDate GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: default. (Date label)", expected, date);
       date.isMandatoryHour = true;
       expected = "myDate GML.MustBeFilled\nmyDate GML.MustBeFilled";
       assertIsDateValid("D: none (M), H: none(M). (Date label)", expected, date);
