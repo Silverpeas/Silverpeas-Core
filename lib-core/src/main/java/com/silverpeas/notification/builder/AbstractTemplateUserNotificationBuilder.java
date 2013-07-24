@@ -47,8 +47,6 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   /**
    * Default constructor
    * @param resource
-   * @param title
-   * @param fileName
    */
   public AbstractTemplateUserNotificationBuilder(final T resource) {
     super(resource, null, null);
@@ -131,9 +129,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
-    if (OrganisationControllerFactory.getFactory().getOrganisationController()
+    if (OrganisationControllerFactory.getOrganisationController()
         .isComponentExist(getComponentInstanceId()) ||
-        OrganisationControllerFactory.getFactory().getOrganisationController()
+        OrganisationControllerFactory.getOrganisationController()
             .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {

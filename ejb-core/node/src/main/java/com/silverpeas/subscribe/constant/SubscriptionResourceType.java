@@ -37,7 +37,9 @@ import java.util.Collection;
 public enum SubscriptionResourceType {
   UNKNOWN,
   COMPONENT,
-  NODE;
+  NODE,
+  FORUM,
+  FORUM_MESSAGE;
 
   private static final Collection<SubscriptionResourceType> VALID_VALUES;
 

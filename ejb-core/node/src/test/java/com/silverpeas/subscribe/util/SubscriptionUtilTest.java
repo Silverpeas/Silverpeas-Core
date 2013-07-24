@@ -32,17 +32,86 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * User: Yohann Chastagnier
  * Date: 01/03/13
  */
 public class SubscriptionUtilTest {
+
+  @Test
+  public void testMergeIndexedSubscriberIdsByType() {
+
+    Map<SubscriberType, Collection<String>> finalContainer =
+        new HashMap<SubscriberType, Collection<String>>();
+    finalContainer.put(SubscriberType.USER, new LinkedHashSet<String>(Arrays.asList("1", "2")));
+    Map<SubscriberType, Collection<String>> containerToAdd =
+        new HashMap<SubscriberType, Collection<String>>();
+
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, null);
+    assertThat(finalContainer.size(), is(1));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(2));
+    assertThat(finalContainer.get(SubscriberType.GROUP), nullValue());
+
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, containerToAdd);
+    assertThat(finalContainer.size(), is(1));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(2));
+    assertThat(finalContainer.get(SubscriberType.GROUP), nullValue());
+
+    containerToAdd.put(SubscriberType.USER, Arrays.asList("10", "20"));
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, containerToAdd);
+    assertThat(finalContainer.size(), is(1));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(4));
+    assertThat(finalContainer.get(SubscriberType.GROUP), nullValue());
+
+    containerToAdd.put(SubscriberType.GROUP, Arrays.asList("30", "40", "50"));
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, containerToAdd);
+    assertThat(finalContainer.size(), is(2));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(4));
+    assertThat(finalContainer.get(SubscriberType.GROUP),
+        not(sameInstance(containerToAdd.get(SubscriberType.GROUP))));
+    assertThat(finalContainer.get(SubscriberType.GROUP), hasSize(3));
+  }
+
+  @Test
+  public void testMergeIndexedSubscriberIdsByTypeWithFinalContainerAsArrayList() {
+
+    Map<SubscriberType, Collection<String>> finalContainer =
+        new HashMap<SubscriberType, Collection<String>>();
+    finalContainer.put(SubscriberType.USER, new ArrayList<String>(Arrays.asList("1", "2")));
+    Map<SubscriberType, Collection<String>> containerToAdd =
+        new HashMap<SubscriberType, Collection<String>>();
+
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, null);
+    assertThat(finalContainer.size(), is(1));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(2));
+    assertThat(finalContainer.get(SubscriberType.GROUP), nullValue());
+
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, containerToAdd);
+    assertThat(finalContainer.size(), is(1));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(2));
+    assertThat(finalContainer.get(SubscriberType.GROUP), nullValue());
+
+    containerToAdd.put(SubscriberType.USER, Arrays.asList("10", "20"));
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, containerToAdd);
+    assertThat(finalContainer.size(), is(1));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(4));
+    assertThat(finalContainer.get(SubscriberType.GROUP), nullValue());
+
+    containerToAdd.put(SubscriberType.GROUP, Arrays.asList("30", "40", "50"));
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(finalContainer, containerToAdd);
+    assertThat(finalContainer.size(), is(2));
+    assertThat(finalContainer.get(SubscriberType.USER), hasSize(6));
+    assertThat(finalContainer.get(SubscriberType.GROUP),
+        not(sameInstance(containerToAdd.get(SubscriberType.GROUP))));
+    assertThat(finalContainer.get(SubscriberType.GROUP), hasSize(3));
+  }
 
   /**
    * Test of indexSubscriberIdsByType method, of class SubscriptionUtilTest.

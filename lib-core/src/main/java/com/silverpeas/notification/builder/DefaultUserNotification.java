@@ -23,10 +23,6 @@
  */
 package com.silverpeas.notification.builder;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -34,6 +30,9 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -81,7 +80,8 @@ public class DefaultUserNotification implements UserNotification {
         }
       } catch (final NotificationManagerException e) {
         SilverTrace.warn("notification", "IUserNotification.send()",
-            "notification.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
+            "notification.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS",
+            "componentId=" + notification.getComponentId(), e);
       }
     }
   }

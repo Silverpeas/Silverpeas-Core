@@ -26,6 +26,14 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that returns capitalized string</description>
+    <name>capitalize</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String capitalize(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that indicates if a String is defined.</description>
     <name>isDefined</name>
     <function-class>com.silverpeas.util.StringUtil</function-class>
