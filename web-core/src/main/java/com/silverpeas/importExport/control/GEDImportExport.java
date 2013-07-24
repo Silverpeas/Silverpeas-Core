@@ -20,25 +20,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -68,7 +49,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -92,8 +72,24 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -188,7 +184,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private PublicationDetail processPublicationDetail(UnitReport unitReport, ImportSettings settings,
       PublicationDetail pubDetailToCreate, List<NodePositionType> listOfNodeTypes) {
     // checking topics
-    List<NodePositionType> existingTopics = processTopics(settings.getUser().getId(), listOfNodeTypes,
+    List<NodePositionType> existingTopics = processTopics(settings.getUser().getId(),
+        listOfNodeTypes,
         pubDetailToCreate.getPK().getInstanceId());
 
     if (existingTopics.isEmpty() && !isKmax()) {
@@ -324,10 +321,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
     return getCurrentComponentId().startsWith("kmax");
   }
 
-  public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId, String language) throws
+  public void createPublicationContent(ImportReportManager reportManager, UnitReport unitReport,
+      int pubId, PublicationContentType pubContent, String userId, String language) throws
       ImportExportException {
-    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.
+    createPublicationContent(reportManager, unitReport, pubId, pubContent, userId, FileServerUtils.
         getApplicationContext(), language);
   }
 
@@ -343,16 +340,16 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param lang
    * @throws ImportExportException
    */
-  public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId, String webContext, String language) throws
-      ImportExportException {
+  public void createPublicationContent(ImportReportManager reportManager, UnitReport unitReport,
+      int pubId, PublicationContentType pubContent, String userId, String webContext,
+      String language) throws ImportExportException {
     WysiwygContentType wysiwygType = pubContent.getWysiwygContentType();
     XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
     try {
       if (wysiwygType != null) { // Contenu Wysiwyg
-        createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext, language);
+        createWysiwygContent(reportManager, unitReport, pubId, wysiwygType, userId, language);
       } else if (xmlModel != null) {
-        createXMLModelContent(unitReport, xmlModel, java.lang.Integer.toString(pubId), userId);
+        createXMLModelContent(xmlModel, java.lang.Integer.toString(pubId), userId);
       }
     } catch (ImportExportException ex) {
       throw ex;
@@ -362,7 +359,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
   }
 
-  private void createXMLModelContent(UnitReport unitReport, XMLModelContentType xmlModel,
+  private void createXMLModelContent(XMLModelContentType xmlModel,
       String pubId, String userId) throws Exception {
     PublicationPK pubPK = new PublicationPK(pubId, getCurrentComponentId());
     PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
@@ -427,7 +424,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     set.save(data);
   }
-  
+
   /**
    * Methode de creation d'un contenu de type wysiwyg
    *
@@ -435,8 +432,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param wysiwygType - objet de mapping castor contenant les informations de contenu de type
    * Wysiwyg
    */
-  private void createWysiwygContent(UnitReport unitReport, int pubId,
-      WysiwygContentType wysiwygType, String userId, String webContext, String lang)
+  private void createWysiwygContent(ImportReportManager reportManager, UnitReport unitReport,
+      int pubId, WysiwygContentType wysiwygType, String userId, String lang)
       throws UtilException, WysiwygException, ImportExportException {
     // Recuperation du nouveau contenu wysiwyg
     File wysiwygFile = null;
@@ -477,8 +474,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     // Creation du fichier de contenu wysiwyg sur les serveur
     String imagesContext = WysiwygController.getImagesFileName(String.valueOf(pubId));
-    String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId,
-        wysiwygFile.getParent(), wysiwygText, imagesContext, webContext);
+    String newWysiwygText = replaceWysiwygImagesPathForImport(reportManager, unitReport, pubId,
+        wysiwygFile.getParent(), wysiwygText, imagesContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
     WysiwygController.createFileAndAttachment(newWysiwygText, new ForeignPK(String.valueOf(pubId),
@@ -492,11 +489,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param wysiwygText - contenu wysiwyg passe en parametre
    * @return - le contenu wysiwyg mis a  jour
    */
-  private String replaceWysiwygImagesPathForImport(UnitReport unitReport, int pubId,
-      String wysiwygImportedPath, String wysiwygText, String imageContext, String webContext)
-      throws ImportExportException {
+  private String replaceWysiwygImagesPathForImport(ImportReportManager reportManager,
+      UnitReport unitReport, int pubId, String wysiwygImportedPath, String wysiwygText,
+      String imageContext) throws ImportExportException {
     int finPath = 0;
-    int debutPath = 0;
+    int debutPath;
     StringBuilder newWysiwygText = new StringBuilder();
 
     if (wysiwygText.indexOf("img src=\"", finPath) == -1) {
@@ -525,14 +522,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
             attDetail = attachmentIE
                 .importWysiwygAttachment(String.valueOf(pubId), getCurrentComponentId(), attDetail,
                 imageContext);
-            ImportReportManager.getInstance().addNumberOfFilesProcessed(1);
+            reportManager.addNumberOfFilesProcessed(1);
             if (attDetail == null || attDetail.getSize() == 0) {
               unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
               throw new ImportExportException("GEDImportExport.replaceWysiwygImagesPathForImport()",
                   "importExport.EX_CANT_CREATE_CONTENT", "pic = " + imageSrc);
             }
             // On additionne la taille des fichiers importes au niveau du rapport
-            ImportReportManager.getInstance().addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
+            reportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
             //TODO FEATURE 82 newWysiwygText.append(webContext).append(attDetail.getAttachmentURL
             // ());
           } catch (Exception e) {
@@ -588,7 +585,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       BufferedReader reader = null;
       try {
         reader = new BufferedReader(new FileReader(dir + File.separator + "strings2Remove.txt"));
-        String ligne = null;
+        String ligne;
         while ((ligne = reader.readLine()) != null) {
           if ("$$removeAnchors$$".equalsIgnoreCase(ligne)) {
             currentWysiwygText = removeAnchors(currentWysiwygText);
@@ -609,7 +606,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private static String removeAnchors(String wysiwygText) {
     int fin = 0;
-    int debut = 0;
+    int debut;
     StringBuilder newWysiwygText = new StringBuilder();
 
     if (wysiwygText.indexOf("<a name=", fin) == -1) {
@@ -717,7 +714,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             newNode.setNodePK(new NodePK("unknown", componentId));
             newNode.setFatherPK(new NodePK(parentId, componentId));
             newNode.setCreatorId(userId);
-            NodePK newNodePK = null;
+            NodePK newNodePK;
             try {
               newNodePK = getNodeBm().createNode(newNode);
             } catch (Exception e) {

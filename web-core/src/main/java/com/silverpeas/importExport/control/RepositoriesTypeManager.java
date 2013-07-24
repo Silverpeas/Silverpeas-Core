@@ -20,35 +20,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-
-import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
-import org.apache.commons.lang3.text.translate.EntityArrays;
-import org.apache.commons.lang3.text.translate.LookupTranslator;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.util.mail.Extractor;
-import org.silverpeas.util.mail.Mail;
-import org.silverpeas.util.mail.MailAttachment;
-import org.silverpeas.util.mail.MailExtractor;
-
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.RepositoriesType;
@@ -68,6 +39,32 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.mail.Extractor;
+import org.silverpeas.util.mail.Mail;
+import org.silverpeas.util.mail.MailAttachment;
+import org.silverpeas.util.mail.MailExtractor;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -89,7 +86,8 @@ public class RepositoriesTypeManager {
    * @return un objet ComponentReport contenant les informations de création des publications
    * unitaires et nécéssaire au rapport détaillé
    */
-  public void processImport(RepositoriesType repositoriesType, ImportSettings settings) {
+  public void processImport(RepositoriesType repositoriesType, ImportSettings settings,
+      ImportReportManager reportManager) {
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -105,7 +103,7 @@ public class RepositoriesTypeManager {
 
       // Création du rapport de repository
       MassiveReport massiveReport = new MassiveReport();
-      ImportReportManager.getInstance().addMassiveReport(massiveReport, componentId);
+      reportManager.addMassiveReport(massiveReport, componentId);
       massiveReport.setRepositoryPath(sPath);
 
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
@@ -114,7 +112,7 @@ public class RepositoriesTypeManager {
         // le composant n'existe pas
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
       } else {
-        ImportReportManager.getInstance().setComponentName(componentId, componentInst.getLabel());
+        reportManager.setComponentName(componentId, componentInst.getLabel());
 
         File path = new File(sPath);
         if (!path.isDirectory()) {
@@ -129,7 +127,7 @@ public class RepositoriesTypeManager {
             File file = itListcontenuPath.next();
             if (file.isFile()) {
               settings.setFolderId(String.valueOf(topicId));
-              importFile(file, massiveReport, gedIE, pdcIE, settings);
+              importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
             } else if (file.isDirectory()) {
               switch (rep_Type.getMassiveTypeInt()) {
                 case RepositoryType.NO_RECURSIVE:
@@ -138,7 +136,7 @@ public class RepositoriesTypeManager {
                 case RepositoryType.RECURSIVE_NOREPLICATE:
                   // traitement récursif spécifique
                   settings.setPathToImport(file.getAbsolutePath());
-                  processImportRecursiveNoReplicate(massiveReport, gedIE,
+                  processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE,
                       attachmentIE, versioningIE, pdcIE, settings);
                   break;
                 case RepositoryType.RECURSIVE_REPLICATE:
@@ -147,7 +145,8 @@ public class RepositoriesTypeManager {
                     // Traitement récursif spécifique
                     settings.setPathToImport(file.getAbsolutePath());
                     settings.setFolderId(nodeDetail.getNodePK().getId());
-                    processImportRecursiveReplicate(massiveReport, gedIE, pdcIE, settings);
+                    processImportRecursiveReplicate(reportManager, massiveReport, gedIE, pdcIE,
+                        settings);
                   } catch (ImportExportException ex) {
                     massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
                   }
@@ -160,8 +159,9 @@ public class RepositoriesTypeManager {
     }
   }
 
-  private PublicationDetail importFile(File file, MassiveReport massiveReport,
-      GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings) {
+  private PublicationDetail importFile(File file, ImportReportManager reportManager,
+      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
+      ImportSettings settings) {
     SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
         "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
     String componentId = gedIE.getCurrentComponentId();
@@ -175,7 +175,8 @@ public class RepositoriesTypeManager {
       // On récupére les infos nécéssaires à la création de la publication
       pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
       pubDetailToCreate.setPk(new PublicationPK("unknown", "useless", componentId));
-      if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.isDraftUsed()) {
+      if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.
+          isDraftUsed()) {
         pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
         pubDetailToCreate.setStatusMustBeChecked(false);
       }
@@ -192,7 +193,8 @@ public class RepositoriesTypeManager {
       if (FileUtil.isMail(file.getName())) {
         // if imported file is an e-mail, its textual content is saved in a dedicated form
         // and attached files are attached to newly created publication
-        processMailContent(pubDetailToCreate, file, unitReport, gedIE, settings.isVersioningUsed());
+        processMailContent(pubDetailToCreate, file, reportManager, unitReport, gedIE, settings.
+            isVersioningUsed());
       }
 
       // add attachment
@@ -215,11 +217,11 @@ public class RepositoriesTypeManager {
       if (document.getSize() > 0L) {
         AttachmentServiceFactory.getAttachmentService()
             .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
-        ImportReportManager.getInstance().addNumberOfFilesProcessed(1);
-        ImportReportManager.getInstance().addImportedFileSize(document.getSize(), componentId);
+        reportManager.addNumberOfFilesProcessed(1);
+        reportManager.addImportedFileSize(document.getSize(), componentId);
       } else {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-        ImportReportManager.getInstance().addNumberOfFilesNotImported(1);
+        reportManager.addNumberOfFilesNotImported(1);
       }
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
@@ -229,8 +231,10 @@ public class RepositoriesTypeManager {
     return pubDetailToCreate;
   }
 
-  private void processMailContent(PublicationDetail pubDetail, File file, UnitReport unitReport,
-      GEDImportExport gedIE, boolean isVersioningUsed) throws ImportExportException {
+  private void processMailContent(PublicationDetail pubDetail, File file,
+      ImportReportManager reportManager,
+      UnitReport unitReport, GEDImportExport gedIE, boolean isVersioningUsed) throws
+      ImportExportException {
 
     String componentId = gedIE.getCurrentComponentId();
     UserDetail userDetail = gedIE.getCurentUserDetail();
@@ -241,8 +245,8 @@ public class RepositoriesTypeManager {
       mail = extractor.getMail();
     } catch (Exception e) {
       SilverTrace.error("importExport",
-            "RepositoriesTypeManager.processMailContent",
-            "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+          "RepositoriesTypeManager.processMailContent",
+          "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
     }
     if (mail != null) {
       // save mail data into dedicated form
@@ -284,7 +288,8 @@ public class RepositoriesTypeManager {
       fields.add(fieldTO);
 
       // save form
-      gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getPK().getId()),
+      gedIE.createPublicationContent(reportManager, unitReport, Integer.parseInt(pubDetail.getPK().
+          getId()),
           pubContent, userDetail.getId(), null);
 
       // extract each file from mail...
@@ -311,8 +316,8 @@ public class RepositoriesTypeManager {
           // versioning mode
           VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
           versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
-                documents, Integer.parseInt(userDetail.getId()),
-                pubDetail.isIndexable());
+              documents, Integer.parseInt(userDetail.getId()),
+              pubDetail.isIndexable());
         } else {
           // classic mode
           AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -339,18 +344,18 @@ public class RepositoriesTypeManager {
    * même dans le cas présent
    * @throws ImportExportException
    */
-  public void processImportRecursiveNoReplicate(MassiveReport massiveReport,
-      GEDImportExport gedIE, AttachmentImportExport attachmentIE,
+  public void processImportRecursiveNoReplicate(ImportReportManager reportManager,
+      MassiveReport massiveReport, GEDImportExport gedIE, AttachmentImportExport attachmentIE,
       VersioningImportExport versioningIE, PdcImportExport pdcIE, ImportSettings settings) {
     Iterator<File> itListcontenuPath = getPathContent(new File(settings.getPathToImport()));
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        importFile(file, massiveReport, gedIE, pdcIE, settings);
+        importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
       } else if (file.isDirectory()) {
         // traitement récursif spécifique
         settings.setPathToImport(file.getAbsolutePath());
-        processImportRecursiveNoReplicate(massiveReport, gedIE, attachmentIE,
+        processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE, attachmentIE,
             versioningIE, pdcIE, settings);
       }
     }
@@ -370,8 +375,9 @@ public class RepositoriesTypeManager {
    * @return the list of publications created by the import.
    * @throws ImportExportException
    */
-  public List<PublicationDetail> processImportRecursiveReplicate(MassiveReport massiveReport,
-      GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings)
+  public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
+      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
+      ImportSettings settings)
       throws ImportExportException {
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     File path = new File(settings.getPathToImport());
@@ -379,7 +385,8 @@ public class RepositoriesTypeManager {
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        PublicationDetail publication = importFile(file, massiveReport, gedIE, pdcIE, settings);
+        PublicationDetail publication = importFile(file, reportManager, massiveReport, gedIE, pdcIE,
+            settings);
         if (publication != null) {
           publications.add(publication);
         }
@@ -390,7 +397,8 @@ public class RepositoriesTypeManager {
         // Traitement récursif spécifique
         settings.setPathToImport(file.getAbsolutePath());
         settings.setFolderId(nodeDetail.getNodePK().getId());
-        publications.addAll(processImportRecursiveReplicate(massiveReport, gedIE, pdcIE, settings));
+        publications.addAll(processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
+            pdcIE, settings));
       }
     }
     return publications;

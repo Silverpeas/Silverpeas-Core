@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.importExport.model.ImportExportException;
@@ -33,14 +29,14 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import java.util.Collection;
 import java.util.List;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Classe de gestion des importations unitaires de thèmes dans KMelia pour le moteur d'importExport
  * de SilverPeas.
+ *
  * @author $Author$
  * @version $Revision$
  */
@@ -55,13 +51,14 @@ public class NodeTreesTypeManager {
    * Construit parallèlement un objet ComponentReport contenant les informations de création des
    * noeuds et nécéssaire au rapport détaillé.
    * </p>
+   *
    * @param userDetail contient les informations sur l'utilisateur du moteur d'importExport
    * @param nodeTreesType objet mappé par castor contenant toutes les informations de création des
    * noeuds
    * @param targetComponentId ID du composant par défaut dans lequel creer les noeuds.
    */
   public void processImport(UserDetail userDetail, NodeTreesType nodeTreesType,
-      String targetComponentId) {
+      String targetComponentId, ImportReportManager reportManager) {
     int nbTopicTree = 1;
     int nbTopic = 1;
     GEDImportExport gedIE =
@@ -81,7 +78,7 @@ public class NodeTreesTypeManager {
         gedIE.setCurrentComponentId(componentId);
         // Création du rapport unitaire
         UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
-        ImportReportManager.getInstance().addUnitReport(unitReport, componentId);
+        reportManager.addUnitReport(unitReport, componentId);
 
         ComponentInst component = OrganisationControllerFactory
             .getOrganisationController().getComponentInst(componentId);
@@ -90,9 +87,9 @@ public class NodeTreesTypeManager {
           unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
           unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
         } else {
-          ImportReportManager.getInstance().setComponentName(componentId, component.getLabel());
+          reportManager.setComponentName(componentId, component.getLabel());
           nbTopic = processImportNodeInternal(nodeTreeType.getNodeDetail(), null, gedIE, nbTopic,
-              componentId);
+              componentId, reportManager);
           nbTopicTree++;
         }
       }
@@ -101,6 +98,7 @@ public class NodeTreesTypeManager {
 
   /**
    * Méthode récursive pour la création des noeuds et de leurs sous-noeuds.
+   *
    * @param node noeud à créer (avec ses sous-noeuds éventuels).
    * @param parentNode noeud parent ou <code>null</code> pour désigner le noeud racine.
    * @param gedIE objet implémentant les méthodes utiles pour la gestion des thèmes et des
@@ -111,11 +109,11 @@ public class NodeTreesTypeManager {
    * l'appel à cette méthode.
    */
   private int processImportNodeInternal(NodeDetail node, NodeDetail parentNode,
-      GEDImportExport gedIE, int nbTopic, String componentId) {
+      GEDImportExport gedIE, int nbTopic, String componentId, ImportReportManager reportManager) {
 
     if (node != null) {
       NodeDetail newNode;
-      int parentNodeId = 0;
+      int parentNodeId;
 
       try {
         String parentNodeIdStr = (parentNode != null) ? parentNode.getNodePK().getId() : null;
@@ -126,7 +124,7 @@ public class NodeTreesTypeManager {
 
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport("<topic> #" + nbTopic);
-      ImportReportManager.getInstance().addUnitReport(unitReport, componentId);
+      reportManager.addUnitReport(unitReport, componentId);
 
       // On commence par créer le topic dont la description est passée en
       // paramètre
@@ -151,7 +149,8 @@ public class NodeTreesTypeManager {
 
       // S'il y a des sous-topics, on les crée de façon récursive
       for (NodeDetail childNode : children) {
-        nbTopic = processImportNodeInternal(childNode, newNode, gedIE, nbTopic, componentId);
+        nbTopic = processImportNodeInternal(childNode, newNode, gedIE, nbTopic, componentId,
+            reportManager);
       }
     }
 
