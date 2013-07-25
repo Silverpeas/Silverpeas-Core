@@ -46,7 +46,7 @@
             title: $("#gef-progressMessage #gef-progress-message1").text(),
             close: function () {
               // Clean up
-              dlg.dialog('destroy').remove();
+              dlg.dialog('destroy');
             },
             open: function(event, ui) {
               $(".ui-dialog-titlebar-close").hide();
