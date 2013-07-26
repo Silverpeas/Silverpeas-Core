@@ -211,7 +211,14 @@ public class RepositoriesTypeManager {
       document.setFilename(file.getName());
       document.setSize(file.length());
       document.getFile().setCreatedBy(userDetail.getId());
-      document.setCreated(new Date());
+      if (settings.useFileDates()) {
+        document.setCreated(pubDetailToCreate.getCreationDate());
+        if (pubDetailToCreate.getUpdateDate() != null) {
+          document.setUpdated(pubDetailToCreate.getUpdateDate());
+        }
+      } else {
+        document.setCreated(new Date());
+      }
       document.setForeignId(pubDetailToCreate.getPK().getId());
       document.setContentType(FileUtil.getMimeType(file.getName()));
       if (document.getSize() > 0L) {

@@ -77,6 +77,7 @@ public class PublicationImportExport {
     String motsClefs = "";
     String content = "";
     Date creationDate = new Date();
+    Date lastModificationDate = null;
 
     if (FileUtil.isMail(file.getName())) {
       try {
@@ -123,14 +124,27 @@ public class PublicationImportExport {
         if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
           motsClefs = StringUtils.join(metaData.getKeywords(), ';');
         }
+        if (settings.useFileDates()) {
+          if (metaData.getCreationDate() != null) {
+            creationDate = metaData.getCreationDate();
+          }
+          if (metaData.getLastSaveDateTime() != null) {
+            lastModificationDate = metaData.getLastSaveDateTime();
+          }
+        }
       } catch (Exception ex) {
         SilverTrace.error("importExport",
             "PublicationImportExport.convertFileInfoToPublicationDetail",
             "importExport.EX_CANT_EXTRACT_PUBLICATION_METADATA_FROM_FILE", ex);
       }
     }
-    return new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
+    PublicationDetail publication = new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
         settings.getUser().getId(), "5", null, motsClefs, content);
+    if (lastModificationDate != null) {
+      publication.setUpdateDate(lastModificationDate);
+      publication.setUpdateDateMustBeSet(true);
+    }
+    return publication;
   }
 
   /**
