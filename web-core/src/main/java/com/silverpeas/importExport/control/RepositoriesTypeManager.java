@@ -376,8 +376,7 @@ public class RepositoriesTypeManager {
    * @throws ImportExportException
    */
   public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
-      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
-      ImportSettings settings)
+      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings)
       throws ImportExportException {
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     File path = new File(settings.getPathToImport());
@@ -385,8 +384,8 @@ public class RepositoriesTypeManager {
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        PublicationDetail publication = importFile(file, reportManager, massiveReport, gedIE, pdcIE,
-            settings);
+        PublicationDetail publication =
+            importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
         if (publication != null) {
           publications.add(publication);
         }
@@ -395,10 +394,11 @@ public class RepositoriesTypeManager {
             gedIE.addSubTopicToTopic(file, Integer.valueOf(settings.getFolderId()), massiveReport);
         // massiveReport.addOneTopicCreated();
         // Traitement récursif spécifique
-        settings.setPathToImport(file.getAbsolutePath());
-        settings.setFolderId(nodeDetail.getNodePK().getId());
+        ImportSettings recursiveSettings = settings.clone();
+        recursiveSettings.setPathToImport(file.getAbsolutePath());
+        recursiveSettings.setFolderId(nodeDetail.getNodePK().getId());
         publications.addAll(processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
-            pdcIE, settings));
+            pdcIE, recursiveSettings));
       }
     }
     return publications;

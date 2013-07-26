@@ -25,7 +25,7 @@ import org.apache.commons.io.FilenameUtils;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class ImportSettings {
+public class ImportSettings implements Cloneable {
   
   private static final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
@@ -132,6 +132,10 @@ public class ImportSettings {
 
   public int getVersionType() {
     return versionType;
+  }
+  
+  public ImportSettings clone() {
+    return new ImportSettings(pathToImport, user, componentId, folderId, draftUsed, poiUsed, method);
   }
   
 }
