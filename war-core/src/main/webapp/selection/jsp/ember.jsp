@@ -101,142 +101,7 @@
           </ul>
         </div>
 
-        <div id="results_userPanel">
-        <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
-          <div class="groups_results_userPanel">
-            <div class="container_input_search">
-              <input type="text" class="search autocompletion" id="group_search"/>
-            </div>
-            <div class="listing_groups">
-              <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
-              {{#if scope.multipleSelection }}
-              <a href="#" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all" {{ action 'selectAllGroups' }} ><fmt:message key="selection.AddAllGroups"/></a>
-              {{/if}}
-              <ul id="group_list">
-                {{#each group in groups}}
-                {{#if groups.indexOf(group) % 2 === 0}}
-                <li class="line even">
-                {{else}
-                <li class="line odd">
-                {{/if}}
-                  <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"></img></div>
-                  <span class="name_group">{{ group.name }}</span><span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
-                  <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
-                  {{#if selectedGroups.indexOf(group) < 0}}
-                  <a href="#" title="<fmt:message key='selection.AddToSelection'/>" class="add group" {{ action 'selectGroup' group }}"><fmt:message key="selection.AddToSelection"/></a>
-                  {{/if}}
-                </li>
-                {{/each}}
-              </ul>
-              <div id="group_list_pagination" class="pageNav_results_userPanel"></div>
-            </div>
-          </div>
-        </c:if>
-        <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-          <div class="users_results_userPanel">
-            <div class="container_input_search">
-              <input type="text" class="search autocompletion" id="user_search"/>
-            </div>
-            <div class="listing_users">
-              <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
-              {{#if scope.multipleSelection}}
-              <a href="#" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all" {{ action 'selectAllUsers' }}><fmt:message key="selection.AddAllUsers"/></a>
-              {{/if}}
-              <ul id="user_list">
-                {{#each user in users}}
-                {{#if users.indexOf(user) % 2 === 0}}
-                <li class="line odd">
-                {{else}}
-                <li class="line even">
-                {{/if}}
-                  <div class="avatar"><img {{ attrBind src="user.avatar" }} alt="avatar"/></div>
-                  <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
-                  <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                  {{#if selectedUsers.indexOf(user) < 0}}
-                  <a href="#" title="<fmt:message key='selection.AddToSelection'/>" class="add user" {{ action 'selectUser' user}}><fmt:message key="selection.AddToSelection"/></a>
-                  {{/if}}
-                </li>
-                {{/each}}
-              </ul>
-              <div id="user_list_pagination" class="pageNav_results_userPanel"></div>
-            </div>
-          </div>
-        </c:if>
-      </div>
 
-      <div id="selected_userPanel">
-        <div class="container">
-          <h4 class="title">${selectionTitle}</h4>
-          <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
-            <div class="groups_selected_userPanel">
-              <div class="listing_groups">
-                <p class="nb_results" id="group_selected_count">{{ selectedGroups.length }} ${selectedGroupText}</p>
-                {{#if scope.multipleSelection}}
-                <a href="#" title="${removeAllGroupsFromSelectionText}" class="remove_all" {{ action "deselectAllGroups" }><fmt:message key="selection.Empty"/></a>
-                {{/if}}
-                <ul id="selected_group_list">
-                  {{#each group in selectedGroups.currentpage}}
-                  {{#if selectedGroups.indexOf(group) % 2 === 0}}
-                  <li class="line odd">
-                  {{else}}
-                  <li class="line even">
-                  {{/if}}
-                    <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
-                    <span class="name_group">{{ group.name }}</span>
-                    <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
-                    <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
-                    <a title="${deselectText}" href="#" class="remove group" {{ action "deselectGroup" group }}>${deselectText}</a>
-                  </li>
-                  {{/each}}
-                </ul>
-                <div class="pageNav_results_userPanel" id="selected_group_list_pagination">
-                </div>
-              </div>
-            </div>
-          </c:if>
-
-          <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-            <div class="users_selected_userPanel">
-              <div class="listing_users">
-                <p class="nb_results" id="user_selected_count">{{ selectedUsers.length }} ${selectedUserText}</p>
-                {{#if scope.multipleSelection}}
-                <a href="#" {{ action "deselectAllUsers" }} title="${removeAllUsersFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
-                {{/if}}
-                <ul id="selected_user_list">
-                  {{#each group in selectedUsers.currentpage}}
-                  {{#if selectedUsers.indexOf(group) % 2 === 0}}
-                  <li class="line odd">
-                  {{else}}
-                  <li class="line even">
-                  {{/if}}
-                    <div class="avatar"><img {{ attrBind src="user.avatar" }} alt="avatar"/></div>
-                    <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
-                    <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                    <a {{ action "deselectUser" user }} title="${deselectText}" href="#" class="remove user">${deselectText}</a>
-                  </li>
-                </ul>
-                <div class="pageNav_results_userPanel" id="selected_user_list_pagination">
-                </div>
-              </div>
-            </div>
-          </c:if>
-
-          <form action="${validationURL}" id="selection" method="POST">
-            <input type="hidden" name="UserOrGroupSelection" value="true"/>
-            <input id="group-selection" type="hidden" name="GroupSelection" value=""/>
-            <input id="user-selection" type="hidden" name="UserSelection" value=""/>
-            <br clear="all"/>
-            <div id="validate">
-              <fmt:message var="selectLabel" key="GML.validate"/>
-              <fmt:message var="cancelLabel" key="GML.cancel"/>
-              <a href="#" class="milieuBoutonV5" {{ action "validate" }}>${selectLabel}</a>
-              <c:if test='${not fn:endsWith(cancelationURL, "userpanel.jsp")}'>
-                <a href="#" class="milieuBoutonV5" {{ action "cancel" }}>${cancelLabel}</a>
-              </c:if>
-            </div>
-          </form>
-        </div>
-      </div>
       </script>
 
     </div>
@@ -248,13 +113,18 @@
       RenderingUserType = { all: 0, relationships: 1, group: 2 };
 
       /* the user selector as an Ember application */
-      window.app = Ember.Application.create();
-      /*UserSelector.Router.map(function() {
+      window.App = Ember.Application.create();
+      /*App.Router.map(function() {
         this.resource('userselector', { path: '/' });
       });*/
+      App.Store = new ProfileStore();
+
+      App.User = User;
+
+      App.UserGroup = UserGroup;
 
       App.Scope = Ember.Object.extend({
-        me: User.find('${currentUserId}'),
+        me: App.User.find('${currentUserId}'),
         currentGroup: null,
         multipleSelection: ${multipleSelection},
         renderedUsers: RenderingUserType.all,

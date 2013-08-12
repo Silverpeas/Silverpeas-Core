@@ -105,7 +105,6 @@
   });
 
   User = DS.Model.extend({
-    id: DS.attr('string'),
     firstName: DS.attr('string'),
     lastName: DS.attr('string'),
     avatar: DS.attr('string'),
@@ -133,7 +132,6 @@
   });
 
   UserGroup = DS.Model.extend({
-    id: DS.attr('string'),
     name: DS.attr('string'),
     description: DS.attr('string'),
     domainName: DS.attr('string'),
