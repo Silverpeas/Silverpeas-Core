@@ -22,181 +22,227 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * The module silverpeas within which the business objects are defined.
- * @type @exp;angular@call;module
- */
-var silverpeas = angular.module('silverpeas', []);
+(function() {
+  /**
+   * The module silverpeas within which the business objects are defined.
+   * @type @exp;angular@call;module
+   */
+  var silverpeas = angular.module('silverpeas', []);
 
-/**
- * The user profile.
- */
-silverpeas.factory('User', function(context, $http, $q) {
-  return new function() {
-    var rootURL = webContext + '/services/profile/users', defaultQuery = '';
-    if (context.resource)
-      defaultQuery += '?resource=' + context.resource;
-    if (context.domain)
-      defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'domain=' + context.domain;
-    if (context.roles)
-      defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'roles=' + context.roles;
-
-    var asUsers = function(data) {
-      var users = [];
-      if (data instanceof Array)
-        for (var i = 0; i < data.length; i++) {
-          users.push(new User(data[i]));
-        }
-      else
-        users = new User(data);
-      return users;
-    };
-
-    var User = function() {
-      if (arguments.length > 0) {
-        for (var prop in arguments[0]) {
-          this[prop] = arguments[0][prop];
-        }
-      }
-    };
-    User.prototype.relationships = function() {
-      var deferred = $q.defer(), filter = defaultQuery;
-      if (arguments.length === 1 && arguments[0]) {
-        if (arguments[0].page)
-          filter += '?page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-        if (arguments[0].name)
-          filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
-      }
-      $http.get(this.contactsUri + filter).
-              error(function(data, status) {
-        alert(status);
-      }).
-              success(function(data, status, headers) {
-        var users = asUsers(data);
-        users.maxlength = headers('X-Silverpeas-UserSize');
-        deferred.resolve(users);
-      });
-      return deferred.promise;
-    };
-
-    this.get = function() {
-      var filter, deferred = $q.defer();
-      if (arguments.length === 1 && typeof arguments[0] === 'number') {
-        filter = '/' + arguments[0];
-      } else {
-        filter = defaultQuery + (context.component ? ((defaultQuery.indexOf('?') < 0 ? '?' : '&') +
-                'component=' + context.component) : '');
-        if (arguments.length === 1 && arguments[0]) {
-          if (arguments[0].group)
-            filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'group=' + arguments[0].group;
-          if (arguments[0].page)
-            filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-          if (arguments[0].name)
-            filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
-        }
-      }
-      $http.get(rootURL + filter).
-              error(function(data, status) {
-        alert(status);
-      }).
-              success(function(data, status, headers) {
-        var users = asUsers(data);
-        if (users instanceof Array)
-          users.maxlength = headers('X-Silverpeas-UserSize');
-        deferred.resolve(users);
-      });
-      return deferred.promise;
-    };
-  };
-});
-
-/**
- * The user group profile.
- */
-silverpeas.factory('UserGroup', function(context, User, $http, $q) {
-  return new function() {
-    var rootURL = webContext + '/services/profile/groups', defaultQuery = '';
-    if (context.resource)
-      defaultQuery += '?resource=' + context.resource;
-    if (context.domain)
-      defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'domain=' + context.domain;
-    if (context.roles)
-      defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'roles=' + context.roles;
-
-    var asUserGroups = function(data) {
-      var groups = [];
-      if (data instanceof Array)
-        for (var i = 0; i < data.length; i++) {
-          groups.push(new UserGroup(data[i]));
-        }
-      else
-        groups = new UserGroup(data);
-      return groups;
-    };
-
-    var UserGroup = function() {
-      if (arguments.length > 0) {
-        for (var prop in arguments[0]) {
-          this[prop] = arguments[0][prop];
-        }
-      }
-    };
-    UserGroup.prototype.subgroups = function() {
-      var deferred = $q.defer(), filter = '';
-      if (arguments.length === 1 && arguments[0]) {
-        if (arguments[0].page)
-          filter += '?page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-        if (arguments[0].name)
-          filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
+  /**
+   * REST-based WEB adapter
+   */
+  silverpeas.factory('RESTAdapter', ['$http', '$q', function($http, $q) {
+      function _get(url, convert) {
+        var deferred = $q.defer();
+        $http.get(url).error(function(data, status) {
+          alert(status);
+        }).success(function(data, status, headers) {
+          var result = (convert ? convert(data) : data);
+          if (result instanceof Array) {
+            var maxlength = headers('X-Silverpeas-Size');
+            if (maxlength)
+              result.maxlength = maxlength;
+          }
+          deferred.resolve(result);
+        });
+        return deferred.promise;
       }
 
-      $http.get(this.childrenUri + filter).
-              error(function(data, status) {
-        alert(status);
-      }).
-              success(function(data, status, headers) {
-        var groups = asUserGroups(data);
-        if (groups instanceof Array)
-          groups.maxlength = headers('X-Silverpeas-GroupSize');
-        deferred.resolve(groups);
-      });
-      return deferred.promise;
-    };
-    UserGroup.prototype.users = function() {
-      var params = {};
-      if (arguments.length === 1)
-        for (var p in arguments[0])
-          params[p] = arguments[0][p];
-      params.group = this.id;
-      return User.get(params);
-    };
-
-    this.get = function() {
-      var filter, deferred = $q.defer();
-      if (arguments.length === 1 && typeof arguments[0] === 'number') {
-        filter = '/' + arguments[0];
-      } else {
-        filter = (context.component ? '/application/' + context.component : '') + defaultQuery;
-        if (arguments.length === 1 && arguments[0]) {
-          if (arguments[0].page)
-            filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-          if (arguments[0].name)
-            filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
+      return {
+        uri: null,
+        converter: null,
+        find: function(parameters) {
+          if (parameters.url)
+            return _get(parameters.url, this.converter);
+          else
+            return findByQuery(this.uri, parameters);
+        },
+        findByQuery: function(url, query) {
+          if (!url) {
+            alert('[RESTAdapter#findByQuery] URL undefined!');
+            return null;
+          }
+          var requestedUrl = url + '?';
+          for (var param in query) {
+            requestedUrl += param + '=' + query[param];
+          }
+          if (requestedUrl.indexOf('?') === requestedUrl.length - 1)
+            requestedUrl = url;
+          return _get(requestedUrl, this.converter);
         }
-      }
-      $http.get(rootURL + filter).
-              error(function(data, status) {
-        alert(status);
-      }).
-              success(function(data, status, headers) {
-        var groups = asUserGroups(data);
-        groups.maxlength = headers('X-Silverpeas-GroupSize');
-        deferred.resolve(groups);
-      });
-      return deferred.promise;
-    };
-  };
-});
+      };
+    }]);
+
+  /**
+   * The user profile.
+   */
+  silverpeas.factory('User', ['context', '$http', '$q', function(context, $http, $q) {
+      return new function() {
+        var rootURL = webContext + '/services/profile/users', defaultQuery = '';
+        if (context.resource)
+          defaultQuery += '?resource=' + context.resource;
+        if (context.domain)
+          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'domain=' + context.domain;
+        if (context.roles)
+          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'roles=' + context.roles;
+
+        var asUsers = function(data) {
+          var users = [];
+          if (data instanceof Array)
+            for (var i = 0; i < data.length; i++) {
+              users.push(new User(data[i]));
+            }
+          else
+            users = new User(data);
+          return users;
+        };
+
+        var User = function() {
+          if (arguments.length > 0) {
+            for (var prop in arguments[0]) {
+              this[prop] = arguments[0][prop];
+            }
+          }
+        };
+        User.prototype.relationships = function() {
+          var deferred = $q.defer(), filter = defaultQuery;
+          if (arguments.length === 1 && arguments[0]) {
+            if (arguments[0].page)
+              filter += '?page=' + arguments[0].page.number + ';' + arguments[0].page.size;
+            if (arguments[0].name)
+              filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
+          }
+          $http.get(this.contactsUri + filter).
+                  error(function(data, status) {
+            alert(status);
+          }).success(function(data, status, headers) {
+            var users = asUsers(data);
+            users.maxlength = headers('X-Silverpeas-UserSize');
+            deferred.resolve(users);
+          });
+          return deferred.promise;
+        };
+
+        this.get = function() {
+          var filter, deferred = $q.defer();
+          if (arguments.length === 1 && typeof arguments[0] === 'number') {
+            filter = '/' + arguments[0];
+          } else {
+            filter = defaultQuery + (context.component ? ((defaultQuery.indexOf('?') < 0 ? '?' : '&') +
+                    'component=' + context.component) : '');
+            if (arguments.length === 1 && arguments[0]) {
+              if (arguments[0].group)
+                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'group=' + arguments[0].group;
+              if (arguments[0].page)
+                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'page=' + arguments[0].page.number + ';' + arguments[0].page.size;
+              if (arguments[0].name)
+                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
+            }
+          }
+          $http.get(rootURL + filter).
+                  error(function(data, status) {
+            alert(status);
+          }).
+                  success(function(data, status, headers) {
+            var users = asUsers(data);
+            if (users instanceof Array)
+              users.maxlength = headers('X-Silverpeas-UserSize');
+            deferred.resolve(users);
+          });
+          return deferred.promise;
+        };
+      };
+    }]);
+
+  /**
+   * The user group profile.
+   */
+  silverpeas.factory('UserGroup', ['context', 'User', '$http', '$q', function(context, User, $http, $q) {
+      return new function() {
+        var rootURL = webContext + '/services/profile/groups', defaultQuery = '';
+        if (context.resource)
+          defaultQuery += '?resource=' + context.resource;
+        if (context.domain)
+          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'domain=' + context.domain;
+        if (context.roles)
+          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'roles=' + context.roles;
+
+        var asUserGroups = function(data) {
+          var groups = [];
+          if (data instanceof Array)
+            for (var i = 0; i < data.length; i++) {
+              groups.push(new UserGroup(data[i]));
+            }
+          else
+            groups = new UserGroup(data);
+          return groups;
+        };
+
+        var UserGroup = function() {
+          if (arguments.length > 0) {
+            for (var prop in arguments[0]) {
+              this[prop] = arguments[0][prop];
+            }
+          }
+        };
+        UserGroup.prototype.subgroups = function() {
+          var deferred = $q.defer(), filter = '';
+          if (arguments.length === 1 && arguments[0]) {
+            if (arguments[0].page)
+              filter += '?page=' + arguments[0].page.number + ';' + arguments[0].page.size;
+            if (arguments[0].name)
+              filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
+          }
+
+          $http.get(this.childrenUri + filter).
+                  error(function(data, status) {
+            alert(status);
+          }).
+                  success(function(data, status, headers) {
+            var groups = asUserGroups(data);
+            if (groups instanceof Array)
+              groups.maxlength = headers('X-Silverpeas-GroupSize');
+            deferred.resolve(groups);
+          });
+          return deferred.promise;
+        };
+        UserGroup.prototype.users = function() {
+          var params = {};
+          if (arguments.length === 1)
+            for (var p in arguments[0])
+              params[p] = arguments[0][p];
+          params.group = this.id;
+          return User.get(params);
+        };
+
+        this.get = function() {
+          var filter, deferred = $q.defer();
+          if (arguments.length === 1 && typeof arguments[0] === 'number') {
+            filter = '/' + arguments[0];
+          } else {
+            filter = (context.component ? '/application/' + context.component : '') + defaultQuery;
+            if (arguments.length === 1 && arguments[0]) {
+              if (arguments[0].page)
+                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'page=' + arguments[0].page.number + ';' + arguments[0].page.size;
+              if (arguments[0].name)
+                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
+            }
+          }
+          $http.get(rootURL + filter).
+                  error(function(data, status) {
+            alert(status);
+          }).
+                  success(function(data, status, headers) {
+            var groups = asUserGroups(data);
+            groups.maxlength = headers('X-Silverpeas-GroupSize');
+            deferred.resolve(groups);
+          });
+          return deferred.promise;
+        };
+      };
+    }]);
+})();
 
 /**
  * Selection of items.

@@ -189,9 +189,9 @@
             <div id="validate">
               <fmt:message var="selectLabel" key="GML.validate"/>
               <fmt:message var="cancelLabel" key="GML.cancel"/>
-              <a href="#" class="milieuBoutonV5" ng-click="validate()">${selectLabel}</a>
+              <div class="milieuBoutonV5"><a href="#"  ng-click="validate()">${selectLabel}</a></div>
               <c:if test='${not fn:endsWith(cancelationURL, "userpanel.jsp")}'>
-                <a href="#" class="milieuBoutonV5" ng-click="cancel()">${cancelLabel}</a>
+                <div class="milieuBoutonV5"><a href="#" class="milieuBoutonV5" ng-click="cancel()">${cancelLabel}</a></div>
               </c:if>
             </div>
           </form>
@@ -199,8 +199,8 @@
       </div>
     </div>
     <script type="text/javascript">
-        /* configure the context of the module silverpeas in which all are defined the business
-         * objects and services */
+        /* configure for the current application the context of the module silverpeas in which all
+         * are defined the business objects and services */
         angular.module('silverpeas').
                 constant('context', {
           currentUserId: '${currentUserId}',
@@ -211,7 +211,7 @@
           roles: '${roles}',
           domain: '${domainId}'});
 
-        /* declare the module userSelector */
+        /* declare the module userSelector and its dependencies (here on the silverpeas module) */
         var userSelector = angular.module('userSelector', ['silverpeas']);
 
         /* the main controller of the application */
@@ -219,13 +219,15 @@
             /* some constants */
             PageSize = 6;
             PageMaxSize = 10;
-            GroupsFilterSizeStep = 3;
+            GroupsFilterSizeStep = 60;
             GroupSearchDefaultText = '<fmt:message key="selection.searchUserGroups"/>';
             UserSearchDefaultText = '<fmt:message key="selection.searchUsers"/>';
-            UsersInGroup = 0;
-            Relationships = 1;
+            UserSource = {
+              Groups: 0, // the users come from a given group or in all groups
+              Relationships: 1 // the users come from my relationships
+            };
 
-            /* The root of the user group tree. It can be then treated as any other group */
+            /* The root of the user group tree. It can be then considered as any other user group */
             var rootGroup = { name: '<fmt:message key="selection.RootUserGroups"/>', root: true,
                     subgroups: function() {
                       return UserGroup.get(arguments[0]);
@@ -334,12 +336,11 @@
 
             /* initialize the userSelection app by filling it with some values */
             function init() {
-              maximizeUsersListingPanel();
               if (context.selectionScope === 'group')
                 maximizeGroupsListingPanel();
               else
                 maximizeUsersListingPanel();
-              displayedUserType = UsersInGroup;
+              displayedUserType = UserSource.Groups;
               groupPageSize = PageSize;
               UserGroup.get({page: {number: 1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
               UserGroup.get({page: {number:1, size: groupPageSize}}).then(updateGroupsListing);
@@ -366,7 +367,7 @@
 
             /* select all the users present in the corresponding listing panel */
             $scope.selectAllUsers = function() {
-              if (displayedUserType === UsersInGroup)
+              if (displayedUserType === UserSource.Groups)
                 $scope.currentGroup.users().then(updateUsersSelection);
               else
                 $scope.me.relationships().then(updateUsersSelection);
@@ -405,7 +406,7 @@
             /* renders all the current user relationships */
             $scope.goToMyContacts = function() {
               maximizeUsersListingPanel();
-              displayedUserType = Relationships;
+              displayedUserType = UserSource.Relationships;
               $scope.me.relationships({page: {number:1, size: userPageSize}}).then(updateUsersListing);
               resetSearchFieldTexts();
               highlightFilter($('#filter_contact'));
@@ -415,7 +416,7 @@
             /* renders all the users */
             $scope.goToAllUsers = function() {
               maximizeUsersListingPanel();
-              displayedUserType = UsersInGroup;
+              displayedUserType = UserSource.Groups;
               User.get({page: {number:1, size: userPageSize}}).then(updateUsersListing);
               resetSearchFieldTexts();
               highlightFilter($('#filter_users'));
@@ -470,7 +471,7 @@
               },
               onchange: function(group) {
                 unmaximizeUsersListingPanel();
-                displayedUserType = UsersInGroup;
+                displayedUserType = UserSource.Group;
                 group.subgroups({page: {number:1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
                 group.subgroups({page: {number:1, size: groupPageSize}}).then(updateGroupsListing);
                 group.users({page: {number:1, size: userPageSize}}).then(updateUsersListing);
