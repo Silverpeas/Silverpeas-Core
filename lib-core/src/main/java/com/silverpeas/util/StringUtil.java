@@ -20,6 +20,17 @@
  */
 package com.silverpeas.util;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
+import com.silverpeas.util.i18n.I18NHelper;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
@@ -30,21 +41,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.ibm.icu.text.CharsetDetector;
-import com.ibm.icu.text.CharsetMatch;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringUtils;
-
-import static org.apache.commons.lang3.StringUtils.split;
 
 public class StringUtil extends StringUtils {
 
@@ -66,6 +62,49 @@ public class StringUtil extends StringUtils {
 
   public static boolean isNotDefined(String parameter) {
     return !isDefined(parameter);
+  }
+
+
+  /**
+   * <p>Returns either the passed in String, or if the String is
+   * {@code not defined}, an empty String ("").</p>
+   * <p/>
+   * <pre>
+   * StringUtil.defaultStringIfNotDefined(null)   = ""
+   * StringUtil.defaultStringIfNotDefined("")     = ""
+   * StringUtil.defaultStringIfNotDefined("    ") = ""
+   * StringUtil.defaultStringIfNotDefined("bat")  = "bat"
+   * </pre>
+   * @param string the String to check, may be null, blank or filled by spaces
+   * if the input is {@code not defined}, may be null, blank or filled by spaces
+   * @return the passed in String, or the default if it was {@code null}
+   * @see StringUtil#isNotDefined(String)
+   * @see StringUtils#defaultString(String, String)
+   */
+  public static String defaultStringIfNotDefined(String string) {
+    return defaultStringIfNotDefined(string, EMPTY);
+  }
+
+
+  /**
+   * <p>Returns either the passed in String, or if the String is
+   * {@code not defined}, the value of {@code defaultString}.</p>
+   * <p/>
+   * <pre>
+   * StringUtil.defaultStringIfNotDefined(null, "NULL")   = "NULL"
+   * StringUtil.defaultStringIfNotDefined("", "NULL")     = "NULL"
+   * StringUtil.defaultStringIfNotDefined("    ", "NULL") = "NULL"
+   * StringUtil.defaultStringIfNotDefined("bat", "NULL")  = "bat"
+   * </pre>
+   * @param string the String to check, may be null, blank or filled by spaces
+   * @param defaultString the default String to return
+   * if the input is {@code not defined}, may be null, blank or filled by spaces
+   * @return the passed in String, or the default if it was {@code null}
+   * @see StringUtil#isNotDefined(String)
+   * @see StringUtils#defaultString(String, String)
+   */
+  public static String defaultStringIfNotDefined(String string, String defaultString) {
+    return defaultString((isDefined(string) ? string : null), defaultString);
   }
 
   public static boolean isInteger(String id) {

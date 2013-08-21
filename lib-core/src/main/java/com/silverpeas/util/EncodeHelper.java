@@ -43,7 +43,7 @@ public class EncodeHelper {
    * @return javascript string encoded
    */
   public static String javaStringToJsString(String javastring) {
-    if (javastring == null) {
+    if (StringUtil.isNotDefined(javastring)) {
       return "";
     }
     return StringEscapeUtils.escapeEcmaScript(javastring);
@@ -56,7 +56,7 @@ public class EncodeHelper {
    * @return html string encoded
    */
   public static String javaStringToHtmlString(String javastring) {
-    if (javastring == null) {
+    if (StringUtil.isNotDefined(javastring)) {
       return "";
     }
     return StringEscapeUtils.escapeHtml4(javastring).replace("œ", "&oelig;");
@@ -77,7 +77,7 @@ public class EncodeHelper {
    * @return html string encoded
    */
   public static String convertWhiteSpacesForHTMLDisplay(String javastring) {
-    if (javastring == null) {
+    if (StringUtil.isNotDefined(javastring)) {
       return "";
     }
     StringBuilder resSB = new StringBuilder(javastring.length() + 10);
@@ -145,7 +145,7 @@ public class EncodeHelper {
    * @deprecated
    */
   public static String encodeSpecialChar(String javastring) {
-    if (javastring == null) {
+    if (StringUtil.isNotDefined(javastring)) {
       return "";
     }
     return javastring;
