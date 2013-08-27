@@ -413,6 +413,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>FormLayerServlet</servlet-name>
+    <servlet-class>com.silverpeas.templatedesigner.servlets.FormLayerServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>ThesaurusRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.thesaurusPeas.servlets.ThesaurusRequestRouter</servlet-class>
   </servlet>
@@ -822,6 +826,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>TemplateDesignerRequestRouter</servlet-name>
     <url-pattern>/RtemplateDesigner/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>FormLayerServlet</servlet-name>
+    <url-pattern>/FormLayer/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ThesaurusRequestRouter</servlet-name>

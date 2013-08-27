@@ -25,6 +25,7 @@
 package com.silverpeas.templatedesigner.control;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,6 +54,8 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Arrays;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.util.crypto.CryptoException;
 
 public class TemplateDesignerSessionController extends AbstractComponentSessionController {
@@ -142,8 +145,19 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
     this.template.setFileName(fileName + ".xml");
     this.template.setDataFileName(fileName + File.separator + "data.xml");
-    this.template.setViewFileName(fileName + File.separator + "view.xml");
-    this.template.setUpdateFileName(fileName + File.separator + "update.xml");
+    
+    String viewFileName = "view.xml";
+    if (this.template.isViewLayerDefined()) {
+      viewFileName = "view.html";
+    }
+    this.template.setViewFileName(fileName + File.separator + viewFileName);
+    
+    String updateFileName = "update.xml";
+    if (this.template.isUpdateLayerDefined()) {
+      updateFileName = "update.html";
+    }
+    this.template.setUpdateFileName(fileName + File.separator + updateFileName);
+    
     this.template.setSearchResultFileName(fileName + File.separator + "searchresult.xml");
     if (template.isSearchable()) {
       this.template.setSearchFileName(fileName + File.separator + "search.xml");
@@ -193,10 +207,27 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     this.template.setThumbnail(updatedTemplate.getThumbnail());
     this.template.setVisible(updatedTemplate.isVisible());
     this.template.setDataEncrypted(updatedTemplate.isDataEncrypted());
-
+    this.template.setViewLayerFileName(updatedTemplate.getViewLayerFileName());
+    this.template.setViewLayerAction(updatedTemplate.getViewLayerAction());
+    this.template.setUpdateLayerFileName(updatedTemplate.getUpdateLayerFileName());
+    this.template.setUpdateLayerAction(updatedTemplate.getUpdateLayerAction());
+    
+    String subdir = getSubdir(this.template.getFileName());
+    
+    if (this.template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+      this.template.setViewFileName(subdir + File.separator + "view.html");
+    } else if (updatedTemplate.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+      this.template.setViewFileName(subdir + File.separator + "view.xml");
+    }
+    
+    if (this.template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+      this.template.setUpdateFileName(subdir + File.separator + "update.html");
+    } else if (updatedTemplate.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+      this.template.setUpdateFileName(subdir + File.separator + "update.xml");
+    }
+   
     if (updatedTemplate.isSearchable()) {
-      this.template.setSearchFileName(getSubdir(template.getFileName())
-          + File.separator + "search.xml");
+      this.template.setSearchFileName(subdir + File.separator + "search.xml");
     } else {
       this.template.setSearchFileName(null);
     }
@@ -211,7 +242,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   private String getSubdir(String fileName) {
-    return fileName.substring(0, fileName.indexOf("."));
+    return FilenameUtils.getBaseName(fileName);
   }
 
   public void addField(FieldTemplate field) throws TemplateDesignerException {
@@ -390,6 +421,24 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         reloadCurrentTemplate();
         throw e;
       }
+      
+      String dir =
+          PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir,
+              getSubdir(template.getFileName()));
+      
+      if (template.isViewLayerDefined() &&
+          template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+        saveLayer(template.getViewLayerFileName(), dir);
+      } else if (template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+        removeLayer(new File(dir, "view.html"));
+      }
+      
+      if (template.isUpdateLayerDefined() &&
+          template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+        saveLayer(template.getUpdateLayerFileName(), dir);
+      } else if (template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+        removeLayer(new File(dir, "update.html"));
+      }
 
       // reset caches partially
       getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
@@ -398,6 +447,32 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           "TemplateDesignerSessionController.saveTemplate",
           SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
           "template = " + template.getName(), e);
+    }
+  }
+  
+  private void saveLayer(String filePath, String dir) throws PublicationTemplateException {
+    try {
+      File file = new File(dir, FilenameUtils.getName(filePath));
+      if (file != null && file.exists()) {
+        file.delete();
+      }
+      FileUtils.moveFileToDirectory(new File(filePath), new File(dir), false);
+    } catch (IOException ioe) {
+      throw new PublicationTemplateException(
+            "PublicationTemplateImpl.saveLayer()",
+            "form.EX_ERR_CANT_SAVE_LAYER",
+            "Publication Template FileName : " + filePath, ioe);
+    }
+  }
+  
+  private void removeLayer(File file) throws PublicationTemplateException {
+    try {
+      FileUtils.forceDelete(file);
+    } catch (IOException ioe) {
+      throw new PublicationTemplateException(
+            "PublicationTemplateImpl.removeLayer()",
+            "form.EX_ERR_CANT_REMOVE_LAYER",
+            "Publication Template FileName : " + file.getAbsolutePath(), ioe);
     }
   }
 

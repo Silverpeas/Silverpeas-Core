@@ -161,14 +161,7 @@ public class FileUploadUtil {
   }
 
   public static void saveToFile(File file, FileItem item) throws IOException {
-    OutputStream out = FileUtils.openOutputStream(file);
-    InputStream in = item.getInputStream();
-    try {
-      IOUtils.copy(in, out);
-    } finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
-    }
+    FileUtils.copyInputStreamToFile(item.getInputStream(), file);
   }
 
   private FileUploadUtil() {
