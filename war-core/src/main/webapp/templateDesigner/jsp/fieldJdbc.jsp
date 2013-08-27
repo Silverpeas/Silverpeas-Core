@@ -43,31 +43,36 @@
 	String password = "";
 	String query = "";
 	String valueFieldType = "";
+	String jdbcDisplayer = "";
 	
 	if (field != null)
 	{
 		if (parameters.containsKey("driverName")) {
-			driverName = (String) parameters.get("driverName");
+			driverName = parameters.get("driverName");
 		}
 		
 		if (parameters.containsKey("url")) {
-			url = (String) parameters.get("url");
+			url = parameters.get("url");
 		}
 
 		if (parameters.containsKey("login")) {
-			login = (String) parameters.get("login");
+			login = parameters.get("login");
 		}
 
 		if (parameters.containsKey("password")) {
-			password = (String) parameters.get("password");
+			password = parameters.get("password");
 		}
 
 		if (parameters.containsKey("query")) {
-			query = (String) parameters.get("query");
+			query = parameters.get("query");
 		}
 
 		if (parameters.containsKey("valueFieldType")) {
-			valueFieldType = (String) parameters.get("valueFieldType");
+			valueFieldType = parameters.get("valueFieldType");
+		}
+		
+		if (parameters.containsKey("displayer")) {
+		  	jdbcDisplayer = parameters.get("displayer");
 		}
 	}
 %>
@@ -89,5 +94,14 @@
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("templateDesigner.valueFieldType")%> :</td><td><input type="text" name="Param_valueFieldType" value="<%=valueFieldType%>" size="30"/></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer")%> :</td>
+	<td>
+		<select name="Param_displayer">
+			<option value="autocomplete" <%= "autocomplete".equals(jdbcDisplayer) ? "selected=\"selected\"" : "" %>><%=resource.getString("templateDesigner.displayer.jdbc.autocompletion") %></option>
+			<option value="listbox" <%= "listbox".equals(jdbcDisplayer) ? "selected=\"selected\"" : "" %>><%=resource.getString("templateDesigner.displayer.jdbc.listbox") %></option>
+		</select>
+	</td>
 </tr>
 <%@ include file="includeBottomField.jsp.inc" %>
