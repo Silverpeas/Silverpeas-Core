@@ -20,20 +20,17 @@
  */
 package org.silverpeas.authentication;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationHostException;
@@ -46,17 +43,18 @@ import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -291,6 +289,7 @@ public class AuthenticationService {
     Connection connection = null;
     boolean authenticationOK = false;
     try {
+
       // Open connection
       connection = openConnection();
 
@@ -305,9 +304,18 @@ public class AuthenticationService {
       resultSet = prepStmt.executeQuery();
 
       authenticationOK = resultSet.next();
+
+      if (authenticationOK) {
+        // Verify that the user can login
+        AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+      }
+
     } catch (Exception ex) {
       SilverTrace.warn(module, "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
+      if (ex instanceof AuthenticationUserAccountBlockedException) {
+        return UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+      }
       return "Error_2";
     } finally {
       DBUtil.close(resultSet, prepStmt);

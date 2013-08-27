@@ -32,6 +32,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import net.sourceforge.spnego.SpnegoPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -54,6 +55,7 @@ public class AuthenticationParameters {
   private String cryptedPassword;
   private String clearPassword;
   private boolean casMode;
+  private boolean ssoMode;
 
   private boolean socialNetworkMode;
   private SocialNetworkID networkId;
@@ -65,6 +67,7 @@ public class AuthenticationParameters {
     HttpSession session = request.getSession();
     boolean cookieEnabled = authenticationSettings.getBoolean(
         "cookieEnabled", false);
+    this.ssoMode = (getSSOUser(request) != null);
     this.casMode = (getCASUser(session) != null);
     checkSocialNetworkMode(session);
 
@@ -72,7 +75,10 @@ public class AuthenticationParameters {
     boolean useNewEncryptionMode = StringUtil.isDefined(request
         .getParameter("Var2"));
 
-    if (casMode) {
+    if (ssoMode) {
+      login = getSSOUser(request);
+      password = "";
+    } else if (casMode) {
       login = getCASUser(session);
       password = "";
     } else if (socialNetworkMode) {
@@ -171,6 +177,13 @@ public class AuthenticationParameters {
     return casUser;
   }
 
+  private String getSSOUser(HttpServletRequest request) {
+    if (request.getUserPrincipal() instanceof SpnegoPrincipal) {
+      return request.getRemoteUser();
+    }
+    return null;
+  }
+
   public String getLogin() {
     return login;
   }
@@ -193,6 +206,10 @@ public class AuthenticationParameters {
 
   public boolean isCasMode() {
     return casMode;
+  }
+
+  public boolean isSsoMode() {
+    return ssoMode;
   }
 
   public boolean isSocialNetworkMode() {
