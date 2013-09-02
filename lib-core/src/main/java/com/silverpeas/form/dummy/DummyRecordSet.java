@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,8 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import java.util.Map;
 
 /**
  * A dummy record set.
@@ -116,15 +118,19 @@ public class DummyRecordSet implements RecordSet {
   @Override
   public void delete(DataRecord record) throws FormException {
   }
+  
+  @Override
+  public void delete(String objectId) throws FormException {
+  }
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException {
+      String cloneComponentId, Map<String, String> attachmentIds) throws FormException {
   }
 
   @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException {
+      String toComponentId, Map<String, String> attachmentIds) throws FormException {
   }
 
   @Override

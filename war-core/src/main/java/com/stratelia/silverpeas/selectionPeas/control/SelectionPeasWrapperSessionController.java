@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.selectionPeas.control;
 
-import java.util.List;
-import java.util.StringTokenizer;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * A simple wrapper to the userpanel.
@@ -156,8 +156,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    * Init the user panel.
    */
   public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles) {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostUrl = m_context + "/RselectionPeasWrapper/jsp/close";
 
     Selection sel = getSelection();
@@ -201,21 +200,21 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     if (isGroupSelectable()) {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedSets();
-        selectedGroups = organizationController.getGroups(ids);
+        selectedGroups = OrganisationControllerFactory.getOrganisationController().getGroups(ids);
       } else {
         String id = sel.getFirstSelectedSet();
         if (StringUtil.isDefined(id)) {
-          selectedGroup = organizationController.getGroup(id);
+          selectedGroup = OrganisationControllerFactory.getOrganisationController().getGroup(id);
         }
       }
     } else {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedElements();
-        selectedUsers = organizationController.getUserDetails(ids);
+        selectedUsers = OrganisationControllerFactory.getOrganisationController().getUserDetails(ids);
       } else {
         String id = sel.getFirstSelectedElement();
         if (StringUtil.isDefined(id)) {
-          selectedUser = organizationController.getUserDetail(id);
+          selectedUser = OrganisationControllerFactory.getOrganisationController().getUserDetail(id);
         }
       }
     }
@@ -260,10 +259,6 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     }
   }
 
-  /**
-   * A private OrganizationController.
-   */
-  static private OrganizationController organizationController = new OrganizationController();
 
   /**
    * The HTML form name whose user element must be set.

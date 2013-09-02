@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@
 package org.silverpeas.quota.model;
 
 import static com.silverpeas.util.StringUtil.isDefined;
+import static java.util.EnumSet.of;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -50,7 +51,7 @@ import org.silverpeas.quota.exception.QuotaException;
  */
 @Entity
 @Table(name = "st_quota")
-public class Quota implements Serializable {
+public class Quota implements Serializable, Cloneable {
   private static final long serialVersionUID = 6564633879921455848L;
 
   @Id
@@ -67,13 +68,13 @@ public class Quota implements Serializable {
   private String resourceId;
 
   @Column(name = "minCount", nullable = false)
-  private int minCount = 0;
+  private long minCount = 0;
 
   @Column(name = "maxCount", nullable = false)
-  private int maxCount = 0;
+  private long maxCount = 0;
 
   @Column(name = "currentCount", nullable = false)
-  private int count = 0;
+  private long count = 0;
 
   @Column(name = "saveDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -139,12 +140,20 @@ public class Quota implements Serializable {
   }
 
   /**
+   * Indicates if the quota is reached or not
+   * @return
+   */
+  public boolean isReached() {
+    return exists() && of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS).contains(getLoad());
+  }
+
+  /**
    * Calculates the load rate of the quota without rounded rounded at 20 decimals
    * @return
    */
   public BigDecimal getLoadRate() {
     final BigDecimal loadRate;
-    if (!QuotaLoad.UNLIMITED.equals(getLoad()) && !QuotaLoad.OUT_OF_BOUNDS.equals(getLoad())) {
+    if (!QuotaLoad.UNLIMITED.equals(getLoad())) {
       loadRate =
           new BigDecimal(String.valueOf(getCount())).divide(
               new BigDecimal(String.valueOf(getMaxCount())), 20, BigDecimal.ROUND_HALF_DOWN);
@@ -199,6 +208,13 @@ public class Quota implements Serializable {
   }
 
   /**
+   * @param type the type to set
+   */
+  public void setType(final String type) {
+    this.type = type;
+  }
+
+  /**
    * @return the resourceId
    */
   public String getResourceId() {
@@ -215,14 +231,14 @@ public class Quota implements Serializable {
   /**
    * @return the minCount
    */
-  public int getMinCount() {
+  public long getMinCount() {
     return minCount;
   }
 
   /**
    * @param minCount the minCount to set
    */
-  public void setMinCount(final int minCount) {
+  public void setMinCount(final long minCount) {
     this.minCount = minCount;
   }
 
@@ -231,7 +247,7 @@ public class Quota implements Serializable {
    */
   public void setMinCount(final String minCount) throws QuotaException {
     try {
-      setMinCount(Integer.valueOf(minCount));
+      setMinCount(Long.valueOf(minCount));
     } catch (final NumberFormatException nfe) {
       throw new QuotaException(this, "BAD_MIN_COUNT");
     }
@@ -240,14 +256,14 @@ public class Quota implements Serializable {
   /**
    * @return the maxCount
    */
-  public int getMaxCount() {
+  public long getMaxCount() {
     return maxCount;
   }
 
   /**
    * @param maxCount the maxCount to set
    */
-  public void setMaxCount(final int maxCount) {
+  public void setMaxCount(final long maxCount) {
     this.maxCount = maxCount;
   }
 
@@ -256,7 +272,7 @@ public class Quota implements Serializable {
    */
   public void setMaxCount(final String maxCount) throws QuotaException {
     try {
-      setMaxCount(Integer.valueOf(maxCount));
+      setMaxCount(Long.valueOf(maxCount));
     } catch (final NumberFormatException nfe) {
       throw new QuotaException(this, "BAD_MAX_COUNT");
     }
@@ -265,14 +281,14 @@ public class Quota implements Serializable {
   /**
    * @return the count
    */
-  public int getCount() {
+  public long getCount() {
     return count;
   }
 
   /**
    * @param count the count to set
    */
-  public void setCount(final int count) {
+  public void setCount(final long count) {
     this.count = count;
   }
 
@@ -288,5 +304,21 @@ public class Quota implements Serializable {
    */
   public void setSaveDate(final Date saveDate) {
     this.saveDate = saveDate;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public Quota clone() {
+    Quota quota;
+    try {
+      quota = (Quota) super.clone();
+      quota.setId(null);
+    } catch (final CloneNotSupportedException e) {
+      quota = null;
+    }
+    return quota;
   }
 }

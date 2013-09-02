@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,30 +68,20 @@ public class SpaceDAO {
     }
   }
 
-  private final static String querySortedRootSpaceIds = "select id"
-      + " from st_space"
-      + " where domainFatherId is null "
-      + " and spacestatus is null"
-      + " and isPersonal is null"
-      + " order by orderNum";
+  private final static String querySortedRootSpaceIds = "SELECT id FROM st_space WHERE "
+      + "domainFatherId IS NULL AND spacestatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
-  public static List<SpaceInstLight> getSubSpaces(Connection con, int spaceId)
-      throws SQLException {
-
+  public static List<SpaceInstLight> getSubSpaces(Connection con, int spaceId) throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
       List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
-
       stmt = con.prepareStatement(querySortedSubSpaces);
       stmt.setInt(1, spaceId);
-
       rs = stmt.executeQuery();
-
       while (rs.next()) {
         spaces.add(fetchSpace(rs));
       }
-
       return spaces;
     } finally {
       DBUtil.close(rs, stmt);

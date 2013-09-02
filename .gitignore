@@ -1,3 +1,4 @@
+.idea
 *.iws
 *.ipr
 *.iml
@@ -7,9 +8,11 @@ target
 .settings
 .classpath
 .project
+.idea
 .sonar-ide.properties
 nbactions.xml
 nb-configuration.xml
+nbactions.xml
 /web-core/src/main/java/META-INF
 /war-core/src/main/webapp/META-INF
 /ejb-core/channels/src/main/resources/META-INF/MANIFEST.MF

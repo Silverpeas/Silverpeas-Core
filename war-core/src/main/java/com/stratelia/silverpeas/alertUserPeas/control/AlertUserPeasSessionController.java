@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,7 +54,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   protected AlertUser m_AlertUser = null;
   protected Selection m_Selection = null;
   protected NotificationSender notificationSender = null;
-  protected String m_Context = "";
+  protected String m_Context = URLManager.getApplicationURL();
   protected UserDetail[] m_userRecipients;
   protected Group[] m_groupRecipients;
 
@@ -70,8 +70,6 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
         "com.stratelia.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
         "com.stratelia.silverpeas.alertUserPeas.settings.alertUserPeasIcons");
     setComponentRootName(URLManager.CMP_ALERTUSERPEAS);
-    m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
     m_AlertUser = getAlertUser();
     m_Selection = getSelection();
     notificationSender = new NotificationSender(null);

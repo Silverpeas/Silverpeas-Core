@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,45 @@
 
 package com.stratelia.webactiv;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public enum SilverpeasRole {
-  admin, publisher, writer, user, reader, supervisor, privilegedUser;
+  admin, Manager, publisher, writer, user, reader, supervisor, privilegedUser;
+
+  @JsonValue
+  public String getName() {
+    return name();
+  }
+
+  @JsonCreator
+  public static SilverpeasRole from(String name) {
+    if (name != null) {
+      for (SilverpeasRole silverpeasRole : SilverpeasRole.values()) {
+        if (name.equals(silverpeasRole.name())) {
+          return silverpeasRole;
+        }
+      }
+    }
+    return null;
+  }
+
+  public static boolean exists(String name) {
+    return from(name) != null;
+  }
+
+  public static Set<SilverpeasRole> from(String[] roles) {
+    Set<SilverpeasRole> result = new HashSet<SilverpeasRole>();
+    if (roles != null) {
+      for (String role : roles) {
+        result.add(SilverpeasRole.valueOf(role));
+      }
+    }
+    return result;
+  }
 
   public boolean isInRole(String role) {
     try {

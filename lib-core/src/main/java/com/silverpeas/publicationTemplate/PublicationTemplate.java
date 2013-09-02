@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,8 +73,6 @@ public interface PublicationTemplate {
 
   public void setExternalId(String externalId);
 
-  public Form getEditForm(String name) throws PublicationTemplateException;
-
   public String getExternalId();
 
   public String getName();
@@ -107,5 +105,21 @@ public interface PublicationTemplate {
    * @return a List of field name
    */
   public List<String> getFieldsForFacets();
+  
+  public boolean isRestrictedVisibility();
+  
+  public List<String> getSpaces();
+  
+  public boolean isRestrictedVisibilityToSpace();
+
+  public List<String> getApplications();
+  
+  public boolean isRestrictedVisibilityToApplication();
+
+  public List<String> getInstances();
+  
+  public boolean isRestrictedVisibilityToInstance();
+  
+  public boolean isDataEncrypted();
 
 }

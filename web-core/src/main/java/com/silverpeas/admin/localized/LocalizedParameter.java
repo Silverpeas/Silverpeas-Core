@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,6 +41,7 @@ public class LocalizedParameter {
 
   private String lang;
   private Parameter realParameter;
+  private List<LocalizedOption> localizedOptions;
 
   public LocalizedParameter(Parameter parameter, String lang) {
     this.realParameter = parameter;
@@ -73,11 +74,17 @@ public class LocalizedParameter {
   }
 
   public List<LocalizedOption> getOptions() {
-    List<LocalizedOption> localizedOptions = new ArrayList<LocalizedOption>();
-    for (Option option : realParameter.getOptions()) {
-      localizedOptions.add(new LocalizedOption(option, lang));
+    if (localizedOptions == null) {
+      localizedOptions = new ArrayList<LocalizedOption>();
+      for (Option option : realParameter.getOptions()) {
+        localizedOptions.add(new LocalizedOption(option, lang));
+      }
     }
     return localizedOptions;
+  }
+  
+  public void setOptions(List<LocalizedOption> options) {
+    localizedOptions = options;
   }
 
   public int getOrder() {

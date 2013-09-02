@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,8 +27,9 @@ package com.stratelia.webactiv.applicationIndexer.control;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Executes a partial or full reindexing of spelling indexes
@@ -57,10 +58,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(),
-        "ApplicationDYMIndexer.indexComponent()",
-        "applicationIndexer.MSG_START_INDEXING_COMPONENT",
-        "component = " + componentId);
+    SilverTrace.info(ApplicationDYMIndexer.class.toString(),  "ApplicationDYMIndexer.indexComponent()",
+        "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + componentId);
     try {
       String ComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
           .getAbsoluteIndexPath(null, componentId);

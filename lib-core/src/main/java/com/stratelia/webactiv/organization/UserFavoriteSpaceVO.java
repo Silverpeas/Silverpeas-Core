@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,9 @@
 package com.stratelia.webactiv.organization;
 
 import java.io.Serializable;
+
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class UserFavoriteSpaceVO implements Serializable {
 
@@ -57,6 +60,16 @@ public class UserFavoriteSpaceVO implements Serializable {
   public UserFavoriteSpaceVO(int userId, int spaceId) {
     this.userId = userId;
     this.spaceId = spaceId;
+  }
+
+  /**
+   * Default UserFavoriteSpaceVO constructor
+   * @param user
+   * @param space
+   */
+  public UserFavoriteSpaceVO(UserDetail user, SpaceInstLight space) {
+    this.userId = Integer.valueOf(user.getId());
+    this.spaceId = Integer.valueOf(space.getShortId());
   }
 
   /*

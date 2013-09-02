@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,11 +24,12 @@
 
 package com.silverpeas.comment;
 
-import com.silverpeas.comment.service.CommentActionNotifier;
 import com.silverpeas.jms.JMSTestFacade;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
 
 /**
  * The base class of all of the test cases in which are involved the comment service.
@@ -46,7 +47,7 @@ public abstract class BaseCommentTest {
       jmsTestFacade = new JMSTestFacade();
     }
     jmsTestFacade.bootstrap();
-    jmsTestFacade.newTopic(CommentActionNotifier.TOPIC_NAME);
+    jmsTestFacade.newTopic(COMMENT_TOPIC.getTopicName());
   }
 
   public static void shutdownMessagingSystem() throws Exception {

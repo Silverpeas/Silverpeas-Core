@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,22 +23,22 @@
  */
 package com.silverpeas.sharing.model;
 
+import java.util.Date;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.services.NodeAccessControl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import java.util.Date;
 
 /**
  *
@@ -51,13 +51,13 @@ public class NodeTicket extends Ticket {
   private static final NodeAccessControl accessControl = new NodeAccessControl();
 
   public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-          Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
 
   public NodeTicket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-          Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
@@ -73,14 +73,12 @@ public class NodeTicket extends Ticket {
 
   @Override
   public ShareableResource<NodeDetail> getResource() {
-    NodeDetail node = null;
-    try {
-      NodeBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      NodeBm nodeBm = home.create();
-      node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()), getComponentId()));
-    } catch (Exception e) {
-      SilverTrace.error("fileSharing", "Ticket.getResource", "root.MSG_GEN_PARAM_VALUE", e);
+    NodeBm nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+    NodeDetail node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
+        getComponentId()));
+    if (node != null) {
+      return new ShareableNode(getToken(), node);
     }
-    return new ShareableNode(getToken(), node);
+    return null;
   }
 }

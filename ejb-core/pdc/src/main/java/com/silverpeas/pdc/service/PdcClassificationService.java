@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -120,11 +120,24 @@ public interface PdcClassificationService {
    * is already classified, then the given classification replaces the existing one. The content
    * must exist in Silverpeas before being classified. If an error occurs while classifying the
    * content, a runtime exception PdcRuntimeException is thrown.
+   * Subscribers are notified if at least one of their subscription matches given classification.
    * @param content the Silverpeas content to classify.
    * @param withClassification the classification with which the content is positioned on the PdC.
    */
   public void classifyContent(final SilverpeasContent content,
           final PdcClassification withClassification) throws PdcRuntimeException;
+  
+  /**
+   * Classifies the specified content on the PdC with the specified classification. If the content
+   * is already classified, then the given classification replaces the existing one. The content
+   * must exist in Silverpeas before being classified. If an error occurs while classifying the
+   * content, a runtime exception PdcRuntimeException is thrown.
+   * @param content the Silverpeas content to classify.
+   * @param withClassification the classification with which the content is positioned on the PdC.
+   * @param alertSubscribers indicates if subscribers must be notified or not
+   */
+  public void classifyContent(final SilverpeasContent content,
+          final PdcClassification withClassification, boolean alertSubscribers) throws PdcRuntimeException;
 
   /**
    * Some values come to be removed from the PdC. Triggers the update of all concerned

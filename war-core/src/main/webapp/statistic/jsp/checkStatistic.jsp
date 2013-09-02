@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,7 +56,6 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.control.StatisticBm"%>
-<%@ page import="com.stratelia.webactiv.util.statistic.control.StatisticBmHome"%>
 <%@ page import="com.stratelia.webactiv.util.EJBUtilitaire"%>
 <%@ page import="com.stratelia.webactiv.util.JNDINames"%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
@@ -67,8 +66,8 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 
 <%
 
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+String m_context = URLManager.getApplicationURL();
 
 Window window = gef.getWindow();
 Frame frame = gef.getFrame();
@@ -77,7 +76,7 @@ OperationPane operationPane = window.getOperationPane();
 
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator 		messages 			= new ResourceLocator("com.silverpeas.statistic.multilang.statistic", language);
+ResourceLocator 		messages 			= new ResourceLocator("org.silverpeas.statistic.multilang.statistic", language);
 ResourceLocator 		generalMessage 		= GeneralPropertiesManager.getGeneralMultilang(language);
 ResourcesWrapper 		resource 			= (ResourcesWrapper)request.getAttribute("resources");
 

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.silverpeas.util.LongText;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.silverpeas.util.LongText;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -47,7 +47,7 @@ import java.util.List;
 public class SILVERMAILPersistence {
 
   /**
-   * 
+   *
    */
   public static void addMessage(SILVERMAILMessage silverMsg) throws SILVERMAILException {
     SilverpeasBeanDAO dao;
@@ -161,7 +161,7 @@ public class SILVERMAILPersistence {
   }
 
   /**
-   * 
+   *
    */
   public static SILVERMAILMessage getMessage(long msgId) throws SILVERMAILException {
     SILVERMAILMessage result = null;
@@ -207,7 +207,7 @@ public class SILVERMAILPersistence {
   }
 
   /**
-   *  
+   *
    */
   public static void deleteMessage(long msgId) throws SILVERMAILException {
     IdPK pk = new IdPK();
@@ -261,7 +261,7 @@ public class SILVERMAILPersistence {
    * @return
    * @throws SILVERMAILException
    */
-  protected static long convertFolderNameToId(String folderName) throws SILVERMAILException {
+  protected static long convertFolderNameToId(String folderName) {
     // pas de gestion de folder pour l'instant
     return 0; // 0 = INBOX
   }
@@ -275,8 +275,8 @@ public class SILVERMAILPersistence {
     String result = "";
 
     try {
-      OrganizationController oc = new OrganizationController();
-      UserDetail ud = oc.getUserDetail(Long.toString(userId));
+      UserDetail ud =  OrganisationControllerFactory
+          .getOrganisationController().getUserDetail(Long.toString(userId));
       if (ud != null) {
         result = ud.getLogin();
       }

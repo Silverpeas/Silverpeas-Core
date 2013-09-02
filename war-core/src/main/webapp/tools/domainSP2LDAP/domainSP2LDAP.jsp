@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -112,7 +112,7 @@
 			      	  UserDetail userLDAPProcessed = (UserDetail) it.next();
 			      	  int classTrNumber = i++ % 2;
 			      	  %>
-			    			<tr class="intfdcolor<%=classTrNumber+2%>"><td><%=userLDAPProcessed.getDomainId()%></td><td><%=userLDAPProcessed.getFirstName()%></td><td><%=userLDAPProcessed.getLastName()%></td><td><%=userLDAPProcessed.getSpecificId() %></td><td><%=userLDAPProcessed.geteMail()%></td><td><%=userLDAPProcessed.getLogin()%></td><td><%=userLDAPProcessed.getAccessLevel()%></td></tr>
+			    			<tr class="intfdcolor<%=classTrNumber+2%>"><td><%=userLDAPProcessed.getDomainId()%></td><td><%=userLDAPProcessed.getFirstName()%></td><td><%=userLDAPProcessed.getLastName()%></td><td><%=userLDAPProcessed.getSpecificId() %></td><td><%=userLDAPProcessed.geteMail()%></td><td><%=userLDAPProcessed.getLogin()%></td><td><%=userLDAPProcessed.getAccessLevel().code()%></td></tr>
 								<%
 							}
 					}
@@ -132,7 +132,7 @@
 			      	  UserDetail userLDAPNotProcessed = (UserDetail) it.next();
 			      	  int classTrNumber = i++ % 2;
 			      	  %>
-			    			<tr class="intfdcolor<%=classTrNumber+2%>"><td><%=userLDAPNotProcessed.getDomainId()%></td><td><%=userLDAPNotProcessed.getFirstName()%></td><td><%=userLDAPNotProcessed.getLastName()%></td><td><%=userLDAPNotProcessed.getSpecificId() %></td><td><%=userLDAPNotProcessed.geteMail()%></td><td><%=userLDAPNotProcessed.getLogin()%></td><td><%=userLDAPNotProcessed.getAccessLevel()%></td></tr>
+			    			<tr class="intfdcolor<%=classTrNumber+2%>"><td><%=userLDAPNotProcessed.getDomainId()%></td><td><%=userLDAPNotProcessed.getFirstName()%></td><td><%=userLDAPNotProcessed.getLastName()%></td><td><%=userLDAPNotProcessed.getSpecificId() %></td><td><%=userLDAPNotProcessed.geteMail()%></td><td><%=userLDAPNotProcessed.getLogin()%></td><td><%=userLDAPNotProcessed.getAccessLevel().code()%></td></tr>
 								<%
 							}
 					}  %>

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,11 +25,15 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class Group implements Serializable, Comparable<Group> {
 
@@ -44,31 +48,32 @@ public class Group implements Serializable, Comparable<Group> {
   private String[] userIds = ArrayUtil.EMPTY_STRING_ARRAY;
 
   private int nbUsers = -1;
-  
+  private int nbTotalUsers = -1;
+
   /**
    * Gets the group with the specified unique identifier.
    * @param id the unique identifier of the group to get.
    * @return the group with the specified unique identifier or null if no such group exists.
    */
   public static Group getById(String id) {
-    return getOrganizationController().getGroup(id);
+    return getOrganisationController().getGroup(id);
   }
-  
+
   /**
    * Gets all root groups available in Silverpeas, whatever their domain.
    * @return a list with all the groups in the Silverpeas portal.
    */
   public static List<Group> getAllRoots() {
-    return Arrays.asList(getOrganizationController().getAllRootGroups());
+    return Arrays.asList(getOrganisationController().getAllRootGroups());
   }
-  
+
   /**
    * Gets all root groups available in the specified domain in Silverpeas.
    * @param domainId the unique identifier of the domain to which the root groups belong.
    * @return a list with all the root user groups in the specified domain.
    */
   public static List<Group> getAllRootsInDomain(String domainId) {
-    return Arrays.asList(getOrganizationController().getAllRootGroupsInDomain(domainId));
+    return Arrays.asList(getOrganisationController().getAllRootGroupsInDomain(domainId));
   }
 
   /**
@@ -240,21 +245,28 @@ public class Group implements Serializable, Comparable<Group> {
     }
     return nbUsers;
   }
-  
+
   /**
    * Gets the total number of users in this group and in its subgroups.
    * @return the total number of users.
    */
   public int getTotalNbUsers() {
-    return getOrganizationController().getAllSubUsersNumber(getId());
+    if (nbTotalUsers < 0) {
+      nbTotalUsers = getOrganisationController().getAllSubUsersNumber(getId());
+    }
+    return nbTotalUsers;
   }
 
   public void setNbUsers(int nbUsers) {
     this.nbUsers = nbUsers;
   }
 
-  protected static OrganizationController getOrganizationController() {
-    return OrganizationControllerFactory.getFactory().getOrganizationController();
+  public void setTotalNbUsers(int count) {
+    this.nbTotalUsers = count;
+  }
+
+  protected static OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getFactory().getOrganisationController();
   }
 
   /**
@@ -318,21 +330,21 @@ public class Group implements Serializable, Comparable<Group> {
     hash = 97 * hash + this.nbUsers;
     return hash;
   }
-  
+
   /**
    * Gets the direct subgroups of this user group.
    * @return a list with its direct subgroups. If this group hasn't children group, then the
    * returned list is empty.
    */
   public List<? extends Group> getSubGroups() {
-    return Arrays.asList(getOrganizationController().getAllSubGroups(getId()));
+    return Arrays.asList(getOrganisationController().getAllSubGroups(getId()));
   }
-  
+
   /**
    * Gets the detail about all the users that are in this group (and in the subgroups of this group).
    * @return a list of all the user details in this group.
    */
   public List<? extends UserDetail> getAllUsers() {
-    return Arrays.asList(getOrganizationController().getAllUsersOfGroup(getId()));
+    return Arrays.asList(getOrganisationController().getAllUsersOfGroup(getId()));
   }
 }

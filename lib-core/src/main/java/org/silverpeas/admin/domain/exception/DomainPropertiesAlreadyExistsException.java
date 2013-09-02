@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,6 +33,6 @@ public class DomainPropertiesAlreadyExistsException extends DomainConflictExcept
   private static final long serialVersionUID = -1196587632333002256L;
 
   public DomainPropertiesAlreadyExistsException(String domainName) {
-    super("AbstractDomainService", "admin.DOMAIN_PROPERTIES_ALREADY_EXISTS", domainName);
+    super("AbstractDomainService", "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", domainName);
   }
 }

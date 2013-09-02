@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,15 +25,16 @@
 package com.silverpeas.jcrutil.model;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import javax.jcr.NamespaceException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
-import java.io.FileReader;
-import java.io.IOException;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.apache.jackrabbit.commons.cnd.ParseException;
 
 public class SilverpeasRegister {
 
@@ -46,13 +47,32 @@ public class SilverpeasRegister {
    * @throws ParseException
    * @throws IOException
    */
-  public static void registerNodeTypes(String cndFileName)
-      throws RepositoryException, ParseException, IOException {
+  public static void registerNodeTypes(String cndFileName) throws RepositoryException,
+      ParseException, IOException {
+     FileReader fileReader = new FileReader(cndFileName);
+    try {     
+      registerNodeTypes(fileReader);
+    } finally {
+      IOUtils.closeQuietly(fileReader);
+    }
+  }
+  /**
+   * Register Silverpeas node types in Jackrabbit
+   *
+   * @param cnd a reader containing the nodes definitions.
+   * @throws NamespaceException
+   * @throws UnsupportedRepositoryOperationException
+   *
+   * @throws RepositoryException
+   * @throws ParseException
+   * @throws IOException
+   */
+  public static void registerNodeTypes(Reader cnd) throws RepositoryException,
+      ParseException, IOException {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      FileReader fileReader = new FileReader(cndFileName);
-      CndImporter.registerNodeTypes(fileReader, session);
+      CndImporter.registerNodeTypes(cnd, session);
       session.save();
     } finally {
       BasicDaoFactory.logout(session);

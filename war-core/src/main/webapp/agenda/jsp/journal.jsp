@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,14 +39,14 @@
   ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
   ResourceLocator settings = agenda.getSettings();
 
-  String action = request.getParameter("Action"); //Add || Update || View (vient de choisir une categorie) 
+  String action = request.getParameter("Action"); //Add || Update || View (vient de choisir une categorie)
   													// || DiffusionListOK (vient de choisir des participants dans le UserPanel)
   													// ReallyAdd || ReallyUpdate
   													// CategoryOK (viens de choisir des cat�gories)
-  													
+
 	if (!StringUtil.isDefined(action))
 		action = "Update";
-  
+
 	String fromCategories 	= (String) request.getAttribute("FromCategories");
 	String fromGuests		= request.getParameter("DiffusionListOK");
   	if (action.equals("Add"))
@@ -63,7 +63,7 @@
   	}
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -121,14 +121,14 @@ function isCorrectForm() {
   var yearBegin = extractYear(beginDate, '<%=agenda.getLanguage()%>');
   var monthBegin = extractMonth(beginDate, '<%=agenda.getLanguage()%>');
 		var dayBegin = extractDay(beginDate, '<%=agenda.getLanguage()%>');
-		
-		var yearEnd = extractYear(endDate, '<%=agenda.getLanguage()%>'); 
+
+		var yearEnd = extractYear(endDate, '<%=agenda.getLanguage()%>');
 		var monthEnd = extractMonth(endDate, '<%=agenda.getLanguage()%>');
-		var dayEnd = extractDay(endDate, '<%=agenda.getLanguage()%>'); 
-		
+		var dayEnd = extractDay(endDate, '<%=agenda.getLanguage()%>');
+
 		var beginDateOK = false;
 		var endDateOK = false;
-		
+
 		index = document.journalForm.StartHour.selectedIndex;
 		var hourBegin = document.journalForm.StartHour.options[index].value;
 		index = document.journalForm.StartMinute.selectedIndex;
@@ -137,25 +137,25 @@ function isCorrectForm() {
 		var hourEnd = document.journalForm.EndHour.options[index].value;
 		index = document.journalForm.EndMinute.selectedIndex;
 		var minuteEnd = document.journalForm.EndMinute.options[index].value;
-		
+
 		var hourMinuteBegin = hourBegin+minuteBegin;
 		var hourMinuteEnd = hourEnd+minuteEnd;
 
 		if (isWhitespace(document.journalForm.Name.value)) {
 	           errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("nomNote")%>' <%=agenda.getString("MustContainsText")%>\n";
-	           errorNb++; 
+	           errorNb++;
 	    }
-		
+
 	     if (isWhitespace(document.journalForm.StartDate.value)) {
 	     		errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateDebutNote")%>' <%=agenda.getString("MustContainsText")%>\n";
-	           	errorNb++; 
+	           	errorNb++;
 						}
-		
+
 	     if (!isValidTextArea(document.journalForm.Description)) {
 	     		errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("descriptionNote")%>' <%=agenda.getString("ContainsTooLargeText")+agenda.getString("NbMaxTextArea")+agenda.getString("Characters")%>\n";
-	           	errorNb++; 
-						}  	  	
-       
+	           	errorNb++;
+						}
+
         if (! isWhitespace(beginDate)) {
         	if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
                 	errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateDebutNote")%>' <%=agenda.getString("MustContainsCorrectDate")%>\n";
@@ -163,7 +163,7 @@ function isCorrectForm() {
         	}
         	else beginDateOK = true;
         }
-              
+
         if (! isWhitespace(endDate)) {
         	if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
                 	errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateFinNote")%>' <%=agenda.getString("MustContainsCorrectDate")%>\n";
@@ -171,36 +171,36 @@ function isCorrectForm() {
         	}
         	else endDateOK = true;
         }
-        
+
         /* comme si on avait les dates identiques */
-        else { 
-        
+        else {
+
         	if (! document.journalForm.CompleteDay.checked) {
 	        	if( hourMinuteEnd < hourMinuteBegin) {
 	        		errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("heureFinNote")%>' <%=agenda.getString("MustContainsPostDateToBeginDate")%>\n";
-	                errorNb++;	        				
-	        	}        
+	                errorNb++;
+	        	}
 	        }
-        }	
-        
+        }
+
         if (beginDateOK && endDateOK) {
         		if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)==false) {
         			errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateFinNote")%>' <%=agenda.getString("MustContainsPostDateToBeginDate")%>\n";
-                    errorNb++;	
+                    errorNb++;
         		}
-        		
+
         		/* les 2 dates sont identiques */
         		else if ((yearEnd == yearBegin) && (monthEnd == monthBegin) && (dayEnd == dayBegin)) {
-        		
+
         			if (! document.journalForm.CompleteDay.checked) {
 	        			if( hourMinuteEnd < hourMinuteBegin) {
 	        				errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("heureFinNote")%>' <%=agenda.getString("MustContainsPostHourToBeginHour")%>\n";
-	                    	errorNb++;	        				
+	                    	errorNb++;
 	        			}
 	        		}
         		}
-        }    
-	
+        }
+
      switch(errorNb)
      {
         case 0 :
@@ -219,13 +219,13 @@ function isCorrectForm() {
      }
      document.journalForm.EndMinute.disabled = false;
  				document.journalForm.StartMinute.disabled = false;
-     
-     return result;	
-     
+
+     return result;
+
 }
 
 function reallyAdd()
-{	
+{
 	if (isCorrectForm()) {
 		if (document.journalForm.CompleteDay.checked) {
 			document.journalForm.WithoutHour.value = "true";
@@ -240,11 +240,11 @@ function reallyUpdate()
     if (isCorrectForm()) {
 		if (document.journalForm.CompleteDay.checked) {
 			document.journalForm.WithoutHour.value = "true";
-		}    
+		}
 		document.journalForm.Action.value = "ReallyUpdate";
 		document.journalForm.submit();
-    }   
-    
+    }
+
 }
 
 function deleteConfirm(name)
@@ -273,12 +273,12 @@ function viewFreeBusyTime(formIndex)
 function hourModified()
 {
   document.journalForm.CompleteDay.checked = false;
-  
+
   if (document.journalForm.StartHour.value == '<%=settings.getString("endHour")%>')
   				document.journalForm.StartMinute.disabled = true;
   else
   				document.journalForm.StartMinute.disabled = false;
-  				
+
   if (document.journalForm.EndHour.value == '<%=settings.getString("endHour")%>')
   				document.journalForm.EndMinute.disabled = true;
   else
@@ -311,13 +311,13 @@ function setBeginDateAndHour(date, hour, minutes)
 
   String hour = null;
   String eHour = null;
-  
+
   /* Add || Update : Ajout ou Modification de l'evenement */
   if (action.equals("Add") || action.equals("Update")) {
-  	
+
     agenda.setCurrentJournalHeader(null);
     hour = request.getParameter("Hour"); //vient de la selection d'une heure dans l'agenda
-    
+
     if (StringUtil.isDefined(hour)) {
       try {
         eHour = String.valueOf(new Integer(hour).intValue() + 1);
@@ -325,30 +325,30 @@ function setBeginDateAndHour(date, hour, minutes)
         if (eHour.length() < 2) eHour = "0"+ eHour;
         hour = hour + ":00";
         eHour = eHour + ":00";
-      } 
+      }
       catch (Exception e) {
         hour = null;
         eHour = null;
       }
     }
-    
+
 	else {
       try {
       	hour = settings.getString("beginHour");
-      	
+
         eHour = String.valueOf(new Integer(hour).intValue() + 1);
         if (hour.length() < 2) hour = "0"+ hour;
         if (eHour.length() < 2) eHour = "0"+ eHour;
         hour = hour + ":00";
         eHour = eHour + ":00";
-      } 
+      }
       catch (Exception e) {
         hour = null;
         eHour = null;
-      }	
-	}    
+      }
+	}
   }
-  
+
   JournalHeader journal = agenda.getCurrentJournalHeader();
   Collection attendees = agenda.getCurrentAttendees();
   Collection categories = agenda.getCurrentCategories();
@@ -359,6 +359,7 @@ function setBeginDateAndHour(date, hour, minutes)
     if (journalId != null) {
       if (journalId.length() > 0) {
         journal = agenda.getJournalHeader(journalId);
+        agenda.selectDay(DateUtil.dateToString(journal.getStartDate(), agenda.getLanguage()));
       }
       else {
         journal = new JournalHeader("", agenda.getUserId());
@@ -369,7 +370,7 @@ function setBeginDateAndHour(date, hour, minutes)
         }
       }
     }
-    
+
     /* Add et premier acces a la page */
     else {
       journal = new JournalHeader("", agenda.getUserId());
@@ -380,10 +381,10 @@ function setBeginDateAndHour(date, hour, minutes)
       }
     }
     agenda.setCurrentJournalHeader(journal);
-  } 
+  }
   /* journal != null */
   else {
-  
+
   	if ( (action.equals("View") || action.equals("EditDiffusionList")) || action.equals("EditCategory") )
   	{
 	    //sauvegarde des valeurs saisies
@@ -398,20 +399,20 @@ function setBeginDateAndHour(date, hour, minutes)
 	    String endHour = request.getParameter("EndHour");
 	    String endMinute = request.getParameter("EndMinute");
 	    String withoutHour = request.getParameter("WithoutHour"); //true ou false
-	
+
 	    journal.setName(name);
 	    journal.setDescription(description);
 	    journal.getClassification().setString(classification);
 	    journal.getPriority().setValue(new Integer(priority).intValue());
-	    
-	    try { 
+
+	    try {
 			Date start = resources.getDate(startDate);
 	      	journal.setStartDate(start);
 	    }
 	    catch (Exception e) {
 	      journal.setStartDate(null);
 	    }
-	      
+
 	    try {
 			Date end = resources.getDate(endDate);
 	      	journal.setEndDate(end);
@@ -419,7 +420,7 @@ function setBeginDateAndHour(date, hour, minutes)
 	    catch (Exception e) {
 	      journal.setEndDate(null);
 	    }
-	      
+
 	      if (withoutHour.equals("true")) {//journee complete
 	    	startHour = null;
 	        endHour =null;
@@ -428,24 +429,24 @@ function setBeginDateAndHour(date, hour, minutes)
 	      	startHour = startHour + ":" + startMinute;
 	        endHour   = endHour   + ":" + endMinute;
 	      }
-	      
+
 	      journal.setStartHour(startHour);
 	      journal.setEndHour(endHour);
-	      
+
 	    agenda.setCurrentJournalHeader(journal);
-	    
+
 	    if (action.equals("EditDiffusionList")) {
 	    	//routage vers le UserPanel
 	    	action = "View";
             autoFocus = false;
 	    	%>
-	   
+
 			<script type="text/javascript">
 				SP_openWindow('diffusion.jsp','diffusion','750','550','scrollbars=yes, resizable, alwaysRaised');
 			</Script>
-			<%  
+			<%
 		}
-	    
+
 	    if (action.equals("EditCategory")) {
 	      action = "View";
 	      autoFocus = false;
@@ -453,16 +454,16 @@ function setBeginDateAndHour(date, hour, minutes)
 	      <script type="text/javascript">
 	           window.SP_openWindow('category.jsp','category',500, 320,'alwaysRaised,scrollbars=yes,resizable')
 	      </Script>
-	      <%  
+	      <%
 	    }
-	    
-	}		    
-	   
+
+	}
+
 }//fin du else
-  
+
   if (! agenda.getUserId().equals(journal.getDelegatorId()))
      readOnly = true;
-	  
+
   String toPrint = null;
 
   /* ReallyAdd || ReallyUpdate */
@@ -478,7 +479,7 @@ function setBeginDateAndHour(date, hour, minutes)
     String endHour = request.getParameter("EndHour");
     String endMinute = request.getParameter("EndMinute");
     String withoutHour = request.getParameter("WithoutHour");
-    
+
     try {
 			Date date1;
 			try {
@@ -489,15 +490,15 @@ function setBeginDateAndHour(date, hour, minutes)
 
 			Date date2;
 			try {
-        		if (endDate.trim().length() == 0) 
+        		if (endDate.trim().length() == 0)
           			date2 = date1;
         		else
           			date2 = resources.getDate(endDate);
-      		} 
+      		}
       		catch (java.text.ParseException e) {
           		throw new AgendaUserException("dateFinIncorrecte");
       		}
-	      
+
 	      if (withoutHour.equals("true")) {//journee complete
 	    	startHour = null;
 	        endHour =null;
@@ -506,7 +507,7 @@ function setBeginDateAndHour(date, hour, minutes)
 	      	startHour = startHour + ":" + startMinute;
 	        endHour   = endHour   + ":" + endMinute;
 	      }
-	      
+
 	      String[] selectedUsers = new String[agenda.getCurrentAttendees().size()];
 	      Iterator i = agenda.getCurrentAttendees().iterator();
 	      int j = 0;
@@ -515,7 +516,7 @@ function setBeginDateAndHour(date, hour, minutes)
 	        selectedUsers[j] = attendee.getUserId();
 	        j++;
 	      }
-	
+
 	      String[] selectedCategories = new String[agenda.getCurrentCategories().size()];
 	      i = agenda.getCurrentCategories().iterator();
 	      j = 0;
@@ -525,11 +526,11 @@ function setBeginDateAndHour(date, hour, minutes)
 	        j++;
 	      }
 
-			if (journal.getId() == null) /* ReallyAdd */ 
-			{ 
+			if (journal.getId() == null) /* ReallyAdd */
+			{
 				journalId = agenda.addJournal(name, description, priority, classification, date1, startHour, date2, endHour);
 			}
-			else /* ReallyUpdate */ 
+			else /* ReallyUpdate */
 			{
 				agenda.updateJournal(journalId, name, description, priority, classification, date1, startHour, date2, endHour);
 			}
@@ -543,9 +544,9 @@ function setBeginDateAndHour(date, hour, minutes)
     catch (AgendaUserException e) {
       toPrint = agenda.getString("saisieErreur")+ agenda.getString(e.getMessage());
     }
-    
+
   }
-  
+
   /* ReallyRemove */
   else if (action.equals("ReallyRemove")) {
     journalId = request.getParameter("JournalId");
@@ -555,7 +556,7 @@ function setBeginDateAndHour(date, hour, minutes)
     out.println("</html>");
     return;
   }
-  
+
   /* SetParticipationStatus */
   else if (action.equals("SetParticipationStatus")) {
     String userId = request.getParameter("UserId");
@@ -587,7 +588,7 @@ else
       <input type="hidden" name="Status"/>
       <input type="hidden" name="selectedCategories"/>
       <input type="hidden" name="JournalId" <%if (journal.getId() != null) out.println("value=\""+journal.getId()+"\"");%>/>
-    
+
     <!-- Barre de titre du composant -->
 
 <%
@@ -626,9 +627,9 @@ else
 
 %>
 <table width="98%" cellspacing="0" cellpadding="0" border="0">
-  <tr> 
+  <tr>
     <td valign="top" width="100%">
-    
+
 <%
   if (toPrint != null) {
     out.println(toPrint);
@@ -637,14 +638,14 @@ else
 		Button button = graphicFactory.getFormButton(agenda.getString("retour"), "javascript:onClick=history.back()", false);
     out.print(button.print());
   }
-  
+
   /* Add || Update || View || DiffusionListOK */
-  else if (action.equals("Update") || action.equals("Add") || action.equals("View") 
+  else if (action.equals("Update") || action.equals("Add") || action.equals("View")
       || action.equals("DiffusionListOK") || action.equals("CategoryOK")) {
     %>
 
       <table width="100%" cellpadding="3" border="0">
-          <tr>           
+          <tr>
             <td class="txtlibform"><%= agenda.getString("organisateurNote") %> :</td>
 			<td width="100%">
               <%
@@ -670,7 +671,7 @@ else
 		    <!-- affichage de la date de d�but de note -->
             <td class="txtlibform"><%= agenda.getString("dateDebutNote") %> :</td>
 			<td><input type="text" class="dateToPick" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
-                if (journal != null) 
+                if (journal != null)
                   if (journal.getStartDate() != null)
                     out.println("value=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="bottom" alt=""/> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 			</td>
@@ -687,7 +688,7 @@ else
                   boolean selected = false;
                   if (s.length() == 1) s = "0"+s;
                   if (journal != null)
-                  { 
+                  {
                     if (journal.getStartHour() != null)
                     {
                       if (journal.getStartHour().startsWith(s))
@@ -712,7 +713,7 @@ else
                   String s = String.valueOf(i * 15);
                   boolean selected = false;
                   if (s.length() == 1) s = "0"+s;
-                  if (journal != null) 
+                  if (journal != null)
                     if (journal.getStartHour() != null)
                       if (journal.getStartHour().endsWith(s))
                         selected = true;
@@ -744,7 +745,7 @@ else
                   String s = String.valueOf(i);
                   boolean selected = false;
                   if (s.length() == 1) s = "0"+s;
-                  if (journal != null) 
+                  if (journal != null)
                   {
                     if (journal.getEndHour() != null)
                     {
@@ -770,7 +771,7 @@ else
                   String s = String.valueOf(i * 15);
                   boolean selected = false;
                   if (s.length() == 1) s = "0"+s;
-                  if (journal != null) 
+                  if (journal != null)
                     if (journal.getEndHour() != null)
                       if (journal.getEndHour().endsWith(s))
                         selected = true;
@@ -784,11 +785,11 @@ else
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("sansHoraireSpecifique")%> :</td>
-			<td><input type="checkbox" name="CompleteDay" 
+			<td><input type="checkbox" name="CompleteDay"
               <%
-                if (journal.getStartHour() == null && journal.getEndHour() == null) 
+                if (journal.getStartHour() == null && journal.getEndHour() == null)
               		out.println("checked=\"checked\"");
-              	if (readOnly) 
+              	if (readOnly)
               		out.print("disabled=\"disabled\"");%>/>
 			</td>
 		  </tr>
@@ -833,26 +834,26 @@ else
               <%=agenda.getString("listeDiffusion")%> :
             </td>
 			<td>
-			<% 
-			if (attendees != null) 
+			<%
+			if (attendees != null)
 			{
-            	if (attendees.size() == 0) 
+            	if (attendees.size() == 0)
             	{
 	                out.print(agenda.getString("listeDiffusionVide"));
 	            }
 				else
 				{
 					out.println("<table width=\"100%\" cellspacing=\"1\" border=\"0\" cellpadding=\"1\">");
-                      
+
                     Iterator i = attendees.iterator();
-                    while (i.hasNext()) 
+                    while (i.hasNext())
                     {
                     	out.println("<tr><td nowrap=\"nowrap\">");
                         Attendee attendee = (Attendee) i.next();
                         UserDetail user = agenda.getUserDetail(attendee.getUserId());
                         out.print("<img src=\"icons/pixel_CCCCCC.gif\" width=\"5\" height=\"5\" alt=\"\"/>");
                         if (user != null)
-                        	out.print("&nbsp;"+user.getDisplayedName()+"&nbsp;"); 
+                        	out.print("&nbsp;"+user.getDisplayedName()+"&nbsp;");
                         else
                            out.println(agenda.getString("utilisateurInconnu"));
                         out.println("</td><td width=\"100%\">");
@@ -861,7 +862,7 @@ else
                            out.println("<select name=\"ParticipationStatus\" onchange=\"javascript:setParticipationStatus('"+
                               journal.getId() + "', '" + attendee.getUserId()+"', document.journalForm.ParticipationStatus.value);\">");
                            String[] all = ParticipationStatus.getJournalParticipationStatus();
-                           for (int iP = 0; iP < all.length; iP++) 
+                           for (int iP = 0; iP < all.length; iP++)
                            {
                            	 out.print("<option value=\""+all[iP]+"\"");
                              if (all[iP].equals(attendee.getParticipationStatus().getString())) {
@@ -906,14 +907,14 @@ else
 			 </tr>
 		<tr>
 	  	  <td colspan="2" nowrap="nowrap">
-	    	<span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt="<%=generalMessage.getString("GML.requiredField")%>"/>&nbsp;:&nbsp;<%=generalMessage.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1" alt=""/></span> 
+	    	<span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt="<%=generalMessage.getString("GML.requiredField")%>"/>&nbsp;:&nbsp;<%=generalMessage.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1" alt=""/></span>
           </td>
         </tr>
         </table>
 <%
   }
-  
-  else 
+
+  else
   	out.println("Erreur : Action inconnu = '"+ action+"'");
 %>
 
@@ -922,18 +923,18 @@ else
  </table>
 <%
 		out.println(board.printAfter());
-  
+
   		if (toPrint == null) {
   			ButtonPane buttonPane = graphicFactory.getButtonPane();
     		if (agenda.getUserId().equals(journal.getDelegatorId()) ) {
 		  		Button button = null;
-		  		if (journal.getId() != null) 
+		  		if (journal.getId() != null)
 					button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=reallyUpdate()", false);
 		  		else
 					button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=reallyAdd()", false);
-		  		
+
 		  		Button buttonCancel = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=gotoAgenda()", false);
-		  		
+
 		  		buttonPane.addButton(button);
 		  		buttonPane.addButton(buttonCancel);
     		} else {
@@ -942,7 +943,7 @@ else
     		}
     		out.print("<br/><center>"+buttonPane.print()+"</center>");
   		}
-  		
+
 		out.println(frame.printAfter());
 	    out.println(window.printAfter());
 %>

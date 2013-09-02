@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +40,7 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
    * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
    */
   @Override
-  public int getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
+  public long getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
     try {
       return DomainDriverManagerFactory.getCurrentDomainDriverManager().getAllUsers(
           key.getResourceId()).length;

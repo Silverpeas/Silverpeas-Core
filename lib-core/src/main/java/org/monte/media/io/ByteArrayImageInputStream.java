@@ -1,5 +1,5 @@
 /*
- * @(#)ByteArrayImageInputStream.java  
+ * @(#)ByteArrayImageInputStream.java
  *
  * Copyright (c) 2008-2011 Werner Randelshofer, Immensee, Switzerland.
  * All rights reserved.
@@ -15,9 +15,10 @@ import java.nio.ByteOrder;
 
 /**
  * A {@code ByteArrayImageInputStream} contains an internal buffer that contains bytes that may be
- * read from the stream. An internal counter keeps track of the next byte to be supplied by the {@code read}
- * method. <p> Closing a {@code ByteArrayImageInputStream} has no effect. The methods in this class
- * can be called after the stream has been closed without generating an {@code IOException}.
+ * read from the stream. An internal counter keeps track of the next byte to be supplied by the
+ * {@code read} method. <p> Closing a {@code ByteArrayImageInputStream} has no effect. The methods
+ * in this class can be called after the stream has been closed without generating an
+ * {@code IOException}.
  *
  * @author Werner Randelshofer, Hausmatt 10, CH-6405 Immensee
  * @version $Id: ByteArrayImageInputStream.java 134 2011-12-02 16:23:00Z werner $
@@ -52,7 +53,7 @@ public class ByteArrayImageInputStream extends ImageInputStreamImpl2 {
   }
 
   public ByteArrayImageInputStream(byte[] buf, int offset, int length, ByteOrder byteOrder) {
-    this.buf = buf;
+    this.buf = buf.clone();
     this.streamPos = offset;
     this.count = Math.min(offset + length, buf.length);
     this.arrayOffset = offset;
@@ -68,8 +69,7 @@ public class ByteArrayImageInputStream extends ImageInputStreamImpl2 {
    * <code>-1</code> is returned. <p> This
    * <code>read</code> method cannot block.
    *
-   * @return the next byte of data, or
-   * <code>-1</code> if the end of the stream has been reached.
+   * @return the next byte of data, or <code>-1</code> if the end of the stream has been reached.
    */
   @Override
   public synchronized int read() {
@@ -98,19 +98,13 @@ public class ByteArrayImageInputStream extends ImageInputStreamImpl2 {
    * <code>read</code> method cannot block.
    *
    * @param b the buffer into which the data is read.
-   * @param off the start offset in the destination array
-   * <code>b</code>
+   * @param off the start offset in the destination array <code>b</code>
    * @param len the maximum number of bytes read.
-   * @return the total number of bytes read into the buffer, or
-   * <code>-1</code> if there is no more data because the end of the stream has been reached.
-   * @exception NullPointerException If
-   * <code>b</code> is
-   * <code>null</code>.
-   * @exception IndexOutOfBoundsException If
-   * <code>off</code> is negative,
-   * <code>len</code> is negative, or
-   * <code>len</code> is greater than
-   * <code>b.length - off</code>
+   * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more
+   * data because the end of the stream has been reached.
+   * @exception NullPointerException If <code>b</code> is <code>null</code>.
+   * @exception IndexOutOfBoundsException If <code>off</code> is negative, <code>len</code> is
+   * negative, or <code>len</code> is greater than <code>b.length - off</code>
    */
   @Override
   public synchronized int read(byte b[], int off, int len) {

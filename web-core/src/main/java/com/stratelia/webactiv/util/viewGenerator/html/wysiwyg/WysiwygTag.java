@@ -2,8 +2,11 @@ package com.stratelia.webactiv.util.viewGenerator.html.wysiwyg;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class WysiwygTag extends TagSupport {
 
@@ -63,6 +66,7 @@ public class WysiwygTag extends TagSupport {
     wysiwyg.setHeight(getHeight());
     wysiwyg.setLanguage(getLanguage());
     wysiwyg.setToolbar(getToolbar());
+    wysiwyg.setServerURL(URLManager.getServerURL((HttpServletRequest) pageContext.getRequest()));
     
     try {     
       pageContext.getOut().println(wysiwyg.print());

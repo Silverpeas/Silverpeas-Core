@@ -1,45 +1,37 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import java.rmi.RemoteException;
 import java.text.MessageFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -50,8 +42,11 @@ import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
-import static com.silverpeas.util.StringUtil.*;
-import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
+
+import static com.silverpeas.util.StringUtil.getBooleanValue;
+import static com.silverpeas.util.StringUtil.isDefined;
+
+import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**
  * The base tag for all concrete tags on the PdC classification of a content.
@@ -79,6 +74,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Sets the identifier of the HTML element in which the classification is rendered.
+   *
    * @param id the widget identifier to set.
    */
   public void setId(String id) {
@@ -87,6 +83,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Gets the identifier used to identify the HTML element in which is rendered the classification.
+   *
    * @return the id of the widget.
    */
   public String getId() {
@@ -95,6 +92,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Sets the unique identifier of the Silverpeas component instance to which the resource belongs.
+   *
    * @param componentId the unique identifier of the instance of a Silverpeas component.
    */
   public void setComponentId(String componentId) {
@@ -103,6 +101,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Sets the unique identifier of the resource content.
+   *
    * @param contentId the unique identifier of the resource content.
    */
   public void setContentId(String contentId) {
@@ -112,6 +111,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * Gets the identifier of the Silverpeas component instance to which the resource belongs. If no
    * component instance identifier is set, then it is fecthed from the request.
+   *
    * @return the component identifier.
    */
   public String getComponentId() {
@@ -124,6 +124,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Gets the unique identifier of the resource content in Silverpeas.
+   *
    * @return the resource content identifier.
    */
   public String getContentId() {
@@ -134,6 +135,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * Gets the identifier of the node to which the content belongs. A node is an hierarchic way to
    * organize the contents. A node can represents a category, a topic, or a folder and its semantic
    * depends on the Silverpeas component that handle the content.
+   *
    * @return the identifier of the node or an empty string.
    */
   public String getNodeId() {
@@ -144,6 +146,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * Sets the identifier of the node to which the content belongs (if any). A node is an hierarchic
    * way to organize the contents. A node can represents a category, a topic, or a folder and its
    * semantic depends on the Silverpeas component that handle the content.
+   *
    * @param nodeId the identifier of the node.
    */
   public void setNodeId(String nodeId) {
@@ -154,11 +157,12 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * Invokes the underlying JQuery PdC plugin with the appropriate function according to the
    * specified operation. The operation is actually invoked only if the PdC is used by the
    * underlying Silverpeas component instance.
+   *
    * @param operation the operation to invoke.
    * @return the HTML elements container with the code to render.
    * @throws JspException
    */
-  public ElementContainer invoke(final PdcTagOperation operation) throws JspException {
+  public ElementContainer invoke(final PdcClassificationTagOperation operation) throws JspException {
     ElementContainer container;
     if (isPdcUsed()) {
       container = initWidget(operation);
@@ -171,11 +175,12 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * Sets up the widget with all required information. It initializes the PdC classification JQuery
    * plugin and it calls it to render the classification of the refered content on the PdC.
+   *
    * @param operation the operation with which the widget is initialized.
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
-  private ElementContainer initWidget(PdcTagOperation operation) throws JspException {
+  private ElementContainer initWidget(PdcClassificationTagOperation operation) throws JspException {
     ElementContainer xhtmlcontainer = new ElementContainer();
     MultiPartElement classification;
     if (operation == PREVIEW_CLASSIFICATION || operation == PREDEFINE_CLASSIFICATION) {
@@ -192,7 +197,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     script pluginDependency1 = new script().setType("text/javascript").
         setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
     script pluginDependency2 = new script().setType("text/javascript").
-        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc.js");
+        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-classification.js");
     script pluginExecution = new script().setType("text/javascript").
         addElement(executePlugin(operation));
     xhtmlcontainer.addElement(pluginDependency1).
@@ -205,18 +210,20 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * This method calls the JQuery PdC plugin with the appropriate function according to the
    * operation to invoke.
+   *
    * @param operation the operation to execute.
    * @return the javascript code to handle the classification onto the PdC.
    * @throws if an error occurs during the processing of the plugin.
    */
-  private String executePlugin(PdcTagOperation operation) throws JspTagException {
+  private String executePlugin(PdcClassificationTagOperation operation) throws JspTagException {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String function = operation.getPluginFunction();
     String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)
         || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
         "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
-    String script = "$('#" + pdcWidgetId + "').pdc('" + function + "', {resource: {context: '"
+    String script = "$('#" + pdcWidgetId + "').pdcClassification('" + function
+        + "', {resource: {context: '"
         + context
         + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
         + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
@@ -233,14 +240,10 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
           if (!isDefined(nodeId)) {
             nodeId = "0";
           }
-          try {
-            NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
-            MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
-            String inLanguage = controller.getFavoriteLanguage();
-            nodeName = node.getName(inLanguage);
-          } catch (RemoteException ex) {
-            Logger.getLogger(BaseClassificationPdCTag.class.getName()).log(Level.SEVERE, null, ex);
-          }
+          NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
+          MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
+          String inLanguage = controller.getFavoriteLanguage();
+          nodeName = node.getName(inLanguage);
         }
         String inheritanceMessage = MessageFormat.format(resources.getString(
             "pdcPeas.CanDoAPredefineClassification"), nodeName);
@@ -273,6 +276,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Gets the resources from which translated text and PdC settings can be get.
+   *
    * @return a resources wrapper instance.
    * @throws JspTagException if an error occurs while fetching the resources.
    */
@@ -280,7 +284,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
     String language = controller.getFavoriteLanguage();
     ResourcesWrapper resources = new ResourcesWrapper(new ResourceLocator(
-        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
+        "org.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;
 
   }
@@ -288,6 +292,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * Is the PdC is used currently by the underlying Silverpeas component instance. For some
    * components, the use of the PdC can be set per instance. For others, the PdC is used by default.
+   *
    * @return true if the component instance uses the PdC, false otherwise.
    */
   protected boolean isPdcUsed() {
@@ -316,13 +321,10 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   protected NodeBm getNodeBm() {
     try {
-      NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      return home.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-          ex);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
   }
 }

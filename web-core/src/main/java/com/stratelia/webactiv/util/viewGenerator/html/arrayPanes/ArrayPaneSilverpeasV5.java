@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,60 +24,18 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
-import com.silverpeas.util.StringUtil;
+import java.util.Collections;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The default implementation of ArrayPane interface.
  * @author squere
  * @version 1.0
  */
-public class ArrayPaneSilverpeasV5 implements ArrayPane {
-
-  private List<ArrayColumn> columns;
-  private List<ArrayLine> lines;
-  private String title = null;
-  private String summary = null;
-  private boolean isXHTML = false;
-  private String alignement = null;
-  private String name;
-  private ArrayPaneStatusBean state = null;
-  private ServletRequest request = null;
-  private HttpSession session = null;
-  private int m_SortMode = 0;
-  /**
-   * configurable values for cells spacing and padding (of the inernal table). These may be set via
-   * {@link #setCellsConfiguration(int spacing,int padding,int borderWidth)}
-   */
-  private int m_CellsSpacing = 2;
-  private int m_CellsPadding = 2;
-  private int m_CellsBorderWidth = 0;
-  /**
-   * In some cases, it may be preferable to specify the routing address (via
-   * {@link #setRoutingAddress(String address)})
-   * @see ArrayColum.setRoutingAddress(String address)
-   */
-  private String m_RoutingAddress = null;
-  private String paginationJavaScriptCallback = null;
-
-  /**
-   * Parameter attribute to enable/disable ArrayPane export feature
-   */
-  private boolean exportData = false;
-  private String exportDataURL = null;
-  private static final String EXPORT_URL_SERVLET_MAPPING = "/Export/ArrayPane";
+public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
 
   /**
    * Default constructor as this class may be instanciated by method newInstance(), constructor
@@ -86,266 +44,6 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    */
   public ArrayPaneSilverpeasV5() {
     // initialisation is made in init methods
-  }
-
-  /**
-   * Generic class to display a typical array table pane. A unique name identifier is to be used in
-   * html pages for this array specific actions (exemple : sort on a specific column)
-   * @param name A unique name in the page to display
-   * @param pageContext
-   */
-  @Override
-  public void init(String name, PageContext pageContext) {
-    init(name, pageContext.getRequest(), pageContext.getSession());
-  }
-
-  /**
-   * @param name
-   * @param request
-   * @param session
-   */
-  @Override
-  public void init(String name, ServletRequest request, HttpSession session) {
-    init(name, null, request, session);
-  }
-
-  /**
-   * Constructor declaration
-   * @param name
-   * @param url
-   * @param request
-   * @param session
-   * @see
-   */
-  @Override
-  public void init(String name, String url, ServletRequest request, HttpSession session) {
-    columns = new ArrayList<ArrayColumn>();
-    lines = new ArrayList<ArrayLine>();
-    this.name = name;
-    setRoutingAddress(url);
-    this.session = session;
-    this.request = request;
-
-    state = (ArrayPaneStatusBean) session.getAttribute(getName());
-    if (state == null) {
-      state = new ArrayPaneStatusBean();
-      session.setAttribute(getName(), state);
-    }
-
-    String target = request.getParameter(TARGET_PARAMETER_NAME);
-
-    if (target != null && target.equals(name)) {
-      String action = request.getParameter(ACTION_PARAMETER_NAME);
-      SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV4.ArrayPaneSilverpeasV4()",
-          "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action + "'");
-      if ("Sort".equals(action)) {
-        String newState = request.getParameter(COLUMN_PARAMETER_NAME);
-        if (newState != null) {
-          int ns = Integer.parseInt(newState);
-          if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
-            state.setSortColumn(-state.getSortColumn());
-          } else {
-            state.setSortColumn(ns);
-          }
-        }
-      } else if ("ChangePage".equals(action)) {
-        String index = request.getParameter(INDEX_PARAMETER_NAME);
-        state.setFirstVisibleLine(Integer.parseInt(index));
-      }
-    }
-
-    if (state.getSortColumn() >= 1) {
-      setColumnToSort(state.getSortColumn());
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param maximum
-   * @see
-   */
-  @Override
-  public void setVisibleLineNumber(int maximum) {
-    state.setMaximumVisibleLine(maximum);
-  }
-
-  /**
-   * This method allows for the change of cell presentation values. A negative value means 'do not
-   * change this value'
-   * @param spacing
-   * @param padding
-   * @param borderWidth
-   */
-  @Override
-  public void setCellsConfiguration(int spacing, int padding, int borderWidth) {
-    if (spacing >= 0) {
-      m_CellsSpacing = spacing;
-    }
-    if (padding >= 0) {
-      m_CellsPadding = padding;
-    }
-    if (borderWidth >= 0) {
-      m_CellsBorderWidth = borderWidth;
-    }
-  }
-
-  /**
-   * Standard method that returns the CVS-managed version string
-   * @return the version of the librairy.
-   */
-  public static String getVersion() {
-    return "$Id: ArrayPaneSilverpeasV5.java,v 1.1 2008/06/13 07:06:36 neysseri Exp $";
-  }
-
-  /**
-   * This method sets the routing address. This is actually the URL of the page to which requests
-   * will be routed when the user clicks on a column header link.
-   * @param address
-   */
-  @Override
-  public void setRoutingAddress(String address) {
-    m_RoutingAddress = address;
-  }
-
-  /**
-   * Add a new column to the table.
-   * @param title The column title to display
-   * @return The new column header. You can use this object to modify the default display options.
-   */
-  @Override
-  public ArrayColumn addArrayColumn(String title) {
-    ArrayColumn col = new ArrayColumn(title, columns.size() + 1, this);
-    columns.add(col);
-    col.setRoutingAddress(m_RoutingAddress);
-    return col;
-  }
-
-  /**
-   * @return
-   */
-  @Override
-  public ArrayLine addArrayLine() {
-    ArrayLine line = new ArrayLine(this);
-    lines.add(line);
-    return line;
-  }
-
-  /**
-   * @param title
-   */
-  @Override
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  /**
-   * @return
-   */
-  public String getAlignement() {
-    return alignement;
-  }
-
-  /**
-   * @param alignement
-   */
-  public void setAlignement(String alignement) {
-    this.alignement = alignement;
-  }
-
-  /**
-   * @return
-   */
-  @Override
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * @param columnNumber
-   */
-  @Override
-  public void setColumnToSort(int columnNumber) {
-    SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV4.setColumnToSort()",
-        "root.MSG_GEN_PARAM_VALUE", " columNumber = '" + columnNumber + "'");
-    state.setSortColumn(columnNumber);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public int getColumnToSort() {
-    return state.getSortColumn();
-  }
-
-  /**
-   * This methods sets the sort mode for all columns. The columns cells may or may not take this
-   * value into account.
-   */
-  @Override
-  public void setSortMode(int mode) {
-    m_SortMode = mode;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public int getSortMode() {
-    return (m_SortMode);
-  }
-
-  /**
-   * Method declaration
-   * @param columnNumber
-   * @param mode
-   * @see
-   */
-  @Override
-  public void setColumnBehaviour(int columnNumber, int mode) {
-    if (columns == null || columnNumber <= 0 || columnNumber > columns.size()) {
-      return;
-    }
-    ArrayColumn col = columns.get(columnNumber - 1);
-    col.setSortable(mode == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
-  }
-
-  /**
-   * Set all array columns to be sortable or not. By default, all colums are sortable.
-   * @param sortable Set sortable to false if you want all the table to be unsortable.
-   */
-  @Override
-  public void setSortable(boolean sortable) {
-    if (sortable) {
-      setSortMode(ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
-    } else {
-      setSortMode(ArrayColumn.COLUMN_BEHAVIOUR_NO_TRIGGER);
-    }
-
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public boolean getSortable() {
-    return (getSortMode() == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
   }
 
   /**
@@ -365,12 +63,12 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   @Override
   public String print() {
     GraphicElementFactory gef =
-        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+        (GraphicElementFactory) getSession().getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     Pagination pagination =
-        gef.getPagination(lines.size(), state.getMaximumVisibleLine(), state.getFirstVisibleLine());
+        gef.getPagination(getLines().size(), getState().getMaximumVisibleLine(), getState().getFirstVisibleLine());
 
     String sep = "&";
-    if (isXHTML) {
+    if (isXHTML()) {
       sep = "&amp;";
     }
 
@@ -386,29 +84,29 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
         INDEX_PARAMETER_NAME).append("=");
     pagination.setBaseURL(url.toString());
 
-    int columnsCount = columns.size();
+    int columnsCount = getColumns().size();
 
-    if ((lines.size() > 0) && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
+    if ((getLines().size() > 0) && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
       SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV5.print()",
           "root.MSG_GEN_PARAM_VALUE", "Tri des lignes");
-      Collections.sort(lines);
+      Collections.sort(getLines());
     }
 
     // when there is no cell spacing, add pseudo columns as fillers
-    if (m_CellsSpacing == 0) {
+    if (getCellSpacing() == 0) {
       columnsCount = columnsCount * 2 + 1;
     }
     StringBuilder result = new StringBuilder();
     result.append("<table width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" border=\"0\" ");
     result.append("class=\"arrayPane\"><tr><td>\n").append("<table width=\"100%\" cellspacing=\"");
-    result.append(m_CellsSpacing).append("\" cellpadding=\"").append(m_CellsPadding);
-    result.append("\" border=\"");
-    result.append(m_CellsBorderWidth).append("\" class=\"tableArrayPane\" summary=\"");
-    result.append(getSummary()).append("\">");
+    result.append(getCellSpacing()).append("\" cellpadding=\"").append(getCellPadding());
+    result.append("\" border=\"").append(getCellBorderWidth()).append("\"");
+    result.append(" id=\"").append(getName()).append("\" class=\"tableArrayPane\"");
+    result.append(" summary=\"").append(getSummary()).append("\">");
     if (getTitle() != null) {
       result.append("<caption>").append(getTitle()).append("</caption>");
     }
-    if (m_CellsSpacing == 0) {
+    if (getCellSpacing() == 0) {
       result.append("<tr>");
       result.append("<td colspan=\"").append(columnsCount).append("\">");
       result.append("<img src=\"").append(getIconsPath()).append(
@@ -418,28 +116,28 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
     result.append("<thead>\n");
     result.append("<tr>\n");
-    if (m_CellsSpacing == 0) {
+    if (getCellSpacing() == 0) {
       result.append(printPseudoColumn());
     }
-    for (ArrayColumn column : columns) {
-      result.append(column.print(isXHTML));
-      if (m_CellsSpacing == 0) {
+    for (ArrayColumn column : getColumns()) {
+      result.append(column.print(isXHTML()));
+      if (getCellSpacing() == 0) {
         result.append(printPseudoColumn());
       }
     }
     result.append("</tr>\n").append("</thead>\n").append("<tbody>\n");
-    if (lines.isEmpty()) {
+    if (getLines().isEmpty()) {
       result.append("<tr><td>&nbsp;</td></tr>\n");
     } else {
 
       // No need pagination
-      if (state.getMaximumVisibleLine() == -1) {
-        for (ArrayLine curLine : lines) {
+      if (getState().getMaximumVisibleLine() == -1) {
+        for (ArrayLine curLine : getLines()) {
           printArrayPaneLine(result, curLine);
         }
       } else {
         // Paginate ArrayPane result
-        state.setFirstVisibleLine(pagination.getIndexForCurrentPage());
+        getState().setFirstVisibleLine(pagination.getIndexForCurrentPage());
         int first = pagination.getIndexForCurrentPage();
         int lastIndex;
         if (pagination.isLastPage()) {
@@ -448,7 +146,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
           lastIndex = pagination.getIndexForNextPage();
         }
         for (int i = first; i < lastIndex; i++) {
-          printArrayPaneLine(result, lines.get(i));
+          printArrayPaneLine(result, getLines().get(i));
         }
       }
 
@@ -457,30 +155,30 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     result.append("</table>\n");
 
     boolean paginationVisible =
-        -1 != state.getMaximumVisibleLine() && lines.size() > state.getMaximumVisibleLine();
+        -1 != getState().getMaximumVisibleLine() && getLines().size() > getState().getMaximumVisibleLine();
 
-    if (paginationVisible || exportData) {
+    if (paginationVisible || getExportData()) {
       result.append(
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
       result.append("<tr class=\"intfdcolor\">\n");
       if (paginationVisible) {
         result.append("<td align=\"center\">");
-        result.append(pagination.printIndex(paginationJavaScriptCallback));
+        result.append(pagination.printIndex(getPaginationJavaScriptCallback()));
         result.append("</td>");
       }
-      if (exportData) {
+      if (getExportData()) {
         // Add export data GUI
         result.append("<td class=\"exportlinks\">");
         result.append("<div>");
         result.append(gef.getMultilang().getString("GEF.export.label")).append(" :");
-        result.append("<a href=\"").append(this.getExportUrl()).append(
+        result.append("<a href=\"").append(getExportUrl()).append(
             "\"><span class=\"export csv\">");
         result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
         result.append("</div>");
         // Be careful we only put a unique name in the session, so we cannot export two ArrayPanes
         // which are displayed in the same page (use this.name instead of "arraypane")
-        this.session.setAttribute("Silverpeas_arraypane_columns", this.columns);
-        this.session.setAttribute("Silverpeas_arraypane_lines", this.lines);
+        getSession().setAttribute("Silverpeas_arraypane_columns", getColumns());
+        getSession().setAttribute("Silverpeas_arraypane_lines", getLines());
         result.append("</td>");
       }
       result.append("</tr>\n");
@@ -488,6 +186,10 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
 
     result.append("</td></tr></table>\n");
+    
+    if (isSortableLines()) {
+      result.append(printSortJavascriptFunction());
+    }
 
     return result.toString();
   }
@@ -498,123 +200,11 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    * @param curLine the array pane line to print
    */
   private void printArrayPaneLine(StringBuilder result, ArrayLine curLine) {
-    if (m_CellsSpacing == 0) {
+    if (getCellSpacing() == 0) {
       result.append(curLine.printWithPseudoColumns());
     } else {
       result.append(curLine.print());
     }
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getUrl() {
-    // routing address computation. By default, route to the short name for the
-    // calling page
-    if (m_RoutingAddress == null) {
-      String address = ((HttpServletRequest) getRequest()).getRequestURI();
-      // only get a relative http address
-      address = address.substring(address.lastIndexOf('/') + 1, address.length());
-      // if the previous request had parameters, remove them
-      if (address.lastIndexOf('?') >= 0) {
-        address = address.substring(0, address.lastIndexOf('?'));
-      }
-      return address;
-    } else {
-      return m_RoutingAddress;
-    }
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public HttpSession getSession() {
-    return session;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public ServletRequest getRequest() {
-    return request;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getIconsPath() {
-    ResourceLocator generalSettings = new ResourceLocator(
-        "com.stratelia.webactiv.general", "fr");
-
-    return generalSettings.getString("ApplicationURL")
-        + GraphicElementFactory.getSettings().getString("IconsPath");
-  }
-
-  @Override
-  public void setPaginationJavaScriptCallback(String callback) {
-    paginationJavaScriptCallback = callback;
-  }
-
-  @Override
-  public String getSummary() {
-    return summary;
-  }
-
-  @Override
-  public void setSummary(String summary) {
-    this.summary = summary;
-  }
-
-  @Override
-  public void setXHTML(boolean isXHTML) {
-    this.isXHTML = isXHTML;
-  }
-
-  @Override
-  public boolean getExportData() {
-    return exportData;
-  }
-
-  @Override
-  public void setExportData(boolean exportData) {
-    this.exportData = exportData;
-  }
-
-  @Override
-  public String getExportDataURL() {
-    return this.exportDataURL;
-  }
-
-  @Override
-  public void setExportDataURL(String exportDataURL) {
-    this.exportDataURL = exportDataURL;
-  }
-
-  /**
-   * @return the export array pane URL
-   */
-  private String getExportUrl() {
-    if (StringUtil.isDefined(exportDataURL)) {
-      return exportDataURL;
-    }
-    StringBuilder exportUrl = new StringBuilder();
-    String contextPath =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    exportUrl.append(contextPath).append(EXPORT_URL_SERVLET_MAPPING);
-    exportUrl.append("?type=ArrayPane&name=");
-    // Change the name parameter if you want to export 2 arrays which are displayed in the same page
-    exportUrl.append("Silverpeas_arraypane");
-    return exportUrl.toString();
   }
 
 }

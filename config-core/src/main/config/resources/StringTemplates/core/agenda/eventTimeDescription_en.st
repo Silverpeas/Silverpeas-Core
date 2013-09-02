@@ -1,0 +1,1 @@
+$startDate$$if(startHour)$ at $startHour$$else$ all the day$endif$

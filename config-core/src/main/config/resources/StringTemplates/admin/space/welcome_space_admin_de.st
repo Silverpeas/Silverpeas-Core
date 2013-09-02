@@ -6,7 +6,7 @@ Als <b>Administrator</b> können Sie alle Bereiche und Anwendungen verwalten.</p>
 
 <div id="txt_evolutivite">
 <h3>Es ist sehr einfach, die Struktur Ihrer Plattform zu ändern!</h3>
-<p>Sie können schnell, unter <a class="txtnav" href="javascript:onclick=openPopup()">diesem Link</a>, einen Wurzelbereich erstellen oder, Sie können über das "Was wollen Sie tun ?" Menü <b class="yuimenu"> einen Bereich erstellen </b>. <b>Was wollen Sie als Nächstes tun ?</b>.<br/>
+<p>Sie können schnell, unter <a class="txtnav" href="CreateSpace">diesem Link</a>, einen Wurzelbereich erstellen oder, Sie können über das "Was wollen Sie tun ?" Menü <b class="yuimenu"> einen Bereich erstellen </b>. <b>Was wollen Sie als Nächstes tun ?</b>.<br/>
 </p><p>Alle First-Level-Bereiche sind über der Dropdown-Liste auf der linken Seite zugänglich. So bearbeiten, löschen oder verwalten Sie einen Bereich, wählen Sie es einfach aus dieser Liste.<br/>
 Der Inhalt des ausgewählten Bereichs wird dann in dieser Liste angezeigt.
 Alle Operationen auf diesem Bereich sind über das Menü <b>Was wollen Sie tun ?</b> erreichbar.<br/>

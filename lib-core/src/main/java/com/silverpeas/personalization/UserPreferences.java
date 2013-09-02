@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,13 +24,13 @@
 
 package com.silverpeas.personalization;
 
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.StringUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.util.StringUtil;
 
 @Entity
 @Table(name = "personalization")

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A GroupField stores a group reference.
@@ -39,7 +39,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 public class GroupField implements Field {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 3278935449715773819L;
   /**
@@ -96,7 +96,7 @@ public class GroupField implements Field {
       return "";
     }
 
-    Group group = organizationController.getGroup(getGroupId());
+    Group group =  OrganisationControllerFactory.getOrganisationController().getGroup(getGroupId());
 
     if (group == null) {
       return "group(" + getGroupId() + ")";
@@ -147,7 +147,7 @@ public class GroupField implements Field {
       return null;
     }
 
-    return organizationController.getGroup(getGroupId());
+    return  OrganisationControllerFactory.getOrganisationController().getGroup(getGroupId());
   }
 
   /**
@@ -267,10 +267,4 @@ public class GroupField implements Field {
    * The referenced groupId.
    */
   private String groupId = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
-
 }

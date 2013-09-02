@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,10 @@
 
 package com.silverpeas.form;
 
+import java.util.List;
 import java.util.Map;
+
+import com.silverpeas.form.record.Parameter;
 
 /**
  * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
@@ -88,6 +91,8 @@ public interface FieldTemplate {
    * (max-size, length ...).
    */
   public Map<String, String> getParameters(String language);
+  
+  public List<Parameter> getParametersObj();
 
   /**
    * Returns an empty Field built on this template.

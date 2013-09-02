@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,22 +25,20 @@
 package com.silverpeas.notification.jms;
 
 import com.silverpeas.notification.SubscriptionException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import javax.jms.JMSException;
 import javax.jms.TopicSubscriber;
 
 /**
- * A subscriber of one or more topics whose the life-cycle is managed by the JMS adapter. JMS
- * doesn't support the subscription of a given subscriber to several topics. JMS is a low-level MOM
- * API so that it is required to enhance this API by adding additional features in order to provide
- * high-level messaging features.
+ * A subscriber of one or more topics whose the life-cycle is managed by the JMS adapter.
+ *
+ * JMS doesn't support the subscription of a subscriber to several topics. In JMS, a subscriber is
+ * the representation of a given subscription to a topic. So, each subscription of a JMS client
+ * to a several topics is represented by a different JMS subscriber. The aims of this class is to
+ * represent a topic subscriber with the capability to subscribe to one or more topics and each of
+ * theses subscriptions will be represented actually by a JMS topic subscriber.
  */
-class ManagedTopicsSubscriber {
+final class ManagedTopicsSubscriber {
 
   private static Map<String, ManagedTopicsSubscriber> subscribers = Collections.synchronizedMap(
       new HashMap<String, ManagedTopicsSubscriber>());
@@ -68,6 +66,15 @@ class ManagedTopicsSubscriber {
     return new ManagedTopicsSubscriber(UUID.randomUUID().toString());
   }
 
+  /**
+   * Gets all the managed subscribers that were saved on behalf of the JMS implementation of the
+   * Notification API.
+   * @return a collection of managed topic subscribers.
+   */
+  public static Collection<ManagedTopicsSubscriber> getAllManagedTopicSubscribers() {
+    return Collections.unmodifiableCollection(subscribers.values());
+  }
+
   private final String id;
   private final List<TopicSubscriber> subscriptions = new ArrayList<TopicSubscriber>();
 
@@ -93,7 +100,7 @@ class ManagedTopicsSubscriber {
    * Gets the JMS TopicSubscriber instance matching the subscription of this subscriber to the
    * specified topic.
    * @param topicName the topic name.
-   * @return the TopicSubscriber matching the subsciption of this subscriber.
+   * @return the TopicSubscriber matching the subscription of this subscriber.
    * @throws JMSException if an error occurs while getting the subscription for the specified topic.
    */
   public TopicSubscriber getSubscription(String topicName) throws JMSException {
@@ -105,6 +112,20 @@ class ManagedTopicsSubscriber {
       }
     }
     return subscription;
+  }
+
+  /**
+   * Gets a collection of JMS TopicSubscriber instances matching all the subscriptions of this
+   * subscriber.
+   * The returned collection is just a view on the subscriptions of this subscriber and won't
+   * reflect any change that will be occurred in the subscriptions of this subscriber; if a
+   * subscription is removed while parsing the collection, it is not reflected and it will be
+   * present in the collection.
+   * @return a collection of JMS TopicSubscriber, each of them representing a subscription of this
+   * subscriber.
+   */
+  public Collection<TopicSubscriber> getAllSubscriptions() {
+    return Collections.unmodifiableCollection(new ArrayList<TopicSubscriber>(subscriptions));
   }
 
   /**

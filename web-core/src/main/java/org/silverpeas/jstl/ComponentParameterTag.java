@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,27 +36,27 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
  * @author ehugonnet
  */
 public class ComponentParameterTag extends AbstractSetVarTagSupport {
-  
+
   private static final long serialVersionUID = 1L;
   private String parameter;
   private String componentId;
-  
 
-  
+
+
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
-  
+
   public void setParameter(String parameter) {
     this.parameter = parameter;
   }
-  
+
   @Override
   public int doEndTag() throws JspException {
     MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl != null && StringUtil.isDefined(getVar())) {
-      pageContext.setAttribute(getVar(), mainSessionCtrl.getOrganizationController().
+      pageContext.setAttribute(getVar(), mainSessionCtrl.getOrganisationController().
           getComponentParameterValue(componentId, parameter), getScope());
     }
     return EVAL_PAGE;

@@ -1,28 +1,35 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.admin.ejb;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.quota.exception.QuotaException;
 
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -32,13 +39,10 @@ import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
-import javax.ejb.SessionContext;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-public class AdminBmEJB implements javax.ejb.SessionBean, AdminBusiness {
+@Stateless(name = "AdminBm", description =
+    "Admin EJB to allow remote access on some administration functions.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class AdminBmEJB implements AdminBusiness {
 
   private static final long serialVersionUID = 8753816261083500713L;
   AdminController ac = null;
@@ -58,7 +62,6 @@ public class AdminBmEJB implements javax.ejb.SessionBean, AdminBusiness {
     String[] spaceIds = getAdminController().getAllRootSpaceIds();
     ArrayList<String> result = new ArrayList<String>();
     result.addAll(Arrays.asList(spaceIds));
-
     return result;
   }
 
@@ -142,33 +145,15 @@ public class AdminBmEJB implements javax.ejb.SessionBean, AdminBusiness {
 
   @Override
   public String addComponentInst(ComponentInst componentInst, String userId) {
-    return getAdminController().addComponentInst(componentInst, userId);
+    try {
+      return getAdminController().addComponentInst(componentInst, userId);
+    } catch (QuotaException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public void updateComponentOrderNum(String sComponentId, int orderNum) {
     getAdminController().updateComponentOrderNum(sComponentId, orderNum);
-  }
-
-  /*
-   * Ejb Methods
-   */
-  public void ejbCreate() {
-  }
-
-  @Override
-  public void ejbRemove() {
-  }
-
-  @Override
-  public void ejbActivate() {
-  }
-
-  @Override
-  public void ejbPassivate() {
-  }
-
-  @Override
-  public void setSessionContext(SessionContext sc) {
   }
 }

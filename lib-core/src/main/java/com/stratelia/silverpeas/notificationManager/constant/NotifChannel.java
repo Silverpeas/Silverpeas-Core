@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,23 +43,14 @@ public enum NotifChannel {
   }
 
   public static NotifChannel decode(final Integer id) {
-    NotifChannel result = null;
     if (id != null) {
-      if (id == SMTP.id) {
-        result = SMTP;
-      } else if (id == SMS.id) {
-        result = SMS;
-      } else if (id == POPUP.id) {
-        result = POPUP;
-      } else if (id == SILVERMAIL.id) {
-        result = SILVERMAIL;
-      } else if (id == REMOVE.id) {
-        result = REMOVE;
-      } else if (id == SERVER.id) {
-        result = SERVER;
+      for (NotifChannel notifChannel : NotifChannel.values()) {
+        if (id == notifChannel.id) {
+          return notifChannel;
+        }
       }
     }
-    return result;
+    return null;
   }
 
   /**

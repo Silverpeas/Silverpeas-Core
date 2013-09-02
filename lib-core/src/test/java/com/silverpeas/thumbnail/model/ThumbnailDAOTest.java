@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,9 @@
 
 package com.silverpeas.thumbnail.model;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.sql.Connection;
+
+import com.silverpeas.components.model.AbstractTestDao;
 
 /**
  *
@@ -86,7 +87,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testSelectByKey() throws Exception {
-    System.out.println("selectByKey");
     Connection con = getConnection().getConnection();
     ThumbnailDetail result = dao.selectByKey(con, "kmelia57", 1, 0);
     assertNotNull(result);
@@ -108,7 +108,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testDeleteThumbnail() throws Exception {
-    System.out.println("insertRow");
     Connection con = getConnection().getConnection();
 
     String instanceId = "kmelia57";
@@ -190,7 +189,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testUpdateRow() throws Exception {
-    System.out.println("updateRow");
     Connection con = getConnection().getConnection();
 
     String instanceId = "kmelia57";
@@ -249,5 +247,11 @@ public class ThumbnailDAOTest extends AbstractTestDao {
   @Override
   protected String getDatasetFileName() {
     return "test-thumbnail-dao-dataset.xml";
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,7 +98,7 @@ public class CommunicationUserRequestRouter extends
           commUserSC.addCurrentDiscussion(fileDiscussion);
           request.setAttribute("UserName", commUserSC.getUserDetail().getDisplayedName());
           request.setAttribute("UserIdDest", userId);
-          request.setAttribute("UserNameDest", commUserSC.getOrganizationController()
+          request.setAttribute("UserNameDest", commUserSC.getOrganisationController()
               .getUserDetail(
               userId).getDisplayedName());
           destination = "/communicationUser/jsp/discussion.jsp";

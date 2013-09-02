@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,11 +41,10 @@ public class JobDomainSettings {
   public static int m_UsersByPage = 10;
   public static int m_GroupsByPage = 10;
   public static int m_MinLengthLogin = 5;
-  public static int m_MinLengthPwd = 4;
-  public static boolean m_BlanksAllowedInPwd = true;
   public static boolean m_UserAddingAllowedForGroupManagers = false;
   public static boolean m_UseCommunityManagement = false;
-  public static boolean userQuotaEnabled = false;
+  public static boolean usersInDomainQuotaActivated = false;
+  public static boolean lastConnectionColumnEnabled = true;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -54,11 +53,10 @@ public class JobDomainSettings {
     m_UsersByPage = rs.getInteger("UsersByPage", 10);
     m_GroupsByPage = rs.getInteger("GroupsByPage", 10);
     m_MinLengthLogin = rs.getInteger("MinLengthLogin", 5);
-    m_MinLengthPwd = rs.getInteger("MinLengthPwd", 4);
-    m_BlanksAllowedInPwd = rs.getBoolean("BlanksAllowedInPwd", true);
     m_UserAddingAllowedForGroupManagers = rs.getBoolean("UserAddingAllowedForGroupManagers", false);
     m_UseCommunityManagement = rs.getBoolean("UseCommunityManagement", false);
-    userQuotaEnabled = rs.getBoolean("quota.users.enable", false);
+    usersInDomainQuotaActivated = rs.getBoolean("quota.domain.users.activated", false);
+    lastConnectionColumnEnabled = rs.getBoolean("domain.users.columns.lastconnection", true);
   }
 
   static public void sortGroups(Group[] toSort) {

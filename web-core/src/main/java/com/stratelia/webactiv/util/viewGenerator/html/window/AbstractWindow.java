@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,12 +33,13 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author neysseri
@@ -64,6 +65,7 @@ public abstract class AbstractWindow implements Window {
    * @param gef
    * @see
    */
+  @Override
   public void init(GraphicElementFactory gef) {
     this.gef = gef;
   }
@@ -82,6 +84,7 @@ public abstract class AbstractWindow implements Window {
    * @param body
    * @see
    */
+  @Override
   public void addBody(String body) {
     this.body = body;
   }
@@ -109,6 +112,7 @@ public abstract class AbstractWindow implements Window {
    * @param width
    * @see
    */
+  @Override
   public void setWidth(String width) {
     this.width = width;
   }
@@ -130,11 +134,11 @@ public abstract class AbstractWindow implements Window {
    * @return
    * @see
    */
+  @Override
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
-      if (GeneralPropertiesManager.getGeneralResourceLocator().getBoolean(
-          "AdminFromComponentEnable", true) &&
+      if (GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
           StringUtil.isDefined(getGEF().getComponentId())) {
         addOperationToSetupComponent();
       }
@@ -144,13 +148,11 @@ public abstract class AbstractWindow implements Window {
 
   private void addOperationToSetupComponent() {
     MainSessionController msc = getGEF().getMainSessionController();
-    if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
+    if (msc.getOrganisationController().isComponentManageable(getGEF().getComponentId(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
-      String label =
-          GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
+      String label = GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
           .getString("GML.operations.setupComponent");
-      String url =
-          URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
+      String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
           "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();
@@ -173,7 +175,7 @@ public abstract class AbstractWindow implements Window {
   public String getContextualDiv() {
     String spaceIds = "";
     String componentId = gef.getComponentId();
-    OrganizationController oc = gef.getMainSessionController().getOrganizationController();
+    OrganisationController oc = gef.getMainSessionController().getOrganisationController();
     if (StringUtil.isDefined(componentId)) {
       List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
 
@@ -273,7 +275,7 @@ public abstract class AbstractWindow implements Window {
       if (StringUtil.isDefined(componentId)) {
         StringBuilder sb = new StringBuilder(300);
         ComponentInstLight component =
-            getGEF().getMainSessionController().getOrganizationController()
+            getGEF().getMainSessionController().getOrganisationController()
             .getComponentInstLight(componentId);
         String language = getGEF().getMainSessionController().getFavoriteLanguage();
         if (component != null) {

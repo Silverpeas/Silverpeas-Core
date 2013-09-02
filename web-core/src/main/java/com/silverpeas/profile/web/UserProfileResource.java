@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,29 +24,41 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.annotation.Authenticated;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserSearchCriteriaFactory;
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.ListSlice;
+
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
+import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -65,7 +77,7 @@ public class UserProfileResource extends RESTWebService {
 
   /**
    * The HTTP header parameter that provides the real size of the user profiles that match a query.
-   * This parameter is usefull for clients that use the pagination to filter the count of user
+   * This parameter is useful for clients that use the pagination to filter the count of user
    * profiles to sent back.
    */
   public static final String RESPONSE_HEADER_USERSIZE = "X-Silverpeas-UserSize";
@@ -73,12 +85,11 @@ public class UserProfileResource extends RESTWebService {
    * Specific identifier of a user group meaning all the user groups in Silverpeas. In that case,
    * only the users part of a user group will be fetched.
    */
-  public static final String QUERY_ALL_GROUP = "all";
+  public static final String QUERY_ALL_GROUPS = "all";
   @Inject
   private UserProfileService profileService;
   @Inject
   private RelationShipService relationShipService;
-  private UserSearchCriteriaFactory criteriaFactory = UserSearchCriteriaFactory.getFactory();
 
   /**
    * Creates a new instance of UserProfileResource
@@ -97,6 +108,7 @@ public class UserProfileResource extends RESTWebService {
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
    *
+   * @param userIds requested user identifiers
    * @param groupId the unique identifier of the group the users must belong to. The particular
    * identifier "all" means all user groups.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
@@ -105,28 +117,40 @@ public class UserProfileResource extends RESTWebService {
    * this parameter is computed the part of users to sent back: those between ((page number - 1) *
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
+   * @param domain the unique identifier of the domain the users have to be related.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getUsers(
-          @QueryParam("group") String groupId,
-          @QueryParam("name") String name,
-          @QueryParam("page") String page) {
-    String domainId = null;
-    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
+  public Response getUsers(@QueryParam("id") Set<String> userIds,
+      @QueryParam("group") String groupId,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page,
+      @QueryParam("domain") String domain,
+      @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels) {
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
+    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
     }
-    SearchCriteria criteria = aSearchCriteria().withDomainId(domainId, getUserDetail()).
-            withGroupId(groupId).
-            withName(name).
-            build();
-    UserDetail[] users = getOrganizationController().searchUsers(criteria);
-    UserDetail[] paginatedUsers = paginate(users, page);
+    if (getUserDetail().isDomainRestricted()) {
+      domainId = getUserDetail().getDomainId();
+    }
+    UserProfilesSearchCriteriaBuilder criteriaBuilder = aSearchCriteria().withDomainId(domainId).
+        withGroupId(groupId).
+        withName(name).
+        withPaginationPage(fromPage(page));
+    if (CollectionUtil.isNotEmpty(userIds)) {
+      criteriaBuilder.withUserIds(userIds.toArray(new String[userIds.size()]));
+    }
+    if (CollectionUtil.isNotEmpty(accessLevels)) {
+      criteriaBuilder
+          .withAccessLevels(accessLevels.toArray(new UserAccessLevel[accessLevels.size()]));
+    }
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
-            asWebEntity(Arrays.asList(paginatedUsers), locatedAt(getUriInfo().getAbsolutePath()))).
-            header(RESPONSE_HEADER_USERSIZE, users.length).build();
+        asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -135,14 +159,20 @@ public class UserProfileResource extends RESTWebService {
    * user of the session within which the request is received.
    *
    * @param userId the unique identifier of the user.
+   * @param extended more user details (full details).
    * @return the profile of the user in a JSON representation.
    */
   @GET
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserProfileEntity getUser(@PathParam("userId") String userId) {
-    UserDetail theUser = getUserDetailMatching(userId);
-    return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
+  public UserProfileEntity getUser(@PathParam("userId") String userId,
+      @QueryParam("extended") boolean extended) {
+    final URI uri = identifiedBy(getUriInfo().getAbsolutePath());
+    if (extended) {
+      return asWebEntity(getUserFullMatching(userId), uri);
+    } else {
+      return asWebEntity(getUserDetailMatching(userId), uri);
+    }
   }
 
   /**
@@ -161,6 +191,13 @@ public class UserProfileResource extends RESTWebService {
    * to.
    * @param groupId the unique identifier of the group the users must belong to. The particular
    * identifier "all" means all user groups.
+   * @param roles the name of the roles the users must play either for the component instance or for
+   * a given resource of the component instance.
+   * @param resource the unique identifier of the resource in the component instance the users to
+   * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
+   * one. If it is not set, by default the resource refered is the whole component instance. As for
+   * component instance identifier, a resource one is defined by its type followed by its
+   * identifier.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
    * string of characters.
    * @param page the pagination parameters formatted as "page number;item count in the page". From
@@ -173,30 +210,33 @@ public class UserProfileResource extends RESTWebService {
   @GET
   @Path("application/{instanceId}")
   public Response getApplicationUsers(
-          @PathParam("instanceId") String instanceId,
-          @QueryParam("group") String groupId,
-          @QueryParam("roles") String roles,
-          @QueryParam("name") String name,
-          @QueryParam("page") String page) {
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-            : null);
+      @PathParam("instanceId") String instanceId,
+      @QueryParam("group") String groupId,
+      @QueryParam("roles") String roles,
+      @QueryParam("resource") String resource,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page) {
+    String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
     String domainId = null;
-    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
+    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
     }
-    SearchCriteria criteria = aSearchCriteria().withDomainId(domainId, getUserDetail()).
-            withComponentInstanceId(instanceId).
-            withRoles(rolesIds).
-            withGroupId(groupId).
-            withName(name).
-            build();
-    UserDetail[] users = getOrganizationController().searchUsers(criteria);
-    UserDetail[] paginatedUsers = paginate(users, page);
+    if (getUserDetail().isDomainRestricted()) {
+      domainId = getUserDetail().getDomainId();
+    }
+    UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
+        withComponentInstanceId(instanceId).
+        withRoles(roleNames).
+        withResourceId(resource).
+        withGroupId(groupId).
+        withName(name).
+        withPaginationPage(fromPage(page)).build();
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-            asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-            header(RESPONSE_HEADER_USERSIZE, users.length).build();
+        asWebEntity(users, locatedAt(usersUri))).
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -206,43 +246,62 @@ public class UserProfileResource extends RESTWebService {
    *
    * @param userId the unique identifier of the user or <i>me</i> to refers the current user at the
    * origin of the request.
+   * @param instanceId the unique identifier of the component instance the users should have access
+   * to.
+   * @param roles the name of the roles the users must play either for the component instance or for
+   * a given resource of the component instance.
+   * @param resource the unique identifier of the resource in the component instance the users to
+   * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
+   * one. If it is not set, by default the resource refered is the whole component instance. As for
+   * component instance identifier, a resource one is defined by its type followed by its
+   * identifier.
+   * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
+   * string of characters.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of users to sent back: those between ((page number - 1) *
+   * item count in the page) and ((page number - 1) * item count in the page + item count in the
+   * page).
+   * @param domain the unique identifier of the domain the users have to be related.
    * @return the profile of the user in a JSON representation.
    */
   @GET
   @Path("{userId}/contacts")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getUserContacts(@PathParam("userId") String userId,
-          @QueryParam("application") String instanceId,
-          @QueryParam("roles") String roles,
-          @QueryParam("name") String name,
-          @QueryParam("page") String page) {
+      @QueryParam("application") String instanceId,
+      @QueryParam("roles") String roles,
+      @QueryParam("resource") String resource,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page,
+      @QueryParam("domain") String domain) {
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     UserDetail theUser = getUserDetailMatching(userId);
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-            : null);
+    String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
     String[] contactIds = getContactIds(theUser.getId());
-    UserDetail[] contacts;
+    ListSlice<UserDetail> contacts;
     if (contactIds.length > 0) {
-      SearchCriteria criteria = aSearchCriteria().withDomainId(null, getUserDetail()).
-              withComponentInstanceId(instanceId).
-              withRoles(rolesIds).
-              withUserIds(contactIds).
-              withName(name).
-              build();
-      contacts = getOrganizationController().searchUsers(criteria);
+      UserDetailsSearchCriteria criteria = aSearchCriteria().
+          withComponentInstanceId(instanceId).
+          withDomainId(domainId).
+          withRoles(roleNames).
+          withResourceId(resource).
+          withUserIds(contactIds).
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
+      contacts = getOrganisationController().searchUsers(criteria);
     } else {
-      contacts = new UserDetail[0];
+      contacts = new ListSlice<UserDetail>(0, 0, 0);
     }
-    UserDetail[] paginatedUsers = paginate(contacts, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-            asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-            header(RESPONSE_HEADER_USERSIZE, contacts.length).build();
+        asWebEntity(contacts, locatedAt(usersUri))).
+        header(RESPONSE_HEADER_USERSIZE, contacts.getOriginalListSize()).build();
   }
 
   @Override
   public String getComponentId() {
     throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
-            + " instances");
+        + " instances");
   }
 
   protected static URI locatedAt(final URI uri) {
@@ -254,7 +313,7 @@ public class UserProfileResource extends RESTWebService {
   }
 
   private UserProfileEntity[] asWebEntity(final List<? extends UserDetail> allUsers,
-          final URI baseUri) {
+      final URI baseUri) {
     return UserProfileEntity.fromUsers(allUsers, baseUri);
   }
 
@@ -262,19 +321,33 @@ public class UserProfileResource extends RESTWebService {
     return UserProfileEntity.fromUser(user).withAsUri(userUri);
   }
 
+  private UserProfileExtendedEntity asWebEntity(final UserFull user, final URI userUri) {
+    return UserProfileExtendedEntity.fromUser(user).withAsUri(userUri);
+  }
+
   private UserDetail getUserDetailById(String userId) {
     UserDetail theUser = UserDetail.getById(userId);
+    checkUser(userId, theUser);
+    return theUser;
+  }
+
+  private UserFull getUserFullById(String userId) {
+    UserFull theUser = UserFull.getById(userId);
+    checkUser(userId, theUser);
+    return theUser;
+  }
+
+  private void checkUser(String userId, UserDetail theUser) {
     if (theUser == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().
-            getDomainId())) {
+    if (!theUser.isAccessAdmin() && getUserDetail().isDomainRestricted() && !theUser.getDomainId().
+        equals(getUserDetail().getDomainId())) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
-              + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
-                userId});
+          + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
+            userId});
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
-    return theUser;
   }
 
   private String[] getContactIds(String userId) {
@@ -297,35 +370,11 @@ public class UserProfileResource extends RESTWebService {
     }
   }
 
-  private UserDetail[] paginate(UserDetail[] users, String pagination) {
-    try {
-      UserDetail[] paginatedUsers;
-      if (pagination != null && !pagination.isEmpty()) {
-        String[] page = pagination.split(";");
-        int nth = Integer.valueOf(page[0]);
-        int count = Integer.valueOf(page[1]);
-        int begin = (nth - 1) * count;
-        int end = begin + count;
-        if (end > users.length) {
-          end = users.length;
-        }
-        paginatedUsers = new UserDetail[end - begin];
-        for (int i = begin, j = 0; i < end; i++, j++) {
-          paginatedUsers[j] = users[i];
-        }
-      } else {
-        paginatedUsers = users;
-      }
-      return paginatedUsers;
-    } catch (Exception ex) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
-  }
-  
   /**
-   * Gets the detail about the user that matchs the specified identifier. The identifier is a pattern
-   * that accepts either a user unique identifier or the specific word <i>me</i>. Latest means the
-   * current user of the underlying HTTP session.
+   * Gets the detail about the user that matchs the specified identifier. The identifier is a
+   * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
+   * means the current user of the underlying HTTP session.
+   *
    * @param identifier an identifier.
    * @return the detail about a user.
    */
@@ -335,5 +384,32 @@ public class UserProfileResource extends RESTWebService {
     } else {
       return getUserDetailById(identifier);
     }
+  }
+
+  /**
+   * Gets all details about the user that matchs the specified identifier. The identifier is a
+   * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
+   * means the current user of the underlying HTTP session.
+   *
+   * @param identifier an identifier.
+   * @return the detail about a user.
+   */
+  private UserFull getUserFullMatching(String identifier) {
+    if (identifier.equals("me")) {
+      return getUserFullById(getUserDetail().getId());
+    } else {
+      return getUserFullById(identifier);
+    }
+  }
+
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      paginationPage = new PaginationPage(nth, count);
+    }
+    return paginationPage;
   }
 }

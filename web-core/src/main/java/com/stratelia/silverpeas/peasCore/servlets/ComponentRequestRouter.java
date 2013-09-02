@@ -1,46 +1,56 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-import com.stratelia.silverpeas.peasCore.*;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.PeasCoreException;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import java.util.Date;
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     HttpServlet {
@@ -75,11 +85,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   public void doPost(HttpServletRequest SPrequest, HttpServletResponse response) {
 
     String destination = computeDestination(SPrequest, response);
-    SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE",
-        "response = " + response);
+    SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE", "response = " + response);
     if (!StringUtil.isDefined(destination)) {
-      destination = GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("sessionTimeout");
+      destination = GeneralPropertiesManager.getString("sessionTimeout");
     }
     redirectService(SPrequest, response, destination);
 
@@ -100,18 +108,26 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (mainSessionCtrl == null) {
       SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      return GeneralPropertiesManager.getString("sessionTimeout");
     }
+
+    // Verify that the user can login
+    try {
+      AuthenticationUserVerifierFactory
+          .getUserCanLoginVerifier(mainSessionCtrl.getCurrentUserDetail()).verify();
+    } catch (AuthenticationException e) {
+      return GeneralPropertiesManager.getString("sessionTimeout");
+    }
+
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
-        + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
+            + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
-    if (mainSessionCtrl.isAppInMaintenance() &&
-        !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "redirectAppInMaintenance");
+    if (mainSessionCtrl.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
+        isAccessAdmin()) {
+      return GeneralPropertiesManager.getString("redirectAppInMaintenance");
     }
 
     // Get the space id and the component id required by the user
@@ -139,14 +155,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     T component = this.getComponentSessionController(session, componentId);
     if (component == null) {
-      // check that the user has an acces to this component instance
+      // isUserStateValid that the user has an acces to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
             "peasCore.MSG_USER_NOT_ALLOWED", "User=" + mainSessionCtrl.getUserId()
-            + " | componentId=" + componentId + " | spaceId=" + spaceId);
-        destination = GeneralPropertiesManager.getGeneralResourceLocator()
-            .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
+                + " | componentId=" + componentId + " | spaceId=" + spaceId);
+        destination = GeneralPropertiesManager.getString("accessForbidden",
+            "/admin/jsp/accessForbidden.jsp");
         return destination;
       }
       component = setComponentSessionController(session, mainSessionCtrl,
@@ -157,17 +173,17 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         component.getIcon(), component.getSettings(), component.getLanguage());
     request.setAttribute("resources", resources);
     request.setAttribute("browseContext", new String[] {
-        component.getSpaceLabel(), component.getComponentLabel(),
-        component.getSpaceId(), component.getComponentId(),
-        component.getComponentUrl() });
-    request.setAttribute("myComponentURL", URLManager.getApplicationURL() +
-        component.getComponentUrl());
+          component.getSpaceLabel(), component.getComponentLabel(),
+          component.getSpaceId(), component.getComponentId(),
+          component.getComponentUrl() });
+    request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.
+        getComponentUrl());
 
-    if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
-        !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
+    if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function)
+        && !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
       GraphicElementFactory gef =
           (GraphicElementFactory) session
-          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+              .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       gef.setComponentId(component.getComponentId());
       gef.setHttpRequest(request);
     }
@@ -182,22 +198,33 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
             component.getSpaceId(), component.getComponentId());
       }
     }
-    
-    if (selectionProcessor.isSelectionDone(request)) {
+
+    if (selectionProcessor.isComeFromSelectionPanel(request)) {
       destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
       if (StringUtil.isDefined(destination)) {
         return destination;
       }
     }
-    
+
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
-    destination = getDestination(function, component, request);
-    
+    try {
+      destination = getDestination(function, component, request);
+
+      // Check existence of a Data Storage Quota Exception
+      QuotaErrorManager.checkQuotaErrorFromRequest(request);
+
+    } catch (DataStorageQuotaException dsqe) {
+
+      // Data Storage Quota Exception : language is required
+      dsqe.setLanguage(component.getLanguage());
+      throw dsqe;
+    }
+
     if (selectionProcessor.isSelectionAsked(destination)) {
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
     }
-    
+
     SilverTrace.info("couverture",
         "ComponentRequestRouter.computeDestination()", "couverture.MSG_RR_JSP",
         "destination = '" + destination + "'");
@@ -220,10 +247,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     SilverTrace.info("peasCore",
         "ComponentRequestRouter.updateSessionManagement",
         "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
-    SessionManager.getInstance().setLastAccess(session);
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    sessionManagement.validateSession(session.getId());
   }
 
-  // check if the user is allowed to access the required component
+  // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
     boolean isAllowed;
@@ -231,7 +260,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      isAllowed = controller.getOrganizationController().isComponentAvailable(
+      isAllowed = controller.getOrganisationController().isComponentAvailable(
           componentId, controller.getUserId());
     }
     return isAllowed;
@@ -246,28 +275,24 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       if (destination.startsWith("http") || destination.startsWith("ftp")) {
         response.sendRedirect(destination);
       } else {
-        request
-            .setAttribute(
-            "com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI",
+        request.setAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI",
             request.getRequestURI());
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
         } else {
-          SilverTrace.info("peasCore",
-              "ComponentRequestRouter.redirectService",
+          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
-              + destination + "' not found !");
+                  + destination + "' not found !");
         }
       }
     } catch (Exception e) {
       try {
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
-            SilverpeasException.ERROR,
-            "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-            + destination, e));
+                SilverpeasException.ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
+                    + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher(
             "/admin/jsp/errorpageMain.jsp").forward(request, response);
       } catch (Exception ex) {
@@ -279,12 +304,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-              + destination, e);
+                  + destination, e);
         } else {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-              + destination, e);
+                  + destination, e);
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_ERROR_PAGE_FAILED",
@@ -329,7 +354,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
     SilverTrace.info("peasCore", "ComponentRequestRouter.setComponentSessionController",
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId
-        + " | componentId=" + componentId);
+            + " | componentId=" + componentId);
     return component;
   }
 

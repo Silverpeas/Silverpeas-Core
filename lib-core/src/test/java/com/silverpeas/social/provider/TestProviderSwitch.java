@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,11 +23,6 @@
  */
 
 package com.silverpeas.social.provider;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -50,8 +45,14 @@ import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
 import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 import com.silverpeas.socialnetwork.status.SocialInformationStatus;
 import com.silverpeas.socialnetwork.status.Status;
+
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *

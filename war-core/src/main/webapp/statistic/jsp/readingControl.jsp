@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +35,7 @@
 
 <%
     //initialisation des variables
+    String currentUserId = m_MainSessionCtrl.getUserId();
     String id 			= request.getParameter("id");
     String userId 		= request.getParameter("userId");
     String url 			= request.getParameter("url");
@@ -50,8 +51,7 @@
     }
     </script>
     <%    
-    StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-    StatisticBm statisticBm =  statisticHome.create();
+    StatisticBm statisticBm =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
     
     ForeignPK foreignPK = new ForeignPK(id, componentId);
     Collection<HistoryByUser> readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType, userIds);
@@ -71,7 +71,7 @@
     	ArrayLine ligne = arrayPane.addArrayLine();
     	
     	HistoryByUser historyByUser = (HistoryByUser) it.next();
-    	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), "unknown"));
+    	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), currentUserId));
     	Date haveRead = historyByUser.getLastAccess();
     	String readingDate = "";
         if (haveRead == null) {

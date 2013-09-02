@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,9 @@ import com.silverpeas.export.EncodingException;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.DateTime;
 import java.text.ParseException;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 
 /**
  * A decoder/encoder of iCal4J dates with Silverpeas dates.
@@ -88,6 +91,7 @@ public class ICal4JDateCodec {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICalInUTC());
         } else {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICal());
+          ((net.fortuna.ical4j.model.DateTime)iCal4JDate).setTimeZone(getTimeZone(aDate));
         }
       } else if (aDate instanceof com.silverpeas.calendar.Date) {
         iCal4JDate = new net.fortuna.ical4j.model.Date(aDate.toICal());
@@ -96,5 +100,10 @@ public class ICal4JDateCodec {
       throw new EncodingException(ex.getMessage(), ex);
     }
     return iCal4JDate;
+  }
+
+  private TimeZone getTimeZone(final Datable<?> date) {
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+    return registry.getTimeZone(date.getTimeZone().getID());
   }
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -187,8 +187,15 @@ $(function () {
 			ul = "<ul class=\"attachments\">";
 			for (i = 0; i<attachments.length; i++) {
 				var attachment = attachments[i];
-				ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" target=\"_blank\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+attachment.logicalName+"</a>";
+				var label = attachment.logicalName;
+				if (attachment.title) {
+					label = attachment.title;
+				}
+				ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" target=\"_blank\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+label+"</a>";
 				ul += "<span class=\"size\">"+bytesToSize(attachment.size, 0)+"</span>";
+				if (attachment.info) {
+					ul += "<span class=\"description\">"+attachment.info+"</span>";
+				}
 				ul += "</li>";
 			}
 			ul += "</ul>";

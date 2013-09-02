@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,11 +26,12 @@ package com.silverpeas.admin.service;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 public interface UserService {
   UserDetail findUser(String userId) throws AdminException;
   String registerUser(String firstName, String lastName, String email, String domainId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId, String accessLevel) throws AdminException;
+  String registerUser(String firstName, String lastName, String email, String domainId, UserAccessLevel accessLevel) throws AdminException;
   void migrateUserToDomain(UserDetail userDetail, String targetDomainId) throws AdminException;
   void updateUser(UserDetail userDetail) throws AdminException;
 }

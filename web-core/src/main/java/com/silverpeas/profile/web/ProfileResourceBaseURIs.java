@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,7 @@ package com.silverpeas.profile.web;
 
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -89,13 +90,19 @@ public final class ProfileResourceBaseURIs {
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
-  
-  public static URI computeUsersUriOfGroupById(String groupId) {
+
+  public static URI computeUsersUriOfGroupById(final URI groupUri, String groupId) {
     try {
-      return new URI(USERS_BASE_URI + "?group=" + groupId);
+      return new URI(getUsersBaseUriFromGroupUri(groupUri) + "?group=" + groupId);
     } catch (URISyntaxException ex) {
       Logger.getLogger(ProfileResourceBaseURIs.class.getName()).log(Level.SEVERE, null, ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
+  }
+
+  private static String getUsersBaseUriFromGroupUri(URI groupUri) {
+    String groupUriAsString = groupUri.toString();
+    return groupUriAsString.substring(0, groupUriAsString.indexOf(GROUPS_BASE_URI)) +
+        USERS_BASE_URI;
   }
 }

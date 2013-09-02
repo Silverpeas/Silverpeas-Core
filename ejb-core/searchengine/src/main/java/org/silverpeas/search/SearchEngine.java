@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,7 @@
 package org.silverpeas.search;
 
 import java.util.Set;
+
 import org.silverpeas.search.searchEngine.model.ParseException;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -34,6 +35,9 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 public interface SearchEngine {
   /**
    * Search the index for the required documents.
+   * @param query
+   * @return
+   * @throws ParseException  
    */
   PlainSearchResult search(QueryDescription query) throws ParseException;
 

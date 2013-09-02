@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,23 +20,6 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItem;
-
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.PagesContext;
@@ -44,12 +27,12 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.pdc.web.AxisValueCriterion;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.containerManager.ContainerInterface;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
@@ -88,6 +71,19 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
@@ -138,13 +134,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String destination = "";
     // controller to inform the request
     try {
-      PdcSubscriptionHelper.init(pdcSC, request);
-      if (function.startsWith("PDCSubscription") || function.startsWith("addSubscription")
-          || function.startsWith("updateSubscription")) {
-        // Processing of the Pdc subscriptions actions
-        destination = processPDCSubscriptionActions(function, pdcSC, request);
-
-      } else if (function.startsWith("ToSearchToSelect")
+      if (function.startsWith("ToSearchToSelect")
           || function.startsWith("ValidateSelectedObjects")) {
 
         // Processing of the Pdc selection actions
@@ -554,6 +544,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         } else {
           searchParameters =
               PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, false);
+        }
+
+        // Filters by the axis' values on the PdC the content to seek should be positioned.
+        String axisValues = request.getParameter("AxisValueCouples");
+        List<AxisValueCriterion> axisValueCriteria = AxisValueCriterion.fromFlattenedAxisValues(
+            axisValues);
+        for (AxisValueCriterion anAxisValueCriterion : axisValueCriteria) {
+          pdcSC.getSearchContext().addCriteria(anAxisValueCriterion);
         }
 
         // Optional. Managing direct search on one axis.
@@ -1399,7 +1397,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         (IGlobalSilverContentProcessor) BasicDaoFactory.getBean(contentProcessorId);
 
     for (SilverContentInterface sci : silverContentTempo) {
-      UserDetail creatorDetail = pdcSC.getOrganizationController().getUserDetail(sci.getCreatorId());
+      UserDetail creatorDetail = pdcSC.getOrganisationController().getUserDetail(sci.getCreatorId());
 
       GlobalSilverContent gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(
           instanceId, pdcSC));
@@ -1514,7 +1512,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // recherche PDC Uniquement
     String spaceId = "";
     ComponentInstLight componentInst =
-        pdcSC.getOrganizationController().getComponentInstLight(componentId);
+        pdcSC.getOrganisationController().getComponentInstLight(componentId);
     if (componentInst != null) {
       spaceId = componentInst.getDomainFatherId();
     }
@@ -1550,25 +1548,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
 
     return res;
-  }
-
-  private String processPDCSubscriptionActions(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    String destination = "";
-
-    if (function.startsWith("PDCSubscription")) {
-      clearUserChoices(pdcSC);
-      PdcSubscriptionHelper.loadSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-    } else if (function.startsWith("addSubscription")) {
-      PdcSubscriptionHelper.addSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-
-    } else if (function.startsWith("updateSubscription")) {
-      PdcSubscriptionHelper.updateSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-    }
-    return destination;
   }
 
   private String processPDCSelectionActions(String function, PdcSearchSessionController pdcSC,

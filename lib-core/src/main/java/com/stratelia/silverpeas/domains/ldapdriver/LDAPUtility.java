@@ -5,20 +5,11 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-<<<<<<< HEAD
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
-=======
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
->>>>>>> master
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -27,10 +18,23 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.google.common.base.Charsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.SynchroReport;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
@@ -41,19 +45,6 @@ import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.controls.LDAPSortControl;
 import com.novell.ldap.controls.LDAPSortKey;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
@@ -98,8 +89,7 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public LDAPConnection getConnection(String connectionId)
-      throws AdminException {
+  static public LDAPConnection getConnection(String connectionId) {
     return (connectInfos.get(connectionId)).connection;
   }
 
@@ -112,8 +102,7 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public boolean recoverConnection(String connectionId, LDAPException ex)
-      throws AdminException {
+  static public boolean recoverConnection(String connectionId, LDAPException ex) {
     int nbRetry = 0;
     boolean reOpened = false;
 
@@ -177,12 +166,9 @@ public class LDAPUtility {
     }
     try {
       valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
-      byte[] passwd = null;
-      if (StringUtil.isDefined(driverSettings.getLDAPAccessPasswd())) {
-        passwd = driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8);
-      }
-      valret.
-          bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), passwd);
+      byte[] passwd = driverSettings.getLDAPAccessPasswd();
+      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
+          passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -192,17 +178,14 @@ public class LDAPUtility {
         }
       } catch (LDAPException ee) {
         SilverTrace.error("admin", "LDAPUtility.openConnection", "admin.EX_ERR_LDAP_GENERAL",
-            "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId
-            + " Error LDAP #" + Integer.toString(e.getResultCode()) + " "
-            + e.getLDAPErrorMessage(), ee);
+            "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId + " Error LDAP #"
+            + e.getResultCode() + " " + e.getLDAPErrorMessage(), ee);
       }
       throw new AdminException("LDAPUtility.openConnection",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "Host : "
-          + driverSettings.getLDAPHost() + " Port : "
-          + Integer.toString(driverSettings.getLDAPPort())
-          + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN()
-          + " ProtocolVer : "
-          + Integer.toString(driverSettings.getLDAPProtocolVer()), e);
+          + driverSettings.getLDAPHost() + " Port : " + driverSettings.getLDAPPort()
+          + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN() + " ProtocolVer : "
+          + driverSettings.getLDAPProtocolVer(), e);
     }
   }
 
@@ -619,8 +602,8 @@ public class LDAPUtility {
       // order. BUT most LDAP server can't performs this type of order (like
       // Active Directory)
       // So, it may be ordered in the opposite way....
-      AbstractLDAPTimeStamp firstVal =
-          driverSettings.newLDAPTimeStamp(getFirstAttributeValue(theEntries[0], timeStampVar));
+      AbstractLDAPTimeStamp firstVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(
+          theEntries[0], timeStampVar));
       AbstractLDAPTimeStamp lastVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(
           theEntries[theEntries.length - 1], timeStampVar));
       if (firstVal.compareTo(lastVal) >= 0) {

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,9 +36,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class Util {
 
   private static final ResourceLocator formIcons = new ResourceLocator(
-      "com.silverpeas.form.settings.formIcons", "");
+      "org.silverpeas.form.settings.formIcons", "");
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.form.settings.form", "");
+      "org.silverpeas.form.settings.form", "");
   private static final String path = URLManager.getApplicationURL();
   private static ResourceLocator generalMessage;
   private static ResourceLocator message;

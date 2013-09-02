@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -80,7 +80,7 @@ public class DidYouMeanSearcher {
       Analyzer analyzer = new IndexManager().getAnalyzer(queryDescription.getRequestedLanguage());
       QueryParser queryParser = new QueryParser(Version.LUCENE_36, field, analyzer);
 
-      Query parsedQuery = null;
+      Query parsedQuery;
       try {
         parsedQuery = queryParser.parse(queryDescription.getQuery());
       } catch (ParseException exception) {
@@ -107,7 +107,7 @@ public class DidYouMeanSearcher {
             // create a file object with given path
             File file = new File(path + "Spell");
 
-            if (file != null && file.exists()) {
+            if (file.exists()) {
 
               // create a spellChecker with the file object
               FSDirectory directory = FSDirectory.open(file);
@@ -163,11 +163,9 @@ public class DidYouMeanSearcher {
 
     }
 
-    String[] suggestions =
-        { currentSentence.toString().replaceAll("\\+", "").replaceAll("-", "")
-        .replaceAll("  ", " ").trim() };
-
-    return suggestions;
+    return new String[]{
+        currentSentence.toString().replaceAll("\\+", "").replaceAll("-", "").replaceAll("  ", " ")
+            .trim()};
 
   }
 

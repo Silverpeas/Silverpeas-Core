@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,29 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.stratelia.webactiv.beans.admin.dao;
 
-import com.google.common.collect.Lists;
-import com.silverpeas.components.model.AbstractTestDao;
-import org.junit.Test;
-import org.junit.internal.matchers.IsCollectionContaining;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
-
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.components.model.AbstractTestDao;
+
+import com.stratelia.webactiv.util.DBUtil;
+
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 /**
  *
  * @author ehugonnet
  */
-@RunWith(BlockJUnit4ClassRunner.class)
 public class ComponentDAOTest extends AbstractTestDao {
 
   public ComponentDAOTest() {
@@ -58,33 +54,33 @@ public class ComponentDAOTest extends AbstractTestDao {
 
   /**
    * Test of getAllAvailableComponentIds method, of class ComponentDAO.
+   * @throws Exception 
    */
   @Test
   public void testGetAllAvailableComponentIdsForUser() throws Exception {
     Connection con = null;
     try {
       con = getConnection().getConnection();
-      List<String> groupIds = Lists.newArrayList();
+      List<String> groupIds = new ArrayList<String>();
       int userId = 0;
       List<String> result = ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId);
       assertNotNull(result);
       assertEquals(17, result.size());
     } finally {
-      if (con != null) {
-        con.close();
-      }
+      DBUtil.close(con);
     }
   }
 
   /**
    * Test of getAllAvailableComponentIds method, of class ComponentDAO.
+   * @throws Exception 
    */
   @Test
   public void testGetAllAvailableComponentIdsForUserAndGroups() throws Exception {
     Connection con = null;
     try {
       con = getConnection().getConnection();
-      List<String> groupIds = Lists.newArrayList();
+      List<String> groupIds = new ArrayList<String>();
       int userId = 0;
       List<String> result = ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId, null);
       assertNotNull(result);
@@ -99,11 +95,9 @@ public class ComponentDAOTest extends AbstractTestDao {
       result = ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId, "kmelia");
       assertNotNull(result);
       assertEquals(1, result.size());
-      assertThat(result, IsCollectionContaining.hasItem("kmelia9"));
-    } finally {
-      if (con != null) {
-        con.close();
-      }
+      assertThat(result, containsInAnyOrder("kmelia9"));
+    } finally {      
+      DBUtil.close(con);
     }
   }
 
@@ -116,20 +110,23 @@ public class ComponentDAOTest extends AbstractTestDao {
       List<String> result = ComponentDAO.getComponentIdsInSpace(con, spaceId);
       assertNotNull(result);
       assertEquals("This space components should be present", 2, result.size());
-      assertThat(result, IsCollectionContaining.hasItems("blog10", "kmelia11"));
+      assertThat(result, containsInAnyOrder("blog10", "kmelia11"));
       assertThat(result, contains("blog10", "kmelia11"));
 
       spaceId = 2;
       result = ComponentDAO.getComponentIdsInSpace(con, spaceId);
       assertNotNull(result);
       assertEquals("Subspace components should not be present", 2, result.size());
-      assertThat(result, IsCollectionContaining.hasItems("questionReply12", "yellowpages19"));
-      assertThat(result, contains("questionReply12", "yellowpages19"));
-      
-    } finally {
-      if (con != null) {
-        con.close();
-      }
+      assertThat(result, containsInAnyOrder("questionReply12", "yellowpages19"));
+      assertThat(result, contains("questionReply12", "yellowpages19"));      
+    } finally {      
+      DBUtil.close(con);
     }
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

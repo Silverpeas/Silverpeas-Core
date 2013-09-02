@@ -5,20 +5,11 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-<<<<<<< HEAD
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
-=======
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
->>>>>>> master
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -94,7 +85,7 @@ abstract public class AbstractLDAPGroup {
   /**
    * Return all groups
    *
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @return all groups
    * @throws AdminException if an error occur during LDAP operations
    */
@@ -126,7 +117,7 @@ abstract public class AbstractLDAPGroup {
    * Return all groups found in the tree that are childs of parentId group or return root groups if
    * parentId is null or empty
    *
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @param parentId the parent group Id to start search, if null or empty, root groups are returned
    * @return all founded groups
    * @throws AdminException if an error occur during LDAP operations
@@ -172,7 +163,6 @@ abstract public class AbstractLDAPGroup {
         groupMerged.add(groupsFounded[cpt - 1]);
         // Convert it into Group
         groupsProcessed[i] = translateGroups(lds, groupMerged);
-        groupSplitted = false;
         groupMerged.clear();
       } else {
         groupsProcessed[i] = translateGroup(lds, groupsFounded[i]);
@@ -229,7 +219,7 @@ abstract public class AbstractLDAPGroup {
    * Return a Group object filled with the infos of the group having ID = id NOTE : the DomainID and
    * the ID are not set. THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
    *
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @param id the group id (most case : LDAP DN)
    * @return the group object
    * @throws AdminException if an error occur during LDAP operations or if the group is not found
@@ -247,8 +237,7 @@ abstract public class AbstractLDAPGroup {
         throw e;
       }
     }
-    Group groupInfos = translateGroup(lds, theEntry);
-    return groupInfos;
+    return translateGroup(lds, theEntry);
   }
 
   public Group getGroupByName(String lds, String name) throws AdminException {
@@ -410,7 +399,7 @@ abstract public class AbstractLDAPGroup {
    * Return a set of LDAP entries that are the child groups of a parent one THIS FUNCTION THROW
    * EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
    *
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @param parentId Id of the parent group
    * @return all founded child groups or root groups if parentId is equal to null or is empty
    * @throws AdminException if an error occur during LDAP operations
@@ -422,7 +411,7 @@ abstract public class AbstractLDAPGroup {
    * Return the LDAP entry of the specified group Id THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A
    * SYNCHRO IS RUNNING)
    *
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @param groupId group's Id
    * @return group's entry
    * @throws AdminException if an error occur during LDAP operations

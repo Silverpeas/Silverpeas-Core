@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,11 @@
 
 package org.silverpeas.admin.domain.repository;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.inject.Named;
-import javax.sql.DataSource;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,8 +36,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 @Repository
 @Named("sqlInternalDomainRepository")
@@ -117,10 +118,15 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     return dropStatement.toString();
   }
 
-  private String generateUserTableCreateStatement(String domainName) throws FileNotFoundException,
-      IOException {
+  private String generateUserTableCreateStatement(String domainName) throws IOException {
     Properties props = new Properties();
-    props.load(new FileInputStream(FileRepositoryManager.getDomainPropertiesPath(domainName)));
+    FileInputStream fis = null;
+    try {
+      fis = new FileInputStream(FileRepositoryManager.getDomainPropertiesPath(domainName));
+      props.load(fis);
+    } finally {
+      IOUtils.closeQuietly(fis);
+    }
     int numberOfColumns = Integer.parseInt(props.getProperty("property.Number"));
 
     StringBuilder createStatement = new StringBuilder();
@@ -131,21 +137,29 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     // Common columns
     createStatement.append("id int NOT NULL , firstName varchar(100) NULL , ");
     createStatement.append("lastName varchar(100) NULL ," + "email varchar(200) NULL , ");
-    createStatement.append("login varchar(50) NOT NULL ," + "password varchar(32) NULL , ");
+    createStatement.append("login varchar(50) NOT NULL ," + "password varchar(123) NULL , ");
     createStatement.append("passwordValid char(1) NULL , ");
 
     // Domain specific columns
     String specificColumnName;
     String specificColumnType;
+    int specificColumnMaxLength;
     for (int i = 1; i <= numberOfColumns; i++) {
       specificColumnType = props.getProperty("property_" + String.valueOf(i) + ".Type");
       specificColumnName = props.getProperty("property_" + String.valueOf(i) + ".MapParameter");
+      String maxLengthPropertyValue =
+          props.getProperty("property_" + String.valueOf(i) + ".MaxLength");
+      if (StringUtil.isInteger(maxLengthPropertyValue)) {
+        specificColumnMaxLength = Integer.parseInt(maxLengthPropertyValue);
+      } else {
+        specificColumnMaxLength = DomainProperty.DEFAULT_MAX_LENGTH;
+      }
 
       createStatement.append(specificColumnName);
       if ("BOOLEAN".equals(specificColumnType)) {
         createStatement.append(" int NOT NULL DEFAULT (0) ");
       } else {
-        createStatement.append(" varchar(50) NULL ");
+        createStatement.append(" varchar(").append(specificColumnMaxLength).append(") NULL ");
       }
 
       if (i != numberOfColumns) {

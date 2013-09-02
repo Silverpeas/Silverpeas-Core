@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
 * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
 * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
 * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
 * text describing the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -23,15 +23,27 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.domains.DomainDriverFactory;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
-import com.stratelia.webactiv.organization.*;
+import com.stratelia.webactiv.organization.AdminPersistenceException;
+import com.stratelia.webactiv.organization.DomainRow;
+import com.stratelia.webactiv.organization.GroupRow;
+import com.stratelia.webactiv.organization.KeyStoreRow;
+import com.stratelia.webactiv.organization.OrganizationSchema;
+import com.stratelia.webactiv.organization.OrganizationSchemaPool;
+import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DomainDriverManager extends AbstractDomainDriver {
@@ -81,13 +93,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-* *
-* Create a new User.
-*
-* @param user
-* @return
-* @throws Exception
-*/
+   * Create a new User.
+   *
+   * @param user
+   * @return
+   * @throws Exception
+   */
   public String createUser(UserFull user) throws Exception {
     try {
       // Get a DomainDriver instance
@@ -236,102 +247,86 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
   }
 
-  @Override
-  public UserFull getUserFull(String userId) throws Exception {
-    UserFull uf = null;
+  private <T extends UserDetail> T loadUserEntity(String userId, Class<T> userModelClass)
+      throws Exception {
+    boolean isUserFull = userModelClass == UserFull.class;
+    UserDetail userModel = null;
     try {
       // Set the OrganizationSchema (if not already done)
       getOrganizationSchema();
+
       // Get the user information
       UserRow ur = getOrganization().user.getUser(idAsInt(userId));
       if (ur == null) {
         throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
-                "admin.EX_ERR_USER_NOT_FOUND", "user Id: '" + userId + "'");
+            "admin.EX_ERR_USER_NOT_FOUND", "user Id: '" + userId + "'");
       }
+
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(ur.domainId);
+
       // Get User detail from specific domain
       try {
-        uf = domainDriver.getUserFull(ur.specificId);
+        userModel = isUserFull ? domainDriver.getUserFull(ur.specificId) :
+            domainDriver.getUser(ur.specificId);
       } catch (AdminException e) {
-        SilverTrace.error("admin", "DomainDriverManager.getUser",
-                "admin.MSG_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" + ur.domainId
-                + "'", e);
-        uf = new UserFull(domainDriver);
-        uf.setLogin(ur.login);
-        uf.setFirstName(ur.firstName);
-        uf.setLastName(ur.lastName);
-        uf.seteMail(ur.eMail);
+        SilverTrace.error("admin", "DomainDriverManager.getUser", "admin.MSG_ERR_GET_USER",
+            "user Id: '" + userId + "', domain Id: '" + ur.domainId + "'", e);
+        userModel = isUserFull ? new UserFull(domainDriver) : new UserDetail();
+        userModel.setFirstName(ur.firstName);
+        userModel.setLastName(ur.lastName);
+        userModel.seteMail(ur.eMail);
       }
 
       // Fill silverpeas info of user details
-      uf.setLogin(ur.login);
-      uf.setId(userId);
-      uf.setSpecificId(ur.specificId);
-      uf.setDomainId(idAsString(ur.domainId));
-      uf.setAccessLevel(ur.accessLevel);
-      uf.setLoginQuestion(ur.loginQuestion);
-      uf.setLoginAnswer(ur.loginAnswer);
+      userModel.setLogin(ur.login);
+      userModel.setId(userId);
+      userModel.setSpecificId(ur.specificId);
+      userModel.setDomainId(idAsString(ur.domainId));
+      userModel.setAccessLevel(UserAccessLevel.fromCode(ur.accessLevel));
+      userModel.setCreationDate(ur.creationDate);
+      userModel.setSaveDate(ur.saveDate);
+      userModel.setVersion(ur.version);
+      userModel.setTosAcceptanceDate(ur.tosAcceptanceDate);
+      userModel.setLastLoginDate(ur.lastLoginDate);
+      userModel.setNbSuccessfulLoginAttempts(ur.nbSuccessfulLoginAttempts);
+      userModel.setLastLoginCredentialUpdateDate(ur.lastLoginCredentialUpdateDate);
+      userModel.setExpirationDate(ur.expirationDate);
+      userModel.setState(UserState.from(ur.state));
+      userModel.setStateSaveDate(ur.stateSaveDate);
+
+      if (isUserFull) {
+        userModel.setLoginQuestion(ur.loginQuestion);
+        userModel.setLoginAnswer(ur.loginAnswer);
+      }
+
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" + userId + "'", e);
+          "admin.EX_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" + userId + "'", e);
     } finally {
       releaseOrganizationSchema();
     }
-    return uf;
+    return (T) userModel;
+  }
+
+  @Override
+  public UserFull getUserFull(String userId) throws Exception {
+      return loadUserEntity(userId, UserFull.class);
+  }
+
+  /**
+   *
+   * @param userId
+   * @return
+   * @throws Exception
+   */
+  public UserDetail getUserDetail(String userId) throws Exception {
+    return loadUserEntity(userId, UserDetail.class);
   }
 
   @Override
   public String[] getUserMemberGroupIds(String userId) throws Exception {
     return ArrayUtil.EMPTY_STRING_ARRAY;
-  }
-
-  /**
-* @param userId
-* @return User
-* @throws Exception
-*/
-  public UserDetail getUserDetail(String userId) throws Exception {
-    UserDetail ud = null;
-    try {
-      // Set the OrganizationSchema (if not already done)
-      getOrganizationSchema();
-
-      // Get the user information
-      UserRow ur = getOrganization().user.getUser(idAsInt(userId));
-      if (ur == null) {
-        throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
-                "admin.EX_ERR_USER_NOT_FOUND", "user Id: '" + userId + "'");
-      }
-
-      // Get a DomainDriver instance
-      DomainDriver domainDriver = this.getDomainDriver(ur.domainId);
-
-      // Get User detail from specific domain
-      try {
-        ud = domainDriver.getUser(ur.specificId);
-      } catch (AdminException e) {
-        SilverTrace.error("admin", "DomainDriverManager.getUser", "admin.MSG_ERR_GET_USER",
-                "user Id: '" + userId + "', domain Id: '" + ur.domainId + "'", e);
-        ud = new UserDetail();
-        ud.setLogin(ur.login);
-        ud.setFirstName(ur.firstName);
-        ud.setLastName(ur.lastName);
-        ud.seteMail(ur.eMail);
-      }
-
-      // Fill silverpeas info of user details
-      ud.setId(userId);
-      ud.setSpecificId(ur.specificId);
-      ud.setDomainId(idAsString(ur.domainId));
-      ud.setAccessLevel(ur.accessLevel);
-    } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" + userId + "'", e);
-    } finally {
-      releaseOrganizationSchema();
-    }
-    return ud;
   }
 
   /**
@@ -909,12 +904,32 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return getDomainDriver(idAsInt(domainId)).getDriverActions();
   }
 
+  public String getNextDomainId() throws Exception {
+    try {
+      startTransaction(false);
+      int domainId = getOrganization().domain.getNextId();
+      this.commit();
+      return idAsString(domainId);
+    } catch (AdminException e) {
+      try {
+        rollback();
+      } catch (Exception e1) {
+        SilverTrace
+            .error("admin", "DomainDriverManager.getNextDomainId", "root.EX_ERR_ROLLBACK", e1);
+      }
+      throw new AdminException("DomainDriverManager.getNextDomainId", SilverpeasException.ERROR,
+          "admin.EX_ERR_ADD_DOMAIN", e);
+    } finally {
+      releaseOrganizationSchema();
+    }
+  }
+
   public String createDomain(Domain theDomain) throws Exception {
     try {
       startTransaction(false);
 
       DomainRow dr = new DomainRow();
-      dr.id = -1;
+      dr.id = (StringUtil.isInteger(theDomain.getId())) ? Integer.valueOf(theDomain.getId()) : -1;
       dr.name = theDomain.getName();
       dr.description = theDomain.getDescription();
       dr.className = theDomain.getDriverClassName();
@@ -926,7 +941,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Create domain
       getOrganization().domain.createDomain(dr);
       this.commit();
-      LoginPasswordAuthentication.initDomains();
 
       return idAsString(dr.id);
     } catch (AdminException e) {
@@ -962,7 +976,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         domainDriverInstances.remove(theDomain.getId());
       }
       this.commit();
-      LoginPasswordAuthentication.initDomains();
 
       return theDomain.getId();
     } catch (AdminException e) {
@@ -990,7 +1003,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         domainDriverInstances.remove(domainId);
       }
       this.commit();
-      LoginPasswordAuthentication.initDomains();
 
       return domainId;
     } catch (AdminException e) {
@@ -1239,7 +1251,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
     return userIndexation;
   }
-  
+
   @Override
   public void resetPassword(UserDetail user, String password) throws Exception {
     try {

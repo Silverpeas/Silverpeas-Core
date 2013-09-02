@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
 /**
@@ -30,16 +26,14 @@ package com.stratelia.webactiv.util;
  */
 public class JNDINames {
 
-  /********************************** JNDI names for EJBs Home ************************************/
+  /**
+   * ******************************** JNDI names for EJBs Home ***********************************
+   */
   public static final String CLIPBOARD_EJBHOME;
   public static final String NODEBM_EJBHOME;
-  public static final String NODE_EJBHOME;
-  public static final String COMMENT_EJBHOME;
   public static final String KMELIABM_EJBHOME;
   public static final String YELLOWPAGESBM_EJBHOME;
-  public static final String PUBLICATION_EJBHOME;
   public static final String PUBLICATIONBM_EJBHOME;
-  public static final String CONTACT_EJBHOME;
   public static final String CONTACTBM_EJBHOME;
   public static final String FAVORITBM_EJBHOME;
   public static final String SUBSCRIBEBM_EJBHOME;
@@ -55,12 +49,9 @@ public class JNDINames {
   public static final String ANSWERBM_EJBHOME;
   public static final String TOOLBOXBM_EJBHOME;
   public static final String SURVEYBM_EJBHOME;
-  public static final String PERSONALIZATIONBM_EJBHOME;
   public static final String QUIZZBM_EJBHOME;
   public static final String SCOREBM_EJBHOME;
   public static final String QUESTIONCONTAINERBM_EJBHOME;
-  public static final String ATTACHMENT_EJBHOME;
-  public static final String VERSIONING_EJBHOME;
   public static final String TASKMBM_EJBHOME;
   public static final String COORDINATESBM_EJBHOME;
   public static final String CONNECTEURJDBC_EJBHOME;
@@ -94,10 +85,14 @@ public class JNDINames {
   public static final String NOTATIONBM_EJBHOME;
   public static final String CLASSIFIEDSBM_EJBHOME;
   public static final String WEBPUBMANAGER_EJBHOME;
-  /********************************** JNDI names for JMS QUEUE ************************************/
+  /**
+   * ******************************** JNDI names for JMS QUEUE ***********************************
+   */
   public static final String SILVERSTATISTICS_JMS_QUEUE;
   public static final String SILVERSTATISTICS_JMS_FACTORY;
-  /********************************** JNDI names for Data Sources ************************************/
+  /**
+   * ******************************** JNDI names for Data Sources ***********************************
+   */
   public static final String SILVERPEAS_DATASOURCE;
   public static final String PUBLICATION_DATASOURCE;
   public static final String INTEREST_CENTER_DATASOURCE;
@@ -150,62 +145,61 @@ public class JNDINames {
   public static final String DATAWARNING_DATASOURCE;
   public static final String WIKI_DATASOURCE;
   public static final String DIRECT_DATASOURCE;
-  /********************************** JNDI names for other resources ************************************/
+  /**
+   * ******************************** JNDI names for other resources ***********************************
+   */
   public static final String MAIL_SESSION;
-  /******************************* JNDI names of application properties ************************************/
+  /**
+   * ***************************** JNDI names of application properties ***********************************
+   */
   public static final String USE_CATALOG_EJB;
   public static final String SECURITY_ADAPTER_CLASSNAME;
   public static final String SEND_CONFIRMATION_MAIL;
   public static final String JMS_FACTORY;
   public static final String JMS_QUEUE;
   public static final String JMS_HEADER_CHANNEL;
+  public static final String NOTIF_API_JMS;
 
   static {
-    ResourceLocator rs = new ResourceLocator("com.stratelia.webactiv.util.jndi", "");
+    ResourceLocator rs = new ResourceLocator("org.silverpeas.util.jndi", "");
 
-    CLIPBOARD_EJBHOME = rs.getString("CLIPBOARD_EJBHOME", "ejb/ClipboardBm");
-    NODEBM_EJBHOME = rs.getString("NODEBM_EJBHOME", "ejb/NodeBm");
-    NODE_EJBHOME = rs.getString("NODE_EJBHOME", "ejb/Node");
-    COMMENT_EJBHOME = rs.getString("COMMENT_EJBHOME", "ejb/Comment");
-    KMELIABM_EJBHOME = rs.getString("KMELIABM_EJBHOME", "ejb/KmeliaBm");
-    YELLOWPAGESBM_EJBHOME = rs.getString("YELLOWPAGESBM_EJBHOME", "ejb/YellowpagesBm");
-    PUBLICATION_EJBHOME = rs.getString("PUBLICATION_EJBHOME", "ejb/Publication");
-    PUBLICATIONBM_EJBHOME = rs.getString("PUBLICATIONBM_EJBHOME", "ejb/PublicationBm");
-    CONTACT_EJBHOME = rs.getString("CONTACT_EJBHOME", "ejb/Contact");
-    CONTACTBM_EJBHOME = rs.getString("CONTACTBM_EJBHOME", "ejb/ContactBm");
-    FAVORITBM_EJBHOME = rs.getString("FAVORITBM_EJBHOME", "ejb/FavoritBm");
+    CLIPBOARD_EJBHOME = rs.getString("CLIPBOARD_EJBHOME", "silverpeas/Clipboard/local");
+    NODEBM_EJBHOME = rs.getString("NODEBM_EJBHOME", "silverpeas/Node/local");
+    KMELIABM_EJBHOME = rs.getString("KMELIABM_EJBHOME", "silverpeas/Kmelia/local");
+    YELLOWPAGESBM_EJBHOME = rs.getString("YELLOWPAGESBM_EJBHOME", "silverpeas/Yellowpages/local");
+    PUBLICATIONBM_EJBHOME = rs.getString("PUBLICATIONBM_EJBHOME", "silverpeas/Publication/local");
+    CONTACTBM_EJBHOME = rs.getString("CONTACTBM_EJBHOME", "silverpeas/ContactBm/local");
+    FAVORITBM_EJBHOME = rs.getString("FAVORITBM_EJBHOME", "silverpeas/Favorit/local");
     SUBSCRIBEBM_EJBHOME = rs.getString("SUBSCRIBEBM_EJBHOME", "ejb/SubscribeBm");
-    STATISTICBM_EJBHOME = rs.getString("STATISTICBM_EJBHOME", "ejb/StatisticBm");
+    STATISTICBM_EJBHOME = rs.getString("STATISTICBM_EJBHOME", "silverpeas/Statistics/local");
     NEWSBM_EJBHOME = rs.getString("NEWSBM_EJBHOME", "ejb/NewsBm");
     QUICKINFOBM_EJBHOME = rs.getString("QUICKINFOBM_EJBHOME", "ejb/QuickInfoBm");
-    ALMANACHBM_EJBHOME = rs.getString("ALMANACHBM_EJBHOME", "ejb/AlmanachBm");
+    ALMANACHBM_EJBHOME = rs.getString("ALMANACHBM_EJBHOME", "silverpeas/Almanach/local");
     AGENDABM_EJBHOME = rs.getString("AGENDABM_EJBHOME", "ejb/AgendaBm");
     CALENDARBM_EJBHOME = rs.getString("CALENDARBM_EJBHOME", "ejb/CalendarBm");
     POLLBM_EJBHOME = rs.getString("POLLBM_EJBHOME", "ejb/PollingStationBm");
     QUESTIONBM_EJBHOME = rs.getString("QUESTIONBM_EJBHOME", "ejb/QuestionBm");
-    QUESTIONRESULTBM_EJBHOME = rs.getString("QUESTIONRESULTBM_EJBHOME", "ejb/QuestionResultBm");
-    ANSWERBM_EJBHOME = rs.getString("ANSWERBM_EJBHOME", "ejb/AnswerBm");
+    QUESTIONRESULTBM_EJBHOME = rs.getString("QUESTIONRESULTBM_EJBHOME",
+        "silverpeas/QuestionResult/local");
+    ANSWERBM_EJBHOME = rs.getString("ANSWERBM_EJBHOME", "silverpeas/Answer/local");
     TOOLBOXBM_EJBHOME = rs.getString("TOOLBOXBM_EJBHOME", "ejb/ToolBoxBm");
     SURVEYBM_EJBHOME = rs.getString("SURVEYBM_EJBHOME", "ejb/SurveyBm");
-    PERSONALIZATIONBM_EJBHOME = rs.getString("PERSONALIZATIONBM_EJBHOME", "ejb/PersonalizationBm");
     QUIZZBM_EJBHOME = rs.getString("QUIZZBM_EJBHOME", "ejb/QuizzBm");
     SCOREBM_EJBHOME = rs.getString("SCOREBM_EJBHOME", "ejb/ScoreBm");
     QUESTIONCONTAINERBM_EJBHOME = rs.getString("QUESTIONCONTAINERBM_EJBHOME",
-        "ejb/QuestionContainerBm");
-    ATTACHMENT_EJBHOME = rs.getString("ATTACHMENT_EJBHOME", "ejb/Attachment");
-    VERSIONING_EJBHOME = rs.getString("VERSIONING_EJBHOME", "ejb/Versioning");
+        "silverpeas/QuestionContainer/local");
     TASKMBM_EJBHOME = rs.getString("TASKMBM_EJBHOME", "ejb/TaskmBm");
-    COORDINATESBM_EJBHOME = rs.getString("COORDINATESBM_EJBHOME", "ejb/CoordinatesBm");
-    GALLERYBM_EJBHOME = rs.getString("GALLERYBM_EJBHOME", "ejb/GalleryBm");
+    COORDINATESBM_EJBHOME = rs.getString("COORDINATESBM_EJBHOME", "silverpeas/Coordinates/local");
+    GALLERYBM_EJBHOME = rs.getString("GALLERYBM_EJBHOME", "silverpeas/Gallery/local");
     CONNECTEURJDBC_EJBHOME = rs.getString("CONNECTEURJDBC_EJBHOME", "ejb/ConnecteurJDBCBm");
     SILVERSTATISTICS_EJBHOME = rs.getString("SILVERSTATISTICS_EJBHOME", "ejb/SilverStatistics");
-    INTEREST_CENTER_EJBHOME = rs.getString("INTEREST_CENTER_EJBHOME", "ejb/InterestCenter");
-    PDC_SUBSCRIPTION_EJBHOME = rs.getString("PDC_SUBSCRIPTION_EJBHOME", "ejb/pdcSubscription");
-    FORUMSBM_EJBHOME = rs.getString("FORUMSBM_EJBHOME", "ejb/ForumsBM");
+    INTEREST_CENTER_EJBHOME = rs.getString("INTEREST_CENTER_EJBHOME", "silverpeas/InterestCenter/local");
+    PDC_SUBSCRIPTION_EJBHOME = rs.getString("PDC_SUBSCRIPTION_EJBHOME", "silverpeas/PdcSubscription/local");
+    FORUMSBM_EJBHOME = rs.getString("FORUMSBM_EJBHOME", "silverpeas/Forums/local");
     INDEXBM_EJBHOME = rs.getString("INDEXBM_EJBHOME", "ejb/IndexEngineBm");
     SEARCHBM_EJBHOME = rs.getString("SEARCHBM_EJBHOME", "ejb/SearchEngineBm");
     BOOKMARKBM_EJBHOME = rs.getString("BOOKMARKBM_EJBHOME", "ejb/BookmarkBm");
-    WEBSITESBM_EJBHOME = rs.getString("WEBSITESBM_EJBHOME", "ejb/webSitesBm");
+    WEBSITESBM_EJBHOME = rs.getString("WEBSITESBM_EJBHOME", "silverpeas/webSites/local");
     FORMDESIGNERBM_EJBHOME = rs.getString("FORMDESIGNERBM_EJBHOME", "ejb/FormDesignerBm");
     FORMMANAGERBM_EJBHOME = rs.getString("FORMMANAGERBM_EJBHOME", "ejb/FormManagerBm");
     KMAXBM_EJBHOME = rs.getString("KMAXBM_EJBHOME", "ejb/KmaxBm");
@@ -214,12 +208,12 @@ public class JNDINames {
     DOCUMENTBM_EJBHOME = rs.getString("DOCUMENTBM_EJBHOME", "ejb/DocumentBm");
     BUSREMOTEACCESSBM_EJBHOME = rs.getString("BUSREMOTEACCESSBM_EJBHOME", "ejb/BusRemoteAccessBm");
     ADMINBM_EJBHOME = rs.getString("ADMINBM_EJBHOME", "ejb/AdminBm");
-    PDCBM_EJBHOME = rs.getString("PDCBM_EJBHOME", "ejb/PdcBm");
+    PDCBM_EJBHOME = rs.getString("PDCBM_EJBHOME", "silverpeas/Pdc/local");
     PLANACTIONSBM_EJBHOME = rs.getString("PLANACTIONSBM_EJBHOME", "ejb/PlanActionsBm");
-    PROJECTMANAGERBM_EJBHOME = rs.getString("PROJECTMANAGERBM_EJBHOME", "ejb/ProjectManagerBm");
-    THESAURUSBM_EJBHOME = rs.getString("THESAURUSBM_EJBHOME", "ejb/ThesaurusBm");
+    PROJECTMANAGERBM_EJBHOME = rs.getString("PROJECTMANAGERBM_EJBHOME", "silverpeas/ProjectManager/local");
+    THESAURUSBM_EJBHOME = rs.getString("THESAURUSBM_EJBHOME", "silverpeas/Thesaurus/local");
     AUTHENTICATIONBM_EJBHOME = rs.getString("AUTHENTICATIONBM_EJBHOME", "ejb/AuthenticationBm");
-    MYDBBM_EJBHOME = rs.getString("MYDBBM_EJBHOME", "ejb/MyDBBm");
+    MYDBBM_EJBHOME = rs.getString("MYDBBM_EJBHOME", "silverpeas/MyDB/local");
     FORMTEMPLATEBM_EJBHOME = rs.getString("FORMTEMPLATEBM_EJBHOME", "ejb/FormTemplateBm");
     MYLINKSBM_EJBHOME = rs.getString("MYLINKSBM_EJBHOME", "ejb/MyLinks");
     WEBPUBMANAGER_EJBHOME = rs.getString("WEBPUBMANAGER_EJBHOME", "ejb/WebPublicationManagerBm");
@@ -318,8 +312,10 @@ public class JNDINames {
         "java:comp/env/securityAdapterClassName");
     SEND_CONFIRMATION_MAIL = rs.getString("SEND_CONFIRMATION_MAIL",
         "java:comp/env/sendConfirmationMail");
-    JMS_FACTORY = rs.getString("JMS_FACTORY",
+    JMS_FACTORY =
+        rs.getString("JMS_FACTORY",
         "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
+    NOTIF_API_JMS = rs.getString("NOTIF_API_JMS", JMS_FACTORY);
     JMS_QUEUE = rs.getString("JMS_QUEUE", "com.stratelia.silverpeas.notificationserver.jms.Queue");
     JMS_HEADER_CHANNEL = rs.getString("JMS_HEADER_CHANNEL", "CHANNEL");
   }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,6 +47,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
  */
 public abstract class AbstractOperationPane implements OperationPane {
 
+  private OperationPaneType type = OperationPaneType.component;
   private Vector<String> stack = null;
   private List<String> creationItems = null;
   private ResourceLocator multilang;
@@ -58,6 +59,16 @@ public abstract class AbstractOperationPane implements OperationPane {
   public AbstractOperationPane() {
     stack = new Vector<String>();
     creationItems = new ArrayList<String>();
+  }
+
+  @Override
+  public void setType(final OperationPaneType type) {
+    this.type = type;
+  }
+
+  @Override
+  public OperationPaneType getType() {
+    return type;
   }
 
   /**
@@ -87,6 +98,7 @@ public abstract class AbstractOperationPane implements OperationPane {
    * @return
    * @see
    */
+  @Override
   public int nbOperations() {
     int nbOperations = 0;
 
@@ -96,6 +108,7 @@ public abstract class AbstractOperationPane implements OperationPane {
     return nbOperations;
   }
 
+  @Override
   public void setMultilang(ResourceLocator multilang) {
     this.multilang = multilang;
   }
@@ -108,25 +121,13 @@ public abstract class AbstractOperationPane implements OperationPane {
     return GraphicElementFactory.getSettings().getBoolean("menu.actions.creation.highlight", true);
   }
 
-  /**
-   * Method declaration
-   * @param iconPath
-   * @param label
-   * @param action
-   * @see
-   */
-  public abstract void addOperation(String iconPath, String label, String action);
+  @Override
+  public void addOperation(String iconPath, String label, String action) {
+    addOperation(iconPath, label, action, null);
+  }
 
-  /**
-   * Method declaration
-   * @see
-   */
-  public abstract void addLine();
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String print();
+  @Override
+  public void addOperationOfCreation(String icon, String label, String action) {
+    addOperationOfCreation(icon, label, action, null);
+  }
 }

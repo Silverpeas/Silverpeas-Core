@@ -1,40 +1,36 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.tagcloud.ejb;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudDAO;
@@ -42,12 +38,14 @@ import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.tagcloud.model.comparator.TagCloudByCountComparator;
 import com.silverpeas.tagcloud.model.comparator.TagCloudByNameComparator;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class TagCloudBmEJB implements SessionBean {
+@Stateless(name = "TagCloud", description = "EJB to manage tags")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class TagCloudBmEJB implements TagCloudBm {
 
   private static final long serialVersionUID = 1117565429121769510L;
 
@@ -60,58 +58,48 @@ public class TagCloudBmEJB implements SessionBean {
     }
   }
 
-  private void closeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("tagCloud", "TagCloudBmEJB.closeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
-    }
-  }
-
   /**
    * @param tagCloud The tagcloud to create in database.
-   * @throws RemoteException
+   *
    */
-  public void createTagCloud(TagCloud tagCloud) throws RemoteException {
+  @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  public void createTagCloud(TagCloud tagCloud) {
     Connection con = openConnection();
     try {
       TagCloudDAO.createTagCloud(con, tagCloud);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new TagCloudRuntimeException("TagCloudBmEJB.createTagCloud()",
-          SilverpeasRuntimeException.ERROR,
-          "tagCloud.CREATING_NEW_TAGCLOUD_FAILED", e);
+          SilverpeasRuntimeException.ERROR, "tagCloud.CREATING_NEW_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * @param pk The primary key of the tagcloud to delete from database.
-   * @throws RemoteException
+   *
    */
-  public void deleteTagCloud(TagCloudPK pk, int type) throws RemoteException {
+  @Override
+  public void deleteTagCloud(TagCloudPK pk, int type) {
     Connection con = openConnection();
     try {
       TagCloudDAO.deleteTagCloud(con, pk, type);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new TagCloudRuntimeException("TagCloudBmEJB.deleteTagCloud()",
-          SilverpeasRuntimeException.ERROR, "tagCloud.DELETE_TAGCLOUD_FAILED",
-          e);
+          SilverpeasRuntimeException.ERROR, "tagCloud.DELETE_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * @param instanceId The id of the instance which tagclouds are searched for.
    * @return The list of tagclouds corresponding to the instance.
-   * @throws RemoteException
+   *
    */
-  public Collection<TagCloud> getInstanceTagClouds(String instanceId)
-      throws RemoteException {
+  @Override
+  public Collection<TagCloud> getInstanceTagClouds(String instanceId) {
     return getInstanceTagClouds(instanceId, -1);
   }
 
@@ -119,29 +107,25 @@ public class TagCloudBmEJB implements SessionBean {
    * @param instanceId The id of the instance which tagclouds are searched for.
    * @param maxCount The maximum number of required tagclouds (all are returned it is lower than 0).
    * @return The list of tagclouds corresponding to the instance.
-   * @throws RemoteException
+   *
    */
-  public Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount)
-      throws RemoteException {
+  @Override
+  public Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount) {
     Connection con = openConnection();
     try {
       Collection<TagCloud> tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
-      List<TagCloud> tagList = new ArrayList<TagCloud>();
-      if (tagClouds.size() > 0) {
+      List<TagCloud> tagList = new ArrayList<TagCloud>(tagClouds.size());
+      if (!tagClouds.isEmpty()) {
         Iterator<TagCloud> iter = tagClouds.iterator();
         tagList.add(iter.next());
-        TagCloud iterTagCloud;
-        String iterTag;
-        TagCloud currentTagCloud;
-        int i;
         boolean tagExists;
         while (iter.hasNext()) {
-          iterTagCloud = iter.next();
-          iterTag = iterTagCloud.getTag();
-          i = 0;
+          TagCloud iterTagCloud = iter.next();
+          String iterTag = iterTagCloud.getTag();
+          int i = 0;
           tagExists = false;
           while (i < tagList.size() && !tagExists) {
-            currentTagCloud = tagList.get(i);
+            TagCloud currentTagCloud = tagList.get(i);
             if (currentTagCloud.getTag().equals(iterTag)) {
               tagExists = true;
               currentTagCloud.incrementCount();
@@ -160,21 +144,21 @@ public class TagCloudBmEJB implements SessionBean {
         }
       }
       return tagList;
-    } catch (Exception e) {
-      throw new TagCloudRuntimeException(
-          "TagCloudBmEJB.getInstanceTagClouds()",
+    } catch (SQLException e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getInstanceTagClouds()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
-   * @param externalId The id of the element which tagclouds are searched for.
+   * @param pk The id of the element which tagclouds are searched for.
    * @return The list of tagclouds corresponding to the element.
-   * @throws RemoteException
+   *
    */
-  public Collection<TagCloud> getElementTagClouds(TagCloudPK pk) throws RemoteException {
+  @Override
+  public Collection<TagCloud> getElementTagClouds(TagCloudPK pk) {
     Connection con = openConnection();
     try {
       return TagCloudDAO.getElementTagClouds(con, pk);
@@ -182,7 +166,7 @@ public class TagCloudBmEJB implements SessionBean {
       throw new TagCloudRuntimeException("TagCloudBmEJB.getElementTagClouds()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -192,44 +176,44 @@ public class TagCloudBmEJB implements SessionBean {
    * @param type The type of elements referenced by the tagclouds (publications or forums).
    * @return The list of tagclouds which correspond to the tag and the id of the instance given as
    * parameters.
-   * @throws RemoteException
+   *
    */
-  public Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type)
-      throws RemoteException {
+  @Override
+  public Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type) {
     Connection con = openConnection();
     try {
-      return TagCloudDAO.getTagCloudsByTags(con, TagCloudUtil.getTag(tags),
-          instanceId, type);
+      return TagCloudDAO.getTagCloudsByTags(con, TagCloudUtil.getTag(tags), instanceId, type);
     } catch (Exception e) {
       throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByTags()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * @param instanceId The id of the instance.
    * @param externalId The id of the element.
+   * @param type The type of elements referenced by the tagclouds (publications or forums).
    * @return The list of tagclouds corresponding to the ids given as parameters.
-   * @throws RemoteException
+   *
    */
-  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
-      int type) throws RemoteException {
+  @Override
+  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId, int type) {
     Connection con = openConnection();
     try {
       return TagCloudDAO.getTagCloudsByElement(con, instanceId, externalId,
           type);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException(
-          "TagCloudBmEJB.getTagCloudsByElement()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByElement()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  public String getTagsByElement(TagCloudPK pk) throws RemoteException {
+  @Override
+  public String getTagsByElement(TagCloudPK pk) {
     Connection con = openConnection();
     try {
       return TagCloudDAO.getTagsByElement(con, pk);
@@ -237,23 +221,7 @@ public class TagCloudBmEJB implements SessionBean {
       throw new TagCloudRuntimeException("TagCloudBmEJB.getTagsByElement()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
-
-  public void ejbCreate() throws CreateException {
-  }
-
-  public void ejbRemove() {
-  }
-
-  public void ejbActivate() {
-  }
-
-  public void ejbPassivate() {
-  }
-
-  public void setSessionContext(SessionContext sc) {
-  }
-
 }

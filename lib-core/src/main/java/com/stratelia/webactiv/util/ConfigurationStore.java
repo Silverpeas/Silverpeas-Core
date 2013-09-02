@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,9 +30,6 @@
 
 package com.stratelia.webactiv.util;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 /**
  * @author jpouyadou
  * @version
@@ -46,7 +43,7 @@ public interface ConfigurationStore {
    * @author jpouyadou
    * @version
    */
-  public void serialize() throws FileNotFoundException, IOException;
+  public void serialize() throws Exception;
 
   public void putProperty(String key, String value);
 

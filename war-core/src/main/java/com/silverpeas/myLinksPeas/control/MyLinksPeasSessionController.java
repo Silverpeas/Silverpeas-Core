@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,8 +28,8 @@ import java.util.Collection;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
-import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -58,9 +58,8 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
    */
   public MyLinksPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-        "com.silverpeas.mylinks.multilang.myLinksBundle",
-        "com.silverpeas.mylinks.settings.myLinksIcons");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.mylinks.multilang.myLinksBundle",
+        "org.silverpeas.mylinks.settings.myLinksIcons");
   }
 
   public Collection<LinkDetail> getAllLinksByUser() {
@@ -175,12 +174,9 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   private MyLinksBm getMyLinksBm() {
     MyLinksBm myLinksBm = null;
     try {
-      MyLinksBmHome myLinksBmHome = (MyLinksBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBmHome.class);
-      myLinksBm = myLinksBmHome.create();
+      myLinksBm = EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBm.class);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException(
-          "MyLInksSessionController.getMyLInksBm()",
+      throw new MyLinksRuntimeException("MyLInksSessionController.getMyLInksBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return myLinksBm;

@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +28,6 @@
 
 <%@ include file="checkAgenda.jsp.inc" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="com.stratelia.webactiv.servlets.TempFileServer"%>
 
 <%
 
@@ -46,7 +45,6 @@
 		{
 			 statusMessage = resources.getString("agenda.ExportSucceeded");
 			 calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX + agenda.getUserId() + ".ics";
-			 //urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName, calendarIcsFileName, "text/calendar");
        urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName);
 		 }
 		else

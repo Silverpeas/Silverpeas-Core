@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
   
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>mylinks</artifactId>
   <packaging>ejb</packaging>
   <name>EJB My Links - ${project.version}</name>
-
+  
 </project>

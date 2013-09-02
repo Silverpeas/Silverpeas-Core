@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,18 @@
 
 package com.silverpeas.jcrutil.security.impl;
 
-import com.silverpeas.util.StringUtil;
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.silverpeas.util.StringUtil;
 
 /**
  * @author ehugonnet

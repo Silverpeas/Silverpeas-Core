@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,7 +50,7 @@
 
 <%
   	//test si la page source n'est pas Main
-	String uri = (String)request.getAttribute("com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI");
+	String uri = (String)request.getAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI");
 	if (uri == null || (uri != null && uri.indexOf("/Main") != -1)) {
 		// le cas echeant, l'erreur est affichee dans la page
 		getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpageMain.jsp").forward(request, response);

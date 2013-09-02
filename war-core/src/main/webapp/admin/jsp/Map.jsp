@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,12 +41,13 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 <view:timeout />
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-  OrganizationController organizationController = mainSessionCtrl.getOrganizationController();
+  OrganisationController organizationController = mainSessionCtrl.getOrganisationController();
   String language = mainSessionCtrl.getFavoriteLanguage();
   ResourceLocator message =
       new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);

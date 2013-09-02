@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,14 +61,14 @@
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
 {
-  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
 
 GraphicElementFactory	gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String  language = m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-ResourceLocator 		homePageSettings 	= new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
-String 					m_sContext 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+String m_sContext = GeneralPropertiesManager.getString("ApplicationURL");
 %>

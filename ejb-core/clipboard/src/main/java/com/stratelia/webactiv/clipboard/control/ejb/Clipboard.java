@@ -1,175 +1,164 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.stratelia.webactiv.clipboard.control.ejb;
 
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import java.rmi.RemoteException;
 import java.util.Collection;
+
+import javax.ejb.Local;
+
+import com.silverpeas.util.clipboard.ClipboardException;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 
 /**
  * @author ehugonnet
  */
+@Local
 public interface Clipboard {
+  
+  public Clipboard create(String name);
+
   /**
    * Method declaration
+   *
    * @param clipObject
-   * @throws RemoteException
+   * @throws ClipboardException
    * @see
    */
-  public void add(ClipboardSelection clipObject) throws RemoteException;
+  public void add(ClipboardSelection clipObject) throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @return
-   * @throws RemoteException
-   * @see
    */
-  public ClipboardSelection getObject() throws RemoteException;
+  public ClipboardSelection getObject();
 
   /**
    * Method declaration
-   * @throws RemoteException
-   * @see
+   *
+   * @throws ClipboardException
    */
-  public void PasteDone() throws RemoteException;
+  public void PasteDone() throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @return
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public Collection<ClipboardSelection> getSelectedObjects() throws RemoteException;
+  public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @return
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public Collection<ClipboardSelection> getObjects() throws RemoteException;
+  public Collection<ClipboardSelection> getObjects() throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @return
-   * @throws RemoteException
+   * @throws ClipboardException
    * @see
    */
-  public int size() throws RemoteException;
+  public int size() throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @param index
    * @return
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public ClipboardSelection getObject(int index) throws RemoteException;
+  public ClipboardSelection getObject(int index) throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @param index
    * @param setIt
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public void setSelected(int index, boolean setIt) throws RemoteException;
+  public void setSelected(int index, boolean setIt) throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @param index
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public void removeObject(int index) throws RemoteException;
+  public void removeObject(int index) throws ClipboardException;
+
+  public void clear();
 
   /**
    * Method declaration
-   * @throws RemoteException
-   * @see
+   *
+   * @throws ClipboardException
    */
-  public void clear() throws RemoteException;
+  public void setMultiClipboard() throws ClipboardException;
 
   /**
    * Method declaration
-   * @throws RemoteException
-   * @see
+   *
+   * @throws ClipboardException
    */
-  public void setMultiClipboard() throws RemoteException;
+  public void setSingleClipboard() throws ClipboardException;
 
   /**
    * Method declaration
-   * @throws RemoteException
-   * @see
-   */
-  public void setSingleClipboard() throws RemoteException;
-
-  /**
-   * Method declaration
+   *
    * @return
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public String getName() throws RemoteException;
+  public int getCount() throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @return
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public Integer getCount() throws RemoteException;
+  public String getMessageError() throws ClipboardException;
 
   /**
    * Method declaration
+   *
    * @return
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public String getMessageError() throws RemoteException;
+  public Exception getExceptionError() throws ClipboardException;
 
   /**
    * Method declaration
-   * @return
-   * @throws RemoteException
-   * @see
-   */
-  public Exception getExceptionError() throws RemoteException;
-
-  /**
-   * Method declaration
+   *
    * @param messageID
    * @param e
-   * @throws RemoteException
-   * @see
+   * @throws ClipboardException
    */
-  public void setMessageError(String messageID, Exception e)
-      throws RemoteException;
+  public void setMessageError(String messageID, Exception e) throws ClipboardException;
+  
+  public void remove();
+  
+  public String getName();
 }

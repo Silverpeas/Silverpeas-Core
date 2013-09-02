@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,7 @@ package com.silverpeas.node.notification;
 
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.SilverpeasNotificationCause;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
@@ -36,7 +37,8 @@ public class NodeDeletionNotification extends SilverpeasNotification {
   private static final long serialVersionUID = -5651929204480502420L;
 
   protected NodeDeletionNotification(final NodePK node) {
-    super(new NotificationSource().withComponentInstanceId(node.getInstanceId()), node);
+    super(new NotificationSource().withComponentInstanceId(node.getInstanceId()),
+        SilverpeasNotificationCause.DELETION, node);
   }
 
   public NodePK getNodePK() {

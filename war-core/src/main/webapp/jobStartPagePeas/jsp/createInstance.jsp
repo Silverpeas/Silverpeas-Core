@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -254,21 +254,8 @@ function isCorrectForm() {
 }
 
 function toDoOnLoad() {
-	<%
-		int height = 385;
-		if (parameters!=null)
-		{
-			int nbParameters = parameters.size();
-			if (nbParameters >= 5)
-				height = height+15*nbParameters;
-			else
-				height = height+30*nbParameters;
-		}
-	%>
-    window.resizeTo(750,<%=height%>);
     document.infoInstance.NameObject.focus();
 }
-
 </script>
 </HEAD>
 <BODY id="admin-component" onload="javascript:toDoOnLoad()">

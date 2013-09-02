@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,15 +28,14 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.util.List;
+import java.util.Map;
+
 import com.silverpeas.components.model.AbstractTestDao;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertThat;
 
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-@RunWith(BlockJUnit4ClassRunner.class)
 public class AdminTest extends AbstractTestDao {
 
   private Admin instance;
@@ -199,5 +197,11 @@ public class AdminTest extends AbstractTestDao {
     assertEquals("Customer", domains[0].getName());
     assertEquals("domainSilverpeas", domains[1].getName());
     assertEquals("SILVERPEAS", domains[2].getName());
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

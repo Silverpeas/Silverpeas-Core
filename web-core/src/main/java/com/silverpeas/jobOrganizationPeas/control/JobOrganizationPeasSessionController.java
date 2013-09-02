@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -143,7 +143,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       }
       currentGroups = new String[groupIds.length][4];
       for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-        Group theCurrentGroup = getOrganizationController().getGroup(groupIds[iGrp]);
+        Group theCurrentGroup = getOrganisationController().getGroup(groupIds[iGrp]);
         currentGroups[iGrp][0] = theCurrentGroup.getId();
         currentGroups[iGrp][1] = theCurrentGroup.getName();
         currentGroups[iGrp][2] = String.valueOf(theCurrentGroup.getUserIds().length);
@@ -321,8 +321,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    * Retour du initialisation userPanel un user ou (exclusif) un groupe
    */
   public String initSelectionPeas() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
         + Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

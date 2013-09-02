@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,9 +77,6 @@ public class XmlFormTest {
     context.bind(JNDINames.FORMTEMPLATE_DATASOURCE, ds);
     PublicationTemplateManager.templateDir = TARGET_DIR + SEPARATOR + "test-classes"
             + SEPARATOR + "templateRepository";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = TARGET_DIR + SEPARATOR
-            + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping"
-            + SEPARATOR + "templateFilesMapping.xml";
     PublicationTemplateManager.mappingRecordTemplateFilePath = TARGET_DIR + SEPARATOR
             + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping"
             + SEPARATOR + "templateMapping.xml";

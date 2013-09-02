@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,12 +36,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.PathTestUtil;
@@ -69,8 +74,6 @@ public class InstanciateurTest {
   public void setUp() {
     PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH
         + File.separatorChar + "templateMapping.xml";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = MAPPINGS_PATH
-        + File.separatorChar + "templateFilesMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 
@@ -138,11 +141,70 @@ public class InstanciateurTest {
       }
     }
     assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
-    assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(true).size(), is(1));
+    GlobalContext context = new GlobalContext("WA1");
+    context.setComponentName("kmelia");
+    assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(context).size(),
+        is(1));
     assertThat(paramWithXMLTemplate, is(notNullValue()));
-    assertThat(paramWithXMLTemplate.getOptions().size(), is(1));
-    assertThat(paramWithXMLTemplate.getOptions().get(0).getValue(), is("template.xml"));
-    assertThat(paramWithXMLTemplate.getOptions().get(0).getName().get("fr"), is("template"));
+    List<Option> options = paramWithXMLTemplate.getOptions();
+    assertThat(options.size(), is(3));
+    
+    Collections.sort(options, new OptionComparator());
+    Option option = options.get(0);
+    assertThat(option.getValue(), is("classifieds.xml"));
+    assertThat(option.getName().get("fr"), is("Classifieds"));
+    option = options.get(1);
+    assertThat(option.getValue(), is("sandbox.xml"));
+    assertThat(option.getName().get("fr"), is("Sandbox"));
+    option = options.get(2);
+    assertThat(option.getValue(), is("template.xml"));
+    assertThat(option.getName().get("fr"), is("template"));
+  }
+  
+  private class OptionComparator implements Comparator<Option> {
+
+    @Override
+    public int compare(Option o1, Option o2) {
+      return o1.getValue().compareTo(o2.getValue());
+    }
+    
+  }
+  
+  @Test
+  public void testLoadComponentWithOneTemplate() throws Exception {
+    String path = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "xmlComponent"
+        + File.separatorChar + "classifieds.xml";
+    Instanciateur instance = new Instanciateur();
+    WAComponent result = instance.loadComponent(path);
+    assertNotNull(result);
+    assertThat(result.getName(), is("classifieds"));
+
+    assertThat(result.isVisibleInPersonalSpace(), is(false));
+    Parameter paramWithXMLTemplate = null;
+    for (Parameter parameter : result.getParameters()) {
+      if ("XMLFormName".equals(parameter.getName())) {
+        paramWithXMLTemplate = parameter;
+      }
+    }
+    assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
+    GlobalContext context = new GlobalContext("WA1");
+    context.setComponentName("classifieds");
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    assertThat(templateManager.getPublicationTemplates(context).size(),
+        is(1));
+    assertThat(paramWithXMLTemplate, is(notNullValue()));
+    List<Option> visibleOptions = new ArrayList<Option>();
+    List<Option> options = paramWithXMLTemplate.getOptions();
+    for (Option option : options) {
+      String templateName = option.getValue();
+      if (templateManager.isPublicationTemplateVisible(templateName, context)) {
+        visibleOptions.add(option);
+      }
+    }
+    assertThat(visibleOptions.size(), is(1));
+    Option option = options.get(0);
+    assertThat(option.getValue(), is("classifieds.xml"));
+    assertThat(option.getName().get("fr"), is("Classifieds"));
   }
   
   @Test
@@ -168,7 +230,7 @@ public class InstanciateurTest {
     assertEquals(label, loadedComponent.getLabel().get("fr"));
     
     Map<String, WAComponent> components = Instanciateur.getWAComponents();
-    assertEquals(3, components.size());
+    assertEquals(4, components.size());
     component = Instanciateur.getWAComponent(componentName);
     assertEquals(label, component.getLabel().get("fr"));
   }

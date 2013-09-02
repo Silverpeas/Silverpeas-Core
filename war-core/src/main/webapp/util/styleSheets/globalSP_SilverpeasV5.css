@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,16 +55,16 @@ a:hover {
 }
 
 input {
-	background-color: #FFFFFF;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	color: #000000;
-	border: 1px solid #999999;
+  background-color: #FFFFFF;
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  color: #000000;
+  border: 1px solid #999999;
 }
 
 input[type=radio],
 input[type=checkbox]{
-	border:0px;
+  border:0px;
 }
 
 .invisible {
@@ -182,8 +182,8 @@ Definition des class de style Silverpeas
 .userzoom-tooltip-interaction-action-invitation,
 .userzoom-tooltip-interaction-accessTchat.disabled:hover{
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-		-pie-background: linear-gradient(#ffffff, #e5e5e5);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
@@ -202,8 +202,8 @@ Definition des class de style Silverpeas
   margin:0;
   padding:5px;
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-		-pie-background: linear-gradient(#ffffff, #e5e5e5);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   min-height:14px;
 }
@@ -246,24 +246,24 @@ Definition des class de style Silverpeas
 }
 
 .principal-content-title {
-	color: #333333;
-    font-size: 130%;
-    font-weight: bold;
-	margin:0 0 10px 0;
-	padding:0;
+  color: #333333;
+  font-size: 130%;
+  font-weight: bold;
+  margin:0 0 10px 0;
+  padding:0;
 }
 
 .tag-presentation {
-	float:right;
-	height:30px;
-	line-height:30px;
-	background:transparent url(../icons/bg-tag-part1.png) top left no-repeat;
-	padding-left:19px;
+  float:right;
+  height:30px;
+  line-height:30px;
+  background:transparent url(../icons/bg-tag-part1.png) top left no-repeat;
+  padding-left:19px;
 }
 
 .tag-presentation .tag-presentation-content {
-	background:transparent url(../icons/bg-tag-part2.png) top right no-repeat;
-	padding:0 10px;
+  background:transparent url(../icons/bg-tag-part2.png) top right no-repeat;
+  padding:0 10px;
 }
 
 .clearAll {
@@ -550,6 +550,11 @@ Definition des class de style Silverpeas
   color: #333333
 }
 
+.non-informed {
+  color:#999999;
+  font-style:italic;
+}
+
 .txtdayoff1 {
   font-size: 10px;
   font-weight: normal;
@@ -580,7 +585,7 @@ Definition des class de style Silverpeas
   white-space: nowrap;
 }
 .portlet-content .intfdcolor {
-	white-space: normal;
+  white-space: normal;
 }
 
 #outilsAdmin {
@@ -1229,7 +1234,7 @@ td.browsebar a:hover {
 #recherche #bodyRecherche {
   background-color: transparent;
   text-align: center;
-  margin-top: -25px;
+  margin-top: -15px;
   font-size: 10px;
   color: #666666;
 }
@@ -1501,7 +1506,7 @@ td.browsebar a:hover {
 
 /****************************************/
 /****** Look V5 - ViewGenerator *********/
-/****************************************/ 
+/****************************************/
 /* objet window */
 .cellBrowseBar {
   border-bottom-width: 1px;
@@ -1580,12 +1585,12 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   width: 5px;
 }
 
-/* pour encadrer les boutons et remplacer la balise center utilisée dans les anciennes pages */
+/* pour encadrer les boutons et remplacer la balise center utilis�e dans les anciennes pages */
 .buttonPane {
-	text-align:center;
+  text-align:center;
 }
 .buttonPane table {
-	margin:0 auto;
+  margin:0 auto;
 }
 
 /* Objet Tabs */
@@ -1765,7 +1770,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   float: left;
   padding: 2px 3px;
   margin-right: 0.5em;
-  font-size:95%;    
+  font-size:95%;
   line-height: 1.6em;
 }
 
@@ -1880,7 +1885,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
-#admin-treeview  img{ 
+#admin-treeview  img{
   border:none;
 }
 
@@ -2034,6 +2039,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #portletPages a {
   color: #000;
+}
+
+#portletPages a.color-inherited {
+  color: inherit;
 }
 
 #portletPages .clear {
@@ -2334,7 +2343,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 .lineResult .content a img{
-	border:0;
+  border:0;
 }
 
 #globalResultFrame {
@@ -2484,11 +2493,11 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 #searchGroupValues a.toggle.less {
-	background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+  background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
 }
 
 #searchGroupValues a.toggle.more {
-	background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+  background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
 #searchGroupValues ul li.otherEntry {
@@ -2578,7 +2587,7 @@ caption {
 }
 */
 
-/* Par défaut, 2 colonnes */
+/* Par d�faut, 2 colonnes */
 #directory .aff_colonnes li {
   float:left;
   margin-right:1%;
@@ -2624,7 +2633,8 @@ caption {
   color: blue;
 }
 
-#directory #index {
+#directory #index,
+#directory #sort {
   float:none;
   margin:0 auto;
   padding:4px;
@@ -2633,7 +2643,8 @@ caption {
   color:#AFAFAF;
 }
 
-#directory #indexAndSearch #index a {
+#directory #indexAndSearch #index a,
+#directory #indexAndSearch #sort a {
   border:1px solid #CECECE;
   padding:2px 4px;
   margin-right:3px;
@@ -2643,18 +2654,20 @@ caption {
   text-decoration: none;
   line-height:220%;
 }
-#directory #indexAndSearch #index a.active {
+#directory #indexAndSearch #index a.active,
+#directory #indexAndSearch #sort a.active {
   background-color:#B5B5B5;
   color:#FFF;
 }
 
-#directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus {
+#directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus,
+#directory #indexAndSearch #sort a:hover, #directory #indexAndSearch #sort a:focus {
   background-color:#BFBFBF;
   color:#FFF;
 }
 
 #directory #indexAndSearch #search {
-  margin:5px 10px 10px auto;
+  margin:0px 10px 0px auto;
   padding:5px;
   text-align:left;
   width:100%;
@@ -2666,9 +2679,15 @@ caption {
   float:left;
 }
 
-#directory #indexAndSearch #search input{
+#directory #indexAndSearch #search input {
   height:16px;
   width:30%;
+  margin-right: 5px;
+}
+
+#directory #indexAndSearch #search #help {
+  line-height: 20px;
+  margin-left: 5px;
 }
 
 #directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{
@@ -2724,7 +2743,7 @@ caption {
 
 #directory .info ul {
   margin:10px 10px 0 104px;
-  color:#909090; 
+  color:#909090;
   font-size:11px;
 }
 
@@ -3291,6 +3310,13 @@ caption {
   margin:0;
 }
 
+#avatarDialog #avatar-policy {
+  color:#333333; 
+  font-size:10px;
+  margin-top: 5px;
+  float: left;
+}
+
 #myProfileFiche .action .invitation {
   /*display: none;*/
 }
@@ -3471,7 +3497,7 @@ caption {
 
 #publicProfileContenu  address { font-style:normal;}
 
-/* IMAGE  bg_tri.png à chercher dans corps dans fleche */
+/* IMAGE  bg_tri.png � chercher dans corps dans fleche */
 .sousNavBulle, .container-filter {
   background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
   float:left;
@@ -3482,8 +3508,8 @@ caption {
   font-size:11px;
   padding:5px 0 14px;
 }
-.sousNavBulle p, .content-container-filter { 
-  margin:0; 
+.sousNavBulle p, .content-container-filter {
+  margin:0;
   padding:0 5px 0;
 }
 
@@ -3669,7 +3695,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
   height:auto;
 }
 
-/* Par défaut 1 colonne */
+/* Par d�faut 1 colonne */
 .aff_colonnes .a_contact {
 
 
@@ -3757,10 +3783,10 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 }
 
 #contactProfil ul li.infoConnection img {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-	border:0;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border:0;
 }
 
 #contactProfil .info li.userType {
@@ -3789,7 +3815,7 @@ hr.sep  {
   color:#3A5998;
 }
 
-/* class actuellement utilisée dans l'annuaire expert à généraliser */
+/* class actuellement utilis�e dans l'annuaire expert � g�n�raliser */
 .linkMore {
   background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
   border-bottom: 1px solid #CCCCCC;
@@ -3851,14 +3877,42 @@ ul#attachmentList li.attachmentListItem .lineMain {
 
 ul#attachmentList li.attachmentListItem .lineSize img {
   float:left;
-  margin-right:10px
+  margin-right:10px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
+  margin-right:0px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.view-file {
+  margin-right:0px;
+}
+
+img.preview-file {
+  cursor:pointer;
+  margin-left:5px;
+  margin-right:0px;
+}
+
+img.view-file {
+  cursor:pointer;
+  margin-left:5px;
+  margin-right:0px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
+  float:inherit;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.view-file {
+  float:inherit;
 }
 
 ul#attachmentList li.attachmentListItem .lineMain .icon {
   float:left;
   width: 16px;
   height: 16px;
-  margin-right:10px
+  margin-right:10px;
 }
 
 ul#attachmentList li.attachmentListItem .moreActions {
@@ -3964,7 +4018,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   webkit-border-radius:10px;
   padding:10px;
   position:relative;
-  margin:70px 2em 0;    
+  margin:70px 2em 0;
 }
 
 .commentaires #edition-box {
@@ -4004,7 +4058,7 @@ html>/**/body .commentaires .oneComment{
 
 .commentaires #edition-box .title , .commentaires .oneComment p.author{
   font-size: 8pt;
-  color: #111111;    
+  color: #111111;
   height: 20px;
   margin:0;
   position:absolute;
@@ -4022,7 +4076,7 @@ html>/**/body .commentaires .oneComment{
   font-size:11px;
 }
 
-.commentaires .oneComment .text {      
+.commentaires .oneComment .text {
   color: #888888;
   font-family: Arial;
   font-size: 13px;
@@ -4121,13 +4175,15 @@ span.csv {
 /*- [Generic inline messages BEGIN ] ---------------- */
 .inlineMessage,
 .inlineMessage-ok,
-.inlineMessage-nok {
-  padding: 5px;
-  margin: 10px;
+.inlineMessage-nok,
+.inlineMessage-waiting{
+  padding: 1em;
+  margin: 1em;
   text-align: center;
   border: 2px solid;
-  float: left;
-  width: 95%;
+  border: 2px solid;
+  display:block;
+  /* float: left;*/
 }
 
 .inlineMessage {
@@ -4145,6 +4201,16 @@ span.csv {
   border-color: #CE6F6F;
 }
 
+.inlineMessage-nok a {
+  text-decoration: underline;
+}
+
+
+.inlineMessage-waiting {
+  background-color: #ffd49d;
+  border-color:#ffb85b;
+}
+
 table.pdcPositionsField {
   border-spacing: 0;
   padding: 0;
@@ -4158,7 +4224,7 @@ button {
   color: #FFFFFF;
 }
 
-/** Css pour présentation pdc dans formsOnline **/
+/** Css pour pr�sentation pdc dans formsOnline **/
 .pdc_position {
   display:block;
   background-color:#e9e9e9;
@@ -4296,7 +4362,7 @@ html:not([lang*=""]) .add_position:hover {
   line-height: 20px;
   float:left;
 }
-.classification .legende { 
+.classification .legende {
   margin:10px 0 0;
   float:left;
   line-height:18px
@@ -4348,12 +4414,12 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification-modification span.header {
-  display:block;  
+  display:block;
   background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
   background-color:#F0F0F0;
   border:1px solid #CDCDCD;
   border-left:0;
-  border-right:0;	
+  border-right:0;
   line-height:100%;
   padding:8px 0 6px 26px;
   margin:10px 12px 0;
@@ -4457,7 +4523,7 @@ li.applicationsType a.linkSee.select {
 }
 
 ul.applicationList {
-  position:absolute; 
+  position:absolute;
   top:0;
   left:0;
   background-color:#FFF;
@@ -4488,14 +4554,14 @@ li.application {
   -moz-background-size: 100%;
 }
 
-/* pour ie8 je veux mettre le pie et virer le bord qui déconne*/
+/* pour ie8 je veux mettre le pie et virer le bord qui d�conne*/
 li.application {
   -pie-background: linear-gradient(#f5f5f5, #EAEAEA);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   border:0px;
 }
 
-/* pour tout le monde sauf ie 6 à 8*/
+/* pour tout le monde sauf ie 6 � 8*/
 :root *> li.application {
   border:1px solid #dfdfdf;
   behavior: url();
@@ -4618,41 +4684,41 @@ li.application  .applicationName {
 /** BackEnd domain content **/
 /*******************************/
 #domainContent #principal-content-domainContent {
-	position:relative;
-	width:100%;
+  position:relative;
+  width:100%;
 }
 
 #domainContent #link-domain-content {
-	padding-bottom:12px;
+  padding-bottom:12px;
 }
 
 #domainContent .principal-content-title.sql-domain {
-	background:transparent url(../icons/component/domainSmall.gif) 0 0 no-repeat;
-	padding-left:20px;
+  background:transparent url(../icons/component/domainSmall.gif) 0 0 no-repeat;
+  padding-left:20px;
 }
 
 #domainContent #principal-content-domainContent .tag-presentation {
-	position:absolute;
-	top:0;
-	right:0;
+  position:absolute;
+  top:0;
+  right:0;
 }
 
 #domainContent #principal-content-domainContent .tag-presentation.limited-number-user span{
-	background:transparent url(../icons/limited-user.png) right 3px no-repeat;
-	padding-right:30px;
-	display:block;
+  background:transparent url(../icons/limited-user.png) right 3px no-repeat;
+  padding-right:30px;
+  display:block;
 }
 
 #domainContent #description-domainContent {
-	border-left: 6px solid #E4E4E4;
-    color: #666666;
-    font-weight: bold;
-    padding: 8px;
+  border-left: 6px solid #E4E4E4;
+  color: #666666;
+  font-weight: bold;
+  padding: 8px;
 }
 
 #domainContent #number-user-group-domainContent {
-	color:#666;
-	font-size:12px;
+  color:#666;
+  font-size:12px;
 }
 
 /*************************************/
@@ -4691,20 +4757,20 @@ li.application  .applicationName {
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   color:#FFF;
 }
-.userPanel .users_results_userPanel, 
+.userPanel .users_results_userPanel,
 .userPanel .groups_results_userPanel,
-.userPanel .users_selected_userPanel, 
+.userPanel .users_selected_userPanel,
 .userPanel .groups_selected_userPanel  {
   margin:8px 3% 16px;
   clear:both;
   position:relative;
 }
 
-.userPanel .users_selected_userPanel, 
+.userPanel .users_selected_userPanel,
 .userPanel .groups_selected_userPanel  {
   margin:2px 3% 16px 3%;
 }
-.userPanel .users_results_userPanel, 
+.userPanel .users_results_userPanel,
 .userPanel .users_selected_userPanel  {
   margin:2px 3% 0 3%;
 }
@@ -4740,10 +4806,16 @@ li.application  .applicationName {
 }
 
 
-#filter_userPanel .listing_filter ul .filter{	    
-	background-image: url("../icons/puce-group.png");
-    background-position: 26px 11px;
-    padding: 6px 0 1px 43px;
+#filter_userPanel .listing_filter ul .filter{
+  background-image: url("../icons/puce-group.png");
+  background-position: 26px 11px;
+  padding: 6px 0 1px 43px;
+}
+
+#filter_userPanel .listing_filter ul li#nextGroups .filter{
+  background-image: url("../icons/arrow/arrowDownModal.png");
+  background-position: 25px 6px;
+  padding: 6px 0 1px 43px;
 }
 
 #filter_userPanel .listing_filter ul {
@@ -4762,8 +4834,8 @@ li.application  .applicationName {
   color:#444;
 }
 
-#filter_userPanel .filter:hover, 
-#filter_userPanel .filter:focus , 
+#filter_userPanel .filter:hover,
+#filter_userPanel .filter:focus ,
 #filter_userPanel .filter.select,
 #filter_userPanel .filter:hover a,
 #filter_userPanel .filter:focus a{
@@ -4775,12 +4847,15 @@ li.application  .applicationName {
 }
 
 #filter_userPanel .title,
-#selected_userPanel .title{
+#selected_userPanel .title,
+.subscription-management .title{
   background-color:#353535;
   color:#FFF;
   font-size:120%;
   line-height:28px;
   padding-left:9px;
+  position:relative;
+  height:28px;
 }
 
 #results_userPanel {
@@ -4902,7 +4977,7 @@ input.search:focus {
 .userPanel .remove  {
   background:transparent url(../icons/deleteFiche.png) top left;
 }
-.userPanel  .avatar {
+.userPanel .avatar {
   width:30px;
   height:30px;
   border:1px solid #bcbcbc;
@@ -4912,7 +4987,7 @@ input.search:focus {
   left:6px;
 }
 
-.userPanel  .avatar img{
+.userPanel .avatar img{
   width:30px;
   height:auto;
 }
@@ -4943,24 +5018,91 @@ input.search:focus {
 #sharing-overview a.Node,
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned  {
-	background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
-	padding: 2px 0px 0px 20px;
-	display: block;
-    line-height: 16px;
+  background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
+  padding: 2px 0px 0px 20px;
+  display: block;
+  line-height: 16px;
 }
 
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
-	background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+  background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+}
+
+/* subscription-management */
+
+.individual-subscription .title .infoBulle {
+  position:absolute;
+  top:7px;
+  right:5px;
+}
+
+.subscription-management {
+  height: 100%;
+  overflow: auto;
+}
+
+.subscription-management .compulsory-subscription-management {
+  float:left;
+  width:58%;
+  border:1px solid #eaeaea;
+}
+
+.subscription-management .individual-subscription {
+  float:left;
+  width:39%;
+  margin-left:2%;
+  border:1px solid #eaeaea;
+}
+
+.compulsory-subscription-management .listing_groups ,
+.compulsory-subscription-management .listing_users,
+.individual-subscription .listing_groups ,
+.individual-subscription .listing_users {
+  margin:0 8px 8px;
+  clear:right;
+}
+
+.compulsory-subscription-management .action,
+.individual-subscription .action {
+  background: url("../icons/delete.gif") repeat scroll left top transparent;
+  height: 16px;
+  position: absolute;
+  right: 12px;
+  text-indent: -3000px;
+  top: 12px;
+  width: 16px;
+}
+
+.compulsory-subscription-management .unsubscribe,
+.individual-subscription .unsubscribe {
+  cursor: pointer;
+}
+
+.userPanel .listing_users .unsubscribed .name_user,
+.userPanel .listing_groups .unsubscribed .name_group,
+.compulsory-subscription-management .unsubscribed,
+.individual-subscription .unsubscribed {
+  color: #d2d2d2 !important;
+}
+
+.compulsory-subscription-management .unsubscribed img,
+.individual-subscription .unsubscribed img {
+  opacity: 0.3;
+}
+
+.compulsory-subscription-management .buttonPane{
+  float:right;
+  margin:8px -92px 0 0;
 }
 
 /* userzoom-tooltip-profilPhoto */
 .userzoom-tooltip {
-	border:1px solid #aeaeae;
-	position:absolute;
-	width:310px;
-	display: block;
-	z-index: 1000;
+  border:1px solid #aeaeae;
+  position:absolute;
+  width:310px;
+  display: block;
+  z-index: 100000;
 }
 
 .userzoom-infoConnection img {
@@ -4981,55 +5123,55 @@ input.search:focus {
 }
 
 .userzoom-tooltip-info {
-	margin:7px 25px 0 7px;
+  margin:7px 25px 0 7px;
 }
 
 .userzoom-tooltip-info-infoConnection {
-	border: 0 none;
-    position: absolute;
-    right: 10px;
-    top: 10px;
+  border: 0 none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 .userzoom-tooltip-info-status {
-	color: #909090;
-	clear: right;
-    float: none;
-    line-height: 120%;
-    max-height: 26px;
-    overflow: hidden;
+  color: #909090;
+  clear: right;
+  float: none;
+  line-height: 120%;
+  max-height: 26px;
+  overflow: hidden;
 }
 
 .userzoom-tooltip-interaction {
-	position:relative;
-	clear:both;
-	height:24px;
+  position:relative;
+  clear:both;
+  height:24px;
 }
 
 .userzoom-tooltip-interaction-action   {
-    bottom: 10px;
-    height: 40px;
-    padding-left: 10px;
-    position: absolute;
-    right: 10px;
-	bottom:24px;
-	z-index:100;
+  bottom: 10px;
+  height: 40px;
+  padding-left: 10px;
+  position: absolute;
+  right: 10px;
+  bottom:24px;
+  z-index:100;
 }
 
 .userzoom-tooltip-interaction-action-invitation  {
-	border: 1px solid #aeaeae;
-    color: #333366;
-    font-size: 11px;
-	line-height:24px;
-	padding:0 8px 0 0;
-	border-radius:3px;
-	display:block;
+  border: 1px solid #aeaeae;
+  color: #333366;
+  font-size: 11px;
+  line-height:24px;
+  padding:0 8px 0 0;
+  border-radius:3px;
+  display:block;
 }
 
 .userzoom-tooltip-interaction-action-invitation span {
-	background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
-	padding-left:32px;
-	display:block;
+  background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
+  padding-left:32px;
+  display:block;
 }
 
 .userzoom-tooltip-info-userName a{
@@ -5046,199 +5188,629 @@ input.search:focus {
 .userzoom-tooltip-interaction-accessProfil ,
 .userzoom-tooltip-interaction-accessNotification,
 .userzoom-tooltip-interaction-accessTchat {
-	position:absolute;
-	bottom:0px;
-	left:0;
-	width:33%;
-	border:1px solid #cdcdcd;
-	border-right:1px solid #fff;
-	border-bottom:0;
-	height:24px;
-	color:#333366;
-	cursor:pointer;
+  position:absolute;
+  bottom:0px;
+  left:0;
+  width:33%;
+  border:1px solid #cdcdcd;
+  border-right:1px solid #fff;
+  border-bottom:0;
+  height:24px;
+  color:#333366;
+  cursor:pointer;
 }
 
 .userzoom-tooltip-interaction-accessProfil {
-	border-left:0;
+  border-left:0;
 }
 
 .userzoom-tooltip-interaction-accessProfil:hover,
 .userzoom-tooltip-interaction-accessTchat:hover,
 .userzoom-tooltip-interaction-accessNotification:hover {
-	background:#E5E5E5 url();
-	color:#000
+  background:#E5E5E5 url();
+  color:#000
 }
 
 .userzoom-tooltip-interaction-accessTchat {
-	left:auto;
-	right:0;
+  left:auto;
+  right:0;
 }
 
 
 .userzoom-tooltip-interaction-accessNotification {
-	left:33%;
-	
+  left:33%;
+
 }
 .userzoom-tooltip-interaction-accessProfil 	span,
 .userzoom-tooltip-interaction-accessTchat 	span,
 .userzoom-tooltip-interaction-accessNotification 	span{
-	background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
-	display:block;
-	height:24px;
-	line-height:24px;
-	padding-left:32px;
+  background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
+  display:block;
+  height:24px;
+  line-height:24px;
+  padding-left:32px;
 }
 
 .userzoom-tooltip-interaction-accessTchat 	span{
-	background-image:url(../icons/talk2user.gif)
+  background-image:url(../icons/talk2user.gif)
 }
 
 .userzoom-tooltip-interaction-accessNotification 	span{
-	background-image:url(../icons/email.gif)
+  background-image:url(../icons/email.gif)
 }
 
 .userzoom-tooltip-interaction-accessTchat.disabled		span{
-	background-image:url(../icons/talk2user-disabled.gif);
-	color:#bbb;
-	cursor:default;
+  background-image:url(../icons/talk2user-disabled.gif);
+  color:#bbb;
+  cursor:default;
 }
 
 .above .userzoom-tooltip-arrow {
-	background:transparent url(../icons/arrow/userzoom-tooltip-arrow.png) 0 0 no-repeat;
-	width:14px;
-	height:10px;
-	position:absolute;
-	bottom:-10px;
-	right:30px;
+  background:transparent url(../icons/arrow/userzoom-tooltip-arrow.png) 0 0 no-repeat;
+  width:14px;
+  height:10px;
+  position:absolute;
+  bottom:-10px;
+  right:30px;
 }
 
 .below .userzoom-tooltip-arrow {
-	background:transparent url(../icons/arrow/userzoom-tooltip-arrow-top.png) 0 0 no-repeat;
-	width:14px;
-	height:10px;
-	position:absolute;
-	top:-103px;
-	right:30px;
+  background:transparent url(../icons/arrow/userzoom-tooltip-arrow-top.png) 0 0 no-repeat;
+  width:14px;
+  height:10px;
+  position:absolute;
+  top:-103px;
+  right:30px;
 }
 
-.above.right .userzoom-tooltip-arrow , 
-.below.right .userzoom-tooltip-arrow 
+.above.right .userzoom-tooltip-arrow ,
+.below.right .userzoom-tooltip-arrow
 {
-	right:30px;
+  right:30px;
 }
 .above.left .userzoom-tooltip-arrow ,
-.below.left .userzoom-tooltip-arrow 
+.below.left .userzoom-tooltip-arrow
 {
-	left:30px;
+  left:30px;
 }
 
 .switch,
 .switch a{
-	border:1px solid #ccc;
-	border-radius:8px;
-	padding:6px 8px;
-	width:140px;
-	font-size:11px;
-	line-height:14px;
-	float:left;
-	margin-right:8px;
-	position:relative;
-	z-index:1000;
-	cursor:pointer
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:6px 8px;
+  width:140px;
+  font-size:11px;
+  line-height:14px;
+  float:left;
+  margin-right:8px;
+  position:relative;
+  z-index:1000;
+  cursor:pointer
 }
 
 .switch a {
-	display:block;
-	border:0;
-	width:30px;
-	padding:6px 4px;
-	margin-right:0;
-	border-left:1px solid #ccc;
-	position:absolute;
-	border-radius:0 8px 8px 0 ;
-	top:0;
-	right:0;
-	text-align:center;
+  display:block;
+  border:0;
+  width:30px;
+  padding:6px 4px;
+  margin-right:0;
+  border-left:1px solid #ccc;
+  position:absolute;
+  border-radius:0 8px 8px 0 ;
+  top:0;
+  right:0;
+  text-align:center;
 }
 
 .switch a:first-child {
-	right:38px;
-	border-radius:0 0 0 0;
+  right:38px;
+  border-radius:0 0 0 0;
 }
 
 .switch a.active  {
-	background-color: #747474;
-    color: #FFFFFF;
-	font-weight:bold
+  background-color: #747474;
+  color: #FFFFFF;
+  font-weight:bold
 }
 
 .switch a:hover  {
-	background-color: #F1790F;
-    color: #FFFFFF;
+  background-color: #F1790F;
+  color: #FFFFFF;
 }
 
 #myprofile-socialnetworks {
-	float: left;
-    padding-top: 10px;
-    width: 100%;
+  float: left;
+  padding-top: 10px;
+  width: 100%;
 }
 
 #myprofile-socialnetworks .switch.socialnetwork{
-	width:160px;
-	float:right;
+  width:160px;
+  float:right;
 }
 
 #myprofile-socialnetworks .a-socialnetwork p {
-	float:left;
-	color:#727272;
-	line-height:32px;
+  float:left;
+  color:#727272;
+  line-height:32px;
 }
 #myprofile-socialnetworks .a-socialnetwork p strong{
-	font-weight:bold;
-	color:#021035;
+  font-weight:bold;
+  color:#021035;
 }
 #myprofile-socialnetworks .a-socialnetwork p img{
-	float:left;
-	margin-right:8px;
+  float:left;
+  margin-right:8px;
 }
 
 #myProfile #FBPublishButton,
 #myProfile #FBLoginButton,
 #myProfile #LinkedInPublishButton,
 #myProfile #LinkedInLoginButton {
-	display: none;
+  display: none;
 }
 
-/********************************/
+/*************/
+/** preview **/
+/*************/
+.dialog-popup-button {
+  cursor: pointer;
+  text-align: center;
+  margin: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #666666;
+  background-color: #efefef;
+  opacity:0.4;
+  z-index: 10;
+}
+
+.dialog-popup-button:hover {
+  border: 1px solid #9BD94A;
+  background-color: #9BD94A;
+  opacity: 1;
+}
+
+.dialog-popup-button-image {
+  width: 13px;
+  height: 13px;
+}
+
+.ui-dialog .label-ui-dialog {
+  float:left;
+  clear:both;
+  width:30%;
+  margin-bottom:14px;
+}
+
+.ui-dialog .champs-ui-dialog {
+  float:right;
+  width:65%;
+  margin-bottom:14px;
+}
+
+/*******************************/
 /** created action bar **/
 /*******************************/
 #menubar-creation-actions {
-	background-color:#fff4eb;
-	border-top:1px solid #f1790f;
-	border-bottom:1px solid #f1790f;
-	vertical-align:middle;
-	text-align:center;
-	height:auto;
-	margin:1em;
+  display: none;
 }
 
-#menubar-creation-actions .menubar-creation-actions-item {
-	padding:10px 30px;
-	color:#4c4c4c;
-	font-size:12px;
-	display:inline-block;
-	width:auto;
-	line-height:12px;
-	height:18px;
-	white-space:nowrap;
+#menubar-creation-actions,
+#attachment-creation-actions {
+  background-color:#fff4eb;
+  border-top:1px solid #f1790f;
+  border-bottom:1px solid #f1790f;
+  vertical-align:middle;
+  text-align:center;
+  height:auto;
+  margin:1em;
 }
 
-#menubar-creation-actions .menubar-creation-actions-item:hover {
-	background-color:#F1790F;
-	color:#fff;
+#attachment-creation-actions {
+  margin:0;
 }
-#menubar-creation-actions .menubar-creation-actions-item img {
-	vertical-align:middle;
+
+#menubar-creation-actions .menubar-creation-actions-item,
+#attachment-creation-actions .menubar-creation-actions-item{
+  padding:10px 30px;
+  color:#4c4c4c;
+  font-size:12px;
+  display:inline-block;
+  width:auto;
+  line-height:12px;
+  height:18px;
+  white-space:nowrap;
+}
+
+#attachment-creation-actions .menubar-creation-actions-item{
+  padding:6px 20px;
+  font-size:11px;
+  line-height:11px;
+  height:18px;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item:hover,
+#attachment-creation-actions .menubar-creation-actions-item:hover {
+  background-color:#F1790F;
+  color:#fff;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item img,
+#attachment-creation-actions .menubar-creation-actions-item img {
+  vertical-align:middle;
+  margin:0;
+  border:0;
+}
+
+#attachment-creation-actions .menubar-creation-actions-item img {
+  margin-right:4px;
+}
+
+/*******************************/
+/**     plugin FileUpload     **/
+/*******************************/
+
+.skinFieldset.fileUpload  legend {
+  background: url("../icons/attachedFiles.gif") no-repeat scroll 11px 0 transparent;
+}
+
+div.fileUpload {
+  width: 90%;
+}
+
+.fileUpload-container {
+  width: auto;
+  clear: both;
+  height: auto;
+  margin: 10px 15px 0;
+}
+
+.fileUpload-container .actions {
+  position: relative;
+  margin-bottom: 3px;
+}
+
+.fileUpload-container .actions.dng {
+}
+
+.fileUpload-container .actions .icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+}
+
+.fileUpload-container .actions .icon.dng {
+  top: 8px;
+}
+.fileUpload-container .actions .input {
+  margin:0 110px 0 28px;
+
+}
+
+.fileUpload-container .actions .droparea {
+  padding: 0;
+  background: #FFF url(../icons/dropFile.png) no-repeat 6px 2px ;
+  border: 3px dashed #e5e5e5;
+  text-align: center;
+  top: 0;
+  left: 0;
+  height: 32px;
+}
+
+.fileUpload-container .actions.dng .milieuBoutonV5.button {
+  position:absolute;
+  top:0;
+  right:-110px;
+  width:90px;
+  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  padding:2px 5px;
+  margin:4px 0;
+  cursor:pointer;
+  background-color:#ece9d8;
+  border:1px solid #999999;
+  height:17px;
+  line-height:18px;
+  display:inline-block;
+  border-radius:5px;
+  text-align:center;
+}
+
+.fileUpload-container .actions.dng .milieuBoutonV5.button a {
+  background:transparent url() no-repeat;
+  padding:0px 8px 0 8px;
+  line-height:18px;
+  border:0;
+}
+
+
+.fileUpload-container .actions .droparea.hover {
+  background-color: #A8DE66;
+  border: 3px solid #9BCD5E;
+}
+
+.fileUpload-container .actions .droparea span {
+  color: #666666;
+  font-weight: bold;
+  line-height: 32px;
+  vertical-align: middle;
+}
+.fileUpload-container .actions a {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fileUpload-container .waiting-list {
+  margin-top:8px;
+  background:url(../icons/uploading.gif) no-repeat  0 3px;
+  padding-left:28px;
+}
+
+.fileUpload-container .waiting-list div {
+  position: relative;
+  margin: 0 0 3px 0;
+  padding: 6px;
+}
+.fileUpload-container .waiting-list .progress-bar {
+  position: absolute;
+  padding: 6px;
+  margin: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  background-color: #808080;
+  opacity: 0.08;
+}
+
+
+.fileUpload-container .uploaded-file-list {
+  width: auto;
+}
+
+.fileUpload-container .uploaded-file {
+  width: 100%;
+}
+
+.fileUpload-container .uploaded-file .details {
+  height: 16px;
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.fileUpload-container .uploaded-file .details img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fileUpload-container .uploaded-file .details span {
+  white-space:nowrap;
+  max-width:90%;
+  overflow:hidden;
+  color: #878787;
+  position: absolute;
+  top: 2px;
+  left: 25px;
+}
+
+.fileUpload-container .uploaded-file .details .delete-file{
+  position:absolute;
+  right:16px;
+  top:0;
+}
+
+.fileUpload-container .uploaded-file .details .delete-file img{
+  border:0;
+}
+
+.fileUpload-container .uploaded-file .infos > div {
+  margin-top: 3px;
+}
+
+.fileUpload-container .uploaded-file label {
+  margin: 0;
+}
+
+.fileUpload-container .uploaded-file input {
+  padding: 2px;
+  margin: 0;
+  width:99%;
+}
+
+.fileUpload-container .uploaded-file textarea {
+  padding: 2px;
+  margin: 0;
+  width:99%;
+}
+
+.fileUpload-container input[type=file] {
+  width: auto;
+}
+
+.fileUpload-container div.fileinputs {
+  position: relative;
+  margin-left: 5px;
+}
+.fileUpload-container div.fileinputs form{
+  padding:0;
+  margin:0;
+}
+
+.fileUpload-container .legendeFileUpload {
+  font-style: italic;
+}
+
+/*******************************/
+/** Tagit **/
+/*******************************/
+ul.tagit {
+  padding: 1px !important;
+  border: 1px solid #999999 !important;
+}
+
+ul.tagit li {
+  margin: 1px 5px 1px 0px !important;
+}
+
+ul.tagit li.tagit-choice {
+  padding: 1px 15px 1px 4px !important;
+}
+
+ul.tagit li.tagit-choice a.tagit-close {
+  padding: 0px 0px 2px 3px !important;
+}
+
+.ui-dialog .label-ui-dialog {
+  float:left;
+  clear:both;
+  width:25%;
+  margin-bottom: 14px;
+}
+
+.ui-dialog .champ-ui-dialog {
+  float:right;
+  width:70%;
+  margin-bottom: 14px;
+}
+
+.ui-dialog .champ-ui-dialog input[type=text],
+.ui-dialog .champ-ui-dialog input[type=file],
+.ui-dialog .champ-ui-dialog textarea {
+  width: 90%;
+}
+
+/*******************************/
+/**       Responsibles        **/
+/*******************************/
+#responsible-popup-content {
+  height: auto !important;
+  max-height: 400px;
+}
+.list-responsible-user {
 	margin:0;
+	padding:0;
+	list-style-type:none;
+}
+.list-responsible-user li{
+	float:left;
+	width:31.5%;
+	min-width:225px;
+	*width:225px;
 	border:0;
+	position:relative;
+	padding:0;
+	margin:0 1.5% 1.5% 0;
+	height:56px;
+	background-color:#FFF;
+}
+
+.list-responsible-user li div.content{
+	padding:0 0 0 50px;
+}
+
+.list-responsible-user .profilPhoto{
+	width:40px;
+	height:50px;
+	background-color:#FFF;
+	text-align:center;
+	border:1px solid #cfcfcf;
+	position:absolute;
+	top:2px;
+	left:2px;
+	
+}
+.list-responsible-user .profilPhoto img{
+	width:auto;
+	height:50px;
+}
+.list-responsible-user .userName {
+	padding-top:4px;
+}
+.list-responsible-user .userName a,
+#portletPages .list-responsible-user .userName a{
+	font-size:14px;
+	color:#333333;
+	font-weight:bold;
+	line-height:12px;
+}
+
+.list-responsible-user .action {
+	position:absolute;
+	bottom:-5px;
+	left:50px;
+}
+
+#portletPages .list-responsible-user .action a,
+.list-responsible-user .action a {
+	color:#666666;
+	text-decoration:underline;
+	border-bottom:0;
+	float:left;
+	margin-bottom: 0px;
+	padding-bottom: 10px;
+}
+#portletPages .list-responsible-user .action a:hover,
+.list-responsible-user .action a:hover{
+	color:#F1790F;
+}
+
+.title-list-responsible-user {
+	border-bottom:1px solid #cfcfcf;
+	padding:0 0 0.5em 0;
+	margin:0 0 1em 0;
+	text-align:center;
+	clear: both;
+}
+
+/*******************************/
+/* Advanced search plugin */
+/*******************************/
+#advanced-search div.tableFrame {
+  width:98%;
+  padding:5px;
+  margin:0 auto;
+}
+#advanced-search div.tableBoard {
+  padding:5px;
+}
+
+#used_pdc {
+  padding:0;
+  margin:0;
+  border:0;
+}
+
+#used_pdc .field{
+  position:relative;
+  padding-left:18px;
+  clear:left;
+}
+
+#used_pdc .field label{
+  display:block;
+  float:left;
+  width:162px;
+  padding:5px;
+  padding-right: 50px;
+}
+
+#used_pdc .field .champs{
+  display:block;
+  float:left;
+  padding:5px;
+}
+#used_pdc .field .champs.pdcAxis img{
+  position:absolute;
+  top:3px;
+  left:0;
+}
+
+#advanced-search table.tableBoard tr td:first-child {
+  width:180px;
 }

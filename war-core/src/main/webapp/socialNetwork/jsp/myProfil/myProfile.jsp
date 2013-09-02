@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,9 +25,13 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
@@ -48,25 +52,28 @@
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
     String language = request.getLocale().getLanguage();
+    ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
     ResourceLocator multilang = new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle", language);
     ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
     String view = (String) request.getAttribute("View");
 
-    List contacts = (List) request.getAttribute("Contacts");
-    int nbContacts = ((Integer) request.getAttribute("ContactsNumber")).intValue();
-    boolean showAllContactLink = !contacts.isEmpty();
+    List<UserDetail> contacts = (List<UserDetail>) request.getAttribute("Contacts");
 
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
 %>
-
+<c:set var="nbContacts" value="${requestScope.ContactsNumber}" />
+<c:set var="contacts" value="${requestScope.Contacts}" />
+<c:set var="currentUser" value="${requestScope.UserFull}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context %>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context %>/util/javaScript/checkForm.js"></script>
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
+<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <view:includePlugin name="messageme"/>
+<view:includePlugin name="password"/>
 <script type="text/javascript">
 function statusPublishFailed() {
 	$("#statusPublishFailedDialog").dialog("open");
@@ -77,8 +84,8 @@ function statusPublished() {
 }
 </script>
 
-<script type="text/javascript" src="<%=m_context %>/socialNetwork/jsp/js/statusFacebook.js"></script>
-<script type="text/javascript" src="<%=m_context %>/socialNetwork/jsp/js/statusLinkedIn.js"></script>
+<script type="text/javascript" src="<c:url value='/socialNetwork/jsp/js/statusFacebook.js' />"></script>
+<script type="text/javascript" src="<c:url value='/socialNetwork/jsp/js/statusLinkedIn.js' />"></script>
 
 <script type="text/javascript">
 function statusPublishFailed() {
@@ -95,6 +102,54 @@ function editStatus() {
 
 function updateAvatar() {
 	$("#avatarDialog").dialog("open");
+}
+
+function getExtension(filename) {
+  var indexPoint = filename.lastIndexOf(".");
+  // on verifie qu il existe une extension au nom du fichier
+  if (indexPoint != -1) {
+    // le fichier contient une extension. On recupere l extension
+    var ext = filename.substring(indexPoint + 1);
+    return ext;
+  }
+  return null;
+}
+
+function isFileCorrect(image) {
+  var errorMsg = "";
+  var errorNb = 0;
+
+  if (!isWhitespace(image)) {
+    var extension = getExtension(image);
+
+    if (extension == null) {
+      errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
+      errorNb++;
+    } else {
+      extension = extension.toLowerCase();
+      if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
+        errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
+        errorNb++;
+      }
+    }
+  }
+
+  switch(errorNb) {
+    case 0 :
+      result = true;
+      break;
+     case 1 :
+      errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+     default :
+      errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;
 }
 
 $(document).ready(function(){
@@ -135,11 +190,14 @@ $(document).ready(function(){
             modal: true,
             autoOpen: false,
             height: "auto",
-            width: 500,
+            width: 650,
             title: "<fmt:message key="profil.actions.changePhoto" />",
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
-					document.photoForm.submit();
+					var imageNewFile = $("#avatarDialog #ImageNewFile").val();
+					if (isFileCorrect(imageNewFile)) {
+						document.photoForm.submit();
+					}
 				},
 				"<fmt:message key="GML.cancel"/>": function() {
 					$(this).dialog( "close" );
@@ -180,6 +238,11 @@ $(document).ready(function(){
     $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
 
 });
+
+function hideImageFile() {
+  $("#avatarDialog #ImageFile").hide();
+  document.photoForm.removeImageFile.value = "yes";
+}
 </script>
 </head>
 <body id="myProfile">
@@ -192,10 +255,8 @@ $(document).ready(function(){
 <div id="myProfileFiche" >
 
 	<div class="info tableBoard">
- 		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
-       	<p class="statut">
-			<%=userFull.getStatus() %>
-        </p>
+ 		<h2 class="userName"><c:out value="${currentUser.firstName}" /> <br /><c:out value="${currentUser.lastName}" /></h2>
+       	<p class="statut"><c:out value="${currentUser.status}" /></p>
 	    <div class="action">
         	<a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
             <br />
@@ -208,7 +269,7 @@ $(document).ready(function(){
 			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>
         </div>
         <div class="profilPhoto">
-			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
+			<img src="<c:url value='${currentUser.avatar}' />" alt="viewUser" class="avatar"/>
         </div>
         <br clear="all" />
  	</div>
@@ -219,14 +280,24 @@ $(document).ready(function(){
 		</form>
 	</div>
 
-	<div id="avatarDialog">
-		<form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-	        <div>
-	          <div class="txtlibform">Image :</div>
-	          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
-	        </div>
-	      </form>
-	</div>
+      <div id="avatarDialog">
+        <form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+          <div>
+            <div class="txtlibform"><fmt:message key="profil.image" /> :</div>
+            <c:if test="${'/directory/jsp/icons/avatar.png' != currentUser.avatar}">
+              <div id="ImageFile">
+                <a href="<c:url value='${currentUser.avatar}' />" target="_blank"><c:out value="${currentUser.avatarFileName}" /></a>
+                <a href="javascript:onclick=hideImageFile();"><img src="<%=resources.getIcon("socialNetwork.smallDelete")%>" border="0"/></a>
+                <br/>
+              </div></c:if>
+              <div>
+                <input type="file" name="WAIMGVAR0" id="ImageNewFile" size="60"/> <i>(.gif/.jpg/.png)</i>
+                <input type="hidden" name="removeImageFile" value="no"/>
+              </div>
+            </div>
+            <span id="avatar-policy"><fmt:message key="profil.descriptionImage" /></span>
+        </form>
+      </div>
 
  	<div id="statusPublishedDialog">
  		<fmt:message key="profil.msg.statusPublished"/>
@@ -235,30 +306,26 @@ $(document).ready(function(){
  	<div id="statusPublishFailedDialog">
  		<fmt:message key="profil.errors.statusPublishFailed"/>
 	</div>
-	<% if (nbContacts > 0) { %>
-	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
+    <c:if test="${nbContacts > 0}">
+	<h3><c:out value="${nbContacts}"/> <fmt:message key="myProfile.contacts" /></h3>
 	<!-- allContact  -->
 	<div id="allContact">
-  	<%
-  		for (int i=0; i<contacts.size(); i++) {
-  		  UserDetail contact = (UserDetail) contacts.get(i);
-  	%>
+    <c:forEach items="${requestScope.Contacts}" var="contact">
 		<!-- unContact  -->
      	<div class="unContact">
         	<div class="profilPhotoContact">
-        		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
+            <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>"><img class="avatar" alt="viewUser" src="<c:url value='${contact.avatar}'/>" /></a>
         	</div>
-	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
+              <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>" class="contactName"><c:out value="${contact.displayedName}"/></a>
 	   	</div> <!-- /unContact  -->
-  	<% } %>
-
-    <% if (showAllContactLink) { %>
+    </c:forEach>
+    <c:if test="${not empty requestScope.Contacts}">
 	     <br clear="all" />
-	     <a href="<%=m_context %>/Rdirectory/jsp/Main?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
+       <a href="<c:url value='/Rdirectory/jsp/Main'><c:param name='UserId' value='${currentUser.id}' /></c:url>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
 	     <br clear="all" />
-    <% } %>
+    </c:if>
 	</div><!-- /allContact  -->
-	<% } %>
+    </c:if>
 
 </div>
 

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -78,6 +78,11 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String domainIds = request.getParameter("DomainIds");
         String userId = request.getParameter("UserId");
 
+        String sort = request.getParameter("Sort");
+        if (StringUtil.isDefined(sort)) {
+          directorySC.setCurrentSort(sort);
+        }
+
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
         } else if (StringUtil.isDefined(spaceId)) {
@@ -98,15 +103,19 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         }
 
         destination = doPagination(request, users, directorySC);
+        request.setAttribute("ShowHelp", true);
       } else if ("CommonContacts".equals(function)) {
         String userId = request.getParameter("UserId");
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if (function.equalsIgnoreCase("searchByKey")) {
-
-        users = directorySC.getUsersByQuery(request.getParameter("key"));
-        destination = doPagination(request, users, directorySC);
-
+        String query = request.getParameter("key");
+        if (StringUtil.isDefined(query)) {
+          users = directorySC.getUsersByQuery(query);
+          destination = doPagination(request, users, directorySC);
+        } else {
+          destination = getDestination("tous", directorySC, request);
+        }
       } else if (function.equalsIgnoreCase("tous")) {
 
         users = directorySC.getLastListOfAllUsers();
@@ -124,14 +133,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
       } else if (function.equalsIgnoreCase("pagination")) {
 
-        users = directorySC.getLastListOfUsersCallded();
+        users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
 
-      } else if (function.equalsIgnoreCase("NotificationView")) {
-        String userId = request.getParameter("Recipient");
-        request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
-        destination = "/directory/jsp/notificationUser.jsp";
-
+      } else if ("Sort".equals(function)) {
+        String sort = request.getParameter("Type");
+        users = directorySC.sort(sort);
+        destination = doPagination(request, users, directorySC);
       }
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -179,17 +187,21 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     Pagination pagination = gef.getPagination(users.size(), directorySC.getElementsByPage(), index);
-    List<Member> membersToDisplay = new ArrayList<Member>();
-    membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
-        getLastItemIndex()));
+    List<Member> membersToDisplay =
+        toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
+            getLastItemIndex()));
 
     // setting one fragment per user displayed
     request.setAttribute("UserFragments", directorySC.getFragments(membersToDisplay));
 
+    request.setAttribute("userTotalNumber", users.size());
     request.setAttribute("pagination", pagination);
+    request.setAttribute("paginationCounter", pagination.printCounter());
     request.setAttribute("View", directorySC.getCurrentView());
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
     request.setAttribute("Query", directorySC.getCurrentQuery());
+    request.setAttribute("Sort", directorySC.getCurrentSort());
+    request.setAttribute("ShowHelp", false);
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }

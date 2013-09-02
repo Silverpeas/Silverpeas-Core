@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,6 +33,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class QuotaException extends SilverpeasException {
   private static final long serialVersionUID = -822107677650523574L;
 
+  private final Quota quota;
+
   /**
    * Default constructor
    * @param quota
@@ -53,6 +55,7 @@ public class QuotaException extends SilverpeasException {
         "quotaType=" + quota.getType() + ", resourceId=" + quota.getResourceId() + ", minCount=" +
             quota.getMinCount() + ", maxCount=" + quota.getMaxCount() + ", count=" +
             quota.getCount(), exception);
+    this.quota = quota;
   }
 
   /**
@@ -62,6 +65,7 @@ public class QuotaException extends SilverpeasException {
    */
   public QuotaException(final Exception exception) {
     super("NoClass", SilverpeasException.ERROR, "", exception);
+    quota = null;
   }
 
   /*
@@ -71,5 +75,12 @@ public class QuotaException extends SilverpeasException {
   @Override
   public String getModule() {
     return "quota";
+  }
+
+  /**
+   * @return the quota
+   */
+  public Quota getQuota() {
+    return quota;
   }
 }

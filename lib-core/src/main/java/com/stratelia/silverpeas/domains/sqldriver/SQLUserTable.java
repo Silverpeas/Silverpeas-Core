@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -452,7 +453,7 @@ public class SQLUserTable {
     u.setLastName(rs.getString(3));
     u.seteMail(rs.getString(4));
     u.setLogin(rs.getString(5));
-    u.setAccessLevel("U");
+    u.setAccessLevel(UserAccessLevel.USER);
     return u;
   }
 }

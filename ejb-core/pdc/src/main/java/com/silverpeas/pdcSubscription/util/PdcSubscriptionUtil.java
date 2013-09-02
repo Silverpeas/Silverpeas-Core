@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,16 @@
 
 package com.silverpeas.pdcSubscription.util;
 
-import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
-import com.stratelia.silverpeas.classifyEngine.Value;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-
 import java.rmi.RemoteException;
 import java.util.List;
+
+import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
+import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
+
+import com.stratelia.silverpeas.classifyEngine.Value;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Utility class. Contains calls of PdcSubscription Ejb
@@ -43,9 +44,7 @@ public class PdcSubscriptionUtil {
   private void initEJB() {
     if (scBm == null)
       try {
-        PdcSubscriptionBmHome icEjbHome =
-            EJBUtilitaire.getEJBObjectRef("ejb/pdcSubscription", PdcSubscriptionBmHome.class);
-        scBm = icEjbHome.create();
+        scBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBm.class);
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
             PdcSubscriptionRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

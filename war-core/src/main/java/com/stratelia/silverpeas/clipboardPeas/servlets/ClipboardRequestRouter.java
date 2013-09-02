@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,11 +24,13 @@
 
 package com.stratelia.silverpeas.clipboardPeas.servlets;
 
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -179,12 +181,17 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
   public void updateSessionManagement(HttpSession session, String destination) {
     SilverTrace.info("clipboardPeas", "ClipboardRequestRouter.updateSessionManagement",
         "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
-    if (destination.startsWith("/clipboard/jsp/Idle")) {
-      // Set the isalived time
-      SessionManager.getInstance().setIsAlived(session);
-    } else {
-      // Set the last accessed time
-      SessionManager.getInstance().setLastAccess(session);
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
+    if (sessionInfo != null) {
+      if (destination.startsWith("/clipboard/jsp/Idle")) {
+        // Set the idle time
+        sessionInfo.setAsIdle();
+      } else {
+        // Set the last accessed time
+        sessionInfo.updateLastAccess();
+      }
     }
   }
 }

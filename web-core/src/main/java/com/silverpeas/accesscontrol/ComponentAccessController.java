@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,21 +24,28 @@
 
 package com.silverpeas.accesscontrol;
 
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
- * Check the access to a component for a user.
+ * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be
+ * either a Silverpeas application instance (like a KMelia instance for example) or a user
+ * personal tool or an administrative tool.
  * @author ehugonnet
  */
 @Named
 public class ComponentAccessController implements AccessController<String> {
 
   @Inject
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public ComponentAccessController() {
   }
@@ -47,7 +54,7 @@ public class ComponentAccessController implements AccessController<String> {
    * For tests only.
    * @param controller the controller to set for tests.
    */
-  protected void setOrganizationController(final OrganizationController controller) {
+  protected void setOrganizationController(final OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -58,7 +65,7 @@ public class ComponentAccessController implements AccessController<String> {
    * @return
    */
   public boolean isRightOnTopicsEnabled(String userId, String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganizationController().
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
         getComponentParameterValue(componentId, "rightsOnTopics"));
   }
 
@@ -69,23 +76,26 @@ public class ComponentAccessController implements AccessController<String> {
   @Override
   public boolean isUserAuthorized(String userId, String componentId) {
     // Personal space or user tool
-    if (componentId == null || getOrganizationController().isToolAvailable(componentId)) {
+    if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
       return true;
     }
-    if (StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+    if (Admin.ADMIN_COMPONENT_ID.equals(componentId)) {
+      return UserDetail.getById(userId).isAccessAdmin();
+    }
+    if (StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
         componentId, "publicFiles"))) {
       return true;
     }
-    return getOrganizationController().isComponentAvailable(componentId, userId);
+    return getOrganisationController().isComponentAvailable(componentId, userId);
   }
 
   /**
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (controller == null) {
-      controller = new OrganizationController();
+      controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
   }

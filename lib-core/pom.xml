@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
@@ -123,6 +123,10 @@
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-exec</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sourceforge</groupId>
@@ -191,6 +195,10 @@
       <artifactId>jersey-server</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
     </dependency>
@@ -234,11 +242,6 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spellchecker</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-snowball</artifactId>
-    </dependency>-->
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
@@ -260,7 +263,7 @@
       <artifactId>hamcrest-all</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.fortuna.ical4j</groupId>
+      <groupId>org.mnode.ical4j</groupId>
       <artifactId>ical4j</artifactId>
     </dependency>
     <dependency>
@@ -274,10 +277,6 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>stringtemplate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
@@ -298,6 +297,10 @@
           <groupId>javax.xml.stream</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -333,7 +336,6 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
-      <classifier>silverpeas</classifier>
     </dependency>
     <dependency>
       <groupId>com.drewnoakes</groupId>
@@ -342,28 +344,21 @@
     <dependency>
       <artifactId>xmlbeans</artifactId>
       <groupId>org.apache.xmlbeans</groupId>
-      <type>jar</type>      
+      <type>jar</type>
       <classifier>jdk6</classifier>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-linkedin</artifactId>
-      <version>1.0.0.RC1</version>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-facebook</artifactId>
-      <version>1.0.1.RELEASE</version>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-crypto</artifactId>
-      <version>3.1.0.RELEASE</version>
     </dependency>
-
     <dependency>
       <groupId>org.forgerock.opendj</groupId>
       <artifactId>opendj-server</artifactId>
@@ -372,53 +367,74 @@
       <groupId>com.sleepycat</groupId>
       <artifactId>je</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.im4java</groupId>
+      <artifactId>im4java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-filesystems</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
     <testResources>
       <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-        <excludes>
-          <exclude>**/*.odp</exclude>
-          <exclude>**/index/**/*</exclude>
-          <exclude>**/*.odt</exclude>
-          <exclude>**/*.doc</exclude>
-          <exclude>**/*.docx</exclude>
-          <exclude>**/*.zip</exclude>
-          <exclude>**/*.tif</exclude>
-          <exclude>**/*.tar.gz</exclude>
-          <exclude>**/*.tar.bz2</exclude>
-          <exclude>**/*.sql</exclude>
-          <exclude>opendj/**</exclude>
-        </excludes>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
+        <directory>${basedir}/src/test/resources</directory>
         <filtering>false</filtering>
         <includes>
           <include>**/index/**/*</include>
+          <include>index/kmelia*/**/*.*</include>
+          <include>org/silverpeas/util/*.*</include>
           <include>**/*.odp</include>
           <include>**/*.odt</include>
           <include>**/*.doc</include>
-          <include>**/*.tif</include>
           <include>**/*.docx</include>
           <include>**/*.zip</include>
           <include>**/*.tar.gz</include>
           <include>**/*.tar.bz2</include>
           <include>**/*.sql</include>
           <include>opendj/**</include>
+          <include>**/*.tif</include>
+          <include>**/*.msg</include>
+          <include>**/*.eml</include>
         </includes>
+      </testResource>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>index/kmelia*/**/*.*</exclude>
+          <exclude>**/index/**/*</exclude>
+          <exclude>org/silverpeas/util/*.*</exclude>
+          <exclude>**/*.odp</exclude>
+          <exclude>**/*.odt</exclude>
+          <exclude>**/*.doc</exclude>
+          <exclude>**/*.docx</exclude>
+          <exclude>**/*.zip</exclude>
+          <exclude>**/*.tar.gz</exclude>
+          <exclude>**/*.tar.bz2</exclude>
+          <exclude>**/*.sql</exclude>
+          <exclude>opendj/**</exclude>
+          <exclude>**/*.tif</exclude>
+          <exclude>**/*.msg</exclude>
+          <exclude>**/*.eml</exclude>
+        </excludes>
       </testResource>
     </testResources>
     <filters>
-      <filter>src/test/filters/filters.properties</filter>
+      <filter>${basedir}/src/test/filters/filters.properties</filter>
     </filters>
     <plugins>
       <plugin>
         <groupId>de.jflex</groupId>
         <artifactId>maven-jflex-plugin</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.0-20120831.084748-4</version>
         <executions>
           <execution>
             <goals>
@@ -437,7 +453,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>false</skipTests>
-		  <argLine>-XX:MaxPermSize=512m</argLine>
+          <argLine>-XX:MaxPermSize=512m</argLine>
           <systemProperties>
             <property>
               <name>java.awt.headless</name>

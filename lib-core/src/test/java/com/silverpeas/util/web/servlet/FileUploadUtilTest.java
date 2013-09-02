@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,8 @@
 package com.silverpeas.util.web.servlet;
 
 import java.io.File;
+
+import com.silverpeas.util.FileUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.io.IOUtils;
@@ -101,7 +103,8 @@ public class FileUploadUtilTest {
   
    @Test
   public void testConvertPathToServerOS() throws Exception {
-    String fileName = FileUploadUtil.convertPathToServerOS("C:\\Documents and Settings\\rivoirede\\Bureau\\GED KHOLER\\import_kohler_partiel.xml");
+    String fileName = FileUtil.convertPathToServerOS(
+        "C:\\Documents and Settings\\rivoirede\\Bureau\\GED KHOLER\\import_kohler_partiel.xml");
     if(File.separatorChar == '/') {
       assertThat(fileName, is("C:/Documents and Settings/rivoirede/Bureau/GED KHOLER/import_kohler_partiel.xml"));
     } else {
@@ -109,7 +112,7 @@ public class FileUploadUtilTest {
     }
     
     
-    fileName = FileUploadUtil.convertPathToServerOS("/home/silverpeas/test/result.txt");
+    fileName = FileUtil.convertPathToServerOS("/home/silverpeas/test/result.txt");
     if(File.separatorChar == '/') {
       assertThat(fileName, is("/home/silverpeas/test/result.txt"));
     } else {

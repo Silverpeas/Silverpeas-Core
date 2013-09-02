@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,14 @@
 
 /*
  * AbstractCalendar.java
- * this class implements Calendar interface
+ * this class implements SilverpeasCalendar interface
  * this class implements the functionalities of a calendar.
  * for the use, you must necessarily create a new class inheriting this one
  * This class must implement the method String print().
  * for thue use:
  * 1 creates a new class extend AbstractCalendar and implements String print()
- * 2 uses method addEvents(Collection events), in order to initialize the list of the events 
- * 
+ * 2 uses method addEvents(Collection events), in order to initialize the list of the events
+ *
  * @version
  */
 

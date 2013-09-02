@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="com.silverpeas.session.SessionInfo"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
@@ -33,7 +35,7 @@
 ArrayLine arrayLine = null;
 Iterator   iter = null;
 Collection cResultData = (Collection)request.getAttribute("ConnectedUsersList");
-String userProfile = (String)request.getAttribute("UserProfile");
+UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 %>
 
@@ -55,7 +57,7 @@ String userProfile = (String)request.getAttribute("UserProfile");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
-<script language="javascript">
+<script type="text/javascript">
 <!--
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -89,7 +91,7 @@ function DoIdle()
 	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoNotifyAll"),resources.getString("silverStatisticsPeas.notifyAllUser"),"javascript:openSPWindow('DisplayNotifyAllSessions','DisplayNotifyAllSessions')");
 
     out.println(window.printBefore());
-    if (userProfile.equals("A"))
+    if (UserAccessLevel.ADMINISTRATOR.equals(userProfile))
     {
 		out.println(tabbedPane.print());
     }
@@ -107,7 +109,7 @@ function DoIdle()
 		  arrayColumn1.setSortable(false);
 
           arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.ip"));
-          arrayPane.addArrayColumn(resources.getString("GML.login"));
+          arrayPane.addArrayColumn(resources.getString("GML.user"));
           arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.duration"));
 
           arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.Actions")+"</A>");
@@ -127,12 +129,12 @@ function DoIdle()
 
                 arrayLine.addArrayCellText("<div align=\"right\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoMonitor")+"\" alt=\"\"/></div>");
 
-          		arrayLine.addArrayCellText(item.getUserHostIP());
+          		arrayLine.addArrayCellText(item.getIPAddress());
 
-				arrayLine.addArrayCellText(item.getLog());
+				arrayLine.addArrayCellText(item.getUserDetail().getLastName()+" "+item.getUserDetail().getFirstName());
 
 				long duration = currentTime - item.getOpeningTimestamp();
-				cellText = arrayLine.addArrayCellText(item.formatDuration(duration));
+				cellText = arrayLine.addArrayCellText(DateUtil.formatDuration(duration));
 				cellText.setCompareOn(new Long(duration));
 
                 arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.getUserDetail().getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.getSessionId()) + "','" + Encode.javaStringToJsString(resources.getString("silverStatisticsPeas.ConfirmKickSession") + item.getUserDetail().getLogin() + " (" + item.getUserDetail().getDisplayedName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\"/></a></div>");
@@ -140,7 +142,7 @@ function DoIdle()
 
         	out.println(arrayPane.print());
         }
-        out.println(resources.getString("silverStatisticsPeas.RefreshedEveryMinutes") + "<BR>");
+        out.println(resources.getString("silverStatisticsPeas.RefreshedEveryMinutes") + "<br/>");
 %>
 </center>
 <%

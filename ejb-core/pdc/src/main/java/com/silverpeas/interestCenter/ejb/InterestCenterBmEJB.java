@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -28,33 +25,42 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.model.InterestCenter;
+
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.sql.Connection;
-import java.util.List;
 
 /**
  * InterestCenterBm EJB implementation for detailed comments for each method see remote interface
  * class
+ *
  * @see InterestCenterBm
  */
-public class InterestCenterBmEJB implements SessionBean {
+@Stateless(name = "InterestCenter", description =
+    "Stateless session bean to manage interest centers.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class InterestCenterBmEJB implements InterestCenterBm {
 
   private static final long serialVersionUID = -5867239072798551540L;
 
+  @Override
   public List<InterestCenter> getICByUserID(int userID) {
-    Connection con = null;
+    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
     try {
-      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.getICByUserID(con, userID);
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
+          "InterestCenter.CANNOT_LOAD_IC", String.valueOf(userID), e);
+    } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
           "InterestCenter.CANNOT_LOAD_IC", String.valueOf(userID), e);
     } finally {
@@ -62,12 +68,15 @@ public class InterestCenterBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public InterestCenter getICByID(int icPK) {
-    Connection con = null;
+    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
     try {
-      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.getICByPK(con, icPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
+          "InterestCenter.CANNOT_LOAD_LIST_OF_IC", String.valueOf(icPK), e);
+    } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
           "InterestCenter.CANNOT_LOAD_LIST_OF_IC", String.valueOf(icPK), e);
     } finally {
@@ -75,12 +84,16 @@ public class InterestCenterBmEJB implements SessionBean {
     }
   }
 
+  @Override
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public int createIC(InterestCenter ic) {
-    Connection con = null;
+    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
     try {
-      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.createIC(con, ic);
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
+          "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
+    } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
           "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
     } finally {
@@ -88,12 +101,16 @@ public class InterestCenterBmEJB implements SessionBean {
     }
   }
 
+  @Override
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void updateIC(InterestCenter ic) {
-    Connection con = null;
+    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
     try {
-      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.updateIC(con, ic);
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
+          "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
+    } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
           "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
     } finally {
@@ -101,12 +118,16 @@ public class InterestCenterBmEJB implements SessionBean {
     }
   }
 
+  @Override
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void removeICByPK(List<Integer> pks) {
-    Connection con = null;
+    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
     try {
-      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.removeICByPK(con, pks);
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
+          "InterestCenter.CANNOT_DELETE_IC", pks.toString(), e);
+    } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
           "InterestCenter.CANNOT_DELETE_IC", pks.toString(), e);
     } finally {
@@ -114,36 +135,20 @@ public class InterestCenterBmEJB implements SessionBean {
     }
   }
 
+  @Override
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void removeICByPK(int pk) {
-    Connection con = null;
+    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
     try {
-      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.removeICByPK(con, pk);
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
+          "InterestCenter.CANNOT_DELETE_IC", String.valueOf(pk), e);
+    } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
           "InterestCenter.CANNOT_DELETE_IC", String.valueOf(pk), e);
     } finally {
       DBUtil.close(con);
     }
   }
-
-  public void ejbCreate() throws CreateException {
-  }
-
-  @Override
-  public void ejbActivate() throws EJBException {
-  }
-
-  @Override
-  public void ejbPassivate() throws EJBException {
-  }
-
-  @Override
-  public void ejbRemove() throws EJBException {
-  }
-
-  @Override
-  public void setSessionContext(SessionContext context) throws EJBException {
-  }
-
 }

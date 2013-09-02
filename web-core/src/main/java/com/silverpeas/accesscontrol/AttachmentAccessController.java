@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,15 +29,16 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
@@ -102,9 +103,7 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
   }
 
   protected PublicationBm getPublicationBm() throws Exception {
-    PublicationBmHome pubBmHome = EJBUtilitaire.getEJBObjectRef(
-        JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-    return pubBmHome.create();
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 
   /**

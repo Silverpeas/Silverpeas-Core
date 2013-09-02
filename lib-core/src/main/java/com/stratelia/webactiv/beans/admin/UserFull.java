@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,10 +24,18 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.profile.token.UserTokenKey;
+import org.silverpeas.token.exception.TokenException;
+import org.silverpeas.token.exception.TokenRuntimeException;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
 
 public class UserFull extends UserDetail {
 
@@ -37,14 +45,14 @@ public class UserFull extends UserDetail {
   protected String m_password = "";
   protected boolean m_isPasswordValid = false;
   protected boolean m_isPasswordAvailable = false;
-  
+
   /**
    * Gets the full profile of the user with the specified identifier.
    * @param userId the unique identifier of the user in Silverpeas.
    * @return the full profile of the user.
    */
   public static UserFull getById(String userId) {
-    return getOrganizationController().getUserFull(userId);
+    return getOrganisationController().getUserFull(userId);
   }
 
   /** Creates new UserFull */
@@ -86,6 +94,14 @@ public class UserFull extends UserDetail {
     return (m_password == null) ? "" : m_password;
   }
 
+  public String getToken() {
+    try {
+      return getTokenService().getInitialized(UserTokenKey.from(this)).getValue();
+    } catch (TokenException e) {
+      throw new TokenRuntimeException(e);
+    }
+  }
+
   public void setPassword(String p) {
     m_password = p;
   }
@@ -95,7 +111,7 @@ public class UserFull extends UserDetail {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getPropertiesNames();
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
 
   }
 

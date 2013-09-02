@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,15 +28,20 @@ import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.DateTime;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+import static java.util.Calendar.*;
 
 /**
  * DateUtil is an helper class for date manipulation.
@@ -82,11 +87,10 @@ public class DateUtil {
     ISO8601DAY_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd");
     ICALDAY_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
     ICALDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
-    ICALUTCDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'",
-        TimeZone.getTimeZone("UTC"));
+    ICALUTCDATE_FORMATTER =
+        FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'", TimeZone.getTimeZone("UTC"));
     ISO8601_FORMATTER =
-        FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone(
-        "UTC"));
+        FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"));
   }
 
   /**
@@ -112,8 +116,7 @@ public class DateUtil {
     return formatter.format(date);
   }
 
-  public static String getOutputDate(String dateDB, String language)
-      throws ParseException {
+  public static String getOutputDate(String dateDB, String language) throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
     }
@@ -130,8 +133,7 @@ public class DateUtil {
     return formatter.format(date);
   }
 
-  public static String getOutputHour(String dateDB, String language)
-      throws ParseException {
+  public static String getOutputHour(String dateDB, String language) throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
     }
@@ -151,9 +153,15 @@ public class DateUtil {
     if (date == null) {
       return "";
     }
+    if (DateUtils.getFragmentInMilliseconds(date, Calendar.DAY_OF_MONTH) == 0L) {
+      // this case is useful on data recovery
+      // avoiding to display an useless information about hour (00:00) when given date have an hour
+      // like 0:00:00.000
+      return getOutputDate(date, language);
+    }
     FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
-        language).getString("dateOutputFormat") +
-        " " + getMultilangProperties(language).getString("hourOutputFormat"));
+        language).getString("dateOutputFormat") + " " + getMultilangProperties(language).getString(
+        "hourOutputFormat"));
     return formatter.format(date);
   }
 
@@ -167,8 +175,7 @@ public class DateUtil {
     }
   }
 
-  public static String getInputDate(String dateDB, String language)
-      throws ParseException {
+  public static String getInputDate(String dateDB, String language) throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
     }
@@ -180,12 +187,11 @@ public class DateUtil {
    * Parse the date in a language specific standard format.
    * @param string The String to convert in Date
    * @param language The current user's language
+   * @return A Date representation of the String in the language specific format.
    * @throws java.text.ParseException if the input String is null, empty, or just in an incorrect
    * format.
-   * @return A Date representation of the String in the language specific format.
    */
-  public static Date stringToDate(String string, String language)
-      throws ParseException {
+  public static Date stringToDate(String string, String language) throws ParseException {
     SimpleDateFormat format = getDateInputFormat(language);
     try {
       return format.parse(string);
@@ -196,8 +202,7 @@ public class DateUtil {
     }
   }
 
-  public static Date stringToDate(String date, String hour, String language)
-      throws ParseException {
+  public static Date stringToDate(String date, String hour, String language) throws ParseException {
     try {
       SimpleDateFormat format;
       if (hour == null || "".equals(hour.trim())) {
@@ -211,14 +216,30 @@ public class DateUtil {
     }
   }
 
+  /**
+   * Gets the current date and hour.
+   * @return
+   */
+  public static Date getNow() {
+    return Calendar.getInstance().getTime();
+  }
+
+  /**
+   * Gets the current date with reseted hour.
+   * @return
+   */
+  public static Date getDate() {
+    return resetHour(getNow());
+  }
+
   public static Date getDate(Date date, String hour) {
     if (date == null) {
       return null;
     }
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = getInstance();
     calendar.setTime(date);
-    calendar.set(Calendar.HOUR_OF_DAY, extractHour(hour));
-    calendar.set(Calendar.MINUTE, extractMinutes(hour));
+    calendar.set(HOUR_OF_DAY, extractHour(hour));
+    calendar.set(MINUTE, extractMinutes(hour));
     return calendar.getTime();
 
   }
@@ -240,7 +261,6 @@ public class DateUtil {
     if (!StringUtil.isDefined(hour)) {
       return 0;
     }
-
     if (hour.indexOf(':') != -1) {
       return Integer.parseInt(hour.substring(hour.indexOf(':') + 1));
     } else if (hour.indexOf('h') != -1) {
@@ -270,7 +290,6 @@ public class DateUtil {
 
   /**
    * Get the hour (from a date) language specific standard output format.
-   *
    * @param lang The current user's language
    * @return A SimpleDateFormat initialized with the language specific output format.
    */
@@ -280,7 +299,6 @@ public class DateUtil {
 
   /**
    * Get the hour (from a date) language specific standard input format.
-   *
    * @param language The current user's language
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
@@ -306,8 +324,7 @@ public class DateUtil {
    * @author squere
    */
   public static ResourceLocator getMultilangProperties(String language) {
-    return new ResourceLocator(
-        "com.stratelia.webactiv.util.date.multilang.date", language);
+    return new ResourceLocator("com.stratelia.webactiv.util.date.multilang.date", language);
   }
 
   /**
@@ -341,22 +358,37 @@ public class DateUtil {
    * @return true if both dates defined the same date
    */
   public static boolean datesAreEqual(Date date1, Date date2) {
-    Calendar cDate1 = Calendar.getInstance();
-    cDate1.setTime(date1);
-    Calendar cDate2 = Calendar.getInstance();
-    cDate2.setTime(date2);
-    if (cDate1.get(Calendar.YEAR) != cDate2.get(Calendar.YEAR)) {
-      return false;
-    } else {
-      if (cDate1.get(Calendar.MONTH) != cDate2.get(Calendar.MONTH)) {
-        return false;
-      } else {
-        if (cDate1.get(Calendar.DATE) != cDate2.get(Calendar.DATE)) {
-          return false;
-        }
-      }
+    return compareTo(date1, date2) == 0;
+  }
+
+  /**
+   * Compare 2 dates on year/month/day only.
+   * @param date1
+   * @param date2
+   * @return int
+   */
+  public static int compareTo(Date date1, Date date2) {
+    return compareTo(date1, date2, true);
+  }
+
+  /**
+   * Compare 2 dates.
+   * @param date1
+   * @param aDate2
+   * @return int
+   */
+  public static int compareTo(Date date1, Date aDate2, boolean aForceResetHour) {
+    Calendar myCal1 = DateUtil.convert(date1);
+    if (aForceResetHour) {
+      resetHour(myCal1);
     }
-    return true;
+
+    Calendar myCal2 = DateUtil.convert(aDate2);
+    if (aForceResetHour) {
+      resetHour(myCal2);
+    }
+
+    return myCal1.getTime().compareTo(myCal2.getTime());
   }
 
   public static String today2SQLDate() {
@@ -366,7 +398,7 @@ public class DateUtil {
   /**
    * @param date the date to transform
    * @return a String representing the given date in a yyyy/MM/dd format or null if given date is
-   * null
+   *         null
    */
   public static String date2SQLDate(Date date) {
     if (date == null) {
@@ -441,8 +473,7 @@ public class DateUtil {
 
   public static String getFormattedTime(Date date) {
     String time = formatTime(date);
-    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " +
-        time);
+    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " + time);
     return time;
   }
 
@@ -456,15 +487,39 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (DATE_PARSER) {
       result.setTime(DATE_PARSER.parse(date));
     }
-    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0);
-    return result.getTime();
+    return resetHour(result).getTime();
+  }
+
+  /**
+   * Reset hour of a date (00:00:00.000)
+   * @param date
+   * @return
+   */
+  public static Calendar resetHour(Calendar date) {
+    date.set(Calendar.HOUR_OF_DAY, 0);
+    date.set(Calendar.MINUTE, 0);
+    date.set(Calendar.SECOND, 0);
+    date.set(Calendar.MILLISECOND, 0);
+    return date;
+  }
+
+  /**
+   * Reset hour of a date (00:00:00.000)
+   * @param date
+   * @return
+   */
+  public static Date resetHour(Date date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    return calendar.getTime();
   }
 
   /**
@@ -477,7 +532,7 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (DATETIME_PARSER) {
       result.setTime(DATETIME_PARSER.parse(date));
     }
@@ -494,7 +549,7 @@ public class DateUtil {
     if (time == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (TIME_PARSER) {
       result.setTime(TIME_PARSER.parse(time));
     }
@@ -511,15 +566,11 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (DATE_PARSER) {
       result.setTime(DATE_PARSER.parse(date));
     }
-    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0);
-    return result;
+    return resetHour(result);
   }
 
   /**
@@ -564,22 +615,22 @@ public class DateUtil {
    * @param calend the calendar to be updated.
    */
   public static void setTime(Calendar calend, String time) {
-    calend.set(Calendar.SECOND, 0);
-    calend.set(Calendar.MILLISECOND, 0);
+    calend.set(SECOND, 0);
+    calend.set(MILLISECOND, 0);
     if (time != null) {
       try {
         Calendar result = Calendar.getInstance();
         synchronized (TIME_PARSER) {
           result.setTime(TIME_PARSER.parse(time));
         }
-        calend.set(Calendar.HOUR_OF_DAY, result.get(Calendar.HOUR_OF_DAY));
-        calend.set(Calendar.MINUTE, result.get(Calendar.MINUTE));
+        calend.set(HOUR_OF_DAY, result.get(HOUR_OF_DAY));
+        calend.set(MINUTE, result.get(MINUTE));
         return;
       } catch (ParseException pex) {
       }
     }
-    calend.set(Calendar.HOUR_OF_DAY, 0);
-    calend.set(Calendar.MINUTE, 0);
+    calend.set(HOUR_OF_DAY, 0);
+    calend.set(MINUTE, 0);
   }
 
   /**
@@ -610,7 +661,7 @@ public class DateUtil {
    * Formats the specified date according to the ISO 8601 format.
    * @param date the date to format.
    * @return a String representation of the date in one of the ISO 8601 format (down to the minute
-   * and without the UTC offset).
+   *         and without the UTC offset).
    */
   public static String formatAsISO8601Date(final Date date) {
     return ISO8601DATE_FORMATTER.format(date);
@@ -627,11 +678,13 @@ public class DateUtil {
   }
 
   /**
-   * Formats the specified date according to the ISO 8601 format of the iCal format (in the timezone
+   * Formats the specified date according to the ISO 8601 format of the iCal format (in the
+   * timezone
    * of the date).
    * @param date the date to format.
-   * @return a String representation of the date the ISO 8601 format of the iCal format (down to the
-   * second).
+   * @return a String representation of the date the ISO 8601 format of the iCal format (down to
+   *         the
+   *         second).
    */
   public static String formatAsICalDate(final Date date) {
     return ICALDATE_FORMATTER.format(date);
@@ -640,8 +693,9 @@ public class DateUtil {
   /**
    * Formats the specified date according to the ISO 8601 format of the iCal format (in UTC).
    * @param date the date to format.
-   * @return a String representation of the date the ISO 8601 format of the iCal format (down to the
-   * second in UTC).
+   * @return a String representation of the date the ISO 8601 format of the iCal format (down to
+   *         the
+   *         second in UTC).
    */
   public static String formatAsICalUTCDate(final Date date) {
     return ICALUTCDATE_FORMATTER.format(date);
@@ -662,11 +716,11 @@ public class DateUtil {
    * @param date the date to parse (must satisfy one of the following pattern yyyy-MM-ddTHH:mm or
    * yyyy-MM-dd).
    * @return a date object, resulting of the parsing.
-   * @exception ParseException if the specified date is not in the one of the expected formats.
+   * @throws ParseException if the specified date is not in the one of the expected formats.
    */
   public static Date parseISO8601Date(final String date) throws ParseException {
-    return DateUtils.parseDate(date, ISO8601DATE_FORMATTER.getPattern(),
-        ISO8601DAY_FORMATTER.getPattern());
+    return DateUtils
+        .parseDate(date, ISO8601DATE_FORMATTER.getPattern(), ISO8601DAY_FORMATTER.getPattern());
   }
 
   /**
@@ -686,18 +740,53 @@ public class DateUtil {
   }
 
   /**
+   * Compute the date of the first day in the year of the specified date.
+   * @param date the specified date.
+   * @return a date for the first day of the year of the specified date.
+   */
+  public static Date getFirstDateOfYear(Date date) {
+    Calendar calendar = getInstance();
+    calendar.setTime(date);
+    calendar.set(MONTH, Calendar.JANUARY);
+    calendar.set(DAY_OF_MONTH, 1);
+    calendar.set(HOUR_OF_DAY, 0);
+    calendar.set(MINUTE, 0);
+    calendar.set(SECOND, 0);
+    calendar.set(MILLISECOND, 0);
+    return calendar.getTime();
+  }
+
+  /**
+   * Compute the date of the last day in the year of the specified date.
+   * @param date the specified date.
+   * @return a date for the last day of the year of the specified date.
+   */
+  public static Date getEndDateOfYear(Date date) {
+    Calendar calendar = getInstance();
+    calendar.setTime(date);
+    calendar.set(MONTH, Calendar.DECEMBER);
+    calendar.set(HOUR_OF_DAY, 23);
+    calendar.set(MINUTE, 59);
+    calendar.set(SECOND, 59);
+    calendar.set(MILLISECOND, 999);
+    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, 1);
+    calendar.add(Calendar.DATE, -1);
+    return calendar.getTime();
+  }
+
+  /**
    * Compute the date of the first day in the month of the specified date.
    * @param date the specified date.
    * @return a date for the first day of the month of the specified date.
    */
   public static Date getFirstDateOfMonth(Date date) {
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = getInstance();
     calendar.setTime(date);
-    calendar.set(Calendar.DAY_OF_MONTH, 1);
-    calendar.set(Calendar.HOUR_OF_DAY, 0);
-    calendar.set(Calendar.MINUTE, 0);
-    calendar.set(Calendar.SECOND, 0);
-    calendar.set(Calendar.MILLISECOND, 0);
+    calendar.set(DAY_OF_MONTH, 1);
+    calendar.set(HOUR_OF_DAY, 0);
+    calendar.set(MINUTE, 0);
+    calendar.set(SECOND, 0);
+    calendar.set(MILLISECOND, 0);
     return calendar.getTime();
   }
 
@@ -707,32 +796,104 @@ public class DateUtil {
    * @return a date for the last day of the month of the specified date.
    */
   public static Date getEndDateOfMonth(Date date) {
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = getInstance();
     calendar.setTime(date);
-    calendar.set(Calendar.DAY_OF_MONTH, calendar.getMaximum(Calendar.DAY_OF_MONTH));
-    calendar.set(Calendar.HOUR_OF_DAY, 23);
-    calendar.set(Calendar.MINUTE, 59);
-    calendar.set(Calendar.SECOND, 59);
-    calendar.set(Calendar.MILLISECOND, 999);
+    calendar.set(HOUR_OF_DAY, 23);
+    calendar.set(MINUTE, 59);
+    calendar.set(SECOND, 59);
+    calendar.set(MILLISECOND, 999);
+    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, 1);
+    calendar.add(Calendar.DATE, -1);
     return calendar.getTime();
   }
 
-  
+  /**
+   * Compute the date of the first day in the week of the specified date.
+   * @param date the specified date.
+   * @param language the locale to take into account (fr for the french locale (fr_FR) for
+   * example).
+   * @return a date for the first day of the week of the specified date.
+   */
+  public static Date getFirstDateOfWeek(Date date, String language) {
+    Locale locale = getLocale(language);
+    Calendar calendar = (locale != null ? getInstance(locale) : getInstance());
+    calendar.setTime(date);
+    calendar.set(DAY_OF_WEEK, getFirstDayOfWeek(language));
+    calendar.set(HOUR_OF_DAY, 0);
+    calendar.set(MINUTE, 0);
+    calendar.set(SECOND, 0);
+    calendar.set(MILLISECOND, 0);
+    return calendar.getTime();
+  }
+
+  /**
+   * Compute the date of the last day in the week of the specified date.
+   * @param date the specified date.
+   * @param language the locale to take into account (fr for the french locale (fr_FR) for
+   * example).
+   * @return a date for the last day of the week of the specified date.
+   */
+  public static Date getEndDateOfWeek(Date date, String language) {
+    Locale locale = getLocale(language);
+    Calendar calendar = (locale != null ? getInstance(locale) : getInstance());
+    calendar.setTime(date);
+    calendar.set(DAY_OF_WEEK, getFirstDayOfWeek(language));
+    calendar.set(HOUR_OF_DAY, 23);
+    calendar.set(MINUTE, 59);
+    calendar.set(SECOND, 59);
+    calendar.set(MILLISECOND, 999);
+    calendar.add(Calendar.DAY_OF_MONTH, 6);
+    return calendar.getTime();
+  }
+
+  /**
+   * Sets the locale of this calendar view. According to the locale, some calendar properties will
+   * be set (for example, the first day of the week).
+   * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
+   */
+  private static Locale getLocale(final String locale) {
+    if (isDefined(locale)) {
+      return new Locale(locale);
+    }
+    return null;
+  }
+
+  /**
+   * Gets the first day of weeks of the calendar with 1 meaning for sunday, 2 meaning for monday,
+   * and so on. The first day of weeks depends on the locale; the first day of weeks is monday for
+   * french whereas it is for sunday for US.
+   * @param language the locale to take into account (fr for the french locale (fr_FR) for
+   * example).
+   * @return the first day of week.
+   */
+  public static int getFirstDayOfWeek(String language) {
+    Calendar calendar;
+    Locale locale = getLocale(language);
+    if (locale == null) {
+      calendar = Calendar.getInstance();
+    } else {
+      calendar = Calendar.getInstance(locale);
+    }
+    return calendar.getFirstDayOfWeek();
+  }
+
   /**
    * Get last hour, minute, second, millisecond of the specified date
    * @param curDate the specified date
    * @return a date at last hour, minute, second and millisecond of the specified date
    */
   public static Date getEndOfDay(Date curDate) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(curDate);
-    cal.set(Calendar.HOUR_OF_DAY, 23);
-    cal.set(Calendar.MINUTE, 59);
-    cal.set(Calendar.SECOND, 59);
-    cal.set(Calendar.MILLISECOND, 999);
-    return cal.getTime();
+    if (curDate != null) {
+      Calendar cal = getInstance();
+      cal.setTime(curDate);
+      cal.set(HOUR_OF_DAY, 23);
+      cal.set(MINUTE, 59);
+      cal.set(SECOND, 59);
+      cal.set(MILLISECOND, 999);
+      return cal.getTime();
+    }
+    return null;
   }
-
 
   /**
    * Get first hour, minute, second, millisecond of the specified date
@@ -740,13 +901,44 @@ public class DateUtil {
    * @return a date at last hour, minute, second and millisecond of the specified date
    */
   public static Date getBeginOfDay(Date curDate) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(curDate);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND,0);    
-    return cal.getTime();
+    if (curDate != null) {
+      Calendar cal = getInstance();
+      cal.setTime(curDate);
+      cal.set(HOUR_OF_DAY, 0);
+      cal.set(MINUTE, 0);
+      cal.set(SECOND, 0);
+      cal.set(MILLISECOND, 0);
+      return cal.getTime();
+    }
+    return null;
+  }
+
+  /**
+   * Set the first hour, minute, second, millisecond of the specified calendar to 0.
+   * @param calendar the specified calendar.
+   */
+  public static void setAtBeginOfDay(Calendar calendar) {
+    if (calendar != null) {
+      calendar.set(HOUR_OF_DAY, 0);
+      calendar.set(MINUTE, 0);
+      calendar.set(SECOND, 0);
+      calendar.set(MILLISECOND, 0);
+    }
+  }
+
+  /**
+   * Compute a new date by adding the specified number of days without couting week-ends.
+   * @param calendar
+   * @param nbDay
+   */
+  public static void addDaysExceptWeekEnds(Calendar calendar, int nbDay) {
+    int nb = 0;
+    while (nb < nbDay) {
+      calendar.add(DATE, 1);
+      if (calendar.get(DAY_OF_WEEK) != SATURDAY && calendar.get(DAY_OF_WEEK) != SUNDAY) {
+        nb += 1;
+      }
+    }
   }
 
   /**
@@ -756,8 +948,19 @@ public class DateUtil {
    * @param curDate
    * @return String
    */
-  public final static int getDayNumberInWeek(Date curDate) {
-    return DateUtil.convert(curDate).get(Calendar.DAY_OF_WEEK);
+  public static int getDayNumberInWeek(Date curDate) {
+    return DateUtil.convert(curDate).get(DAY_OF_WEEK);
+  }
+
+  /**
+   * Get the number of days between two dates.
+   * @param date1
+   * @param date2
+   * @return int
+   */
+  public static int getDayNumberBetween(Date date1, Date date2) {
+    long out = date2.getTime() - date1.getTime();
+    return (int) (out / 86400000); //86400000 = 1000 * 36000 * 24
   }
 
   /**
@@ -766,7 +969,19 @@ public class DateUtil {
    * @return Calendar
    */
   public static Calendar convert(Date curDate) {
-    Calendar cal = Calendar.getInstance();
+    return convert(curDate, null);
+  }
+
+  /**
+   * Convert Date to Calendar
+   * @param curDate
+   * @param language the locale to take into account (fr for the french locale (fr_FR) for
+   * example).
+   * @return Calendar
+   */
+  public static Calendar convert(Date curDate, String language) {
+    Locale locale = getLocale(language);
+    Calendar cal = (locale != null ? getInstance(locale) : getInstance());
     cal.setTime(curDate);
     return cal;
   }

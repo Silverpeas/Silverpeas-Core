@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +24,28 @@
 
 package com.silverpeas.ical;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
+
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.Schedulable;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import com.sun.syndication.io.XmlReader;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
@@ -52,17 +61,6 @@ import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.StringTokenizer;
-
-/**
- * @author dle
- */
 public class ImportIcalManager {
 
   public final static String IMPORT_SUCCEEDED = "0";
@@ -70,7 +68,7 @@ public class ImportIcalManager {
   private static final long YEAR = 1000L * 60 * 60 * 24 * 365;
   public static String charset = null;
   private AgendaSessionController agendaSessionController;
-  private CalendarBm calendarBm;
+  private SilverpeasCalendar calendarBm;
 
   public ImportIcalManager(AgendaSessionController agendaSessionController) {
     this.agendaSessionController = agendaSessionController;
@@ -78,7 +76,7 @@ public class ImportIcalManager {
   }
 
   /**
-   * IMPORT Calendar in Ical format
+   * IMPORT SilverpeasCalendar in Ical format
    * @param file
    * @return
    * @throws Exception
@@ -322,7 +320,7 @@ public class ImportIcalManager {
     if (calendarBm == null) {
       try {
         calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            CalendarBmHome.class).create();
+            SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new AgendaRuntimeException("ImportIcalManager.setCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

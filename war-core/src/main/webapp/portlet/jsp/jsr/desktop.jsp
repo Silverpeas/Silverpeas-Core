@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,6 +37,7 @@
     if(SpaceInst.PERSONAL_SPACE_ID.equals(currentSpaceId)) {
       currentSpaceId = null;
     }
+  request.setAttribute("spaceId", currentSpaceId);
     Boolean disableMove = (Boolean) request.getAttribute("DisableMove");
     if (disableMove == null)
         disableMove = Boolean.FALSE;
@@ -51,6 +52,11 @@
     if (!disableMove.booleanValue())
     {
         OperationPane operationPane = window.getOperationPane();
+        if (currentSpaceId != null) {
+          operationPane.setType(OperationPaneType.space);
+        } else {
+          operationPane.setType(OperationPaneType.personalSpace);
+        }
         operationPane.addOperation("", message.getString("portlets.createPortlet"), "javascript:openAdmin()");
     }
 
@@ -110,4 +116,6 @@
 </body>
 
 
-<%@page import="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants"%></html>
+<%@page import="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType" %>
+</html>

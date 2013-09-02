@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  *
@@ -54,7 +55,7 @@ public class ComponentAccessControllerTest {
    */
   @Test
   public void testIsRightOnTopicsEnabled() {
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     String componentIdWithRigths = "kmelia18";
     String componentIdWithoutRigths = "kmelia20";
     String componentId = "yellowpages154";
@@ -107,7 +108,7 @@ public class ComponentAccessControllerTest {
 
     String userId = "bart";
 
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(componentId, userId)).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
 

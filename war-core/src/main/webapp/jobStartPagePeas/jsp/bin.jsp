@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,27 +75,28 @@ function jqCheckAll2(id, name)
    $("input[name='" + name + "'][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
 }
 
-$(document).ready(function() 
-{
-   // By suppling no content attribute, the library uses each elements title attribute by default
-   $('.item-path').qtip({
-      content: {
-         text: false,
-         title: {
-             text: "<%=resource.getString("GML.path")%>"
-         }
+$(document).ready(function() {
+  // By suppling no content attribute, the library uses each elements title attribute by default
+  $('.item-path').qtip({
+    content : {
+      text : false,
+      title : {
+        text : "<%=resource.getString("GML.path")%>"
+      }
+    },
+    style : {
+      tip : true,
+      classes : "qtip-shadow qtip-green"
+    },
+    position : {
+      adjust : {
+        method : "flip flip"
       },
-      style: 'silverpeas',
-	  position: {
-		  corner: {
-			target: 'bottomMiddle',
-			tooltip: 'topLeft'
-		  },
-		  adjust: {
-			  screen: true
-		  }
-	  }
-   });
+      at : "bottom center",
+      my : "top left",
+      viewport : $(window)
+    }
+  });
 });
 -->
 </script>

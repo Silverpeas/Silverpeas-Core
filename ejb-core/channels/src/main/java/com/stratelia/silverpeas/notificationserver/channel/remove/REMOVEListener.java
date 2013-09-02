@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,29 +24,42 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.remove;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import javax.jms.Message;
 
-public class REMOVEListener extends AbstractListener {
+@MessageDriven(activationConfig = {
+  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='REMOVE'"),
+  @ActivationConfigProperty(propertyName = "destination", propertyValue =
+      "java:/queue/notificationsQueue")},
+    description = "Message driven bean to remove notifications")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class REMOVEListener extends AbstractListener implements MessageListener {
   private static final long serialVersionUID = 6228192030238517258L;
 
   public REMOVEListener() {
   }
 
-  public void ejbCreate() {
-  }
-
   /**
    * listener of NotificationServer JMS message
+   * @param msg 
    */
+  @Override
   public void onMessage(Message msg) {
     // we only remove this message
   }
 
-  public void send(NotificationData p_Message)
-      throws NotificationServerException {
+  @Override
+  public void send(NotificationData notificationData) throws NotificationServerException {
     // we only remove this message
   }
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
 * Open Source Software ("FLOSS") applications as described in Silverpeas's
 * FLOSS exception. You should have recieved a copy of the text describing
 * the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,14 +23,8 @@
 */
 package com.silverpeas.web;
 
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.web.mock.AccessControllerMock;
-import com.silverpeas.web.mock.UserDetailWithProfiles;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import javax.ws.rs.core.MultivaluedMap;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -40,12 +34,24 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
+
+import org.silverpeas.core.admin.OrganisationController;
+
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.web.mock.AccessControllerMock;
+import com.silverpeas.web.mock.SpaceAccessControllerMock;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
 * The base class for testing REST web services in Silverpeas.
@@ -83,7 +89,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   /**
 * Gets the component instances to take into account in tests. Theses component instances will be
-* considered as existing. Others than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+* considered as existing. Others than those will be rejected with an HTTP error 404 (NOT FOUND).
 * @return an array with the identifier of the component instances to take into account in tests.
 * The array cannot be null but it can be empty.
 */
@@ -91,7 +97,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   /**
    * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
-   * than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+   * than those will be rejected with an HTTP error 404 (NOT FOUND).
    * @return an array with the identifier of tools to take into account in tests. The array cannot
    * be null but it can be empty.
    */
@@ -104,6 +110,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return webClient.resource(getBaseURI() + CONTEXT_NAME + "/");
   }
 
+  @SuppressWarnings("unchecked")
   @Before
   public void prepareMockedResources() {
     testResources = (T) TestResources.getTestResources();
@@ -120,17 +127,17 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   /**
-* Authenticates the user to use in the tests.
-* The user will be added in the context of the mocked organization controller.
-* @param theUser the user to authenticate.
-* @return the key of the opened session.
-*/
+   * Authenticates the user to use in the tests.
+   * The user will be added in the context of the mocked organization controller.
+   * @param theUser the user to authenticate.
+   * @return the key of the opened session.
+   */
   public String authenticate(final UserDetail theUser) {
     getTestResources().registerUser(theUser);
     for (String componentId : getExistingComponentInstances()) {
       setComponentAccessibilityToUser(componentId, theUser.getId());
     }
-    SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
+    final SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
     return session.getSessionId();
   }
 
@@ -151,9 +158,16 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   /**
-* Gets the resources in use in the current test case.
-* @return a TestResources instance.
-*/
+   * Denies the access to the silverpeas spaces to all users.
+   */
+  public void denieSpaceAuthorizationToUsers() {
+    getMockedSpaceAccessController().setAuthorization(false);
+  }
+
+  /**
+   * Gets the resources in use in the current test case.
+   * @return a TestResources instance.
+   */
   public T getTestResources() {
     return testResources;
   }
@@ -163,21 +177,21 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 * @param componentId the unique identifier of the component instance to use in tests.
 */
   public void addComponentInstance(String componentId) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.isComponentExist(componentId)).thenReturn(true);
   }
-  
+
   public void addTool(String toolId) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.isToolAvailable(toolId)).thenReturn(true);
   }
-  
+
   public void setComponentAccessibilityToUser(String componentId, String userId) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
   }
 
-  protected OrganizationController getOrganizationControllerMock() {
+  protected OrganisationController getOrganizationControllerMock() {
     return getTestResources().getOrganizationControllerMock();
   }
 
@@ -185,16 +199,20 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return getTestResources().getAccessControllerMock();
   }
 
+  protected SpaceAccessControllerMock getMockedSpaceAccessController() {
+    return getTestResources().getSpaceAccessControllerMock();
+  }
+
   protected PersonalizationService getPersonalizationServiceMock() {
     return getTestResources().getPersonalizationServiceMock();
   }
-  
+
   protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
     MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
     String[] queryParameters = query.split("&");
     for (String aQueryParameter : queryParameters) {
       String[] parameterParts = aQueryParameter.split("=");
-      parameters.add(parameterParts[0], parameterParts[1]);
+      parameters.add(parameterParts[0], parameterParts.length > 1 ? parameterParts[1] : "");
     }
     return parameters;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,25 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function login()
-{
-	var loginField 	= document.authForm.Login.value;
-	if (loginField.length != 0) 
-	{
-		document.authForm.action = getContext()+"/AuthenticationServlet";
-		document.authForm.submit();
-	}
+function login() {
+  var loginField = document.authForm.Login.value;
+  if (loginField.length != 0) {
+    document.authForm.action = getContext() + "/AuthenticationServlet";
+    document.authForm.submit();
+  }
 }
 
-function logout()
-{
-	document.authForm.action = getContext()+"/LogoutServlet";
-	document.authForm.submit();
+function logout() {
+  document.authForm.action = getContext() + "/LogoutServlet";
+  document.authForm.submit();
 }
 
-function checkSubmitToLogin(ev)
-{
-	var touche = ev.keyCode;
-	if (touche == 13)
-		login();
+function checkSubmitToLogin(ev) {
+  var touche = ev.keyCode;
+  if (touche == 13) {
+    login();
+  }
 }

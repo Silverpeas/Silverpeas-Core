@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,8 @@ package com.silverpeas.comment.mock;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
+
 import javax.inject.Named;
 import static org.mockito.Mockito.*;
 
@@ -36,9 +38,9 @@ import static org.mockito.Mockito.*;
 @Named("organizationController")
 public class OrganizationControllerMocking extends OrganizationController {
   private static final long serialVersionUID = 4787617291562786442L;
-  
-  private OrganizationController mock = mock(OrganizationController.class);
-  
+
+  private OrganisationController mock = mock(OrganizationController.class);
+
   public void saveUser(final UserDetail user) {
     when(mock.getUserDetail(user.getId())).thenReturn(user);
   }
@@ -47,8 +49,8 @@ public class OrganizationControllerMocking extends OrganizationController {
   public UserDetail getUserDetail(String sUserId) {
     return mock.getUserDetail(sUserId);
   }
-  
-  public OrganizationController getMock() {
+
+  public OrganisationController getMock() {
     return mock;
   }
 }

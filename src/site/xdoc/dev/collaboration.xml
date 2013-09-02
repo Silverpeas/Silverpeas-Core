@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -125,7 +125,10 @@ git merge silverpeas/master</source>
 git push origin BRANCH_NAME
 git branch --set-upstream BRANCH_NAME origin/BRANCH_NAME</source>
         <p>The second approach is to create the branch in your fork, then creates from it a local branch that will also track it:</p>
-        <source>git push origin origin:refs/heads/BRANCH_NAME
+        <source>git push origin master:refs/heads/BRANCH_NAME
+git branch --track BRANCH_NAME origin/BRANCH_NAME</source>
+        <p>or to create remotely a branch from another one:</p>
+        <source>git push origin EXISTING_BRANCH:refs/heads/BRANCH_NAME
 git branch --track BRANCH_NAME origin/BRANCH_NAME</source>
         <p>Now you can switch your working directory to the branch you have created (id est checkout the branch):</p>
         <source>git checkout  BRANCH_NAME</source>

@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -18,7 +18,7 @@
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
-      <artifactId>junit-dep</artifactId>
+      <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -60,6 +60,10 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -138,7 +142,7 @@
       <artifactId>mockrunner-jdbc</artifactId>
       <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>compile</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
@@ -158,8 +162,25 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.forgerock.opendj</groupId>
       <artifactId>opendj-server</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>

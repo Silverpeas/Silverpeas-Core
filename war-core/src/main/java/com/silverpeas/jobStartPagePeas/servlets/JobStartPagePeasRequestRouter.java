@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,6 @@
 
 package com.silverpeas.jobStartPagePeas.servlets;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +31,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.util.UnitUtil;
 
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
@@ -42,13 +43,14 @@ import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.admin.localized.LocalizedParameter;
 import com.silverpeas.admin.localized.LocalizedParameterSorter;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
-import com.silverpeas.jobStartPagePeas.SpaceLookHelper;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -62,11 +64,11 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import org.apache.commons.fileupload.FileItem;
 
 public class JobStartPagePeasRequestRouter extends
     ComponentRequestRouter<JobStartPagePeasSessionController> {
@@ -103,7 +105,7 @@ public class JobStartPagePeasRequestRouter extends
    */
   public String getDestinationStartPage(String function,
       JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) throws
-      RemoteException {
+      ClipboardException {
     if (!jobStartPageSC.getClipboardSelectedObjects().isEmpty()) {
       request.setAttribute("ObjectsSelectedInClipboard", "true");
     }
@@ -285,7 +287,7 @@ public class JobStartPagePeasRequestRouter extends
       if (jobStartPageSC.isComponentManageable(compoId)) {
         jobStartPageSC.setManagedInstanceId(compoId,
             JobStartPagePeasSessionController.SCOPE_FRONTOFFICE);
-        destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
+        destination = getDestination("UpdateInstance", jobStartPageSC, request);
       } else {
         destination = "/admin/jsp/accessForbidden.jsp";
       }
@@ -306,7 +308,13 @@ public class JobStartPagePeasRequestRouter extends
       componentInst.setDomainFatherId(spaceint1.getId());
 
       // Add the component
-      String sComponentId = jobStartPageSC.addComponentInst(componentInst);
+      String sComponentId = null;
+      String sErrorMessage = null;
+      try {
+        sComponentId = jobStartPageSC.addComponentInst(componentInst);
+      } catch (QuotaException e) {
+        sErrorMessage = jobStartPageSC.getString("JSPP.componentSpaceQuotaFull");
+      }
       if (StringUtil.isDefined(sComponentId)) {
         jobStartPageSC.setManagedInstanceId(sComponentId);
         jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
@@ -317,6 +325,7 @@ public class JobStartPagePeasRequestRouter extends
         // Si la création de l'espace se passe mal alors l'exception n'est pas déportée vers les
         // appelants
         request.setAttribute("When", "ComponentCreation");
+        request.setAttribute("ErrorMessage", sErrorMessage);
 
         setSpacesNameInRequest(jobStartPageSC, request);
 
@@ -461,10 +470,8 @@ public class JobStartPagePeasRequestRouter extends
       try {
         jobStartPageSC.paste();
       } catch (Exception e) {
-        throw new AdminException(
-            "JobStartPagePeasRequestRouter.getDestination()",
-            SilverpeasException.ERROR, "jobStartPagePeas.CANT_PAST_COMPONENT",
-            e);
+        throw new AdminException("JobStartPagePeasRequestRouter.getDestination()",
+            SilverpeasException.ERROR, "jobStartPagePeas.CANT_PAST_COMPONENT", e);
       }
       refreshNavBar(jobStartPageSC, request);
       if (StringUtil.isDefined(jobStartPageSC.getManagedSpaceId())) {
@@ -488,7 +495,7 @@ public class JobStartPagePeasRequestRouter extends
 
   public String getDestinationSpace(String function,
       JobStartPagePeasSessionController jobStartPageSC,
-      HttpServletRequest request) throws AdminException {
+      HttpServletRequest request) throws Exception {
     String destination = null;
 
     if (function.equals("StartPageInfo")) {
@@ -544,6 +551,7 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute("SousEspace", request.getParameter("SousEspace"));
       request.setAttribute("spaceTemplates", jobStartPageSC.getAllSpaceTemplates());
       request.setAttribute("brothers", jobStartPageSC.getBrotherSpaces(true));
+      request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
       destination = "/jobStartPagePeas/jsp/createSpace.jsp";
     } else if (function.equals("SetSpaceTemplateProfile")) {
       String spaceTemplate = request.getParameter("SpaceTemplate");
@@ -554,7 +562,9 @@ public class JobStartPagePeasRequestRouter extends
             getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
             request),
-            request.getParameter("SelectedLook"));
+            request.getParameter("SelectedLook"),
+            request.getParameter("ComponentSpaceQuota"),
+            request.getParameter("DataStorageQuota"));
       }
 
       destination = getDestinationSpace("EffectiveCreateSpace", jobStartPageSC, request);
@@ -564,8 +574,7 @@ public class JobStartPagePeasRequestRouter extends
       if (spaceId != null && spaceId.length() > 0) {
         jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
         refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "StartPageInfo");
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+        destination = getDestinationSpace("StartPageInfo", jobStartPageSC, request);
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas
@@ -582,19 +591,19 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute("Translation", translation);
       request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
           JobStartPagePeasSettings.isInheritanceEnable));
+      request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
 
       destination = "/jobStartPagePeas/jsp/updateSpace.jsp";
     } else if (function.equals("EffectiveUpdateSpace")) {
       // Update the space
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
 
-      request2SpaceInst(spaceint1, request);
+      request2SpaceInst(spaceint1, jobStartPageSC, request);
 
       String spaceId = jobStartPageSC.updateSpaceInst(spaceint1);
       if (spaceId != null && spaceId.length() > 0) {
         refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "StartPageInfo");
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+        destination = getDestinationSpace("StartPageInfo", jobStartPageSC, request);
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas
@@ -646,7 +655,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("Profile", profile);
       }
 
-      // liste des groupes et user qui sont manager de l'espace courant
+      // get groups and users which manage current space
       List<Group> groupes = jobStartPageSC.getAllCurrentGroupSpace(role);
       List<UserDetail> users = jobStartPageSC.getAllCurrentUserSpace(role);
       request.setAttribute("listGroupSpace", groupes);
@@ -656,19 +665,24 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
       request.setAttribute("Role", role);
 
-      // Profile hérité, liste des groupes et user du role hérité courant
-      SpaceProfileInst inheritedProfile = spaceint1.getInheritedSpaceProfileInst(role);
-      if (inheritedProfile != null) {
-        request.setAttribute("InheritedProfile", inheritedProfile);
-        request.setAttribute("listInheritedGroups", jobStartPageSC.groupIds2groups(inheritedProfile
-            .
-            getAllGroups()));
-        request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
-            getAllUsers()));
+      if ("Manager".equals(role)) {
+        request.setAttribute("InheritedProfile", "Manager");
+        // get groups and users which manage space parent
+        request.setAttribute("listInheritedGroups", jobStartPageSC.getGroupsManagerOfParentSpace());
+        request.setAttribute("listInheritedUsers", jobStartPageSC.getUsersManagerOfParentSpace());
+        request.setAttribute("IsInheritanceEnable", true);
+      } else {
+        // get inherited profile
+        SpaceProfileInst inheritedProfile = spaceint1.getInheritedSpaceProfileInst(role);
+        if (inheritedProfile != null) {
+          request.setAttribute("InheritedProfile", inheritedProfile);
+          request.setAttribute("listInheritedGroups",
+              jobStartPageSC.groupIds2groups(inheritedProfile.getAllGroups()));
+          request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
+              getAllUsers()));
+        }
+        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
       }
-
-      request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-          JobStartPagePeasSettings.isInheritanceEnable));
 
       destination = "/jobStartPagePeas/jsp/spaceManager.jsp";
     } else if (function.equals("SelectUsersGroupsSpace")) {
@@ -747,23 +761,10 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute("urlToReload", "SpaceManager");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.equals("SpaceLook")) {
-      String path = getSpaceLookRepository(jobStartPageSC);
-
-      List<File> files = null;
-      try {
-        files = (List<File>) FileFolderManager.getAllFile(path);
-      } catch (UtilException e) {
-        files = new ArrayList<File>();
-      }
-
-      SpaceLookHelper slh = new SpaceLookHelper("Space"
-          + jobStartPageSC.getManagedSpaceId());
-      slh.setFiles(files);
-
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
 
       request.setAttribute("Space", spaceint1);
-      request.setAttribute("SpaceLookHelper", slh);
+      request.setAttribute("SpaceLookHelper", jobStartPageSC.getSpaceLookHelper());
       request.setAttribute("SpaceExtraInfos", jobStartPageSC.getManagedSpace());
       request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
           JobStartPagePeasSettings.isInheritanceEnable));
@@ -781,70 +782,12 @@ public class JobStartPagePeasRequestRouter extends
       }
       destination = "/jobStartPagePeas/jsp/spaceLook.jsp";
     } else if (function.equals("UpdateSpaceLook")) {
-      try {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
-        FileItem file = FileUploadUtil.getFile(items, "wallPaper");
-        if (file != null && StringUtil.isDefined(file.getName())) {
-          String extension = FileRepositoryManager.getFileExtension(file.getName());
-          if (extension != null && extension.equalsIgnoreCase("jpeg")) {
-            extension = "jpg";
-          }
-          FileRepositoryManager.createAbsolutePath("Space" + jobStartPageSC.getManagedSpaceId(),
-              "look");
-          String[] dir = new String[1];
-          dir[0] = "look";
-
-          String path = FileRepositoryManager.getAbsolutePath("Space"
-              + jobStartPageSC.getManagedSpaceId(), dir);
-
-          // Remove all wallpapers to ensure it is unique
-          File wallPaper = new File(path + File.separator + "wallPaper.gif");
-          if (wallPaper != null && wallPaper.exists()) {
-            wallPaper.delete();
-          }
-
-          wallPaper = new File(path + File.separator + "wallPaper.jpg");
-          if (wallPaper != null && wallPaper.exists()) {
-            wallPaper.delete();
-          }
-
-          file.write(new File(path + File.separator + "wallPaper." + extension.toLowerCase()));
-        }
-
-        String selectedLook = FileUploadUtil.getParameter(items, "SelectedLook");
-        if (!StringUtil.isDefined(selectedLook)) {
-          selectedLook = null;
-        }
-
-        SpaceInst space = jobStartPageSC.getSpaceInstById();
-        space.setLook(selectedLook);
-        // Retrieve global variable configuration
-        String configSpacePosition = jobStartPageSC.getConfigSpacePosition();
-        boolean isDisplaySpaceFirst = true;
-        // Use global variable if defined else use SpacePosition request parameter.
-        if ("BEFORE".equalsIgnoreCase(configSpacePosition)) {
-          isDisplaySpaceFirst = true;
-        } else if ("AFTER".equalsIgnoreCase(configSpacePosition)) {
-          isDisplaySpaceFirst = false;
-        } else {
-          String spacePosition = FileUploadUtil.getParameter(items, "SpacePosition");
-          isDisplaySpaceFirst = !(StringUtil.isDefined(spacePosition)
-              && "2".equalsIgnoreCase(spacePosition));
-        }
-        // Set new space position VO
-        space.setDisplaySpaceFirst(isDisplaySpaceFirst);
-        // Save these changes in database
-        jobStartPageSC.updateSpaceInst(space);
-      } catch (Exception e) {
-        throw new AdminException("JobStartPagePeasRequestRouter.AddFileToLook",
-            SilverpeasException.ERROR, "jobStartPagePeas.CANT_UPLOAD_FILE", e);
-      }
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      jobStartPageSC.updateSpaceAppearance(items);
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if (function.equals("RemoveFileToLook")) {
       String fileName = request.getParameter("FileName");
-      String path = getSpaceLookRepository(jobStartPageSC);
-      File file = new File(path + File.separator + fileName);
-      file.delete();
+      jobStartPageSC.removeExternalElementOfSpaceAppearance(fileName);
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if (function.equals("OpenSpace")) {
       jobStartPageSC.init();
@@ -872,11 +815,6 @@ public class JobStartPagePeasRequestRouter extends
     }
 
     return destination;
-  }
-
-  private String getSpaceLookRepository(JobStartPagePeasSessionController sc) {
-    return FileRepositoryManager.getAbsolutePath("Space"
-        + sc.getManagedSpaceId(), new String[] { "look" });
   }
 
   /**
@@ -1010,16 +948,6 @@ public class JobStartPagePeasRequestRouter extends
     }
   }
 
-  private List<LocalizedParameter> getVisibleParameters(List<LocalizedParameter> parameters) {
-    List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
-    for (LocalizedParameter parameter : parameters) {
-      if (parameter.isVisible()) {
-        visibleParameters.add(parameter);
-      }
-    }
-    return visibleParameters;
-  }
-
   private List<LocalizedParameter> getHiddenParameters(List<LocalizedParameter> parameters) {
     List<LocalizedParameter> hiddenParameters = new ArrayList<LocalizedParameter>();
     for (LocalizedParameter parameter : parameters) {
@@ -1030,9 +958,12 @@ public class JobStartPagePeasRequestRouter extends
     return hiddenParameters;
   }
 
-  private void request2SpaceInst(SpaceInst spaceInst, HttpServletRequest request) {
+  private void request2SpaceInst(SpaceInst spaceInst,
+      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) {
     String name = request.getParameter("NameObject");
     String desc = request.getParameter("Description");
+    String componentSpaceQuotaMaxCount = request.getParameter("ComponentSpaceQuota");
+    String dataStorageQuotaMaxCount = request.getParameter("DataStorageQuota");
     String pInheritance = request.getParameter("InheritanceBlocked");
     String look = request.getParameter("SelectedLook");
     if (desc == null) {
@@ -1048,6 +979,30 @@ public class JobStartPagePeasRequestRouter extends
       spaceInst.setLook(look);
     }
     I18NHelper.setI18NInfo(spaceInst, request);
+
+    // Component space quota
+    if (jobStartPageSC.isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated &&
+        StringUtil.isDefined(componentSpaceQuotaMaxCount)) {
+      try {
+        spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(componentSpaceQuotaMaxCount));
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
+
+    // Data storage quota
+    if (jobStartPageSC.isUserAdmin() &&
+        JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated &&
+        StringUtil.isDefined(dataStorageQuotaMaxCount)) {
+      try {
+        spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
+            Long.valueOf(dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
   }
 
   private void request2ComponentInst(ComponentInst componentInst,
@@ -1167,7 +1122,8 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1200,8 +1156,8 @@ public class JobStartPagePeasRequestRouter extends
     LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
         getComponentByName(componentName), sessionController.getLanguage());
     setSpacesNameInRequest(sessionController, request);
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(componentInstSelected.
-        getSortedParameters());
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(componentName, componentInstSelected.getSortedParameters());
     Parameter hiddenParam = createIsHiddenParam("no");
     visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
     if (JobStartPagePeasSettings.isPublicParameterEnable) {
@@ -1231,7 +1187,8 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1252,7 +1209,7 @@ public class JobStartPagePeasRequestRouter extends
         getLanguage());
     request.setAttribute("Parameters", visibleParameters);
     request.setAttribute("ComponentInst", componentInst);
-    request.setAttribute("JobPeas", localizedComponent.getName());
+    request.setAttribute("JobPeas", localizedComponent.getLabel());
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());

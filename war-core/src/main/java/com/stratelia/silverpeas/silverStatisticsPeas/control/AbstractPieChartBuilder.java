@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -148,7 +148,7 @@ public abstract class AbstractPieChartBuilder {
       // build instance list
       UserDetail userDetail = AdminReference.getAdminService().getUserDetail(currentUserId);
       if (!StringUtil.isDefined(spaceId)) {
-        if (UserDetail.ADMIN_ACCESS.equals(userDetail.getAccessLevel())) {// Admin
+        if (userDetail.isAccessAdmin()) {// Admin
           tabSpaceIds = AdminReference.getAdminService().getAllRootSpaceIds(); // de type WA123
         } else {// Manager d'espaces ou de sous-espaces
           // manager d'espace

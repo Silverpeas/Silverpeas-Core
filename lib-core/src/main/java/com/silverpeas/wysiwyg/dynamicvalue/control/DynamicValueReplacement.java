@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
+ *
  *
  */
 public class DynamicValueReplacement {
@@ -83,7 +83,7 @@ public class DynamicValueReplacement {
         String firstOption = " ------------------";
         try {
           message =
-              new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle",
+              new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
               language);
           if (message != null) {
             firstOption = message.getString("DynamicValues");
@@ -213,7 +213,7 @@ public class DynamicValueReplacement {
    */
   public static boolean isActivate() {
     ResourceLocator resource =
-        new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+        new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
     return resource.getBoolean("activateDynamicValue", false);
   }
 

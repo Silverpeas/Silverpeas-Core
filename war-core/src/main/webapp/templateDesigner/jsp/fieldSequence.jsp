@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@ include file="includeParamsField.jsp.inc" %>
 	<script type="text/javascript">
 		function isCorrectForm()  {
@@ -60,6 +61,7 @@
 	String minLength = "1";
 	String startValue = "1";
 	boolean reuseAvailableValues = false;
+	boolean global = false;
 	if (field != null) {
 		if (parameters.containsKey("minLength")) {
 		  	minLength = (String) parameters.get("minLength");
@@ -70,6 +72,7 @@
 		if (parameters.containsKey("reuseAvailableValues")) {
 		  	reuseAvailableValues = "true".equals((String) parameters.get("reuseAvailableValues"));
 		}
+		global = StringUtil.getBooleanValue( (String) parameters.get("global") );
 	}
 %>
 <%@ include file="includeTopField.jsp.inc" %>
@@ -87,6 +90,15 @@
 		<select name="Param_reuseAvailableValues">
 			<option value="false"<%if (!reuseAvailableValues) {%> selected<%}%>><%=resource.getString("templateDesigner.displayer.sequence.alwaysIncrement")%></option>
 			<option value="true"<%if (reuseAvailableValues) {%> selected<%}%>><%=resource.getString("templateDesigner.displayer.sequence.reuseAvailableValues")%></option>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.sequence.globalParam")%> :</td>
+	<td>
+		<select name="Param_global">
+			<option value="false"<%if (!global) {%> selected<%}%>><%=resource.getString("templateDesigner.displayer.sequence.notGlobal")%></option>
+			<option value="true"<%if (global) {%> selected<%}%>><%=resource.getString("templateDesigner.displayer.sequence.global")%></option>
 		</select>
 	</td>
 </tr>

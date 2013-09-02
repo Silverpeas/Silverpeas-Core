@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,11 +59,18 @@ public class ToDoHeader extends Schedulable implements Cloneable {
   }
 
   public void setCompletedDate(java.util.Date date) {
-    completedDate = new java.util.Date(date.getTime());
+    if(date != null) {
+      completedDate = new java.util.Date(date.getTime());
+    } else {
+      completedDate = null;
+    }
   }
 
   public java.util.Date getCompletedDate() {
-    return new java.util.Date(completedDate.getTime());
+    if(completedDate != null) {
+      return new java.util.Date(completedDate.getTime());
+    }
+    return completedDate;
   }
 
   public void setCompletedDay(String day) {

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class JobDomainPeasComponentPathServlet extends HttpServlet {
 
@@ -71,7 +71,7 @@ public class JobDomainPeasComponentPathServlet extends HttpServlet {
   private String getComponentPath(JobDomainPeasSessionController sc, String componentId) {
     String componentPath = "";
 
-    OrganizationController orgaController = sc.getOrganizationController();
+    OrganisationController orgaController = sc.getOrganisationController();
 
     // Espace > Sous-espaces
     List<SpaceInst> spaceList = orgaController.getSpacePathToComponent(componentId);

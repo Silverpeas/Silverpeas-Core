@@ -1,20 +1,20 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
- * 
+ *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
 * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- * 
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- * 
+ *
 * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -58,7 +59,6 @@ public class WAIndexSearcher {
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
   public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
-  
   /**
    * indicates the number maximum of results returned by the search
    */
@@ -116,12 +116,12 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType) {
     SpaceComponentPair pair = new SpaceComponentPair(null, component);
-    HashSet<SpaceComponentPair> set = new HashSet<SpaceComponentPair>();
+    Set<SpaceComponentPair> set = new HashSet<SpaceComponentPair>(1);
     set.add(pair);
 
     IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
-    Searcher searcher = getSearcher(set);
+    IndexSearcher searcher = getSearcher(set);
     try {
       TopDocs topDocs;
       Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
@@ -135,14 +135,7 @@ public class WAIndexSearcher {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
     } finally {
-      try {
-        if (searcher != null) {
-          searcher.close();
-        }
-      } catch (IOException ioe) {
-        SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-            "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
-      }
+      IOUtils.closeQuietly(searcher);
     }
     return matchingIndexEntry;
   }
@@ -150,6 +143,10 @@ public class WAIndexSearcher {
   /**
    * Search the documents of the given component's set. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results set.
+   *
+   * @param query
+   * @return
+   * @throws org.silverpeas.search.searchEngine.model.ParseException
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.search.searchEngine.model.ParseException {
@@ -260,7 +257,7 @@ public class WAIndexSearcher {
         l++;
       }
 
-      MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_36,fields, analyzer);
+      MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_36, fields, analyzer);
       mfqp.setDefaultOperator(defaultOperand);
       parsedQuery = mfqp.parse(query.getQuery());
     } else {
@@ -287,8 +284,7 @@ public class WAIndexSearcher {
   }
 
   private Query getXMLQuery(QueryDescription query, Searcher searcher)
-      throws org.silverpeas.search.searchEngine.model.ParseException,
-      IOException {
+      throws org.silverpeas.search.searchEngine.model.ParseException {
 
     try {
       Map<String, String> xmlQuery = query.getXmlQuery();
@@ -326,7 +322,7 @@ public class WAIndexSearcher {
   }
 
   private Query getMultiFieldQuery(QueryDescription query, Searcher searcher)
-      throws org.silverpeas.search.searchEngine.model.ParseException, IOException {
+      throws org.silverpeas.search.searchEngine.model.ParseException {
     try {
       List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
       String keyword = query.getQuery();
@@ -375,7 +371,7 @@ public class WAIndexSearcher {
    * @throws IOException if there is a problem when searching Lucene index
    */
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
-      Searcher searcher) throws IOException {
+      IndexSearcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
     MatchingIndexEntry indexEntry =
         new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
@@ -404,6 +400,7 @@ public class WAIndexSearcher {
     indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
     indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
+    indexEntry.setFilename(doc.get(IndexManager.FILENAME));
     indexEntry.setScore(scoreDoc.score); // TODO check the score.
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
@@ -445,7 +442,7 @@ public class WAIndexSearcher {
    * reached or whose endDate is passed are pruned from the results list.
    */
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
-      Searcher searcher) throws IOException {
+      IndexSearcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
 
     if (topDocs != null) {
@@ -453,8 +450,8 @@ public class WAIndexSearcher {
 
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         scoreDoc = topDocs.scoreDocs[i];
-        MatchingIndexEntry indexEntry =
-            createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
+        MatchingIndexEntry indexEntry = createMatchingIndexEntry(scoreDoc, query
+            .getRequestedLanguage(), searcher);
         results.add(indexEntry);
       }
     }

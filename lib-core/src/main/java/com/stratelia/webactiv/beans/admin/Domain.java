@@ -1,45 +1,39 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
-import java.util.EnumSet;
 
 import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
-import org.silverpeas.quota.contant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
+  public static final String MIXED_DOMAIN_ID = "-1";
   private String id;
   private String name;
   private String description;
@@ -48,7 +42,6 @@ public class Domain implements Serializable {
   private String authenticationServer;
   private String theTimeStamp = "0";
   private String silverpeasServerURL = "";
-
   /**
    * This data is not used in equals and hashcode process as it is an extra information.
    */
@@ -107,7 +100,7 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @param descriptionId
+   * @param description
    */
   public void setDescription(String description) {
     this.description = description;
@@ -135,7 +128,7 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @param className
+   * @param propFileName 
    */
   public void setPropFileName(String propFileName) {
     this.propFileName = propFileName;
@@ -149,7 +142,7 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @param className
+   * @param authenticationServer the class to be used.
    */
   public void setAuthenticationServer(String authenticationServer) {
     this.authenticationServer = authenticationServer;
@@ -163,27 +156,22 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @param className
+   * @param silverpeasServerURL
    */
   public void setSilverpeasServerURL(String silverpeasServerURL) {
     this.silverpeasServerURL = silverpeasServerURL;
   }
 
   /**
-   * Updates quota data
+   * Centralizes the user in domain quota loading
    */
-  public void refreshUserDomainQuota() {
+  private void loadUserDomainQuota() {
     try {
-      if (StringUtil.isDefined(getId())) {
-        userDomainQuota =
-            DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
-      }
-      if (userDomainQuota == null) {
-        userDomainQuota = new Quota();
-      }
+      userDomainQuota =
+          DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
     } catch (final QuotaException qe) {
-      throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_QUOTA", qe);
+      throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR, "root.EX_CANT_GET_QUOTA",
+          qe);
     }
   }
 
@@ -192,34 +180,31 @@ public class Domain implements Serializable {
    */
   public Quota getUserDomainQuota() {
     if (userDomainQuota == null) {
-      try {
-        if (StringUtil.isDefined(getId())) {
-          userDomainQuota =
-              DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
-        }
-        if (userDomainQuota == null) {
-          userDomainQuota = new Quota();
-        }
-      } catch (final QuotaException qe) {
-        throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR,
-            "root.EX_CANT_GET_QUOTA", qe);
-      }
+      loadUserDomainQuota();
     }
     return userDomainQuota;
   }
 
   /**
    * Sets the max count of users of the domain
+   *
+   * @param userDomainQuotaMaxCount
+   * @throws QuotaException
    */
   public void setUserDomainQuotaMaxCount(final String userDomainQuotaMaxCount) throws QuotaException {
-    getUserDomainQuota().setMaxCount(userDomainQuotaMaxCount);
-    getUserDomainQuota().validateBounds();
+    loadUserDomainQuota();
+    userDomainQuota.setMaxCount(userDomainQuotaMaxCount);
+    userDomainQuota.validateBounds();
   }
-  
+
   public boolean isQuotaReached() {
-    return getUserDomainQuota().exists() &&
-        EnumSet.of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS)
-            .contains(getUserDomainQuota().getLoad());
+    loadUserDomainQuota();
+    return userDomainQuota.isReached();
+  }
+
+  public boolean isMixedOne() {
+    return MIXED_DOMAIN_ID.equals(getId());
+
   }
 
   @Override
@@ -305,5 +290,4 @@ public class Domain implements Serializable {
     hash = 73 * hash + (this.silverpeasServerURL != null ? this.silverpeasServerURL.hashCode() : 0);
     return hash;
   }
-
 }

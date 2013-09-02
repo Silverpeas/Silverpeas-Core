@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,18 +23,19 @@
  */
 package com.silverpeas.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Set;
-
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
@@ -43,6 +44,7 @@ public class CollectionUtil {
 
   /**
    * Checks if the given collection is not instancied or empty
+   *
    * @param <T>
    * @param collection
    * @return
@@ -53,27 +55,30 @@ public class CollectionUtil {
 
   /**
    * Checks if the given collection is instancied and not empty
+   *
    * @param <T>
    * @param collection
    * @return
    */
   public static <T> boolean isNotEmpty(final Collection<T> collection) {
-    return collection != null && collection.size() > 0;
+    return collection != null && !collection.isEmpty();
   }
 
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
+   *
    * @param collection
    * @return
    */
   public static <T> Collection<Collection<T>> split(final Collection<T> collection) {
-    return split(collection, 5000);
+    return split(collection, 500);
   }
 
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
+   *
    * @param collection
    * @param collectionSizeMax
    * @return
@@ -121,12 +126,13 @@ public class CollectionUtil {
       }
     }
 
-    // Retour du r�sultat
+    // Retour du resultat
     return result;
   }
 
   /**
    * Transforming a collection into a map
+   *
    * @param <T> collection type elements
    * @param <K> map type key
    * @param <V> map type value
@@ -156,6 +162,7 @@ public class CollectionUtil {
 
   /**
    * Extracting a property.
+   *
    * @param aClass property class to extract
    * @param collection collection from that to extract
    * @param propertyName name of the property
@@ -168,6 +175,7 @@ public class CollectionUtil {
 
   /**
    * Extracting a property.
+   *
    * @param collection collection from that to extract
    * @param propertyName name of the property
    * @return a collection with requested elements
@@ -179,13 +187,14 @@ public class CollectionUtil {
 
   /**
    * Extracting a property.
+   *
    * @param collection collection from that to extract
    * @param propertyName name of the property
    * @param isListOfArray indicates if the list is an array list
    * @param numberColumn column index to extract from the array
    * @return a collection with requested elements
    */
-  @SuppressWarnings({ "unchecked" })
+  @SuppressWarnings({"unchecked"})
   public static <T> Collection<T> extractFrom(final Collection<?> collection,
       final String propertyName, final boolean isListOfArray,
       final int numberColumn) {
@@ -208,6 +217,7 @@ public class CollectionUtil {
 
   /**
    * Extracting a property from elements that each has an other property with a given value
+   *
    * @param class property class to extract
    * @param collection element collection
    * @param propertyNameToExtract name property to extract
@@ -216,7 +226,7 @@ public class CollectionUtil {
    * @param nullValueExtracted null value extracted
    * @return a bean property collection
    */
-  @SuppressWarnings({ "unchecked" })
+  @SuppressWarnings({"unchecked"})
   public static <T> Collection<T> extractFrom(final Class<T> aClass,
       final Collection<?> collection, final String propertyNameToExtract,
       final String propertyNameToCompare, final Object givenValueToCompare,
@@ -231,7 +241,7 @@ public class CollectionUtil {
             propertyNameToCompare);
         if ((givenValueToCompare == null && valueToCompare == null)
             || (givenValueToCompare != null && givenValueToCompare
-                .equals(valueToCompare))) {
+            .equals(valueToCompare))) {
           valueToExtract = getPropertyAsObject(element,
               propertyNameToExtract);
           if (valueToExtract != null || nullValueExtracted) {
@@ -245,6 +255,7 @@ public class CollectionUtil {
 
   /**
    * Value converted from a bean property.
+   *
    * @param bean bean
    * @param propertyName
    */
@@ -268,5 +279,13 @@ public class CollectionUtil {
       return null;
     }
     return property;
+  }
+
+  public static <T> List<T> asList(T... values) {
+    return new ArrayList<T>(Arrays.asList(values));
+  }
+
+  public static <T> Set<T> asSet(T... values) {
+    return new HashSet<T>(Arrays.asList(values));
   }
 }

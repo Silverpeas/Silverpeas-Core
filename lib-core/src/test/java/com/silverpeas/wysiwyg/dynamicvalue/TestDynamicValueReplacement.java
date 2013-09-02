@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import org.junit.Test;
+
+import org.silverpeas.util.Charsets;
 
 /**
  * Test class for TestDynamicValueReplacement
@@ -79,11 +81,11 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    * @throws IOException
    */
   private String getContentFromFile(String fileName) throws IOException {
-    StringBuilder contents = new StringBuilder();
+    StringBuilder contents = new StringBuilder(1024);
     BufferedReader input = new BufferedReader(new InputStreamReader(TestDynamicValueReplacement.class
-        .getResourceAsStream(fileName)));
+        .getResourceAsStream(fileName), Charsets.UTF_8));
     try {
-      String line = null;
+      String line;
       while ((line = input.readLine()) != null) {
         contents.append(line);
       }
@@ -100,7 +102,6 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
   @Test
   public void testIsActivate() {
     assertEquals(false, DynamicValueReplacement.isActivate());
-
   }
 
 }

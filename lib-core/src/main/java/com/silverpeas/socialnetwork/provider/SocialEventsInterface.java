@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import java.util.List;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
+
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public interface SocialEventsInterface {
@@ -42,8 +43,7 @@ public interface SocialEventsInterface {
    * @throws SilverpeasException
    */
   public List<SocialInformation> getSocialInformationsList(String userId, String classification,
-      Date begin, Date end)
-      throws SilverpeasException;
+      Date begin, Date end) throws SilverpeasException;
 
   /**
    * get the next Events of my contacts according to number of Item and the first Index
@@ -55,8 +55,7 @@ public interface SocialEventsInterface {
    * @throws SilverpeasException
    */
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException;
+      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 
   /**
    * get the Last Events of my contacts according to number of Item and the first Index

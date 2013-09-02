@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,7 +63,10 @@ public class Priority implements Serializable, Comparable<Priority> {
 
   /**
    * The purpose of this method is to create a new priority property with the given initial value.
+
+   *
    * @param newval The initial value of the priority property
+   * @throws CalendarException
    */
   public Priority(int newval) throws CalendarException {
     setValue(newval);
@@ -74,7 +77,7 @@ public class Priority implements Serializable, Comparable<Priority> {
    * @param newval The new value for the priority property
    */
 
-  public void setValue(int newval) throws CalendarException {
+  public final void setValue(int newval) throws CalendarException {
     if (newval > MAXIMUM_PRIORITY) {
       SilverTrace.warn("calendar", "Priority.setValue(int newval)",
           "calendar_MSG_GREATER_MAXIMUM_PRIORITY",
@@ -86,7 +89,6 @@ public class Priority implements Serializable, Comparable<Priority> {
           "priority = MINIMUM_PRIORITY =" + MINIMUM_PRIORITY);
       newval = MINIMUM_PRIORITY;
     }
-
     priority = newval;
 
   }
@@ -95,6 +97,7 @@ public class Priority implements Serializable, Comparable<Priority> {
     return priority;
   }
 
+  @Override
   public int compareTo(Priority other) {
     if (other == null)
       return 1;

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -99,11 +99,11 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
     return super.getTopic(string);
   }
 
-  private void prepareJndi() throws IOException {
+  private void prepareJndi() {
     SimpleMemoryContextFactory.setUpAsInitialContext();
   }
 
-  private void cleanJndi() throws IOException {
+  private void cleanJndi() {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 

@@ -10,7 +10,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the web'activ index. A
@@ -63,6 +64,7 @@ public class IndexEntry implements Serializable {
   private Map<String, String> previews = null;
   private Map<String, String> keywordsI18N = null;
   private String serverName = null;
+  private String filename = null;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -166,7 +168,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getTitle(String lang) {
-    return getTitles().get(I18NHelper.checkLanguage(lang));
+    String title = getTitles().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(title)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        title = getTitles().get(language);
+        if (StringUtil.isDefined(title)) {
+          return title;
+        }
+      }
+    }
+    return title;
   }
 
   /**
@@ -193,7 +205,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getKeywords(String lang) {
-    return getKeywords().get(I18NHelper.checkLanguage(lang));
+    String keywords = getKeywords().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(keywords)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        keywords = getKeywords().get(language);
+        if (StringUtil.isDefined(keywords)) {
+          return keywords;
+        }
+      }
+    }
+    return keywords;
   }
 
   /**
@@ -222,7 +244,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getPreview(String lang) {
-    return getPreviews().get(I18NHelper.checkLanguage(lang));
+    String preview = getPreviews().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(preview)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        preview = getPreviews().get(language);
+        if (StringUtil.isDefined(preview)) {
+          return preview;
+        }
+      }
+    }
+    return preview;
   }
 
   /**
@@ -450,4 +482,13 @@ public class IndexEntry implements Serializable {
   public void setServerName(String serverName) {
     this.serverName = serverName;
   }
+  
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
 }

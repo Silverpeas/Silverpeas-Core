@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.jCharts.Chart;
 import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -90,9 +91,9 @@ public class SilverStatisticsPeasRequestRouter extends
         "root.MSG_GEN_PARAM_VALUE", "User=" + statsSC.getUserId()
         + " Function=" + function);
 
-    String userProfile = statsSC.getUserProfile();
-    if ("A".equals(userProfile)
-        || SilverStatisticsPeasSessionController.SPACE_ADMIN.equals(userProfile)) {
+    UserAccessLevel userProfile = statsSC.getUserProfile();
+    if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)
+        || UserAccessLevel.SPACE_ADMINISTRATOR.equals(userProfile)) {
       request.setAttribute("UserProfile", userProfile);
     } else {
       SilverTrace.info("silverStatisticsPeas",
@@ -476,7 +477,7 @@ public class SilverStatisticsPeasRequestRouter extends
         destination = "/silverStatisticsPeas/jsp/viewEvolutionAccess.jsp";
       } else if (function.startsWith("ViewVolumeServices")) {
         // Onglet Volume
-        if (!userProfile.equals("A")) {
+        if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
           return getDestination("ViewVolumePublication", statsSC, request);
         }
 

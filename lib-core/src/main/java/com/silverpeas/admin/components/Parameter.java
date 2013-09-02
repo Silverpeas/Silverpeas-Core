@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -384,11 +384,15 @@ public class Parameter implements Cloneable {
     param.setLabel((HashMap<String, String>) getLabel().clone());
     param.setMandatory(mandatory);
     param.setName(name);
-    List<Option> newOptions = new ArrayList<Option>(getOptions().size());
-    for (Option option : getOptions()) {
-      newOptions.add(option.clone());
+    if (options == null) {
+      param.setOptions(new ArrayList<Option>());
+    } else {
+      List<Option> newOptions = new ArrayList<Option>(options.size());
+      for (Option option : options) {
+        newOptions.add(option.clone());
+      }
+      param.setOptions(newOptions);
     }
-    param.setOptions(newOptions);
     param.setOrder(order);
     param.setPersonalSpaceValue(personalSpaceValue);
     param.setSize(size);
@@ -416,4 +420,5 @@ public class Parameter implements Cloneable {
           "root.EX_IGNORED", "ParameterName=" + name, ex);
     }
   }
+
 }

@@ -6,7 +6,7 @@ As an <b>administrator</b> you can manage all spaces and applications.</p>
 
 <div id="txt_evolutivite">
 <h3>It's very easy to change the structure of your platform !</h3>
-<p>You can create a root space quickly following <a class="txtnav" href="javascript:onclick=openPopup()">this link</a> or when following right corner operation <b class="yuimenu"> Create a space </b> from menu <b>What do you want to do next ?</b>.<br/>
+<p>You can create a root space quickly following <a class="txtnav" href="CreateSpace">this link</a> or when following right corner operation <b class="yuimenu"> Create a space </b> from menu <b>What do you want to do next ?</b>.<br/>
 </p><p>All first-level spaces are accessible in the drop-down list on the left. To edit, delete or manage a space, simply select it from this list.<br/>
 The content of the selected space will then appear in this list.
 All the operations available on this space are accessible via the menu <b>What do you want to do next?</b>.<br/>

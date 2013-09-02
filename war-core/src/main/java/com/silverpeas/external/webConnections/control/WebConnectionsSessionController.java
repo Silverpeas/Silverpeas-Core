@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,12 +24,6 @@
 
 package com.silverpeas.external.webConnections.control;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
@@ -38,7 +32,13 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class WebConnectionsSessionController extends AbstractComponentSessionController {
   /**
@@ -74,8 +74,8 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   private void addParamToConnection(ConnectionDetail connection) {
     // ajouter les données venue de hyperlink
-    OrganizationController orga = new OrganizationController();
-    ComponentInst inst = orga.getComponentInst(connection.getComponentId());
+    ComponentInst inst = OrganisationControllerFactory
+        .getOrganisationController().getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("Url");
     Map<String, String> param = connection.getParam();

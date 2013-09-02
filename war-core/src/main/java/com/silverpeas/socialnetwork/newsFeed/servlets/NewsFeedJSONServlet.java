@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,9 +53,9 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class NewsFeedJSONServlet extends HttpServlet {
 
@@ -131,7 +131,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
-    out.println(toJsonS(map, m_MainSessionCtrl.getOrganizationController(), multilang));
+    out.println(toJsonS(map, m_MainSessionCtrl.getOrganisationController(), multilang));
   }
 
   private com.silverpeas.calendar.Date[] getPeriod(HttpSession session, ResourceLocator settings) {
@@ -189,7 +189,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param information
    * @return JSONObject
    */
-  private JSONObject toJson(SocialInformation information, OrganizationController oc,
+  private JSONObject toJson(SocialInformation information, OrganisationController oc,
       ResourceLocator multilang) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
@@ -240,7 +240,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param Map<Date, List<SocialInformation>> map
    * @return JSONArray
    */
-  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganizationController oc,
+  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganisationController oc,
       ResourceLocator multilang) {
     SimpleDateFormat formatDate =
         new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale(multilang.getLanguage()));

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,22 +22,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.stratelia.webactiv.calendar.model;
 
-import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
-import com.stratelia.webactiv.util.DateUtil;
-import com.silverpeas.components.model.AbstractTestDao;
-
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.silverpeas.components.model.AbstractTestDao;
+
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
+import com.stratelia.webactiv.util.DateUtil;
+
 import org.dbunit.database.IDatabaseConnection;
 
 /**
@@ -46,7 +42,7 @@ import org.dbunit.database.IDatabaseConnection;
  */
 public class TestJournalDAO extends AbstractTestDao {
 
-  private JournalDAO dao = new JournalDAO();;
+  private JournalDAO dao = new JournalDAO();
 
   @Override
   protected String getDatasetFileName() {
@@ -330,5 +326,10 @@ public class TestJournalDAO extends AbstractTestDao {
     } finally {
       closeConnection(connexion);
     }
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-table.sql";
   }
 }

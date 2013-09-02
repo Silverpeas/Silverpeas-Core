@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,8 +35,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -50,7 +48,6 @@ public class Event {
   private Date startDate = null;
   private Date endDate = null;
   private String url = null;
-  private int spanDay = 1;
   private int priority = 0;
   private String startHour = null;
   private String endHour = null;
@@ -109,8 +106,6 @@ public class Event {
     this.url = url;
 
     this.priority = priority;
-    // this.style = initStyle();
-    this.spanDay = initSpanDay();
   }
 
   /**
@@ -194,97 +189,6 @@ public class Event {
    */
   public int getPriority() {
     return priority;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public int getSpanDay() {
-    return spanDay;
-  }
-
-  public int getSpanDay(Date beginPeriod) {
-    return initSpanDay(beginPeriod);
-  }
-
-  /*
-   * to control if the event is in Day
-   * @param Day: the day to control if the current event is into this day
-   * @return boolean
-   */
-  public boolean isInDay(Day day) {
-    Date dateDay = day.getDate();
-
-    SilverTrace.info("viewgenerator", "Event.isInDay()",
-        "root.MSG_GEN_PARAM_VALUE", "dateDay = " + dateDay.toString()
-        + ", startDate = " + startDate.toString());
-
-    return dateDay.equals(startDate);
-  }
-
-  /*
-   * to control if the date of event is in the week if the start date of event is before the satrat
-   * day of week, the start day of event equals the start day of week if the end date of event is
-   * over the end day of week, the end day of event equals end day of week
-   * @param Date: start date and end date of week
-   * @return boolean catch java.text.ParseException, write this exception int the log file
-   * @see com.stratelia.webactiv.util.DateUtil;
-   */
-  public boolean isInWeek(Date sDate, Date eDate) {
-    boolean val = false;
-
-    Date sD = sDate;
-    Date eD = eDate;
-
-    if ((startDate.compareTo(eD) <= 0) && (endDate.compareTo(eD) >= 0)) {
-      val = true;
-    } else if ((startDate.compareTo(sD) >= 0) && (endDate.compareTo(eD) <= 0)) {
-      val = true;
-
-    } else if ((startDate.compareTo(sD) <= 0) && (endDate.compareTo(sD) >= 0)) {
-      val = true;
-    }
-    return val;
-  }
-
-  /*
-   * to initialize the parametar spanDay. This parameter represent le nombre de jour couvert par
-   * l'evenement it's use by the print method of the class of extend AbstractMonthCalendar default
-   * value for spanDay is 0
-   * @return int
-   * @catch java.text.ParseException, write this exception int the log file and return default value
-   * @see com.stratelia.webactiv.util.DateUtil;
-   */
-  private int initSpanDay(Date date) {
-    Date sD = date;
-    Date eD = this.endDate;
-
-    int span = ((int) ((eD.getTime() - sD.getTime()) / (3600 * 24 * 1000)));
-
-    if (span == 1) {
-      SilverTrace.info("viewgenerator", "Event.initSpanDay()",
-          "root.MSG_GEN_PARAM_VALUE", "return 2");
-      return 2;
-    } else {
-      SilverTrace.info("viewgenerator", "Event.initSpanDay()",
-          "root.MSG_GEN_PARAM_VALUE", "return " + span + 1);
-      return span + 1;
-    }
-  }
-
-  private int initSpanDay() {
-    Date sD = this.startDate;
-    Date eD = this.endDate;
-
-    int span = ((int) ((eD.getTime() - sD.getTime()) / (3600 * 24 * 1000)));
-
-    if (span == 1) {
-      return 2;
-    } else {
-      return span + 1;
-    }
   }
 
   /**

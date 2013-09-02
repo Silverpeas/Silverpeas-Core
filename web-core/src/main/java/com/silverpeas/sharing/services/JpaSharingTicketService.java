@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,13 +47,12 @@ public class JpaSharingTicketService implements SharingTicketService {
 
   @Inject
   TicketRepository repository;
-  
   @Inject
   DownloadDetailRepository historyRepository;
 
   @Override
   public List<Ticket> getTicketsByUser(String userId) {
-    List<Ticket> tickets =  repository.findAllReservationsForUser(userId);
+    List<Ticket> tickets = repository.findAllReservationsForUser(userId);
     return tickets;
   }
 
@@ -83,9 +82,9 @@ public class JpaSharingTicketService implements SharingTicketService {
       downloads.add(download);
       ticket.setDownloads(downloads);
       historyRepository.saveAndFlush(download);
+      ticket.addDownload();
+      repository.saveAndFlush(ticket);
     }
-    ticket.addDownload();
-    repository.saveAndFlush(ticket);
   }
 
   @Override

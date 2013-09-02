@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,11 +29,13 @@
 package com.silverpeas.socialnetwork.user.model;
 
 import com.silverpeas.session.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.io.File;
 import java.util.Collection;
 
@@ -50,7 +52,7 @@ public class SNFullUser {
   private String phone;
 
   public SNFullUser(String userId) {
-    userFull = new OrganizationController().getUserFull(userId);
+    userFull = OrganisationControllerFactory.getOrganisationController().getUserFull(userId);
     this.phone = userFull.getValue("phone");
 
     // return the url of profil Photo
@@ -63,7 +65,9 @@ public class SNFullUser {
       profilPhoto = "/directory/jsp/icons/Photo_profil.jpg";
 
     }
-    Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().getId().equals(userId)) {
 

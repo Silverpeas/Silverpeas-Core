@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +28,9 @@
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 
 <%
-        GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	    WysiwygController scc = (WysiwygController) request.getAttribute("wysiwyg");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+  WysiwygController scc = (WysiwygController) request.getAttribute("wysiwyg");
 %>

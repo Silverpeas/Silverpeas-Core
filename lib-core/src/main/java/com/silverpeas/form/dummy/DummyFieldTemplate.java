@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,9 +27,12 @@ package com.silverpeas.form.dummy;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.fieldType.TextFieldImpl;
+import com.silverpeas.form.record.Parameter;
 import com.silverpeas.util.ArrayUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -134,6 +137,11 @@ public class DummyFieldTemplate implements FieldTemplate {
   @Override
   public Map<String, String> getParameters(String language) {
     return new HashMap<String, String>();
+  }
+  
+  @Override
+  public List<Parameter> getParametersObj() {
+    return new ArrayList<Parameter>();
   }
 
   /**

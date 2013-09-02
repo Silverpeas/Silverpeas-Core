@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,13 +26,13 @@ package com.silverpeas.notification.builder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 /**
  * @author Yohann Chastagnier
@@ -47,8 +47,6 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   /**
    * Default constructor
    * @param resource
-   * @param title
-   * @param fileName
    */
   public AbstractTemplateUserNotificationBuilder(final T resource) {
     super(resource, null, null);
@@ -131,9 +129,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
-    if (OrganizationControllerFactory.getFactory().getOrganizationController()
+    if (OrganisationControllerFactory.getOrganisationController()
         .isComponentExist(getComponentInstanceId()) ||
-        OrganizationControllerFactory.getFactory().getOrganizationController()
+        OrganisationControllerFactory.getOrganisationController()
             .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {

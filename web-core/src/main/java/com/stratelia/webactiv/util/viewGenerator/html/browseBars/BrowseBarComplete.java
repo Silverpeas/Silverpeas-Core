@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
 * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
 * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
 * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
 * text describing the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -81,6 +81,8 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       setSpaceJavascriptCallback("goSpace");
     }
     result.append("<div id=\"breadCrumb\">");
+    
+    boolean emptyBreadCrumb = true;
 
     // Display spaces path from root to component
     String language = (getMainSessionController() == null) ? "" : getMainSessionController()
@@ -90,10 +92,10 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
       if (StringUtil.isDefined(getComponentId())) {
         spaces =
-          getMainSessionController().getOrganizationController().getSpacePathToComponent(
+          getMainSessionController().getOrganisationController().getSpacePathToComponent(
           getComponentId());
       } else {
-        spaces = getMainSessionController().getOrganizationController().getSpacePath(getSpaceId());
+        spaces = getMainSessionController().getOrganisationController().getSpacePath(getSpaceId());
       }
       boolean firstSpace = true;
       for (SpaceInst spaceInst : spaces) {
@@ -117,12 +119,13 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append("</a>");
 
         firstSpace = false;
+        emptyBreadCrumb = false;
       }
 
       if (StringUtil.isDefined(getComponentId())) {
         // Display component's label
         ComponentInstLight componentInstLight =
-          getMainSessionController().getOrganizationController().getComponentInstLight(
+          getMainSessionController().getOrganisationController().getComponentInstLight(
           getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);
@@ -147,11 +150,13 @@ public class BrowseBarComplete extends AbstractBrowseBar {
           result.append(">");
           result.append(componentInstLight.getLabel(language));
           result.append("</a>");
+          emptyBreadCrumb = false;
         }
       }
     } else {
       if (getDomainName() != null) {
         result.append(getDomainName());
+        emptyBreadCrumb = false;
       }
       if (getComponentName() != null) {
         if (getDomainName() != null) {
@@ -163,6 +168,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         } else {
           result.append(getComponentName());
         }
+        emptyBreadCrumb = false;
       }
     }
 
@@ -170,7 +176,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     List<BrowseBarElement> elements = getElements();
     if (!elements.isEmpty()) {
       for (BrowseBarElement element : elements) {
-        result.append(CONNECTOR);
+        if (!emptyBreadCrumb) {
+          result.append(CONNECTOR);
+        }
         result.append("<a href=\"").append(element.getLink()).append("\"");
         result.append(" class=\"element\"");
         if (StringUtil.isDefined(element.getId())) {
@@ -179,9 +187,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append(">");
         result.append(EncodeHelper.javaStringToHtmlString(element.getLabel()));
         result.append("</a>");
+        emptyBreadCrumb = false;
       }
     } else if (StringUtil.isDefined(path)) {
-      result.append(CONNECTOR);
+      if (!emptyBreadCrumb) {
+        result.append(CONNECTOR);
+      }
       result.append("<span class=\"path\">");
       result.append(path);
       result.append("</span>");
@@ -189,7 +200,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
     // Display extra information
     if (StringUtil.isDefined(information)) {
-      result.append(CONNECTOR);
+      if (!emptyBreadCrumb) {
+        result.append(CONNECTOR);
+      }
       result.append("<span class=\"information\">");
       result.append(information);
       result.append("</span>");
@@ -205,13 +218,15 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     StringBuilder script = new StringBuilder();
     script.append("<script type=\"text/javascript\">");
     script.append("function goSpace(spaceId) {");
+    String mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
     if(look != null && StringUtil.isDefined(look.getMainFrame())) {
-      script.append(" top.location = \"").append(context).append(look.getMainFrame()).append(
-      "RedirectToSpaceId=\"+spaceId;");
-    }else {
-      script.append(" top.location = \"").append(context).append(
-            "/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId=\"+spaceId;");
+      mainFrame = look.getMainFrame();
+      if (!mainFrame.startsWith("/")) {
+        mainFrame = "/admin/jsp/" + mainFrame;
+      }
     }
+    script.append(" top.location = \"").append(context).append(mainFrame)
+        .append("?RedirectToSpaceId=\"+spaceId;");
     script.append("}");
     script.append("</script>");
     return script.toString();

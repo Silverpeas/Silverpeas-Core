@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,11 +35,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.quota.exception.QuotaException;
+
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
 public class PersonalSpaceController {
 
-  public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
+  public List<WAComponent> getVisibleComponents(OrganisationController orgaController) {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
     Collection<WAComponent> components = orgaController.getAllComponents().values();
     for (WAComponent component : components) {
@@ -51,7 +54,7 @@ public class PersonalSpaceController {
   }
 
   public String addComponent(String userId, String componentName, String componentLabel)
-      throws AdminException {
+      throws AdminException, QuotaException {
     ComponentInst component = new ComponentInst();
     component.setCreatorUserId(userId);
     component.setInheritanceBlocked(false);

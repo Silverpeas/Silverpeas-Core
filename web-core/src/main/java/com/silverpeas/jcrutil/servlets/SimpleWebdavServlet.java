@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,19 @@
 
 package com.silverpeas.jcrutil.servlets;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
+
 import org.apache.jackrabbit.server.CredentialsProvider;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
+
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 
   private static final long serialVersionUID = -1609493516113921269L;
   private static final ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.jcr", "");
+      "org.silverpeas.util.jcr", "");
   /**
    * the jcr repository
    */

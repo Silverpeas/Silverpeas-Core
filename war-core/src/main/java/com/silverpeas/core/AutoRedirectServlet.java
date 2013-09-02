@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -100,12 +100,12 @@ public class AutoRedirectServlet extends HttpServlet {
         mainFrameParams = "?ComponentIdFromRedirect=" + componentId;
         session.setAttribute("RedirectToComponentId", componentId);
         String foreignId = request.getParameter("ForeignId");
-        if (isSilverpeasIdValid(attachmentGoTo) && isSilverpeasIdValid(foreignId)) {
+        if (StringUtil.isDefined(attachmentGoTo) && isSilverpeasIdValid(foreignId)) {
           String type = request.getParameter("Mapping");
           // Contruit l'url vers l'objet du composant contenant le fichier
           strGoTo =
               URLManager.getURL(null, componentId) + "searchResult?Type=Publication&Id=" +
-              foreignId;
+                  foreignId;
           session.setAttribute("gotoNew", strGoTo);
           // Ajoute l'id de l'attachment pour ouverture automatique
           session.setAttribute("RedirectToAttachmentId", attachmentGoTo);
@@ -173,7 +173,7 @@ public class AutoRedirectServlet extends HttpServlet {
   }
 
   private boolean isAccessibleSpace(String spaceId, MainSessionController mainController) {
-    return StringUtil.isDefined(spaceId) && !mainController.getOrganizationController().
+    return StringUtil.isDefined(spaceId) && !mainController.getOrganisationController().
         isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
@@ -181,7 +181,7 @@ public class AutoRedirectServlet extends HttpServlet {
     return StringUtil.isDefined(componentId) &&
         !StringUtil.isAlpha(componentId) &&
         !mainController.
-        getOrganizationController().isComponentAvailable(componentId,
+            getOrganisationController().isComponentAvailable(componentId,
         mainController.getUserId());
   }
 
@@ -225,5 +225,5 @@ public class AutoRedirectServlet extends HttpServlet {
   @Override
   public String getServletInfo() {
     return "Short description";
-  }// </editor-fold>
+  }
 }

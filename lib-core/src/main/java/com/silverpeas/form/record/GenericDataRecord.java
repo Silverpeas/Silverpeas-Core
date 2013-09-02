@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,20 @@
 
 package com.silverpeas.form.record;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.TypeManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -156,5 +161,30 @@ public class GenericDataRecord implements DataRecord, Serializable {
   @Override
   public void setLanguage(String language) {
     this.language = language;
+  }
+  
+  @Override
+  public Map<String, String> getValues(String language) {
+    Map<String, String> formValues = new HashMap<String, String>();
+    String fieldNames[] = getFieldNames();
+    PagesContext pageContext = new PagesContext();
+    pageContext.setLanguage(language);
+    for (String fieldName : fieldNames) {
+      try {
+        Field field = getField(fieldName);
+        GenericFieldTemplate fieldTemplate =
+            (GenericFieldTemplate) template.getFieldTemplate(fieldName);
+        FieldDisplayer fieldDisplayer =
+            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
+        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+        formValues.put(fieldName, sw.toString());
+      } catch (Exception e) {
+        SilverTrace.warn("form", "GenericDataRecord.getValues", "CANT_GET_FIELD_VALUE",
+            "objectId = " + externalId + "fieldName = " + fieldName, e);
+      }
+    }
+    return formValues;
   }
 }

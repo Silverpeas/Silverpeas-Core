@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,13 +24,12 @@
 
 package com.silverpeas.comment.dao;
 
-import java.util.List;
-
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.util.List;
 
 /**
  * A Data Access Object that provides an access to Comment objects persisted within a data source.
@@ -89,14 +88,9 @@ public interface CommentDAO {
   int getCommentsCountByForeignKey(final String resourceType, final ForeignPK pk);
 
   /**
-<<<<<<< HEAD
-   * Among all the publications identified by the specified primary keys, gets the most commented
-   * ones.
-=======
    * Among all the publications identified by the resource type and the specified primary keys, gets
    * the most commented ones.
    * @param resourceType type of the commented publication.
->>>>>>> master
    * @param pks a list of primary keys refering some publications.
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).

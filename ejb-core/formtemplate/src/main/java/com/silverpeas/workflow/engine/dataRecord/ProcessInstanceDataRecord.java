@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,9 @@
  */
 
 package com.silverpeas.workflow.engine.dataRecord;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -39,6 +42,9 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
  * participant.<participantName>
  */
 public class ProcessInstanceDataRecord implements DataRecord {
+
+  private static final long serialVersionUID = 4538018078050395139L;
+
   /**
    * Builds the data record representation of a process instance.
    */
@@ -104,6 +110,12 @@ public class ProcessInstanceDataRecord implements DataRecord {
 
   public void setLanguage(String lang) {
     // do nothing
+  }
+  
+  @Override
+  public Map<String, String> getValues(String language) {
+    // no implemented yet !
+    return new HashMap<String, String>();
   }
 
   /**

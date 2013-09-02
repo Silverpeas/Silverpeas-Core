@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -198,15 +198,15 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 		}
 	</style>
 <% } %>
-<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <!--[if IE 6]>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript">
 	function submitContent(cUrl, componentId) {
 
@@ -446,19 +446,33 @@ function markAsRead(id) {
 	$(document).ready(function(){
 		//used for keywords autocompletion
 	    <%  if(autoCompletion){ %>
-			        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
-			                    minChars: <%=autocompletionMinChars%>,
-			                    max: 50,
-			                    autoFill: false,
-			                    mustMatch: false,
-			                    matchContains: false,
-			                    scrollHeight: 220
-			            });
+			        $("#query").autocomplete({
+                source: "<%=m_context%>/AutocompleteServlet",
+                minLength: <%=autocompletionMinChars%>
+      });
 	    <%}%>
 	  });
 
 function showExternalSearchError() {
   $("#externalSearchErrorDivId").dialog();
+}
+
+function previewFile(target, attachmentId, versioned, componentId) {
+  $(target).preview("previewAttachment", {
+    componentInstanceId: componentId,
+    attachmentId: attachmentId,
+    versioned: versioned
+  });
+  return false;
+}
+
+function viewFile(target, attachmentId, versioned, componentId) {
+  $(target).view("viewAttachment", {
+	componentInstanceId: componentId,
+    attachmentId: attachmentId,
+    versioned: versioned
+  });
+  return false;
 }
 </script>
 </head>
@@ -614,7 +628,7 @@ function showExternalSearchError() {
   <c:if test="${not empty results}">
     <table border="0" id="globalResultListDetails" cellspacing="0" cellpadding="0">
       <c:forEach var="result" items="${results}">
-        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}"></view:displayResult>
+        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}" settings="<%=resource %>"></view:displayResult>
       </c:forEach>
     </table>
   </c:if>

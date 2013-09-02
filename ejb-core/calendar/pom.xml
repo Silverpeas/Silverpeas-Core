@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core.ejb-core</groupId>
@@ -18,8 +18,9 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
       </testResource>
-    </testResources>
+    </testResources> 
   </build>
+  
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
@@ -27,5 +28,5 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
+  </dependencies> 
 </project>

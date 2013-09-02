@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -21,18 +21,22 @@
 package com.stratelia.webactiv.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.util.UnitUtil;
+
+import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.IndexFileManager;
+
 import static java.io.File.separatorChar;
 
 /**
@@ -41,6 +45,7 @@ import static java.io.File.separatorChar;
  */
 public class FileRepositoryManager {
 
+  static final String securityPath = GeneralPropertiesManager.getString("securityPath");
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
@@ -50,14 +55,8 @@ public class FileRepositoryManager {
   static String domainAuthenticationPropertiesFolderPath;
   final static ResourceLocator uploadSettings = new ResourceLocator(
       "org.silverpeas.util.uploads.uploadSettings", "");
-  static final ResourceLocator utilMessages = new ResourceLocator(
-      "org.silverpeas.util.multilang.util", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
-  static final long ko = 1024;
-  static final long mo = ko * 1024;
-  static final long go = mo * 1024;
-  static final long to = go * 1024;
 
   static {
     tempPath = GeneralPropertiesManager.getString("tempPath");
@@ -65,7 +64,7 @@ public class FileRepositoryManager {
       tempPath = tempPath + File.separatorChar;
     }
 
-    StringBuilder path = new StringBuilder();
+    StringBuilder path = new StringBuilder(512);
     path.append(System.getenv("SILVERPEAS_HOME")).append(separatorChar).append("properties");
     path.append(separatorChar).append("org").append(separatorChar).append("silverpeas").append(
         separatorChar);
@@ -75,20 +74,32 @@ public class FileRepositoryManager {
   }
 
   /**
-   * @deprecated @param sSpaceId
+   * Gets the path of the directory in which all the resources related to the security in Silverpeas
+   * are stored.
+   * @return the path of the Silverpeas security directory.
+   */
+  public static String getSecurityDirPath() {
+    return securityPath + File.separator;
+  }
+
+  /**
+   * @deprecated
+   * @param sSpaceId
    * @param sComponentId
    * @return
+   * @deprecated
    */
+  @Deprecated
   public static String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
-    return upLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + separatorChar + sComponentId + separatorChar;
   }
 
   public static String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
-    return upLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + separatorChar + sComponentId + separatorChar;
   }
 
   public static String getAvatarPath() {
@@ -102,54 +113,51 @@ public class FileRepositoryManager {
    * @return the path of the root repository for uploads.
    */
   public static String getUploadPath() {
-    return upLoadPath + File.separator;
+    return upLoadPath + separatorChar;
   }
 
-  // Add by Jean-Claude Groccia
-  // @param: sSpaceId: type String: the name of the space
-  // @param: sComponentId: type String: the name of the componentId
-  // @param: sDirectoryName: type Array of String: the name of sub directory.
-  // this parameter represents the context of component
   /**
+   * Add by Jean-Claude Groccia
+   *
+   * @param: spaceId: type String: the name of the space
+   * @param: componentId: type String: the name of the componentId
+   * @param: directoryName: type Array of String: the name of sub directory. this parameter
+   * represents the context of component
    * @deprecated
    */
-  public static String getAbsolutePath(String sSpaceId, String sComponentId,
-      String[] sDirectoryName) {
-    return getAbsolutePath(sComponentId, sDirectoryName);
+  @Deprecated
+  public static String getAbsolutePath(String spaceId, String componentId, String[] directoryName) {
+    return getAbsolutePath(componentId, directoryName);
   }
 
   /**
-   * @param sSpaceId
-   * @param sComponentId
-   * @param sDirectoryName
+   * @param componentId
+   * @param directoryName
    * @return path
    */
-  public static String getAbsolutePath(String sComponentId, String[] sDirectoryName) {
-    int lg = sDirectoryName.length;
-    String path = getAbsolutePath(sComponentId);
+  public static String getAbsolutePath(String componentId, String[] directoryName) {
+    int lg = directoryName.length;
+    String path = getAbsolutePath(componentId);
     for (int k = 0; k < lg; k++) {
       SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-          ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
-      path = path + sDirectoryName[k] + File.separatorChar;
+          ("concat: path = " + path + " sDirectoryName[" + k + "]=" + directoryName[k]));
+      path = path + directoryName[k] + separatorChar;
     }
     return path;
   }
 
-  // Add by Jean-Claude Groccia
-  // @param: sDirectoryName: type of String: the name of sub directory.
-  // @return path1/path2/
-  public static String getRelativePath(String[] sDirectoryName) {
-    int lg = sDirectoryName.length;
-    String path = sDirectoryName[0];
-    path = path.concat(File.separator);
-    for (int k = 1; k < lg; k++) {
-      SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-          "concat: path = " + path + " sDirectoryName[" + k + "]="
-          + sDirectoryName[k]);
-      path = path.concat(sDirectoryName[k]);
-      path = path.concat(File.separator);
-    }
-    return path;
+  /**
+   * Construct an OS specific relative path.
+   *
+   * @param directories the names of sub directory. (path1, path2,...)
+   * @return path1/path2/.../
+   */
+  public static String getRelativePath(String... directories) {
+    return StringUtil.join(directories, separatorChar) + separatorChar;
+  }
+
+  public static String getTemporaryPath() {
+    return tempPath + separatorChar;
   }
 
   public static String getDomainPropertiesPath(String domainName) {
@@ -160,33 +168,12 @@ public class FileRepositoryManager {
     return domainAuthenticationPropertiesFolderPath + "autDomain" + domainName + ".properties";
   }
 
-  public static String getTemporaryPath() {
-    return tempPath + File.separator;
-  }
-
   public static String getTemporaryPath(String sSpaceId, String sComponentId) {
-    return tempPath + File.separator;
+    return tempPath + separatorChar;
   }
 
   public static String getComponentTemporaryPath(String sComponentId) {
-    return getAbsolutePath(sComponentId) + "Temp" + File.separator;
-  }
-
-  /**
-   * @param sSpaceId
-   * @param sComponentId
-   * @param sDirectoryName
-   * @deprecated
-   */
-  public static void createAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(sComponentId)
-        + sDirectoryName);
-  }
-
-  public static void createAbsolutePath(String sComponentId, String sDirectoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(sComponentId)
-        + sDirectoryName);
+    return getAbsolutePath(sComponentId) + "Temp" + separatorChar;
   }
 
   /**
@@ -195,16 +182,32 @@ public class FileRepositoryManager {
    * @param directoryName
    * @deprecated
    */
+  @Deprecated
+  public static void createAbsolutePath(String spaceId, String componentId, String directoryName) {
+    FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
+  }
+
+  public static void createAbsolutePath(String componentId, String directoryName) {
+    FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
+  }
+
+  /**
+   * @param spaceId
+   * @param componentId
+   * @param directoryName
+   * @deprecated
+   */
+  @Deprecated
   public static void createTempPath(String spaceId, String componentId, String directoryName) {
     FileFolderManager.createFolder(getAbsolutePath(componentId));
   }
 
-  public static void createTempPath(String componentId, String directoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(componentId));
+  public static void createTempPath(String sComponentId, String sDirectoryName) {
+    FileFolderManager.createFolder(getAbsolutePath(sComponentId));
   }
 
-  public static void createGlobalTempPath(String directoryName) {
-    FileFolderManager.createFolder(getTemporaryPath() + directoryName);
+  public static void createGlobalTempPath(String sDirectoryName) {
+    FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
   public static void createAbsoluteIndexPath(String particularSpace, String componentId) {
@@ -212,19 +215,15 @@ public class FileRepositoryManager {
         componentId));
   }
 
-  public static void deleteAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
-    FileFolderManager.deleteFolder(getAbsolutePath(sComponentId)
-        + sDirectoryName);
+  public static void deleteAbsolutePath(String sSpaceId, String sComponentId, String sDirectoryName) {
+    FileFolderManager.deleteFolder(getAbsolutePath(sComponentId) + sDirectoryName);
   }
 
-  public static void deleteTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
+  public static void deleteTempPath(String sSpaceId, String sComponentId, String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
   }
 
-  public static void deleteAbsoluteIndexPath(String particularSpace,
-      String sComponentId) {
+  public static void deleteAbsoluteIndexPath(String particularSpace, String sComponentId) {
     FileFolderManager.deleteFolder(IndexFileManager.getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
@@ -248,10 +247,13 @@ public class FileRepositoryManager {
     return getFileIcon(false, extension, isReadOnly);
   }
 
-  public static String getFileIcon(boolean small, String extension, boolean isReadOnly) {
+  public static String getFileIcon(boolean small, String filename, boolean isReadOnly) {
     String path = URLManager.getApplicationURL() + uploadSettings.getString("FileIconsPath");
-
-    String fileIcon = uploadSettings.getString(extension.toLowerCase());
+    String extension = FilenameUtils.getExtension(filename);
+    if (!StringUtil.isDefined(extension)) {
+      extension = filename;
+    }
+    String fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
     if (fileIcon == null) {
       fileIcon = unknownFileIcon;
     } else {
@@ -278,31 +280,7 @@ public class FileRepositoryManager {
    * @return String
    */
   public static String formatFileSize(long lSize) {
-    String sTo = utilMessages.getString("to", "Tb");
-    String sGo = utilMessages.getString("go", "Gb");
-    String sMo = utilMessages.getString("mo", "Mb");
-    String sKo = utilMessages.getString("ko", "Kb");
-    String o = utilMessages.getString("o", "bytes");
-
-    float size = new Long(lSize).floatValue();
-
-    if (size < ko) {// inférieur à 1 ko (1024 octets)
-      return Integer.toString(Math.round(size)).concat(" ").concat(o);
-    } else if (size < mo) {// inférieur à 1 mo (1024 * 1024 octets)
-      return Integer.toString(Math.round(size / ko)).concat(" ").concat(sKo);
-    } else if (size < go) {// inférieur à 1 Go
-      DecimalFormat format = new DecimalFormat();
-      format.setMaximumFractionDigits(2);
-      return format.format(size / mo).concat(" ").concat(sMo);
-    } else if (size < to) {// inférieur à 1 To
-      DecimalFormat format = new DecimalFormat();
-      format.setMaximumFractionDigits(2);
-      return format.format(size / go).concat(" ").concat(sGo);
-    } else {
-      DecimalFormat format = new DecimalFormat();
-      format.setMaximumFractionDigits(2);
-      return format.format(size / to).concat(" ").concat(sTo);
-    }
+    return UnitUtil.formatMemSize(lSize);
   }
 
   /**
@@ -340,7 +318,6 @@ public class FileRepositoryManager {
    * @author Seb
    * @param from The name of the source file, the one to copy.
    * @param to The name of the destination file, where to paste data.
-   * @throws FileNotFoundException
    * @throws IOException
    */
   public static void copyFile(String from, String to) throws IOException {
@@ -365,6 +342,7 @@ public class FileRepositoryManager {
    * stored.
    *
    * @param str : type String: the string of repertories
+   * @return
    */
   public static String[] getAttachmentContext(String str) {
 
@@ -399,5 +377,8 @@ public class FileRepositoryManager {
       path += "/";
     }
     return path;
+  }
+
+  private FileRepositoryManager() {
   }
 }

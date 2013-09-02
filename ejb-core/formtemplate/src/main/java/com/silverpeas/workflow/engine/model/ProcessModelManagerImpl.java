@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -449,9 +449,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    */
   @Override
   public String getProcessModelDir() {
-    String dir = settings.getString("ProcessModelDir");
-    dir = dir.replace('/', File.separatorChar);
-    dir = dir.replace('\\', File.separatorChar);
+    String dir = FileUtil.convertPathToServerOS(settings.getString("ProcessModelDir"));
     if (dir != null && !dir.endsWith(File.separator)) {
       dir = dir + File.separatorChar;
     }
@@ -496,17 +494,15 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * Search the cache for the required process model.
    */
-  private ProcessModel getCachedProcessModel(String modelId)
-      throws WorkflowException {
-    ProcessModel model = (ProcessModel) models.get(modelId);
+  private ProcessModel getCachedProcessModel(String modelId) {
+    ProcessModel model = models.get(modelId);
     return model;
   }
 
   /**
    * Put the given process model in the the cache.
    */
-  private void cacheProcessModel(String modelId, ProcessModel model,
-      String filename) throws WorkflowException {
+  private void cacheProcessModel(String modelId, ProcessModel model, String filename) {
     synchronized (models) {
       models.put(modelId, model);
     }

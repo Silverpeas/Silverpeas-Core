@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,16 @@
 
 package org.silverpeas.admin.domain;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
@@ -40,20 +41,24 @@ import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.repository.SQLDomainRepository;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.Normalizer;
 
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
   ResourceLocator templateSettings;
   ResourceLocator adminSettings;
+
+  private final static String DATABASE_TABLE_NAME_DOMAIN_PREFIX = "Domain";
+  private final static String DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX = "_User";
+  private final static String DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX = "_Group";
+  private final static String DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX = "_Group_User_Rel";
 
   @Inject
   @Named("sqlInternalDomainRepository")
@@ -62,76 +67,143 @@ public class SQLDomainService extends AbstractDomainService {
   @PostConstruct
   void init() {
     templateSettings =
-        new ResourceLocator("com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    adminSettings = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
+        new ResourceLocator("org.silverpeas.domains.templateDomainSQL", "");
+    adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
-
-  @Override
-  protected void checkDomainName(String domainName) throws DomainConflictException, AdminException {
-
-    // Commons checks
-    super.checkDomainName(domainName);
+  
+  private void checkFileName(String fileDomainName)
+      throws DomainAuthenticationPropertiesAlreadyExistsException,
+      DomainPropertiesAlreadyExistsException {
 
     // Check properties files availability
-    // com.stratelia.silverpeas.domains.domain<domainName>.properties
-    // com.stratelia.silverpeas.authentication.autDomain<domainName>.properties
+    // org.silverpeas.domains.domain<domainName>.properties
+    // org.silverpeas.authentication.autDomain<domainName>.properties
     String authenticationPropertiesPath =
-        FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainName);
-    String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
+        FileRepositoryManager.getDomainAuthenticationPropertiesPath(fileDomainName);
+    String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(fileDomainName);
 
     if (new File(authenticationPropertiesPath).exists()) {
-      throw new DomainAuthenticationPropertiesAlreadyExistsException(domainName);
+      SilverTrace.error("admin", "SQLDomainService.checkFileName",
+          "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", fileDomainName);
+      throw new DomainAuthenticationPropertiesAlreadyExistsException(fileDomainName);
     }
 
     if (new File(domainPropertiesPath).exists()) {
-      throw new DomainPropertiesAlreadyExistsException(domainName);
+      SilverTrace.error("admin", "SQLDomainService.checkFileName",
+          "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", fileDomainName);
+      throw new DomainPropertiesAlreadyExistsException(fileDomainName);
     }
   }
 
+  /**
+   * Gets a file name without special characters and without accentued characters in the aim to
+   * create domain property files safely on file system.
+   * @param domain with a name that may contain some special characters and/or accentued characters
+   * @return
+   */
+  protected String getTechnicalDomainName(Domain domain) {
+
+    // Normalizing the name (accents, puissance, ...)
+    String fileDomainName = FileServerUtils.replaceAccentChars(domain.getName());
+    fileDomainName = Normalizer.normalize(fileDomainName, Normalizer.Form.NFKD);
+
+    // Replacing of each sequence of special characters by nothing
+    fileDomainName = fileDomainName.replaceAll("[^\\p{Alnum}]+", "");
+
+    // Limitations of some databases on length of table or column names : compute max length
+    int maxTableNameSuffixLength = Math.max(DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX.length(),
+        DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX.length());
+    maxTableNameSuffixLength =
+        Math.max(maxTableNameSuffixLength, DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX.length());
+    int maxLength =
+        SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - DATABASE_TABLE_NAME_DOMAIN_PREFIX.length() -
+            maxTableNameSuffixLength - domain.getId().length();
+
+    // The technical name is the addition of the part of the domain id and the part of the
+    // normalized (and resized) domain name. The domain name is unique by this way
+    return domain.getId() + StringUtil.left(fileDomainName, maxLength);
+  }
+
   @Override
-  public String createDomain(Domain domainToCreate) throws DomainConflictException,
-      DomainCreationException {
+  public String createDomain(Domain domainToCreate)
+      throws DomainConflictException, DomainCreationException {
 
     // Check domain name
-    String domainName = domainToCreate.getName();
+    String initialDomainName = domainToCreate.getName();
     try {
-      checkDomainName(domainName);
+      checkDomainName(initialDomainName);
     } catch (AdminException e) {
-      throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
+      throw new DomainConflictException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
     }
 
-    // Generates domain properties file
-    generateDomainPropertiesFile(domainToCreate);
+    // Get the next domain identifier to work on it
+    String domainId = getNextDomainId();
+    domainToCreate.setId(domainId);
 
-    // Generates domain authentication properties file
-    generateDomainAuthenticationPropertiesFile(domainToCreate);
+    // Get the technical name of the domain
+    String technicalDomainName = getTechnicalDomainName(domainToCreate);
 
-    // Create storage
+    // Check that it doesn't exist a file with the computed technical name
+    checkFileName(technicalDomainName);
+
     try {
+
+      // Set the technical name to the domain for technical treatments
+      domainToCreate.setName(technicalDomainName);
+
+      // Generates domain properties file
+      generateDomainPropertiesFile(domainToCreate);
+
+      // Generates domain authentication properties file
+      generateDomainAuthenticationPropertiesFile(domainToCreate);
+
+      // Create storage
       dao.createDomainStorage(domainToCreate);
+
+      // SQL Driver might be override for some purpose
+      if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
+        domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
+      }
+      domainToCreate.setPropFileName("org.silverpeas.domains.domain" + technicalDomainName);
+      domainToCreate.setAuthenticationServer("autDomain" + technicalDomainName);
+      domainToCreate.setTheTimeStamp("0");
+
+      // Enregistre le nom initial dans la table st_domain
+      domainToCreate.setName(initialDomainName);
+      registerDomain(domainToCreate);
+
     } catch (Exception e) {
-      removePropertiesFiles(domainName);
+
+      /*
+      Roll back all things that have been created
+       */
+
+      try {
+        removePropertiesFiles(technicalDomainName);
+      } catch (Exception anyE) {
+        // Nothing to do ...
+      }
+
+      try {
+        domainToCreate.setName(technicalDomainName);
+        dao.deleteDomainStorage(domainToCreate);
+      } catch (Exception anyE) {
+        // Nothing to do ...
+      }
+
+      try {
+        domainToCreate.setName(initialDomainName);
+        unRegisterDomain(domainToCreate);
+      } catch (Exception anyE) {
+        // Nothing to do ...
+      }
+
+      if (e instanceof DomainCreationException) {
+        throw (DomainCreationException) e;
+      }
       throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
-    }
-
-    // register new Domain
-    // SQL Driver might be override for some purpose
-    if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
-      domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
-    }
-    domainToCreate.setPropFileName("com.stratelia.silverpeas.domains.domain" + domainName);
-    domainToCreate.setAuthenticationServer("autDomain" + domainName);
-    domainToCreate.setTheTimeStamp("0");
-    String domainId = registerDomain(domainToCreate);
-    if (!StringUtil.isDefined(domainId)) {
-      try {
-        dao.deleteDomainStorage(domainToCreate);
-      } catch (Exception e) {
-        removePropertiesFiles(domainName);
-      }
-      removePropertiesFiles(domainName);
     }
 
     return domainId;
@@ -140,12 +212,24 @@ public class SQLDomainService extends AbstractDomainService {
   @Override
   public String deleteDomain(Domain domainToRemove) throws DomainDeletionException {
 
-    // unregister new Domain
+    // Retrieve the prefix of a domain property file name
+    String separator = "#@#@#@#@#";
+    String domainPropertyPrefix = new File(
+        FileRepositoryManager.getDomainPropertiesPath(separator).replaceAll(separator + ".*$", ""))
+        .getName();
+    // Get the domain property file name without the package
+    String domainPropertyFileName =
+        domainToRemove.getPropFileName().replaceAll("[\\p{Alnum}]+\\.+", "");
+    // Compute the common property file name by removing the prefix of a domain property file name
+    String fileDomainName = domainPropertyFileName.replaceFirst(domainPropertyPrefix, "");
+    domainToRemove.setName(fileDomainName);
+    
+    // unregister new Domain dans st_domain
     String domainId = unRegisterDomain(domainToRemove);
     if (!StringUtil.isDefined(domainId)) {
       throw new DomainDeletionException("SQLDomainService.deleteDomain");
     }
-
+    
     // Remove storage
     try {
       dao.deleteDomainStorage(domainToRemove);
@@ -177,28 +261,24 @@ public class SQLDomainService extends AbstractDomainService {
    * @throws DomainCreationException
    */
   private void generateDomainPropertiesFile(Domain domainToCreate) throws DomainCreationException {
-    SilverTrace
-        .info(
-        "admin",
-        "SQLDomainService.generateDomainPropertiesFile()",
+    SilverTrace.info("admin", "SQLDomainService.generateDomainPropertiesFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToCreate.getName();
+    
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
 
-    String cryptMethod =
-        templateSettings.getString("database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
-
     SilverpeasTemplate template = getNewTemplate();
-    template.setAttribute("SQLPasswordEncryption", cryptMethod);
-
     template.setAttribute("SQLClassName", adminSettings.getString("AdminDBDriver"));
     template.setAttribute("SQLJDBCUrl", adminSettings.getString("WaProductionDb"));
     template.setAttribute("SQLAccessLogin", adminSettings.getString("WaProductionUser"));
     template.setAttribute("SQLAccessPasswd", adminSettings.getString("WaProductionPswd"));
-    template.setAttribute("SQLUserTableName", "Domain" + domainName + "_User");
-    template.setAttribute("SQLGroupTableName", "Domain" + domainName + "_Group");
-    template.setAttribute("SQLUserGroupTableName", "Domain" + domainName + "_Group_User_Rel");
+    template.setAttribute("SQLUserTableName",
+        DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX);
+    template.setAttribute("SQLGroupTableName",
+        DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX);
+    template.setAttribute("SQLUserGroupTableName", DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName +
+        DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX);
 
     File domainPropertiesFile = new File(domainPropertiesPath);
     PrintWriter out = null;
@@ -223,10 +303,7 @@ public class SQLDomainService extends AbstractDomainService {
    */
   private void generateDomainAuthenticationPropertiesFile(Domain domainToCreate)
       throws DomainCreationException {
-    SilverTrace
-        .info(
-        "admin",
-        "SQLDomainService.generateDomainAuthenticationPropertiesFile()",
+    SilverTrace.info("admin", "SQLDomainService.generateDomainAuthenticationPropertiesFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToCreate.getName();
@@ -235,18 +312,16 @@ public class SQLDomainService extends AbstractDomainService {
         FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainName);
 
     boolean allowPasswordChange = templateSettings.getBoolean("allowPasswordChange", true);
-    String cryptMethod =
-        templateSettings.getString("database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
 
     SilverpeasTemplate template = getNewTemplate();
-    template.setAttribute("SQLPasswordEncryption", cryptMethod);
     template.setAttribute("allowPasswordChange", allowPasswordChange);
 
     template.setAttribute("SQLDriverClass", adminSettings.getString("AdminDBDriver"));
     template.setAttribute("SQLJDBCUrl", adminSettings.getString("WaProductionDb"));
     template.setAttribute("SQLAccessLogin", adminSettings.getString("WaProductionUser"));
     template.setAttribute("SQLAccessPasswd", adminSettings.getString("WaProductionPswd"));
-    template.setAttribute("SQLUserTableName", "Domain" + domainName + "_User");
+    template.setAttribute("SQLUserTableName",
+        DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX);
 
     File domainPropertiesFile = new File(domainPropertiesPath);
     File authenticationPropertiesFile = new File(authenticationPropertiesPath);
@@ -261,8 +336,10 @@ public class SQLDomainService extends AbstractDomainService {
           "SQLDomainService.generateDomainAuthenticationPropertiesFile()", domainToCreate
           .toString(), e);
     } finally {
+      if (out != null) {
       out.close();
     }
+  }
   }
 
   /**
@@ -270,11 +347,8 @@ public class SQLDomainService extends AbstractDomainService {
    * @param domainToRemove domain to remove
    * @throws DomainDeletionException
    */
-  private void removeDomainPropertiesFile(Domain domainToRemove) throws DomainDeletionException {
-    SilverTrace
-        .info(
-        "admin",
-        "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
+  private void removeDomainPropertiesFile(Domain domainToRemove) {
+    SilverTrace.info("admin", "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToRemove.getName();
@@ -288,11 +362,8 @@ public class SQLDomainService extends AbstractDomainService {
     boolean domainPropertiesFileDeleted = domainPropertiesFile.delete();
     boolean authenticationPropertiesFileDeleted = authenticationPropertiesFile.delete();
 
-    if ((!domainPropertiesFileDeleted) || (!authenticationPropertiesFileDeleted)) {
-      SilverTrace
-          .warn(
-          "admin",
-          "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
+    if (!(domainPropertiesFileDeleted && authenticationPropertiesFileDeleted)) {
+      SilverTrace.warn("admin", "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
           "admin.EX_DELETE_DOMAIN_PROPERTIES", "domainPropertiesFileDeleted:" +
           domainPropertiesFileDeleted + ", authenticationPropertiesFileDeleted:" +
           authenticationPropertiesFileDeleted);

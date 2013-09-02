@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,24 +25,33 @@
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import java.util.Date;
+import java.util.Map;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.Map;
 
-public class SILVERMAILListener extends AbstractListener {
+@MessageDriven(activationConfig = {
+  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SILVERMAIL'"),
+  @ActivationConfigProperty(propertyName = "destination", propertyValue =
+      "java:/queue/notificationsQueue")},
+    description = "Message driven bean to silverpeas notification box")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class SILVERMAILListener extends AbstractListener implements MessageListener {
   private static final long serialVersionUID = -6357231434570565933L;
 
   public SILVERMAILListener() {
-  }
-
-  @Override
-  public void ejbCreate() {
   }
 
   /**

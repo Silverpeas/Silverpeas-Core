@@ -1,37 +1,35 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdcSubscriptionPeas.control;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -43,26 +41,31 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import javax.ejb.RemoveException;
+import org.silverpeas.subscription.SubscriptionComparator;
+import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
+import org.silverpeas.subscription.bean.NodeSubscriptionBean;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
   private PdcSubscriptionBm scBm = null;
   private PdcBm pdcBm = null;
+  private PDCSubscription currentPDCSubscription = null;
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
+   *
    * @param mainSessionCtrl
    * @param componentContext
    */
@@ -79,9 +82,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   private void initEJB() {
     if (scBm == null) {
       try {
-        PdcSubscriptionBmHome icEjbHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBmHome.class);
-        scBm = icEjbHome.create();
+        scBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME,
+            PdcSubscriptionBm.class);
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
             SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -101,45 +103,88 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-          NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return nodeBm;
   }
 
-  public Collection<Collection<NodeDetail>> getUserSubscribe(String userId) {
+  public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {
     String currentUserId = userId;
-    Collection<Collection<NodeDetail>> subscribe = new ArrayList<Collection<NodeDetail>>();
+    List<NodeSubscriptionBean> subscribes = new ArrayList<NodeSubscriptionBean>();
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
-    Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptions(currentUserId);
+    Collection<Subscription> list = getSubscribeBm().getByUserSubscriber(currentUserId);
     for (Subscription subscription : list) {
       try {
-        Collection<NodeDetail> path = getNodeBm().getPath((NodePK) subscription.getTopic());
-        subscribe.add(path);
-      } catch (RemoteException e) {
+        // Subscriptions managed at this level are only those of node subscription.
+        if (SubscriptionResourceType.NODE.equals(subscription.getResource().getType())) {
+          ComponentInstLight componentInstLight = getOrganisationController()
+              .getComponentInstLight(subscription.getResource().getInstanceId());
+          if (componentInstLight != null) {
+            Collection<NodeDetail> path =
+                getNodeBm().getPath((NodePK) subscription.getResource().getPK());
+            subscribes.add(
+                new NodeSubscriptionBean(subscription, path, componentInstLight, getLanguage()));
+          }
+        }
+      } catch (Exception e) {
         // User subscribed to a non existing component or topic .Do nothing. Process next
         // subscription.
       }
     }
-    return subscribe;
+    Collections.sort(subscribes, new SubscriptionComparator());
+    return subscribes;
+  }
+
+  public Collection<ComponentSubscriptionBean> getComponentUserSubscriptions(String userId) {
+    String currentUserId = userId;
+    List<ComponentSubscriptionBean> subscribes = new ArrayList<ComponentSubscriptionBean>();
+    if (!StringUtil.isDefined(currentUserId)) {
+      currentUserId = getUserId();
+    }
+    Collection<Subscription> list = getSubscribeBm().getByUserSubscriber(currentUserId);
+    for (Subscription subscription : list) {
+      // Subscriptions managed at this level are only those of node subscription.
+      if (SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType())) {
+        ComponentInstLight componentInstLight = getOrganisationController()
+            .getComponentInstLight(subscription.getResource().getInstanceId());
+        if (componentInstLight != null) {
+          subscribes
+              .add(new ComponentSubscriptionBean(subscription, componentInstLight, getLanguage()));
+        }
+      }
+    }
+    Collections.sort(subscribes, new SubscriptionComparator());
+    return subscribes;
   }
 
   public void deleteThemes(String[] themes) {
-    for (int i = 0; i < themes.length; i++) {
+    for (final String theme : themes) {
       // convertir la chaine en NodePK
-      String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
-      String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
-          themes[i].length());
+      String[] subscribtionIdentifiers = theme.split("-");
+      String nodeId = subscribtionIdentifiers[0];
+      String instanceId = subscribtionIdentifiers[1];
+      String creatorId = subscribtionIdentifiers[2];
       NodeSubscription subscription =
-          new NodeSubscription(getUserId(), new NodePK(nodeId, instanceId));
+          new NodeSubscription(UserSubscriptionSubscriber.from(getUserId()),
+          new NodePK(nodeId, instanceId), creatorId);
+      getSubscribeBm().unsubscribe(subscription);
+    }
+  }
+
+  public void deleteComponentSubscription(String[] subscriptions) {
+    for (final String subscribtion : subscriptions) {
+      // convertir la chaine en NodePK
+      String[] subscribtionIdentifiers = subscribtion.split("-");
+      String instanceId = subscribtionIdentifiers[0];
+      String creatorId = subscribtionIdentifiers[1];
+      ComponentSubscription subscription =
+          new ComponentSubscription(UserSubscriptionSubscriber.from(getUserId()), instanceId,
+          creatorId);
       getSubscribeBm().unsubscribe(subscription);
     }
   }
@@ -165,7 +210,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     subscription.setId(scBm.createPDCSubscription(subscription));
   }
 
-  public void updateIC(PDCSubscription subscription) throws RemoteException {
+  public void updatePDCSubscription(PDCSubscription subscription) throws RemoteException {
     initEJB();
     scBm.updatePDCSubscription(subscription);
   }
@@ -181,8 +226,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {
-    AxisHeader axisHeader = getPdcBm().getAxisHeader(axisId);
-    return axisHeader;
+    return getPdcBm().getAxisHeader(axisId);
   }
 
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
@@ -202,18 +246,19 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return newValueId;
   }
 
-  public List<List<Value>> getPathCriterias(List<Criteria> searchCriterias) throws Exception {
+  public List<List<Value>> getPathCriterias(List<? extends Criteria> searchCriterias) throws
+      Exception {
     List<List<Value>> pathCriteria = new ArrayList<List<Value>>();
 
     if (searchCriterias.size() > 0) {
       for (Criteria sc : searchCriterias) {
         int searchAxisId = sc.getAxisId();
         String searchValue = getLastValueOf(sc.getValue());
-        AxisHeader axis = getAxisHeader(new Integer(searchAxisId).toString());
+        AxisHeader axis = getAxisHeader(Integer.toString(searchAxisId));
 
         String treeId = null;
         if (axis != null) {
-          treeId = new Integer(axis.getRootId()).toString();
+          treeId = Integer.toString(axis.getRootId());
         }
 
         List<Value> fullPath = new ArrayList<Value>();
@@ -229,14 +274,41 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   @Override
   public void close() {
-    try {
-      if (scBm != null) {
-        scBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
+    if (scBm != null) {
+      scBm = null;
     }
+  }
+
+  public PDCSubscription getCurrentPDCSubscription() {
+    return currentPDCSubscription;
+  }
+
+  public void setCurrentPDCSubscription(PDCSubscription currentPDCSubscription) {
+    this.currentPDCSubscription = currentPDCSubscription;
+  }
+
+  public void createPDCSubscription(String name, final List<? extends Criteria> criteria) throws
+      RemoteException {
+    PDCSubscription subscription =
+        new PDCSubscription(-1, name, criteria, Integer.parseInt(getUserId()));
+    createPDCSubscription(subscription);
+  }
+
+  public void updateCurrentSubscription(String name, final List<? extends Criteria> criteria) throws
+      RemoteException {
+    PDCSubscription subscription = getCurrentPDCSubscription();
+    if (StringUtil.isDefined(name)) {
+      subscription.setName(name);
+    }
+
+    subscription.setPdcContext(criteria);
+    updatePDCSubscription(subscription);
+  }
+
+  public PDCSubscription setAsCurrentPDCSubscription(String subscriptionId) throws RemoteException {
+    int id = Integer.valueOf(subscriptionId);
+    PDCSubscription pdcSubscription = getPDCSubsriptionById(id);
+    setCurrentPDCSubscription(pdcSubscription);
+    return pdcSubscription;
   }
 }

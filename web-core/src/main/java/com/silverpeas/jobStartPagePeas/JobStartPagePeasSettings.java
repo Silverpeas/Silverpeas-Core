@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,10 +20,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * JobStartPagePeasSettings.java
  */
 
 package com.silverpeas.jobStartPagePeas;
@@ -50,6 +46,10 @@ public class JobStartPagePeasSettings {
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
+  public static boolean componentsInSpaceQuotaActivated = false;
+  public static boolean dataStorageInSpaceQuotaActivated;
+  public static long dataStorageInSpaceQuotaDefaultMaxCount;
+  public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -69,5 +69,17 @@ public class JobStartPagePeasSettings {
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
+    componentsInSpaceQuotaActivated = rs.getBoolean("quota.space.components.activated", false);
+    dataStorageInSpaceQuotaActivated = rs.getBoolean("quota.space.datastorage.activated", false);
+    dataStorageInSpaceQuotaDefaultMaxCount =
+        rs.getLong("quota.space.datastorage.default.maxCount", 0);
+    if (dataStorageInSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInSpaceQuotaDefaultMaxCount = 0;
+    }
+    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
+        rs.getLong("quota.personalspace.datastorage.default.maxCount", 0);
+    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
+    }
   }
 }

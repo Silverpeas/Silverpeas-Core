@@ -1,6 +1,5 @@
 /*
- <<<<<<< HEAD:lib-core/src/main/java/com/stratelia/webactiv/util/indexEngine/parser/tika/TikaParser.java
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -10,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -26,48 +25,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Map;
-
-import org.apache.tika.Tika;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.microsoft.OfficeParser;
-import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
-import org.apache.tika.parser.odf.OpenDocumentParser;
 
 import org.silverpeas.search.indexEngine.parser.Parser;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-/**
- *
- * @author ehugonnet
- */
+import org.apache.tika.Tika;
+
 public class TikaParser implements Parser {
 
   private final Tika tika = initTika();
 
-  private final Tika initTika() {
-    TikaConfig configuration = TikaConfig.getDefaultConfig();
-    ParseContext context = new ParseContext();
-    CompositeParser parser = ((CompositeParser) configuration.getParser());
-    org.apache.tika.parser.Parser openOfficeParser = new OpenDocumentParser();
-    Map<MediaType, org.apache.tika.parser.Parser> parsers = parser.getParsers(context);
-    for (MediaType type : openOfficeParser.getSupportedTypes(context)) {
-      parsers.put(type, openOfficeParser);
-    }
-    org.apache.tika.parser.Parser officeParser = new OfficeParser();
-    for (MediaType type : officeParser.getSupportedTypes(context)) {
-      parsers.put(type, officeParser);
-    }
-    org.apache.tika.parser.Parser ooxmlParser = new OOXMLParser();
-    for (MediaType type : ooxmlParser.getSupportedTypes(context)) {
-      parsers.put(type, ooxmlParser);
-    }
-    parser.setParsers(parsers);
-    return new Tika(configuration);
+  private Tika initTika() {
+    return new Tika();
   }
 
   @Override

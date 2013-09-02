@@ -1,0 +1,1 @@
+ALTER TABLE st_quota ADD CONSTRAINT const_st_quota_pk PRIMARY KEY (id);

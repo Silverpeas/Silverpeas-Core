@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +24,6 @@
 
 package com.silverpeas.form.fieldType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
@@ -36,12 +33,15 @@ import com.novell.ldap.LDAPSearchResults;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A LdapField stores a value of ldap field.
  * @see Field
- * @see FieldDisplayer
+ * @see com.silverpeas.form.FieldDisplayer
  */
 public class LdapField extends TextField {
 
@@ -167,8 +167,8 @@ public class LdapField extends TextField {
     // parsing filter -> dynamic variable
     if (filter.contains(VARIABLE_LOGIN)) {
       try {
-        String valueLogin = organizationController.getUserDetail(currentUserId)
-            .getLogin();
+        String valueLogin =  OrganisationControllerFactory.getOrganisationController()
+            .getUserDetail(currentUserId).getLogin();
         filter = filter.replaceAll(VARIABLE_REGEX_LOGIN, valueLogin);
       } catch (Exception e) {
         throw new FormException("LdapField.searchLdap",
@@ -221,9 +221,4 @@ public class LdapField extends TextField {
     }
     return listRes;
   }
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
 }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,16 @@
 package com.silverpeas.directory.model;
 
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.util.Collection;
 
 /**
@@ -44,7 +47,9 @@ public class Member {
   private String duration;
 
   private void refreshStatus() {
-    Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().equals(userDetail)) {
 
@@ -71,7 +76,7 @@ public class Member {
     refreshStatus();
   }
 
-  public String getAccessLevel() {
+  public UserAccessLevel getAccessLevel() {
     return getUserDetail().getAccessLevel();
   }
 

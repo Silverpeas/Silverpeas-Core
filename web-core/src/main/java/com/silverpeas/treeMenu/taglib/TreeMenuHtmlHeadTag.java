@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
+
 import java.util.Map;
 
 /**
@@ -121,7 +122,7 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
           StringBuilder iconStyleBuilder = new StringBuilder();
           MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
               getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-          OrganizationController controller = mainSessionCtrl.getOrganizationController();
+          OrganisationController controller = mainSessionCtrl.getOrganisationController();
           Map<String, String> componentsNames = controller.getAllComponentsNames();
 
           if (!componentsNames.isEmpty()) {

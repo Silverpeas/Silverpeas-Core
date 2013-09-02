@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -84,7 +84,7 @@ public class ClassifyEngine implements Cloneable {
   /*
    * Constructor
    */
-  public ClassifyEngine() throws ClassifyEngineException {
+  public ClassifyEngine() {
   }
 
   static public void clearCache() {
@@ -277,8 +277,7 @@ public class ClassifyEngine implements Cloneable {
   }
 
   // Return if the LogicalAxisId given is already registered
-  private boolean AxisAlreadyRegistered(int nLogicalAxisId)
-      throws ClassifyEngineException {
+  private boolean AxisAlreadyRegistered(int nLogicalAxisId) {
     for (int nI = 0; nI < nbMaxAxis; nI++) {
       if (registeredAxis[nI] == nLogicalAxisId) {
         return true;

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -93,6 +93,12 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
         Collection<Attendee> attendees = scc.getUserSelected();
         scc.setCurrentAttendees(attendees);
         destination = "/todo/jsp/todoEdit.jsp?Action=DiffusionListOK";
+      } else if (function.equals("DeleteTodo")) {
+        String[] tabTodoId = request.getParameterValues("todoCheck");
+        if (tabTodoId != null && tabTodoId.length>0) {
+          scc.removeTabToDo(tabTodoId);
+        }
+        destination = "/todo/jsp/todo.jsp";
       } else {
         destination = "/todo/jsp/" + function;
       }

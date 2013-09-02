@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +24,22 @@
 
 package com.silverpeas.scheduler;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.trigger.TimeUnit;
 import java.util.Calendar;
-import com.silverpeas.scheduler.trigger.JobTrigger;
 import java.util.concurrent.Callable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
-import static com.jayway.awaitility.Awaitility.*;
-import static java.util.concurrent.TimeUnit.*;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Tests on the scheduler that take longer time to run are gathering in this test class.
@@ -100,7 +103,7 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(1, MINUTES).until(jobIsExecuted());
+    await().atMost(70, SECONDS).until(jobIsExecuted());
     assertTrue(eventHandler.isJobSucceeded());
   }
 

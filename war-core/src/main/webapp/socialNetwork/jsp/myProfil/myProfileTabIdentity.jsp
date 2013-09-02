@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,47 +37,56 @@
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
-ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+  ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", resource.getLanguage());
+  ResourceLocator authRs = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", resource.getLanguage());
+  ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", resource.getLanguage());
 
-boolean 	updateIsAllowed				= ((Boolean) request.getAttribute("UpdateIsAllowed")).booleanValue();
-boolean 	isAdmin						= ((Boolean) request.getAttribute("isAdmin")).booleanValue();
-boolean 	isPasswordChangeAllowed		= ((Boolean) request.getAttribute("isPasswordChangeAllowed")).booleanValue();
-Integer     minLengthPwd 				= (Integer) request.getAttribute("minLengthPwd");
-Boolean		blanksAllowedInPwd 			= (Boolean) request.getAttribute("blanksAllowedInPwd");
-String 		action 						= (String) request.getAttribute("Action");
-String 		messageOK 					= (String) request.getAttribute("MessageOK");
-String 		messageNOK 					= (String) request.getAttribute("MessageNOK");
+  boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
+  boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
+  boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
 
+  String fieldAttribute = " disabled=\"disabled\" ";
+  if (updateIsAllowed) {
+    fieldAttribute = "";
+  }
 
-String fieldAttribute = " disabled=\"disabled\" ";
-if (updateIsAllowed) {
-	fieldAttribute = "";
-}
-
-boolean updateFirstNameIsAllowed 	= rs.getBoolean("updateFirstName", false);
-boolean updateLastNameIsAllowed 	= rs.getBoolean("updateLastName", false);
-boolean updateEmailIsAllowed 		= rs.getBoolean("updateEmail", false);
-boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
+  boolean updateFirstNameIsAllowed = rs.getBoolean("updateFirstName", false);
+  boolean updateLastNameIsAllowed = rs.getBoolean("updateLastName", false);
+  boolean updateEmailIsAllowed = rs.getBoolean("updateEmail", false);
+  boolean displayInfosLDAP = rs.getBoolean("displayInfosLDAP", false);
 %>
 
+<c:set var="messageOK" value="${requestScope.MessageOK}"/>
+<c:set var="messageNOK" value="${requestScope.MessageNOK}"/>
+<c:set var="action" value="${requestScope.Action}"/>
+<c:set var="displayInfosLDAP" value="<%=displayInfosLDAP%>"/>
+
+<style type="text/css">
+  .txtlibform {
+    width: 230px;
+  }
+  .message-addon {
+    float: left;
+    width: 96%;
+  }
+</style>
+
 <div class="sousNavBulle">
-	<p><fmt:message key="profil.subnav.display" /> : <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
+	<p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
 </div>
 
-<% if (StringUtil.isDefined(messageOK)) { %>
-<div class="inlineMessage-ok">
-	<%=messageOK %>
-</div>
-<% } else if (StringUtil.isDefined(messageNOK)) {%>
-<div class="inlineMessage-nok">
-	<%=messageNOK %>
-</div>
-<% } %>
+<c:if test="${not empty messageOK}">
+  <div class="inlineMessage-ok message-addon">${messageOK}</div>
+</c:if>
+<c:if test="${not empty messageNOK}">
+  <div class="inlineMessage-nok message-addon">${messageNOK}</div>
+</c:if>
 
 <div id="identity">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
+<fieldset id="identity-main" class="skinFieldset">
+<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" /></legend>
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
@@ -115,37 +124,34 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
     </tr>
 	<tr id="accessLevel">
 		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td>
-			<input type="radio" name="userAccessLevel" value=A" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("A"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.admin") %><br/>
-			<input type="radio" name="userAccessLevel" value=D" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("D"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
-			<input type="radio" name="userAccessLevel" value=K" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("K"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
-			<input type="radio" name="userAccessLevel" value=U" <% if ((userFull.getAccessLevel() == null) || (userFull.getAccessLevel().equalsIgnoreCase("U"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.user") %><br/>
-			<input type="radio" name="userAccessLevel" value=G" <% if ((userFull.getAccessLevel() == null) || (userFull.getAccessLevel().equalsIgnoreCase("G"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.guest") %>
-		</td>
+		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
 	</tr>
 	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
 		<tr id="oldPassword">
 	        <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
 	        <td><input <%=fieldAttribute%> type="password" name="OldPassword" size="50" maxlength="32"/></td>
 	    </tr>
-		<tr id="newPassword">
+		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
+	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
-		<tr id="newPasswordConfirmation">
+		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" name="NewPasswordConfirm" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
+	        <td><input <%=fieldAttribute%> id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
 	    </tr>
     <%} else { %>
 	    <tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
+	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
 	    </tr>
-    <% }
-
+    <% } %>
+      <tr id="token">
+            <td class="txtlibform"><%=resource.getString("myProfile.Token")%> :</td>
+      <td><%=userFull.getToken()%></td>
+      </tr>
+    <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
-        String userLoginAnswer = userFull.getLoginAnswer();
 %>
         <tr id="question">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginQuestion")%> :</td>
@@ -163,53 +169,75 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
         </tr>
         <tr id="answer">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginAnswer")%> :</td>
-            <td><input type="text" name="userLoginAnswer" value="<%=userLoginAnswer%>" size="50" maxlength="99"/></td>
+            <td><input type="text" name="userLoginAnswer" value="" size="50" maxlength="99"/></td>
         </tr><%
     }
 %>
-
-	<%//rajout des champs LDAP complémentaires
-	 if (displayInfosLDAP || action.equals("userModify")) {
-		//rajout des champs Silverpeas custom complémentaires
-		String[] properties = userFull.getPropertiesNames();
-		String propertyName = null;
-		for (int p=0; p<properties.length; p++) {
-			propertyName = (String) properties[p];
-			DomainProperty property=userFull.getProperty(propertyName);
-
-			if (!propertyName.startsWith("password")) {
-			%>
-			<tr id="<%=propertyName%>">
-				<td class="txtlibform"><%=userFull.getSpecificLabel(resource.getLanguage(), propertyName) %> :</td>
-				<% if ( (userFull.isPropertyUpdatableByUser(propertyName)) || (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName)) ) { %>
-					<td><input type="text" name="prop_<%=propertyName%>" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%>"></td>
-				<% } else { %>
-					<td><%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%></td>
-				<% } %>
-			</tr>
-			<%
-			}
-		}
-	}
-	%>
-  </table>
+</table>
+</fieldset>
+  <c:if test="${displayInfosLDAP and action eq 'userModify'}">
+    <fieldset id="identity-extra" class="skinFieldset">
+      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
+      <table border="0" cellspacing="0" cellpadding="5" width="100%">
+        <%
+          //rajout des champs Silverpeas custom complémentaires
+          String[] properties = userFull.getPropertiesNames();
+          for (String propertyName : properties) {
+            if (!propertyName.startsWith("password")) {
+        %>
+        <c:set var="propertyName" value="<%=propertyName%>"/>
+        <c:set var="domainProperty" value="<%=userFull.getProperty(propertyName)%>"/>
+        <c:set var="propertyValue" value="<%=userFull.getValue(propertyName)%>"/>
+        <tr id="${propertyName}">
+          <td class="txtlibform"><%=userFull
+              .getSpecificLabel(resource.getLanguage(), propertyName) %>
+            :
+          </td>
+          <% if (userFull.isPropertyUpdatableByUser(propertyName) ||
+              (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName))) { %>
+          <td>
+            <c:choose>
+              <c:when test="${domainProperty.maxLength gt 100}">
+                <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
+              </c:when>
+              <c:otherwise>
+                <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
+              </c:otherwise>
+            </c:choose>
+          </td>
+          <% } else { %>
+          <td>${silfn:escapeHtml(propertyValue)}</td>
+          <% } %>
+        </tr>
+        <%
+            }
+          }
+        %>
+      </table>
+    </fieldset>
+  </c:if>
  </form>
  </div>
+ <br clear="all"/>
  <%
 		ButtonPane buttonPane = gef.getButtonPane();
-		if (updateIsAllowed)
-		{
+		if (updateIsAllowed) {
 			Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=submitForm();", false);
 			buttonPane.addButton(validateButton);
 		}
 		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=history.back();", false);
 		buttonPane.addButton(cancelButton);
-		out.println("<br/><center>"+buttonPane.print()+"</center>");
+		out.println(buttonPane.print());
 %>
 
 <script type="text/javascript">
-	function submitForm()
-	{
+
+  // Password
+  $(document).ready(function(){
+    $('#newPassword').password();
+  });
+
+	function submitForm() {
 		var errorMsg = "";
 		<% if (updateLastNameIsAllowed) { %>
 			var namefld = document.UserForm.userLastName.value;
@@ -219,17 +247,15 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 			}
 		<% } %>
 		<% if (isPasswordChangeAllowed) {%>
-		if (document.UserForm.NewPassword.value != document.UserForm.NewPasswordConfirm.value)
-		{
-			errorMsg += "- <%=resource.getString("WrongNewPwd")%>\n";
-		}
-		if (<%=! blanksAllowedInPwd.booleanValue()%> && document.UserForm.NewPassword.value.indexOf(" ") != -1)
-		{
-			errorMsg += "- <%=resource.getString("NoSpacesInPassword")%>\n";
-		}
-		else if ((document.UserForm.NewPassword.value.length > 0) &&
-				(document.UserForm.NewPassword.value.length < <%=minLengthPwd.intValue()%>))
-			errorMsg += "- <%=resource.getString("WrongLength")%>\n";
+    var $pwdInput = $('#newPassword');
+    if ($pwdInput.val()) {
+      $pwdInput.password('verify', {onError : function() {
+        errorMsg += "- <%=resource.getString("myProfile.Error_bad_credential")%>\n";
+      }});
+      if ($pwdInput.val() != $('#newPasswordConfirmation').val()) {
+        errorMsg += "- <%=resource.getString("myProfile.WrongNewPwd")%>\n";
+      }
+    }
 		<%
 		}
 		%>

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +27,7 @@ package com.silverpeas.util.html;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.xerces.xni.parser.XMLDocumentFilter;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
@@ -66,10 +66,9 @@ public class HtmlCleaner {
    */
   public String cleanHtmlFragment(String html) throws IOException {
     StringWriter content = new StringWriter();
-    writer.setWriter(content, "UTF-8");
-    XMLInputSource source =
-        new XMLInputSource("-//W3C//DTD HTML 4.01", null, null, new StringReader(
-        html), "UTF-8");
+    writer.setWriter(content, CharEncoding.UTF_8);
+    XMLInputSource source = new XMLInputSource("-//W3C//DTD HTML 4.01", null, null, new StringReader(
+        html), CharEncoding.UTF_8);
     parser.parse(source);
     return content.toString();
   }

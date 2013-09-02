@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,9 +26,10 @@ package com.stratelia.silverpeas.selection;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,23 +37,26 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SelectionUsersGroups implements SelectionExtraParams {
-  static OrganizationController organizationController = new OrganizationController();
+  static OrganisationController organizationController =  OrganisationControllerFactory
+      .getOrganisationController();
 
   public final static int USER = 0;
   public final static int GROUP = 1;
 
   String domainId = null;
   String componentId = null;
+  String objectId = null;
   List<String> profileIds = null;
   List<String> profileNames = null;
 
+  @Deprecated
   public String[] getProfileIds() {
     if (profileIds != null) {
       return profileIds.toArray(new String[profileIds.size()]);
     }
     return null;
   }
-  
+
   public String getJoinedProfileNames() {
     if (profileNames != null && !profileNames.isEmpty()) {
       StringBuilder names = new StringBuilder();
@@ -80,10 +84,26 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     }
   }
 
+  /**
+   * Sets the identifier of the roles the users must play.
+   * @param profileIds the unique identifier of the user roles.
+   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
+   * for a given object in the component instance or the setProfileNames() method to set the roles
+   * for the whole component instance.
+   */
+  @Deprecated
   public void setProfileIds(List<String> profileIds) {
     this.profileIds = profileIds;
   }
 
+  /**
+   * Add the identifier of the role the users must play.
+   * @param profileId the unique identifier of a user role.
+   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
+   * for a given object in the component instance or the setProfileNames() method to set the roles
+   * for the whole component instance.
+   */
+  @Deprecated
   public void addProfileId(String profileId) {
     if (profileIds == null) {
       profileIds = new ArrayList<String>();
@@ -91,11 +111,37 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     profileIds.add(profileId);
   }
 
+  /**
+   * Adds the identifiers of the roles the users must play.
+   * @param profileIds the user role identifiers.
+   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
+   * for a given object in the component instance or the setProfileNames() method to set the roles
+   * for the whole component instance.
+   */
+  @Deprecated
   public void addProfileIds(List<String> profileIds) {
     if (this.profileIds == null) {
       this.profileIds = new ArrayList<String>();
     }
     profileIds.addAll(profileIds);
+  }
+
+  /**
+   * Gets the identifier of the object in the component instance for which the users must have
+   * enough right to access.
+   * @return the unique identifier of the object, made up of its type followed by its identifier.
+   */
+  public String getObjectId() {
+    return objectId;
+  }
+
+  /**
+   * Sets the object in the component instance for which the users must have enough right to access.
+   * @param objectId the unique identifier of the object in Silverpeas. It must be made up of its
+   * type followed by its identifier.
+   */
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
   }
 
   public String getComponentId() {
@@ -114,6 +160,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     this.domainId = domainId;
   }
 
+  @Override
   public String getParameter(String name) {
     return null;
   }

@@ -1,41 +1,39 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.form;
 
-import java.util.Arrays;
 import java.util.List;
+
+import com.silverpeas.util.CollectionUtil;
 
 /**
  * A record template implementation for testing purpose.
  */
 public class MyRecordTemplate implements RecordTemplate {
-  
+
   private List<FieldTemplate> templates;
-  
+
   public MyRecordTemplate(final FieldTemplate... fieldTemplates) {
-    this.templates = Arrays.asList(fieldTemplates);
+    this.templates = CollectionUtil.asList(fieldTemplates);
   }
 
   @Override
@@ -56,7 +54,7 @@ public class MyRecordTemplate implements RecordTemplate {
   public FieldTemplate getFieldTemplate(final String fieldName) throws FormException {
     FieldTemplate template = null;
     for (FieldTemplate fieldTemplate : templates) {
-      if(fieldTemplate.getFieldName().equals(fieldName)) {
+      if (fieldTemplate.getFieldName().equals(fieldName)) {
         template = fieldTemplate;
         break;
       }
@@ -69,7 +67,7 @@ public class MyRecordTemplate implements RecordTemplate {
     int index = -1;
     for (int i = 0; i < templates.size(); i++) {
       FieldTemplate fieldTemplate = templates.get(i);
-      if(fieldTemplate.getFieldName().equals(fieldName)) {
+      if (fieldTemplate.getFieldName().equals(fieldName)) {
         index = i;
         break;
       }

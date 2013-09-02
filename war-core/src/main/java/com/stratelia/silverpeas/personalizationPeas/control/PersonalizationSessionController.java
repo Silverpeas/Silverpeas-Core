@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -321,8 +321,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   /**
    * Supprime les doublons
    */
-  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds)
-      throws PeasCoreException {
+  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds) {
     ArrayList<String> instancesIds = new ArrayList<String>();
     String instanceId = null;
     ArrayList<String> intermed = new ArrayList<String>();
@@ -489,7 +488,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     UserFull valret = null;
     String IdUserCur = getUserId();
     if (StringUtil.isDefined(IdUserCur)) {
-      valret = getOrganizationController().getUserFull(IdUserCur);
+      valret = getOrganisationController().getUserFull(IdUserCur);
     }
     return valret;
   }
@@ -510,11 +509,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "aNotifAddressId=" + notifAddressId, e);
     }
   }
-  
+
   /*
-   * Delayed Notifications 
+   * Delayed Notifications
    */
-  
+
   public DelayedNotificationBean getDelayedNotificationBean() {
     return new DelayedNotificationBean(getUserId());
   }

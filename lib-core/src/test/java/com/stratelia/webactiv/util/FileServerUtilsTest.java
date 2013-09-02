@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,8 +28,11 @@
  */
 package com.stratelia.webactiv.util;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
@@ -60,9 +63,9 @@ public class FileServerUtilsTest {
     String url =  FileServerUtils.getUrlToTempDir("hello_world.pdf");
     assertEquals("/silverpeas/TempFileServer/hello_world.pdf", url);
     url =  FileServerUtils.getUrlToTempDir("Mon œuvre.pdf");
-    assertEquals("/silverpeas/TempFileServer/Mon%20œuvre.pdf", url);
+    assertEquals("/silverpeas/TempFileServer/Mon%2520%25C5%2593uvre.pdf", url);
     url =  FileServerUtils.getUrlToTempDir("Mon œuvre & mon été.pdf");
-    assertEquals("/silverpeas/TempFileServer/Mon%20œuvre%20&%20mon%20été.pdf", url);
+    assertEquals("/silverpeas/TempFileServer/Mon%2520%25C5%2593uvre%2520&%2520mon%2520%25C3%25A9t%25C3%25A9.pdf", url);
   }
 
 }

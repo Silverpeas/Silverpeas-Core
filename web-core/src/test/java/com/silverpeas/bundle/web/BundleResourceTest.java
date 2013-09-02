@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,20 +23,22 @@
  */
 package com.silverpeas.bundle.web;
 
-import static com.silverpeas.bundle.web.BundleTestResources.JAVA_PACKAGE;
-import static com.silverpeas.bundle.web.BundleTestResources.SPRING_CONTEXT;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
-import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+
+import static com.silverpeas.bundle.web.BundleTestResources.JAVA_PACKAGE;
+import static com.silverpeas.bundle.web.BundleTestResources.SPRING_CONTEXT;
 
 /**
  * The bundle resource represents in the WEB a localized bundle of messages. This WEB service is an
@@ -65,33 +67,24 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   @Test
   @Override
   public void gettingAResourceByANonAuthenticatedUser() {
-    try {
-      resource().path(aResourceURI()).
-              accept(MediaType.TEXT_PLAIN).
-              get(getWebEntityClass());
-      fail("A non authenticated user shouldn't access the resource");
-    } catch (UniformInterfaceException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int unauthorized = Response.Status.UNAUTHORIZED.getStatusCode();
-      assertThat(receivedStatus, is(unauthorized));
-    }
+    String messages = resource().path(aResourceURI()).
+        accept(MediaType.TEXT_PLAIN).
+        get(getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
+
+    messages =
+        getAt(aOrgResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
   }
 
+  @Ignore
   @Test
   @Override
   public void gettingAResourceWithAnExpiredSession() {
-    try {
-      resource().path(aResourceURI()).
-              header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-              accept(MediaType.TEXT_PLAIN).get(getWebEntityClass());
-      fail("A non authenticated user shouldn't access the resource");
-    } catch (UniformInterfaceException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int unauthorized = Response.Status.UNAUTHORIZED.getStatusCode();
-      assertThat(receivedStatus, is(unauthorized));
-    }
   }
 
+  @Ignore
+  @Test
   @Override
   public void gettingAResourceByAnUnauthorizedUser() {
   }
@@ -113,12 +106,19 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   public void getAnExistingBundleInFrench() {
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
+
+    messages = getAt(aOrgResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
   }
 
   @Test
   public void getAnExistingBundleByItsNameAndExtension() {
     String messages = getAt(aResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
-            getWebEntityClass());
+        getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
+
+    messages = getAt(aOrgResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
+        getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
   }
 
@@ -128,25 +128,38 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
     p.getUserSettings(user.getId()).setLanguage("en");
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
+
+    messages = getAt(aOrgResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
   }
 
   @Test
   public void getAnExistingBundleExplicitlyInEnglish() {
     String messages = getAt(aResourceURI() + "_en", MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
+
+    messages = getAt(aOrgResourceURI() + "_en", MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
   }
 
   @Test
-  public void getAComponentSettings() {
+  public void getAComponentSettingsInPlaceOfLocalizedBundle() {
     try {
       String settingsURI = "bundles/com/silverpeas/bundle/web/componentSettings";
       getAt(settingsURI, MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
       fail("A user shouldn't get a bundle with component settings");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
-      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      int forbidden = Response.Status.BAD_REQUEST.getStatusCode();
       assertThat(receivedStatus, is(forbidden));
     }
+  }
+
+  @Test
+  public void getAComponentSettings() {
+    String messages =
+        getAt(aSettingsResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.parametre=1"), is(true));
   }
 
   @Override
@@ -157,6 +170,14 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   @Override
   public String aResourceURI() {
     return "bundles/com/silverpeas/bundle/web/multilang/mytranslations";
+  }
+
+  public String aOrgResourceURI() {
+    return "bundles/org/silverpeas/bundle/web/multilang/mytranslations";
+  }
+
+  public String aSettingsResourceURI() {
+    return "bundles/settings/com/silverpeas/bundle/web/componentSettings";
   }
 
   @Override

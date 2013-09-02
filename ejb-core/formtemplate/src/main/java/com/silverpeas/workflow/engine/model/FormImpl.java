@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -345,6 +345,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
           ft.setReadOnly(input.isReadonly());
         }
         ft.setMandatory(input.isMandatory());
+        ft.setTemplateName("form:"+name);
         if (input.getDisplayerName() != null
             && input.getDisplayerName().length() > 0) {
           ft.setDisplayerName(input.getDisplayerName());
@@ -384,7 +385,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
   // ~ Methods ////////////////////////////////////////////////////////////////
 
   /*
-	 * 
+	 *
 	 */
   public void setId(int id) {
     this.id = id;

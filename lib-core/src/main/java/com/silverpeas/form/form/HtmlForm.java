@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,6 @@
 
 package com.silverpeas.form.form;
 
-import com.google.common.base.Charsets;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.jsp.JspWriter;
-
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -42,10 +34,16 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import javax.servlet.jsp.JspWriter;
+import org.silverpeas.util.Charsets;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -211,7 +209,7 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    * @throws IOException if an error occurs while printing the field.
    */
-  private void printField(PrintWriter out, String fieldName, PagesContext pc) throws IOException {
+  private void printField(PrintWriter out, String fieldName, PagesContext pc) {
     try {
       Field field = record.getField(fieldName);
       String currentFieldName = fieldName;
@@ -251,8 +249,7 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    * @throws IOException if an error occurs while printing the field label.
    */
-  private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc)
-      throws IOException {
+  private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) {
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
       if (fieldTemplate != null && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
         out.print(fieldTemplate.getLabel(pc.getLanguage()));

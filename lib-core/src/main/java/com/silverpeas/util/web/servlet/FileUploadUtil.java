@@ -1,53 +1,52 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util.web.servlet;
 
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.List;
 
 /**
  * Utility class for file uploading.
+ *
  * @author ehugonnet
  */
 public class FileUploadUtil {
 
-  public static final String DEFAULT_ENCODING = "UTF-8";
+
+  public static final String DEFAULT_ENCODING = CharEncoding.UTF_8;
+
+  private static ServletFileUpload upload = new ServletFileUpload(
+      new SilverpeasDiskFileItemFactory());
 
   public static boolean isRequestMultipart(HttpServletRequest request) {
     return ServletFileUpload.isMultipartContent(request);
@@ -57,29 +56,6 @@ public class FileUploadUtil {
   public static List<FileItem> parseRequest(HttpServletRequest request)
       throws UtilException {
     try {
-      // Create a factory for disk-based file items
-      FileItemFactory factory = new DiskFileItemFactory();
-      // Create a new file upload handler
-      ServletFileUpload upload = new ServletFileUpload(factory);
-
-      // Parse the request
-      return (List<FileItem>) upload.parseRequest(request);
-    } catch (FileUploadException fuex) {
-      throw new UtilException("FileUploadUtil.parseRequest",
-          "Error uploading files", fuex);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public static List<FileItem> parseRequest(HttpServletRequest request, int maxSize)
-      throws UtilException {
-    try { // Create a factory for disk-based file items
-      DiskFileItemFactory factory = new DiskFileItemFactory();
-      // Set factory constraints
-      factory.setSizeThreshold(maxSize);
-      // Create a new file upload handler
-      ServletFileUpload upload = new ServletFileUpload(factory);
-
       // Parse the request
       return (List<FileItem>) upload.parseRequest(request);
     } catch (FileUploadException fuex) {
@@ -91,6 +67,7 @@ public class FileUploadUtil {
   /**
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
+   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
@@ -115,6 +92,7 @@ public class FileUploadUtil {
   /**
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
+   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
@@ -127,6 +105,7 @@ public class FileUploadUtil {
 
   /**
    * Get the parameter value from the list of FileItems. Returns null if the parameter is not found.
+   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @return the parameter value from the list of FileItems. Returns null if the parameter is not
@@ -136,14 +115,17 @@ public class FileUploadUtil {
     return getParameter(items, parameterName, null);
   }
 
+  @SuppressWarnings("unchecked")
   public static String getOldParameter(List items, String parameterName) {
     return getParameter((List<FileItem>) items, parameterName, null);
   }
 
+  @SuppressWarnings("unchecked")
   public static String getOldParameter(List items, String parameterName, String defaultValue) {
     return getParameter((List<FileItem>) items, parameterName, defaultValue);
   }
 
+  @SuppressWarnings("unchecked")
   public static FileItem getOldFile(List items, String parameterName) {
     return getFile((List<FileItem>) items, parameterName);
   }
@@ -175,24 +157,7 @@ public class FileUploadUtil {
     if (file == null || !StringUtil.isDefined(file.getName())) {
       return "";
     }
-    String fileName = convertPathToServerOS(file.getName());
-    return fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1, fileName.length())
-        .trim();
-  }
-
-  /**
-   * Convert a path to the current OS path format.
-   * @param undeterminedOsPath
-   * @return server OS pah.
-   */
-  public static String convertPathToServerOS(String undeterminedOsPath) {
-    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
-      return "";
-    }
-    String localPath = undeterminedOsPath;
-    localPath = localPath.replace('\\', File.separatorChar);
-    localPath = localPath.replace('/', File.separatorChar);
-    return localPath;
+    return  FileUtil.getFilename(file.getName());
   }
 
   public static void saveToFile(File file, FileItem item) throws IOException {

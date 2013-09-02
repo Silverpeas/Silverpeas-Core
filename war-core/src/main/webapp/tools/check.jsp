@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,10 +66,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = URLManager.getApplicationURL();
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
@@ -78,15 +79,15 @@ Frame frame = gef.getFrame();
 Board board = gef.getBoard();
 
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
+if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
   // No session controller in the request -> security exception
-  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
 	%>
 	<script language="javascript">
 		location.href="<%=request.getContextPath()+sessionTimeout%>";
 	</script>
 	<%
 }
-ResourceLocator resource = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", m_MainSessionCtrl.getFavoriteLanguage());
+ResourceLocator resource = new ResourceLocator("org.silverpeas.multilang.generalMultilang", m_MainSessionCtrl.getFavoriteLanguage());
 
 %>

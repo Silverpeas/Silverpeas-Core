@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,21 +24,30 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.annotation.Authenticated;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
-import static com.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Group;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
+import org.silverpeas.util.ListSlice;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
@@ -47,13 +56,20 @@ import com.silverpeas.annotation.Service;
  *
  * The user groups that are published depend on some parameters whose the domain isolation and the
  * profile of the user behind the requesting. The domain isolation defines the visibility of a user
- * or a group of users in a given domain to the others domains in Silverpeas.
+ * or a group of groups in a given domain to the others domains in Silverpeas.
  */
 @Service
 @RequestScoped
 @Path(GROUPS_BASE_URI)
 @Authenticated
 public class UserGroupProfileResource extends RESTWebService {
+
+  /**
+   * The HTTP header parameter that provides the real size of the group profiles that match a query.
+   * This parameter is useful for clients that use the pagination to filter the count of group
+   * profiles to sent back.
+   */
+  public static final String RESPONSE_HEADER_GROUPSIZE = "X-Silverpeas-GroupSize";
 
   @Inject
   private UserProfileService profileService;
@@ -66,40 +82,118 @@ public class UserGroupProfileResource extends RESTWebService {
 
   /**
    * Gets all the root user groups in Silverpeas.
+   *
+   * @param groupIds requested group identifiers. If this parameter is filled,
+   * sub groups are also returned.
+   * @param name a pattern on the name of the root groups to retrieve. If null, all the root groups
+   * are fetched.
+   * @param domain the unique identifier of the domain the groups has to be related.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of groups to sent back: those between ((page number - 1)
+   * item count in the page) and ((page number - 1) item count in the page + item count in the
+   * page).
+   * @return the JSON representation of the array of the groups matching the pattern.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name) {
-    Set<String> groupIds = new HashSet<String>();
-    if (getUserDetail().isDomainRestricted()) {
-      String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
-              name, "-1"));
-      groupIds.addAll(Arrays.asList(ids));
+  public Response getAllRootGroups(@QueryParam("ids") Set<String> groupIds,
+      @QueryParam("name") String name, @QueryParam("page") String page,
+      @QueryParam("domain") String domain) {
+    UserGroupsSearchCriteriaBuilder criteriaBuilder =
+        UserGroupsSearchCriteriaBuilder.aSearchCriteria();
+
+    // Ids or not ids ?
+    if (CollectionUtil.isNotEmpty(groupIds)) {
+      // In that case, sub groups are also returned
+      criteriaBuilder.withGroupIds(groupIds.toArray(new String[groupIds.size()]));
+    } else {
+      criteriaBuilder.withRootGroupSet();
     }
-    String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
-            name, null));
-    groupIds.addAll(Arrays.asList(ids));
-    Group[] allGroups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.
-            size()]));
-    return asWebEntity(Arrays.asList(allGroups), locatedAt(getUriInfo().getAbsolutePath()));
+
+    // Domains
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
+    if (getUserDetail().isDomainRestricted()) {
+      domainId = getUserDetail().getDomainId();
+      criteriaBuilder.withMixedDomainId();
+    }
+
+    // Common parameters
+    criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
+
+    ListSlice<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    UserGroupProfileEntity[] entities =
+        asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
+    return Response.ok(entities).
+        header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).build();
   }
 
+  /**
+   * Gets the groups of users having the priviledges to access the specified Silverpeas application
+   * instance. In the context some groups are parents of others groups, only the parent groups are
+   * fetched, no their subgroups.
+   *
+   * @param instanceId the unique identifier of the Silverpeas application instance.
+   * @param roles the roles the groups must play. Null if no specific roles have to be played by the
+   * groups.
+   * @param resource the unique identifier of the resource in the component instance the groups to
+   * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
+   * one. If it is not set, by default the resource refered is the whole component instance. As for
+   * component instance identifier, a resource one is defined by its type followed by its
+   * identifier.
+   * @param name the pattern on the name the groups name must match. Null if all groups for the
+   * specified application have to be fetched.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of groups to sent back: those between ((page number - 1)
+   * item count in the page) and ((page number - 1) item count in the page + item count in the
+   * page).
+   * @param domain the unique identifier of the domain the groups has to be related.
+   * @return the JSON representation of the array with the parent groups having access the
+   * application instance.
+   */
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getAllRootGroupsInApplication(
-          @PathParam("instanceId") String instanceId,
-          @QueryParam("roles") String roles,
-          @QueryParam("name") String name) {
-    String[] roleNames = (isDefined(roles) ? roles.split(","):new String[0]);
-    String[] roleIds = profileService.getRoleIds(instanceId, roleNames);
-    String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
-            aFilteringModel(name, null));
-    Group[] groups = getOrganizationController().getGroups(groupIds);
+  public Response getGroupsInApplication(
+      @PathParam("instanceId") String instanceId,
+      @QueryParam("roles") String roles,
+      @QueryParam("resource") String resource,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page,
+      @QueryParam("domain") String domain) {
+    String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
+    GroupsSearchCriteria criteria;
+    if (getUserDetail().isDomainRestricted()) {
+      domainId = getUserDetail().getDomainId();
+      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+          withComponentInstanceId(instanceId).
+          withRoles(roleNames).
+          withResourceId(resource).
+          withDomainId(domainId).
+          withMixedDomainId().
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
+    } else {
+      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+          withComponentInstanceId(instanceId).
+          withRoles(roleNames).
+          withResourceId(resource).
+          withDomainId(domainId).
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
+    }
+    ListSlice<Group> groups = getOrganisationController().searchGroups(criteria);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
-    return asWebEntity(Arrays.asList(groups), locatedAt(groupsUri));
+    return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
+            header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).build() ;
   }
 
+  /**
+   * Gets the group of users identified by the specified path.
+   *
+   * @param groupPath the path of group identifiers, from the root group downto the seeked one.
+   * @return the JSON representation of the user group.
+   */
   @GET
   @Path("{path: [0-9]+(/groups/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -110,25 +204,52 @@ public class UserGroupProfileResource extends RESTWebService {
     return asWebEntity(theGroup, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
+  /**
+   * Gets the direct subgroups of the group of groups identified by the specified path.
+   *
+   * @param groups the path of group identifiers, from the root group downto the group for which the
+   * direct subgroups are seeked.
+   * @param name a pattern the subgroup names must match. If null, all the direct subgroups are
+   * fetched.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of groups to sent back: those between ((page number - 1)
+   * item count in the page) and ((page number - 1) item count in the page + item count in the
+   * page).
+   * @return a JSON representation of the array of the direct subgroups.
+   */
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getSubGroups(@PathParam("path") String groups,
-          @QueryParam("name") String name) {
+  public Response getSubGroups(@PathParam("path") String groups,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page) {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
     profileService.getGroupAccessibleToUser(groupId, getUserDetail());
-    Group model = aFilteringModel(name, null);
-    model.setSuperGroupId(groupId);
-    String[] subgroupIds = getOrganizationController().searchGroupsIds(false, null, null, model);
-    Group[] subgroups = getOrganizationController().getGroups(subgroupIds);
-    return asWebEntity(Arrays.asList(subgroups), locatedAt(getUriInfo().getAbsolutePath()));
+    GroupsSearchCriteria criteria;
+    if (getUserDetail().isDomainRestricted()) {
+      String domainId = getUserDetail().getDomainId();
+      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+          withSuperGroupId(groupId).
+          withDomainId(domainId).
+          withMixedDomainId().
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
+    } else {
+      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+          withSuperGroupId(groupId).
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
+    }
+    ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteria);
+    return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
+            header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).build();
   }
 
   @Override
   public String getComponentId() {
     throw new UnsupportedOperationException("The UserGroupProfileResource doesn't belong to any component"
-            + " instances");
+        + " instances");
   }
 
   protected static URI locatedAt(final URI uri) {
@@ -147,17 +268,14 @@ public class UserGroupProfileResource extends RESTWebService {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
   }
 
-  private Group aFilteringModel(String name, String domainId) {
-    Group model = new Group();
-    if (isDefined(domainId)) {
-      model.setDomainId(domainId);
-    } else if (getUserDetail().isDomainRestricted()) {
-      model.setDomainId(getUserDetail().getDomainId());
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      paginationPage = new PaginationPage(nth, count);
     }
-    if (isDefined(name)) {
-      String filterByName = name.replaceAll("\\*", "%");
-      model.setName(filterByName);
-    }
-    return model;
+    return paginationPage;
   }
 }

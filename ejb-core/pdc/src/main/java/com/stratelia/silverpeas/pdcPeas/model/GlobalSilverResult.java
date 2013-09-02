@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,6 +45,11 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private String downloadLink = null;
   private String creatorName = null;
   private boolean exportable = false;
+  private boolean viewable = false;
+  private boolean previewable = false;
+  private String attachmentId = null;
+  private String attachmentFilename = null;
+  private boolean versioned = false;
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
   private boolean hasRead = false; // marks a result as redden
@@ -56,7 +61,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
    * List of all linked attachment in wysiwyg content
    */
   private List<String> embeddedFileIds;
-  
+
   private Map<String, String> formFieldsForFacets;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
@@ -79,6 +84,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setScore(mie.getScore());
     this.embeddedFileIds = mie.getEmbeddedFileIds();
     this.formFieldsForFacets = mie.getXMLFormFieldsForFacets();
+    this.attachmentFilename = mie.getFilename();
 
     if (mie.getThumbnail() != null) {
       File image;
@@ -102,7 +108,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
         image = new File(filePath);
       } else {
         // case of an uploaded image
-        super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
+        super.setThumbnailURL(FileServerUtils.getUrl(mie.getComponent(),
             mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
 
         String[] directory = new String[1];
@@ -225,6 +231,46 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     return formFieldsForFacets;
   }
 
+  public void setViewable(boolean viewable) {
+    this.viewable = viewable;
+  }
+
+  public boolean isViewable() {
+    return viewable;
+  }
+
+  public void setPreviewable(boolean previewable) {
+    this.previewable = previewable;
+  }
+
+  public boolean isPreviewable() {
+    return previewable;
+  }
+
+  public void setAttachmentId(String attachmentId) {
+    this.attachmentId = attachmentId;
+  }
+
+  public String getAttachmentId() {
+    return attachmentId;
+  }
+  
+  public String getAttachmentFilename() {
+    return attachmentFilename;
+  }
+
+  public void setVersioned(boolean versioned) {
+    this.versioned = versioned;
+  }
+
+  public boolean isVersioned() {
+    return versioned;
+  }
+
+  public boolean isAttachment() {
+    return StringUtil.isDefined(getAttachmentId());
+  }
+
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof GlobalSilverResult)) {
@@ -241,4 +287,5 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     hash = 29 * hash + (this.getInstanceId() != null ? this.getInstanceId().hashCode() : 0);
     return hash;
   }
+
 }

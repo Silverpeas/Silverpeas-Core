@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,8 +43,7 @@ public class ConnectionPool {
   private static void init() {
     SilverTrace.debug("util", "ConnectionPool.getConnection",
         "No more free connection : we need to create a new one.");
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.webactiv.beans.admin.admin", "");
+    ResourceLocator resources = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
     pool = new BasicDataSource();
     pool.setPassword(resources.getString("WaProductionPswd"));
     pool.setUsername(resources.getString("WaProductionUser"));
@@ -77,5 +76,8 @@ public class ConnectionPool {
       }
     }
     return pool.getConnection();
+  }
+
+  private ConnectionPool() {
   }
 }

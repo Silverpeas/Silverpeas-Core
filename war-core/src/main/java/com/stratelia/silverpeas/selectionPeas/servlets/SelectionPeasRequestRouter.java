@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,6 +43,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
+
+import com.silverpeas.util.ArrayUtil;
 
 /**
  * Class declaration
@@ -134,7 +136,7 @@ public class SelectionPeasRequestRouter extends
               request.setAttribute("user", user);
             }
           } else {
-            UserDetail[] users = selectionPeasSC.getOrganizationController().getUserDetails(
+            UserDetail[] users = selectionPeasSC.getOrganisationController().getUserDetails(
                 selectionPeasSC.
                 getSelection().getSelectedElements());
             if (users != null && users.length > 0) {
@@ -404,10 +406,10 @@ public class SelectionPeasRequestRouter extends
     }
 
     ComponentSessionController componentSessionController = (ComponentSessionController) request.
-        getSession(true).getAttribute("Silverpeas_" + beanName + "_" + componentId);
-    Method m = componentSessionController.getClass().getMethod(method, null);
+        getSession(true).getAttribute("Silverpeas_" + beanName + "_" + componentId);    
+    Method m = componentSessionController.getClass().getMethod(method, ArrayUtil.EMPTY_CLASS_ARRAY);
     JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(componentSessionController,
-        null);
+         ArrayUtil.EMPTY_CLASS_ARRAY);
 
     selectionPeasSC.updateJdbcParameters(jdbcSetting, tableName, columnsNames.toString(),
         formIndex,

@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -12,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -85,7 +86,7 @@
     String spaceId = (String) request.getAttribute("SpaceId");
 	Vector vPath = (Vector) request.getAttribute("Path");
 	Vector vStatsData = (Vector)request.getAttribute("StatsData");
-	String userProfile = (String)request.getAttribute("UserProfile");
+	UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 %>
 
 <html>
@@ -130,7 +131,7 @@
 		while ( i.hasNext() )
 		{
 			String[] pathItem = (String[]) i.next();
-			if (userProfile.equals("A")) {
+			if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 				path += separator + "<a href=\"ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+( (pathItem[0]==null) ? "" : ("&SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {
 				path += separator + pathItem[1];

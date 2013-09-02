@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// synchronization between Google Calendar and various iCalendar (RFC 2445)
+// synchronization between Google SilverpeasCalendar and various iCalendar (RFC 2445)
 // compatible calendar applications (Sunbird, Rainlendar, iCal, Calcium, Lightning, etc).
 //
 package com.silverpeas.ical;
@@ -51,7 +51,7 @@ public final class SyncEngine {
   /**
    * Import a remote calendar
    * @param localCalendar localResourceLocator calendar file
-   * @param remoteCalendar Google Calendar's private ICAL URL
+   * @param remoteCalendar Google SilverpeasCalendar's private ICAL URL
    * ("https://www.google.com/calendar/ical/.../basic.ics"), or the RSS/ATOM feed's URL (= feed
    * converter mode)
    * @param username full name of the user (eg. "username@gmail.com" or "username@mydomain.org"),
@@ -87,7 +87,7 @@ public final class SyncEngine {
         if (isRssFeed(feedBytes, remoteCalendar)) {
           SilverTrace.info("agenda", "SyncEngine.synchronize()",
               "root.MSG_GEN_PARAM_VALUE", "Feed RSS");
-          // convert rss feed in Calendar File
+          // convert rss feed in SilverpeasCalendar File
           CalendarOutputter outputter = new CalendarOutputter();
           SyndFeed feed = FeedUtilities.parseFeed(feedBytes);
           Calendar feedCalendar = FeedUtilities.convertFeedToCalendar(feed, 100000000L);

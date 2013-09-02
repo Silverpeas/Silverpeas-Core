@@ -520,7 +520,7 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>cl� de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>iconName</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -541,7 +541,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>cl� de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>imagePath</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -871,6 +871,13 @@
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Defines if lines can be explicitly sorted</description>
+      <name>sortableLines</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to create a column header for an ArrayPane</description>
@@ -894,6 +901,12 @@
     <name>arrayLine</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLineTag</tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>The String to identified this line</description>
+      <name>id</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to create a new cell in the current line of the ArrayPane.</description>
@@ -934,7 +947,7 @@
     </attribute>
     <attribute>
       <description>
-        Total number of pages.
+        Index of current page.
       </description>
       <name>currentPage</name>
       <required>true</required>
@@ -968,6 +981,15 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>
+        Alt message for go to page.
+      </description>
+      <name>altGoToAction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Equivalent of the JSTL fmt:setBundle tag but with support for the ResourceWrapper</description>
@@ -987,7 +1009,7 @@
     </attribute>
     <attribute>
       <description>
-        The name of the variabl containing the bundle.
+        The name of the variable containing the bundle.
       </description>
       <name>var</name>
       <required>false</required>
@@ -1094,6 +1116,74 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.util.List</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to manage upload of files.</description>
+    <name>fileUpload</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.upload.FileUploadTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>If not filled, default id is 'fileUpload'.</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        By this attribute is passed the jQuery selector that permits to identify html forms to
+        manage. If files are being upload, all the html forms aimed by the given selector can not be
+        submitted. When an html forms can not be submitted, a modal warning message is displayed to
+        the user.
+      </description>
+      <name>jqueryFormSelector</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        If filled with a positive value, when the number of uploads reaches the value, it is no more
+        possible to upload files.
+      </description>
+      <name>nbFileLimit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Pass true if the UI has to be displayed in a fieldset.
+      </description>
+      <name>fieldset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Choose several files at one time. If not filled, default is true.
+        If the web browser is not compatible with multiple file selection, the
+        feature is deactivated.
+      </description>
+      <name>multiple</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Default value is true.
+        If true drop zone area is displayed on compatible web browsers. If false a standard input
+        file is displayed in any case.
+      </description>
+      <name>dragAndDropDisplay</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
   <tag>
@@ -1234,6 +1324,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>Settings of search engine</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.silverpeas.util.ResourcesWrapper</type>
+    </attribute>
   </tag>
   <tag>
     <description>Generate HTML for the site Map.</description>
@@ -1310,7 +1407,43 @@
     </attribute>
   </tag>
   <tag>
-    <description>Obtain the value of the parmaeter for the specified component instance.</description>
+    <description>Tag that displays the available languages.</description>
+    <name>langSelect</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.LanguageSelectorTag
+    </tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Current lang</description>
+      <name>langCode</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name for the input field/select</description>
+      <name>elementName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id for the input field/select</description>
+      <name>elementId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Include label before the input field/select</description>
+      <name>includeLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Obtain the value of the parameter for the specified component instance.</description>
     <name>componentParam</name>
     <tag-class>org.silverpeas.jstl.ComponentParameterTag</tag-class>
     <body-content>JSP</body-content>
@@ -1371,6 +1504,54 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  <tag>
+    <description>Tag that display a StringTemplate content.</description>
+    <name>applyTemplate</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.template.StringTemplateTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The base of the location of the template. It is separated into two parts by a colon character.
+        First part corresponds at the namespace. If it is defined "core" then template location base starts from
+        the CORE root path of templates. Otherwise, the name of a component instance has to be defined and template
+        location base starts from the COMPONENT root path of templates (for example "kmelia:publication/content"
+        indicates that the COMPONENT root path of templates is used and that the location base after parsing
+        is "COMPONENT_ROOT_PATH/kmelia/publication/content"). Second part represents the base of templates
+        location, from the CORE or the COMPONENT starting node, into which templates are performed.
+      </description>
+      <name>locationBase</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of the template to apply (without the language suffix).</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Parameter of a StringTemplate Tag. This parameter represents a StringTemplate attribute.</description>
+    <name>templateParam</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.template.StringTemplateParamTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Name of the parameter.</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Value of the parameter.</description>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>
+  </tag>
 
   <tag>
     <description>
@@ -1399,15 +1580,102 @@
     </attribute>
   </tag>
 
+  <tag>
+    <description>
+      Establishes a scoped variable that contains the value of the defined settings.
+    </description>
+    <name>settings</name>
+    <tag-class>org.silverpeas.jstl.settings.SettingsValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The fully qualified name of the ResourceLocator to be used for the settings.</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The key of the wanted settings.</description>
+      <name>key</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The default value for the corresponding setting. The type of the value returned is based on the type of the default value.</description>
+      <name>defaultValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The scope in which the scoped variable is to be created.</description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Display the content of a Wysiwyg.
+    </description>
+    <name>displayWysiwyg</name>
+    <tag-class>org.silverpeas.jstl.view.WysiwygDisplayerTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The language of the wysiwyg to display.</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the component to which this wysiwyg is attached.</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the object to which this wysiwyg is attached.</description>
+      <name>objectId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the classification scheme axis to which this wysiwyg is attached for highlighting.</description>
+      <name>axisId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if the highlight is first or not.</description>
+      <name>highlightFirst</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+
+
   <function>
     <description>Function that returns the value of a class constant.</description>
     <name>constantValue</name>
-    <function-class>org.silverpeas.jstl.constant.ClassConstantInspector</function-class>
+    <function-class>org.silverpeas.jstl.constant.reflect.ClassConstantInspector</function-class>
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
   </function>
-  
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
@@ -1423,5 +1691,64 @@
     <function-signature>
       boolean isDefined( java.lang.String )
     </function-signature>
+  </function>
+  <function>
+    <description>Function that display the estimated download time.</description>
+    <name>estimateDownload</name>
+    <function-class>com.stratelia.webactiv.util.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileDownloadTime( long )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file size in a human readable format.</description>
+    <name>humanReadableSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file mime type.</description>
+    <name>mimeType</name>
+    <function-class>com.silverpeas.util.FileUtil</function-class>
+    <function-signature>
+      java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file is previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file can be displayed with FlexPaper.</description>
+    <name>isViewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isViewable( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function that formats as memory size the given value.</description>
+    <name>formatMemSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a Javascript String.</description>
+    <name>escapeJs</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
+    <name>escapeHtml</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
   </function>
 </taglib>

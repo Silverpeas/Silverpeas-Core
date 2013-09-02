@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,16 +39,16 @@ import com.silverpeas.treeMenu.model.NodeType;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
- * 
+ *
  *
  */
 public class TreeHandler {
 
   /**
-   * 
+   *
    */
   private TreeHandler() {
   }
@@ -60,11 +60,10 @@ public class TreeHandler {
    * @return
    * @throws RemoteException
    */
-  public static String ProcessMenu(HttpServletRequest request, String menuType)
-      throws RemoteException {
+  public static String ProcessMenu(HttpServletRequest request, String menuType) {
     MainSessionController mainSessionCtrl =
         new SilverpeasWebUtil().getMainSessionController(request);
-    OrganizationController controller = mainSessionCtrl.getOrganizationController();
+    OrganisationController controller = mainSessionCtrl.getOrganisationController();
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();
     MenuItem items =

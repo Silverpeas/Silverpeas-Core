@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +31,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
@@ -69,18 +75,43 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * <li>a view Form used to show the publications.</li>
  * </ol>
  */
+@XmlRootElement(name="publicationTemplate")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PublicationTemplateImpl implements PublicationTemplate {
+  @XmlElement(required=true)
   private String name = "";
+  @XmlElement
   private String description = "";
+  @XmlElement(name="image")
   private String thumbnail = "";
-  private String fileName = "";
+  @XmlElement(required=true,defaultValue="false")
   private boolean visible = false;
+  @XmlElement(required=true,defaultValue="false")
+  private boolean dataEncrypted = false;
+  @XmlElementWrapper(name = "spaces")
+  @XmlElement(name = "space")
+  private List<String> spaces;
+  @XmlElementWrapper(name = "applications")
+  @XmlElement(name = "application")
+  private List<String> applications;
+  @XmlElementWrapper(name = "instances")
+  @XmlElement(name = "instance")
+  private List<String> instances;
+  
+  @XmlElement
   private String viewFileName = "";
+  @XmlElement
   private String updateFileName = "";
+  @XmlElement
   private String searchFileName = "";
+  @XmlElement
   private String dataFileName = "";
+  @XmlElement
   private String viewTypeFile = "";
+  @XmlElement
   private String updateTypeFile = "";
+  
+  private String fileName = "";
   private String externalId = "";
   private String searchResultFileName = "";
   private RecordTemplate template = null;
@@ -92,8 +123,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private Form updateForm = null;
   private Form viewForm = null;
   private Form searchResultForm = null;
-  // private Form searchForm = null;
-  private ArrayList<TemplateFile> templateFiles = new ArrayList<TemplateFile>();
 
   /**
    * Return the RecordTemplate of the publication data item.
@@ -217,29 +246,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     }
     // }
     return searchForm;
-  }
-
-  /**
-   * Returns the Form witch name is name parameter the records built from this template.
-   */
-  @Override
-  public Form getEditForm(String name) throws PublicationTemplateException {
-    SilverTrace.info("form", "PublicationTemplateImpl.getEditForm",
-        "root.MSG_GEN_PARAM_VALUE", "name=" + name);
-    Form form = null;
-    if (templateFiles != null) {
-      for (TemplateFile file : templateFiles) {
-        if (file.getName().compareToIgnoreCase(name) == 0) {
-          form = getForm(file.getFileName(), file.getTypeName());
-          return form;
-        }
-      }
-    }
-    if (form == null) {
-      throw new PublicationTemplateException("PublicationTemplateImpl.getEditForm",
-          "form.EX_CANT_GET_FORM", "name=" + name, null);
-    }
-    return form;
   }
 
   private Form getForm(String fileName, String fileType) throws PublicationTemplateException {
@@ -394,17 +400,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @Override
   public String getExternalId() {
     return externalId;
-  }
-
-  public void setTemplatesObj(ArrayList<TemplateFile> templatesObj) {
-    this.templateFiles = templatesObj;
-  }
-
-  /**
-   *
-   */
-  public ArrayList<TemplateFile> getTemplatesObj() {
-    return templateFiles;
   }
 
   /**
@@ -645,6 +640,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setThumbnail(getThumbnail());
     cloneTemplate.setFileName(getFileName());
     cloneTemplate.setVisible(isVisible());
+    cloneTemplate.setDataEncrypted(isDataEncrypted());
     cloneTemplate.setViewFileName(getViewFileName());
     cloneTemplate.setUpdateFileName(getUpdateFileName());
     cloneTemplate.setSearchFileName(getSearchFileName());
@@ -653,6 +649,9 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setUpdateTypeFile(getUpdateTypeFile());
     cloneTemplate.setExternalId(getExternalId());
     cloneTemplate.setSearchResultFileName(getSearchResultFileName());
+    cloneTemplate.setSpaces(getSpaces());
+    cloneTemplate.setApplications(getApplications());
+    cloneTemplate.setInstances(getInstances());
     return cloneTemplate;
   }
 
@@ -685,5 +684,56 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       SilverTrace.warn("form", "PublicationTemplateImpl.getFieldsForFacets", "form.CANT_GET_FIELDS_FOR_FACETS", e);
     }
     return fieldNames;
+  }
+  
+  public List<String> getSpaces() {
+    return spaces;
+  }
+  
+  public boolean isRestrictedVisibilityToSpace() {
+    return getSpaces() != null && !getSpaces().isEmpty();
+  }
+  
+  public boolean isRestrictedVisibilityToApplication() {
+    return getApplications() != null && !getApplications().isEmpty();
+  }
+  
+  public boolean isRestrictedVisibilityToInstance() {
+    return getInstances() != null && !getInstances().isEmpty();
+  }
+
+  public void setSpaces(List<String> spaces) {
+    this.spaces = spaces;
+  }
+
+  public List<String> getApplications() {
+    return applications;
+  }
+
+  public void setApplications(List<String> applications) {
+    this.applications= applications;
+  }
+
+  public List<String> getInstances() {
+    return instances;
+  }
+
+  public void setInstances(List<String> instances) {
+    this.instances = instances;
+  }
+  
+  public boolean isRestrictedVisibility() {
+    return isRestrictedVisibilityToSpace() ||
+        isRestrictedVisibilityToApplication() ||
+        isRestrictedVisibilityToInstance();
+  }
+
+  public void setDataEncrypted(boolean dataEncrypted) {
+    this.dataEncrypted = dataEncrypted;
+  }
+
+  @Override
+  public boolean isDataEncrypted() {
+    return dataEncrypted;
   }
 }

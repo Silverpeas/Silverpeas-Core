@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,17 @@
 
 package com.silverpeas.converter.openoffice;
 
+import static org.mockito.Mockito.mock;
+
+import java.io.File;
+import java.net.ConnectException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.silverpeas.converter.DocumentFormat;
-import java.io.File;
-import java.net.ConnectException;
-import javax.inject.Inject;
-import javax.inject.Named;
-import static org.mockito.Mockito.*;
 
 /**
  * A converter of documents that is based upon the OpenOffice service.
@@ -42,7 +45,8 @@ public class MyDocumentConverter extends OpenOfficeConverter {
 
   @Inject
   private OpenOfficeODTConverter converter;
-  private OpenOfficeDocumentConverter ooconverter = mock(OpenOfficeDocumentConverter.class);
+  private final SilverpeasOpenOfficeDocumentConverter ooconverter =
+      mock(SilverpeasOpenOfficeDocumentConverter.class);
 
   @Override
   public DocumentFormat[] getSupportedFormats() {
@@ -50,16 +54,17 @@ public class MyDocumentConverter extends OpenOfficeConverter {
   }
 
   @Override
-  public boolean isDocumentSupported(File document) {
+  public boolean isDocumentSupported(final File document) {
     return converter.isDocumentSupported(document);
   }
 
   @Override
-  protected void closeConnection(OpenOfficeConnection connection) {
+  protected void closeConnection(final OpenOfficeConnection connection) {
   }
 
   @Override
-  protected OpenOfficeDocumentConverter getOpenOfficeDocumentConverterFrom(OpenOfficeConnection connection) {
+  protected SilverpeasOpenOfficeDocumentConverter getOpenOfficeDocumentConverterFrom(
+      final OpenOfficeConnection connection) {
     return ooconverter;
   }
 

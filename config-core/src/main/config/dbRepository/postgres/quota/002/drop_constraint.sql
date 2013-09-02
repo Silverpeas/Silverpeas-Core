@@ -1,0 +1,1 @@
+ALTER TABLE st_quota DROP CONSTRAINT const_st_quota_pk;

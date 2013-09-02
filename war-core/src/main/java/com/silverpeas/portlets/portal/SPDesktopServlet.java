@@ -1,57 +1,29 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets.portal;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -66,10 +38,33 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
-import java.util.HashSet;
+import org.silverpeas.core.admin.OrganisationController;
 
-import static com.silverpeas.util.MimeTypes.*;
-import static com.silverpeas.util.StringUtil.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class SPDesktopServlet extends HttpServlet {
 
@@ -80,6 +75,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Reads the DriverConfig.properties file. Initializes the Portlet Registry files.
+   *
    * @param config the ServletConfig Object
    * @throws javax.servlet.ServletException
    */
@@ -126,14 +122,15 @@ public class SPDesktopServlet extends HttpServlet {
       response.sendRedirect(spaceHomePage);
     } else {
       spaceId = getSpaceId(request);
-      String userId = getMainSessionController(request).getUserId();
+      MainSessionController mainSessionController = getMainSessionController(request);
+      String userId = mainSessionController.getUserId();
       String spContext = userId;
       if (isDefined(spaceId)) {
         spContext = spaceId;
       }
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
-      DesktopMessages.init(request);
+      DesktopMessages.init(mainSessionController.getFavoriteLanguage());
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
           "DesktopMessages initialized !");
       DriverUtil.init(request);
@@ -205,6 +202,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Returns the PortletWindowData object for the portlet window. A Set of PortletWindowData for all
    * portlet windows is stored in the Session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the PortletWindowData object for the portlet window.
@@ -251,6 +249,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Returns a Map of portlet data and title for all portlet windows. In the portlet window is
    * maximized, only the data and title for that portlet is displayed. For any portlet window that
    * is minimized , only the title is shown.
+   *
    * @param request the HttpServletRequest Object
    * @param portletContent the PortletContent Object
    * @param portletRegistryContext the PortletRegistryContext Object
@@ -276,13 +275,14 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Initializes the specified portlet content from the data carries by specified HTTP request.
+   *
    * @param portletContent the portlet content to initialize.
    * @param request the HTTP request carrying the data (by itself or through the HTTP session) about
    * the portlet.
    * @return the initialized portlet content.
    */
   private PortletContent initPortletContent(final PortletContent portletContent,
-      final HttpServletRequest request) throws InvokerException {
+      final HttpServletRequest request) {
     String portletWindowName = portletContent.getPortletWindowName();
     portletContent.setPortletWindowMode(getPortletWindowMode(request, portletWindowName));
     portletContent.setPortletWindowState(getPortletWindowState(request, portletWindowName));
@@ -291,8 +291,9 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Returns a Map of portlet data and title for the portlet windows specified in the portletList
+   *
    * @param request the HttpServletRequest Object
-   * @param portletContent the PortletContent Cobject
+   * @param response the HttpServletResponse object
    * @param portletList the List of portlet windows
    * @return a Map of portlet data and title for the portlet windows specified in the portletList
    */
@@ -311,6 +312,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Returns a Map of PortletWindowData for the portlet windows for both thick and think widths.
+   *
    * @param request the HttpServletRequest Object
    * @param portletContents a Map of portlet data and title for the portlet windows
    * @param portletRegistryContext the PortletRegistryContext Object
@@ -326,6 +328,7 @@ public class SPDesktopServlet extends HttpServlet {
       try {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContent, portletRegistryContext, spContext);
+
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
         } else if (portletWindowData.isThick()) {
@@ -341,9 +344,9 @@ public class SPDesktopServlet extends HttpServlet {
         new HashMap<String, SortedSet<PortletWindowData>>();
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
-    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[] {
-        String.valueOf(portletWindowContentsThin.
-        size()), String.valueOf(portletWindowContentsThick.size()) });
+    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[]{
+          String.valueOf(portletWindowContentsThin.
+          size()), String.valueOf(portletWindowContentsThick.size())});
 
     return portletWindowContents;
   }
@@ -364,6 +367,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Returns the list of visible portlet windows from the portlet registry.
+   *
    * @param portletRegistryContext the PortletRegistryContext Object
    * @return the list of visible portlet windows from the portlet registry.
    */
@@ -383,6 +387,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Gets the state of the portlet window identified by the specified name. It looks for the state
    * in the request (current portlet window). If not found, it looks for it among the available
    * portlets in the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the state of the specified portlet window.
@@ -404,6 +409,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Gets the mode of the portlet window identified by the specified name. It looks for the mode in
    * the request (current portlet window). If not found, it looks for it among the available
    * portlets in the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the mode of the specified portlet window.
@@ -424,6 +430,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Returns the portlet window state for the portlet window from the PortletWindowData that is in
    * the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the portlet window state for the portlet window from session.
@@ -444,6 +451,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Returns the portlet window mode for the portlet window from the PortletWindowData that is in
    * the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the portlet window mode for the portlet window from session.
@@ -474,6 +482,7 @@ public class SPDesktopServlet extends HttpServlet {
       String spContext) throws PortletRegistryException {
     PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
     portletWindowData.init(request, portletRegistryContext, portletContent.getPortletWindowName());
+
     if (!portletContent.isInMinimizedWindowState()) {
       portletWindowData.setContent(portletContent.getContent());
     }
@@ -546,6 +555,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Gets the identifier of the selected space from the request. If the space is the user personal
    * one or it is not of type portlet, then null is returned (no specific space)
+   *
    * @param request the HTTP request.
    * @return the space identifier or null if the space hasn't to be taken into account in the
    * portlets rendering.
@@ -562,7 +572,7 @@ public class SPDesktopServlet extends HttpServlet {
         }
         MainSessionController m_MainSessionCtrl = getMainSessionController(request);
         SpaceInst spaceStruct =
-            m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
+            m_MainSessionCtrl.getOrganisationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           return null;
@@ -582,8 +592,8 @@ public class SPDesktopServlet extends HttpServlet {
     return m_MainSessionCtrl;
   }
 
-  private OrganizationController getOrganizationController(final HttpServletRequest request) {
-    return getMainSessionController(request).getOrganizationController();
+  private OrganisationController getOrganizationController(final HttpServletRequest request) {
+    return getMainSessionController(request).getOrganisationController();
   }
 
   private boolean isSpaceBackOffice(final HttpServletRequest request) {
@@ -599,7 +609,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   private String getSpaceHomepage(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
-    OrganizationController organizationCtrl = getOrganizationController(request);
+    OrganisationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = null;
     if (!SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
       spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
@@ -610,10 +620,10 @@ public class SPDesktopServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
 
       // Maintenance Mode
-      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId)
-          && m_MainSessionCtrl.getUserAccessLevel().equals("U")) {
-        return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-            + "/admin/jsp/spaceInMaintenance.jsp";
+      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
+          (m_MainSessionCtrl.getCurrentUserDetail().isAccessUser() ||
+              m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest())) {
+        return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
 
       // Page d'accueil de l'espace = Composant
@@ -621,8 +631,7 @@ public class SPDesktopServlet extends HttpServlet {
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailable(componentId, userId)) {
-          return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-              + URLManager.getURL("useless", componentId) + "Main";
+          return URLManager.getApplicationURL() + URLManager.getURL("useless", componentId) + "Main";
         }
       }
 

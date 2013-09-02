@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,17 +24,17 @@
 
 package com.silverpeas.form.fieldType;
 
-import com.stratelia.silverpeas.silvertrace.*;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A PdcUserField stores a the users references
  * @see Field
- * @see FieldDisplayer
+ * @see com.silverpeas.form.FieldDisplayer
  */
 public class PdcUserField implements Field {
 
@@ -109,7 +109,7 @@ public class PdcUserField implements Field {
         userCardId = userCardIdUserId.substring(0, index);
         userId = userCardIdUserId.substring(index + 1);
 
-        user = organizationController.getUserDetail(userId);
+        user =  OrganisationControllerFactory.getOrganisationController().getUserDetail(userId);
         if (user == null) {
           names.append("userCardId(").append(userCardId).append(")");
         } else {
@@ -289,10 +289,5 @@ public class PdcUserField implements Field {
    * The referenced userCardIds.
    */
   private String userCardIds = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
 
 }

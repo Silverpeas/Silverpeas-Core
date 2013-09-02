@@ -1,21 +1,21 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- * 
-* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ *
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- * 
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- * 
-* You should have received a copy of the GNU Affero General Public License along with this program.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.util;
@@ -23,14 +23,31 @@ package com.silverpeas.util;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import javax.activation.MimetypesFileTypeMap;
+import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-
-import javax.activation.MimetypesFileTypeMap;
-import java.io.*;
-import java.util.*;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.util.mail.Mail;
 
 public class FileUtil implements MimeTypes {
 
@@ -41,11 +58,11 @@ public class FileUtil implements MimeTypes {
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
       new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-        @Override
-        public ConfigurationClassLoader run() {
-          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-        }
-      });
+    @Override
+    public ConfigurationClassLoader run() {
+      return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+    }
+  });
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -54,7 +71,7 @@ public class FileUtil implements MimeTypes {
    * @param bundle the name of the bundle.
    * @return the name of the migrated bundle.
    */
-  public static String convertBundleName(String bundle) {
+  public static String convertBundleName(final String bundle) {
     return bundle.replace("com.silverpeas", "org.silverpeas").replace(
         "com.stratelia.silverpeas", "org.silverpeas").replace("com.stratelia.webactiv",
         "org.silverpeas");
@@ -67,7 +84,7 @@ public class FileUtil implements MimeTypes {
    * @param resource the name of the resource.
    * @return the name of the migrated resource.
    */
-  public static String convertResourceName(String resource) {
+  public static String convertResourceName(final String resource) {
     return resource.replace("com/silverpeas", "org/silverpeas").replace(
         "com/stratelia/silverpeas", "org/silverpeas").replace("com/stratelia/webactiv",
         "org/silverpeas");
@@ -79,19 +96,19 @@ public class FileUtil implements MimeTypes {
    * @param fileName the name of the file.
    * @return the mime-type as a String.
    */
-  public static String getMimeType(String fileName) {
+  public static String getMimeType(final String fileName) {
     String mimeType = null;
-    String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
+    final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
     try {
       if (MIME_TYPES_EXTENSIONS != null) {
         mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
       }
-    } catch (MissingResourceException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
+    } catch (final MissingResourceException e) {
+      SilverTrace.warn("attachment", "FileUtil",
           "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
     }
     if (mimeType == null) {
-      MIME_TYPES.getContentType(fileName);
+      mimeType = MIME_TYPES.getContentType(fileName);
     }
     if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
         mimeType)) {
@@ -115,12 +132,12 @@ public class FileUtil implements MimeTypes {
    * @param context
    * @return
    */
-  public static String[] getAttachmentContext(String context) {
+  public static String[] getAttachmentContext(final String context) {
     if (!StringUtil.isDefined(context)) {
       return new String[]{BASE_CONTEXT};
     }
-    StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
-    List<String> folders = new ArrayList<String>(10);
+    final StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
+    final List<String> folders = new ArrayList<String>(10);
     folders.add(BASE_CONTEXT);
     while (strToken.hasMoreElements()) {
       folders.add(strToken.nextToken().trim());
@@ -135,8 +152,19 @@ public class FileUtil implements MimeTypes {
    * @return the bytes array containing the content of the file.
    * @throws IOException
    */
-  public static byte[] readFile(File file) throws IOException {
+  public static byte[] readFile(final File file) throws IOException {
     return FileUtils.readFileToByteArray(file);
+  }
+
+  /**
+   * Read the content of a file as text (the text is supposed to be in the UTF-8 charset).
+   *
+   * @param file the file to read.
+   * @return the file content as a String.
+   * @throws IOException if an error occurs while reading the file.
+   */
+  public static String readFileToString(final File file) throws IOException {
+    return FileUtils.readFileToString(file);
   }
 
   /**
@@ -146,7 +174,7 @@ public class FileUtil implements MimeTypes {
    * @param data the data to be written.
    * @throws IOException
    */
-  public static void writeFile(File file, InputStream data) throws IOException {
+  public static void writeFile(final File file, final InputStream data) throws IOException {
     FileOutputStream out = null;
     try {
       out = new FileOutputStream(file);
@@ -165,7 +193,7 @@ public class FileUtil implements MimeTypes {
    * @param data the data to be written.
    * @throws IOException
    */
-  public static void writeFile(File file, Reader data) throws IOException {
+  public static void writeFile(final File file, final Reader data) throws IOException {
     FileWriter out = new FileWriter(file);
     try {
       IOUtils.copy(data, out);
@@ -181,7 +209,7 @@ public class FileUtil implements MimeTypes {
    * @param locale the locale of the bundle.
    * @return the corresponding ResourceBundle if it exists - null otherwise.
    */
-  public static ResourceBundle loadBundle(String bundleName, Locale locale) {
+  public static ResourceBundle loadBundle(final String bundleName, final Locale locale) {
     String name = convertBundleName(bundleName);
     ResourceBundle bundle;
     Locale loc = locale;
@@ -189,11 +217,11 @@ public class FileUtil implements MimeTypes {
       loc = Locale.ROOT;
     }
     try {
-      bundle =  ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
-      if(bundle == null) {
+      bundle = ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
+      if (bundle == null) {
         bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
       }
-    } catch(MissingResourceException mex) {
+    } catch (MissingResourceException mex) {
       //Let's try with the real name
       bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
     }
@@ -207,13 +235,14 @@ public class FileUtil implements MimeTypes {
    * @param resourceName the name of the resource.
    * @throws IOException
    */
-  public static void loadProperties(Properties properties, String resourceName) throws IOException {
+  public static void loadProperties(final Properties properties, final String resourceName) throws
+      IOException {
     if (StringUtil.isDefined(resourceName) && properties != null) {
       String name = convertResourceName(resourceName);
       InputStream in = loader.getResourceAsStream(name);
       try {
         properties.load(in);
-      }finally {
+      } finally {
         IOUtils.closeQuietly(in);
       }
     }
@@ -229,13 +258,13 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Indicates if the current file is of type archive.
+   * If 3D document.
    *
    * @param filename the name of the file.
-   * @return true is the file s of type archive - false otherwise.
+   * @return true or false
    */
-  public static boolean isArchive(String filename) {
-    return ARCHIVE_MIME_TYPES.contains(getMimeType(filename));
+  public static boolean isSpinfireDocument(String filename) {
+    return SPINFIRE_MIME_TYPE.equals(getMimeType(filename));
   }
 
   /**
@@ -244,20 +273,186 @@ public class FileUtil implements MimeTypes {
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
    */
-  public static boolean isImage(String filename) {
-    return FilenameUtils.isExtension(filename, IMAGE_EXTENTIONS);
+  public static boolean isArchive(final String filename) {
+    return ARCHIVE_MIME_TYPES.contains(getMimeType(filename));
   }
 
-  public static boolean isOpenOfficeCompatible(String filename) {
+  /**
+   * Indicates if the current file is of type image.
+   *
+   * @param filename the name of the file.
+   * @return true is the file is of type image - false otherwise.
+   */
+  public static boolean isImage(final String filename) {
     String mimeType = getMimeType(filename);
+    if (DEFAULT_MIME_TYPE.equals(mimeType)) {
+      return FilenameUtils.isExtension(filename.toLowerCase(), ImageUtil.IMAGE_EXTENTIONS);
+    } else {
+      return mimeType.startsWith("image");
+    }
+  }
+
+  /**
+   * Indicates if the current file is of type mail.
+   *
+   * @param filename the name of the file.
+   * @return true is the file is of type mail - false otherwise.
+   */
+  public static boolean isMail(final String filename) {
+    return FilenameUtils.isExtension(filename, Mail.MAIL_EXTENTIONS);
+  }
+
+  /**
+   * Indicates if the current file is of type PDF.
+   *
+   * @param filename the name of the file.
+   * @return true is the file s of type archive - false otherwise.
+   */
+  public static boolean isPdf(final String filename) {
+    final String mimeType = getMimeType(filename);
+    return PDF_MIME_TYPE.equals(mimeType);
+  }
+
+  public static boolean isOpenOfficeCompatible(final String filename) {
+    final String mimeType = getMimeType(filename);
     return OPEN_OFFICE_MIME_TYPES.contains(mimeType) || isMsOfficeExtension(mimeType);
   }
 
-  static boolean isMsOfficeExtension(String mimeType) {
+  static boolean isMsOfficeExtension(final String mimeType) {
     return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
         || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
   }
 
+  public static Collection<File> listFiles(File directory, String[] extensions, boolean recursive) {
+    return FileUtils.listFiles(directory, extensions, recursive);
+  }
+
+  public static Collection<File> listFiles(File directory, String[] extensions,
+      boolean caseSensitive, boolean recursive) {
+    if (caseSensitive) {
+      return listFiles(directory, extensions, recursive);
+    }
+    IOFileFilter filter;
+    if (extensions == null) {
+      filter = TrueFileFilter.INSTANCE;
+    } else {
+      String[] suffixes = new String[extensions.length];
+      for (int i = 0; i < extensions.length; i++) {
+        suffixes[i] = "." + extensions[i];
+      }
+      filter = new SuffixFileFilter(suffixes, IOCase.INSENSITIVE);
+    }
+    return FileUtils.listFiles(directory, filter, (recursive ? TrueFileFilter.INSTANCE
+        : FalseFileFilter.INSTANCE));
+  }
+
+  /**
+   * Forces the deletion of the specified file. If the write property of the file to delete isn't
+   * set, this property is then set before deleting.
+   *
+   * @param fileToDelete file to delete.
+   * @throws IOException if the deletion failed or if the file doesn't exist.
+   */
+  public static void forceDeletion(File fileToDelete) throws IOException {
+    if (fileToDelete.exists() && !fileToDelete.canWrite()) {
+      fileToDelete.setWritable(true);
+    }
+    FileUtils.forceDelete(fileToDelete);
+  }
+
+  /**
+   * Moves the specified source file to the specified destination. If the destination exists, it is
+   * then replaced by the source; if the destination is a directory, then it is deleted with all of
+   * its contain.
+   *
+   * @param source the file to move.
+   * @param destination the destination file of the move.
+   * @throws IOException if the source or the destination is invalid or if an error occurs while
+   * moving the file.
+   */
+  public static void moveFile(File source, File destination) throws IOException {
+    if (destination.exists()) {
+      FileUtils.forceDelete(destination);
+    }
+    FileUtils.moveFile(source, destination);
+  }
+
+  /**
+   * Copies the specified source file to the specified destination. If the destination exists, it is
+   * then replaced by the source. If the destination can be overwritten, its write property is set
+   * before the copy.
+   *
+   * @param source the file to copy.
+   * @param destination the destination file of the move.
+   * @throws IOException if the source or the destination is invalid or if an error occurs while
+   * copying the file.
+   */
+  public static void copyFile(File source, File destination) throws IOException {
+    if (destination.exists() && !destination.canWrite()) {
+      destination.setWritable(true);
+    }
+    FileUtils.copyFile(source, destination);
+  }
+
+  /*
+   * Remove any \ or / from the filename thus avoiding conflicts on the server.
+   *
+   * @param fileName
+   * @return
+   */
+  public static String getFilename(String fileName) {
+    if (!StringUtil.isDefined(fileName)) {
+      return "";
+    }
+    String logicalName = convertPathToServerOS(fileName);
+    return logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+  }
+
   private FileUtil() {
+  }
+
+  /**
+   * Convert a path to the current OS path format.
+   *
+   * @param undeterminedOsPath
+   * @return server OS pah.
+   */
+  public static String convertPathToServerOS(String undeterminedOsPath) {
+    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
+      return "";
+    }
+    String localPath = undeterminedOsPath;
+    localPath = localPath.replace('\\', File.separatorChar).replace('/', File.separatorChar);
+    return localPath;
+  }
+
+  public static String convertFilePath(File file) {
+    if (OsEnum.getOS().isWindows()) {
+      return StringUtils.quoteArgument(file.getAbsolutePath());
+    }
+    String path = file.getAbsolutePath();
+    path = path.replaceAll("\\\\", "\\\\\\\\");
+    path = path.replaceAll("\\s", "\\\\ ");
+    path = path.replaceAll("<", "\\\\<");
+    path = path.replaceAll(">", "\\\\>");
+    path = path.replaceAll("'", "\\\\'");
+    path = path.replaceAll("\"", "\\\\\"");
+    path = path.replaceAll("\\{", "\\\\{");
+    path = path.replaceAll("}", "\\\\}");
+    path = path.replaceAll("\\(", "\\\\(");
+    path = path.replaceAll("\\)", "\\\\)");
+    path = path.replaceAll("\\[", "\\\\[");
+    path = path.replaceAll("\\]", "\\\\]");
+    path = path.replaceAll("\\&", "\\\\&");
+    path = path.replaceAll("\\|", "\\\\|");
+    return path;
+  }
+
+  public static boolean deleteEmptyDir(File directory) {
+    if (directory.exists() && directory.isDirectory() && directory.list() != null && directory.
+        list().length == 0) {
+      return directory.delete();
+    }
+    return false;
   }
 }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,10 @@
  */
 
 package com.silverpeas.form;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
  * The page context where a form is displayed.
@@ -54,6 +58,7 @@ public class PagesContext {
   int updatePolicy = ON_UPDATE_REPLACE_EMPTY_VALUES;
   String encoding = "UTF-8";
   boolean creation = false;
+  String serverURL;
 
   public PagesContext() {
   }
@@ -314,5 +319,13 @@ public class PagesContext {
   
   public void setCreation(boolean creation) {
     this.creation = creation;
+  }
+  
+  public String getServerURL() {
+    return serverURL;
+  }
+  
+  public void setRequest(HttpServletRequest request) {
+    this.serverURL = URLManager.getServerURL(request);
   }
 }

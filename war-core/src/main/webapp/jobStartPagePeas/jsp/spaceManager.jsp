@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,7 +36,6 @@
 	DisplaySorted 		m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
 	boolean 			isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 	
-	SpaceProfileInst	inheritedProfile 	= (SpaceProfileInst) request.getAttribute("InheritedProfile");
 	List<Group>			inheritedGroups		= (List<Group>) request.getAttribute("listInheritedGroups"); //List of GroupDetail
 	List<UserDetail>	inheritedUsers 		= (List<UserDetail>) request.getAttribute("listInheritedUsers"); //List of UserDetail
 	String 				spaceId				= (String) request.getAttribute("CurrentSpaceId");
@@ -125,7 +124,7 @@ out.println(board.printBefore());
 %>
 <center>
 <br/><br/>
-	<% if (inheritedProfile != null && (!inheritedGroups.isEmpty() || !inheritedUsers.isEmpty())) { %>
+	<% if ((inheritedGroups != null && !inheritedGroups.isEmpty()) || (inheritedUsers != null && !inheritedUsers.isEmpty())) { %>
 	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
 		<tr>
 			<td colspan="2" class="txttitrecol"><%=resource.getString("JSPP.inheritedRights")%></td>
@@ -140,7 +139,7 @@ out.println(board.printBefore());
 		<tr>
 			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
 		</tr>
-		
+		<% if (inheritedGroups != null) { %>
 		<% for (Group group : inheritedGroups) { %>
 			<tr>
 			<% if (group.isSynchronized()) { %>
@@ -151,12 +150,15 @@ out.println(board.printBefore());
 			<td align="center"><%=group.getName() %></td>
 			</tr>
 		<% } %>
+		<% } %>
 		
+		<% if (inheritedUsers != null) { %>
 		<% for (UserDetail user : inheritedUsers) { %>
 			<tr>
 				<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
 				<td align="center"><view:username userId="<%=user.getId()%>" /></td>
 			</tr>
+		<% } %>
 		<% } %>
 		<tr>
 			<td colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>

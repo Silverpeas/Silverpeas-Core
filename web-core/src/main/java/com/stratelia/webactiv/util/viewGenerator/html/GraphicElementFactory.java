@@ -1,33 +1,29 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -51,8 +47,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.frame.Frame;
 import com.stratelia.webactiv.util.viewGenerator.html.frame.FrameSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPaneWA;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
 import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList;
 import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
@@ -72,6 +66,10 @@ import java.util.List;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -88,16 +86,16 @@ public class GraphicElementFactory {
   public static final String RESOURCES_KEY = "resources";
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
+      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "");
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private final static String defaultLook =
-      "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
+      "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
-      "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
-  private final static String iconsPath = URLManager.getApplicationURL() + settings.getString(
-      "IconsPath");
+      "org.silverpeas.general", I18NHelper.defaultLanguage);
+  private final static String iconsPath = (URLManager.getApplicationURL() + settings
+      .getString("IconsPath")).replaceAll("/$", "");
   private ResourceLocator multilang = null;
   private String currentLookName = null;
   private String externalStylesheet = null;
@@ -106,16 +104,16 @@ public class GraphicElementFactory {
   private String spaceId = null;
   private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
-  private static final String JQUERY_JS = "jquery-1.7.1.min.js";
-  private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
-  private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
-  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
-  private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
-  private static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
+  protected static final String JQUERY_JS = "jquery-1.10.1.min.js";
+  protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
+  protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
+  protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
+  protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**
    * Constructor declaration
+   *
    * @param look
    * @see
    */
@@ -135,8 +133,7 @@ public class GraphicElementFactory {
     if (multilang == null) {
       String language = getLanguage();
       multilang = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
-          language);
+          "org.silverpeas.util.viewGenerator.multilang.graphicElementFactoryBundle", language);
     }
     return multilang;
   }
@@ -151,6 +148,7 @@ public class GraphicElementFactory {
 
   /**
    * Get the settings for the factory.
+   *
    * @return The ResourceLocator returned contains all default environment settings necessary to
    * know wich component to instanciate, but also to know how to generate html code.
    */
@@ -160,6 +158,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @return Customer specific look settings if defined, default look settings otherwise
    * @see
    */
@@ -168,14 +167,12 @@ public class GraphicElementFactory {
         "root.MSG_GEN_ENTER_METHOD");
     if (lookSettings == null) {
       ResourceLocator silverpeasSettings = getSilverpeasLookSettings();
-      SilverTrace.info("viewgenerator",
-          "GraphicElementFactory.getLookSettings()",
+      SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
           "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
         lookSettings =
-            new ResourceLocator(
-            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
+            new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
             silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
@@ -189,22 +186,23 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @return the default look settings ResourceLocator
    * @see
    */
   public ResourceLocator getSilverpeasLookSettings() {
-    SilverTrace.info("viewgenerator",
-        "GraphicElementFactory.getSilverpeasLookSettings()",
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getSilverpeasLookSettings()",
         "root.MSG_GEN_ENTER_METHOD");
     if (silverpeasLookSettings == null) {
       silverpeasLookSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "");
+          "org.silverpeas.util.viewGenerator.settings.defaultLookSettings", "");
     }
     return silverpeasLookSettings;
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -214,6 +212,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @param look
    * @see
    */
@@ -265,6 +264,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -277,6 +277,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -286,7 +287,7 @@ public class GraphicElementFactory {
     String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String contextPath = getGeneralSettings().getString("ApplicationURL");
-    String charset = getGeneralSettings().getString("charset", "UTF-8");
+    String charset = getGeneralSettings().getString("charset", CharEncoding.UTF_8);
     StringBuilder code = new StringBuilder();
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);
@@ -303,7 +304,7 @@ public class GraphicElementFactory {
       StringBuilder specificComponentCSS = null;
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
         ComponentInstLight component =
-            mainSessionController.getOrganizationController().getComponentInstLight(componentId);
+            mainSessionController.getOrganisationController().getComponentInstLight(componentId);
         if (component != null) {
           String componentName = component.getName();
           String genericComponentName = getGenericComponentName(componentName);
@@ -364,8 +365,6 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_INCLUDE_JS).append("\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
@@ -379,6 +378,9 @@ public class GraphicElementFactory {
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
+      code.append(
+          JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), getLanguage())
+          .toString()).append("\n");
     }
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
@@ -387,23 +389,24 @@ public class GraphicElementFactory {
   }
 
   /**
-   * Retrieve space look <br/>
-   * Look Style behavior algorithm is :
-   * <ul>
-   * <li>Use specific space look if defined</li>
-   * <li>else if use the user defined look settings</li>
-   * <li>else if use the default look settings</li>
-   * </ul>
+   * Retrieve space look <br/> Look Style behavior algorithm is : <ul> <li>Use specific space look
+   * if defined</li> <li>else if use the user defined look settings</li> <li>else if use the default
+   * look settings</li> </ul>
+   *
    * @param code the current state of the HTML produced for the header.
    */
   private void appendSpecificCSS(StringBuilder code) {
     if (StringUtil.isDefined(this.spaceId)) {
       SpaceInstLight curSpace =
-          mainSessionController.getOrganizationController().getSpaceInstLightById(
-          this.spaceId);
+          mainSessionController.getOrganisationController().getSpaceInstLightById(this.spaceId);
       if (curSpace != null) {
         String spaceLookStyle = curSpace.getLook();
         getSpaceLook(code, curSpace, spaceLookStyle);
+        String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(this.spaceId);
+        if (StringUtil.isDefined(css)) {
+          code.append("<link id=\"spaceCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"")
+              .append(css).append("\"/>\n");
+        }
         return;
       }
     }
@@ -428,7 +431,7 @@ public class GraphicElementFactory {
       if (!curSpace.isRoot()) {
         String fatherSpaceId = curSpace.getFatherId();
         SpaceInstLight fatherSpace =
-            mainSessionController.getOrganizationController().getSpaceInstLightById(fatherSpaceId);
+            mainSessionController.getOrganisationController().getSpaceInstLightById(fatherSpaceId);
         spaceLookStyle = fatherSpace.getLook();
         getSpaceLook(code, fatherSpace, spaceLookStyle);
       } else {
@@ -439,6 +442,7 @@ public class GraphicElementFactory {
 
   /**
    * Append the default look CSS.
+   *
    * @param code the current state of the HTML produced for the header.
    */
   private void appendDefaultLookCSS(StringBuilder code) {
@@ -454,6 +458,7 @@ public class GraphicElementFactory {
   /**
    * Some logical components have got the same technical component. For example, "toolbox" component
    * is technically "kmelia"
+   *
    * @return the "implementation" name of the given component
    */
   private String getGenericComponentName(String componentName) {
@@ -493,6 +498,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -504,6 +510,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -519,6 +526,7 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new button.
+   *
    * @param label The new button label
    * @param action The action associated exemple : "javascript:onClick=history.back()", or
    * "http://www.stratelia.com/"
@@ -536,14 +544,16 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_BUTTON", "", e);
       button = new ButtonSilverpeasV5();
     } finally {
-      button.init(label, action, disabled);
+      if (button != null) {
+        button.init(label, action, disabled);
+      }
     }
     return button;
   }
 
   /**
    * Construct a new frame.
-   * @param title The new frame title
+   *
    * @return returns an object implementing the Frame interface. That's the new frame to use.
    */
   public Frame getFrame() {
@@ -562,6 +572,7 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new board.
+   *
    * @return returns an object implementing the Board interface. That's the new board to use.
    */
   public Board getBoard() {
@@ -580,6 +591,7 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new navigation list.
+   *
    * @return returns an object implementing the NavigationList interface.
    */
   public NavigationList getNavigationList() {
@@ -599,6 +611,7 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new button.
+   *
    * @param label The new button label
    * @param action The action associated exemple : "javascript:history.back()", or
    * "http://www.stratelia.com/"
@@ -615,6 +628,7 @@ public class GraphicElementFactory {
 
   /**
    * Build a new TabbedPane.
+   *
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane() {
@@ -629,13 +643,16 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_TABBED_PANE", "", e);
       tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
-      tabbedPane.init(1);
+      if (tabbedPane != null) {
+        tabbedPane.init(1);
+      }
     }
     return tabbedPane;
   }
 
   /**
    * Build a new TabbedPane.
+   *
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane(int nbLines) {
@@ -650,13 +667,16 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_TABBED_PANE", " nbLines = " + nbLines, e);
       tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
-      tabbedPane.init(nbLines);
+      if (tabbedPane != null) {
+        tabbedPane.init(nbLines);
+      }
     }
     return tabbedPane;
   }
 
   /**
    * Build a new ArrayPane.
+   *
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
@@ -673,18 +693,20 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator",
-          "GraphicElementFactory.getArrayPane()",
+      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
-      arrayPane.init(name, pageContext);
+      if (arrayPane != null) {
+        arrayPane.init(name, pageContext);
+      }
     }
     return arrayPane;
   }
 
   /**
    * Build a new ArrayPane.
+   *
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
@@ -699,18 +721,20 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator",
-          "GraphicElementFactory.getArrayPane()",
+      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
-      arrayPane.init(name, request, session);
+      if (arrayPane != null) {
+        arrayPane.init(name, request, session);
+      }
     }
     return arrayPane;
   }
 
   /**
    * Build a new ArrayPane.
+   *
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
@@ -727,18 +751,20 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator",
-          "GraphicElementFactory.getArrayPane()",
+      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
-      arrayPane.init(name, url, request, session);
+      if (arrayPane != null) {
+        arrayPane.init(name, url, request, session);
+      }
     }
     return arrayPane;
   }
 
   /**
    * Build a new main Window using the object specified in the properties.
+   *
    * @return An object implementing Window interface
    */
   public Window getWindow() {
@@ -751,13 +777,16 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_WINDOW", "", e);
       window = new WindowWeb20V5();
     } finally {
-      window.init(this);
+      if (window != null) {
+        window.init(this);
+      }
     }
     return window;
   }
 
   /**
    * Build a new ButtonPane.
+   *
    * @return An object implementing the ButtonPane interface
    */
   public ButtonPane getButtonPane() {
@@ -775,6 +804,7 @@ public class GraphicElementFactory {
 
   /**
    * Build a new IconPane.
+   *
    * @return An object implementing the IconPane interface.
    */
   public IconPane getIconPane() {
@@ -790,6 +820,7 @@ public class GraphicElementFactory {
 
   /**
    * Build a new FormPane.
+   *
    * @param name
    * @param actionURL
    * @param pageContext
@@ -802,6 +833,7 @@ public class GraphicElementFactory {
 
   /**
    * Build a new OperationPane.
+   *
    * @return An object implementing the OperationPane interface.
    */
   public OperationPane getOperationPane() {
@@ -820,6 +852,7 @@ public class GraphicElementFactory {
 
   /**
    * Build a new BrowseBar.
+   *
    * @return An object implementing the BrowseBar interface.
    */
   public BrowseBar getBrowseBar() {
@@ -840,17 +873,9 @@ public class GraphicElementFactory {
   }
 
   /**
-   * Build a new monthCalendar.
-   * @param String : the language to use by the monthCalendar
-   * @return an object implementing the monthCalendar interface
-   */
-  public MonthCalendar getMonthCalendar(String language) {
-    return new MonthCalendarWA1(language);
-  }
-
-  /**
-   * Build a new Calendar.
-   * @param String : the language to use by the monthCalendar
+   * Build a new SilverpeasCalendar.
+   *
+   * @param language : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
   public Calendar getCalendar(String context, String language, Date date) {
@@ -858,6 +883,12 @@ public class GraphicElementFactory {
   }
 
   public Pagination getPagination(int nbItems, int nbItemsPerPage, int firstItemIndex) {
+    Pagination pagination = getPagination();
+    pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
+    return pagination;
+  }
+
+  public Pagination getPagination() {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination;
     if (paginationClassName == null) {
@@ -871,7 +902,6 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_PAGINATION", "", e);
       pagination = new PaginationSP();
     }
-    pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
     pagination.setMultilang(getMultilang());
     return pagination;
   }
@@ -911,7 +941,8 @@ public class GraphicElementFactory {
     HttpSession session = request.getSession(true);
     mainSessionController =
         (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    componentMainPage = request.getRequestURI().endsWith("/Main");
+    componentMainPage =
+        request.getRequestURI().endsWith("/Main") && !request.getRequestURI().endsWith("/jsp/Main");
   }
 
   public boolean isComponentMainPage() {
@@ -934,6 +965,7 @@ public class GraphicElementFactory {
 
   /**
    * Retrieve default look name
+   *
    * @return user personal look settings if defined, default look settings otherwise
    */
   public String getDefaultLookName() {

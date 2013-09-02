@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 
@@ -101,6 +102,8 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     createdBy = compo.createdBy;
     updatedBy = compo.updatedBy;
     removedBy = compo.removedBy;
+
+    orderNum = compo.orderNum;
 
     isInheritanceBlocked = compo.inheritanceBlocked == 1;
   }
@@ -280,6 +283,10 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
 
   public void setInheritanceBlocked(boolean isInheritanceBlocked) {
     this.isInheritanceBlocked = isInheritanceBlocked;
+  }
+  
+  public boolean isWorkflow() {
+    return Instanciateur.isWorkflow(getName());
   }
 
   @Override

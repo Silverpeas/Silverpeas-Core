@@ -13,22 +13,24 @@ public class Wysiwyg {
   private String toolbar = "Default";
   private boolean toolbarStartExpanded = true;
   private String imageBrowserURL;
-  
-  ResourceLocator wysiwygSettings = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
-  
+  private String serverURL;
+
+  ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+
   public Wysiwyg() {
-    
+
   }
-  
+
   public String print() {
     String configFile = wysiwygSettings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/ckeditor/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
-    
+
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
     builder.append("width : '").append(getWidth()).append("',\n");
     builder.append("height : ").append(getHeight()).append(",\n");
     builder.append("language : '").append(getLanguage()).append("',\n");
-    builder.append("baseHref : '").append(URLManager.getApplicationURL()).append("/wysiwyg/jsp/ckeditor/").append("',\n");
+    String basehref = wysiwygSettings.getString("baseHref", getServerURL());
+    builder.append("baseHref : '").append(basehref).append("',\n");
     if (StringUtil.isDefined(getImageBrowserURL())) {
       builder.append("filebrowserImageBrowseUrl : '").append(getImageBrowserURL()).append("',\n");
     }
@@ -36,10 +38,10 @@ public class Wysiwyg {
     builder.append("customConfig : '").append(configFile).append("',\n");
     builder.append("toolbar : '").append(getToolbar()).append("'\n");
     builder.append("});");
-    
+
     return builder.toString();
   }
-  
+
   public String getReplace() {
     return replace;
   }
@@ -95,8 +97,13 @@ public class Wysiwyg {
   public void setImageBrowserURL(String imageBrowserURL) {
     this.imageBrowserURL = imageBrowserURL;
   }
-  
-  
-  
-  
+
+  public void setServerURL(String serverURL) {
+    this.serverURL = serverURL;
+  }
+
+  public String getServerURL() {
+    return serverURL;
+  }
+
 }

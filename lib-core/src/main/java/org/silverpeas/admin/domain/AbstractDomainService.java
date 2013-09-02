@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +24,16 @@
 
 package org.silverpeas.admin.domain;
 
-import org.apache.commons.lang.StringUtils;
-import org.silverpeas.admin.domain.exception.DomainConflictException;
-import org.silverpeas.admin.domain.exception.DomainCreationException;
-import org.silverpeas.admin.domain.exception.DomainDeletionException;
-import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
-import org.silverpeas.admin.domain.exception.NonAlphaNumericDetectedException;
-import org.silverpeas.admin.domain.exception.WhiteSpacesDetectedException;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.admin.domain.exception.DomainConflictException;
+import org.silverpeas.admin.domain.exception.DomainCreationException;
+import org.silverpeas.admin.domain.exception.DomainDeletionException;
+import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 
 public abstract class AbstractDomainService implements DomainService {
 
@@ -48,25 +45,33 @@ public abstract class AbstractDomainService implements DomainService {
    * @throws AdminException if a technical problem occurs during checks
    */
   protected void checkDomainName(String domainName)
-      throws DomainConflictException, AdminException {
+      throws AdminException, NameAlreadyExistsInDatabaseException {
 
-    // Check 1 - Detects white spaces in domain name
-    if (StringUtils.contains(domainName, ' ')) {
-      throw new WhiteSpacesDetectedException(domainName);
-    }
-
-    // Check 2 - Detects non-alphanumerics characters
-    if (!StringUtils.isAlphanumeric(domainName)) {
-      throw new NonAlphaNumericDetectedException(domainName);
-    }
-
-    // Check 3 - Check domain name availability in database
+    // Check domain name availability in database
     Admin adminService = AdminReference.getAdminService();
     Domain[] tabDomain = adminService.getAllDomains();
     for (Domain domain : tabDomain) {
       if (domain.getName().equalsIgnoreCase(domainName)) {
         throw new NameAlreadyExistsInDatabaseException(domainName);
       }
+    }
+  }
+
+  /**
+   * Get the next domain id
+   * @return new domain id
+   * @throws DomainDeletionException
+   */
+  protected String getNextDomainId() throws DomainCreationException {
+    SilverTrace
+        .info("admin", "AbstractDomainService.getNextDomainId()", "root.MSG_GEN_ENTER_METHOD");
+    Admin adminService = AdminReference.getAdminService();
+    try {
+      return adminService.getNextDomainId();
+    } catch (AdminException e) {
+      SilverTrace
+          .error("admin", "AAbstractDomainService.getNextDomainId()", "admin.EX_ADD_DOMAIN", e);
+      throw new DomainCreationException("AbstractDomainService.getNextDomainId()", e);
     }
   }
 
@@ -81,15 +86,16 @@ public abstract class AbstractDomainService implements DomainService {
         "AbstractDomainService.registerDomain()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    domainToCreate.setId("-1");
+    if (StringUtil.isNotDefined(domainToCreate.getId())) {
+      domainToCreate.setId("-1");
+    }
     Admin adminService = AdminReference.getAdminService();
 
     try {
       return adminService.addDomain(domainToCreate);
     } catch (AdminException e) {
-      SilverTrace.error("admin",
-          "AAbstractDomainService.registerDomain()",
-          "admin.EX_ADD_DOMAIN", e);
+      SilverTrace
+          .error("admin", "AAbstractDomainService.registerDomain()", "admin.EX_ADD_DOMAIN", e);
       throw new DomainCreationException("AbstractDomainService.registerDomain()", e);
     }
   }
@@ -113,5 +119,4 @@ public abstract class AbstractDomainService implements DomainService {
       throw new DomainDeletionException("AbstractDomainService.unRegisterDomain()", e);
     }
   }
-
 }

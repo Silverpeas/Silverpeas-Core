@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,7 @@
 <html>
 <head>
   <view:looknfeel/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />'></script>
   <script type="text/javascript">
     function editTicket(token) {
       location.href = "EditTicket?token=" + token;
@@ -81,16 +81,24 @@
           <c:set var="endDate" value=""/>
           <c:set var="accessCount" value="${ticket.nbAccess}"/>
           <view:arrayLine>
-              <c:url var="lien" value="${ticket.resource.URL}"/>
-              <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\'>${ticket.resource.name}</a>" />
-              <%
-               IconPane iconPane = gef.getIconPane();
+            <c:choose>
+              <c:when test="${ticket.resource ne null && ticket.resource.URL ne null}"> 
+                <c:url var="lien" value="${ticket.resource.URL}"/>
+              </c:when>
+              <c:otherwise>
+                <c:set var="lien" value="''" />
+              </c:otherwise>
+            </c:choose>
+            <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\'>${ticket.resource.name}</a>" />
+            <%
+              IconPane iconPane = gef.getIconPane();
               Icon keyIcon = iconPane.addIcon();
               keyIcon.setProperties(resource.getIcon("sharing.ticket"),
-                  resource.getString("sharing.ticket"), "javascript:go('"+((Ticket)pageContext.getAttribute("ticket")).getUrl(request)+"');");
+                  resource.getString("sharing.ticket"), "javascript:go('" + ((Ticket) pageContext.
+                  getAttribute("ticket")).getUrl(request) + "');");
               pageContext.setAttribute("ticketIcon", keyIcon.print());
-              %>
-              <view:arrayCellText text="${ticketIcon}"/>
+            %>
+            <view:arrayCellText text="${ticketIcon}"/>
             <c:if test="${ticket.endDate ne null}">
               <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
             </c:if>

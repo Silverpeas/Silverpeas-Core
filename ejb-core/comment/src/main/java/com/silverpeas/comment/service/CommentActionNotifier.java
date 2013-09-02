@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,19 +27,20 @@ package com.silverpeas.comment.service;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.notification.NotificationSource;
+import com.silverpeas.notification.SilverpeasNotification;
+
 import javax.inject.Inject;
-import static com.silverpeas.notification.NotificationTopic.*;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
+import static com.silverpeas.notification.SilverpeasNotificationCause.CREATION;
+import static com.silverpeas.notification.SilverpeasNotificationCause.DELETION;
 
 /**
  * A notifier of actions on comments. The notifier uses the Silverpeas notification API to inform
  * subscribers about actions on comments.
  */
 public class CommentActionNotifier {
-
-  /**
-   * Name of the topic on which the notifications about the comments will be received.
-   */
-  public static final String TOPIC_NAME = "comment";
 
   @Inject
   private NotificationPublisher publisher;
@@ -52,8 +53,8 @@ public class CommentActionNotifier {
     NotificationSource source = new NotificationSource()
         .withComponentInstanceId(addedComment.getCommentPK().getInstanceId())
         .withUserId(String.valueOf(addedComment.getOwnerId()));
-    CommentAddingNotification notification = new CommentAddingNotification(source, addedComment);
-    publisher.publish(notification, onTopic(TOPIC_NAME));
+    SilverpeasNotification notification = new SilverpeasNotification(source, CREATION, addedComment);
+    publisher.publish(notification, onTopic(COMMENT_TOPIC));
   }
 
   /**
@@ -64,8 +65,7 @@ public class CommentActionNotifier {
     NotificationSource source = new NotificationSource()
         .withComponentInstanceId(removedComment.getCommentPK().getInstanceId())
         .withUserId(String.valueOf(removedComment.getOwnerId()));
-    CommentRemovalNotification notification =
-        new CommentRemovalNotification(source, removedComment);
-    publisher.publish(notification, onTopic(TOPIC_NAME));
+    SilverpeasNotification notification = new SilverpeasNotification(source, DELETION, removedComment);
+    publisher.publish(notification, onTopic(COMMENT_TOPIC));
   }
 }

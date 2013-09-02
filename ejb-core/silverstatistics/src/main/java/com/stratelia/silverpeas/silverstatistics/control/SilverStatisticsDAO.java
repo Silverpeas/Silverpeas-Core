@@ -1,35 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.silverstatistics.control;
-
-import com.google.common.base.Joiner;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -41,14 +31,23 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+
 /**
  * This is the alimentation statistics DAO Object
+ *
  * @author sleroux
  */
 public class SilverStatisticsDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param type
    * @param valueKeys
@@ -65,8 +64,7 @@ public class SilverStatisticsDAO {
     int i = 0;
 
     Collection<String> theKeys = conf.getAllKeys(type);
-    Joiner joiner = Joiner.on(",");
-    joiner.appendTo(insertStatementBuf, theKeys);
+    insertStatementBuf.append(StringUtil.join(theKeys, ','));
     insertStatementBuf.append(") ");
 
     insertStatementBuf.append("VALUES(?");
@@ -144,7 +142,7 @@ public class SilverStatisticsDAO {
    * @throws IOException
    */
   public static void putDataStats(Connection con, StatType type, List<String> valueKeys,
-      StatisticsConfig conf) throws SQLException, IOException {
+      StatisticsConfig conf) throws SQLException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
     StringBuffer updateStatementBuf = new StringBuffer("UPDATE ");
     String tableName = conf.getTableName(type);

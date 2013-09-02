@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -74,8 +74,6 @@
             document.formForm.name.readOnly = false;
             document.formForm.role.options.selectedIndex = 0;
             document.formForm.role.disabled = true;
-            document.formForm.HTMLFileName.value = '';
-            document.formForm.HTMLFileName.readOnly = true;
         }
         else if ( document.formForm.type[1].checked )
         {
@@ -84,8 +82,6 @@
         	document.formForm.name.value = '<%=WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION%>';
             document.formForm.name.readOnly = true; 
         	document.formForm.role.disabled = false;
-            document.formForm.HTMLFileName.value = '';
-            document.formForm.HTMLFileName.readOnly = true;
         }
         else
         {
@@ -95,7 +91,6 @@
             document.formForm.name.readOnly = true; 
             document.formForm.role.options.selectedIndex = 0;
             document.formForm.role.disabled = true;
-        	document.formForm.HTMLFileName.readOnly = false;
         }
     }
 

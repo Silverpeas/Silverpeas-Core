@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,17 +24,23 @@
 
 package com.silverpeas.subscribe;
 
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import java.util.Date;
 
 /**
  * @author ehugonnet
  */
 public interface Subscription {
-  final String COMPONENT_SUBSCRIPTION = "component";
 
-  public WAPrimaryKey getTopic();
+  public SubscriptionResource getResource();
 
-  public String getSubscriber();
+  public SubscriptionSubscriber getSubscriber();
 
-  public boolean isComponentSubscription();
+  public SubscriptionMethod getSubscriptionMethod();
+
+  public String getCreatorId();
+
+  public Date getCreationDate();
 }

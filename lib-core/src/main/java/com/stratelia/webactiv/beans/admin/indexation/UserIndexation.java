@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,7 +45,7 @@ public class UserIndexation {
 
   private WAIndexSearcher searcher = new WAIndexSearcher();
   static final String COMPONENT_ID = "users";
-  static final String OBJECT_TYPE = "FullUser";
+  public static final String OBJECT_TYPE = "UserFull";
 
   /**
    * Indexes the specified user. If no user exist with the specified unique identifier, nothing is
@@ -66,7 +66,7 @@ public class UserIndexation {
         indexEntry.addField("FirstName", user.getFirstName());
         indexEntry.addField("LastName", user.getLastName());
         indexEntry.addField("DomainId", user.getDomainId());
-        indexEntry.addField("AccessLevel", user.getAccessLevel());
+        indexEntry.addField("AccessLevel", user.getAccessLevel().code());
 
         // index extra informations
         String[] propertyNames = user.getPropertiesNames();

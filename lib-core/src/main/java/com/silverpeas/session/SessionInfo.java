@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -35,6 +35,7 @@ public class SessionInfo {
   private long openingTimestamp;
   private long lastAccessTimestamp;
   private Map<String, Object> attributes = new HashMap<String, Object>();
+  private long idleTimestamp;
 
   /**
    * Constructs a new instance about a given opened user session.
@@ -46,6 +47,7 @@ public class SessionInfo {
     this.sessionId = sessionId;
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
+    this.idleTimestamp = 0;
   }
 
   /**
@@ -85,6 +87,22 @@ public class SessionInfo {
   }
 
   /**
+   * Gets the last duration of its idle time.
+   * @return the session alive timestamp.
+   */
+  public long getLastIdleDuration() {
+    return System.currentTimeMillis() - idleTimestamp;
+  }
+
+  /**
+   * Sets this session as currently idle. A session is idle if it is not used since a given time
+   * but it is still in alive.
+   */
+  public void setAsIdle() {
+    idleTimestamp = System.currentTimeMillis();
+  }
+
+  /**
    * Gets the unique identifier of the session.
    *
    * @return the session identifier.
@@ -107,6 +125,7 @@ public class SessionInfo {
    */
   public void updateLastAccess() {
     this.lastAccessTimestamp = System.currentTimeMillis();
+    this.idleTimestamp = 0;
   }
 
   /**

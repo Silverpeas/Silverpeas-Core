@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,31 +44,37 @@ public class GeneralPropertiesManager {
   static final Map<String, Collection<String>> listProperties = new HashMap<String, Collection<String>>();
 
 
-  static public ResourceLocator getGeneralResourceLocator() {
+  /**
+   * You can access the data directly.
+   * @return
+   * @deprecated
+   */
+  @Deprecated
+  public static ResourceLocator getGeneralResourceLocator() {
     return generalProperties;
   }
 
-  static public int getInteger(String property, int defaultValue) {
+  public static int getInteger(String property, int defaultValue) {
     return generalProperties.getInteger(property, defaultValue);
   }
 
-  static public String getString(String property, String defaultValue) {
+  public static String getString(String property, String defaultValue) {
     return generalProperties.getString(property, defaultValue);
   }
 
-  static public String getString(String property) {
+  public static String getString(String property) {
     return generalProperties.getString(property);
   }
 
-  static public boolean getBoolean(String property, boolean defaultValue) {
+  public static boolean getBoolean(String property, boolean defaultValue) {
     return generalProperties.getBoolean(property, defaultValue);
   }
 
-  static public Collection<String> getStringCollection(String property) {
+  public static Collection<String> getStringCollection(String property) {
     return getStringCollection(property,"[ ,;]");
   }
 
-  static public Collection<String> getStringCollection(String property, String regexValueSeparator) {
+  public static Collection<String> getStringCollection(String property, String regexValueSeparator) {
     Collection<String> propertyValues = listProperties.get(property);
     if (propertyValues == null) {
       propertyValues = new LinkedHashSet<String>();
@@ -85,11 +91,11 @@ public class GeneralPropertiesManager {
     return propertyValues;
   }
 
-  static public int getDomainVisibility() {
+  public static int getDomainVisibility() {
     return dvis;
   }
 
-  static public ResourceLocator getGeneralMultilang(String language) {
+  public static ResourceLocator getGeneralMultilang(String language) {
     return new ResourceLocator(GENERAL_PROPERTIES_FILE, language);
   }
 

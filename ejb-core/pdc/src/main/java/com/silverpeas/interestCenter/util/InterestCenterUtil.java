@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,14 @@
 
 package com.silverpeas.interestCenter.util;
 
+import java.util.List;
+
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.ejb.InterestCenterBm;
-import com.silverpeas.interestCenter.ejb.InterestCenterBmHome;
 import com.silverpeas.interestCenter.model.InterestCenter;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-
-import java.rmi.RemoteException;
-import java.util.List;
 
 public class InterestCenterUtil {
 
@@ -51,10 +50,8 @@ public class InterestCenterUtil {
   private void initEJB() {
     if (icEjb == null) {
       try {
-        InterestCenterBmHome icEjbHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-            InterestCenterBmHome.class);
-        icEjb = icEjbHome.create();
+        icEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
+            InterestCenterBm.class);
       } catch (Exception e) {
         throw new InterestCenterRuntimeException("InterestCenterUtil.initEJB()",
             "root.EX_CANT_GET_REMOTE_OBJECT", "", e);
@@ -65,7 +62,7 @@ public class InterestCenterUtil {
   /**
    * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
-  public List<InterestCenter> getICByUserId(int userId) throws RemoteException {
+  public List<InterestCenter> getICByUserId(int userId)  {
     initEJB();
     return icEjb.getICByUserID(userId);
   }
@@ -73,7 +70,7 @@ public class InterestCenterUtil {
   /**
    * Method getICByPK returns Interest Center given by id
    */
-  public InterestCenter getICByID(int id) throws RemoteException {
+  public InterestCenter getICByID(int id)  {
     initEJB();
     return icEjb.getICByID(id);
   }
@@ -83,7 +80,7 @@ public class InterestCenterUtil {
    * other case
    */
 
-  public int isICExists(String nameIC, int userId) throws RemoteException {
+  public int isICExists(String nameIC, int userId)  {
     List<InterestCenter> icList = getICByUserId(userId);
     for (InterestCenter ic : icList) {
       if (nameIC.equals(ic.getName())) {
@@ -96,7 +93,7 @@ public class InterestCenterUtil {
   /**
    * Method createIC creates new InterestCenter
    */
-  public int createIC(InterestCenter icToCreate) throws RemoteException {
+  public int createIC(InterestCenter icToCreate)  {
     initEJB();
     int id = isICExists(icToCreate.getName(), icToCreate.getOwnerID());
     if (id != -1) {

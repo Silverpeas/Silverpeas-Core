@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,22 +36,22 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ include file="checkSilvermail.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="java.util.Date"%>
 <%@page import="com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
-   List sendedNotifs = (List) request.getAttribute("SendedNotifs");
+   List<SendedNotificationDetail> sentNotifs = (List<SendedNotificationDetail>) request.getAttribute("SendedNotifs");
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=graphicPath%>/util/javaScript/animation.js"></script>
-<script>
+<script type="text/javascript">
 function readMessage(id){
 	SP_openWindow("ReadSendedNotification.jsp?NotifId=" + id,"ReadSendedNotification","600","380","scrollable=yes,scrollbars=yes");
 }
@@ -67,12 +67,10 @@ function deleteAllMessages() {
 		window.location = "DeleteAllSendedNotifications.jsp?";
     }
 }
-
 </script>
 </head>
-<body marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+<body>
 <%
-  
   Window window = gef.getWindow();
 
   OperationPane operationPane = window.getOperationPane();
@@ -106,23 +104,19 @@ function deleteAllMessages() {
   col = list.addArrayColumn( silvermailScc.getString("operation") );
   col.setSortable(false);
 
-  Iterator	it = sendedNotifs.iterator();
-  while( it.hasNext() == true )
-  {
-		SendedNotificationDetail message = (SendedNotificationDetail) it.next();
-			
-    String link = "<A HREF =\"javascript:onClick=readMessage(" + message.getNotifId() + ");\">";
+  for (SendedNotificationDetail message : sentNotifs) {			
+    String link = "<a href=\"javascript:onclick=readMessage(" + message.getNotifId() + ");\">";
     ArrayLine line = list.addArrayLine();
-	  Date notifDate = message.getNotifDate();
-    ArrayCellText cell = line.addArrayCellText(resource.getOutputDate(notifDate));
+	Date notifDate = message.getNotifDate();
+    ArrayCellText cell = line.addArrayCellText(link + resource.getOutputDate(notifDate) + "</a>");
     cell.setCompareOn(notifDate);
-    line.addArrayCellText(EncodeHelper.javaStringToHtmlString(message.getSource()) + "</A>");
-    line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getTitle()) + "</A>");
+    line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>");
+    line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getTitle()) + "</a>");
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();
     Icon del = actions.addIcon();
-  	del.setProperties(delete, silvermailScc.getString("delete") , "javascript:onClick=deleteMessage('" + message.getNotifId() +"');");
+  	del.setProperties(delete, silvermailScc.getString("delete") , "javascript:onclick=deleteMessage('" + message.getNotifId() +"');");
     line.addArrayCellIconPane(actions);
   }
 

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
+import com.silverpeas.components.model.AbstractTestDao;
 
 import org.junit.Test;
 
@@ -86,5 +86,11 @@ public class UserFavoriteSpaceDAOImplTest extends AbstractTestDao {
   @Override
   protected String getDatasetFileName() {
     return "test-favoritespace-dataset.xml";
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

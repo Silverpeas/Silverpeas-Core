@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,8 @@
 package com.stratelia.webactiv.beans.admin;
 
 import java.util.List;
+
+import org.silverpeas.core.admin.OrganisationController;
 
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 
@@ -56,7 +58,7 @@ public class UserFavoriteSpaceManager {
    * @return true if the current space contains user favorites sub space, false else if
    */
   public static boolean containsFavoriteSubSpace(String spaceId, List<UserFavoriteSpaceVO> listUFS,
-      OrganizationController orgaController, String userId) {
+      OrganisationController orgaController, String userId) {
     boolean result = false;
     String cleanSpaceId =
         (spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) ? spaceId.substring(Admin.SPACE_KEY_PREFIX

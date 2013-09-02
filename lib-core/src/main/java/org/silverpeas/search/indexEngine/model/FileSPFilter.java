@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,8 +35,9 @@ public class FileSPFilter implements FileFilter {
   }
 
   public synchronized static FileSPFilter getInstance() {
-    if (INSTANCE == null)
+    if (INSTANCE == null) {
       INSTANCE = new FileSPFilter();
+    }
     return INSTANCE;
   }
 

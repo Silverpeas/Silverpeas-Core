@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.util.ComponentHelper;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -193,8 +194,7 @@ public class URLManager {
         absoluteUrl += ":" + request.getServerPort();
       }
     }
-    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-    return generalSettings.getString("httpServerBase", absoluteUrl);
+    return GeneralPropertiesManager.getString("httpServerBase", absoluteUrl);
   }
 
   public static String getHttpMode() {
@@ -239,6 +239,9 @@ public class URLManager {
     }
     switch (type) {
       case URL_SPACE:
+        if (!id.startsWith(Admin.SPACE_KEY_PREFIX)) {
+          id = Admin.SPACE_KEY_PREFIX + id;
+        }
         url += "/Space/" + id;
         break;
       case URL_COMPONENT:

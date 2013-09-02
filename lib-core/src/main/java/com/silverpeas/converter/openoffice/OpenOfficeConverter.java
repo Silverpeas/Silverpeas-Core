@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,20 +24,23 @@
 
 package com.silverpeas.converter.openoffice;
 
-import com.silverpeas.converter.DocumentFormatException;
-import com.artofsolving.jodconverter.DocumentConverter;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ConnectException;
+import java.util.Arrays;
+
+import org.apache.commons.io.FilenameUtils;
+
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
-import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConversion;
 import com.silverpeas.converter.DocumentFormatConversionException;
+import com.silverpeas.converter.DocumentFormatException;
+import com.silverpeas.converter.option.FilterOption;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.File;
-import java.net.ConnectException;
-import java.util.Arrays;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * A document format converter using the OpenOffice API to perform its task. This class is the
@@ -46,12 +49,9 @@ import org.apache.commons.io.FilenameUtils;
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.converter.openoffice", "");
+      "org.silverpeas.converter.openoffice", "");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOST = "openoffice.host";
-
-  @Override
-  public abstract DocumentFormat[] getSupportedFormats();
 
   /**
    * Is the specified document in the format on which the converter works?
@@ -61,29 +61,106 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   public abstract boolean isDocumentSupported(final File document);
 
   @Override
-  public File convert(final File source, final DocumentFormat format) {
-    if (!isFormatSupported(format)) {
-      throw new DocumentFormatException("The conversion of the file to the format " + format.
-          toString() + " isn't supported");
+  public File convert(final File source, final DocumentFormat inFormat,
+      final FilterOption... options) {
+    final String fileName = FilenameUtils.getBaseName(source.getName()) + '.' + inFormat.name();
+    final File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
+    return convert(source, destination, inFormat, options);
+  }
+
+  @Override
+  public File convert(final File source, final File destination, final DocumentFormat inFormat,
+      final FilterOption... options) {
+    if (!isFormatSupported(inFormat)) {
+      throw new DocumentFormatException("The conversion of the file to the format " +
+          inFormat.toString() + " isn't supported");
     }
     if (!isDocumentSupported(source)) {
-      throw new DocumentFormatException("The format of the file " + source.getName() + " isn't "
-          + "supported by this converter");
+      throw new DocumentFormatException("The format of the file " + source.getName() + " isn't " +
+          "supported by this converter");
     }
-    String fileName = FilenameUtils.getBaseName(source.getName()) + "." + format.name();
-    File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
     OpenOfficeConnection connection = null;
     try {
       connection = openConnection();
-      DocumentConverter converter = getOpenOfficeDocumentConverterFrom(connection);
-      converter.convert(source, destination);
-    } catch (Exception e) {
+      convert(getOpenOfficeDocumentConverterFrom(connection), source, destination, options);
+    } catch (final Exception e) {
       throw new DocumentFormatConversionException(e.getMessage(), e);
     } finally {
       closeConnection(connection);
     }
 
     return destination;
+  }
+
+  @Override
+  public void convert(final InputStream source, final DocumentFormat inFormat,
+      final OutputStream destination, final DocumentFormat outFormat,
+      final FilterOption... options) {
+    if (!isFormatSupported(outFormat)) {
+      throw new DocumentFormatException("The conversion of the stream to the format " +
+          outFormat.toString() + " isn't supported");
+    }
+    OpenOfficeConnection connection = null;
+    try {
+      connection = openConnection();
+      convert(getOpenOfficeDocumentConverterFrom(connection), source, inFormat, destination,
+          outFormat, options);
+    } catch (final Exception e) {
+      throw new DocumentFormatConversionException(e.getMessage(), e);
+    } finally {
+      closeConnection(connection);
+    }
+  }
+
+  /**
+   * Technical converting operations
+   * @param documentConverter
+   * @param source
+   * @param destination
+   * @param options
+   */
+  protected void convert(final SilverpeasOpenOfficeDocumentConverter documentConverter,
+      final File source, final File destination, final FilterOption... options) {
+
+    // Options
+    applyFilterOptions(documentConverter, options);
+
+    // Conversion
+    documentConverter.convert(source, destination);
+  }
+
+  /**
+   * Technical converting operations
+   * @param documentConverter
+   * @param source
+   * @param inFormat
+   * @param destination
+   * @param outFormat
+   * @param options
+   */
+  protected void convert(final SilverpeasOpenOfficeDocumentConverter documentConverter,
+      final InputStream source, final DocumentFormat inFormat, final OutputStream destination,
+      final DocumentFormat outFormat, final FilterOption... options) {
+
+    // Options
+    applyFilterOptions(documentConverter, options);
+
+    // Conversion
+    documentConverter.convert(source, inFormat, destination, outFormat);
+  }
+
+  /**
+   * Applying options about the conversion.
+   * @param documentConverter
+   * @param options
+   */
+  private void applyFilterOptions(final SilverpeasOpenOfficeDocumentConverter documentConverter,
+      final FilterOption... options) {
+    if (options != null) {
+      for (final FilterOption option : options) {
+        documentConverter.addFilterData(option);
+      }
+    }
   }
 
   /**
@@ -94,9 +171,9 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
    * occurs when no OpenOffice service is available for example.
    */
   protected OpenOfficeConnection openConnection() throws ConnectException {
-    String host = settings.getString(OPENOFFICE_HOST, "localhost");
-    int port = settings.getInteger(OPENOFFICE_PORT, 8100);
-    OpenOfficeConnection connection = new SocketOpenOfficeConnection(host, port);
+    final String host = settings.getString(OPENOFFICE_HOST, "localhost");
+    final int port = settings.getInteger(OPENOFFICE_PORT, 8100);
+    final OpenOfficeConnection connection = new SocketOpenOfficeConnection(host, port);
     connection.connect();
     return connection;
   }
@@ -118,9 +195,9 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
    * @param connection the connection an OpenOffice service.
    * @return a converter of documents.
    */
-  protected OpenOfficeDocumentConverter getOpenOfficeDocumentConverterFrom(
+  protected SilverpeasOpenOfficeDocumentConverter getOpenOfficeDocumentConverterFrom(
       final OpenOfficeConnection connection) {
-    return new OpenOfficeDocumentConverter(connection);
+    return new SilverpeasOpenOfficeDocumentConverter(connection);
   }
 
   private boolean isFormatSupported(final DocumentFormat format) {

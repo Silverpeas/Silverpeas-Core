@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -39,26 +39,8 @@ import javax.servlet.http.HttpSession;
  */
 public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
 
-  private static final long millisPerHour = 60L * 60L * 1000L;
-  private static final long millisPerMinute = 60000L;
   private HttpSession httpSession;
-  private long lastAliveTimestamp;
 
-  /**
-   * Updates the isalive status of the session.
-   */
-  protected void updateIsAlive() {
-    lastAliveTimestamp = System.currentTimeMillis();
-  }
-
-  /**
-   * Gets the date at which the session is alive.
-   *
-   * @return the isalive date
-   */
-  public long getIsAliveDate() {
-    return lastAliveTimestamp;
-  }
 
   /**
    * Prevent the class from being instantiate (private)
@@ -70,7 +52,6 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   public HTTPSessionInfo(HttpSession session, String IP, UserDetail ud) {
     super(session.getId(), ud);
     httpSession = session;
-    lastAliveTimestamp = System.currentTimeMillis();
     setIPAddress(IP);
   }
 
@@ -78,7 +59,11 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   public void onClosed() {
     if (httpSession != null) {
       cleanSession(httpSession);
-      httpSession.invalidate();
+      try {
+        httpSession.invalidate();
+      } catch (IllegalStateException ex) {
+        SilverTrace.warn("peasCore", "SessionInfo.onClosed()", null, ex.getMessage());
+      }
     }
     super.onClosed();
   }
@@ -107,7 +92,7 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
                 getName());
           } else if (element instanceof MainSessionController) {
             MainSessionController controller = (MainSessionController) element;
-            controller.close();
+            controller.remove();
             SilverTrace.debug("peasCore", "SessionManager.cleanSession()", "MainSessionController");
           }
           httpSession.removeAttribute(attributeName);

@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,6 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-<%@ page import="java.util.Date"%>
 <%@ page import="java.lang.String"%>
 <%@ page import="java.util.*"%>
 
@@ -53,11 +52,12 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganizationController();
+OrganisationController organizationCtrl = m_MainSessionCtrl.getOrganisationController();
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 String language = m_MainSessionCtrl.getFavoriteLanguage();

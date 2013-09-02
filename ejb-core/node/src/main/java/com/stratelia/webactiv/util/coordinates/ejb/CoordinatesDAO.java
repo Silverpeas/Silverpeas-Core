@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,11 +24,6 @@
 
 package com.stratelia.webactiv.util.coordinates.ejb;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,6 +33,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.coordinates.model.Coordinate;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 
 /**
  * Class declaration
@@ -168,9 +169,7 @@ public class CoordinatesDAO {
    * @see
    */
   public static Collection<String> selectByFatherIds(Connection con, List<Integer> fatherIds,
-      CoordinatePK pk)
-      throws SQLException {
-
+      CoordinatePK pk) throws SQLException {
     // get all points corresponding to fatherIds
     List<CoordinatePoint> points = selectCoordinatePointsByNodeIds(con, fatherIds, pk);
     SilverTrace.info("coordinates", "CoordinatesDAO.selectByFatherIds()",

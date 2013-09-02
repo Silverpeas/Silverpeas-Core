@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,8 +60,8 @@ String targetElementIdVisible = request.getParameter("elementVisible");
 String scope = request.getParameter("scope");
 %>
     
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
 <style type="text/css">
@@ -160,7 +160,7 @@ $(function () {
 							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/icons/folder.gif"
 						}
 					}
-				},
+				}
 			},
 			"themes" : {
 				"theme" : "default",

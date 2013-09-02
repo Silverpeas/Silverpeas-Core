@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,6 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.stratelia.silverpeas.containerManager.ContainerManager;
-import com.stratelia.silverpeas.containerManager.URLIcone;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.JoinStatement;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +38,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.inject.Named;
+
+import com.stratelia.silverpeas.containerManager.ContainerManager;
+import com.stratelia.silverpeas.containerManager.URLIcone;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.JoinStatement;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
@@ -865,20 +866,19 @@ public class ContentManager implements Serializable {
     return instanceId;
   }
 
-  private Map<String, String> getAsso() throws ContentManagerException {
+  private Map<String, String> getAsso() {
     return assoComponentIdInstanceId;
   }
 
-  private String getInstanceId(String componentId) throws ContentManagerException {
+  private String getInstanceId(String componentId) {
     return getAsso().get(componentId);
   }
 
-  private void addAsso(String componentId, int instanceId)
-      throws ContentManagerException {
+  private void addAsso(String componentId, int instanceId) {
     getAsso().put(componentId, java.lang.Integer.toString(instanceId));
   }
 
-  private void removeAsso(String componentId) throws ContentManagerException {
+  private void removeAsso(String componentId) {
     getAsso().remove(componentId);
   }
 
@@ -1154,5 +1154,47 @@ public class ContentManager implements Serializable {
       closeConnection(con);
       // closeStatementAndConnection(prepStmt, con);
     }
+  }
+  
+  public SilverContentVisibility getSilverContentVisibility(int silverObjectId) throws ContentManagerException {
+    Connection connection = null;
+    StringBuffer sSQLStatement = new StringBuffer();
+    PreparedStatement prepStmt = null;
+    ResultSet resSet = null;
+    SilverContentVisibility scv = null;
+
+    try {
+      // Open connection
+      connection = DBUtil.makeConnection(m_dbName);
+      
+      // Get the SilverContentVisibility
+      sSQLStatement.append("SELECT beginDate, endDate, isVisible FROM ").append(m_sSilverContentTable);
+      sSQLStatement.append(" WHERE silverContentId = '").append(silverObjectId).append("'");
+
+      SilverTrace.info("contentManager", "ContentManager.getSilverContentVisibility",
+          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+      prepStmt = connection.prepareStatement(sSQLStatement.toString());
+      resSet = prepStmt.executeQuery();
+      
+      // Fetch the result
+      if (resSet.next()) {
+        String beginDate = resSet.getString(1);
+        String endDate = resSet.getString(2);
+        int visibility = resSet.getInt(3);
+        boolean isVisible = true;
+        if(visibility == 0) {
+          isVisible = false;
+        }
+        scv = new SilverContentVisibility(beginDate, endDate, isVisible);
+      }
+    } catch(SQLException e) {
+      throw new ContentManagerException("ContentManager.getSilverContentVisibility",
+          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
+          "sSQLStatement: " + sSQLStatement, e);
+    } finally {
+      DBUtil.close(resSet, prepStmt);
+      closeConnection(connection);
+    }
+    return scv;
   }
 }

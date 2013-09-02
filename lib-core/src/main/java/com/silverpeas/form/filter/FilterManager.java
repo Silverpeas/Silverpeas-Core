@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,15 +73,12 @@ public class FilterManager {
       criteriaTemplate = new GenericRecordTemplate();
       FieldTemplate[] filteredFields = template.getFieldTemplates();
 
-      String filteredType;
-      String filteredName;
-      String filteredLabel;
       GenericFieldTemplate criteriumField;
 
       for (FieldTemplate filteredField : filteredFields) {
-        filteredType = filteredField.getTypeName();
-        filteredName = filteredField.getFieldName();
-        filteredLabel = filteredField.getLabel(lang);
+        String filteredType = filteredField.getTypeName();
+        String filteredName = filteredField.getFieldName();
+        String filteredLabel = filteredField.getLabel(lang);
 
         if ("text".equals(filteredType)) {
           criteriumField = new GenericFieldTemplate(filteredName + "__like", "text");
@@ -90,18 +87,26 @@ public class FilterManager {
           if (fieldsParameter.containsKey(filteredName)) {
             FieldTemplate field = fieldsParameter.get(filteredName);
             criteriumField.setDisplayerName("listbox");
-
+            
             Map<String, String> parameters = field.getParameters(lang);
             Set<String> keys = parameters.keySet();
-            Iterator<String> it = keys.iterator();
-            String key = null;
-            while (it.hasNext()) {
-              key = it.next();
+            for (String key : keys) {
               criteriumField.addParameter(key, parameters.get(key));
             }
           }
+        } else if ("jdbc".equals(filteredType)) {
+          criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
+          criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
 
-          criteriaTemplate.addFieldTemplate(criteriumField);
+          if (fieldsParameter.containsKey(filteredName)) {
+            FieldTemplate field = fieldsParameter.get(filteredName);
+            Map<String, String> parameters = field.getParameters(lang);
+            Set<String> keys = parameters.keySet();
+            for (String key : keys) {
+              criteriumField.addParameter(key, parameters.get(key));
+            }
+            criteriumField.addParameter("displayer", "listbox");
+          }
         } else if ("date".equals(filteredType)) {
           criteriumField = new GenericFieldTemplate(filteredName + "__lt", "date");
           criteriumField.addLabel(filteredLabel + " "
@@ -110,12 +115,11 @@ public class FilterManager {
 
           criteriumField = new GenericFieldTemplate(filteredName + "__gt", "date");
           criteriumField.addLabel(filteredLabel + " " + Util.getString("ge", lang), lang);
-          criteriaTemplate.addFieldTemplate(criteriumField);
         } else {
           criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
           criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
-          criteriaTemplate.addFieldTemplate(criteriumField);
         }
+        criteriaTemplate.addFieldTemplate(criteriumField);
       }
     }
 

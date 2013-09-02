@@ -1,35 +1,28 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.model.PdcClassification;
-import static com.silverpeas.pdc.web.TestConstants.COMPONENT_INSTANCE_ID;
-import static com.silverpeas.pdc.web.TestConstants.CONTENT_ID;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import static com.silverpeas.pdc.web.beans.ClassificationPlan.aClassificationPlan;
-import static com.silverpeas.pdc.web.beans.TestPdcClassification.aClassificationFromPositions;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.*;
@@ -40,10 +33,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Named;
+
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import static com.silverpeas.pdc.web.TestConstants.COMPONENT_INSTANCE_ID;
+import static com.silverpeas.pdc.web.TestConstants.CONTENT_ID;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.aClassificationPlan;
+import static com.silverpeas.pdc.web.beans.TestPdcClassification.aClassificationFromPositions;
 
 /**
  * A decorator of the PdcBm implementation by mocking some of its services for testing purpose.
@@ -65,7 +64,7 @@ public class PdcBmMock extends PdcBmImpl {
 
   @Override
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId) throws
-          PdcException {
+      PdcException {
     if (silverObjectId < 0) {
       return new ArrayList<ClassifyPosition>();
     }
@@ -93,7 +92,7 @@ public class PdcBmMock extends PdcBmImpl {
 
   @Override
   public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId)
-          throws PdcException {
+      throws PdcException {
     String contentId = getContentIdOf(silverObjectId);
     assertContentExists(contentId, in(sComponentId));
     addPosition(position);
@@ -102,7 +101,7 @@ public class PdcBmMock extends PdcBmImpl {
 
   @Override
   public int updatePosition(ClassifyPosition position, String instanceId, int silverObjectId) throws
-          PdcException {
+      PdcException {
     return 0;
   }
 
@@ -113,12 +112,31 @@ public class PdcBmMock extends PdcBmImpl {
   }
 
   @Override
-  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
-    if (!instanceId.equals(COMPONENT_INSTANCE_ID)) {
-      return new ArrayList<UsedAxis>();
+  public List<AxisHeader> getAxisByType(String type) throws PdcException {
+    if (!StringUtil.isDefined(type)) {
+      throw new NullPointerException();
     }
     ClassificationPlan pdc = aClassificationPlan();
-    return pdc.getAxis();
+    return pdc.getAxisHeaders(type);
+  }
+
+  @Override
+  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
+    List<UsedAxis> usedAxis = new ArrayList<UsedAxis>();
+    ClassificationPlan pdc = aClassificationPlan();
+    List<UsedAxis> allAxis = pdc.getUsedAxis();
+    for (UsedAxis anAxis : allAxis) {
+      if (anAxis.getInstanceId().equals(instanceId)) {
+        usedAxis.add(anAxis);
+      }
+    }
+    return usedAxis;
+  }
+
+  @Override
+  public List<AxisHeader> getAxis() throws PdcException {
+    ClassificationPlan pdc = aClassificationPlan();
+    return pdc.getAxisHeaders(null);
   }
 
   @Override
@@ -139,17 +157,42 @@ public class PdcBmMock extends PdcBmImpl {
     }
     if (theValue == null) {
       throw new PdcException(getClass().getSimpleName() + ".getValue()", SilverpeasException.ERROR,
-              "root.NO_EX_MESSAGE");
+          "root.NO_EX_MESSAGE");
     }
     return theValue;
   }
-  
+
+  @Override
+  public List<Value> getPertinentDaughterValuesByInstanceIds(SearchContext searchContext,
+      String axisId, String valueId,
+      List<String> instanceIds) throws PdcException {
+    List<Value> pertinentValues = new ArrayList<Value>();
+    ClassificationPlan pdc = aClassificationPlan();
+    UsedAxis theAxis = pdc.getAxis(axisId);
+    if (instanceIds.contains(theAxis.getInstanceId())) {
+      List<Value> values = pdc.getValuesUsedInClassification(axisId);
+      List<SearchCriteria> criteria = searchContext.getCriterias();
+      if (criteria.isEmpty()) {
+        return values;
+      }
+      for (Value aValue : values) {
+        for (SearchCriteria criterion : criteria) {
+          if (criterion.getAxisId() == Integer.valueOf(aValue.getAxisId()) && criterion.getValue().
+              equals(aValue.getFullPath())) {
+            pertinentValues.add(aValue);
+          }
+        }
+      }
+    }
+    return pertinentValues;
+  }
+
   @Override
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
     List<Value> fullPath = new ArrayList<Value>();
     Value value = getValue(treeId, valueId);
     fullPath.add(value);
-    while (value.hasFather()) {      
+    while (value.hasFather()) {
       value = getValue(treeId, value.getFatherId());
       fullPath.add(0, value);
     }
@@ -161,9 +204,14 @@ public class PdcBmMock extends PdcBmImpl {
     return axisId;
   }
 
+  @Override
+  public Value getRoot(String axisId) throws PdcException {
+    return getValue(axisId, "0");
+  }
+
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentInstanceId())
-            && (CONTENT_ID.equals(classification.getContentId()))) {
+        && (CONTENT_ID.equals(classification.getContentId()))) {
       this.positions.clear();
       for (ClassifyPosition position : classification.getClassifyPositions()) {
         addPosition(position);
@@ -178,9 +226,9 @@ public class PdcBmMock extends PdcBmImpl {
   public PdcClassification getClassification(String contentId, String inComponentId) {
     PdcClassification classification = null;
     if (COMPONENT_INSTANCE_ID.equals(inComponentId) && CONTENT_ID.equals(contentId) && !positions.
-            isEmpty()) {
+        isEmpty()) {
       classification = aClassificationFromPositions(positions).ofContent(contentId).
-              inComponentInstance(inComponentId);
+          inComponentInstance(inComponentId);
     }
     return classification;
   }

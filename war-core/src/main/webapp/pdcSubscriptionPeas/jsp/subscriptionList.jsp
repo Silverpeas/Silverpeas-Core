@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -154,14 +154,14 @@ function areYouSure(){
 }
 
 function newSubscription() {
-        chemin = '<%=m_context%>/RpdcSearch/jsp/PDCSubscription?showNotOnlyPertinentAxisAndValues=true&mode=clear';
+        chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PDCSubscription';
                 largeur = "600";
                 hauteur = "440";
                 SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
 }
 
 function editSubscription(scid) {
-		chemin = '<%=m_context%>/RpdcSearch/jsp/PDCSubscription?showNotOnlyPertinentAxisAndValues=true&pdcSId=' + scid ;
+		chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PDCSubscription?pdcSId=' + scid ;
                 largeur = "600";
                 hauteur = "440";
                 SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
@@ -203,9 +203,11 @@ function deleteSubscription() {
  	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("pdc"), "#", true);
 	tabbedPane.addTab(resource.getString("thematique"), "ViewSubscriptionTheme?userId="+userId+"&action="+action, false);
+   tabbedPane.addTab(resource.getString("application"),
+       "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);
 
       if (!isReadOnly) {
-          operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),"javascript:newSubscription()");
+          operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),m_context + "/RpdcSubscriptionPeas/jsp/PDCSubscription");
           if (subscriptionList != null && subscriptionList.size() > 0) {
               operationPane.addOperation(iconDelete , resource.getString("DeleteSC"),"javascript:deleteSubscription()");
           }
@@ -240,7 +242,7 @@ function deleteSubscription() {
 
 		  iconPane	= gef.getIconPane();
           updateIcon = iconPane.addIcon();
-          updateIcon.setProperties(iconEdit, resource.getString("EditSC"), "javascript:onClick=editSubscription('"+ps.getId()+"')");
+          updateIcon.setProperties(iconEdit, resource.getString("EditSC"), m_context + "/RpdcSubscriptionPeas/jsp/PDCSubscription?pdcSId="+ps.getId());
 
 		  if (!isReadOnly) {
 			  ligne.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\"/>");

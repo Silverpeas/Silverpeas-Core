@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,6 +41,12 @@ public class DocumentFormatConverterFactory {
   @Inject
   private HTMLConverter htmlConverter;
 
+  @Inject
+  private ToPDFConverter toPDFConverter;
+
+  @Inject
+  private ToHTMLConverter toHTMLConverter;
+
   /**
    * Gets an instance of this factory.
    * @return a DocumentFormatConverterFactory instance.
@@ -63,6 +69,22 @@ public class DocumentFormatConverterFactory {
    */
   public HTMLConverter getHTMLConverter() {
     return htmlConverter;
+  }
+
+  /**
+   * Gets an instance of the ToPDFConverter interface.
+   * @return a ToPDFConverter instance.
+   */
+  public ToPDFConverter getToPDFConverter() {
+    return toPDFConverter;
+  }
+
+  /**
+   * Gets an instance of the ToHTMLConverter interface.
+   * @return a ToHTMLConverter instance.
+   */
+  public ToHTMLConverter getToHTMLConverter() {
+    return toHTMLConverter;
   }
 
   private DocumentFormatConverterFactory() {

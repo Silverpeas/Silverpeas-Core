@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -253,7 +253,7 @@ public class SpaceInstManager {
     }
   }
 
-  private SpaceInst spaceRow2SpaceInst(SpaceRow space) throws AdminException {
+  private SpaceInst spaceRow2SpaceInst(SpaceRow space) {
     // Set the attributes of the space Inst
     SpaceInst spaceInst = new SpaceInst();
     spaceInst.setId(idAsString(space.id));
@@ -347,8 +347,7 @@ public class SpaceInstManager {
     }
   }
 
-  private int getSpaceLevel(int spaceId)
-      throws AdminException {
+  private int getSpaceLevel(int spaceId) {
     return TreeCache.getSpaceLevel(Integer.toString(spaceId));
   }
 
@@ -362,7 +361,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
@@ -381,7 +380,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
@@ -412,18 +411,18 @@ public class SpaceInstManager {
    * Return subspaces of a space
    * @return a List of SpaceInstLight
    */
-  public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
-    Connection con = null;
+  public List<SpaceInstLight> getSubSpaces(DomainDriverManager ddManager, String spaceId) throws AdminException {
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      ddManager.getOrganizationSchema();
+      List<SpaceRow> rows = ddManager.getOrganization().space.getDirectSubSpaces(Integer.parseInt(spaceId));
 
-      return SpaceDAO.getSubSpaces(con, Integer.parseInt(spaceId));
+      return spaceRows2SpaceInstLights(ddManager, rows.toArray(new SpaceRow[0]));
 
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getSubSpaces",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES", e);
     } finally {
-      DBUtil.close(con);
+      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -465,13 +464,12 @@ public class SpaceInstManager {
   private List<SpaceInstLight> spaceRows2SpaceInstLights(DomainDriverManager ddManager,
       SpaceRow[] spaceRows) {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
-    SpaceInstLight spaceLight = null;
-    for (int s = 0; spaceRows != null && s < spaceRows.length; s++) {
-      SpaceRow row = spaceRows[s];
-      spaceLight = new SpaceInstLight(row);
-
+    if (spaceRows == null) {
+      return spaces;
+    }
+    for (SpaceRow row : spaceRows) {
+      SpaceInstLight spaceLight = new SpaceInstLight(row);
       setTranslations(ddManager, spaceLight, row);
-
       spaces.add(spaceLight);
     }
     return spaces;
@@ -489,7 +487,7 @@ public class SpaceInstManager {
       if (asSpaceProfileIds != null) {
         return asSpaceProfileIds;
       } else {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceProfileIds",
@@ -565,7 +563,7 @@ public class SpaceInstManager {
           "spaceId = " + spaceId, e);
     }
   }
-  
+
   /*
    * Move space from current location to space defined by fatherId
    */

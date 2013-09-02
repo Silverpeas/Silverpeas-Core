@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,7 +54,7 @@ import org.opends.server.util.StaticUtils;
 
 /**
  * JUnit ClassRule to start an embedded OpenDJ server in a JUnit Test. Must be used with the
- * CreateLdapServer annoation
+ * CreateLdapServer annotation
  *
  * @sez org.silverpeas.ldap.CreateLdapServer
  * @author ehugonnet
@@ -113,20 +113,19 @@ public class OpenDJRule implements TestRule {
    * @throws URISyntaxException
    */
   private void startLdapServer(String serverHome, String ldifConfigFile) throws
-      InitializationException, ConfigException, FileNotFoundException, DirectoryException,
-      URISyntaxException {
+      InitializationException, ConfigException, URISyntaxException {
     File directoryServerRoot = getServerRoot(serverHome);
     new File(directoryServerRoot, "locks").mkdir();
     new File(directoryServerRoot, "logs").mkdir();
-    DirectoryEnvironmentConfig envConfig = new DirectoryEnvironmentConfig();
-    envConfig.setServerRoot(directoryServerRoot);
-    envConfig.setConfigFile(getFile(ldifConfigFile));
-    envConfig.setDisableConnectionHandlers(false);
-    envConfig.setMaintainConfigArchive(false);
     // Start the OpenDS server.
     if (EmbeddedUtils.isRunning()) {
       return;
     } else {
+      DirectoryEnvironmentConfig envConfig = new DirectoryEnvironmentConfig();
+      envConfig.setServerRoot(directoryServerRoot);
+      envConfig.setConfigFile(getFile(ldifConfigFile));
+      envConfig.setDisableConnectionHandlers(false);
+      envConfig.setMaintainConfigArchive(false);
       EmbeddedUtils.startServer(envConfig);
     }
     // Get an internal, root connection to the OpenDJ instance.

@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.util.publication.info;
@@ -53,21 +50,23 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class InfoDAO {
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public InfoDAO() {
   }
 
   // return a ModelDetail collection of available models
-
   /**
    * Method declaration
+   *
    * @param con
    * @return
    * @throws SQLException
@@ -77,8 +76,8 @@ public class InfoDAO {
       throws SQLException {
     ResultSet rs = null;
     ModelPK mPK = new ModelPK("unknown");
-    String selectStatement =
-        "select id, name, description, imageName, htmlDisplayer, htmlEditor from "
+    String selectStatement
+        = "select id, name, description, imageName, htmlDisplayer, htmlEditor from "
         + mPK.getTableName() + " order by id asc, partId asc";
     Statement stmt = null;
 
@@ -130,9 +129,9 @@ public class InfoDAO {
   }
 
   // return the ModelDetail associated to the infoPK
-
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @return
@@ -144,14 +143,15 @@ public class InfoDAO {
     SilverTrace.info("publication", "InfoDAO.getModelDetail(infoPK)",
         "root.MSG_GEN_PARAM_VALUE", "Info = " + infoPK.getId());
 
-    if (!isInteger(infoPK.getId()))
+    if (!isInteger(infoPK.getId())) {
       return null;
+    }
 
     ResultSet rs = null;
     ModelPK mPK = new ModelPK("unknown", infoPK);
     ModelDetail detail = null;
-    String selectStatement =
-        "select M.id, M.name, M.description, M.imageName, M.htmlDisplayer, M.htmlEditor "
+    String selectStatement
+        = "select M.id, M.name, M.description, M.imageName, M.htmlDisplayer, M.htmlEditor "
         + "from "
         + mPK.getTableName()
         + " M, "
@@ -210,36 +210,30 @@ public class InfoDAO {
   }
 
   // return a ModelDetail
-
   /**
    * Method declaration
+   *
    * @param con
    * @param modelPK
    * @return
    * @throws SQLException
    * @see
    */
-  public static ModelDetail getModelDetail(Connection con, ModelPK modelPK)
-      throws SQLException {
+  public static ModelDetail getModelDetail(Connection con, ModelPK modelPK) throws SQLException {
     SilverTrace.info("publication", "InfoDAO.getModelDetail(modelPK)",
         "root.MSG_GEN_PARAM_VALUE", "Model = " + modelPK.getId());
-
     ModelDetail modelDetail = null;
     ResultSet rs = null;
-    String selectStatement = "select id, name, description, imageName, htmlDisplayer, htmlEditor "
-        + "from "
-        + modelPK.getTableName()
-        + " where id="
-        + modelPK.getId()
-        + " order by partId asc";
+    String selectStatement = "SELECT id, name, description, imageName, htmlDisplayer, htmlEditor "
+        + "FROM Model WHERE id = ? ORDER BY partId ASC";
 
-    Statement stmt = null;
-
+    PreparedStatement stmt = null;
     try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);
-      String htmlDisplayer = "";
-      String htmlEditor = "";
+      stmt = con.prepareStatement(selectStatement);
+      stmt.setInt(1, Integer.parseInt(modelPK.getId()));
+      rs = stmt.executeQuery();
+      StringBuilder htmlDisplayer = new StringBuilder(512);
+      StringBuilder htmlEditor = new StringBuilder(512);
       String id = null;
       String name = null;
       String description = null;
@@ -248,47 +242,37 @@ public class InfoDAO {
       while (rs.next()) {
         if (!firstModelPartReaden) {
           // It's the first part of the model
-          id = String.valueOf(rs.getInt(1));
-          name = rs.getString(2);
-          description = rs.getString(3);
-          imageName = rs.getString(4);
-          htmlDisplayer = rs.getString(5);
-          htmlEditor = rs.getString(6);
-
+          id = String.valueOf(rs.getInt("id"));
+          name = rs.getString("name");
+          description = rs.getString("description");
+          imageName = rs.getString("imageName");
           firstModelPartReaden = true;
-        } else {
-          htmlDisplayer += rs.getString(5);
-          htmlEditor += rs.getString(6);
         }
+        htmlDisplayer.append(rs.getString("htmlDisplayer"));
+        htmlEditor.append(rs.getString("htmlEditor"));
       }
       if (firstModelPartReaden) {
-        modelDetail = new ModelDetail(id, name, description, imageName,
-            htmlDisplayer, htmlEditor);
+        modelDetail = new ModelDetail(id, name, description, imageName, htmlDisplayer.toString(),
+            htmlEditor.toString());
       }
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("InfoDAO.getModelDetail(modelPK)",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_MODEL_FAILED",
-          "modelPK = " + modelPK.toString(), e);
     } finally {
       DBUtil.close(rs, stmt);
     }
-
-    SilverTrace.info("publication", "InfoDAO.getModelDetail(modelPK)",
-        "root.MSG_GEN_PARAM_VALUE", "ModelDetail = " + modelDetail);
-
+    SilverTrace.info("publication", "InfoDAO.getModelDetail(modelPK)", "root.MSG_GEN_PARAM_VALUE",
+        "ModelDetail = " + modelDetail);
     return modelDetail;
   }
 
   /**
    * Method declaration
+   *
    * @param con
    * @param pubPK
    * @return
    * @throws SQLException
    * @see
    */
-  public static InfoPK hasInfo(Connection con, PublicationPK pubPK)
-      throws SQLException {
+  public static InfoPK hasInfo(Connection con, PublicationPK pubPK) throws SQLException {
     SilverTrace.info("publication", "InfoDAO.hasInfo",
         "root.MSG_GEN_PARAM_VALUE", "Pub = " + pubPK.getId());
 
@@ -321,9 +305,9 @@ public class InfoDAO {
 
   // create the info reference
   // match the info with a model
-
   /**
    * Method declaration
+   *
    * @param con
    * @param modelPK
    * @param pubPK
@@ -387,9 +371,9 @@ public class InfoDAO {
 
   // update the info reference
   // match the info with a model
-
   /**
    * Method declaration
+   *
    * @param con
    * @param modelPK
    * @param infoPK
@@ -426,6 +410,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @throws SQLException
@@ -448,9 +433,9 @@ public class InfoDAO {
   }
 
   // match the info with a model
-
   /**
    * Method declaration
+   *
    * @param con
    * @param infos
    * @throws SQLException
@@ -496,6 +481,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infos
    * @param infoPK
@@ -540,6 +526,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @throws SQLException
@@ -556,9 +543,9 @@ public class InfoDAO {
   }
 
   // match the info with a model
-
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @param infoText
@@ -597,6 +584,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoText
    * @param infoPK
@@ -627,6 +615,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @throws SQLException
@@ -653,6 +642,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @param infoImage
@@ -695,6 +685,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @param infoImage
@@ -706,8 +697,7 @@ public class InfoDAO {
     InfoImagePK infoImagePK = new InfoImagePK("unknown", infoPK);
     String tableName = infoImagePK.getTableName();
 
-    String updateStatement =
-        "update " + tableName + " set infoId = ? , infoImagePhysicalName = ? ,"
+    String updateStatement = "update " + tableName + " set infoId = ? , infoImagePhysicalName = ? ,"
         + " infoImageLogicalName = ? , infoImageDescription = ? , infoImageType = ? , "
         + "infoImageSize = ? , infoImageDisplayOrder = ? where infoImageId = ? ";
     PreparedStatement prepStmt = null;
@@ -729,6 +719,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @throws SQLException
@@ -757,6 +748,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @param infoLink
@@ -797,6 +789,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @param linkIds
@@ -818,6 +811,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param linkPK
    * @throws SQLException
@@ -869,6 +863,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @throws SQLException
@@ -891,6 +886,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @param targetLink
@@ -915,6 +911,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @return
@@ -950,6 +947,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @throws SQLException
@@ -965,6 +963,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @return
@@ -1004,6 +1003,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @return
@@ -1053,6 +1053,7 @@ public class InfoDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param infoPK
    * @return

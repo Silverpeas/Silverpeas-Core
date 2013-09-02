@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,6 +42,7 @@ import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,13 +61,7 @@ public class XmlSearchForm extends AbstractForm {
   public XmlSearchForm(RecordTemplate template) throws FormException {
     super(template);
     if (template != null) {
-      FieldTemplate fields[] = template.getFieldTemplates();
-      int size = fields.length;
-      FieldTemplate fieldTemplate;
-      for (int i = 0; i < size; i++) {
-        fieldTemplate = fields[i];
-        this.fieldTemplates.add(fieldTemplate);
-      }
+      Collections.addAll(this.fieldTemplates, template.getFieldTemplates());
     }
   }
 

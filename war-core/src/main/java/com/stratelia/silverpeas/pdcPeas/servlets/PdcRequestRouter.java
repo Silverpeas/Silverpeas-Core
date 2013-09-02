@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -473,7 +473,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
 
         // get rights for this axis and this user and if user is admin or
         // kmAdmin
-        Boolean KMadmin = Boolean.valueOf((pdcSC.getUserDetail().isAccessKMManager() || pdcSC.
+        Boolean KMadmin = Boolean.valueOf((pdcSC.getUserDetail().isAccessPdcManager() || pdcSC.
             getUserDetail().isAccessAdmin()));
         request.setAttribute("KMAdmin", KMadmin);
         request.setAttribute("UserRights", pdcSC.getRights());

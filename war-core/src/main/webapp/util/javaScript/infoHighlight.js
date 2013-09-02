@@ -3,26 +3,17 @@
 $(document).ready(function() {
 	$('.highlight-silver').each(function(){
 		   $(this).qtip({
-			   content: { text: false // Use each elements title attribute
-			   },				   
-		       style: {
-                  border: {
-                     width: 5,
-                     radius: 5
-                  },
-                  padding: 7, 
-                  textAlign: 'center',
-                  tip: true, 
-                  name: 'green' 
-               },
-
-		      position: {
-				corner: {
-				   target: 'topRight',
-				   tooltip: 'topLeft'
-				}
-			  }
-						      
+			content: {
+				text: false // Use each elements title attribute
+			},
+			style: {
+				tip: true,
+				classes: "qtip-shadow qtip-green"
+			},
+			position: {
+				at: "top right",
+				my: "top left"
+			}
 		   });
 		});
 });

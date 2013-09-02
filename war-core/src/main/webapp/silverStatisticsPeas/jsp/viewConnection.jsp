@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -12,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,7 +54,7 @@
 	String filterLib = (String)request.getAttribute("FilterLib");
 	String filterId = (String)request.getAttribute("FilterId");
   Collection cResultData = (Collection)request.getAttribute("ResultData");
-  String userProfile = (String)request.getAttribute("UserProfile");
+  UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
   
   String[] item = null;
   String theValue = null;
@@ -111,7 +112,7 @@
 <body>
 <view:window>
 <%
-          if (userProfile.equals("A")) {
+          if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 %>
 <view:tabs>
 	<fmt:message var="userTabLabel" key="silverStatisticsPeas.usersWithSession" />

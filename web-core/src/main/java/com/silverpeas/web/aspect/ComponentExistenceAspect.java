@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,14 @@ package com.silverpeas.web.aspect;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +40,8 @@ import org.springframework.stereotype.Component;
  * implicitly for each web resources managed by a given component instance. If a web resource
  * doesn't belong to any component instance, then nothing is done.
  */
-@Component @Aspect
+@Component
+@Aspect
 public class ComponentExistenceAspect {
 
   @Pointcut("@within(javax.ws.rs.Path) && this(com.silverpeas.web.RESTWebService)")
@@ -63,8 +65,8 @@ public class ComponentExistenceAspect {
   }
 
   @Before("webServices() && (methodAnnotatedWithGET() || "
-  + "methodAnnotatedWithPOST() || methodAnnotatedWithDELETE() || methodAnnotatedWithPUT()) "
-  + "&& this(service)")
+      + "methodAnnotatedWithPOST() || methodAnnotatedWithDELETE() || methodAnnotatedWithPUT()) "
+      + "&& this(service)")
   public void checkComponentInstanceExistence(RESTWebService service) throws Throwable {
     String instanceId = null;
     try {
@@ -72,9 +74,10 @@ public class ComponentExistenceAspect {
     } catch (Exception ex) {
     }
     if (isDefined(instanceId)) {
-      OrganizationController controller = OrganizationControllerFactory.getFactory().
-              getOrganizationController();
-      if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId)) {
+      OrganisationController controller =
+          OrganisationControllerFactory.getFactory().getOrganisationController();
+      if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
+          !controller.isAdminTool(instanceId)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
     }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
@@ -42,7 +41,7 @@ public class ComponentURLTag extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
-    String url = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String url = URLManager.getApplicationURL();
     if (isDefined(componentName)) {
       url += URLManager.getURL(componentName, null, componentId);
     } else {

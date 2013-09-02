@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,20 +23,19 @@
  */
 package com.silverpeas.sharing.services;
 
+import org.silverpeas.attachment.model.HistorisedDocument;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.stratelia.silverpeas.versioning.model.Document;
 
 /**
  * Access control to shared version documents.
  */
-public class VersionFileAccessControl implements ShareableAccessControl<Document> {
+public class VersionFileAccessControl implements ShareableAccessControl<HistorisedDocument> {
   @Override
-    public boolean isReadable(ShareableResource<Document> resource) {
-      Ticket ticket =
-          SharingServiceFactory.getFactory().getSharingTicketService().getTicket(resource.getToken());
+    public boolean isReadable(ShareableResource<HistorisedDocument> resource) {
+      Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
       return (ticket != null && ticket instanceof VersionFileTicket &&
           ((VersionFileTicket) ticket).getDocument().equals(resource.getAccessedObject()));
     }

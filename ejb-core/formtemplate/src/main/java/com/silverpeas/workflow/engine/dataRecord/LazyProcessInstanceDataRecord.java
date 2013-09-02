@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,11 +55,12 @@ import com.silverpeas.workflow.api.user.UserSettings;
  */
 public class LazyProcessInstanceDataRecord implements DataRecord {
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * Builds the data record representation of a process instance.
    */
-  public LazyProcessInstanceDataRecord(ProcessInstance instance, String role,
-      String lang) throws WorkflowException {
+  public LazyProcessInstanceDataRecord(ProcessInstance instance, String role, String lang) {
     this.instance = instance;
     this.role = role;
     this.lang = lang;
@@ -233,6 +234,12 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
 
   public void setLanguage(String lang) {
     // do nothing
+  }
+
+  @Override
+  public Map<String, String> getValues(String language) {
+    // no implemented yet !
+    return new HashMap<String, String>();
   }
 
   /**

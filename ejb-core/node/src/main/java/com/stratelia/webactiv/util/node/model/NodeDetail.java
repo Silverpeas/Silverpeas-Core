@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,6 +63,17 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   // contained by this node
   private String userRole = null; // No persistence - usefull to store user role
   private boolean useId = false;
+
+
+  public NodeDetail(NodeDetail detail) {
+    new NodeDetail(detail.nodePK, detail.name, detail.description, detail.creationDate,
+        detail.creatorId, detail.path, detail.level, detail.fatherPK, detail.modelId, detail.status,
+        null, detail.type);
+    setOrder(detail.order);
+    setLanguage(detail.getLanguage());
+    setRightsDependsOn(detail.rightsDependsOn);
+
+  }
 
   /**
    * Construct an empty NodeDetail

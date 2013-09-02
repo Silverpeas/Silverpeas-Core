@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,7 +48,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Collection;
 
@@ -131,7 +130,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();
 
-    allGroups = getOrganizationController().getAllGroups();
+    allGroups = getOrganisationController().getAllGroups();
     for (i = 0; i < allGroups.length; i++) {
       p = new Properties();
       p.setProperty("id", allGroups[i].getId());
@@ -152,7 +151,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();
 
-    allUsers = getOrganizationController().getAllUsers();
+    allUsers = getOrganisationController().getAllUsers();
     for (i = 0; i < allUsers.length; i++) {
       p = new Properties();
       p.setProperty("id", allUsers[i].getId());
@@ -274,8 +273,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         "NotificationUsersessionController.initSelectionPeas()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
 
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostUrl = m_context
         + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
         + paramValues;
@@ -318,7 +316,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     String[] idUsers = new String[0];
     if (theTargetsUsers != null && theTargetsUsers.length() > 0) {
       if (theTargetsUsers.equals("Administrators")) {
-        idUsers = this.getOrganizationController().getAdministratorUserIds(
+        idUsers = this.getOrganisationController().getAdministratorUserIds(
             getUserId());
       } else {
         idUsers = this.getIdsArrayFromIdsLine(theTargetsUsers);
@@ -398,7 +396,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     SilverTrace.debug("notificationUser",
         "NotificationUsersessionController.getUserDetailList()",
         "root.MSG_GEN_PARAM_VALUE", "Enter Method");
-    return this.getOrganizationController().getUserDetails(idUsers);
+    return this.getOrganisationController().getUserDetails(idUsers);
   }
 
   private Group[] getGroupList(String[] idGroups) {
@@ -406,7 +404,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     if (idGroups != null && idGroups.length > 0) {
       setOfGroup = new Group[idGroups.length];
       for (int i = 0; i < idGroups.length; i++) {
-        setOfGroup[i] = this.getOrganizationController().getGroup(idGroups[i]);
+        setOfGroup[i] = this.getOrganisationController().getGroup(idGroups[i]);
       }
     }
     return setOfGroup;

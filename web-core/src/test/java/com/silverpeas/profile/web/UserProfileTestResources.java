@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,11 +35,15 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ListSlice;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 /**
  * The resources to use in the test on the UserProfileResource REST service. Theses objects manage
@@ -75,37 +79,25 @@ public class UserProfileTestResources extends TestResources {
     return users;
   }
 
-  public void whenSearchGroupsThenReturn(final Group[] groups) {
-    OrganizationController mock = getOrganizationControllerMock();
-    String[] groupIds = getGroupIds(groups);
-    when(mock.searchGroupsIds(anyBoolean(), anyString(), any(String[].class), any(Group.class))).
-            thenReturn(groupIds);
-    doAnswer(new Answer<Group[]>() {
-
+  public void whenSearchGroupsByCriteriaThenReturn(final Group[] groups) {
+    OrganisationController mock = getOrganizationControllerMock();
+    doAnswer(new Answer<ListSlice<Group>>() {
       @Override
-      public Group[] answer(InvocationOnMock invocation) throws Throwable {
-        Group[] emptyGroup = new Group[0];
-        String[] passedGroupIds = (String[]) invocation.getArguments()[0];
-        String[] groupIds = getGroupIds(groups);
-        if (passedGroupIds.length == groupIds.length) {
-          if (Arrays.asList(passedGroupIds).containsAll(Arrays.asList(groupIds))) {
-            return groups;
-          }
-        }
-        return emptyGroup;
+      public ListSlice<Group> answer(InvocationOnMock invocation) throws Throwable {
+        return new ListSlice<Group>(Arrays.asList(groups));
       }
-    }).when(mock).getGroups(any(String[].class));
+    }).when(mock).searchGroups(any(GroupsSearchCriteria.class));
   }
 
-  public void whenSearchUsersByCriteriaThenReturn(final SearchCriteria criteria,
+  public void whenSearchUsersByCriteriaThenReturn(final UserDetailsSearchCriteria criteria,
           final UserDetail[] users) {
-    OrganizationController mock = getOrganizationControllerMock();
-    doAnswer(new Answer<UserDetail[]>() {
+    OrganisationController mock = getOrganizationControllerMock();
+    doAnswer(new Answer<ListSlice<UserDetail>>() {
 
       @Override
-      public UserDetail[] answer(InvocationOnMock invocation) throws Throwable {
-        UserDetail[] emptyUsers = new UserDetail[0];
-        SearchCriteria passedCriteria = (SearchCriteria) invocation.getArguments()[0];
+      public ListSlice<UserDetail> answer(InvocationOnMock invocation) throws Throwable {
+        ListSlice<UserDetail> emptyUsers = new ListSlice<UserDetail>(0, 0, 0);
+        UserDetailsSearchCriteria passedCriteria = (UserDetailsSearchCriteria) invocation.getArguments()[0];
         if (criteria.isCriterionOnComponentInstanceIdSet() && passedCriteria.
                 isCriterionOnComponentInstanceIdSet()) {
           if (!criteria.getCriterionOnComponentInstanceId().equals(passedCriteria.
@@ -127,13 +119,25 @@ public class UserProfileTestResources extends TestResources {
                 && !passedCriteria.isCriterionOnDomainIdSet())) {
           return emptyUsers;
         }
-        if (criteria.isCriterionOnGroupIdSet() && passedCriteria.isCriterionOnGroupIdSet()) {
-          if (!criteria.getCriterionOnGroupId().equals(passedCriteria.getCriterionOnGroupId())) {
+        if (criteria.isCriterionOnGroupIdsSet() && passedCriteria.isCriterionOnGroupIdsSet()) {
+          if (!Arrays.equals(criteria.getCriterionOnGroupIds(), passedCriteria.getCriterionOnGroupIds())) {
             return emptyUsers;
           }
-        } else if ((!criteria.isCriterionOnGroupIdSet()
-                && passedCriteria.isCriterionOnGroupIdSet()) || (criteria.isCriterionOnGroupIdSet()
-                && !passedCriteria.isCriterionOnGroupIdSet())) {
+        } else if ((!criteria.isCriterionOnGroupIdsSet()
+                && passedCriteria.isCriterionOnGroupIdsSet()) || (criteria.isCriterionOnGroupIdsSet()
+                && !passedCriteria.isCriterionOnGroupIdsSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnAccessLevelsSet() &&
+            passedCriteria.isCriterionOnAccessLevelsSet()) {
+          if (!Arrays.equals(criteria.getCriterionOnAccessLevels(),
+              passedCriteria.getCriterionOnAccessLevels())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnAccessLevelsSet() &&
+            passedCriteria.isCriterionOnAccessLevelsSet()) ||
+            (criteria.isCriterionOnAccessLevelsSet() &&
+                !passedCriteria.isCriterionOnAccessLevelsSet())) {
           return emptyUsers;
         }
         if (criteria.isCriterionOnNameSet() && passedCriteria.isCriterionOnNameSet()) {
@@ -145,15 +149,15 @@ public class UserProfileTestResources extends TestResources {
                 && !passedCriteria.isCriterionOnNameSet())) {
           return emptyUsers;
         }
-        if (criteria.isCriterionOnRoleIdsSet() && passedCriteria.isCriterionOnRoleIdsSet()) {
-          List<String> roles = Arrays.asList(criteria.getCriterionOnRoleIds());
-          List<String> passedRoles = Arrays.asList(passedCriteria.getCriterionOnRoleIds());
+        if (criteria.isCriterionOnRoleNamesSet() && passedCriteria.isCriterionOnRoleNamesSet()) {
+          List<String> roles = Arrays.asList(criteria.getCriterionOnRoleNames());
+          List<String> passedRoles = Arrays.asList(passedCriteria.getCriterionOnRoleNames());
           if (roles.size() != passedRoles.size() || !roles.containsAll(passedRoles)) {
             return emptyUsers;
           }
-        } else if ((!criteria.isCriterionOnRoleIdsSet()
-                && passedCriteria.isCriterionOnRoleIdsSet()) || (criteria.isCriterionOnRoleIdsSet()
-                && !passedCriteria.isCriterionOnRoleIdsSet())) {
+        } else if ((!criteria.isCriterionOnRoleNamesSet()
+                && passedCriteria.isCriterionOnRoleNamesSet()) || (criteria.isCriterionOnRoleNamesSet()
+                && !passedCriteria.isCriterionOnRoleNamesSet())) {
           return emptyUsers;
         }
         if (criteria.isCriterionOnUserIdsSet() && passedCriteria.isCriterionOnUserIdsSet()) {
@@ -168,9 +172,9 @@ public class UserProfileTestResources extends TestResources {
           return emptyUsers;
         }
 
-        return users;
+        return new ListSlice<UserDetail>(Arrays.asList(users));
       }
-    }).when(mock).searchUsers(any(SearchCriteria.class));
+    }).when(mock).searchUsers(any(UserDetailsSearchCriteria.class));
   }
 
   public UserDetail[] getAllExistingUsersInDomain(String domainId) {
@@ -304,7 +308,7 @@ public class UserProfileTestResources extends TestResources {
     UserDetail[] existingUsers = getAllExistingUsers();
     UserDetail[] actualUsers = Arrays.copyOf(existingUsers, existingUsers.length + 1);
     actualUsers[actualUsers.length - 1] = user;
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.getAllUsers()).thenReturn(actualUsers);
     return super.registerUser(user);
   }
@@ -324,6 +328,7 @@ public class UserProfileTestResources extends TestResources {
     user.setLastName(lastName);
     user.setId(id);
     user.setDomainId(domainId);
+    user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     return user;
   }
 
@@ -340,14 +345,16 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void putUsersInGroups() {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     Group[] groups = mock.getAllGroups();
     for (Group group : groups) {
       when(mock.getAllUsersOfGroup(group.getId())).thenReturn(new UserDetail[0]);
+      group.setTotalNbUsers(1);
     }
     Group internalGroup = mock.getGroup("1");
     UserDetail[] users = getAllExistingUsers();
     internalGroup.setUserIds(getUserIds(users));
+    internalGroup.setTotalNbUsers(users.length);
 
     for (int i = 0; i <= 1; i++) {
       String domainId = String.valueOf(i);
@@ -364,7 +371,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void registerSomeGroups(final Group... someGroups) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     List<Group> rootGroups = new ArrayList<Group>();
     for (int i = 0; i < someGroups.length; i++) {
       when(mock.getGroup(someGroups[i].getId())).thenReturn(someGroups[i]);

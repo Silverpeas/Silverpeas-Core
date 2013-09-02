@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.util;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map adding that containing collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -46,9 +49,8 @@ public class MapUtil {
    * @param value
    * @return
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static <K, V> Collection<V> putAdd(
-      final Class<? extends Collection> collectionClass,
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static <K, V> Collection<V> putAdd(final Class<? extends Collection> collectionClass,
       Map<K, Collection<V>> map, final K key, final V value) {
 
     if (map == null) {
@@ -75,6 +77,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map adding that containing list collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -105,6 +108,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map adding that containing set collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -135,6 +139,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map removing that containing list collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -142,12 +147,9 @@ public class MapUtil {
    * @param value
    * @return
    */
-  public static <K, V> List<V> removeValueList(final Map<K, List<V>> map,
-      final K key, final V value) {
-
+  public static <K, V> List<V> removeValueList(final Map<K, List<V>> map, final K key, final V value) {
     List<V> result = null;
     if (map != null) {
-
       // Old value
       result = map.get(key);
       if (result != null) {
@@ -161,6 +163,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map removing that containing set collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -185,43 +188,21 @@ public class MapUtil {
     return result;
   }
 
-  /**
-   * Transforming a map into an other map with same keys
-   * @param <K>
-   * @param <VI>
-   * @param <VO>
-   * @param map
-   * @param extractor
-   * @return
-   */
-  public static <K extends Object, VI extends Object, VO extends Object> HashMap<K, VO> mapToMap(
-      final Map<K, VI> map, final ExtractionMap<VI, VO> extractor) {
-    final LinkedHashMap<K, VO> result;
-    if (map == null) {
-      result = null;
-    } else if (map.isEmpty()) {
-      result = new LinkedHashMap<K, VO>();
-    } else {
-      result = new LinkedHashMap<K, VO>((int) (map.size() * 0.75f));
-      for (final Map.Entry<K, VI> toPerform : map.entrySet()) {
-        result.put(toPerform.getKey(), extractor.getValue(toPerform.getValue()));
+  public static <K, V> boolean equals(Map<? extends K, ? extends V> left,
+      Map<? extends K, ? extends V> right) {
+    Map<K, V> onlyOnRight = new HashMap<K, V>(right);
+    for (Map.Entry<? extends K, ? extends V> entry : left.entrySet()) {
+      K leftKey = entry.getKey();
+      V leftValue = entry.getValue();
+      if (right.containsKey(leftKey)) {
+        V rightValue = onlyOnRight.remove(leftKey);
+        if (!ObjectUtils.equals(leftValue, rightValue)) {
+          return false;
+        }
+      } else {
+        return false;
       }
     }
-    return result;
-  }
-
-  /**
-   * Convert a list into a map
-   * @param map
-   * @param collection
-   */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static void toMap(final Map map,
-      final Collection<? extends Object> collection) {
-    if (map != null && collection != null) {
-      for (final Object object : collection) {
-        map.put(object, object);
-      }
-    }
+    return onlyOnRight.isEmpty();
   }
 }

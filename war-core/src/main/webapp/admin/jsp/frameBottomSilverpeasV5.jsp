@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,13 +45,9 @@ int framesetWidth = Integer.parseInt(rsc.getString("domainsBarFramesetWidth"));
 String paramsForDomainsBar = "";
 if ("1".equals(request.getParameter("FromTopBar"))) {
 	paramsForDomainsBar = (spaceId == null) ? "" : "?privateDomain="+spaceId+"&privateSubDomain="+subSpaceId+"&FromTopBar=1";
-} 
-else if (componentId != null) 
-{
+}  else if (componentId != null)  {
 	paramsForDomainsBar = "?privateDomain=&component_id="+componentId;
-} 
-else
-{
+} else {
 	paramsForDomainsBar = "?privateDomain="+spaceId;
 }
 
@@ -64,21 +60,15 @@ if (StringUtil.isDefined(loginHomepage) && StringUtil.isDefined(login) &&
 }
 
 String frameURL = "";
-if (displayLoginHomepage)
-{
+if (displayLoginHomepage) {
 	frameURL = loginHomepage;
-}
-else if (strGoToNew==null)
-{
-	if (StringUtil.isDefined(componentId))
-	{
+} else if (strGoToNew == null) {
+	if (StringUtil.isDefined(componentId)) {
 		frameURL = URLManager.getApplicationURL()+URLManager.getURL(null, componentId)+"Main";
-	}
-	else
-	{
+	} else {
 		String homePage = rsc.getString("defaultHomepage", "/dt");
 		String param = "";
-		if (spaceId != null && spaceId.length() >= 3){
+		if (StringUtil.isDefined(spaceId)) {
 		    param = "?SpaceId=" + spaceId;
 		}
 		frameURL = URLManager.getApplicationURL()+homePage+param;
@@ -126,9 +116,10 @@ function resizeFrame(contractsetting){
 		setframevalue(columntype, contractsetting)
 }
 
-function init(){
-	if (!document.all && !document.getElementById) return
-	if (document.body!=null){
+function init() {
+	if (!document.all && !document.getElementById) 
+    return
+	if (document.body != null){
 		columntype=(document.body.cols)? "cols" : "rows"
 		defaultsetting=(document.body.cols)? document.body.cols : document.body.rows
 	} 
