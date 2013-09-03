@@ -1961,6 +1961,21 @@ public class PublicationBmEJB implements PublicationBm {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public Collection<PublicationDetail> getDraftsByUser(String userId) {
+    Connection con = getConnection();
+    try {
+      return PublicationDAO.getDraftsByUser(con, userId);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getDraftsByUser()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED", "userId = "
+          + userId, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
   private static final boolean useTagCloud;
   private static final boolean useNotation;
   private static final boolean indexAuthorName;

@@ -27,53 +27,30 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
+<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail" %>
 
 <%@ include file="../portletImport.jsp"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
 
 <%
-RenderRequest 	pReq 	= (RenderRequest)request.getAttribute("javax.portlet.request");
-Iterator 		links 	= (Iterator) pReq.getAttribute("Links");
-
-if (!links.hasNext()) {
-	out.println(message.getString("NoFavorites"));
-} else {
-    %>
-    <ul>
-    <%
-	//affichage des liens favoris de l'utilisateur
-	while (links.hasNext()) {
-	  	LinkDetail link = (LinkDetail) links.next();
-		if (link.isVisible()) {
-			// afficher que les liens que l'utilisateur a top� "visible en page d'accueil"
-			String lien = link.getUrl();
-			String name = EncodeHelper.convertHTMLEntities(link.getName());
-			if (!StringUtil.isDefined(name)) {
-				name = lien;
-			}
-			
-			// ajouter le context devant le lien si n�c�ssaire
-			if (lien.indexOf("://") == -1) {
-				lien = URLManager.getApplicationURL() + lien;
-			}
-
-			String target = "_self";
-			if (link.isPopup()) {
-				target = "_blank";
-			}
-			%>
-			<li><a href="<%=lien%>" target="<%=target%>"><%=name%></a></li>
-			<%
-		}
-	}
-    %>
-    </ul>
-    <%
-}
-out.flush();
+    RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
+    List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
 %>
+
+<% if (publications.isEmpty()) { %>
+	<%=portletsBundle.getString("portlets.portlet.mydrafts.none") %>
+<% } else { %>
+	<ul>
+	<%
+	for (PublicationDetail pub : publications) {
+	    String url = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getId());
+	%>
+	<li><a href="<%=url%>" target="_top"><%=EncodeHelper.convertHTMLEntities(pub.getName(language))%></a></li>
+	<% } %>
+	</ul>
+<% } %>
