@@ -696,7 +696,7 @@ public class PublicationsTypeManager {
             nodes = pubType.getNodePositionsType().getListNodePositionType();
           }
 
-          // Création ou modification de la publication
+          // creation or update of the publication
           PublicationDetail pubDetail = gedIE
               .createPublicationForUnitImport(unitReport, settings, pubDetailToCreate, nodes);
           try {
@@ -704,7 +704,7 @@ public class PublicationsTypeManager {
               if (isKmax(componentId)) {
                 PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
               }
-              // traitement du contenu de la publi
+              // process the publication detail
               if (pubType.getPublicationContentType() != null) {
                 try {
                   gedIE.createPublicationContent(reportManager, unitReport, Integer.parseInt(
@@ -716,7 +716,7 @@ public class PublicationsTypeManager {
                   }
                 }
               }
-              // traitement des fichiers joints à la publi
+              // process the publication's attachments
               ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
               long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
               
@@ -739,7 +739,7 @@ public class PublicationsTypeManager {
                   versioningIE.importDocuments(pubDetail.getId(), componentId, attachmentsSizeOk,
                       Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
                 } else {
-                  // Ajout des attachments
+                  // add the attachments
                   copiedAttachments = attachmentIE
                       .importAttachments(pubDetail.getId(), componentId, attachmentsSizeOk,
                       userDetail.getId(), pubDetail.isIndexable());
@@ -752,22 +752,19 @@ public class PublicationsTypeManager {
                 reportManager
                     .addNumberOfFilesNotImported(attachments.size() - copiedAttachments.size());
 
-                // On additionne la taille des fichiers importés au niveau du rapport
+                // The size of the imported files are added for the reporting
                 for (AttachmentDetail attdetail : copiedAttachments) {
                   reportManager.addImportedFileSize(attdetail.getSize(),
                       componentId);
                 }
               }
               if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
-                // Get number of versions
                 int nbFiles = 0;
-                for (Document document : documents) {
-                  nbFiles += document.getVersionsType().getListVersions().size();
-                }
-                
-                //New list of documents whose size does not exceed the limit
+
+                //New list of versions whose size does not exceed the limit
                 List<Document> documentsSizeOk= new ArrayList<Document>();
                 for (Document documentDetail : documents) {
+                  nbFiles += documentDetail.getVersionsType().getListVersions().size();
                   List<DocumentVersion> documentVersionsSizeOk= new ArrayList<DocumentVersion>();
                   
                   List<DocumentVersion> documentVersions = documentDetail.getVersionsType().getListVersions();
