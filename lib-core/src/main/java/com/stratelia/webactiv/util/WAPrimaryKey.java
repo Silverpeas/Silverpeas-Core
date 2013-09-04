@@ -209,8 +209,8 @@ public abstract class WAPrimaryKey implements Serializable {
   @Override
   public String toString() {
     StringBuilder buffer = new StringBuilder(100);
-    buffer.append("(id = ").append(getId()).append(", space = ").append(getSpace()).
-        append(", componentName = ").append(getComponentName()).append(')');
+    buffer.append("(id = ").append(getId()).append(", instanceId = ").append(getComponentName())
+        .append(")");
     return buffer.toString();
   }
 

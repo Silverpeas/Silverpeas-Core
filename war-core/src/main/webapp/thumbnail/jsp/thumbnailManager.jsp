@@ -69,8 +69,10 @@
 	}
 %>
 
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">
+
 <style>
 .jcrop-holder {
 	float: left;

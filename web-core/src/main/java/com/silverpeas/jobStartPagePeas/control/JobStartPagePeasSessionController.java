@@ -28,9 +28,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
@@ -40,6 +42,7 @@ import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.UnitUtil;
 
+import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.admin.localized.LocalizedOption;
@@ -96,6 +99,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class declaration
@@ -1649,7 +1653,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @throws ClipboardException 
    * @throws JobStartPagePeasException
    */
-  public void paste() throws ClipboardException, JobStartPagePeasException {
+  public void paste(Map<String, String> options) throws ClipboardException, JobStartPagePeasException {
     try {
       SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.pasteComponent()",
           "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + " count="
@@ -1664,7 +1668,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
             if (clipObject.isCutted()) {
               moveComponent(compo.getId());
             } else {
-              pasteComponent(compo.getId());
+              PasteDetail pasteDetail = new PasteDetail(compo.getId(), getUserId());
+              pasteDetail.setOptions(options);
+              pasteComponent(pasteDetail);
             }
             refreshCache = true;
           } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
@@ -1672,7 +1678,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
             if (clipObject.isCutted()) {
               moveSpace(space.getId());
             } else {
-              pasteSpace(space.getId());
+              PasteDetail pasteDetail = new PasteDetail(getUserId());
+              pasteDetail.setFromSpaceId(space.getId());
+              pasteDetail.setOptions(options);
+              pasteSpace(pasteDetail);
             }
             refreshCache = true;
           }
@@ -1687,6 +1696,42 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     clipboardPasteDone();
   }
+  
+  /**
+   * Get names of all copied components directly or indirectly (case of a space)
+   * @return a Set of component names
+   * @throws JobStartPagePeasException
+   */
+  public Set<String> getCopiedComponents() throws JobStartPagePeasException {
+    Set<String> copiedComponents = new HashSet<String>();
+    try {
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection clipObject : clipObjects) {
+        if (clipObject != null) {
+          if (clipObject.isDataFlavorSupported(ComponentSelection.ComponentDetailFlavor)) {
+            ComponentInst compo = (ComponentInst) clipObject.getTransferData(
+                ComponentSelection.ComponentDetailFlavor);
+            if (!clipObject.isCutted()) {
+              copiedComponents.add(compo.getName());
+            }
+          } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
+            SpaceInst space = (SpaceInst) clipObject.getTransferData(SpaceSelection.SpaceFlavor);
+            if (!clipObject.isCutted()) {
+              String[] componentIds = getOrganisationController().getAllComponentIdsRecur(space.getId());
+              for (String componentId : componentIds) {
+                String componentName = StringUtil.splitByCharacterType(componentId)[0];
+                copiedComponents.add(componentName);
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new JobStartPagePeasException("JobStartPagePeasSessionController.getCopiedComponents()",
+          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
+    }
+    return copiedComponents;
+  }
 
   /**
    * Paste component with profiles
@@ -1694,10 +1739,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @param componentId
    * @throws JobStartPagePeasException
    */
-  public void pasteComponent(String componentId) throws JobStartPagePeasException {
+  private void pasteComponent(PasteDetail pasteDetail) throws JobStartPagePeasException {
     try {
-      String sComponentId = adminController.copyAndPasteComponent(componentId, getManagedSpaceId(),
-          getUserId());
+      pasteDetail.setToSpaceId(getManagedSpaceId());
+      String sComponentId = adminController.copyAndPasteComponent(pasteDetail);
       // Adding ok
       if (StringUtil.isDefined(sComponentId)) {
         setManagedInstanceId(sComponentId);
@@ -1706,7 +1751,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     } catch (Exception e) {
       throw new JobStartPagePeasException("JobStartPagePeasSessionController.pasteComponent()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
-          "componentId = " + componentId + " in space " + getManagedSpaceId(), e);
+          "componentId = " + pasteDetail.getFromComponentId() + " in space " + getManagedSpaceId(),
+          e);
     }
   }
 
@@ -1714,10 +1760,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     adminController.moveComponentInst(getManagedSpaceId(), componentId, null, null);
   }
 
-  private void pasteSpace(String spaceId) throws JobStartPagePeasException {
+  private void pasteSpace(PasteDetail pasteDetail) throws JobStartPagePeasException {
     try {
-      String newSpaceId = adminController.copyAndPasteSpace(spaceId, getManagedSpaceId(),
-          getUserId());
+      pasteDetail.setToSpaceId(getManagedSpaceId());
+      String newSpaceId = adminController.copyAndPasteSpace(pasteDetail);
       if (StringUtil.isDefined(newSpaceId)) {
         if (StringUtil.isDefined(getManagedSpaceId())) {
           refreshCurrentSpaceCache();
@@ -1729,7 +1775,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       throw new JobStartPagePeasException(
           "JobStartPagePeasSessionController.pasteSpace()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
-          "spaceId = " + spaceId + " in space " + getManagedSpaceId(), e);
+          "spaceId = " + pasteDetail.getFromSpaceId() + " in space " + getManagedSpaceId(), e);
     }
   }
 

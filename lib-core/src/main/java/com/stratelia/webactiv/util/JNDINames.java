@@ -65,7 +65,6 @@ public class JNDINames {
   public static final String WEBSITESBM_EJBHOME;
   public static final String FORMDESIGNERBM_EJBHOME;
   public static final String FORMMANAGERBM_EJBHOME;
-  public static final String KMAXBM_EJBHOME;
   public static final String ADBM_EJBHOME;
   public static final String AD_EJBHOME;
   public static final String DOCUMENTBM_EJBHOME;
@@ -202,7 +201,6 @@ public class JNDINames {
     WEBSITESBM_EJBHOME = rs.getString("WEBSITESBM_EJBHOME", "silverpeas/webSites/local");
     FORMDESIGNERBM_EJBHOME = rs.getString("FORMDESIGNERBM_EJBHOME", "ejb/FormDesignerBm");
     FORMMANAGERBM_EJBHOME = rs.getString("FORMMANAGERBM_EJBHOME", "ejb/FormManagerBm");
-    KMAXBM_EJBHOME = rs.getString("KMAXBM_EJBHOME", "ejb/KmaxBm");
     ADBM_EJBHOME = rs.getString("ADBM_EJBHOME", "ejb/AdBm");
     AD_EJBHOME = rs.getString("AD_EJBHOME", "ejb/Ad");
     DOCUMENTBM_EJBHOME = rs.getString("DOCUMENTBM_EJBHOME", "ejb/DocumentBm");
