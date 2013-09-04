@@ -141,8 +141,7 @@ public class PublicationsTypeManager {
       if (gedIE.isKmax()) {
         publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
         exportPublicationRelativePath = createPathDirectoryForKmaxPublicationExport(exportPath,
-            componentId,
-            componentInst.getLabel(), publicationDetail, useNameForFolders);
+            componentId, componentInst.getLabel(), publicationDetail, useNameForFolders);
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       } else {
         fillPublicationType(gedIE, publicationType);
@@ -152,10 +151,10 @@ public class PublicationsTypeManager {
         // Création de l'arborescence de dossiers pour la création de l'export de publication
         NodePositionType nodePositionType = publicationType.getNodePositionsType().
             getListNodePositionType().get(0);
-        exportPublicationRelativePath = createPathDirectoryForPublicationExport(exportPath,
-            nodePositionType.getId(),
-            componentId, componentInst.getLabel(), publicationDetail, useNameForFolders,
-            bExportPublicationPath);
+        exportPublicationRelativePath =
+            createPathDirectoryForPublicationExport(exportPath,
+                nodePositionType.getId(), componentId, componentInst.getLabel(), publicationDetail,
+                useNameForFolders, bExportPublicationPath);
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       }
       // To avoid problems with Winzip
@@ -267,19 +266,17 @@ public class PublicationsTypeManager {
 
   void exportAttachments(AttachmentImportExport attachmentIE, VersioningImportExport versioningIE,
       ComponentInst componentInst, PublicationType publicationType, PublicationPK publicationPK,
-      String exportPublicationRelativePath, String exportPublicationPath)
+      String exportRelativePath, String exportPath)
       throws ImportExportException {
     // Récupération des attachments et copie des fichiers
     try {
       List<AttachmentDetail> attachments;
       if (ImportExportHelper.isVersioningUsed(componentInst)) {
-        attachments = versioningIE
-            .exportDocuments(publicationPK, exportPublicationPath, exportPublicationRelativePath,
-            null);
+        attachments =
+            versioningIE.exportDocuments(publicationPK, exportPath, exportRelativePath, null);
       } else {
-        attachments = attachmentIE
-            .getAttachments(publicationPK, exportPublicationPath, exportPublicationRelativePath,
-            null);
+        attachments =
+            attachmentIE.getAttachments(publicationPK, exportPath, exportRelativePath, null);
       }
       if (attachments != null && !attachments.isEmpty() && publicationType != null) {
         publicationType.setAttachmentsType(new AttachmentsType());
@@ -352,6 +349,51 @@ public class PublicationsTypeManager {
       }
     }
   }
+  
+  private String createDirectoryPathForExport(String exportPath, String rootId, String topicId, String componentId,
+      boolean useNameForFolders) throws IOException {
+    
+    StringBuilder pathToCreate = new StringBuilder(exportPath);
+      
+    NodeImportExport nodeIE = new NodeImportExport();
+    List<NodeDetail> listNodes =
+        new ArrayList<NodeDetail>(nodeIE.getPathOfNode(new NodePK(topicId, componentId)));
+    Collections.reverse(listNodes);
+    boolean rootFound = false;
+    for (NodeDetail nodeDetail : listNodes) {
+      if (nodeDetail.getNodePK().getId().equals(rootId)) {
+        rootFound = true;
+      }
+      if (rootFound) {
+        String nodeNameForm = nodeDetail.getNodePK().getId();
+        if (useNameForFolders) {
+          nodeNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(nodeDetail.getName());
+        }
+        pathToCreate.append(separator).append(nodeNameForm);
+      }
+    }
+
+    // ZIP API manage only ASCII characters. So directories are created in ASCII too.
+    String pathToCreateAscii = createASCIIPath(pathToCreate.toString());
+
+    return pathToCreateAscii;
+  }
+  
+  private String createASCIIPath(String path) throws IOException {
+    String pathToCreateAscii = FileServerUtils.replaceAccentChars(path);
+    SilverTrace
+        .debug("importExport", "PublicationTypeManager.createASCIIPath",
+            "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
+
+    File dir = new File(pathToCreateAscii);
+    if (!dir.exists()) {
+      boolean creationOK = dir.mkdirs();
+      if (!creationOK) {
+        throw new IOException();
+      }
+    }
+    return pathToCreateAscii;
+  }
 
   /**
    * Méthode créant l'arboresence des répertoires pour une publication exportée
@@ -397,33 +439,30 @@ public class PublicationsTypeManager {
     relativeExportPath.append(separator).append(pubNameForm);
     pathToCreate.append(separator).append(pubNameForm);
 
-    // L'api zip ne prends que les caractères ascii, aussi pour être
-    // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath
-        .toString());
+    // ZIP API manage only ASCII characters. So directories are created in ASCII too.
+    String relativeExportPathAscii =
+        FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace
         .debug("importExport", "PublicationTypeManager.createPathDirectoryForPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
-    String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.createPathDirectoryForPublicationExport",
-        "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
+    
+    createASCIIPath(pathToCreate.toString());
 
-    File dir = new File(pathToCreateAscii);
-    if (!dir.exists()) {
-      boolean creationOK = dir.mkdirs();
-      if (!creationOK) {
-        throw new IOException();
-      }
-    }
     return relativeExportPathAscii;
   }
 
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, String exportPath)
+      List<WAAttributeValuePair> listItemsToExport, String exportPath, String nodeRootId)
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+    
+    GEDImportExport gedIE = null;
+    NodeImportExport nodeIE = new NodeImportExport();
+    if (listItemsToExport != null && !listItemsToExport.isEmpty()) {
+      String componentId = listItemsToExport.get(0).getValue();
+      gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
+    }
 
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
@@ -436,7 +475,33 @@ public class PublicationsTypeManager {
       PublicationPK pk = new PublicationPK(pubId, componentId);
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
-      exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", exportPath);
+      
+      if (!StringUtil.isDefined(nodeRootId)) {
+        // exporting all attachments in same directory
+        exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", exportPath);
+      } else {
+        // exporting attachments in directories according to place of publications
+        List<NodePK> folderPKs = gedIE.getAllTopicsOfPublication(pubId, componentId);
+        NodePK rightFolderPK = null;
+        for (NodePK folderPK : folderPKs) {
+          if (folderPK.getInstanceId().equals(componentId)) {
+            List<NodeDetail> listNodes =
+                new ArrayList<NodeDetail>(nodeIE.getPathOfNode(folderPK));
+            Collections.reverse(listNodes);
+            for (NodeDetail nodeDetail : listNodes) {
+              if (nodeDetail.getNodePK().getId().equals(nodeRootId)) {
+                rightFolderPK = folderPK;
+                break;
+              }
+            }
+          }
+          if (rightFolderPK != null) {
+            String attachmentsExportPath = createDirectoryPathForExport(exportPath, nodeRootId, rightFolderPK.getId(), componentId, true);
+            exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", attachmentsExportPath);
+            break;
+          }
+        }
+      }
     }
   }
 
@@ -518,25 +583,15 @@ public class PublicationsTypeManager {
     relativeExportPath.append(separator).append(pubNameForm);
     pathToCreate.append(separator).append(pubNameForm);
 
-    // L'api zip ne prends que les caractères ascii, aussi pour être
-    // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath
-        .toString());
+    // ZIP API manage only ASCII characters. So directories are created in ASCII too.
+    String relativeExportPathAscii =
+        FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace
         .debug("importExport", "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
-    String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
-        "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
+    
+    createASCIIPath(pathToCreate.toString());
 
-    File dir = new File(pathToCreateAscii);
-    if (!dir.exists()) {
-      boolean creationOK = dir.mkdirs();
-      if (!creationOK) {
-        throw new IOException();
-      }
-    }
     return relativeExportPathAscii;
   }
 

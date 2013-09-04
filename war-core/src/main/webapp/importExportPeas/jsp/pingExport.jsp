@@ -26,20 +26,19 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ include file="check.jsp" %>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<Script language="JavaScript">
-function ping()
-{
+<view:looknfeel/>
+<script type="text/javascript">
+function ping() {
+	$.progressMessage();
 	window.setTimeout("doIdle();", 5000);	
 }
 
-function doIdle()
-{
+function doIdle() {
     self.location.href = "/silverpeas/RimportExportPeas/jsp/ExportItemsPing";
 }
 </script>
@@ -49,18 +48,19 @@ function doIdle()
 browseBar.setComponentName(resource.getString("importExportPeas.Export"));
 
 out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
 %>
+<view:frame>
+<view:board>
 <center>
 <table>
-<tr><td class="txtlibform"><blink><%=resource.getString("importExportPeas.InProgress")%></blink></td></tr>
+<tr><td class="txtlibform"><%=resource.getString("importExportPeas.InProgress")%></td></tr>
 </table>
 </center>
+</view:board>
+</view:frame>
 <%
-out.println(board.printAfter());
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>
