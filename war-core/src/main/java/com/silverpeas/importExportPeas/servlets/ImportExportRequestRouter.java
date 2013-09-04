@@ -50,8 +50,8 @@ public class ImportExportRequestRouter extends
   public ImportExportSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ImportExportSessionController(mainSessionCtrl, componentContext,
-        "com.silverpeas.importExportPeas.multilang.importExportPeasBundle",
-        "com.silverpeas.importExportPeas.settings.importExportPeasIcons");
+        "org.silverpeas.importExportPeas.multilang.importExportPeasBundle",
+        "org.silverpeas.importExportPeas.settings.importExportPeasIcons");
   }
 
   /**
