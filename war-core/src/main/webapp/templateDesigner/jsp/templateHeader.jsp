@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="org.apache.commons.io.FilenameUtils"%>
+<%@page import="org.apache.commons.io.FileUtils"%>
 <%@page import="org.silverpeas.util.crypto.CryptoException"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedComponent"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
@@ -152,6 +154,11 @@ function getTags(tags) {
 	return string;
 }
 
+function deleteLayer(id) {
+	$('#Delete'+id).val('true');
+	$('#Existing'+id).hide();
+}
+
 $(function () {
 	
 	var tagTriggerKeys = ['enter', 'comma', 'tab', 'semicolon', 'space'];
@@ -185,7 +192,7 @@ out.println(tabbedPane.print());
 <% if (cryptoException != null) { %>
 <div class="inlineMessage-nok"><%=cryptoException.getMessage()%></div>
 <% } %>
-<form name="templateForm" action="<%=action%>" method="post">
+<form name="templateForm" action="<%=action%>" method="post" enctype="multipart/form-data">
 <fieldset id="main" class="skinFieldset">
 <legend><%=resource.getString("templateDesigner.header.fieldset.main") %></legend>
 <div class="fields">
@@ -267,6 +274,43 @@ out.println(tabbedPane.print());
 </table>
 </div>
 </fieldset>
+
+<fieldset id="customization" class="skinFieldset">
+<legend><%=resource.getString("templateDesigner.header.fieldset.customization") %></legend>
+<div class="inlineMessage">
+<%=resource.getString("templateDesigner.header.customization.overview") %><br/>
+<%=resource.getString("templateDesigner.header.customization.help") %>
+</div>
+<div class="fields">
+<table cellpadding="5" width="100%">
+<tr>
+<td class="txtlibform"><%=resource.getString("templateDesigner.header.customization.view")%> :</td>
+<td>
+	<% if (template.isViewLayerExist()) { %>
+		<div id="ExistingViewLayer">
+			<a href="<%=URLManager.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=view.html" target="_blank">view.html</a>
+			<a href="javascript:deleteLayer('ViewLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
+		</div>
+	<% } %>
+	<input type="file" name="ViewLayer" /><input type="hidden" id="DeleteViewLayer" name="DeleteViewLayer" value="false"/>
+</td>
+</tr>
+<tr>
+<td class="txtlibform"><%=resource.getString("templateDesigner.header.customization.update")%> :</td>
+<td>
+	<% if (template.isUpdateLayerExist()) { %>
+		<div id="ExistingUpdateLayer">
+			<a href="<%=URLManager.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=update.html" target="_blank">update.html</a>
+			<a href="javascript:deleteLayer('UpdateLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
+		</div>
+	<% } %>
+	<input type="file" name="UpdateLayer" /><input type="hidden" id="DeleteUpdateLayer" name="DeleteUpdateLayer" value="false"/>
+</td>
+</tr>
+</table>
+</div>
+</fieldset>
+
 </form>
 <%
 ButtonPane buttonPane = gef.getButtonPane();
