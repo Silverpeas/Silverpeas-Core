@@ -922,6 +922,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
     String datatype = request.getParameter("datatypeFilter");
+    String filetype = request.getParameter("filetypeFilter");
 
     ResultFilterVO filter = new ResultFilterVO();
 
@@ -934,6 +935,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
     if (StringUtil.isDefined(datatype)) {
       filter.setDatatype(datatype);
+    }
+    if (StringUtil.isDefined(filetype)) {
+      filter.setFiletype(filetype);
     }
 
     // check form field facets
