@@ -75,18 +75,18 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * <li>a view Form used to show the publications.</li>
  * </ol>
  */
-@XmlRootElement(name="publicationTemplate")
+@XmlRootElement(name = "publicationTemplate")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationTemplateImpl implements PublicationTemplate {
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private String name = "";
   @XmlElement
   private String description = "";
-  @XmlElement(name="image")
+  @XmlElement(name = "image")
   private String thumbnail = "";
-  @XmlElement(required=true,defaultValue="false")
+  @XmlElement(required = true, defaultValue = "false")
   private boolean visible = false;
-  @XmlElement(required=true,defaultValue="false")
+  @XmlElement(required = true, defaultValue = "false")
   private boolean dataEncrypted = false;
   @XmlElementWrapper(name = "spaces")
   @XmlElement(name = "space")
@@ -97,7 +97,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @XmlElementWrapper(name = "instances")
   @XmlElement(name = "instance")
   private List<String> instances;
-  
+
   @XmlElement
   private String viewFileName = "";
   @XmlElement
@@ -110,7 +110,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String viewTypeFile = "";
   @XmlElement
   private String updateTypeFile = "";
-  
+
   private String fileName = "";
   private String externalId = "";
   private String searchResultFileName = "";
@@ -123,6 +123,16 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private Form updateForm = null;
   private Form viewForm = null;
   private Form searchResultForm = null;
+
+  public static final int LAYER_ACTION_NONE = 0;
+  public static final int LAYER_ACTION_ADD = 1;
+  public static final int LAYER_ACTION_REMOVE = 2;
+
+  private int viewLayerAction = LAYER_ACTION_NONE;
+  private int updateLayerAction = LAYER_ACTION_NONE;
+
+  private String viewLayerFileName = "";
+  private String updateLayerFileName = "";
 
   /**
    * Return the RecordTemplate of the publication data item.
@@ -427,7 +437,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     } catch (MappingException me) {
       throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : "
-          + xmlFileName, me);
+              + xmlFileName, me);
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE",
@@ -490,7 +500,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           throw new PublicationTemplateException(
               "PublicationTemplateImpl.saveRecordTemplate",
               "form.EX_ERR_CASTOR_SAVE_PUBLICATION_TEMPLATE", "xmlDirPath = "
-              + xmlDirPath, e);
+                  + xmlDirPath, e);
         }
       }
       String xmlFilePath = PublicationTemplateManager.makePath(
@@ -670,34 +680,35 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     }
     return searchResultForm;
   }
-  
+
   public List<String> getFieldsForFacets() {
     List<String> fieldNames = new ArrayList<String>();
     try {
       FieldTemplate[] fieldTemplates = getRecordTemplate().getFieldTemplates();
       for (FieldTemplate fieldTemplate : fieldTemplates) {
-        if(fieldTemplate.isUsedAsFacet()) {
+        if (fieldTemplate.isUsedAsFacet()) {
           fieldNames.add(fieldTemplate.getFieldName());
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("form", "PublicationTemplateImpl.getFieldsForFacets", "form.CANT_GET_FIELDS_FOR_FACETS", e);
+      SilverTrace.warn("form", "PublicationTemplateImpl.getFieldsForFacets",
+          "form.CANT_GET_FIELDS_FOR_FACETS", e);
     }
     return fieldNames;
   }
-  
+
   public List<String> getSpaces() {
     return spaces;
   }
-  
+
   public boolean isRestrictedVisibilityToSpace() {
     return getSpaces() != null && !getSpaces().isEmpty();
   }
-  
+
   public boolean isRestrictedVisibilityToApplication() {
     return getApplications() != null && !getApplications().isEmpty();
   }
-  
+
   public boolean isRestrictedVisibilityToInstance() {
     return getInstances() != null && !getInstances().isEmpty();
   }
@@ -711,7 +722,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   public void setApplications(List<String> applications) {
-    this.applications= applications;
+    this.applications = applications;
   }
 
   public List<String> getInstances() {
@@ -721,7 +732,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   public void setInstances(List<String> instances) {
     this.instances = instances;
   }
-  
+
   public boolean isRestrictedVisibility() {
     return isRestrictedVisibilityToSpace() ||
         isRestrictedVisibilityToApplication() ||
@@ -735,5 +746,55 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @Override
   public boolean isDataEncrypted() {
     return dataEncrypted;
+  }
+
+  public int getViewLayerAction() {
+    return viewLayerAction;
+  }
+
+  public void setViewLayerAction(int viewLayerAction) {
+    this.viewLayerAction = viewLayerAction;
+  }
+
+  public int getUpdateLayerAction() {
+    return updateLayerAction;
+  }
+
+  public void setUpdateLayerAction(int updateLayerAction) {
+    this.updateLayerAction = updateLayerAction;
+  }
+
+  public String getViewLayerFileName() {
+    return viewLayerFileName;
+  }
+
+  public void setViewLayerFileName(String viewLayerFileName) {
+    this.viewLayerFileName = viewLayerFileName;
+  }
+
+  public String getUpdateLayerFileName() {
+    return updateLayerFileName;
+  }
+
+  public void setUpdateLayerFileName(String updateLayerFileName) {
+    this.updateLayerFileName = updateLayerFileName;
+  }
+
+  public boolean isViewLayerDefined() {
+    return StringUtil.isDefined(viewLayerFileName);
+  }
+
+  public boolean isUpdateLayerDefined() {
+    return StringUtil.isDefined(updateLayerFileName);
+  }
+
+  @Override
+  public boolean isViewLayerExist() {
+    return getViewFileName().endsWith(".html");
+  }
+
+  @Override
+  public boolean isUpdateLayerExist() {
+    return getUpdateFileName().endsWith(".html");
   }
 }
