@@ -76,7 +76,7 @@ void displayFacet(Facet facet, ResourcesWrapper resource, JspWriter out) throws 
 			FacetEntryVO entry = facet.getEntries().get(cpt);
 		    String entryName = entry.getName();
 		    String entryId = entry.getId();
-		    String displayComp = (entryName != null && entryName.length() > facetResultLength)? entryName.substring(0,facetResultLength) + "...":entryName;
+		    String displayComp = StringUtil.abbreviate(entryName, facetResultLength);
 		    displayComp += "&nbsp;(" + entry.getNbElt() + ")";
 		    String lastClass = "";
 		    if (cpt == facet.getEntries().size() - 1) {
@@ -135,7 +135,7 @@ List<GoogleTab>	webTabs			= (List<GoogleTab>) request.getAttribute("WebTabs");
 List<String> spellingWords = (List<String>) request.getAttribute("spellingWords");
 
 // List of Group result filter (new function added by EBO)
-ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
+ResultGroupFilter facets = (ResultGroupFilter) request.getAttribute("ResultGroup");
 
 // recuperation du choix de l'utilisateur
 String keywords = (String) request.getAttribute("Keywords");
@@ -664,67 +664,51 @@ function viewFile(target, attachmentId, versioned, componentId) {
     </div>
     <div id="globalResultHelp" class="inlineMessage">
 		<table width="100%" border="0"><tr><td valign="top" width="30%">
-        <fmt:message key="pdcPeas.helpCol1Header" /><br><br>
-        <fmt:message key="pdcPeas.helpCol1Content1" /><br>
-        <fmt:message key="pdcPeas.helpCol1Content2" /><br>
-        <fmt:message key="pdcPeas.helpCol1Content3" /><br>
+        <fmt:message key="pdcPeas.helpCol1Header" /><br/><br/>
+        <fmt:message key="pdcPeas.helpCol1Content1" /><br/>
+        <fmt:message key="pdcPeas.helpCol1Content2" /><br/>
+        <fmt:message key="pdcPeas.helpCol1Content3" /><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-        <fmt:message key="pdcPeas.helpCol2Header" /><br><br>
+        <fmt:message key="pdcPeas.helpCol2Header" /><br/><br/>
         <%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
 		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
-        <fmt:message key="pdcPeas.helpCol2Content3" /><br>
-        <fmt:message key="pdcPeas.helpCol2Content4" /><br>
-        <fmt:message key="pdcPeas.helpCol2Content5" /><br>
+        <fmt:message key="pdcPeas.helpCol2Content3" /><br/>
+        <fmt:message key="pdcPeas.helpCol2Content4" /><br/>
+        <fmt:message key="pdcPeas.helpCol2Content5" /><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-        <fmt:message key="pdcPeas.helpCol3Header" /><br><br>
-        <fmt:message key="pdcPeas.helpCol3Content1" /><br>
-        <fmt:message key="pdcPeas.helpCol3Content2" /><br>
-        <fmt:message key="pdcPeas.helpCol3Content3" /><br>
-        <fmt:message key="pdcPeas.helpCol3Content4" /><br>
+        <fmt:message key="pdcPeas.helpCol3Header" /><br/><br/>
+        <fmt:message key="pdcPeas.helpCol3Content1" /><br/>
+        <fmt:message key="pdcPeas.helpCol3Content2" /><br/>
+        <fmt:message key="pdcPeas.helpCol3Content3" /><br/>
+        <fmt:message key="pdcPeas.helpCol3Content4" /><br/>
 		</td>
 		</tr></table>
   </div>
   </view:frame>
 </div>
-	<%
-
-	// Adding facet search group
-  	if (resultGroup != null) {
-    	%>
+	<% if (facets != null) { %>
 	  <input type="hidden" name="changeFilter" id="changeFilterId" value="" />
       <div id="globalResultGroupDivId">
       	<div id="facetSearchDivId">
       	<%
-      	Facet authorFacet = resultGroup.getAuthorFacet();
-      	Facet componentFacet = resultGroup.getComponentFacet();
-      	Facet datatypeFacet = resultGroup.getDatatypeFacet();
-      	List<Facet> fieldFacets = resultGroup.getFormFieldFacets();
+      	displayFacet(facets.getAuthorFacet(), resource, out);
       	
-      	displayFacet(authorFacet, resource, out);
+      	List<Facet> fieldFacets = facets.getFormFieldFacets();
       	for (Facet facet : fieldFacets) {
       	  	displayFacet(facet, resource, out);
-	  	        }
-      	displayFacet(datatypeFacet, resource, out);
-      	displayFacet(componentFacet, resource, out);
-	  	        %>
-      	<%--
-      	  <div id="searchGroupTitle"><span class="file">Type de fichier</span></div>
-   		  <div id="searchGroupValues">
-   			<ul>
-  	  				<li><a href="#">pdf</a></li>
-  	  				<li><a href="#">xls</a></li>
-      		</ul>
-      	  </div>
-        --%>
+	  	}
+      	
+      	displayFacet(facets.getDatatypeFacet(), resource, out);
+      	displayFacet(facets.getFiletypeFacet(), resource, out);
+      	displayFacet(facets.getComponentFacet(), resource, out);
+	  	%>
         </div>
       </div>
-    	<%
-    }
-%>
+    <% } %>
 </view:window>
 
 	<input type="hidden" name="selectedIds"/>

@@ -33,6 +33,7 @@ public class ResultFilterVO {
   private String authorId = null;
   private String componentId = null;
   private String datatype = null;
+  private String filetype = null;
   private String year = null;
   private Map<String, String> formFieldFacets;
 
@@ -90,7 +91,7 @@ public class ResultFilterVO {
   
   public boolean isEmpty() {
     return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) &&
-        !StringUtil.isDefined(datatype) && isSelectedFormFieldFacetsEmpty();
+        !StringUtil.isDefined(datatype) && !StringUtil.isDefined(filetype) && isSelectedFormFieldFacetsEmpty();
   }
   
   public Map<String, String> getFormFieldSelectedFacetEntries() {
@@ -106,7 +107,10 @@ public class ResultFilterVO {
       str.append(" ComponentId=").append(componentId);
     }
     if (StringUtil.isDefined(datatype)) {
-      str.append(" DataTye=").append(datatype);
+      str.append(" DataType=").append(datatype);
+    }
+    if (StringUtil.isDefined(filetype)) {
+      str.append(" FileType=").append(filetype);
     }
     if (!isSelectedFormFieldFacetsEmpty()) {
       for (String facetId : formFieldFacets.keySet()) {
@@ -126,4 +130,13 @@ public class ResultFilterVO {
   public String getDatatype() {
     return datatype;
   }
+
+  public void setFiletype(String filetype) {
+    this.filetype = filetype;
+  }
+
+  public String getFiletype() {
+    return filetype;
+  }
+  
 }
