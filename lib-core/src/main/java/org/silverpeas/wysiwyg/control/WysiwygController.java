@@ -56,8 +56,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -766,13 +768,14 @@ public class WysiwygController {
    * @param userId
    * @see
    */
-  public static void copy(String oldComponentId, String oldObjectId, String componentId,
+  public static Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
       String objectId, String userId) {
     SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
+    Map<String, String> fileIds = new HashMap<String, String>();
     for (SimpleDocument doc : documents) {
       doc.getFile().setCreatedBy(userId);
       SimpleDocumentPK pk = AttachmentServiceFactory.getAttachmentService().copyDocument(doc,
@@ -787,12 +790,13 @@ public class WysiwygController {
       for (SimpleDocument image : images) {
         SimpleDocumentPK imageCopyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
             image, targetPk);
+        fileIds.put(image.getId(), imageCopyPk.getId());
         content = replaceInternalImageId(content, image.getPk(), imageCopyPk);
       }
       AttachmentServiceFactory.getAttachmentService().updateAttachment(copy,
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)), true, true);
     }
-
+    return fileIds;
   }
 
   static String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,

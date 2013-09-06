@@ -45,6 +45,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -217,6 +218,10 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void delete(DataRecord record) throws FormException {
     if (record != null) {
+      // remove files managed by Wysiwyg field
+      WysiwygFCKFieldDisplayer.removeContents(new ForeignPK(record.getId(), recordTemplate.getInstanceId()));
+      
+      // remove data in database
       getGenericRecordSetManager().deleteRecord(recordTemplate, record);
     }
   }
@@ -225,6 +230,68 @@ public class GenericRecordSet implements RecordSet, Serializable {
     DataRecord data = getRecord(objectId);
     delete(data);
   }
+  
+  @Override
+  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+      throws FormException {
+    GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId());
+    if (record != null) {
+      // move wysiwyg fields
+      WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
+      try {
+        wysiwygDisplayer.move(fromPK, toPK);
+      } catch (IOException e) {
+        SilverTrace.error("form", "GenericRecordSet.move", "form.CANT_MOVE_WYSIWYG_FIELD_CONTENT", null, e);
+      }
+      
+      // move files, images and video of form
+      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
+      for (SimpleDocument doc : documents) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPK);
+      }
+      
+      // move record itself in database
+      getGenericRecordSetManager().moveRecord(record.getInternalId(),
+          (IdentifiedRecordTemplate) toRecordTemplate);
+    }
+  }
+  
+  @Override
+  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+      Map<String, String> oldAndNewFileIds) throws FormException {
+    GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId());
+    record.setInternalId(-1);
+    record.setId(toPK.getId());
+
+    // clone wysiwyg fields content
+    WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
+    try {
+      wysiwygDisplayer.cloneContents(fromPK, toPK, oldAndNewFileIds);
+    } catch (Exception e) {
+      SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
+    }
+    
+    // copy files, images and videos
+    try {
+      List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
+      originals.addAll(AttachmentServiceFactory.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(fromPK, DocumentType.video, null));
+      Map<String, String> ids = new HashMap<String, String>(originals.size());
+      for (SimpleDocument original : originals) {
+        SimpleDocumentPK clonePk =
+            AttachmentServiceFactory.getAttachmentService().copyDocument(original, toPK);
+        ids.put(original.getId(), clonePk.getId());
+      }
+      replaceIds(ids, record, toPK.getId());
+    } catch (AttachmentException e) {
+      throw new FormException("form", "", e);
+    }
+
+    // insert record itself in database
+    getGenericRecordSetManager().insertRecord((IdentifiedRecordTemplate) toRecordTemplate, record);
+  }
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
@@ -232,19 +299,19 @@ public class GenericRecordSet implements RecordSet, Serializable {
     GenericDataRecord record = (GenericDataRecord) getRecord(originalExternalId);
     record.setInternalId(-1);
     record.setId(cloneExternalId);
+    
+    ForeignPK fromPK = new ForeignPK(originalExternalId, originalComponentId);
+    ForeignPK toPK = new ForeignPK(cloneExternalId, cloneComponentId);
 
     // clone wysiwyg fields content
     WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
     try {
-      wysiwygDisplayer.cloneContents(originalComponentId, originalExternalId, cloneComponentId,
-          cloneExternalId);
+      wysiwygDisplayer.cloneContents(fromPK, toPK, attachmentIds);
     } catch (Exception e) {
       SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
     }
 
     // clone images and videos
-    ForeignPK fromPK = new ForeignPK(originalExternalId, originalComponentId);
-    ForeignPK toPK = new ForeignPK(cloneExternalId, cloneComponentId);
     try {
       List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
@@ -256,7 +323,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
             original, cloneExternalId);
         ids.put(original.getId(), clonePk.getId());
       }
-      replaceIds(ids, record);
+      replaceIds(ids, record, originalExternalId);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
@@ -290,7 +357,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
       Map<String, String> videoIds = AttachmentServiceFactory.getAttachmentService().mergeDocuments(
           toPK, fromPK, DocumentType.video);
       ids.putAll(videoIds);
-      replaceIds(ids, fromRecord);
+      replaceIds(ids, fromRecord, toExternalId);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
@@ -298,7 +365,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     update(fromRecord);
   }
 
-  private void replaceIds(Map<String, String> ids, GenericDataRecord record)
+  private void replaceIds(Map<String, String> ids, GenericDataRecord record, String recordIdFrom)
       throws FormException {
     String[] fieldNames = record.getFieldNames();
     for (String fieldName : fieldNames) {
@@ -312,10 +379,16 @@ public class GenericRecordSet implements RecordSet, Serializable {
             if (!StringUtil.isDefined(fieldDisplayerName)) {
               fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
             }
-            if ("image".equals(fieldDisplayerName) || "video".equals(fieldDisplayerName) || "file"
-                .equals(fieldDisplayerName)) {
+            if (Field.TYPE_FILE.equals(fieldType)) {
               if (ids.containsKey(field.getStringValue())) {
                 field.setStringValue(ids.get(field.getStringValue()));
+              }
+            } else {
+              String oldValue = field.getStringValue();
+              if (oldValue != null && oldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+                // Wysiwyg case
+                String newValue = oldValue.replaceAll(recordIdFrom, record.getId());
+                field.setStringValue(newValue);
               }
             }
           } catch (Exception e) {

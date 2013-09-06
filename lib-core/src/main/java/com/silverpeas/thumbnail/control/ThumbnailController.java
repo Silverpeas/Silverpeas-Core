@@ -189,6 +189,37 @@ public class ThumbnailController {
           SilverpeasRuntimeException.ERROR, "thumbnail_CANT_COPY_THUMBNAIL", e);
     }
   }
+  
+  public static void moveThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+    ThumbnailDetail thumbnail =
+      ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
+          fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
+          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
+    try {
+      if (thumbnail != null) {
+        // move thumbnail on disk
+        if (!thumbnail.getOriginalFileName().startsWith("/")) {
+          File file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getOriginalFileName());
+          File to = new File(getImageDirectory(toPK.getInstanceId()));
+          
+          // move original thumbnail
+          FileUtils.moveFileToDirectory(file, to, true);
+          
+          // move cropped thumbnail
+          if (thumbnail.getCropFileName() != null) {
+            file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getCropFileName());
+            FileUtils.moveFileToDirectory(file, to, true);
+          }
+        }
+        
+        // move thumbnail in DB
+        thumbnailService.moveThumbnail(thumbnail, toPK.getInstanceId());
+      }
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailController.moveThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_MOVE_THUMBNAIL", e);
+    }
+  }
 
   protected static void createCropThumbnailFileOnServer(String pathOriginalFile,
       String pathCropdir,

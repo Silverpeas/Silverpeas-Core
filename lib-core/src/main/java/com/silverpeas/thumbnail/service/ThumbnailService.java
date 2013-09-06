@@ -38,5 +38,7 @@ public interface ThumbnailService {
       throws ThumbnailException;
 
   public void deleteAllThumbnail(String componentId) throws ThumbnailException;
+  
+  public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId) throws ThumbnailException;
 
 }
