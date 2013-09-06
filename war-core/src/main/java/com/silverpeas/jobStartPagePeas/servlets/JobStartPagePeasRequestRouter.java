@@ -27,7 +27,9 @@ package com.silverpeas.jobStartPagePeas.servlets;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,6 +40,7 @@ import org.silverpeas.util.UnitUtil;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
+import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.admin.localized.LocalizedParameter;
@@ -466,9 +469,10 @@ public class JobStartPagePeasRequestRouter extends
       }
       destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
           + "Idle.jsp?message=REFRESHCLIPBOARD";
-    } else if (function.startsWith("paste")) {
+    } else if ("Paste".equals(function)) {
+      Map<String, String> options = getPasteOptions(request);
       try {
-        jobStartPageSC.paste();
+        jobStartPageSC.paste(options);
       } catch (Exception e) {
         throw new AdminException("JobStartPagePeasRequestRouter.getDestination()",
             SilverpeasException.ERROR, "jobStartPagePeas.CANT_PAST_COMPONENT", e);
@@ -491,6 +495,17 @@ public class JobStartPagePeasRequestRouter extends
     }
 
     return destination;
+  }
+  
+  private Map<String, String> getPasteOptions(HttpServletRequest request) {
+    Map<String, String[]> parameters = request.getParameterMap();
+    Map<String, String> pasteOptions = new HashMap<String, String>();
+    for (String parameterName : parameters.keySet()) {
+      if (parameterName.startsWith(PasteDetail.OPTION_PREFIX)) {
+        pasteOptions.put(parameterName, parameters.get(parameterName)[0]);
+      }
+    }
+    return pasteOptions;
   }
 
   public String getDestinationSpace(String function,
@@ -875,6 +890,8 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
         request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+        
+        request.setAttribute("CopiedComponents", jobStartPageSC.getCopiedComponents());
 
         request.setAttribute("Space", spaceint1);
       } else if ("/jobStartPagePeas/jsp/componentInfo.jsp".equals(destination)) {

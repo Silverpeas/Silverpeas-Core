@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.silverpeas.quota.exception.QuotaException;
 
+import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
@@ -1706,14 +1707,14 @@ public class AdminController implements java.io.Serializable {
     getAdminService().reloadCache();
   }
 
-  public String copyAndPasteComponent(String componentId, String spaceId, String userId)
+  public String copyAndPasteComponent(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
-    return getAdminService().copyAndPasteComponent(componentId, spaceId, userId);
+    return getAdminService().copyAndPasteComponent(pasteDetail);
   }
 
-  public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
+  public String copyAndPasteSpace(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
-    return getAdminService().copyAndPasteSpace(spaceId, toSpaceId, userId);
+    return getAdminService().copyAndPasteSpace(pasteDetail);
   }
 
 }

@@ -113,9 +113,7 @@ public class GenericRecordSetManager {
         if (templateName == null) {
           insertTemplateFieldRows(con, identifiedTemplate);
         }
-      }
-
-      if (existingOne == null) {
+      
         GenericRecordSet newSet = new GenericRecordSet(identifiedTemplate);
         cacheRecordSet(externalId, newSet);
         return newSet;
@@ -406,25 +404,21 @@ public class GenericRecordSetManager {
     }
   }
 
-  public void moveRecord(IdentifiedRecordTemplate templateFrom,
-      String recordIdFrom, IdentifiedRecordTemplate templateTo) throws FormException {
+  public void moveRecord(int recordId, IdentifiedRecordTemplate templateTo)
+      throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.moveRecord",
-        "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom);
+        "root.MSG_GEN_ENTER_METHOD", "recordId = " + recordId+", toInstanceId = "+templateTo.getInternalId());
 
-    GenericDataRecord record = (GenericDataRecord) getRecord(templateFrom, recordIdFrom);
-    if (record != null) {
-      Connection con = null;
+    Connection con = null;
 
-      try {
-        con = getConnection();
-        updateTemplateId(con, templateFrom.getInternalId(), templateTo.getInternalId(),
-            recordIdFrom);
-      } catch (SQLException e) {
-        throw new FormException("GenericRecordSetManager.moveRecord",
-            "form.CANT_MOVE_RECORD_FROM_TEMPLATE_TO_ANOTHER", e);
-      } finally {
-        closeConnection(con);
-      }
+    try {
+      con = getConnection();
+      updateTemplateId(con, templateTo.getInternalId(), recordId);
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager.moveRecord",
+          "form.CANT_MOVE_RECORD_FROM_TEMPLATE_TO_ANOTHER", e);
+    } finally {
+      closeConnection(con);
     }
   }
 
@@ -1142,16 +1136,14 @@ public class GenericRecordSetManager {
     }
   }
 
-  private void updateTemplateId(Connection con, int oldTemplateId, int newTemplateId,
-      String externalId)
+  private void updateTemplateId(Connection con, int newTemplateId, int recordId)
       throws SQLException {
     PreparedStatement update = null;
 
     try {
       update = con.prepareStatement(MOVE_RECORD);
       update.setInt(1, newTemplateId);
-      update.setString(2, externalId);
-      update.setInt(3, oldTemplateId);
+      update.setInt(2, recordId);
       update.execute();
     } finally {
       DBUtil.close(update);
@@ -1215,7 +1207,7 @@ public class GenericRecordSetManager {
       + " where recordId=?";
 
   static final private String MOVE_RECORD =
-      "update " + RECORD_TABLE + " set templateId = ? where externalId = ? and templateId = ? ";
+      "update " + RECORD_TABLE + " set templateId = ? where recordId = ? ";
 
   /* Record fields table */
 

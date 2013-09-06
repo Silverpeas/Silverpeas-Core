@@ -113,11 +113,24 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      // delete all thumbnails
       dao.deleteAllThumbnails(con, componentId);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
           SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  @Override
+  public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId) throws ThumbnailException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      dao.moveThumbnail(con, thumbDetail, toInstanceId);
+    } catch (SQLException se) {
+      throw new ThumbnailException("ThumbnailBmImpl.moveThumbnail()",
+          SilverpeasException.ERROR, "thumbnail.EX_MSG_CANT_MOVE_THUMBNAIL", se);
     } finally {
       DBUtil.close(con);
     }
