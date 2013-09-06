@@ -286,7 +286,7 @@ out.println(tabbedPane.print());
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.header.customization.view")%> :</td>
 <td>
-	<% if (template.isViewLayerExist()) { %>
+	<% if (template != null && template.isViewLayerExist()) { %>
 		<div id="ExistingViewLayer">
 			<a href="<%=URLManager.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=view.html" target="_blank">view.html</a>
 			<a href="javascript:deleteLayer('ViewLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
@@ -298,7 +298,7 @@ out.println(tabbedPane.print());
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.header.customization.update")%> :</td>
 <td>
-	<% if (template.isUpdateLayerExist()) { %>
+	<% if (template != null && template.isUpdateLayerExist()) { %>
 		<div id="ExistingUpdateLayer">
 			<a href="<%=URLManager.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=update.html" target="_blank">update.html</a>
 			<a href="javascript:deleteLayer('UpdateLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>

@@ -1,50 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.publicationTemplate;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
 
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
@@ -62,8 +36,25 @@ import com.silverpeas.form.record.GenericRecordTemplate;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.InputSource;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A
@@ -78,6 +69,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 @XmlRootElement(name = "publicationTemplate")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationTemplateImpl implements PublicationTemplate {
+
   @XmlElement(required = true)
   private String name = "";
   @XmlElement
@@ -97,7 +89,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @XmlElementWrapper(name = "instances")
   @XmlElement(name = "instance")
   private List<String> instances;
-
   @XmlElement
   private String viewFileName = "";
   @XmlElement
@@ -110,7 +101,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String viewTypeFile = "";
   @XmlElement
   private String updateTypeFile = "";
-
   private String fileName = "";
   private String externalId = "";
   private String searchResultFileName = "";
@@ -123,19 +113,17 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private Form updateForm = null;
   private Form viewForm = null;
   private Form searchResultForm = null;
-
   public static final int LAYER_ACTION_NONE = 0;
   public static final int LAYER_ACTION_ADD = 1;
   public static final int LAYER_ACTION_REMOVE = 2;
-
   private int viewLayerAction = LAYER_ACTION_NONE;
   private int updateLayerAction = LAYER_ACTION_NONE;
-
   private String viewLayerFileName = "";
   private String updateLayerFileName = "";
 
   /**
    * Return the RecordTemplate of the publication data item.
+   *
    * @param loadIfNull
    * @return the record template, or a dummy record template if not found (never return
    * <code>null</code> if <code>loadIfNull</code> is <code>true</code>), or <code>null</code> if not
@@ -160,6 +148,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Return the RecordSet of all the records built from this template.
+   *
    * @return the record set or a dummy record set if not found (never return <code>null</code>).
    * @throws PublicationTemplateException
    */
@@ -260,7 +249,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   private Form getForm(String fileName, String fileType) throws PublicationTemplateException {
     Form form = null;
-    RecordTemplate templateForm = null;
+    RecordTemplate templateForm;
     String currentFileName = fileName;
 
     String typeFile = FileRepositoryManager.getFileExtension(currentFileName);
@@ -297,6 +286,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Merge the data template with the form template
+   *
    * @param formTemplate
    * @throws PublicationTemplateException
    */
@@ -414,6 +404,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * load a recordTemplate definition from xml file to java objects
+   *
    * @param xmlFileName the xml file name that contains process model definition
    * @return a RecordTemplate object
    */
@@ -437,7 +428,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     } catch (MappingException me) {
       throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : "
-              + xmlFileName, me);
+          + xmlFileName, me);
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE",
@@ -455,6 +446,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * This method saves current templates inside a sub directory
+   *
    * @throws PublicationTemplateException
    */
   public void saveRecordTemplates() throws PublicationTemplateException {
@@ -479,6 +471,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Save a recordTemplate to xml file
+   *
    * @param recordTemplate the object to save as xml File
    * @param subDir the sub directory where saving the xml file
    * @param xmlFileName the xml file name
@@ -489,20 +482,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     // FileWriter writer = null;
     Mapping mapping = new Mapping();
     try {
-      // Format these url
-      String xmlDirPath = PublicationTemplateManager.makePath(
-          PublicationTemplateManager.templateDir, subDir);
-      File dir = new File(xmlDirPath);
-      if (!dir.exists()) {
-        try {
-          FileFolderManager.createFolder(dir);
-        } catch (UtilException e) {
-          throw new PublicationTemplateException(
-              "PublicationTemplateImpl.saveRecordTemplate",
-              "form.EX_ERR_CASTOR_SAVE_PUBLICATION_TEMPLATE", "xmlDirPath = "
-                  + xmlDirPath, e);
-        }
-      }
       String xmlFilePath = PublicationTemplateManager.makePath(
           PublicationTemplateManager.templateDir, subDir + xmlFileName);
       // Load mapping and instantiate a Marshaller
@@ -667,6 +646,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Gets an instance of a GenericRecordSet objects manager.
+   *
    * @return a GenericRecordSetManager instance.
    */
   protected GenericRecordSetManager getGenericRecordSetManager() {
@@ -681,6 +661,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return searchResultForm;
   }
 
+  @Override
   public List<String> getFieldsForFacets() {
     List<String> fieldNames = new ArrayList<String>();
     try {
@@ -697,18 +678,22 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return fieldNames;
   }
 
+  @Override
   public List<String> getSpaces() {
     return spaces;
   }
 
+  @Override
   public boolean isRestrictedVisibilityToSpace() {
     return getSpaces() != null && !getSpaces().isEmpty();
   }
 
+  @Override
   public boolean isRestrictedVisibilityToApplication() {
     return getApplications() != null && !getApplications().isEmpty();
   }
 
+  @Override
   public boolean isRestrictedVisibilityToInstance() {
     return getInstances() != null && !getInstances().isEmpty();
   }
@@ -717,6 +702,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.spaces = spaces;
   }
 
+  @Override
   public List<String> getApplications() {
     return applications;
   }
@@ -725,6 +711,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.applications = applications;
   }
 
+  @Override
   public List<String> getInstances() {
     return instances;
   }
@@ -733,10 +720,10 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.instances = instances;
   }
 
+  @Override
   public boolean isRestrictedVisibility() {
-    return isRestrictedVisibilityToSpace() ||
-        isRestrictedVisibilityToApplication() ||
-        isRestrictedVisibilityToInstance();
+    return isRestrictedVisibilityToSpace() || isRestrictedVisibilityToApplication()
+        || isRestrictedVisibilityToInstance();
   }
 
   public void setDataEncrypted(boolean dataEncrypted) {
