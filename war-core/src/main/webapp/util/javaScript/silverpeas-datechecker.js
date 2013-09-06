@@ -106,28 +106,28 @@
 (function($) {
 
   $.datechecker = {
-    CODE_ERROR : {
-      UNKNOWN : 'UNKNOWN',
-      UNEXISTING : 'UNEXISTING',
-      IS_NOT_VALID : 'IS_NOT_VALID',
-      HOUR_IS_NOT_VALID : 'HOUR_IS_NOT_VALID',
-      IS_NOT_AFTER_NOW : 'IS_NOT_AFTER_NOW',
-      IS_NOT_AFTER_ANOTHER : 'IS_NOT_AFTER_ANOTHER'
+    CODE_ERROR: {
+      UNKNOWN: 'UNKNOWN',
+      UNEXISTING: 'UNEXISTING',
+      IS_NOT_VALID: 'IS_NOT_VALID',
+      HOUR_IS_NOT_VALID: 'HOUR_IS_NOT_VALID',
+      IS_NOT_AFTER_NOW: 'IS_NOT_AFTER_NOW',
+      IS_NOT_AFTER_ANOTHER: 'IS_NOT_AFTER_ANOTHER'
     },
-    settings : {
-      language : 'en'
+    settings: {
+      language: 'en'
     },
-    isDateValid : function() {
+    isDateValid: function() {
       var options = (arguments.length > 1) ? arguments[1] : null;
       return __isDateValid(__buildDateContext(arguments[0], options));
     },
-    isDateAfterNow : function() {
+    isDateAfterNow: function() {
       var options = (arguments.length > 1) ? arguments[1] : null;
       return __isDateAfterNow(__buildDateContext(arguments[0], options));
     },
-    isDateAfterAnother : function(dateContext, anotherDateContext) {
+    isDateAfterAnother: function(dateContext, anotherDateContext) {
       return __isDateAfterAnother(__buildDateContext(dateContext),
-          __buildDateContext(anotherDateContext));
+              __buildDateContext(anotherDateContext));
     }
   };
 
@@ -141,12 +141,12 @@
   function __isDateAfterAnother(dateContext, anotherDateContext) {
     var errors = __isDateValid(anotherDateContext).concat(__isDateValid(dateContext));
     if (!dateContext.isError && !anotherDateContext.isError && dateContext.parsedDate &&
-        anotherDateContext.parsedDate) {
+            anotherDateContext.parsedDate) {
       if (__compareDateToAnother(dateContext.parsedDate, anotherDateContext.parsedDate) < 0 ||
-          ((!dateContext.canBeEqualToAnother || !anotherDateContext.canBeEqualToAnother) &&
-              __compareDateToAnother(anotherDateContext.parsedDate, dateContext.parsedDate) == 0)) {
+              ((!dateContext.canBeEqualToAnother || !anotherDateContext.canBeEqualToAnother) &&
+                      __compareDateToAnother(anotherDateContext.parsedDate, dateContext.parsedDate) === 0)) {
         errors.push(__buildError($.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER, dateContext,
-            anotherDateContext));
+                anotherDateContext));
       }
     }
     return errors;
@@ -160,9 +160,9 @@
    */
   function __isDateAfterNow(dateContext) {
     var errors = __isDateAfterAnother(dateContext,
-        {parsedDate : __getNow(!__isDefined(dateContext.hour))});
+            {parsedDate: __getNow(!__isDefined(dateContext.hour))});
     if (errors.length > 0 &&
-        $.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER == errors[errors.length - 1].code) {
+            $.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER == errors[errors.length - 1].code) {
       errors.pop();
       errors.push(__buildError($.datechecker.CODE_ERROR.IS_NOT_AFTER_NOW, dateContext));
     }
@@ -201,7 +201,7 @@
           }
           dateContext.parsedDate = $.datepicker.parseDate(dateFormat, dateContext.date, null);
           if (dateContext.date !=
-              $.datepicker.formatDate(dateFormat, dateContext.parsedDate, null)) {
+                  $.datepicker.formatDate(dateFormat, dateContext.parsedDate, null)) {
             throw $.datechecker.CODE_ERROR.IS_NOT_VALID;
           }
         } catch (ex) {
@@ -211,7 +211,7 @@
 
       // Hour
       if (__isDefined(dateContext.hour)) {
-        if (typeof dateContext.parsedDate === 'undefined' || dateContext.parsedDate == null) {
+        if (typeof dateContext.parsedDate === 'undefined' || dateContext.parsedDate === null) {
           // Only hour will be verified
           dateContext.parsedDate = new Date('1970-01-01');
           dateContext.hourOnly = true;
@@ -306,21 +306,21 @@
 
     var options = (arguments.length > 1) ? arguments[1] : null;
     var dateContext = {
-      labelId : '',
-      dateId : '',
-      labelHourId : '',
-      hourId : '',
-      label : '',
-      date : '',
-      labelHour : '',
-      hour : '',
-      defaultDate : '',
-      defaultDateHour : '',
-      isMandatory : false,
-      isMandatoryHour : false,
-      canBeEqualToAnother : true,
-      nbCheck : 1,
-      isError : false
+      labelId: '',
+      dateId: '',
+      labelHourId: '',
+      hourId: '',
+      label: '',
+      date: '',
+      labelHour: '',
+      hour: '',
+      defaultDate: '',
+      defaultDateHour: '',
+      isMandatory: false,
+      isMandatoryHour: false,
+      canBeEqualToAnother: true,
+      nbCheck: 1,
+      isError: false
     };
     if (dateOrDateContext) {
       if (typeof dateOrDateContext === 'string') {
@@ -340,22 +340,22 @@
        */
       var fromTagValues = {};
       __loadValuesFromHtmlTags(fromTagValues, {
-        labelId : dateContext.labelId,
-        id : dateContext.dateId,
-        labelProp : 'label',
-        valueProp : 'date'
+        labelId: dateContext.labelId,
+        id: dateContext.dateId,
+        labelProp: 'label',
+        valueProp: 'date'
       });
       __loadValuesFromHtmlTags(fromTagValues, {
-        labelId : dateContext.labelHourId,
-        id : dateContext.hourId,
-        labelProp : 'labelHour',
-        valueProp : 'hour'
+        labelId: dateContext.labelHourId,
+        id: dateContext.hourId,
+        labelProp: 'labelHour',
+        valueProp: 'hour'
       });
       $.extend(dateContext, fromTagValues);
     }
 
     // Options
-    if (options && options != null) {
+    if (options && options !== null) {
       $.extend(dateContext, options);
     }
 
@@ -364,7 +364,7 @@
       dateContext.date = dateContext.defaultDate;
     }
     if (!dateContext.isMandatoryHour && dateContext.defaultDateHour &&
-        !__isDefined(dateContext.hour) && __isDefined(dateContext.date)) {
+            !__isDefined(dateContext.hour) && __isDefined(dateContext.date)) {
       dateContext.hour = dateContext.defaultDateHour;
     }
 
@@ -437,12 +437,12 @@
         break;
       case $.datechecker.CODE_ERROR.IS_NOT_AFTER_NOW:
         error.message += __getFromBundleKey(
-            (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDate' :
+                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDate' :
                 'GML.MustContainsPostDate');
         break;
       case $.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER:
         error.message += __getFromBundleKey(
-            (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDateTo' :
+                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDateTo' :
                 'GML.MustContainsPostDateTo');
         if (anotherDateContext.label) {
           error.message += ' ' + anotherDateContext.label;
@@ -468,10 +468,10 @@
     if (webContext) {
       if (!__i18nInitialized) {
         $.i18n.properties({
-          name : 'generalMultilang',
-          path : webContext + '/services/bundles/org/silverpeas/multilang/',
-          language : '$$', /* by default the language of the user in the current session */
-          mode : 'map'
+          name: 'generalMultilang',
+          path: webContext + '/services/bundles/org/silverpeas/multilang/',
+          language: '$$', /* by default the language of the user in the current session */
+          mode: 'map'
         });
         __i18nInitialized = true;
       }

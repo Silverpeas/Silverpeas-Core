@@ -100,7 +100,7 @@
         <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
           <div class="groups_results_userPanel">
             <div class="container_input_search">
-              <input type="text" class="search autocompletion" id="group_search" ng-model="searchedGroups"/>
+              <input type="text" class="search autocompletion" id="group_search" ng-change="searchMatchingGroups()" ng-model="searchedGroups"/>
             </div>
             <div class="listing_groups">
               <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
@@ -120,7 +120,7 @@
         <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
           <div class="users_results_userPanel">
             <div class="container_input_search">
-              <input type="text" class="search autocompletion" id="user_search" ng-model="searchedUsers"/>
+              <input type="text" class="search autocompletion" id="user_search" ng-change="searchMatchingUsers()" ng-model="searchedUsers"/>
             </div>
             <div class="listing_users">
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
@@ -189,9 +189,9 @@
             <div id="validate">
               <fmt:message var="selectLabel" key="GML.validate"/>
               <fmt:message var="cancelLabel" key="GML.cancel"/>
-              <div class="milieuBoutonV5"><a href="#"  ng-click="validate()">${selectLabel}</a></div>
+              <a class="milieuBoutonV5" href="#"  ng-click="validate()">${selectLabel}</a>
               <c:if test='${not fn:endsWith(cancelationURL, "userpanel.jsp")}'>
-                <div class="milieuBoutonV5"><a href="#" class="milieuBoutonV5" ng-click="cancel()">${cancelLabel}</a></div>
+                <a class="milieuBoutonV5" href="#" ng-click="cancel()">${cancelLabel}</a>
               </c:if>
             </div>
           </form>
@@ -223,9 +223,35 @@
             GroupSearchDefaultText = '<fmt:message key="selection.searchUserGroups"/>';
             UserSearchDefaultText = '<fmt:message key="selection.searchUsers"/>';
             UserSource = {
-              Groups: 0, // the users come from a given group or in all groups
-              Relationships: 1 // the users come from my relationships
+              All: 0, // all the users
+              Groups: 1, // the users coming from a given group or belonging to all groups
+              Relationships: 2 // the users coming from my relationships
             };
+
+            // what are the preselected user profiles and user groups (get at web page build)
+      <c:choose>
+        <c:when test="${selection.selectedElements != null && fn:length(selection.selectedElements) > 0}">
+        var preselectedUsers = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>'.split(',');
+        if (preselectedUsers[0] === "")
+          preselectedUsers = [];
+        </c:when>
+        <c:otherwise>
+          var preselectedUsers = [];
+        </c:otherwise>
+      </c:choose>
+      <c:choose>
+        <c:when test="${selection.selectedSets != null && fn:length(selection.selectedSets) > 0}">
+        var preselectedUserGroups = '<c:out value="${fn:join(selection.selectedSets, ',')}"/>'.split(',');
+        if (preselectedUserGroups[0] === "")
+          preselectedUserGroups = [];
+        </c:when>
+        <c:otherwise>
+          var preselectedUserGroups = [];
+        </c:otherwise>
+      </c:choose>
+
+            /* the type of users displayed in the user listing: relationships or users in a group */
+            var displayedUserType;
 
             /* The root of the user group tree. It can be then considered as any other user group */
             var rootGroup = { name: '<fmt:message key="selection.RootUserGroups"/>', root: true,
@@ -243,8 +269,24 @@
             var userPageSize = (context.selectionScope === 'user'? PageMaxSize:PageSize);
             var groupPageSize = (context.selectionScope === 'group'? PageMaxSize:PageSize);
 
-            /* the type of users displayed in the user listing: relationships or users in a group */
-            var displayedUserType;
+            // fetch the users matching the specified parameters. The kind of users that fetched
+            // depends on the current user displaying context (relationships, all users, or users of a
+            // group)
+            function fetchUsers(params) {
+              var users;
+              switch(displayedUserType) {
+                case UserSource.All:
+                  users = User.get(params);
+                  break;
+                case UserSource.Groups:
+                  users = $scope.currentGroup.users(params);
+                  break;
+                case UserSource.Relationships:
+                  users = me.relationships(params);
+                  break;
+              }
+              return users;
+            }
 
             /* sets the specified array of groups for the filter on the groups */
             function setGroupsFilter(groups) {
@@ -276,7 +318,7 @@
               var $pagination = $('#user_list_pagination');
               $pagination.children().remove();
               renderPagination($pagination, 'user_list', userPageSize, $scope.users.maxlength, function(pageNumber) {
-                $scope.users = $scope.currentGroup.users({page: {number: pageNumber, size: userPageSize}});
+                $scope.users = fetchUsers({page: {number: pageNumber, size: userPageSize}});
               });
             }
 
@@ -304,16 +346,6 @@
             function resetSearchFieldTexts() {
               $scope.searchedGroups = GroupSearchDefaultText;
               $scope.searchedUsers = UserSearchDefaultText;
-            }
-
-            /* search the user groups whose the name begins with the specified text */
-            function searchGroupsMatching(name) {
-              $scope.groups = $scope.currentGroup.subgroups({name: name + '*', page: {number: 1, size: groupPageSize}});
-            }
-
-            /* search the users whose the name begins with the specified text */
-            function searchUsersMatching(name) {
-              $scope.users = $scope.currentGroup.users({name: name + '*', page: {number: 1, size: userPageSize}});
             }
 
             /* maximize the the listing of groups over the listing of users */
@@ -350,7 +382,17 @@
                 $scope.me = user;
               });
               $scope.selectedUsers = new Selection(context.multiSelection, PageSize);
+              for(var i = 0; i < preselectedUsers.length; i++) {
+                User.get(preselectedUsers[i]).then(function(user) {
+                  $scope.selectedUsers.add(user);
+                });
+              }
               $scope.selectedGroups = new Selection(context.multiSelection, PageSize);
+              for(var i = 0; i < preselectedUserGroups.length; i++) {
+                UserGroup.get(preselectedUserGroups[i]).then(function(group) {
+                  $scope.selectedGroups.add(group);
+                });
+              }
               resetSearchFieldTexts();
             }
 
@@ -367,10 +409,7 @@
 
             /* select all the users present in the corresponding listing panel */
             $scope.selectAllUsers = function() {
-              if (displayedUserType === UserSource.Groups)
-                $scope.currentGroup.users().then(updateUsersSelection);
-              else
-                $scope.me.relationships().then(updateUsersSelection);
+              fetchUsers().then(updateUsersSelection);
             };
 
             /* select the specified user */
@@ -416,7 +455,7 @@
             /* renders all the users */
             $scope.goToAllUsers = function() {
               maximizeUsersListingPanel();
-              displayedUserType = UserSource.Groups;
+              displayedUserType = UserSource.All;
               User.get({page: {number:1, size: userPageSize}}).then(updateUsersListing);
               resetSearchFieldTexts();
               highlightFilter($('#filter_users'));
@@ -425,6 +464,20 @@
             /* renders the subgroups of the specified group or all the groups if it is the root of the tree */
             $scope.goToGroup = function(group) {
               $('#breadcrumb').breadcrumb('set', group);
+            };
+
+            /* search the users that match the name entered by the user in the searchbox */
+            $scope.searchMatchingUsers = function() {
+              var text = $scope.searchedUsers;
+              if (text && text !== UserSearchDefaultText && text.length >= 3)
+                $scope.users = fetchUsers({name: name + '*', page: {number: 1, size: userPageSize}});
+            };
+
+            /* search the groups that match the name entered by the group in the searchbox */
+            $scope.searchMatchingGroups = function() {
+              var text = $scope.searchedGroups;
+              if (text && text !== GroupSearchDefaultText && text.length >= 3)
+                $scope.groups = $scope.currentGroup.subgroups({name: text + '*', page: {number: 1, size: groupPageSize}});
             };
 
              // validate the selection of users and/or of user groups.
@@ -471,7 +524,7 @@
               },
               onchange: function(group) {
                 unmaximizeUsersListingPanel();
-                displayedUserType = UserSource.Group;
+                displayedUserType = UserSource.Groups;
                 group.subgroups({page: {number:1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
                 group.subgroups({page: {number:1, size: groupPageSize}}).then(updateGroupsListing);
                 group.users({page: {number:1, size: userPageSize}}).then(updateUsersListing);
@@ -482,13 +535,7 @@
             });
 
             /* the search input field's treatment for the user groups */
-            $('#group_search').autocomplete({
-              minLength: 3,
-              source: [],
-              search: function() {
-                searchGroupsMatching($scope.searchedGroups);
-              }
-            }).focus(function() {
+            $('#group_search').focus(function() {
               if ($scope.searchedGroups === GroupSearchDefaultText) {
                 $scope.searchedGroups = "";
                 $scope.$apply();
@@ -504,13 +551,7 @@
             });;
 
             /* the search input field's treatment for the users */
-            $('#user_search').autocomplete({
-              minLength: 3,
-              source: [],
-              search: function() {
-                searchUsersMatching($scope.searchedUsers);
-              }
-            }).focus(function() {
+            $('#user_search').focus(function() {
               if ($scope.searchedUsers === UserSearchDefaultText) {
                 $scope.searchedUsers = "";
                 $scope.$apply();

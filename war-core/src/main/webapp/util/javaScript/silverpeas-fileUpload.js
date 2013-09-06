@@ -34,21 +34,20 @@
 
   // Event definitions
   var EVENT = {
-    SEND_FILE : 'SEND_REQUEST',
-    FILES_TO_SEND : 'FILES_TO_SEND',
-    UPLOADED_FILE_CHANGED : 'UPLOADED_FILE_CHANGED',
-    DELETE_FILE : 'DELETE_FILE'
+    SEND_FILE: 'SEND_REQUEST',
+    FILES_TO_SEND: 'FILES_TO_SEND',
+    UPLOADED_FILE_CHANGED: 'UPLOADED_FILE_CHANGED',
+    DELETE_FILE: 'DELETE_FILE'
   };
 
   /**
    * The different fileUpload methods handled by the plugin.
    */
   var methods = {
-
     /**
      * Prepare UI and behavior
      */
-    init : function(options) {
+    init: function(options) {
       return __init($(this), options);
     }
   };
@@ -101,9 +100,9 @@
       $target.append($container);
 
       var params = {
-        $container : $container,
-        containerOriginId : $target.attr('id'),
-        uploadCount : 0
+        $container: $container,
+        containerOriginId: $target.attr('id'),
+        uploadCount: 0
       };
 
       // Options
@@ -153,7 +152,7 @@
    */
   function __renderBlocs(params) {
     params.$container.append(__renderUploadLimitBloc(params), __renderUploadBloc(params),
-        __renderWaitingUploadList(params), __renderUploadedFilesList(params));
+            __renderWaitingUploadList(params), __renderUploadedFilesList(params));
 
     // Handling the file upload limit.
     if (params.options.nbFileLimit > 0) {
@@ -204,7 +203,7 @@
     var message = params.options.labels.limitFileWarning;
     if (params.options.nbFileLimit > 1) {
       message =
-          params.options.labels.limitFilesWarning.replace(/@number@/, params.options.nbFileLimit);
+              params.options.labels.limitFilesWarning.replace(/@number@/, params.options.nbFileLimit);
     }
     return message;
   }
@@ -219,7 +218,7 @@
     var message = params.options.labels.limitFileReached;
     if (params.options.nbFileLimit > 1) {
       message =
-          params.options.labels.limitFilesReached.replace(/@number@/, params.options.nbFileLimit);
+              params.options.labels.limitFilesReached.replace(/@number@/, params.options.nbFileLimit);
     }
     return message;
   }
@@ -280,20 +279,20 @@
     // File
     $uploadBloc.empty();
     var $img = $('<div>').append($('<img>', {
-      title : chooseFileLabel,
-      alt : chooseFileLabel,
-      src : webContext + '/util/icons/create-action/addFile.png'
+      title: chooseFileLabel,
+      alt: chooseFileLabel,
+      src: webContext + '/util/icons/create-action/addFile.png'
     })).addClass('icon');
     var $fileInputs = $('<div>').addClass('fileinputs').addClass('input');
     var $form = $('<form>', {
-      id : 'form-' + params.containerOriginId,
-      method : 'post',
-      action : '#'
+      id: 'form-' + params.containerOriginId,
+      method: 'post',
+      action: '#'
     });
     var $fileInput = $('<input>', {
-      multiple : params.options.multiple,
-      type : 'file',
-      size : 40
+      multiple: params.options.multiple,
+      type: 'file',
+      size: 40
     }).addClass('dragAndDrop');
     $form.append($fileInput);
     $fileInputs.append($form);
@@ -309,10 +308,10 @@
       }));
       var $areaInput = $('<div>').addClass('droparea').append($('<span>').append((
               params.options.multiple ? params.options.labels.dragAndDropFiles :
-                  params.options.labels.dragAndDropFile))).click(function() {
-            $('a', $buttonInput).click();
-            return false;
-          });
+              params.options.labels.dragAndDropFile))).click(function() {
+        $('a', $buttonInput).click();
+        return false;
+      });
       $fileInputs.append($areaInput, $buttonInput);
 
       // DnD on right area
@@ -379,22 +378,22 @@
 
       var uploadCommons = __performAppendUploadCommons(params, $inputOfFiles);
       var $fileUploadContainer = $('<div>', {
-        id : uploadCommons.uploadContext.uploadId
+        id: uploadCommons.uploadContext.uploadId
       });
       var $form = $('<form>', {
-        id : uploadCommons.uploadContext.formId,
-        method : 'post',
-        action : uploadCommons.uploadContext.uploadUrl
+        id: uploadCommons.uploadContext.formId,
+        method: 'post',
+        action: uploadCommons.uploadContext.uploadUrl
       });
       $inputOfFiles.attr({
-        name : 'file_upload'
+        name: 'file_upload'
       }).hide();
 
       params.$container.append($fileUploadContainer.append($form.append($inputOfFiles)));
 
       // Perform uploads
       __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
-          uploadCommons.$waitingEndOfUploadContainer, $fileUploadContainer, null));
+              uploadCommons.$waitingEndOfUploadContainer, $fileUploadContainer, null));
     }
   }
 
@@ -415,7 +414,7 @@
 
         // Perform uploads
         __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
-            uploadCommons.$waitingEndOfUploadContainer, null, file));
+                uploadCommons.$waitingEndOfUploadContainer, null, file));
       });
     }
     return true;
@@ -460,10 +459,10 @@
 
     // Prepare waiting message
     var waitingMessage = params.options.labels.sendingFile.replace(/@name@/, (
-        (isFileAPI && files) ? files[0].name : files.val()));
+            (isFileAPI && files) ? files[0].name : files.val()));
     if (isFileAPI && uploadContext.nbFiles > 1) {
       waitingMessage =
-          params.options.labels.sendingFiles.replace(/@number@/, uploadContext.nbFiles);
+              params.options.labels.sendingFiles.replace(/@number@/, uploadContext.nbFiles);
     }
     var $waitingEndOfUploadContainer = $('<div>').addClass('inlineMessage-waiting').append(waitingMessage);
 
@@ -476,9 +475,9 @@
 
     // Results
     return  {
-      uploadContext : uploadContext,
-      $waitingEndOfUploadContainer : $waitingEndOfUploadContainer
-    }
+      uploadContext: uploadContext,
+      $waitingEndOfUploadContainer: $waitingEndOfUploadContainer
+    };
   }
 
   /**
@@ -516,7 +515,7 @@
    * @private
    */
   function __UploadHandler(uploadContext, $waitingEndOfUploadContainer, $formUploadContainer,
-      file) {
+          file) {
     var self = this;
     var xhr = null;
 
@@ -524,11 +523,11 @@
      * Aborts the send.
      */
     this.abort = function() {
-      if (xhr != null) {
-        if (xhr != null && xhr.abort) {
+      if (xhr) {
+        if (xhr && xhr.abort) {
           xhr.abort();
           window.console &&
-          window.console.log('Silverpeas File Upload JQuery Plugin - INFO - File sending aborted successfully');
+                  window.console.log('Silverpeas File Upload JQuery Plugin - INFO - File sending aborted successfully');
           xhr = null;
         }
       }
@@ -539,22 +538,22 @@
      */
     this.send = function() {
       // Sending
-      if ($formUploadContainer != null) {
+      if ($formUploadContainer) {
         __renderUploadFile(uploadContext, self, $(":file", $formUploadContainer).val(),
-            $waitingEndOfUploadContainer);
+                $waitingEndOfUploadContainer);
         // HTML4 upload way (use of jquery-iframe-transport.js plugin)
         $("form", $formUploadContainer).iframeAjaxFormSubmit({
-          sendFilesOnly : true,
-          complete : function(uploadedFilesAsJson) {
+          sendFilesOnly: true,
+          complete: function(uploadedFilesAsJson) {
             $formUploadContainer.remove();
             self.sendComplete(uploadedFilesAsJson);
             __triggerUploadedListChanged(uploadContext);
           },
-          error : function(errorThrown) {
+          error: function(errorThrown) {
             uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
             window.console &&
-            window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
-                errorThrown && errorThrown.length > 0 ? errorThrown :
+                    window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
+                    errorThrown && errorThrown.length > 0 ? errorThrown :
                     'Maybe due to an upload of a wrong type of file...')));
           }
         }).submit();
@@ -599,8 +598,8 @@
         xhr.onerror = function() {
           uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
           window.console &&
-          window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
-              this.responseText && this.responseText.length > 0 ? this.responseText :
+                  window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
+                  this.responseText && this.responseText.length > 0 ? this.responseText :
                   'Maybe due to an upload of a wrong type of file...')));
           xhr = null;
         };
@@ -618,7 +617,7 @@
       xhr = null;
       __removeWaiting($waitingEndOfUploadContainer);
       $(uploadedFiles).each(function(index, file) {
-        __renderUploadedFile(uploadContext, file)
+        __renderUploadedFile(uploadContext, file);
       });
     };
   }
@@ -629,7 +628,7 @@
    * @private
    */
   function __removeWaiting($waitingEndOfUploadContainer) {
-    if ($waitingEndOfUploadContainer != null) {
+    if ($waitingEndOfUploadContainer) {
       $waitingEndOfUploadContainer.remove();
     }
   }
@@ -652,11 +651,11 @@
    * @private
    */
   function __renderUploadFile(uploadContext, uploadHandler, fileName,
-      $waitingEndOfUploadContainer) {
+          $waitingEndOfUploadContainer) {
     uploadContext.fileUI.setUploadFileData({
-      uploadHandler : uploadHandler,
-      fileName : fileName,
-      $waitingEndOfUploadContainer : $waitingEndOfUploadContainer
+      uploadHandler: uploadHandler,
+      fileName: fileName,
+      $waitingEndOfUploadContainer: $waitingEndOfUploadContainer
     });
   }
 
@@ -693,10 +692,10 @@
     // Header - details
     $file.on(EVENT.DELETE_FILE, function() {
       __removeWaiting($waitingEndOfUploadContainer);
-      if (uploadHandler != null) {
+      if (uploadHandler) {
         uploadHandler.abort();
       }
-      if (uploadedFileData != null) {
+      if (uploadedFileData) {
         __deleteFile(uploadedFileData.fileId);
       }
       $file.fadeOut(200, function() {
@@ -706,24 +705,24 @@
     });
     $fileDetails.append($('<span>'));
     var $deleteAction = $('<a>').attr('href', '#').addClass('delete-file').append($('<img>', {
-          title : params.options.labels.deleteFile,
-          alt : params.options.labels.deleteFile,
-          src : webContext + '/util/icons/cross.png'
-        })).click(function() {
-          $file.trigger(EVENT.DELETE_FILE);
-          return false;
-        });
+      title: params.options.labels.deleteFile,
+      alt: params.options.labels.deleteFile,
+      src: webContext + '/util/icons/cross.png'
+    })).click(function() {
+      $file.trigger(EVENT.DELETE_FILE);
+      return false;
+    });
     $fileDetails.append($deleteAction.hide());
 
     // Body - title and description
     var dummyBaseId = new Date().getMilliseconds();
     var $fileTitle = $('<input>', {
-      type : 'text',
-      id : dummyBaseId + '-title',
-      name : dummyBaseId + '-title',
-      maxLength : 150,
-      size : 40,
-      placeholder : params.options.labels.title
+      type: 'text',
+      id: dummyBaseId + '-title',
+      name: dummyBaseId + '-title',
+      maxLength: 150,
+      size: 40,
+      placeholder: params.options.labels.title
     });
     if (!isFileAPI) {
       $fileTitleInfo.append($('<label>').attr('for',
@@ -732,11 +731,11 @@
     }
     $fileTitleInfo.append($fileTitle);
     var $fileDescription = $('<textarea>', {
-      id : dummyBaseId + '-description',
-      name : dummyBaseId + '-description',
-      rows : 2,
-      cols : 40,
-      placeholder : params.options.labels.description
+      id: dummyBaseId + '-description',
+      name: dummyBaseId + '-description',
+      rows: 2,
+      cols: 40,
+      placeholder: params.options.labels.description
     });
     if (!isFileAPI) {
       $fileDescriptionInfo.append($('<label>').attr('for', dummyBaseId +
@@ -759,7 +758,7 @@
      */
     this.setFileIcon = function(iconUrl) {
       var $img = $('img.file-icon', $fileDetails);
-      if ($img.length == 0) {
+      if ($img.length === 0) {
         $img = $('<img>').attr('alt', '').addClass('file-icon').prependTo($fileDetails);
       }
       $img.attr('src', iconUrl);
@@ -786,15 +785,15 @@
 
       // Hidden technical input
       $file.prepend($('<input>', {
-        type : 'hidden',
-        name : 'uploaded-file-' + uploadedFileData.fileId,
-        value : uploadedFileData.fileId
+        type: 'hidden',
+        name: 'uploaded-file-' + uploadedFileData.fileId,
+        value: uploadedFileData.fileId
       }));
 
       // Header - details
       self.setFileIcon(uploadedFileData.iconUrl);
       $('span', $fileDetails).empty().append(uploadedFileData.name, ' - ',
-          uploadedFileData.formattedSize);
+              uploadedFileData.formattedSize);
 
       // Body - title and description
       $fileTitle.attr('id', uploadedFileData.fileId + '-title');
@@ -827,10 +826,10 @@
   function __buildUploadContext(params) {
     var uploadId = params.containerOriginId + '-' + params.uploadCount;
     var uploadContext = $.extend({
-      uploadId : uploadId,
-      formId : 'form-' + uploadId,
-      inputId : 'input-' + uploadId,
-      uploadUrl : webContext + '/services/fileUpload'
+      uploadId: uploadId,
+      formId: 'form-' + uploadId,
+      inputId: 'input-' + uploadId,
+      uploadUrl: webContext + '/services/fileUpload'
     }, params);
     params.uploadCount++;
     return uploadContext;
@@ -843,12 +842,12 @@
    */
   function __deleteFile(fileId) {
     $.ajax({
-      url : webContext + '/services/fileUpload/' + fileId,
-      type : 'DELETE',
-      cache : false,
-      error : function(jqXHR, textStatus, errorThrown) {
+      url: webContext + '/services/fileUpload/' + fileId,
+      type: 'DELETE',
+      cache: false,
+      error: function(jqXHR, textStatus, errorThrown) {
         window.console &&
-        window.console.log('Silverpeas File Upload JQuery Plugin - ERROR - ' + errorThrown);
+                window.console.log('Silverpeas File Upload JQuery Plugin - ERROR - ' + errorThrown);
       }
     });
     return true;
@@ -862,26 +861,26 @@
    */
   function __buildOptions(options) {
     var agregatedOptions = {
-      multiple : true,
-      dragAndDropDisplay : true,
-      jqueryFormSelector : '',
-      nbFileLimit : 0,
-      labels : {
-        browse : '',
-        chooseFile : '',
-        chooseFiles : '',
-        dragAndDropFile : '',
-        dragAndDropFiles : '',
-        sendingFile : '',
-        sendingFiles : '',
-        sendingWaitingWarning : '',
-        limitFileWarning : '',
-        limitFilesWarning : '',
-        limitFileReached : '',
-        limitFilesReached : '',
-        title : '',
-        description : '',
-        deleteFile : ''
+      multiple: true,
+      dragAndDropDisplay: true,
+      jqueryFormSelector: '',
+      nbFileLimit: 0,
+      labels: {
+        browse: '',
+        chooseFile: '',
+        chooseFiles: '',
+        dragAndDropFile: '',
+        dragAndDropFiles: '',
+        sendingFile: '',
+        sendingFiles: '',
+        sendingWaitingWarning: '',
+        limitFileWarning: '',
+        limitFilesWarning: '',
+        limitFileReached: '',
+        limitFilesReached: '',
+        title: '',
+        description: '',
+        deleteFile: ''
       }
     };
     var _options = $.extend(agregatedOptions, options);
@@ -901,7 +900,7 @@
    */
   function __buildContext(params, options) {
     var context = {
-      options : options
+      options: options
     };
     params.options = options;
     params.context = context;

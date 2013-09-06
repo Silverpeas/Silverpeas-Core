@@ -33,6 +33,7 @@
    * REST-based WEB adapter
    */
   silverpeas.factory('RESTAdapter', ['$http', '$q', function($http, $q) {
+
       function _get(url, convert) {
         var deferred = $q.defer();
         $http.get(url).error(function(data, status) {
@@ -49,27 +50,64 @@
         return deferred.promise;
       }
 
+      var RESTAdapter = function(url, converter) {
+        this.url = url;
+        this.converter = converter;
+      };
+      RESTAdapter.prototype.criteria = function() {
+        var criteria = null;
+        if (arguments && arguments.length > 0) {
+          criteria = {};
+          for (var i = 0; i < arguments.length; i++) {
+            var obj = arguments[i];
+            if (obj && typeof obj === 'object') {
+              for (var prop in obj) {
+                if (prop === 'page' && obj.page.number && obj.page.size)
+                  criteria.page = obj.page.number + ';' + obj.page.size;
+                else if (obj[prop] !== null && obj[prop] !== undefined)
+                  criteria[prop] = obj[prop];
+              }
+            }
+          }
+        }
+        return criteria;
+      };
+      RESTAdapter.prototype.find = function(parameters) {
+        if (parameters !== null && parameters !== undefined) {
+          if (typeof parameters === 'number' || typeof parameters === 'string') {
+            return this.findById(this.url, parameters);
+          } else if (parameters.url) {
+            if (parameters.criteria) {
+              return this.findByCriteria(parameters.url, parameters.criteria);
+            } else {
+              return _get(parameters.url, this.converter);
+            }
+          } else {
+            return this.findByCriteria(this.url, parameters);
+          }
+        } else {
+          return _get(this.url, this.converter);
+        }
+      };
+      RESTAdapter.prototype.findById = function(url, id) {
+        return _get(url + '/' + id, this.converter);
+      };
+      RESTAdapter.prototype.findByCriteria = function(url, criteria) {
+        if (!url) {
+          alert('[RESTAdapter#findByCriteria] URL undefined!');
+          return null;
+        }
+        var requestedUrl = url;
+        for (var param in criteria) {
+          if (criteria[param])
+            requestedUrl += (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param];
+        }
+        return _get(requestedUrl, this.converter);
+      };
+
       return {
-        uri: null,
-        converter: null,
-        find: function(parameters) {
-          if (parameters.url)
-            return _get(parameters.url, this.converter);
-          else
-            return findByQuery(this.uri, parameters);
-        },
-        findByQuery: function(url, query) {
-          if (!url) {
-            alert('[RESTAdapter#findByQuery] URL undefined!');
-            return null;
-          }
-          var requestedUrl = url + '?';
-          for (var param in query) {
-            requestedUrl += param + '=' + query[param];
-          }
-          if (requestedUrl.indexOf('?') === requestedUrl.length - 1)
-            requestedUrl = url;
-          return _get(requestedUrl, this.converter);
+        get: function(url, converter) {
+          return new RESTAdapter(url, converter);
         }
       };
     }]);
@@ -77,26 +115,26 @@
   /**
    * The user profile.
    */
-  silverpeas.factory('User', ['context', '$http', '$q', function(context, $http, $q) {
+  silverpeas.factory('User', ['context', 'RESTAdapter', function(context, RESTAdapter) {
       return new function() {
-        var rootURL = webContext + '/services/profile/users', defaultQuery = '';
-        if (context.resource)
-          defaultQuery += '?resource=' + context.resource;
-        if (context.domain)
-          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'domain=' + context.domain;
-        if (context.roles)
-          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'roles=' + context.roles;
+        var defaultParameters = {
+          resource: context.resource,
+          domain: context.domain,
+          roles: context.roles
+        };
 
-        var asUsers = function(data) {
-          var users = [];
-          if (data instanceof Array)
+        var adapter = RESTAdapter.get(webContext + '/services/profile/users', function(data) {
+          var users;
+          if (data instanceof Array) {
+            users = [];
             for (var i = 0; i < data.length; i++) {
               users.push(new User(data[i]));
             }
-          else
+          } else {
             users = new User(data);
+          }
           return users;
-        };
+        });
 
         var User = function() {
           if (arguments.length > 0) {
@@ -106,51 +144,22 @@
           }
         };
         User.prototype.relationships = function() {
-          var deferred = $q.defer(), filter = defaultQuery;
-          if (arguments.length === 1 && arguments[0]) {
-            if (arguments[0].page)
-              filter += '?page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-            if (arguments[0].name)
-              filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
-          }
-          $http.get(this.contactsUri + filter).
-                  error(function(data, status) {
-            alert(status);
-          }).success(function(data, status, headers) {
-            var users = asUsers(data);
-            users.maxlength = headers('X-Silverpeas-UserSize');
-            deferred.resolve(users);
+          return adapter.find({
+            url: this.contactsUri,
+            criteria: adapter.criteria(arguments[0], defaultParameters)
           });
-          return deferred.promise;
         };
 
         this.get = function() {
-          var filter, deferred = $q.defer();
-          if (arguments.length === 1 && typeof arguments[0] === 'number') {
-            filter = '/' + arguments[0];
+          if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
+            return adapter.find(arguments[0]);
           } else {
-            filter = defaultQuery + (context.component ? ((defaultQuery.indexOf('?') < 0 ? '?' : '&') +
-                    'component=' + context.component) : '');
-            if (arguments.length === 1 && arguments[0]) {
-              if (arguments[0].group)
-                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'group=' + arguments[0].group;
-              if (arguments[0].page)
-                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-              if (arguments[0].name)
-                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
-            }
+            var url = adapter.url + (context.component ? '/application/' + context.component : '');
+            return adapter.find({
+              url: url,
+              criteria: adapter.criteria(arguments[0], defaultParameters)
+            });
           }
-          $http.get(rootURL + filter).
-                  error(function(data, status) {
-            alert(status);
-          }).
-                  success(function(data, status, headers) {
-            var users = asUsers(data);
-            if (users instanceof Array)
-              users.maxlength = headers('X-Silverpeas-UserSize');
-            deferred.resolve(users);
-          });
-          return deferred.promise;
         };
       };
     }]);
@@ -158,17 +167,15 @@
   /**
    * The user group profile.
    */
-  silverpeas.factory('UserGroup', ['context', 'User', '$http', '$q', function(context, User, $http, $q) {
+  silverpeas.factory('UserGroup', ['context', 'User', 'RESTAdapter', function(context, User, RESTAdapter) {
       return new function() {
-        var rootURL = webContext + '/services/profile/groups', defaultQuery = '';
-        if (context.resource)
-          defaultQuery += '?resource=' + context.resource;
-        if (context.domain)
-          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'domain=' + context.domain;
-        if (context.roles)
-          defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?' : '&') + 'roles=' + context.roles;
+        var defaultParameters = {
+          resource: context.resource,
+          domain: context.domain,
+          roles: context.roles
+        };
 
-        var asUserGroups = function(data) {
+        var adapter = RESTAdapter.get(webContext + '/services/profile/groups', function(data) {
           var groups = [];
           if (data instanceof Array)
             for (var i = 0; i < data.length; i++) {
@@ -177,7 +184,7 @@
           else
             groups = new UserGroup(data);
           return groups;
-        };
+        });
 
         var UserGroup = function() {
           if (arguments.length > 0) {
@@ -187,26 +194,12 @@
           }
         };
         UserGroup.prototype.subgroups = function() {
-          var deferred = $q.defer(), filter = '';
-          if (arguments.length === 1 && arguments[0]) {
-            if (arguments[0].page)
-              filter += '?page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-            if (arguments[0].name)
-              filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
-          }
-
-          $http.get(this.childrenUri + filter).
-                  error(function(data, status) {
-            alert(status);
-          }).
-                  success(function(data, status, headers) {
-            var groups = asUserGroups(data);
-            if (groups instanceof Array)
-              groups.maxlength = headers('X-Silverpeas-GroupSize');
-            deferred.resolve(groups);
+          return adapter.find({
+            url: this.childrenUri,
+            criteria: adapter.criteria(arguments[0])
           });
-          return deferred.promise;
         };
+
         UserGroup.prototype.users = function() {
           var params = {};
           if (arguments.length === 1)
@@ -217,28 +210,15 @@
         };
 
         this.get = function() {
-          var filter, deferred = $q.defer();
-          if (arguments.length === 1 && typeof arguments[0] === 'number') {
-            filter = '/' + arguments[0];
+          if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
+            return adapter.find(arguments[0]);
           } else {
-            filter = (context.component ? '/application/' + context.component : '') + defaultQuery;
-            if (arguments.length === 1 && arguments[0]) {
-              if (arguments[0].page)
-                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'page=' + arguments[0].page.number + ';' + arguments[0].page.size;
-              if (arguments[0].name)
-                filter += (filter.indexOf('?') < 0 ? '?' : '&') + 'name=' + arguments[0].name;
-            }
+            var url = adapter.url + (context.component ? '/application/' + context.component : '');
+            return adapter.find({
+              url: url,
+              criteria: adapter.criteria(arguments[0], defaultParameters)
+            });
           }
-          $http.get(rootURL + filter).
-                  error(function(data, status) {
-            alert(status);
-          }).
-                  success(function(data, status, headers) {
-            var groups = asUserGroups(data);
-            groups.maxlength = headers('X-Silverpeas-GroupSize');
-            deferred.resolve(groups);
-          });
-          return deferred.promise;
         };
       };
     }]);
@@ -257,61 +237,61 @@ function Selection(multiselection, pageSize) {
   var pagesize = (pageSize ? pageSize : 0);
   var startpage = 0;
 
-  Selection.prototype.currentpage = function() {
+  this.currentpage = function() {
     return (pagesize === 0 ? this.items : this.items.slice(startpage, startpage + pagesize));
   };
 
-  Selection.prototype.page = function(pagenumber) {
+  this.page = function(pagenumber) {
     startpage = (pagenumber - 1) * pagesize;
   };
-
-  Selection.prototype.add = function(item) {
-    if (this.multipleSelection) {
-      if (item instanceof Array)
-        this.items = item;
-      else
-        this.items.push(item);
-    } else {
-      this.items.splice(0, 1);
-      this.items[0] = (item instanceof Array ? item[0] : item);
-    }
-  };
-
-  Selection.prototype.remove = function(item) {
-    var index = this.indexOf(item);
-    this.items.splice(index, 1);
-  };
-
-  Selection.prototype.clear = function() {
-    this.items = [];
-  };
-
-  Selection.prototype.indexOf = function(item) {
-    for (var i = 0; i < this.items.length; i++)
-      if (item.id === this.items[i].id)
-        return i;
-    return -1;
-  };
-
-  Selection.prototype.length = function() {
-    return this.items.length;
-  };
-
-  Selection.prototype.itemIdsAsString = function() {
-    var ids = '';
-    for (var i = 0; i < this.items.length - 1; i++)
-      ids += this.items[i].id + ',';
-    if (this.items.length > 0)
-      ids += this.items[this.items.length - 1].id;
-    return ids;
-  };
-
-  Selection.prototype.itemNamesAsString = function() {
-    var names = '';
-    for (var i = 0; i < this.items.length - 1; i++)
-      names += this.items[i].name + ',';
-    if (this.items.length > 0)
-      names += this.items[this.items.length - 1].name;
-    return names;
-  };
 }
+
+Selection.prototype.add = function(item) {
+  if (this.multipleSelection) {
+    if (item instanceof Array)
+      this.items = item;
+    else
+      this.items.push(item);
+  } else {
+    this.items.splice(0, 1);
+    this.items[0] = (item instanceof Array ? item[0] : item);
+  }
+};
+
+Selection.prototype.remove = function(item) {
+  var index = this.indexOf(item);
+  this.items.splice(index, 1);
+};
+
+Selection.prototype.clear = function() {
+  this.items = [];
+};
+
+Selection.prototype.indexOf = function(item) {
+  for (var i = 0; i < this.items.length; i++)
+    if (item.id === this.items[i].id)
+      return i;
+  return -1;
+};
+
+Selection.prototype.length = function() {
+  return this.items.length;
+};
+
+Selection.prototype.itemIdsAsString = function() {
+  var ids = '';
+  for (var i = 0; i < this.items.length - 1; i++)
+    ids += this.items[i].id + ',';
+  if (this.items.length > 0)
+    ids += this.items[this.items.length - 1].id;
+  return ids;
+};
+
+Selection.prototype.itemNamesAsString = function() {
+  var names = '';
+  for (var i = 0; i < this.items.length - 1; i++)
+    names += this.items[i].name + ',';
+  if (this.items.length > 0)
+    names += this.items[this.items.length - 1].name;
+  return names;
+};
