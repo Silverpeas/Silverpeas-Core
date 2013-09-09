@@ -44,7 +44,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
@@ -67,8 +66,8 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   public AlertUserPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
-        "com.stratelia.silverpeas.alertUserPeas.settings.alertUserPeasIcons");
+        "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
+        "org.silverpeas.alertUserPeas.settings.alertUserPeasIcons");
     setComponentRootName(URLManager.CMP_ALERTUSERPEAS);
     m_AlertUser = getAlertUser();
     m_Selection = getSelection();
@@ -111,7 +110,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
 
   // initialisation de Selection pour nav vers SelectionPeas
   public String initSelection() {
-    String url = m_Context + URLManager.getURL(getComponentRootName());
+    String url = m_Context + URLManager.getURL(getComponentRootName(), null, null);
     String goUrl = url + "FromSelection";
     String cancelUrl = url + "Close";
 
@@ -129,9 +128,13 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     m_Selection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
     // Add extra params
-    SelectionUsersGroups sug = new SelectionUsersGroups();
+    SelectionUsersGroups sug = m_AlertUser.getSelectionUsersGroups();
+    if (sug == null) {
+      sug = new SelectionUsersGroups();
+    }
     sug.setComponentId(getHostComponentId());
     m_Selection.setExtraParams(sug);
+    
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
