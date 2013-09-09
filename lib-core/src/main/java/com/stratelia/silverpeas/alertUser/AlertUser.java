@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.alertUser;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
 
 public class AlertUser {
@@ -32,6 +33,7 @@ public class AlertUser {
   protected String m_hostComponentId;
   protected PairObject m_hostComponentName;
   protected NotificationMetaData m_notificationMetaData;
+  protected SelectionUsersGroups extraParams;
 
   public AlertUser() {
     resetAll();
@@ -41,6 +43,7 @@ public class AlertUser {
     m_hostSpaceName = "";
     m_hostComponentId = "";
     m_hostComponentName = new PairObject("", "");
+    extraParams = null;
   }
 
   static public String getAlertUserURL() {
@@ -93,5 +96,13 @@ public class AlertUser {
 
   public NotificationMetaData getNotificationMetaData() {
     return m_notificationMetaData;
+  }
+  
+  public SelectionUsersGroups getSelectionUsersGroups() {
+    return extraParams;
+  }
+
+  public void setSelectionUsersGroups(SelectionUsersGroups extraParams) {
+    this.extraParams = extraParams;
   }
 }
