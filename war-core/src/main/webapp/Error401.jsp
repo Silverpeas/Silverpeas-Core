@@ -22,49 +22,50 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="headLog.jsp" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
+<%-- Retrieve user menu display mode --%>
+<c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}"/>
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang"/>
+<view:setBundle basename="com.silverpeas.common.multilang.errors" var="fnf"/>
 
-<html>
+<% response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); %>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Infos</title>
-  <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css">
+  <title><fmt:message key="GML.error"/>&nbsp;401</title>
+  <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css"/>
   <style type="text/css">
     .titre {
       left: 490px;
     }
   </style>
+
 </head>
 <body>
 <div class="page">
-  <div class="titre">Information</div>
+  <div class="titre"><fmt:message key="GML.error"/>&nbsp;401</div>
   <div id="background">
     <div class="cadre">
       <div id="header">
-        <a href="http://www.silverpeas.com"><img src="<c:url value="/images/logo.jpg" />" class="logo" alt="logo"/></a>
+        <img src="<%=logo%>" class="logo" alt="logo"/>
 
-        <p class="information">Silverpeas version is
-          <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
+        <p class="information"></p>
       </div>
-      <c:if test="${currentUserId != null && currentUserId >= 0}">
-      <p class="information">
-        Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}"/></b>
-        with the version
-        <b><c:out value="${pageContext.servletContext.majorVersion}"/>.<c:out value="${pageContext.servletContext.minorVersion}"/></b>
-        of the Servlet API.<br/><br/>
-        The server is running on <b><%=System.getProperty("os.name") %><%=System
-          .getProperty("os.version")%> <%=System.getProperty("os.arch")%>
-      </b> with the version <b><%=System.getProperty("java.vm.name")%> <%=System
-          .getProperty("java.vm.version")%> by <%=System.getProperty("java.vm.vendor")%>
-      </b><br/><br/>
-        Silverpeas is running with the following configuration:<br/><i><%=System
-          .getenv("JAVA_OPTS")%>
-      </i></p>
-      </c:if>
+      <div class="fnfinformation">
+        <p><fmt:message key="error.401.description" bundle="${fnf}"></fmt:message></p>
+        <p><fmt:message key="error.401.solutions" bundle="${fnf}"></fmt:message></p>
+      </div>
     </div>
   </div>
 </div>
