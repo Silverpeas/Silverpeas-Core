@@ -275,9 +275,21 @@ public class SilverpeasSessionOpener {
     return absoluteUrl.toString();
   }
 
+  /**
+   * The navigation is secure when silverpeas is either directly accessed through a secure chanel
+   * like HTTPS or after a reverse-proxy handling secure connections for Silverpeas.
+   *
+   * From the specified request, we can detect if Silverpeas is accessed directly through a secure
+   * channel like HTTPS, therefore the channel is then considered as secure. then if the navigation
+   * is secure. Whether Silverpeas is after a reverse-proxy that handles HTTPS connections, it is
+   * then required to inform Silverpeas about it by setting the parameter server.ssl to true in
+   * <code>org/silverpeas/general.properties</code>.
+   *
+   * @param request the HTTP/HTTPS request
+   * @return true the Web navigation with Silverpeas is secured.
+   */
   public boolean isNavigationSecure(HttpServletRequest request) {
-    return !(request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false))
-        && request.isSecure();
+    return (request.isSecure() || GeneralPropertiesManager.getBoolean("server.ssl", false));
   }
 
   private int getServerPort(HttpServletRequest request) {
