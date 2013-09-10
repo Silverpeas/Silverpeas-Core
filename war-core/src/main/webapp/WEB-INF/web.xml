@@ -1019,8 +1019,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>
+    <error-code>401</error-code>
+    <location>/Error401.jsp</location>
+  </error-page>
+  <error-page>
     <error-code>404</error-code>
     <location>/Error404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/Error500.jsp</location>
   </error-page>
   <error-page>
     <exception-type>org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException</exception-type>
