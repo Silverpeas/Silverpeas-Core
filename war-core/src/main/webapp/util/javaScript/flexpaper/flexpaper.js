@@ -43,10 +43,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
     var _JSONDataType = (config.JSONDataType!=null)?config.JSONDataType:"json";
 
     if (_uDoc != null) {
-        _SWFFile 	= translateUrlByFormat(_uDoc,"swf");
-        _PDFFile 	= translateUrlByFormat(_uDoc,"pdf");
-        _JSONFile 	= translateUrlByFormat(_uDoc,_JSONDataType);
-        _IMGFiles 	= translateUrlByFormat(_uDoc,"png");
+        _SWFFile 	= FLEXPAPER.translateUrlByFormat(_uDoc,"swf");
     }
 
     _SWFFile  			= (config.SwfFile!=null?config.SwfFile:_SWFFile);
@@ -118,17 +115,32 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
     });
 };
 
-function translateUrlByDocument(url,document){
-    return (url!=null && url.indexOf('{doc}') > 0 ? url.replace("{doc}", document):null);
-}
+(function() {
+    if(!window.FLEXPAPER){window.FLEXPAPER = {};}
 
-function translateUrlByFormat(url,format){
-    if(url.indexOf("{") == 0 && format != "swf"){ // loading in split file mode
-        url = url.substring(1,url.lastIndexOf(","));
-        url = url.replace("[*,0]","{page}")
-    }
-    return (url!=null && url.indexOf('{format}') > 0 ? url.replace("{format}", format):null);
-}
+    FLEXPAPER.getLocationHashParameter = function(param){
+        var hash = location.hash.substr(1);
+
+        if(hash.indexOf(param+'=')>=0){
+            var value = hash.substr(hash.indexOf(param+'='))
+                .split('&')[0]
+                .split('=')[1];
+
+            return value;
+        }
+
+        return null;
+    };
+
+    FLEXPAPER.translateUrlByFormat = function(url,format){
+        if(url.indexOf("{") == 0 && format != "swf"){ // loading in split file mode
+            url = url.substring(1,url.lastIndexOf(","));
+            url = url.replace("[*,0]","{page}")
+        }
+        return (url!=null && url.indexOf('{format}') > 0 ? url.replace("{format}", format):null);
+    };
+})();
+
 
 /**
  *
@@ -361,6 +373,16 @@ function translateUrlByFormat(url,format){
 
         // Default to a rendering mode if its not set
         if(!conf.RenderingOrder && conf.SwfFile !=  null){conf.RenderingOrder = "flash";}
+
+        if(conf.RenderingOrder.indexOf('html5')==0){
+            if(confirm('The FlexPaper GPL version does not support HTML5 rendering. Do you want to navigate to our download page for more details?')){location.href='http://flexpaper.devaldi.com/download.jsp?ref=FlexPaper'}
+            return;
+        }
+
+        if(conf.RenderingOrder.indexOf('html')==0){
+            if(confirm('The FlexPaper GPL version does not support HTML4 rendering. Do you want to navigate to our download page for more details?')){location.href='http://flexpaper.devaldi.com/download.jsp?ref=FlexPaper'}
+            return;
+        }
 
         // version is ok
         if (f.isSupported(opts.version)) {
