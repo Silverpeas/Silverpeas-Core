@@ -222,6 +222,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>net.sourceforge.spnego</groupId>
+      <artifactId>spnego</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
