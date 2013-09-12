@@ -20,7 +20,29 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import au.id.jericho.lib.html.Source;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -30,6 +52,7 @@ import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
@@ -41,17 +64,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -467,14 +479,13 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       FileRepositoryManager.createAbsolutePath(componentId, dir);
     } catch (Exception e) {
     }
-    String[] dirs = new String[]{dir};
-    String path = FileRepositoryManager.getAbsolutePath(componentId, dirs);
+    String path = getPath(componentId);
     String fileName = getFileName(fieldName, objectId, language);
 
     try {
       FileFolderManager.createFile(path, fileName, code);
     } catch (UtilException e) {
-      // do nothinf
+      // do nothing
     }
     return fileName;
   }
@@ -487,10 +498,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   public static String getContentFromFile(String componentId, String objectId, String fieldName,
       String language) throws UtilException {
     String fileName = getFileName(fieldName, objectId, language);
-
-    String[] dirs = new String[1];
-    dirs[0] = dir;
-    String path = FileRepositoryManager.getAbsolutePath(componentId, dirs);
+    String path = getPath(componentId);
 
     return FileFolderManager.getCode(path, fileName);
   }
@@ -506,50 +514,104 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       return objectId + "_" + language + "_" + fieldName;
     }
   }
-
-  public void cloneContents(String componentIdFrom, String objectIdFrom, String componentIdTo,
-      String objectIdTo) throws
-      UtilException, IOException {
-    String[] dirs = new String[1];
-    dirs[0] = dir;
-    String fromPath = FileRepositoryManager.getAbsolutePath(componentIdFrom, dirs);
-    String toPath = FileRepositoryManager.getAbsolutePath(componentIdTo, dirs);
+  
+  public void move(ForeignPK fromPK, ForeignPK toPK) throws IOException {
+    moveOrCopy(fromPK, toPK, false, null);
+  }
+  
+  private void moveOrCopy(ForeignPK fromPK, ForeignPK toPK, boolean copy,
+      Map<String, String> oldAndNewFileIds) throws IOException {
+    String fromPath = getPath(fromPK.getInstanceId());
+    String toPath = getPath(toPK.getInstanceId());
 
     File from = new File(fromPath);
     if (from != null && from.exists()) {
-      try {
-        FileRepositoryManager.createAbsolutePath(componentIdTo, dir);
-      } catch (Exception e) {
-        throw new IOException(e.getMessage());
-      }
       List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
       for (File file : files) {
         String fileName = file.getName();
-        if (fileName.startsWith(objectIdFrom + "_")) {
-          String fieldName = fileName.substring(objectIdFrom.length() + 1);
-          FileRepositoryManager.copyFile(fromPath + file.getName(), toPath
-              + getFileName(fieldName, objectIdTo));
+        if (fileName.startsWith(fromPK.getId() + "_")) {
+          String fieldName = fileName.substring(fromPK.getId().length() + 1);
+          File srcFile = new File(fromPath, file.getName());
+          File destFile = new File(toPath, getFileName(fieldName, toPK.getId()));
+          if (copy) {
+            // copy file and change images path (instanceId and imageId) inside
+            FileUtils.copyFile(srcFile, destFile);
+            changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(), oldAndNewFileIds);
+          } else {
+            // move file and change images path (instanceId only) inside
+            FileUtils.moveFile(srcFile, destFile);
+            changeInstanceId(destFile, fromPK.getInstanceId(), toPK.getInstanceId());
+          }
           Iterator<String> languages = I18NHelper.getLanguages();
           while (languages.hasNext()) {
             String language = languages.next();
 
             if (fieldName.startsWith(language + "_")) {
               fieldName = fieldName.substring(3); // skip en_
-              FileRepositoryManager.copyFile(fromPath + file.getName(), toPath
-                  + getFileName(fieldName, objectIdTo,
-                  language));
+              srcFile = new File(fromPath, file.getName());
+              destFile = new File(toPath, getFileName(fieldName, toPK.getId(), language));
+              if (copy) {
+                // copy file and change images path (instanceId and imageId) inside
+                FileUtils.copyFile(srcFile, destFile);
+                changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(), oldAndNewFileIds);
+              } else {
+                // move file and change images path (instanceId only) inside
+                FileUtils.moveFile(srcFile, destFile);
+                changeInstanceId(destFile, fromPK.getInstanceId(), toPK.getInstanceId());
+              }
             }
           }
         }
       }
     }
   }
+  
+  private void changeInstanceId(File file, String from, String to) throws IOException {
+    String content = FileUtils.readFileToString(file, Charsets.UTF_8);
+    String changed = content.replaceAll("/"+from+"/", "/"+to+"/");
+    FileUtils.writeStringToFile(file, changed, Charsets.UTF_8);
+  }
+  
+  private void changeImagePath(File file, String from, String to,
+      Map<String, String> oldAndNewFileIds) throws IOException {
+    String content = FileUtils.readFileToString(file, Charsets.UTF_8);
+    ForeignPK fromPK = new ForeignPK("unknown", from);
+    ForeignPK toPK = new ForeignPK("unknown", to);
+    for (String oldId : oldAndNewFileIds.keySet()) {
+      fromPK.setId(oldId);
+      toPK.setId(oldAndNewFileIds.get(oldId));
+      content = replaceInternalImageId(content, fromPK, toPK);
+    }
+    FileUtils.writeStringToFile(file, content, Charsets.UTF_8);
+  }
+  
+  private String replaceInternalImageId(String content, ForeignPK oldPK, ForeignPK newPK) {
+    String from = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getId() + "/";
+    String to = "/componentId/" + newPK.getInstanceId() + "/attachmentId/" + newPK.getId() + "/";
+    return content.replaceAll(from, to);
+  }
+  
+  public void cloneContents(ForeignPK fromPK, ForeignPK toPK, Map<String, String> oldAndNewFileIds)
+      throws IOException {
+    if (oldAndNewFileIds == null) {
+      oldAndNewFileIds = new HashMap<String, String>();
+    }
+    
+    List<SimpleDocument> images =
+        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(fromPK,
+            DocumentType.image, null);
+    for (SimpleDocument image : images) {
+      SimpleDocumentPK imageCopyPk =
+          AttachmentServiceFactory.getAttachmentService().copyDocument(image, toPK);
+      oldAndNewFileIds.put(image.getId(), imageCopyPk.getId());
+    }
+    
+    moveOrCopy(fromPK, toPK, true, oldAndNewFileIds);
+  }
 
   public void mergeContents(String componentIdFrom, String objectIdFrom, String componentIdTo,
       String objectIdTo) throws UtilException, IOException {
-    String[] dirs = new String[1];
-    dirs[0] = dir;
-    String fromPath = FileRepositoryManager.getAbsolutePath(componentIdFrom, dirs);
+    String fromPath = getPath(componentIdFrom);
 
     File from = new File(fromPath);
     if (from != null && from.exists()) {
@@ -596,10 +658,21 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   public static String getFile(String componentId, String objectId, String fieldName,
       String language) {
+    return getPath(componentId) + getFileName(fieldName, objectId, language);
+  }
+  
+  public static void removeContents(ForeignPK pk) {
+    String fromPath = getPath(pk.getInstanceId());
+    Collection<File> files =
+        FileUtils.listFiles(new File(fromPath), new PrefixFileFilter(pk.getId() + "_"), null);
+    for (File file : files) {
+      FileUtils.deleteQuietly(file);
+    }
+  }
+  
+  private static String getPath(String componentId) {
     String[] dirs = new String[1];
     dirs[0] = dir;
-    String path = FileRepositoryManager.getAbsolutePath(componentId, dirs);
-
-    return path + getFileName(fieldName, objectId, language);
+    return FileRepositoryManager.getAbsolutePath(componentId, dirs);
   }
 }

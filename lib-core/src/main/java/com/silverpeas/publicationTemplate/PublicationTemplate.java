@@ -121,5 +121,9 @@ public interface PublicationTemplate {
   public boolean isRestrictedVisibilityToInstance();
   
   public boolean isDataEncrypted();
+  
+  public boolean isViewLayerExist();
+  
+  public boolean isUpdateLayerExist();
 
 }

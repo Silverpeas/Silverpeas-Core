@@ -422,10 +422,10 @@ public class ImportExport {
         report = processExport(userDetail, language, listItemsToExport, rootId);
         break;
       case ImportExport.EXPORT_FILESONLY:
-        report = processExportOfFilesOnly(userDetail, language, listItemsToExport);
+        report = processExportOfFilesOnly(userDetail, language, listItemsToExport, rootId);
         break;
       case ImportExport.EXPORT_PUBLICATIONSONLY:
-        report = processExportOfPublicationsOnly(userDetail, language, listItemsToExport);
+        report = processExportOfPublicationsOnly(userDetail, language, listItemsToExport, rootId);
     }
     return report;
   }
@@ -1154,7 +1154,7 @@ public class ImportExport {
   }
 
   private ExportReport processExportOfFilesOnly(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
@@ -1164,7 +1164,7 @@ public class ImportExport {
     // Export files attached to publications
     try {
       pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
-          fileExportDir.getPath());
+          fileExportDir.getPath(), rootId);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
     }
@@ -1174,7 +1174,7 @@ public class ImportExport {
   }
 
   private ExportReport processExportOfPublicationsOnly(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
@@ -1186,7 +1186,7 @@ public class ImportExport {
     try {
       // création des répertoires avec le nom des thèmes et des publications
       pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-          fileExportDir.getPath(), true, false);
+          fileExportDir.getPath(), true, StringUtil.isDefined(rootId));
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     }

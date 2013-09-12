@@ -48,17 +48,17 @@
             'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
         $(document.body).append($waiting);
         $waiting.popup("waiting");
+
+        // Little hack to prevent some unexpected errors when escape key is
+        // pressed during an ajax request
+        $waiting.dialog("widget").keydown(function(e) {
+          if (e.keyCode == 27) {
+            e.preventDefault();
+          }
+        });
       } else {
         $waiting.dialog("open");
       }
-
-      // Little hack to prevent some unexpected errors when escape key is
-      // pressed during an ajax request
-      $waiting.dialog("widget").keydown(function(e) {
-        if (e.keyCode == 27) {
-          e.preventDefault();
-        }
-      });
     },
     hideWaiting : function() {
       var $waiting = $("#spWaiting");
@@ -107,7 +107,6 @@
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
@@ -144,7 +143,6 @@
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     information : function(options) {
@@ -171,7 +169,6 @@
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     help : function(options) {
@@ -199,7 +196,6 @@
      * - title : the title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     validation : function(options) {
@@ -225,7 +221,6 @@
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     confirmation : function(options) {
@@ -264,7 +259,6 @@
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
@@ -305,7 +299,6 @@
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
@@ -323,7 +316,6 @@
       // Internal settings
       $.extend(settings, __buildInternalSettings({
         buttonDisplayed : false,
-        disabledParentScroll : true,
         width : 'auto'
       }));
 
@@ -393,7 +385,6 @@
     var settings = {
       title : '',
       callback : null,
-      keydown : null,
       callbackOnClose : null
     };
     if (options) {
@@ -512,13 +503,6 @@
         $_this.dialog("option", "width", "auto");
       } else {
         $_this.dialog("option", "width", width);
-      }
-
-      // keydown
-      if (options.keydown) {
-        $_this.dialog("widget").keydown(function(e) {
-          options.keydown.call(this, e);
-        });
       }
 
       // Dialog opening
