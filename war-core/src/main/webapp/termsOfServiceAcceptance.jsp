@@ -9,7 +9,7 @@
   As a special exception to the terms and conditions of version 3.0 of
   the GPL, you may redistribute this Program in connection with Free/Libre
   Open Source Software ("FLOSS") applications as described in Silverpeas's
-  FLOSS exception.  You should have recieved a copy of the text describing
+  FLOSS exception. You should have recieved a copy of the text describing
   the FLOSS exception, and it is also available here:
   "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
@@ -24,23 +24,23 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<c:set var="templateLocationBase" value="core:termsOfService"/>
+<c:set var="templateContent" value="termsOfService"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
-
 <%@ include file="headLog.jsp" %>
-<%
-  UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
-%>
+
+<fmt:setLocale value="${requestScope.language}"/>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication" var="authenticationBundle"/>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%></title>
-  <link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
+  <title><fmt:message key="GML.refuse"/></title>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <view:includePlugin name="jquery"/>
   <!--[if lt IE 8]>
@@ -59,56 +59,46 @@
   </style>
   <![endif]-->
   <script type="text/javascript">
-    var webContext = '<%=m_context%>';
     $(document).ready(function() {
-      $('#questionForm').submit(function() {
-        var answer = $(this).find('#answer').val();
-        if (!answer || answer.length == 0) {
-          alert("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
-          return false;
-        }
-        this.action = '<c:url value="/CredentialsServlet/ValidateAnswer"/>';
+      $('#termsOfServiceAcceptance').on("submit", function() {
+        this.action = '<c:url value="/CredentialsServlet/TermsOfServiceResponse"/>';
         return true;
       });
-      $('#answer').focus();
     });
+    function submit() {
+      $('#termsOfServiceAcceptance').submit();
+    }
+    function userAccept() {
+      $('#tosAccepted').val('true');
+      submit();
+    }
   </script>
 </head>
+
 <body>
-<form id="questionForm" action="#" method="post">
+<form id="termsOfServiceAcceptance" action="#" method="post">
   <div id="top"></div>
   <div class="page">
-    <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
-    </div>
-    <div id="background">
+    <div id="backgroundBig">
       <div class="cadre">
         <div id="header">
           <img src="<%=logo%>" class="logo" alt=""/>
 
-          <p class="information"><%=authenticationBundle
-              .getString("authentication.reminder.label") %>
-            <c:if test="${not empty requestScope.message}">
-              <br/><span><c:out value="${requestScope.message}" escapeXml="false"/></span>
-            </c:if>
-          </p>
-
+          <div id="content-terms-of-service">
+            <view:applyTemplate locationBase="${templateLocationBase}" name="${templateContent}"/>
+          </div>
           <div class="clear"></div>
         </div>
-        <p><label><span><%=userDetail.getLoginQuestion()%></span>
-          <input type="password" name="answer" id="answer"/></label></p>
 
-        <div class="submit">
-          <p>
-            <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#questionForm').submit()"><span><span>LOGIN</span></span></a>
-          </p>
-        </div>
+        <p>
+          <a href="#" class="submit refused" onclick="submit()"><span><span><fmt:message bundle="${authenticationBundle}" key="GML.refuse"/></span></span></a>
+          <a href="#" class="submit validate" onclick="userAccept()"><span><span><fmt:message bundle="${authenticationBundle}" key="GML.accept"/></span></span></a>
+        </p>
       </div>
     </div>
-    <input type="hidden" name="Login" value="<%=userDetail.getLogin()%>"/>
-    <input type="hidden" name="DomainId" value="<%=userDetail.getDomainId()%>"/>
+    <input type="hidden" name="tosToken" value="${requestScope.tosToken}"/>
+    <input type="hidden" id="tosAccepted" name="tosAccepted" value="false"/>
   </div>
 </form>
 </body>
-
 </html>

@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import net.sourceforge.spnego.SpnegoPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +57,7 @@ public class AuthenticationParameters {
   private String clearPassword;
   private boolean casMode;
   private boolean ssoMode;
+  private boolean userByInternalAuthTokenMode;
 
   private boolean socialNetworkMode;
   private SocialNetworkID networkId;
@@ -67,6 +69,7 @@ public class AuthenticationParameters {
     HttpSession session = request.getSession();
     boolean cookieEnabled = authenticationSettings.getBoolean(
         "cookieEnabled", false);
+    UserDetail userByInternalAuthToken = getUserByInternalAuthToken(request);
     this.ssoMode = (getSSOUser(request) != null);
     this.casMode = (getCASUser(session) != null);
     checkSocialNetworkMode(session);
@@ -75,7 +78,12 @@ public class AuthenticationParameters {
     boolean useNewEncryptionMode = StringUtil.isDefined(request
         .getParameter("Var2"));
 
-    if (ssoMode) {
+    if (userByInternalAuthToken != null) {
+      userByInternalAuthTokenMode = true;
+      login = userByInternalAuthToken.getLogin();
+      domainId = userByInternalAuthToken.getDomainId();
+      password = "";
+    } else if (ssoMode) {
       login = getSSOUser(request);
       password = "";
     } else if (casMode) {
@@ -184,6 +192,24 @@ public class AuthenticationParameters {
     return null;
   }
 
+  /**
+   * Internal server method of user authentication. This method consists to use {@link
+   * org.silverpeas.cache.service.CacheService}. The module that must authenticate a user by this
+   * way have to set a token value to the request attribute "internalAuthToken". The token has to be
+   * a key of the common cache that references a {@link UserDetail}
+   * @param request
+   * @return
+   */
+  private UserDetail getUserByInternalAuthToken(HttpServletRequest request) {
+    String internalAuthToken = (String) request.getAttribute("internalAuthToken");
+    if (StringUtil.isDefined(internalAuthToken)) {
+      if (CacheServiceFactory.getCacheService().get(internalAuthToken) instanceof UserDetail) {
+        return (UserDetail) CacheServiceFactory.getCacheService().remove(internalAuthToken);
+      }
+    }
+    return null;
+  }
+
   public String getLogin() {
     return login;
   }
@@ -210,6 +236,10 @@ public class AuthenticationParameters {
 
   public boolean isSsoMode() {
     return ssoMode;
+  }
+
+  public boolean isUserByInternalAuthTokenMode() {
+    return userByInternalAuthTokenMode;
   }
 
   public boolean isSocialNetworkMode() {

@@ -237,7 +237,8 @@
           </c:otherwise>
         </c:choose>
         <p>
-          <input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="<%=submitClass%>" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a>
+          <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+          <a href="#" class="<%=submitClass%>" onclick="checkForm()"><span><span>LOGIN</span></span></a>
         </p>
 
         <% if (rememberPwdActive || forgottenPwdActive || changePwdFromLoginPageActive) { %>
