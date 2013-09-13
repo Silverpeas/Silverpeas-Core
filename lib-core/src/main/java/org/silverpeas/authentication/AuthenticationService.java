@@ -55,7 +55,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
  * authentication process as it wraps all the mechanism and the delegation to perform the actual
@@ -67,7 +66,6 @@ import java.util.Random;
 public class AuthenticationService {
 
   private static final String module = "authentication";
-
   static final protected String m_JDBCUrl;
   static final protected String m_AccessLogin;
   static final protected String m_AccessPasswd;
@@ -84,10 +82,12 @@ public class AuthenticationService {
   static final protected String m_UserIdColumnName;
   static final protected String m_UserLoginColumnName;
   static final protected String m_UserDomainColumnName;
-
   static protected int m_AutoInc = 1;
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
   public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
+  public static final String ERROR_BAD_CREDENTIAL = "Error_1";
+  public static final String ERROR_AUTHENTICATION_FAILURE = "Error_2";
+  public static final String ERROR_PASSWORD_NOT_AVAILABLE = "Error_5";
 
   static {
     ResourceLocator propFile = new ResourceLocator(
@@ -200,7 +200,7 @@ public class AuthenticationService {
         SilverTrace.error(module, "AuthenticationService.authenticate()",
             "authentication.EX_USER_REJECTED",
             "DomainId=" + userCredential.getDomainId() + ";User=" + userCredential.getLogin(), ex);
-        String errorCause = "Error_2";
+        String errorCause = ERROR_AUTHENTICATION_FAILURE;
         Exception nested = ex.getNested();
         if (nested != null) {
           if (nested instanceof AuthenticationException) {
@@ -208,11 +208,11 @@ public class AuthenticationService {
           }
         }
         if (ex instanceof AuthenticationBadCredentialException) {
-          errorCause = "Error_1";
+          errorCause = ERROR_BAD_CREDENTIAL;
         } else if (ex instanceof AuthenticationHostException) {
-          errorCause = "Error_2";
+          errorCause = ERROR_AUTHENTICATION_FAILURE;
         } else if (ex instanceof AuthenticationPwdNotAvailException) {
-          errorCause = "Error_5";
+          errorCause = ERROR_PASSWORD_NOT_AVAILABLE;
         } else if (ex instanceof AuthenticationPasswordExpired) {
           errorCause = ERROR_PWD_EXPIRED;
         } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
@@ -310,7 +310,7 @@ public class AuthenticationService {
     } catch (Exception ex) {
       SilverTrace.warn(module, "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
-      return "Error_2";
+      return ERROR_AUTHENTICATION_FAILURE;
     } finally {
       DBUtil.close(resultSet, prepStmt);
       closeConnection(connection);
@@ -330,7 +330,7 @@ public class AuthenticationService {
         SilverTrace.warn(module, "AuthenticationService.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User="
             + login, e);
-        return "Error_2";
+        return ERROR_AUTHENTICATION_FAILURE;
       }
     }
 
@@ -616,5 +616,4 @@ public class AuthenticationService {
     // Return the AuthenticationServer instance with the specified unique name
     return AuthenticationServer.getAuthenticationServer(authenticationServerName);
   }
-
 }

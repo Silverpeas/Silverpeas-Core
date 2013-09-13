@@ -36,6 +36,8 @@ import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -289,7 +291,8 @@ public class AuthenticationServlet extends HttpServlet {
     } else if (authParameters.isCasMode()) {
       return authSettings.getString("cas.authentication.domainId", "0");
     }
-    return request.getParameter("DomainId");
+    OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
+    return controller.getDomain(request.getParameter("DomainId")).getId();
   }
 
   private String authenticate(HttpServletRequest request,
