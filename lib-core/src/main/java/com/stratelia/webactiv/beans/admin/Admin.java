@@ -4807,8 +4807,7 @@ public final class Admin {
       String spaceId = getDriverSpaceId(sClientSpaceId);
       List<String> groupIds = getAllGroupsOfUser(sUserId);
       List<String> asAvailCompoIds = componentManager.getAllowedComponentIds(Integer.parseInt(
-          sUserId), groupIds,
-          spaceId);
+          sUserId), groupIds, spaceId);
 
       return asAvailCompoIds.toArray(new String[asAvailCompoIds.size()]);
     } catch (Exception e) {

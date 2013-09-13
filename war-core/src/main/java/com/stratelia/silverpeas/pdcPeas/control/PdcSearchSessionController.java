@@ -2401,8 +2401,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<ComponentInstLight> getAllowedComponents(String space) {
     List<ComponentInstLight> allowedList = new ArrayList<ComponentInstLight>();
     if (space != null) {
-      String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-          getUserId());
+      String[] asAvailCompoForCurUser =
+          getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId());
       for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
         ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
             asAvailCompoForCurUser[nI]);

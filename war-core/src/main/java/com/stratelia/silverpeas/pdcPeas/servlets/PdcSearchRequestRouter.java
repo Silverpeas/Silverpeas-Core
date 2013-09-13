@@ -1827,10 +1827,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
     } else {
       String spaceId = request.getParameter("spaces");
-      pdcSC.getQueryParameters().setSpaceId(spaceId);
+      if (StringUtil.isDefined(spaceId)) {
+        pdcSC.getQueryParameters().setSpaceId(spaceId);
+      }
 
       String instanceId = request.getParameter("componentSearch");
-      pdcSC.getQueryParameters().setInstanceId(instanceId);
+      if (StringUtil.isDefined(instanceId)) {
+        pdcSC.getQueryParameters().setInstanceId(instanceId);
+      }
 
       if (pdcSC.isPlatformUsesPDC()) {
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
