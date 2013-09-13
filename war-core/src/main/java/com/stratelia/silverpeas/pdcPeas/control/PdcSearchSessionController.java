@@ -411,6 +411,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             query.addComponent(curComp);
           }
         }
+        
+        if (componentList.size() == 1) {
+          query.setRequestedFolder(getQueryParameters().getFolder());
+        }
 
         if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
