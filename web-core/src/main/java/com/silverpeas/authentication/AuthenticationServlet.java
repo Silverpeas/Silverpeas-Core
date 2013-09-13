@@ -45,6 +45,8 @@ import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -88,8 +90,10 @@ public class AuthenticationServlet extends HttpServlet {
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     session.setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
-    String domainId = getDomain(request, authenticationSettings,
-        authenticationParameters.isCasMode());
+
+    String domainId = getDomain(request, authenticationSettings, authenticationParameters.
+        isCasMode());
+
     AuthenticationCredential credential =
         AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin())
         .withAsPassword(authenticationParameters.getPassword())
@@ -252,6 +256,9 @@ public class AuthenticationServlet extends HttpServlet {
     String sDomainId = request.getParameter("DomainId");
     if (casMode) {
       sDomainId = authSettings.getString("cas.authentication.domainId", "0");
+    } else {
+      OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
+      sDomainId = controller.getDomain(sDomainId).getId();
     }
     return sDomainId;
   }
