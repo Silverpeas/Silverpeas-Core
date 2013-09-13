@@ -25,6 +25,7 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -60,10 +61,11 @@ public class PersonalSpaceController {
     component.setName(componentName);
 
     WAComponent baseComponent = Instanciateur.getWAComponent(componentName);
-    if (!baseComponent.isVisibleInPersonalSpace()) {
+    if (baseComponent == null || !baseComponent.isVisibleInPersonalSpace()) {
       UserDetail user = UserDetail.getById(userId);
       ResourceLocator messages = getMessages(user.getUserPreferences().getLanguage());
-      throw new AdminException(messages.getString("JSPP.ErrorUnknownComponent"), false);
+      String errorText = messages.getString("JSPP.ErrorUnknownComponent");
+      throw new AdminException(MessageFormat.format(errorText, componentName), false);
     }
     List<Parameter> parameters = baseComponent.getParameters();
 
