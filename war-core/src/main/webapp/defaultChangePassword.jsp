@@ -78,14 +78,14 @@
       });
       <c:if test="${isEmailAddress}">
       $('#changePwdForm').on("submit", function() {
-        if (!$('#emailAddress').val().trim()) {
+        if (!$.trim($('#emailAddress').val())) {
           alert("- <fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>\n");
           return false;
         }
         return true;
       });
       var $emailMessage = $('#emailAddressMessage');
-      if ($emailMessage.length > 0 && $emailMessage.html().trim()) {
+      if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
         var $emailAddress = $('#emailAddress');
         $emailAddress.qtip({
 		content: $emailMessage,
