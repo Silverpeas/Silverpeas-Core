@@ -115,4 +115,11 @@ public class UnitReport {
   public String getLabel() {
     return label;
   }
+  
+  /**
+   * @param string
+   */
+  public void setLabel(String string) {
+    label = string;
+  }
 }

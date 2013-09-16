@@ -25,6 +25,8 @@ package com.silverpeas.importExportPeas.servlets;
 
 import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
+import com.silverpeas.importExport.report.ComponentReport;
+import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -38,7 +40,6 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -165,12 +166,19 @@ public class ImportDragAndDrop extends HttpServlet {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         ImportSettings settings =
             new ImportSettings(savePath, userDetail, componentId, topicId, draftUsed, true, ImportSettings.FROM_DRAGNDROP);
-        List<PublicationDetail> importedPublications =
+        ImportReport importReport =
             massiveImporter.importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
-          for (PublicationDetail publicationDetail : importedPublications) {
-            result.append("pubid=").append(publicationDetail.getId()).append("&");
+          ComponentReport componentReport = importReport.getListComponentReport().get(0);
+          List<MassiveReport> listMassiveReport = componentReport.getListMassiveReports();
+          for (MassiveReport theMassiveReport : listMassiveReport) {
+            List<UnitReport> listMassiveUnitReport = theMassiveReport.getListUnitReports();
+            for (UnitReport unitReport : listMassiveUnitReport) {
+              if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+                result.append("pubid=").append(unitReport.getLabel()).append("&");
+              }
+            }
           }
         }
       } catch (Exception ex) {

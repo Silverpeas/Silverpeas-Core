@@ -619,7 +619,6 @@ public class PublicationsTypeManager {
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
     List<Integer> nodesKmax = new ArrayList<Integer>();
     List<NodePositionType> nodes = new ArrayList<NodePositionType>();
-    int nbItem = 1;
     UserDetail userDetail = settings.getUser();
 
     // On parcours les objets PublicationType
@@ -634,7 +633,7 @@ public class PublicationsTypeManager {
       gedIE.setCurrentComponentId(componentId);
 
       // Création du rapport unitaire
-      UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
+      UnitReport unitReport = new UnitReport();
       reportManager.addUnitReport(unitReport, componentId);
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
@@ -756,6 +755,8 @@ public class PublicationsTypeManager {
               .createPublicationForUnitImport(unitReport, settings, pubDetailToCreate, nodes);
           try {
             if (pubDetail != null) {
+              unitReport.setLabel(pubDetail.getPK().getId());
+              
               if (isKmax(componentId)) {
                 PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
               }
@@ -889,7 +890,6 @@ public class PublicationsTypeManager {
           }
         }
       }
-      nbItem++;
     }
   }
 
