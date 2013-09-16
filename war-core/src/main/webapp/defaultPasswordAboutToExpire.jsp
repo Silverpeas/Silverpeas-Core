@@ -24,7 +24,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ include file="headLog.jsp" %>
@@ -39,7 +39,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%></title>
+  <title><%=generalMultilang.getString("GML.popupTitle")%>
+  </title>
   <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
@@ -63,6 +64,7 @@
   <script type="text/javascript">
     var webContext = '<%=m_context%>';
     $(document).ready(function() {
+      $('#oldPassword').focus();
       handlePasswordForm({
         passwordFormId : 'changePwdForm',
         passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordBeforeExpiration"/>',
@@ -76,7 +78,8 @@
 <body>
 <form id="changePwdForm" action="#" method="post">
   <div class="page">
-    <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %></div>
+    <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
+    </div>
     <div id="backgroundBig">
       <div class="cadre">
         <div id="header">
@@ -106,40 +109,23 @@
         <p><label><span><%=authenticationBundle.getString(
             "authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
         </p>
-        <br/>
 
-        <p>
-        <table cellspacing="0" width="100%">
-          <tbody>
-          <tr>
-            <td style="background-image: url('<%=m_context%>/images/bt-left.png'); width: 31px; height: 31px">
-              &nbsp;</td>
-            <td style="background: url('<%=m_context%>/images/bt-bg.png') repeat-x;">
-              <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-              <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><%=authenticationBundle
-                  .getString("authentication.password.change") %>
-              </a></td>
-            <td style="background-image: url('<%=m_context%>/images/bt-right.png');width: 16px; height: 31px">
-              &nbsp;</td>
-            <td style="width: 16px; ">&nbsp;</td>
-            <td style="background-image: url('<%=m_context%>/images/bt-left.png'); width: 31px; height: 31px">
-              &nbsp;</td>
-            <td style="background: url('<%=m_context%>/images/bt-bg.png') repeat-x;">
-              <a href="<%=m_context%>/Main/<%=gef.getLookFrame() %>" class="submit"><%=authenticationBundle
-                  .getString("authentication.password.remindMeLater") %>
-              </a></td>
-            <td style="background-image: url('<%=m_context%>/images/bt-right.png');width: 16px; height: 31px">
-              &nbsp;</td>
-          </tr>
-          </tbody>
-        </table>
-        </p>
+        <div class="submit">
+          <p>
+            <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+            <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><span><span><%=authenticationBundle
+                .getString("authentication.password.change") %></span></span></a>
+            <a href="<%=m_context%>/Main/<%=gef.getLookFrame() %>" class="submit"><span><span><%=authenticationBundle
+                .getString("authentication.password.remindMeLater") %></span></span></a>
 
-        <p>
+          </p>
+
+          <p>
           <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
             <%=authenticationBundle.getString("authentication.password.showRules") %>
           </a></span>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   </div>

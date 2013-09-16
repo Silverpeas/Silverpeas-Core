@@ -23,6 +23,7 @@ package org.silverpeas.servlets;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.servlets.credentials.*;
@@ -36,8 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.silverpeas.authentication.exception.AuthenticationException;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)
@@ -79,6 +78,9 @@ public class CredentialsServlet extends HttpServlet {
     // User Registration
     handlers.put("NewRegistration", new NewRegistrationHandler());
     handlers.put("Register", new RegisterHandler());
+    // Terms of service
+    handlers.put("TermsOfServiceRequest", new TermsOfServiceRequestHandler());
+    handlers.put("TermsOfServiceResponse", new TermsOfServiceResponseHandler());
   }
 
   /*

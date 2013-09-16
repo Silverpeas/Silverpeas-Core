@@ -190,10 +190,39 @@ public class AuthenticationService {
   public String authenticate(final AuthenticationCredential userCredential) {
     String key = null;
     if (userCredential.getLogin() != null) {
-      if (userCredential.isPasswordSet()) {
-        key = authenticateByLoginAndPasswordAndDomain(userCredential);
-      } else {
-        key = authenticateByLoginAndDomain(userCredential);
+      try {
+        if (userCredential.isPasswordSet()) {
+          key = authenticateByLoginAndPasswordAndDomain(userCredential);
+        } else {
+          key = authenticateByLoginAndDomain(userCredential);
+        }
+      } catch (AuthenticationException ex) {
+        SilverTrace.error(module, "AuthenticationService.authenticate()",
+            "authentication.EX_USER_REJECTED",
+            "DomainId=" + userCredential.getDomainId() + ";User=" + userCredential.getLogin(), ex);
+        String errorCause = "Error_2";
+        Exception nested = ex.getNested();
+        if (nested != null) {
+          if (nested instanceof AuthenticationException) {
+            ex = (AuthenticationException) nested;
+          }
+        }
+        if (ex instanceof AuthenticationBadCredentialException) {
+          errorCause = "Error_1";
+        } else if (ex instanceof AuthenticationHostException) {
+          errorCause = "Error_2";
+        } else if (ex instanceof AuthenticationPwdNotAvailException) {
+          errorCause = "Error_5";
+        } else if (ex instanceof AuthenticationPasswordExpired) {
+          errorCause = ERROR_PWD_EXPIRED;
+        } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
+          errorCause = ERROR_PWD_MUST_BE_CHANGED;
+        } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
+          errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
+        } else if (ex instanceof AuthenticationUserAccountBlockedException) {
+          errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+        }
+        return errorCause;
       }
     }
     return key;
@@ -207,7 +236,8 @@ public class AuthenticationService {
    * with the domain to which the user belongs.
    * @return an authentication key if the authentication succeed, null otherwise.
    */
-  private String authenticateByLoginAndPasswordAndDomain(AuthenticationCredential credential) {
+  private String authenticateByLoginAndPasswordAndDomain(AuthenticationCredential credential)
+      throws AuthenticationException {
     // Test data coming from calling page
     String login = credential.getLogin();
     String password = credential.getPassword();
@@ -215,6 +245,9 @@ public class AuthenticationService {
     if (login == null || password == null || domainId == null) {
       return null;
     }
+
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
     Connection connection = null;
     try {
@@ -227,43 +260,12 @@ public class AuthenticationService {
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
-      // Verify that the user can login
-      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
-
       // Authentification test
       authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database
       return getAuthenticationKey(login, domainId);
 
-    } catch (AuthenticationException ex) {
-      SilverTrace.error(module,
-          "AuthenticationService.authenticate()",
-          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-          + login, ex);
-      String errorCause = "Error_2";
-      Exception nested = ex.getNested();
-      if (nested != null) {
-        if (nested instanceof AuthenticationException) {
-          ex = (AuthenticationException) nested;
-        }
-      }
-      if (ex instanceof AuthenticationBadCredentialException) {
-        errorCause = "Error_1";
-      } else if (ex instanceof AuthenticationHostException) {
-        errorCause = "Error_2";
-      } else if (ex instanceof AuthenticationPwdNotAvailException) {
-        errorCause = "Error_5";
-      } else if (ex instanceof AuthenticationPasswordExpired) {
-        errorCause = ERROR_PWD_EXPIRED;
-      } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
-        errorCause = ERROR_PWD_MUST_BE_CHANGED;
-      } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
-        errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
-      } else if (ex instanceof AuthenticationUserAccountBlockedException) {
-        errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
-      }
-      return errorCause;
     } finally {
       closeConnection(connection);
     }
@@ -276,7 +278,8 @@ public class AuthenticationService {
    * belongs.
    * @return an authentication key if the authentication succeed, null otherwise.
    */
-  private String authenticateByLoginAndDomain(AuthenticationCredential credential) {
+  private String authenticateByLoginAndDomain(AuthenticationCredential credential)
+      throws AuthenticationException {
     // Test data coming from calling page
     String login = credential.getLogin();
     String domainId = credential.getDomainId();
@@ -304,18 +307,9 @@ public class AuthenticationService {
       resultSet = prepStmt.executeQuery();
 
       authenticationOK = resultSet.next();
-
-      if (authenticationOK) {
-        // Verify that the user can login
-        AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
-      }
-
     } catch (Exception ex) {
       SilverTrace.warn(module, "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
-      if (ex instanceof AuthenticationUserAccountBlockedException) {
-        return UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
-      }
       return "Error_2";
     } finally {
       DBUtil.close(resultSet, prepStmt);
@@ -325,6 +319,10 @@ public class AuthenticationService {
     String key = null;
 
     if (authenticationOK) {
+
+      // Verify that the user can login
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+
       // Generate a random key and store it in database
       try {
         key = getAuthenticationKey(login, domainId);

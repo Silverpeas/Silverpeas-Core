@@ -29,20 +29,18 @@ date 14/09/2000
 */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.PasteDetail;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.quota.exception.QuotaException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.spaces.SpaceTemplate;
-import com.silverpeas.util.ArrayUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
@@ -1295,6 +1293,20 @@ public class AdminController implements java.io.Serializable {
       SilverTrace.error("admin", "AdminController.addUser",
           "admin.EX_ERR_ADD_USER", e);
       return "";
+    }
+  }
+
+  /**
+   * Updates the acceptance date of a user from its id.
+   */
+  public void userAcceptsTermsOfService(String userId) {
+    SilverTrace
+        .info("admin", "AdminController.userAcceptsTermsOfService", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().userAcceptsTermsOfService(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.userAcceptsTermsOfService",
+          "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE", e);
     }
   }
 

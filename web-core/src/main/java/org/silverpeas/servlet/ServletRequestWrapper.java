@@ -94,6 +94,15 @@ public class ServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a boolean.
+   * @param parameterName
+   * @return
+   */
+  public boolean getParameterAsBoolean(String parameterName) {
+    return asBoolean(getParameter(parameterName));
+  }
+
+  /**
    * Get a parameter value as a Long.
    * @param parameterName
    * @return
@@ -124,7 +133,25 @@ public class ServletRequestWrapper {
   }
 
   /**
-   * Centralizition of Object to Long convertion.
+   * Centralization of Object to boolean convertion.
+   * @param object
+   * @return
+   */
+  private <T> boolean asBoolean(T object) {
+    if (object instanceof Boolean) {
+      return (Boolean) object;
+    } else if (object instanceof String) {
+      String typedObject = (String) object;
+      return StringUtil.getBooleanValue(typedObject);
+    }
+    if (object != null) {
+      throw new NotImplementedException();
+    }
+    return false;
+  }
+
+  /**
+   * Centralization of Object to Long convertion.
    * @param object
    * @return
    */
@@ -145,7 +172,7 @@ public class ServletRequestWrapper {
   }
 
   /**
-   * Centralizition of Object to Long convertion.
+   * Centralization of Object to Long convertion.
    * @param date
    * @param hour
    * @return

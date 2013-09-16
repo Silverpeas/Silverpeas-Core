@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.stratelia.webactiv.util.DateUtil;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -3451,6 +3452,24 @@ public final class Admin {
       throw new AdminException("Admin.updateUserState", SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE_USER_STATE", "user id : '" + userId + "', state : '" + state.name()
           + "'", e);
+    }
+  }
+
+  /**
+   * Updates the acceptance date of a user from its id.
+   *
+   * @param userId
+   * @throws AdminException
+   */
+  public void userAcceptsTermsOfService(String userId) throws AdminException {
+    try {
+      UserDetail user = UserDetail.getById(userId);
+      user.setTosAcceptanceDate(DateUtil.getNow());
+      updateUser(user);
+    } catch (Exception e) {
+      throw new AdminException("Admin.updateTermsOfServiceAcceptanceDate",
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE",
+          "user id : '" + userId + "'", e);
     }
   }
 

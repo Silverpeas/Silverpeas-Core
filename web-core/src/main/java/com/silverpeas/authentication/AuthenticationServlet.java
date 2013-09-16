@@ -30,9 +30,11 @@ import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
+import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
 import javax.servlet.RequestDispatcher;
@@ -118,12 +120,24 @@ public class AuthenticationServlet extends HttpServlet {
       storePassword(response, authenticationParameters.getStoredPassword(), isNewEncryptMode,
           authenticationParameters.getClearPassword(), securedAccess);
 
+      if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
+        UserMustAcceptTermsOfServiceVerifier verifier =
+            AuthenticationUserVerifierFactory.getUserMustAcceptTermsOfServiceVerifier(credential);
+        try {
+          verifier.verify();
+        } catch (AuthenticationUserMustAcceptTermsOfService
+            authenticationUserMustAcceptTermsOfService) {
+          forward(request, response, verifier.getDestination(request));
+          return;
+        }
+      }
+
       MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
       if (checker.check(request, authenticationKey)) {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(checker.getDestination());
-        dispatcher.forward(request, response);
+        forward(request, response, checker.getDestination());
         return;
       }
+
       String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
       writeSessionCookie(response, session, securedAccess);
       response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
@@ -176,8 +190,7 @@ public class AuthenticationServlet extends HttpServlet {
         storeDomain(response, domainId, securedAccess);
         url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential)
             .getDestinationOnFirstLogin(request);
-        RequestDispatcher dispatcher = request.getRequestDispatcher(url);
-        dispatcher.forward(request, response);
+        forward(request, response, url);
         return;
       } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
         if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
@@ -203,6 +216,18 @@ public class AuthenticationServlet extends HttpServlet {
     }
     response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request)
         + url));
+  }
+
+  /**
+   * Centralization.
+   * @param request
+   * @param response
+   * @param destination
+   */
+  private void forward(HttpServletRequest request, HttpServletResponse response,
+      String destination) throws ServletException, IOException {
+    RequestDispatcher dispatcher = request.getRequestDispatcher(destination);
+    dispatcher.forward(request, response);
   }
 
   private void storePassword(HttpServletResponse response, String shoudStorePasword,
@@ -257,7 +282,9 @@ public class AuthenticationServlet extends HttpServlet {
 
   private String getDomain(HttpServletRequest request, AuthenticationParameters authParameters,
       ResourceLocator authSettings) {
-    if (authParameters.isSsoMode()) {
+    if (authParameters.isUserByInternalAuthTokenMode()) {
+      return authParameters.getDomainId();
+    } else if (authParameters.isSsoMode()) {
       return authSettings.getString("sso.authentication.domainId", "0");
     } else if (authParameters.isCasMode()) {
       return authSettings.getString("cas.authentication.domainId", "0");
@@ -271,7 +298,8 @@ public class AuthenticationServlet extends HttpServlet {
     if (!StringUtil.isDefined(key)) {
       AuthenticationCredential credential =
           AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin());
-      if (authenticationParameters.isSsoMode() || authenticationParameters.isCasMode()) {
+      if (authenticationParameters.isUserByInternalAuthTokenMode() ||
+          authenticationParameters.isSsoMode() || authenticationParameters.isCasMode()) {
         key = authService.authenticate(credential.withAsDomainId(sDomainId));
       } else if (authenticationParameters.isSocialNetworkMode()) {
         key = authService.authenticate(credential.withAsDomainId(authenticationParameters.
