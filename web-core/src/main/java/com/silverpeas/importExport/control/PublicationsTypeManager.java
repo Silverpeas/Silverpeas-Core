@@ -756,7 +756,7 @@ public class PublicationsTypeManager {
           try {
             if (pubDetail != null) {
               unitReport.setLabel(pubDetail.getPK().getId());
-              
+
               if (isKmax(componentId)) {
                 PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
               }
@@ -772,23 +772,24 @@ public class PublicationsTypeManager {
                   }
                 }
               }
-              // traitement des fichiers joints à la publi
-              ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+              // process the publication's attachments
+              ResourceLocator uploadSettings = new ResourceLocator(
+                  "org.silverpeas.util.uploads.uploadSettings", "");
               long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-              
+
               if (attachments != null) {
-                
+
                 //New list of attachments whose size does not exceed the limit
-                List<AttachmentDetail> attachmentsSizeOk= new ArrayList<AttachmentDetail>();
+                List<AttachmentDetail> attachmentsSizeOk = new ArrayList<AttachmentDetail>();
                 for (AttachmentDetail attdetail : attachments) {
                   long fileSize = attdetail.getSize();
-                  if(fileSize > maximumFileSize) {
+                  if (fileSize > maximumFileSize) {
                     unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                   } else {
                     attachmentsSizeOk.add(attdetail);
                   }
                 }
-                
+
                 List<AttachmentDetail> copiedAttachments;
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
                   copiedAttachments = attachmentsSizeOk;
@@ -817,19 +818,18 @@ public class PublicationsTypeManager {
               if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
                 // Get number of versions
                 int nbFiles = 0;
-                for (Document document : documents) {
-                  nbFiles += document.getVersionsType().getListVersions().size();
-                }
-                
-                //New list of documents whose size does not exceed the limit
-                List<Document> documentsSizeOk= new ArrayList<Document>();
+
+                //New list of versions whose size does not exceed the limit
+                List<Document> documentsSizeOk = new ArrayList<Document>();
                 for (Document documentDetail : documents) {
-                  List<DocumentVersion> documentVersionsSizeOk= new ArrayList<DocumentVersion>();
-                  
-                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().getListVersions();
+                  nbFiles += documentDetail.getVersionsType().getListVersions().size();
+                  List<DocumentVersion> documentVersionsSizeOk = new ArrayList<DocumentVersion>();
+
+                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().
+                      getListVersions();
                   for (DocumentVersion documentVersionDetail : documentVersions) {
                     long fileSize = documentVersionDetail.getSize();
-                    if(fileSize > maximumFileSize) {
+                    if (fileSize > maximumFileSize) {
                       unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                     } else {
                       documentVersionsSizeOk.add(documentVersionDetail);
