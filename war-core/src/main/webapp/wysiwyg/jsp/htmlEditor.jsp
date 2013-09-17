@@ -189,6 +189,9 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
   fileName = request.getParameter("FileName");
   session.setAttribute("WYSIWYG_FileName", fileName);
   path = request.getParameter("Path");
+  if (componentId.startsWith("webSites")) {
+    path = WysiwygController.getWebsiteRepository() + path;
+  }
   session.setAttribute("WYSIWYG_Path", path);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "fileName= " + fileName + " Path=" + path);
 
