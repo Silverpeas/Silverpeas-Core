@@ -2,12 +2,12 @@ package org.silverpeas.core.admin;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
-import org.silverpeas.util.ListSlice;
-
 import java.util.List;
 import java.util.Map;
+import org.silverpeas.util.ListSlice;
 
 public interface OrganisationController extends java.io.Serializable {
+
   /**
    * Return all the spaces Id available in silverpeas
    *
@@ -17,8 +17,9 @@ public interface OrganisationController extends java.io.Serializable {
 
   /**
    * Return all the subSpaces Id available in silverpeas given a space id (driver format)
+   *
    * @param sSpaceId
-   * @return  
+   * @return
    */
   String[] getAllSubSpaceIds(String sSpaceId);
 
@@ -173,8 +174,10 @@ public interface OrganisationController extends java.io.Serializable {
    * Searches the users that match the specified criteria.
    *
    * @param criteria the criteria in searching of user details.
-   * @return a slice of the list of user details matching the criteria or an empty list of no ones are found.
-   * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while getting the user details.
+   * @return a slice of the list of user details matching the criteria or an empty list of no ones
+   * are found.
+   * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while getting the
+   * user details.
    */
   ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria criteria);
 
@@ -198,9 +201,12 @@ public interface OrganisationController extends java.io.Serializable {
 
   /**
    * Searches the groups that match the specified criteria.
+   *
    * @param criteria the criteria in searching of user groups.
-   * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
-   * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while getting the user groups.
+   * @return a slice of the list of user groups matching the criteria or an empty list of no ones
+   * are found.
+   * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while getting the
+   * user groups.
    */
   ListSlice<Group> searchGroups(GroupsSearchCriteria criteria);
 
@@ -352,13 +358,14 @@ public interface OrganisationController extends java.io.Serializable {
   String[] getAllUsersIds();
 
   /**
-   * 
+   *
    * Return all the users of Silverpeas
+   *
    * @param groupId
    * @param componentId
    * @param profileId
    * @param filterUser
-   * @return 
+   * @return
    */
   String[] searchUsersIds(String groupId, String componentId, String[] profileId,
       UserDetail filterUser);
@@ -380,14 +387,16 @@ public interface OrganisationController extends java.io.Serializable {
 
   /**
    * Get a domain with given id
+   *
    * @param domainId
-   * @return  
+   * @return
    */
   Domain getDomain(String domainId);
 
   /**
    * Get all domains
-   * @return 
+   *
+   * @return
    */
   Domain[] getAllDomains();
 
@@ -423,9 +432,9 @@ public interface OrganisationController extends java.io.Serializable {
    * of several tools, each of them providing an administrative feature. Each tool in the
    * administration component have the same identifier that refers in fact the administration
    * console.
+   *
    * @param toolId the unique identifier of the tool.
    * @return true if the tool belongs to the administration component.
    */
   boolean isAdminTool(String toolId);
-
 }
