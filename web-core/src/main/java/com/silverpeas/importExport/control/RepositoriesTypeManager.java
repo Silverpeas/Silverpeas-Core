@@ -201,6 +201,7 @@ public class RepositoriesTypeManager {
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate,
           settings);
+      unitReport.setLabel(pubDetailToCreate.getPK().getId());
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");

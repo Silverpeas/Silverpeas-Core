@@ -564,7 +564,6 @@ public class PublicationsTypeManager {
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
     List<Integer> nodesKmax = new ArrayList<Integer>();
     List<NodePositionType> nodes = new ArrayList<NodePositionType>();
-    int nbItem = 1;
     UserDetail userDetail = settings.getUser();
 
     // On parcours les objets PublicationType
@@ -579,7 +578,7 @@ public class PublicationsTypeManager {
       gedIE.setCurrentComponentId(componentId);
 
       // Création du rapport unitaire
-      UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
+      UnitReport unitReport = new UnitReport();
       reportManager.addUnitReport(unitReport, componentId);
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
@@ -701,6 +700,8 @@ public class PublicationsTypeManager {
               .createPublicationForUnitImport(unitReport, settings, pubDetailToCreate, nodes);
           try {
             if (pubDetail != null) {
+              unitReport.setLabel(pubDetail.getPK().getId());
+              
               if (isKmax(componentId)) {
                 PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
               }
@@ -779,6 +780,24 @@ public class PublicationsTypeManager {
                   documentDetail.getVersionsType().setListVersions(documentVersionsSizeOk);
                   documentsSizeOk.add(documentDetail);
                 }
+                
+                //New list of documents whose size does not exceed the limit
+                List<Document> documentsSizeOk= new ArrayList<Document>();
+                for (Document documentDetail : documents) {
+                  List<DocumentVersion> documentVersionsSizeOk= new ArrayList<DocumentVersion>();
+                  
+                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().getListVersions();
+                  for (DocumentVersion documentVersionDetail : documentVersions) {
+                    long fileSize = documentVersionDetail.getSize();
+                    if(fileSize > maximumFileSize) {
+                      unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
+                    } else {
+                      documentVersionsSizeOk.add(documentVersionDetail);
+                    }
+                  }
+                  documentDetail.getVersionsType().setListVersions(documentVersionsSizeOk);
+                  documentsSizeOk.add(documentDetail);
+                }
 
                 // Copy files on disk, set info on each version
                 List<SimpleDocument> copiedFiles = versioningIE.
@@ -831,7 +850,6 @@ public class PublicationsTypeManager {
           }
         }
       }
-      nbItem++;
     }
   }
 
