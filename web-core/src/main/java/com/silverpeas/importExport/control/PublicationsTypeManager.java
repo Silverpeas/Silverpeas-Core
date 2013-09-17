@@ -701,7 +701,7 @@ public class PublicationsTypeManager {
           try {
             if (pubDetail != null) {
               unitReport.setLabel(pubDetail.getPK().getId());
-              
+
               if (isKmax(componentId)) {
                 PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
               }
@@ -718,22 +718,23 @@ public class PublicationsTypeManager {
                 }
               }
               // process the publication's attachments
-              ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+              ResourceLocator uploadSettings = new ResourceLocator(
+                  "org.silverpeas.util.uploads.uploadSettings", "");
               long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-              
+
               if (attachments != null) {
-                
+
                 //New list of attachments whose size does not exceed the limit
-                List<AttachmentDetail> attachmentsSizeOk= new ArrayList<AttachmentDetail>();
+                List<AttachmentDetail> attachmentsSizeOk = new ArrayList<AttachmentDetail>();
                 for (AttachmentDetail attdetail : attachments) {
                   long fileSize = attdetail.getSize();
-                  if(fileSize > maximumFileSize) {
+                  if (fileSize > maximumFileSize) {
                     unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                   } else {
                     attachmentsSizeOk.add(attdetail);
                   }
                 }
-                
+
                 List<AttachmentDetail> copiedAttachments;
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
                   copiedAttachments = attachmentsSizeOk;
@@ -763,33 +764,16 @@ public class PublicationsTypeManager {
                 int nbFiles = 0;
 
                 //New list of versions whose size does not exceed the limit
-                List<Document> documentsSizeOk= new ArrayList<Document>();
+                List<Document> documentsSizeOk = new ArrayList<Document>();
                 for (Document documentDetail : documents) {
                   nbFiles += documentDetail.getVersionsType().getListVersions().size();
-                  List<DocumentVersion> documentVersionsSizeOk= new ArrayList<DocumentVersion>();
-                  
-                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().getListVersions();
+                  List<DocumentVersion> documentVersionsSizeOk = new ArrayList<DocumentVersion>();
+
+                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().
+                      getListVersions();
                   for (DocumentVersion documentVersionDetail : documentVersions) {
                     long fileSize = documentVersionDetail.getSize();
-                    if(fileSize > maximumFileSize) {
-                      unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
-                    } else {
-                      documentVersionsSizeOk.add(documentVersionDetail);
-                    }
-                  }
-                  documentDetail.getVersionsType().setListVersions(documentVersionsSizeOk);
-                  documentsSizeOk.add(documentDetail);
-                }
-                
-                //New list of documents whose size does not exceed the limit
-                List<Document> documentsSizeOk= new ArrayList<Document>();
-                for (Document documentDetail : documents) {
-                  List<DocumentVersion> documentVersionsSizeOk= new ArrayList<DocumentVersion>();
-                  
-                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().getListVersions();
-                  for (DocumentVersion documentVersionDetail : documentVersions) {
-                    long fileSize = documentVersionDetail.getSize();
-                    if(fileSize > maximumFileSize) {
+                    if (fileSize > maximumFileSize) {
                       unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                     } else {
                       documentVersionsSizeOk.add(documentVersionDetail);
