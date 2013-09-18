@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,13 +38,10 @@ import java.util.Set;
  * IndexEntry is create by a web'activ's component when it creates a new element or document. This
  * IndexEntry will be return later when the document matchs a query.
  */
-public class IndexEntry implements Serializable {
+public class IndexEntry implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -4817004188601716658L;
-  /**
-   * The primary key is fixed at construction time.
-   */
-  private final IndexEntryPK pk;
+  private IndexEntryPK pk;
   /**
    * The IndexEntry attributes are null by default. The title should been set in order to display
    * the entry to the user when the document match his query. The index engine may set with a
@@ -65,6 +63,7 @@ public class IndexEntry implements Serializable {
   private Map<String, String> keywordsI18N = null;
   private String serverName = null;
   private String filename = null;
+  private List<String> paths = null;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -489,6 +488,29 @@ public class IndexEntry implements Serializable {
 
   public String getFilename() {
     return filename;
+  }
+
+  public void setPaths(List<String> paths) {
+    this.paths = paths;
+  }
+
+  public List<String> getPaths() {
+    return paths;
+  }
+  
+  public void setPK(IndexEntryPK pk) {
+    this.pk = pk;
+  }
+  
+  @Override
+  public IndexEntry clone() {
+    IndexEntry clone;
+    try {
+      clone = (IndexEntry) super.clone();
+    } catch (final CloneNotSupportedException e) {
+      clone = null;
+    }
+    return clone;
   }
 
 }

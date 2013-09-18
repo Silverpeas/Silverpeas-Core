@@ -148,6 +148,7 @@ public class PdcSearchRequestRouterHelper {
       queryParameters.setBeforeDate(getDateFromRequest("createbeforedate", lang, request));
       queryParameters.setAfterUpdateDate(getDateFromRequest("updateafterdate", lang, request));
       queryParameters.setBeforeUpdateDate(getDateFromRequest("updatebeforedate", lang, request));
+      queryParameters.setFolder(request.getParameter(QueryParameters.PARAM_FOLDER));
     }
 
     String paramNbResToDisplay = request.getParameter("nbRes");

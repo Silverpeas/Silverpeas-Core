@@ -33,8 +33,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class QueryParameters implements java.io.Serializable {
-  // class version identifier
-
+  
+  public static final String PARAM_FOLDER = "folderSearch";
+  
   private static final long serialVersionUID = -5191736720955151540L;
   private String keywords = null;
   private String spaceId = null;
@@ -46,6 +47,8 @@ public class QueryParameters implements java.io.Serializable {
   private Date beforeupdatedate = null;
   private Map<String, String> xmlQuery = null;
   private String xmlTitle = null;
+  private String folder = null;
+  
   // attributes below are used only to display info in the search page
   private UserDetail creatorDetail = null;
 
@@ -244,5 +247,13 @@ public class QueryParameters implements java.io.Serializable {
   public boolean isDefined() {
     return StringUtil.isDefined(keywords) || afterdate != null || beforedate != null || StringUtil
         .isDefined(creatorId);
+  }
+
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
+
+  public String getFolder() {
+    return folder;
   }
 }
