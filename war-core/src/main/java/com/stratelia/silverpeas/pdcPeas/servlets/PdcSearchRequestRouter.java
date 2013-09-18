@@ -830,13 +830,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         if (!StringUtil.isDefined(curSpaceId)) {
           curSpaceId = null;
         }
-        searchParameters.setSpaceId(curSpaceId);
         String strComponentIds = request.getParameter("componentSearch");
         List<String> componentIds = null;
         if (StringUtil.isDefined(strComponentIds)) {
           componentIds = Arrays.asList(strComponentIds.split(",\\s*"));
         }
-        searchParameters.setInstanceId(strComponentIds);
+        searchParameters.setSpaceIdAndInstanceId(curSpaceId, strComponentIds);
         pdcSC.buildCustomComponentListWhereToSearch(curSpaceId, componentIds);
 
         if (pdcSC.getSearchContext() != null && !pdcSC.getSearchContext().isEmpty()) {
@@ -1827,14 +1826,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
     } else {
       String spaceId = request.getParameter("spaces");
-      if (StringUtil.isDefined(spaceId)) {
-        pdcSC.getQueryParameters().setSpaceId(spaceId);
-      }
-
       String instanceId = request.getParameter("componentSearch");
-      if (StringUtil.isDefined(instanceId)) {
-        pdcSC.getQueryParameters().setInstanceId(instanceId);
-      }
+      pdcSC.getQueryParameters().setSpaceIdAndInstanceId(spaceId, instanceId);
 
       if (pdcSC.isPlatformUsesPDC()) {
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
