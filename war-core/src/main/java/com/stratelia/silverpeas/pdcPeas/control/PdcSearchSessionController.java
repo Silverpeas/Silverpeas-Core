@@ -411,6 +411,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             query.addComponent(curComp);
           }
         }
+        
+        if (componentList.size() == 1) {
+          query.setRequestedFolder(getQueryParameters().getFolder());
+        }
 
         if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
@@ -2397,8 +2401,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<ComponentInstLight> getAllowedComponents(String space) {
     List<ComponentInstLight> allowedList = new ArrayList<ComponentInstLight>();
     if (space != null) {
-      String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-          getUserId());
+      String[] asAvailCompoForCurUser =
+          getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId());
       for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
         ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
             asAvailCompoForCurUser[nI]);

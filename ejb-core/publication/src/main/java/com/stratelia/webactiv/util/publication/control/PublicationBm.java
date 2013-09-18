@@ -148,6 +148,8 @@ public interface PublicationBm {
    * return the publication's collection of Alias
    */
   public Collection<Alias> getAlias(PublicationPK pubPK);
+  
+  public List<Alias> setAlias(PublicationPK pubPK, List<Alias> alias);
 
   public void addAlias(PublicationPK pubPK, List<Alias> alias);
 
