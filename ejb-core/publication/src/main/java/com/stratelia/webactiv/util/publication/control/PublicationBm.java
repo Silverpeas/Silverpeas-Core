@@ -475,4 +475,12 @@ public interface PublicationBm {
       List<String> options, Date begin, Date end);
 
   public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone);
+
+  /**
+   * get all publications of given user in state 'Draft'. It returns simple publications in state
+   * 'Draft' and cloned publications with a clone in state 'Draft'.
+   * @param userId
+   * @return all PublicationDetail in state 'Draft' according to given userId
+   */
+  Collection<PublicationDetail> getDraftsByUser(String userId);
 }

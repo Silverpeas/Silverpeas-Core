@@ -251,5 +251,23 @@
             </preference>
         </portlet-preferences>
  </portlet>
+ 
+ <portlet>
+        <description>Drafts of connected user</description>
+        <portlet-name>MyDraftsPortlet</portlet-name>
+        <display-name>MyDraftsPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyDrafts</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+            <!-- <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode> -->
+        </supports>
+        <portlet-info>
+            <title>Drafts of connected user</title>
+            <short-title>My drafts</short-title>
+        </portlet-info>
+ </portlet>
   
 </portlet-app>

@@ -74,4 +74,7 @@
   <PortletWindowPreference name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" userName="default">
     <Properties/>
   </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

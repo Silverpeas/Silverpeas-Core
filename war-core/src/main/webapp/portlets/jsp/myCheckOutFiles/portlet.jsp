@@ -28,7 +28,6 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-
 <%@ include file="../portletImport.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
@@ -60,7 +59,7 @@ RenderRequest 	pReq 		= (RenderRequest)request.getAttribute("javax.portlet.reque
 Iterator<SimpleDocument> attachments	= (Iterator<SimpleDocument>) pReq.getAttribute("Attachments");
 
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
-	if ((attachments != null && attachments.hasNext())) {
+	if (attachments != null && attachments.hasNext()) {
     	// convertir la date du jour
         Calendar today = Calendar.getInstance();
         today.setTime(new Date());
@@ -76,54 +75,51 @@ ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(la
         tomorrow.set(Calendar.MINUTE, 0);
         tomorrow.set(Calendar.SECOND, 0);
         tomorrow.set(Calendar.MILLISECOND, 0);
+        
+        out.println("<ul>");
 
 		// traitement des liens vers les fichiers joints
- 		if (attachments != null) {
-			while (attachments.hasNext()) {
-				SimpleDocument att =  attachments.next();
-				String url 	= m_sContext+URLManager.getURL(null,null,att.getInstanceId())+"GoToFilesTab?Id="+att.getForeignId();
-				String name = EncodeHelper.convertHTMLEntities(att.getTitle());
-				if (StringUtil.isDefined(att.getFilename()))
-					name = EncodeHelper.convertHTMLEntities(att.getFilename());
-
-				out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+att.getInstanceId()+"')\">"+name+"</a>");
-
-				if (att.getExpiry() != null) {
-            // convertir la date de l'evenement
-            Calendar atDate = Calendar.getInstance();
-            atDate.setTime(att.getExpiry());
-            atDate.set(Calendar.HOUR_OF_DAY, 0);
-            atDate.set(Calendar.MINUTE, 0);
-
-            // formatage de la date sous forme jj/mm/aaaa
-            String date = DateUtil.getInputDate(att.getExpiry(), language);
-            if (today.equals(atDate)) {
-              // evenement du jour
-              out.println(" (" + message.getString("today") + ")");
-            } else if (tomorrow.equals(atDate)) {
-              // evenement du lendemain
-              out.println(" (" + message.getString("tomorrow") + ")");
-            } else {
-              // recherche du libelle du jour
-              int day = atDate.get(Calendar.DAY_OF_WEEK);
-              String jour = "GML.jour" + day;
-              // recherche du libelle du mois
-              int month = atDate.get(Calendar.MONTH);
-              String mois = "GML.mois" + month;
-              out.println(" (" + generalMessage.getString(jour) + " " + atDate.get(Calendar.DATE)
-                  + " " + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR) + ")");
-            }
-            out.println("<br/>");
-          }
-				else
-				{
-					// affichage sans la date
-                 	out.println("<br/>");
-				}
+		while (attachments.hasNext()) {
+			SimpleDocument att =  attachments.next();
+			String url 	= m_sContext+URLManager.getURL(null,null,att.getInstanceId())+"GoToFilesTab?Id="+att.getForeignId();
+			String name = EncodeHelper.convertHTMLEntities(att.getTitle());
+			if (StringUtil.isDefined(att.getFilename())) {
+				name = EncodeHelper.convertHTMLEntities(att.getFilename());
 			}
+
+			out.println("<li><a href=\"javaScript:goTo('"+url+"','"+att.getInstanceId()+"')\">"+name+"</a>");
+
+			if (att.getExpiry() != null) {
+	            // convertir la date de l'evenement
+	            Calendar atDate = Calendar.getInstance();
+	            atDate.setTime(att.getExpiry());
+	            atDate.set(Calendar.HOUR_OF_DAY, 0);
+	            atDate.set(Calendar.MINUTE, 0);
+	
+	            // formatage de la date sous forme jj/mm/aaaa
+	            String date = DateUtil.getInputDate(att.getExpiry(), language);
+	            if (today.equals(atDate)) {
+	              // evenement du jour
+	              out.println(" (" + message.getString("today") + ")");
+	            } else if (tomorrow.equals(atDate)) {
+	              // evenement du lendemain
+	              out.println(" (" + message.getString("tomorrow") + ")");
+	            } else {
+	              // recherche du libelle du jour
+	              int day = atDate.get(Calendar.DAY_OF_WEEK);
+	              String jour = "GML.jour" + day;
+	              // recherche du libelle du mois
+	              int month = atDate.get(Calendar.MONTH);
+	              String mois = "GML.mois" + month;
+	              out.println(" (" + generalMessage.getString(jour) + " " + atDate.get(Calendar.DATE)
+	                  + " " + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR) + ")");
+	            }
+          	}
+			
+			out.println("</li>");
 		}
-	 }
- else {
+		out.println("</ul>");
+	 } else {
 	 	out.println(generalMessage.getString("GML.noLockedFile"));
 	 }
 	 out.flush();
