@@ -338,17 +338,20 @@ public class HtmlSearchResultTag extends TagSupport {
           cssClassDisableVisited).append("\"><span id=\"").append(curResultId).append(
           "\" class=\"").append(cssClass).append("\">").append(sName).append("</span></a>");
     }
+    if (gsr.getIndexEntry().isAlias()) {
+      result.append(" (").append(settings.getString("GML.alias")).append(")");
+    }
     if (StringUtil.isDefined(sDownloadURL)) {
       // affiche le lien pour le téléchargement
       result.append("<a href=\"").append(sDownloadURL).append("\" target=\"_blank\">").append(
           downloadSrc).append("</a>");
     }
     if (StringUtil.isDefined(sCreatorName)) {
-      result.append(" <span class=\"creatorName\"> - ").append(
+      result.append("<br/><span class=\"creatorName\">").append(
           EncodeHelper.javaStringToHtmlString(sCreatorName)).append("</span>");
     }
     if (StringUtil.isDefined(sCreationDate)) {
-      result.append(" <span class=\"creationDate\"> (").append(sCreationDate).append(") </span>");
+      result.append(" <span class=\"creationDate\"> - ").append(sCreationDate).append(" </span>");
     }
 
     if (StringUtil.isDefined(sDescription)) {

@@ -64,6 +64,7 @@ public class IndexEntry implements Serializable, Cloneable {
   private String serverName = null;
   private String filename = null;
   private List<String> paths = null;
+  private boolean alias = false;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -500,6 +501,14 @@ public class IndexEntry implements Serializable, Cloneable {
   
   public void setPK(IndexEntryPK pk) {
     this.pk = pk;
+  }
+  
+  public boolean isAlias() {
+    return alias;
+  }
+
+  public void setAlias(boolean alias) {
+    this.alias = alias;
   }
   
   @Override
