@@ -172,7 +172,7 @@ public class SilverpeasSessionOpener {
     HttpSession session = request.getSession();
     session.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     session.removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    Enumeration<String> names = (Enumeration<String>) session.getAttributeNames();
+    Enumeration<String> names = session.getAttributeNames();
     while (names.hasMoreElements()) {
       String attributeName = names.nextElement();
       if (!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName)) {

@@ -145,7 +145,6 @@ public class RepositoryIndexerTest {
     String creatorId = "";
     File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
         + File.separatorChar + "large", "fond tableau calque.tif");
-    instance.indexFile(action, creationDate, creatorId, file, false);
-    instance.indexFile(action, creationDate, creatorId, file, true);
+    instance.indexFile(action, creationDate, creatorId, file);
   }
 }
