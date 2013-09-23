@@ -1188,7 +1188,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
    * permalink
    *
-   * @see URLManager.getSimpleURL
+   * @see URLManager#getSimpleURL
    * @param resultType the result type
    * @param markAsReadJS javascript string to mark this result as read
    * @param indexEntry the current indexEntry
@@ -1236,8 +1236,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     titleLinkBuilder.append("');document.location.href='");
     titleLinkBuilder.append(EncodeHelper.javaStringToJsString(underLink));
     if (openFile) {
-      titleLinkBuilder.append("&FileOpened=1';");
+      titleLinkBuilder.append("&FileOpened=1");
     }
+    titleLinkBuilder.append("';");
     return titleLinkBuilder.toString();
   }
 
