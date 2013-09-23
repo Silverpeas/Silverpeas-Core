@@ -49,6 +49,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -74,6 +75,7 @@ import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentsType;
 import org.silverpeas.importExport.versioning.Document;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -617,7 +619,6 @@ public class PublicationsTypeManager {
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
     List<Integer> nodesKmax = new ArrayList<Integer>();
     List<NodePositionType> nodes = new ArrayList<NodePositionType>();
-    int nbItem = 1;
     UserDetail userDetail = settings.getUser();
 
     // On parcours les objets PublicationType
@@ -632,7 +633,7 @@ public class PublicationsTypeManager {
       gedIE.setCurrentComponentId(componentId);
 
       // Création du rapport unitaire
-      UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
+      UnitReport unitReport = new UnitReport();
       reportManager.addUnitReport(unitReport, componentId);
       ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
@@ -754,6 +755,8 @@ public class PublicationsTypeManager {
               .createPublicationForUnitImport(unitReport, settings, pubDetailToCreate, nodes);
           try {
             if (pubDetail != null) {
+              unitReport.setLabel(pubDetail.getPK().getId());
+
               if (isKmax(componentId)) {
                 PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
               }
@@ -769,19 +772,35 @@ public class PublicationsTypeManager {
                   }
                 }
               }
-              // traitement des fichiers joints à la publi
+              // process the publication's attachments
+              ResourceLocator uploadSettings = new ResourceLocator(
+                  "org.silverpeas.util.uploads.uploadSettings", "");
+              long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+
               if (attachments != null) {
+
+                //New list of attachments whose size does not exceed the limit
+                List<AttachmentDetail> attachmentsSizeOk = new ArrayList<AttachmentDetail>();
+                for (AttachmentDetail attdetail : attachments) {
+                  long fileSize = attdetail.getSize();
+                  if (fileSize > maximumFileSize) {
+                    unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
+                  } else {
+                    attachmentsSizeOk.add(attdetail);
+                  }
+                }
+
                 List<AttachmentDetail> copiedAttachments;
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
-                  copiedAttachments = attachments;
-                  versioningIE.importDocuments(pubDetail.getId(), componentId, attachments,
+                  copiedAttachments = attachmentsSizeOk;
+                  versioningIE.importDocuments(pubDetail.getId(), componentId, attachmentsSizeOk,
                       Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
                 } else {
                   // Ajout des attachments
                   copiedAttachments = attachmentIE
-                      .importAttachments(pubDetail.getId(), componentId, attachments,
+                      .importAttachments(pubDetail.getId(), componentId, attachmentsSizeOk,
                       userDetail.getId(), pubDetail.isIndexable());
-                  if (copiedAttachments.size() != attachments.size()) {
+                  if (copiedAttachments.size() != attachmentsSizeOk.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                   }
                 }
@@ -799,13 +818,30 @@ public class PublicationsTypeManager {
               if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
                 // Get number of versions
                 int nbFiles = 0;
-                for (Document document : documents) {
-                  nbFiles += document.getVersionsType().getListVersions().size();
+
+                //New list of versions whose size does not exceed the limit
+                List<Document> documentsSizeOk = new ArrayList<Document>();
+                for (Document documentDetail : documents) {
+                  nbFiles += documentDetail.getVersionsType().getListVersions().size();
+                  List<DocumentVersion> documentVersionsSizeOk = new ArrayList<DocumentVersion>();
+
+                  List<DocumentVersion> documentVersions = documentDetail.getVersionsType().
+                      getListVersions();
+                  for (DocumentVersion documentVersionDetail : documentVersions) {
+                    long fileSize = documentVersionDetail.getSize();
+                    if (fileSize > maximumFileSize) {
+                      unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
+                    } else {
+                      documentVersionsSizeOk.add(documentVersionDetail);
+                    }
+                  }
+                  documentDetail.getVersionsType().setListVersions(documentVersionsSizeOk);
+                  documentsSizeOk.add(documentDetail);
                 }
 
                 // Copy files on disk, set info on each version
                 List<SimpleDocument> copiedFiles = versioningIE.
-                    importDocuments(new ForeignPK(pubDetail.getId(), componentId), documents,
+                    importDocuments(new ForeignPK(pubDetail.getId(), componentId), documentsSizeOk,
                     Integer.parseInt(userDetail.getId()),
                     ImportExportHelper.isIndexable(pubDetail));
                 reportManager.addNumberOfFilesProcessed(copiedFiles.size());
@@ -854,7 +890,6 @@ public class PublicationsTypeManager {
           }
         }
       }
-      nbItem++;
     }
   }
 

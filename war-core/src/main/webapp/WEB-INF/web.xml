@@ -591,6 +591,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <url-pattern>/AuthenticationServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>AuthenticationServlet</servlet-name>
+    <url-pattern>/sso</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>CredentialsServlet</servlet-name>
     <url-pattern>/CredentialsServlet/*</url-pattern>
   </servlet-mapping>
@@ -1003,8 +1007,28 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <welcome-file>Login.jsp</welcome-file>
   </welcome-file-list>
   <error-page>
+    <exception-type>net.sourceforge.spnego.SpnegoGSSException</exception-type>
+    <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
+  </error-page>
+  <error-page>
+    <exception-type>net.sourceforge.spnego.SpnegoUnsupportedOperationException</exception-type>
+    <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
+  </error-page>
+  <error-page>
+    <exception-type>net.sourceforge.spnego.SpnegoUnauthenticatedException</exception-type>
+    <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
+  </error-page>
+  <error-page>
+    <error-code>401</error-code>
+    <location>/Error401.jsp</location>
+  </error-page>
+  <error-page>
     <error-code>404</error-code>
     <location>/Error404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/Error500.jsp</location>
   </error-page>
   <error-page>
     <exception-type>org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException</exception-type>

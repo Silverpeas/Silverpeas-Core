@@ -78,6 +78,7 @@
   <ctx:component-scan base-package="org.silverpeas.security.web"/>
   <ctx:component-scan base-package="org.silverpeas.upload"/>
   <ctx:component-scan base-package="org.silverpeas.contribution"/>
+  <ctx:component-scan base-package="org.silverpeas.cache"/>
 
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
         factory-method="getDomainDriverFactory"/>
@@ -182,5 +183,10 @@
 
   <bean id="publicationTemplateManager" class="com.silverpeas.publicationTemplate.PublicationTemplateManager"
         factory-method="getInstance" init-method="registerForRenewingContentCipher"/>
+
+  <!-- the factory of cache services.
+        It wraps and provides an access to different service instances relative to cache handling -->
+  <bean id="cacheServiceFactory" class="org.silverpeas.cache.service.CacheServiceFactory"
+        factory-method="getInstance"/>
         
 </beans>

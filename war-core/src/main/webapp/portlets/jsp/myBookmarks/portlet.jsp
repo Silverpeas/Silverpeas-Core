@@ -42,34 +42,38 @@ Iterator 		links 	= (Iterator) pReq.getAttribute("Links");
 
 if (!links.hasNext()) {
 	out.println(message.getString("NoFavorites"));
-}
-else
-{
+} else {
+    %>
+    <ul>
+    <%
 	//affichage des liens favoris de l'utilisateur
-	LinkDetail link = null;
-	while (links.hasNext())
-	{
-		link = (LinkDetail) links.next();
-		if (link.isVisible())
-		{
+	while (links.hasNext()) {
+	  	LinkDetail link = (LinkDetail) links.next();
+		if (link.isVisible()) {
 			// afficher que les liens que l'utilisateur a top� "visible en page d'accueil"
 			String lien = link.getUrl();
 			String name = EncodeHelper.convertHTMLEntities(link.getName());
-			if (!StringUtil.isDefined(name))
+			if (!StringUtil.isDefined(name)) {
 				name = lien;
-
+			}
+			
 			// ajouter le context devant le lien si n�c�ssaire
-			if (lien.indexOf("://") == -1)
+			if (lien.indexOf("://") == -1) {
 				lien = URLManager.getApplicationURL() + lien;
+			}
 
 			String target = "_self";
-			if (link.isPopup())
+			if (link.isPopup()) {
 				target = "_blank";
+			}
 			%>
-			&#149; <a href="<%=lien%>" target="<%=target%>"><%=name%></a><br/>
+			<li><a href="<%=lien%>" target="<%=target%>"><%=name%></a></li>
 			<%
 		}
 	}
+    %>
+    </ul>
+    <%
 }
 out.flush();
 %>

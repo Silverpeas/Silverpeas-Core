@@ -98,6 +98,9 @@ public class SilverpeasSessionOpener {
    * occurred during the session opening (for example, the user wasn't authenticated).
    */
   public String openSession(HttpServletRequest request, String authKey) {
+    // Before opening a Silverpeas session, clearing all old session potential residues
+    closeSession(request);
+    // Opening a new session (new JSESSIONID)
     HttpSession session = request.getSession();
     try {
       // Get the user profile from the admin

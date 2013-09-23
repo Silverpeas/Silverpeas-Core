@@ -95,6 +95,7 @@ public class IndexManager {
   public static final String EMBEDDED_FILE_IDS = "embeddedFileIds";
   public static final String FIELDS_FOR_FACETS = "fieldsForFacet";
   public static final String FILENAME = "filename";
+  public static final String PATH = "path";
 
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
@@ -522,6 +523,13 @@ public class IndexManager {
     }
     // Add server name inside Lucene doc
     doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, NOT_ANALYZED));
+    
+    if (indexEntry.getPaths() != null) {
+      for (String path : indexEntry.getPaths()) {
+        doc.add(new Field(PATH, path, Store.YES, Index.NOT_ANALYZED));
+      }
+    }
+    
     return doc;
   }
 

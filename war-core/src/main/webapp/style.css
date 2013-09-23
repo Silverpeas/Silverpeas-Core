@@ -91,6 +91,20 @@ body {
   min-height: 424px;
 }
 
+#background .submit {
+  color: #666666;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#background div.submit {
+  position: absolute;
+  top: 310px;
+  width: 448px;
+  text-align: center;
+  padding: 5px
+}
+
 #backgroundBig {
   background: url(images/bgBig.gif) no-repeat;
   min-height: 524px;
@@ -101,6 +115,14 @@ body {
   text-decoration: none;
   font-weight: bold;
   position: static;
+}
+
+#backgroundBig div.submit {
+  position: absolute;
+  top: 410px;
+  width: 448px;
+  text-align: center;
+  padding: 5px
 }
 
 .cadre {
@@ -177,10 +199,17 @@ p label span {
   text-align: left;
 }
 
-.submit {
+#formLogin .submit {
   position: relative;
   text-align: left;
   top: -10px;
+}
+
+#formLogin .submitWithOneDomain {
+  position: relative;
+  text-align: left;
+  margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .caractere {
@@ -194,26 +223,31 @@ p label span {
 .forgottenPwd a {
   font-size: 10px;
   color: #999999;
+  font-weight: normal;
 }
 
 .rememberPwd {
   font-size: 10px;
   color: #999999;
+  font-weight: normal;
 }
 
 .changePwd {
   font-size: 10px;
   color: #999999;
+  font-weight: normal;
 }
 
 .passwordRules {
   font-size: 10px;
   color: #999999;
+  font-weight: normal;
 }
 
 .passwordRules a {
   font-size: 10px;
   color: #999999;
+  font-weight: normal;
 }
 
 #storePassword {
@@ -249,5 +283,48 @@ p label span {
 .fnfinformation ul li {
   padding-left: 5px;
   margin-left: 25px;
+  text-align: left;
+}
+
+a.submit, a.submitWithOneDomain{
+  background: transparent url(images/bt-left.png) 0 0 no-repeat;
+  display: inline-block;
+  padding-left: 30px;
+  line-height: 31px;
+  text-decoration: none;
+}
+
+a.submit.validate, a.submitWithOneDomain.validate{
+  background: transparent url(images/bt-left-validate.png) 0 0 no-repeat;
+}
+
+a.submit.refused, a.submitWithOneDomain.refused{
+  background: transparent url(images/bt-left-refused.png) 0 0 no-repeat;
+}
+
+a.submit span, a.submitWithOneDomain span {
+  background: transparent url(images/bt-right.png) right 0 no-repeat;
+  display: block;
+  padding-right: 10px;
+}
+
+a.submit span span, a.submitWithOneDomain span span {
+  background: transparent url(images/bt-bg.png) 0 0 repeat-x;
+  display: block;
+  color: #666666;
+  font-size: 12px;
+  text-decoration: none !important;
+}
+
+#content-terms-of-service {
+  clear: both;
+  float: none;
+  height: 271px;
+  overflow: auto;
+  text-align: left;
+  padding-top: 1em;
+}
+
+#content-terms-of-service * {
   text-align: left;
 }

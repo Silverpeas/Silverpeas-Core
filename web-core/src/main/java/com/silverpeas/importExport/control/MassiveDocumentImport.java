@@ -21,21 +21,24 @@
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.importExport.model.ImportExportException;
+import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MassiveDocumentImport {
 
-  public List<PublicationDetail> importDocuments(ImportSettings importSettings,
+  /**
+   * @param importSettings
+   * @param massiveReport
+   * @return a report of the import
+   * @throws ImportExportException
+   */
+  public ImportReport importDocuments(ImportSettings importSettings,
       MassiveReport massiveReport) throws ImportExportException {
-    List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
+    ImportReportManager reportManager = new ImportReportManager();
     try {
-      ImportReportManager reportManager = new ImportReportManager();
       PdcImportExport pdcIE = new PdcImportExport();
       massiveReport.setRepositoryPath(importSettings.getPathToImport());
       reportManager.addMassiveReport(massiveReport, importSettings.getComponentId());
@@ -44,12 +47,12 @@ public class MassiveDocumentImport {
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
       importSettings.setVersioningUsed(ImportExportHelper.isVersioningUsed(importSettings
           .getComponentId()));
-      publicationDetails = rtm.processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
+      rtm.processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
           pdcIE, importSettings);
       reportManager.reportImportEnd();
     } finally {
       FileFolderManager.deleteFolder(importSettings.getPathToImport());
     }
-    return publicationDetails;
+    return reportManager.getImportReport();
   }
 }

@@ -78,38 +78,38 @@
       });
       <c:if test="${isEmailAddress}">
       $('#changePwdForm').on("submit", function() {
-        if (!$('#emailAddress').val().trim()) {
+        if (!$.trim($('#emailAddress').val())) {
           alert("- <fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>\n");
           return false;
         }
         return true;
       });
       var $emailMessage = $('#emailAddressMessage');
-      if ($emailMessage.length > 0 && $emailMessage.html().trim()) {
+      if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
         var $emailAddress = $('#emailAddress');
         $emailAddress.qtip({
-		content: $emailMessage,
-		style: {
-			width: "auto",
-			tip: true,
-			classes: "qtip-shadow qtip-cream"
-		},
-		position: {
-			adjust: {
-				method: "flip flip"
-			},
-			viewport: $(window),
-			at: "bottom left",
-			my: "top right"
-		},
-		show: {
-			delay: 0,
-			event: "displayQTip"
-		},
-		hide: {
-			fixed: true,
-			event: "hideQTip"
-		}
+          content : $emailMessage,
+          style : {
+            width : "auto",
+            tip : true,
+            classes : "qtip-shadow qtip-cream"
+          },
+          position : {
+            adjust : {
+              method : "flip flip"
+            },
+            viewport : $(window),
+            at : "bottom left",
+            my : "top right"
+          },
+          show : {
+            delay : 0,
+            event : "displayQTip"
+          },
+          hide : {
+            fixed : true,
+            event : "hideQTip"
+          }
         });
         $emailAddress.trigger("displayQTip");
       }
@@ -161,18 +161,19 @@
         </c:if>
         <input type="hidden" name="login" value="${param.Login}"/>
         <input type="hidden" name="domainId" value="${param.DomainId}"/>
-        <br/>
 
-        <p>
-          <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-          <a href="#" class="<%=submitClass%>" onclick="$('#changePwdForm').submit()"><img src='<%=m_context%>/images/bt-login.png' alt=""/></a>
-        </p>
+        <div class="submit">
+          <p>
+            <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+            <a style="cursor: pointer" class="<%=submitClass%>" onclick="$('#changePwdForm').submit()"><span><span>LOGIN</span></span></a>
+          </p>
 
-        <p>
+          <p>
           <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
             <fmt:message key="authentication.password.showRules" bundle="${authenticationBundle}"/>
           </a></span>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   </div>

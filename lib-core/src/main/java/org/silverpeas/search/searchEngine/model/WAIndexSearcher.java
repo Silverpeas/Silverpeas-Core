@@ -185,6 +185,10 @@ public class WAIndexSearcher {
           if (termQueryOnAuthor != null) {
             booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
           }
+          PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
+          if (termQueryOnFolder != null) {
+            booleanQuery.add(termQueryOnFolder, BooleanClause.Occur.MUST);
+          }
 
           try {
             Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
@@ -581,5 +585,13 @@ public class WAIndexSearcher {
     }
     Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
     return new TermQuery(authorTerm);
+  }
+  
+  protected PrefixQuery getTermQueryOnFolder(QueryDescription query) {
+    if (!StringUtil.isDefined(query.getRequestedFolder())) {
+      return null;
+    }
+    Term term = new Term(IndexManager.PATH, query.getRequestedFolder());
+    return new PrefixQuery(term);
   }
 }
