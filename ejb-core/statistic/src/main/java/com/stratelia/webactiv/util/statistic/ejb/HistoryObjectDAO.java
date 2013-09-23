@@ -115,8 +115,8 @@ public class HistoryObjectDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection<HistoryObjectDetail> getHistoryDetails(ResultSet rs, String space,
-      String componentName) throws SQLException {
+  public static Collection<HistoryObjectDetail> getHistoryDetails(ResultSet rs, String componentName)
+      throws SQLException {
     List<HistoryObjectDetail> list = new ArrayList<HistoryObjectDetail>();
     Date date;
     String userId = "";
@@ -214,19 +214,21 @@ public class HistoryObjectDAO {
       throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
         "root.MSG_GEN_ENTER_METHOD");
-    String space = foreignPK.getSpace();
     String componentName = foreignPK.getComponentName();
     String selectStatement = "select * from " + tableName
-        + " where objectId=" + foreignPK.getId() + " and componentId='"
-        + foreignPK.getInstanceId() + "'" + " and objectType='" + objectType
-        + "'";
+        + " where objectId=? and componentId=? and objectType=?"
+        + " order by datestat desc, heurestat desc";
 
-    Statement stmt = null;
+    PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);
-      return getHistoryDetails(rs, space, componentName);
+      stmt = con.prepareStatement(selectStatement);
+      stmt.setInt(1, Integer.parseInt(foreignPK.getId()));
+      stmt.setString(2, foreignPK.getInstanceId());
+      stmt.setString(3, objectType);
+      
+      rs = stmt.executeQuery();
+      return getHistoryDetails(rs, componentName);
     } finally {
       DBUtil.close(rs, stmt);
     }
@@ -238,7 +240,6 @@ public class HistoryObjectDAO {
     SilverTrace.info("statistic",
         "HistoryObjectDAO.getHistoryDetailByObjectAndUser",
         "root.MSG_GEN_ENTER_METHOD");
-    String space = foreignPK.getSpace();
     String componentName = foreignPK.getComponentName();
     String selectStatement = "select * from " + tableName
         + " where objectId=" + foreignPK.getId() + " and componentId='"
@@ -251,7 +252,7 @@ public class HistoryObjectDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      return getHistoryDetails(rs, space, componentName);
+      return getHistoryDetails(rs, componentName);
     } finally {
       DBUtil.close(rs, stmt);
     }
