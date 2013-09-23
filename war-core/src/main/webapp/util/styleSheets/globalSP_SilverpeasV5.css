@@ -5814,3 +5814,35 @@ ul.tagit li.tagit-choice a.tagit-close {
 #advanced-search table.tableBoard tr td:first-child {
   width:180px;
 }
+
+/*responsive design */
+@media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
+	.rightContent {
+		width: 230px;
+	}
+	.rightContent .attachments {
+		min-width:auto;
+	}
+	.principalContent {
+    	margin-right: 245px;
+	}
+}
+
+@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+	.rightContent {
+		clear: inherit;
+		float: none;
+		margin-top: 10px;
+		width: auto;
+	}
+	.rightContent .attachments {
+		min-width:auto;
+	}
+	.principalContent {
+    	margin-right: 0;
+    	margin-top: 10px;
+	}
+	.header h4 {
+    	min-width: auto;
+	}
+}
