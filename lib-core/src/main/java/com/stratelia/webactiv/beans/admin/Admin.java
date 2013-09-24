@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.stratelia.webactiv.util.DateUtil;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -3455,6 +3456,24 @@ public final class Admin {
   }
 
   /**
+   * Updates the acceptance date of a user from its id.
+   *
+   * @param userId
+   * @throws AdminException
+   */
+  public void userAcceptsTermsOfService(String userId) throws AdminException {
+    try {
+      UserDetail user = UserDetail.getById(userId);
+      user.setTosAcceptanceDate(DateUtil.getNow());
+      updateUser(user);
+    } catch (Exception e) {
+      throw new AdminException("Admin.updateTermsOfServiceAcceptanceDate",
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE",
+          "user id : '" + userId + "'", e);
+    }
+  }
+
+  /**
    * Delete the given user from silverpeas and specific domain
    */
   public String deleteUser(String sUserId) throws AdminException {
@@ -4807,8 +4826,7 @@ public final class Admin {
       String spaceId = getDriverSpaceId(sClientSpaceId);
       List<String> groupIds = getAllGroupsOfUser(sUserId);
       List<String> asAvailCompoIds = componentManager.getAllowedComponentIds(Integer.parseInt(
-          sUserId), groupIds,
-          spaceId);
+          sUserId), groupIds, spaceId);
 
       return asAvailCompoIds.toArray(new String[asAvailCompoIds.size()]);
     } catch (Exception e) {
@@ -6942,27 +6960,27 @@ public final class Admin {
     }
   }
 
-  public String copyAndPasteComponent(String componentId, String spaceId, String userId) throws
-      AdminException, QuotaException {
-    if (!StringUtil.isDefined(spaceId)) {
+  public String copyAndPasteComponent(PasteDetail pasteDetail) throws AdminException,
+      QuotaException {
+    if (!StringUtil.isDefined(pasteDetail.getToSpaceId())) {
       // cannot paste component on root
       return null;
     }
-    ComponentInst newCompo = (ComponentInst) getComponentInst(componentId).clone();
-    SpaceInst destinationSpace = getSpaceInstById(spaceId);
+    ComponentInst newCompo =
+        (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).clone();
+    SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
     // Creation
     newCompo.setId("-1");
     newCompo.setDomainFatherId(destinationSpace.getId());
     newCompo.setOrderNum(destinationSpace.getNumComponentInst());
     newCompo.setCreateDate(new Date());
-    newCompo.setCreatorUserId(userId);
+    newCompo.setCreatorUserId(pasteDetail.getUserId());
     newCompo.setLanguage(I18NHelper.defaultLanguage);
 
     // Rename if componentName already exists in the destination space
     String label = renameComponentName(newCompo.getLabel(I18NHelper.defaultLanguage),
-        destinationSpace.
-        getAllComponentsInst());
+        destinationSpace.getAllComponentsInst());
     newCompo.setLabel(label);
 
     // Delete inherited profiles only
@@ -6970,24 +6988,22 @@ public final class Admin {
     newCompo.removeInheritedProfiles();
 
     // Add the component
-    String sComponentId = addComponentInst(userId, newCompo);
+    String sComponentId = addComponentInst(pasteDetail.getUserId(), newCompo);
 
     // Execute specific paste by the component
     try {
-      PasteDetail pasteDetail = new PasteDetail(componentId, sComponentId, userId);
-      String componentRootName = URLManager.getComponentNameFromComponentId(componentId);
+      pasteDetail.setToComponentId(sComponentId);
+      String componentRootName =
+          URLManager.getComponentNameFromComponentId(pasteDetail.getFromComponentId());
       String className = "com.silverpeas.component." + componentRootName + "." + componentRootName
-          .substring(0,
-          1).toUpperCase() + componentRootName.substring(1) + "Paste";
+          .substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
       if (Class.forName(className).getClass() != null) {
         ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.forName(className).
             newInstance();
         componentPaste.paste(pasteDetail);
       }
     } catch (Exception e) {
-      SilverTrace.warn("admin",
-          "Admin.copyAndPasteComponent()",
-          "root.GEN_EXIT_METHOD", e);
+      SilverTrace.warn("admin", "Admin.copyAndPasteComponent()", "root.GEN_EXIT_METHOD", e);
     }
     return sComponentId;
   }
@@ -7027,9 +7043,10 @@ public final class Admin {
     return false;
   }
 
-  public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
-      throws AdminException, QuotaException {
+  public String copyAndPasteSpace(PasteDetail pasteDetail) throws AdminException, QuotaException {
     String newSpaceId = null;
+    String spaceId = pasteDetail.getFromSpaceId();
+    String toSpaceId = pasteDetail.getToSpaceId();
     boolean pasteAllowed = !isParent(spaceId, toSpaceId);
     if (pasteAllowed) {
       // paste space itself
@@ -7046,7 +7063,7 @@ public final class Admin {
       }
       newSpace.setOrderNum(newBrotherIds.size());
       newSpace.setCreateDate(new Date());
-      newSpace.setCreatorUserId(userId);
+      newSpace.setCreatorUserId(pasteDetail.getUserId());
       newSpace.setLanguage(I18NHelper.defaultLanguage);
 
       // Rename if spaceName already used in the destination space
@@ -7065,7 +7082,7 @@ public final class Admin {
       newSpace.removeAllComponentsInst();
 
       // Add space
-      newSpaceId = addSpaceInst(userId, newSpace);
+      newSpaceId = addSpaceInst(pasteDetail.getUserId(), newSpace);
 
       // verify space homepage
       String componentIdAsHomePage = null;
@@ -7074,8 +7091,12 @@ public final class Admin {
       }
 
       // paste components of space
+      PasteDetail componentPasteDetail = new PasteDetail(pasteDetail.getUserId());
+      componentPasteDetail.setOptions(pasteDetail.getOptions());
+      componentPasteDetail.setToSpaceId(newSpaceId);
       for (ComponentInst component : components) {
-        String componentId = copyAndPasteComponent(component.getId(), newSpaceId, userId);
+        componentPasteDetail.setFromComponentId(component.getId());
+        String componentId = copyAndPasteComponent(componentPasteDetail);
         // check if new component must be used as home page of new space
         if (componentIdAsHomePage != null && componentIdAsHomePage.equals(component.getId())) {
           componentIdAsHomePage = componentId;
@@ -7083,9 +7104,13 @@ public final class Admin {
       }
 
       // paste subspaces
+      PasteDetail subSpacePasteDetail = new PasteDetail(pasteDetail.getUserId());
+      subSpacePasteDetail.setOptions(pasteDetail.getOptions());
+      subSpacePasteDetail.setToSpaceId(newSpaceId);
       String[] subSpaceIds = newSpace.getSubSpaceIds();
       for (String subSpaceId : subSpaceIds) {
-        copyAndPasteSpace(subSpaceId, newSpaceId, userId);
+        subSpacePasteDetail.setFromSpaceId(subSpaceId);
+        copyAndPasteSpace(subSpacePasteDetail);
       }
 
       // update parameter of space home page if needed

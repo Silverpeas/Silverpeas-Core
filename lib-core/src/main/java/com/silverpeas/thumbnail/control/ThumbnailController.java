@@ -39,6 +39,7 @@ import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -139,6 +140,84 @@ public class ThumbnailController {
     } catch (Exception e) {
       throw new ThumbnailRuntimeException("ThumbnailController.getCompleteThumbnail()",
           SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_COMPLETE_THUMBNAIL_KO", e);
+    }
+  }
+  
+  public static void copyThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+    ThumbnailDetail vignette =
+        ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
+            fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
+            ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
+    try {
+      if (vignette != null) {
+        ThumbnailDetail thumbDetail =
+            new ThumbnailDetail(toPK.getInstanceId(),
+                Integer.valueOf(toPK.getId()),
+                ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        if (vignette.getOriginalFileName().startsWith("/")) {
+          thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
+          thumbDetail.setMimeType(vignette.getMimeType());
+        } else {
+          String from = getImageDirectory(fromPK.getInstanceId()) + vignette.getOriginalFileName();
+
+          String type = FilenameUtils.getExtension(vignette.getOriginalFileName());
+          String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+
+          String to = getImageDirectory(toPK.getInstanceId()) + newOriginalImage;
+          FileRepositoryManager.copyFile(from, to);
+          thumbDetail.setOriginalFileName(newOriginalImage);
+
+          // then copy thumbnail image if exists
+          if (vignette.getCropFileName() != null) {
+            from = getImageDirectory(fromPK.getInstanceId()) + vignette.getCropFileName();
+            type = FilenameUtils.getExtension(vignette.getCropFileName());
+            String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+            to = getImageDirectory(toPK.getInstanceId()) + newThumbnailImage;
+            FileRepositoryManager.copyFile(from, to);
+            thumbDetail.setCropFileName(newThumbnailImage);
+          }
+          thumbDetail.setMimeType(vignette.getMimeType());
+          thumbDetail.setXLength(vignette.getXLength());
+          thumbDetail.setYLength(vignette.getYLength());
+          thumbDetail.setXStart(vignette.getXStart());
+          thumbDetail.setYStart(vignette.getYStart());
+        }
+        thumbnailService.createThumbnail(thumbDetail);
+      }
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailController.copyThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_COPY_THUMBNAIL", e);
+    }
+  }
+  
+  public static void moveThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+    ThumbnailDetail thumbnail =
+      ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
+          fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
+          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
+    try {
+      if (thumbnail != null) {
+        // move thumbnail on disk
+        if (!thumbnail.getOriginalFileName().startsWith("/")) {
+          File file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getOriginalFileName());
+          File to = new File(getImageDirectory(toPK.getInstanceId()));
+          
+          // move original thumbnail
+          FileUtils.moveFileToDirectory(file, to, true);
+          
+          // move cropped thumbnail
+          if (thumbnail.getCropFileName() != null) {
+            file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getCropFileName());
+            FileUtils.moveFileToDirectory(file, to, true);
+          }
+        }
+        
+        // move thumbnail in DB
+        thumbnailService.moveThumbnail(thumbnail, toPK.getInstanceId());
+      }
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailController.moveThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_MOVE_THUMBNAIL", e);
     }
   }
 

@@ -148,4 +148,8 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
   public boolean isEncrypted() {
     return encrypted;
   }
+  
+  public String getInstanceId() {
+    return getExternalId().split(":")[0];
+  }
 }

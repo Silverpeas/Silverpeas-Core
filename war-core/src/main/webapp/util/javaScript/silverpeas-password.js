@@ -41,7 +41,7 @@
         $.password.rules = policy.rules;
         $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
         $.password.combinedRules = policy.combinedRules;
-        $.password.extraRuleMessage = policy.extraRuleMessage.trim();
+        $.password.extraRuleMessage =  $.trim(policy.extraRuleMessage);
       }
     }
   };

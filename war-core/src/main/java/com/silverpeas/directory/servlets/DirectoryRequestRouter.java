@@ -187,14 +187,16 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     Pagination pagination = gef.getPagination(users.size(), directorySC.getElementsByPage(), index);
-    List<Member> membersToDisplay = new ArrayList<Member>();
-    membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
-        getLastItemIndex()));
+    List<Member> membersToDisplay =
+        toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
+            getLastItemIndex()));
 
     // setting one fragment per user displayed
     request.setAttribute("UserFragments", directorySC.getFragments(membersToDisplay));
 
+    request.setAttribute("userTotalNumber", users.size());
     request.setAttribute("pagination", pagination);
+    request.setAttribute("paginationCounter", pagination.printCounter());
     request.setAttribute("View", directorySC.getCurrentView());
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
     request.setAttribute("Query", directorySC.getCurrentQuery());

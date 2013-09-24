@@ -45,11 +45,12 @@
 	String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 	boolean			objectsSelectedInClipboard = new Boolean((String) request.getAttribute("ObjectsSelectedInClipboard")).booleanValue();
 	DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
-  boolean 		isUserAdmin 		= ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
-  boolean 		isBackupEnable 		= ((Boolean)request.getAttribute("IsBackupEnable")).booleanValue();
-  boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+  boolean 		isUserAdmin 		= (Boolean)request.getAttribute("isUserAdmin");
+  boolean 		isBackupEnable 		= (Boolean)request.getAttribute("IsBackupEnable");
+  boolean 		isInHeritanceEnable = (Boolean)request.getAttribute("IsInheritanceEnable");
 
   SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
+  Set<String>	copiedComponentNames	= (Set<String>) request.getAttribute("CopiedComponents");
 
   // Component space quota
   boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
@@ -151,6 +152,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<view:includePlugin name="popup"/>
 <style type="text/css">
 .txtlibform {
 	white-space: nowrap;
@@ -199,8 +201,7 @@ function openPopup(action, larg, haut) {
 <% } %>
 
 function clipboardPaste() {
-	$.progressMessage();
-	location.href="paste";
+	showPasteOptions();
 }
 
 function clipboardCopy() {
@@ -214,6 +215,35 @@ function clipboardCut() {
 function recoverRights() {
 	$.progressMessage();
 	location.href = "RecoverSpaceRights?Id=<%=space.getId()%>";
+}
+
+function showPasteOptions() {
+	// Display copy options only if there is at least one copied compliant app (ignore cut/paste)
+	<% for (String componentName : copiedComponentNames) { %>
+	$.ajax({
+		url: webContext+'/<%=componentName%>/jsp/copyApplicationDialog.jsp',
+		async: false,
+		type: "GET",
+		dataType: "html",
+		success: function(data) {
+			  $('#pasteOptions').html(data);
+			}
+		});
+	<% } %>
+	
+	if ($('#pasteOptions').is(':empty')) {
+		$.progressMessage();
+		location.href="Paste";
+	} else {
+		$('#pasteOptionsDialog').popup('validation', {
+			title : "<%=resource.getString("JSPP.copyoptions.dialog.title")%>",
+		    callback : function() {
+		      $.progressMessage();
+		      document.pasteForm.submit();
+		      return true;
+		    }
+		});
+	}
 }
 //-->
 </script>
@@ -320,5 +350,10 @@ out.println(tabbedPane.print());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
+<div id="pasteOptionsDialog" style="display:none">
+<form name="pasteForm" action="Paste" method="post">
+<div id="pasteOptions"></div>
+</form>
+</div>
 </body>
 </html>

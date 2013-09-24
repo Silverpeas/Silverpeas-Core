@@ -46,6 +46,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
@@ -475,7 +476,9 @@ public class SpacesAndComponentsTest {
     waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
 
     String targetSpaceId = "WA3";
-    String componentId = ac.copyAndPasteComponent("almanach2", targetSpaceId, userId);
+    PasteDetail pasteDetail = new PasteDetail("almanach2", userId);
+    pasteDetail.setToSpaceId(targetSpaceId);
+    String componentId = ac.copyAndPasteComponent(pasteDetail);
 
     String expectedComponentId = "almanach4";
     assertThat(componentId, is(expectedComponentId));
@@ -502,7 +505,10 @@ public class SpacesAndComponentsTest {
     String[] rootSpaceIds = ac.getAllRootSpaceIds();
     assertThat(rootSpaceIds.length, is(4));
     String targetSpaceId = null;
-    String newSpaceId = ac.copyAndPasteSpace("WA1", targetSpaceId, userId);
+    PasteDetail pasteDetail = new PasteDetail(userId);
+    pasteDetail.setFromSpaceId("WA1");
+    pasteDetail.setToSpaceId(targetSpaceId);
+    String newSpaceId = ac.copyAndPasteSpace(pasteDetail);
     String expectedSpaceId = "WA7";
     assertThat(newSpaceId, is(expectedSpaceId));
 
@@ -542,7 +548,10 @@ public class SpacesAndComponentsTest {
 
     String copiedSpaceId = "WA2";
     String targetSpaceId = "WA3";
-    String newSpaceId = ac.copyAndPasteSpace(copiedSpaceId, targetSpaceId, userId);
+    PasteDetail pasteDetail = new PasteDetail(userId);
+    pasteDetail.setFromSpaceId(copiedSpaceId);
+    pasteDetail.setToSpaceId(targetSpaceId);
+    String newSpaceId = ac.copyAndPasteSpace(pasteDetail);
 
     String expectedSpaceId = "WA7";
     assertThat(newSpaceId, is(expectedSpaceId));
@@ -575,7 +584,10 @@ public class SpacesAndComponentsTest {
     AdminController ac = getAdminController();
     String copiedSpaceId = "WA1";
     String targetSpaceId = "WA2";
-    String newSpaceId = ac.copyAndPasteSpace(copiedSpaceId, targetSpaceId, userId);
+    PasteDetail pasteDetail = new PasteDetail(userId);
+    pasteDetail.setFromSpaceId(copiedSpaceId);
+    pasteDetail.setToSpaceId(targetSpaceId);
+    String newSpaceId = ac.copyAndPasteSpace(pasteDetail);
     assertThat(newSpaceId, is(nullValue()));
   }
 

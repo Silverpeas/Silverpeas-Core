@@ -384,12 +384,15 @@ public class Parameter implements Cloneable {
     param.setLabel((HashMap<String, String>) getLabel().clone());
     param.setMandatory(mandatory);
     param.setName(name);
-    List<Option> options = getOptions();
-    List<Option> newOptions = new ArrayList<Option>(options.size());
-    for (Option option : options) {
-      newOptions.add(option.clone());
+    if (options == null) {
+      param.setOptions(new ArrayList<Option>());
+    } else {
+      List<Option> newOptions = new ArrayList<Option>(options.size());
+      for (Option option : options) {
+        newOptions.add(option.clone());
+      }
+      param.setOptions(newOptions);
     }
-    param.setOptions(newOptions);
     param.setOrder(order);
     param.setPersonalSpaceValue(personalSpaceValue);
     param.setSize(size);

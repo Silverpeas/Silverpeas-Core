@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -171,6 +172,20 @@ public class RepositoriesTypeManager {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport();
       massiveReport.addUnitReport(unitReport);
+      
+      // Check the file size
+      ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+      long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+      long fileSize = file.length();
+      if (fileSize <= 0L) {
+        unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+        reportManager.addNumberOfFilesNotImported(1);
+        return pubDetailToCreate;
+      } else if (fileSize > maximumFileSize) {
+        unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
+        reportManager.addNumberOfFilesNotImported(1);
+        return pubDetailToCreate;
+      }
 
       // On récupére les infos nécéssaires à la création de la publication
       pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
@@ -186,6 +201,7 @@ public class RepositoriesTypeManager {
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate,
           settings);
+      unitReport.setLabel(pubDetailToCreate.getPK().getId());
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
@@ -209,7 +225,7 @@ public class RepositoriesTypeManager {
       document.setPK(pk);
       document.setFile(new SimpleAttachment());
       document.setFilename(file.getName());
-      document.setSize(file.length());
+      document.setSize(fileSize);
       document.getFile().setCreatedBy(userDetail.getId());
       if (settings.useFileDates()) {
         document.setCreated(pubDetailToCreate.getCreationDate());
@@ -221,19 +237,14 @@ public class RepositoriesTypeManager {
       }
       document.setForeignId(pubDetailToCreate.getPK().getId());
       document.setContentType(FileUtil.getMimeType(file.getName()));
-      if (document.getSize() > 0L) {
-        AttachmentServiceFactory.getAttachmentService()
+      AttachmentServiceFactory.getAttachmentService()
             .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
-        reportManager.addNumberOfFilesProcessed(1);
-        reportManager.addImportedFileSize(document.getSize(), componentId);
-      } else {
-        unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-        reportManager.addNumberOfFilesNotImported(1);
-      }
+      reportManager.addNumberOfFilesProcessed(1);
+      reportManager.addImportedFileSize(document.getSize(), componentId);
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverTrace
-          .error("importExport", "RepositoriesTypeManager.importFile()", "root.EX_NO_MESSAGE", ex);
+          .error("importExport", "RepositoriesTypeManager.importFile", "root.EX_NO_MESSAGE", ex);
     }
     return pubDetailToCreate;
   }
@@ -332,7 +343,7 @@ public class RepositoriesTypeManager {
               userDetail.getId(), pubDetail.isIndexable());
         }
       } catch (Exception e) {
-        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent()",
+        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent",
             "root.EX_NO_MESSAGE", e);
       }
     }
@@ -383,8 +394,7 @@ public class RepositoriesTypeManager {
    * @throws ImportExportException
    */
   public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
-      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
-      ImportSettings settings)
+      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings)
       throws ImportExportException {
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     File path = new File(settings.getPathToImport());
@@ -392,8 +402,8 @@ public class RepositoriesTypeManager {
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        PublicationDetail publication = importFile(file, reportManager, massiveReport, gedIE, pdcIE,
-            settings);
+        PublicationDetail publication =
+            importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
         if (publication != null) {
           publications.add(publication);
         }
@@ -402,10 +412,11 @@ public class RepositoriesTypeManager {
             gedIE.addSubTopicToTopic(file, Integer.valueOf(settings.getFolderId()), massiveReport);
         // massiveReport.addOneTopicCreated();
         // Traitement récursif spécifique
-        settings.setPathToImport(file.getAbsolutePath());
-        settings.setFolderId(nodeDetail.getNodePK().getId());
+        ImportSettings recursiveSettings = settings.clone();
+        recursiveSettings.setPathToImport(file.getAbsolutePath());
+        recursiveSettings.setFolderId(nodeDetail.getNodePK().getId());
         publications.addAll(processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
-            pdcIE, settings));
+            pdcIE, recursiveSettings));
       }
     }
     return publications;

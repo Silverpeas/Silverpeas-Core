@@ -24,8 +24,8 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.sharing.services.SharingTicketService;
 import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingTicketService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
@@ -37,20 +37,19 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.silverpeas.core.admin.OrganisationController;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
 
@@ -190,7 +189,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       jsonObject.put("url", URLManager.getURL(componentName, "useless", componentId) + "Main");
     }
     if (e != null) {
-      jsonObject.put("exception", e.toString());
+      jsonObject.put("exception", e.getMessage());
     }
     return jsonObject;
   }
@@ -221,7 +220,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     JSONArray jsonArray = new JSONArray();
     if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
       addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"), URLManager
-          . getURL(URLManager.CMP_AGENDA, null, null) + "Main");
+          .getURL(URLManager.CMP_AGENDA, null, null) + "Main");
       addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"), URLManager
           .getURL(URLManager.CMP_TODO, null, null) + "todo.jsp");
       addNotificationsAsTool(jsonArray, helper, message);

@@ -127,7 +127,7 @@ To create a new keystore from scratch, containing a single
   ...
   <fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/">
     <configfile name="general.properties">
-      <parameter key="server.ssl">false</parameter> <!-- we don't want to stay in SSL mode -->
+      <parameter key="server.ssl">true</parameter> <!-- we don't want to stay in SSL mode -->
       <parameter key="server.http.port">8000</parameter> <!-- the web port as defined in JBoss -->
     </configfile>
   </fileset>

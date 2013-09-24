@@ -28,8 +28,9 @@
  */
 package com.silverpeas.util;
 
-import java.io.UnsupportedEncodingException;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -217,5 +218,22 @@ public class StringUtilTest {
     copyright = "D\u00E9partement de la Dr\u00F4me";
     result = StringUtil.detectEncoding(copyright.getBytes("ISO-8859-1"), "UTF-8");
     assertThat(result, is("ISO-8859-1"));*/
+  }
+
+  @Test
+  public void testDefaultStringIfNotDefinedReturningEmptyStringAsDefault() {
+    assertThat(StringUtil.defaultStringIfNotDefined(null), is(StringUtil.EMPTY));
+    assertThat(StringUtil.defaultStringIfNotDefined(""), is(StringUtil.EMPTY));
+    assertThat(StringUtil.defaultStringIfNotDefined("   "), is(StringUtil.EMPTY));
+    assertThat(StringUtil.defaultStringIfNotDefined(" A "), is(" A "));
+  }
+
+  @Test
+  public void testDefaultStringIfNotDefinedReturningGivenStringAsDefault() {
+    String defaultString = "givenString";
+    assertThat(StringUtil.defaultStringIfNotDefined(null, defaultString), is(defaultString));
+    assertThat(StringUtil.defaultStringIfNotDefined("", defaultString), is(defaultString));
+    assertThat(StringUtil.defaultStringIfNotDefined("   ", defaultString), is(defaultString));
+    assertThat(StringUtil.defaultStringIfNotDefined(" A ", defaultString), is(" A "));
   }
 }

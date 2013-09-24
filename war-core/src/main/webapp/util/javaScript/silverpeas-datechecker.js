@@ -81,9 +81,10 @@
  *           parameter
  *    defaultDate : the formatted default date, empty by default. Ignored if isMandatory is true.
  *                  WARNING : this is a default date for the checker, source value is not modified
- *    defaultHour : the formatted default hour for the date, empty by default. Ignored if
- *                  isMandatoryHour is true.
- *                  WARNING : this is a default hour for the checker, source value is not modified
+ *    defaultDateHour : the formatted default hour for the date if it exists, empty by default.
+ *                      Ignored if isMandatoryHour is true.
+ *                      WARNING : this is a default hour for the checker, source value is not
+ *                      modified
  *    isMandatory : boolean value to indicate if the date is mandatory, false by default. If false
  *                  then an unexisting date is not an error
  *    isMandatoryHour : boolean value to indicate if the hour is mandatory, false by default. If
@@ -314,7 +315,7 @@
       labelHour : '',
       hour : '',
       defaultDate : '',
-      defaultHour : '',
+      defaultDateHour : '',
       isMandatory : false,
       isMandatoryHour : false,
       canBeEqualToAnother : true,
@@ -358,12 +359,13 @@
       $.extend(dateContext, options);
     }
 
-    // Default value if any
+    // Default values if any
     if (!dateContext.isMandatory && dateContext.defaultDate && !__isDefined(dateContext.date)) {
-      dateContext.date = dateContext.defaultDate
+      dateContext.date = dateContext.defaultDate;
     }
-    if (!dateContext.isMandatoryHour && dateContext.defaultHour && !__isDefined(dateContext.hour)) {
-      dateContext.hour = dateContext.defaultHour
+    if (!dateContext.isMandatoryHour && dateContext.defaultDateHour &&
+        !__isDefined(dateContext.hour) && __isDefined(dateContext.date)) {
+      dateContext.hour = dateContext.defaultDateHour;
     }
 
     // Returning initialized date context

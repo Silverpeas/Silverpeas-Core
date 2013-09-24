@@ -73,6 +73,8 @@ public final class QueryDescription implements Serializable {
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
   private boolean searchByComponentType = false;
+  private String requestedFolder = null;
+  
   /**
    * The external searched components are build empty. This is a set of ExternalComponent
    */
@@ -367,5 +369,13 @@ public final class QueryDescription implements Serializable {
 
   public void setSearchByComponentType(boolean searchByComponentType) {
     this.searchByComponentType = searchByComponentType;
+  }
+
+  public void setRequestedFolder(String requestedFolder) {
+    this.requestedFolder = requestedFolder;
+  }
+
+  public String getRequestedFolder() {
+    return requestedFolder;
   }
 }

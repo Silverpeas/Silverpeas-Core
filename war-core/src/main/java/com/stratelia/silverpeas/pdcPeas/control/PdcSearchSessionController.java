@@ -82,6 +82,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
@@ -197,7 +198,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle,
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings");
+        "org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
     isExportEnabled = isExportLicenseOK();
     isRefreshEnabled = getSettings().getBoolean("EnableRefresh", true);
@@ -410,6 +411,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             query.addComponent(curComp);
           }
         }
+        
+        if (componentList.size() == 1) {
+          query.setRequestedFolder(getQueryParameters().getFolder());
+        }
 
         if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
@@ -608,6 +613,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     Facet authorFacet = new Facet("author", getString("pdcPeas.facet.author"));
     Facet componentFacet = new Facet("component", getString("pdcPeas.facet.service"));
     Facet dataTypeFacet = new Facet("datatype", getString("pdcPeas.facet.datatype"));
+    Facet fileTypeFacet = new Facet("filetype", getString("pdcPeas.facet.filetype"));
 
     // key is the fieldName
     Map<String, Facet> fieldFacetsMap = new HashMap<String, Facet>();
@@ -636,6 +642,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         // manage "datatype" facet
         processFacetDatatype(dataTypeFacet, result);
+        
+        if (result.isAttachment()) {
+          processFacetFiletype(fileTypeFacet, result);
+        }
 
         // manage forms fields facets
         processFacetsFormField(fieldFacetsMap, result);
@@ -646,6 +656,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     res.setAuthorFacet(authorFacet);
     res.setComponentFacet(componentFacet);
     res.setDatatypeFacet(dataTypeFacet);
+    res.setFiletypeFacet(fileTypeFacet);
     res.setFormFieldFacets(new ArrayList<Facet>(fieldFacetsMap.values()));
 
     // sort facets entries descending
@@ -677,11 +688,26 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       SearchTypeConfigurationVO theSearchType = getSearchType(instanceId, type);
       if (theSearchType != null) {
         FacetEntryVO facetEntry = new FacetEntryVO(theSearchType.getName(), String.valueOf(
-            theSearchType.
-            getConfigId()));
+            theSearchType.getConfigId()));
         if (getSelectedFacetEntries() != null) {
           if (String.valueOf(theSearchType.getConfigId()).equals(getSelectedFacetEntries().
               getDatatype())) {
+            facetEntry.setSelected(true);
+          }
+        }
+        facet.addEntry(facetEntry);
+      }
+    }
+  }
+  
+  private void processFacetFiletype(Facet facet, GlobalSilverResult result) {
+    String filename = result.getAttachmentFilename();
+    if (StringUtil.isDefined(filename)) {
+      String extension = FileRepositoryManager.getFileExtension(filename).toLowerCase();
+      if (StringUtil.isDefined(extension)) {
+        FacetEntryVO facetEntry = new FacetEntryVO(extension, extension);
+        if (getSelectedFacetEntries() != null) {
+          if (extension.equals(getSelectedFacetEntries().getFiletype())) {
             facetEntry.setSelected(true);
           }
         }
@@ -957,7 +983,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             visible = false;
           }
         }
-
+        
+        // check filetype facet
+        if (visible && StringUtil.isDefined(filter.getFiletype())) {
+          if (!gsResult.isAttachment() ||
+              !StringUtil.isDefined(gsResult.getAttachmentFilename()) ||
+              !FileRepositoryManager.getFileExtension(gsResult.getAttachmentFilename())
+                  .toLowerCase().equals(filter.getFiletype())) {
+            visible = false;
+          }
+        }
+        
         // check form field facets
         Map<String, String> gsrFormFieldsForFacets = gsResult.getFormFieldsForFacets();
         if (visible && filterFormFields) {
@@ -2365,8 +2401,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<ComponentInstLight> getAllowedComponents(String space) {
     List<ComponentInstLight> allowedList = new ArrayList<ComponentInstLight>();
     if (space != null) {
-      String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-          getUserId());
+      String[] asAvailCompoForCurUser =
+          getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId());
       for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
         ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
             asAvailCompoForCurUser[nI]);

@@ -2189,4 +2189,36 @@ public class PublicationDAO {
     }
     return publications;
   }
+  
+  public static Collection<PublicationDetail> getDraftsByUser(Connection con, String userId)
+      throws SQLException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("select * from sb_publication_publi ");
+    sb.append("where pubUpdaterId = ? ");
+    sb.append("and ((pubStatus = ? ");
+    sb.append("and pubcloneid = -1 ");
+    sb.append("and pubclonestatus is null) ");
+    sb.append("or ");
+    sb.append("(pubcloneid <> -1 ");
+    sb.append("and pubclonestatus = ? )) ");
+    sb.append("order by pubUpdateDate desc");
+
+    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(sb.toString());
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, PublicationDetail.DRAFT);
+      prepStmt.setString(3, PublicationDetail.DRAFT);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        publications.add(resultSet2PublicationDetail(rs, null));
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return publications;
+  }
 }
+

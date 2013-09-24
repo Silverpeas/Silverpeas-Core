@@ -32,6 +32,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
@@ -46,8 +47,9 @@
 <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
+<view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
+<fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
-<view:settings var="maximumFileSize"  settings="org.silverpeas.util.uploads.uploadSettings" defaultValue="10000000" key="MaximumFileSize" />
 <c:set var="id" value="${param.Id}" />
 <c:set var="Silverpeas_Attachment_ObjectId" scope="session" value="${id}" />
 <c:set var="componentId" value="${param.ComponentId}" />
@@ -195,7 +197,6 @@
     $("#dialog-attachment-add").dialog("open");
   }
   function deleteAttachment(id, filename) {
-    $("#dialog-attachment-delete").dialog("option", 'title', '<fmt:message key="supprimerAttachment" />' + filename + ' ?');
     $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?' );
     $("#dialog-attachment-delete").data("id", id).dialog("open");
   }
@@ -249,12 +250,12 @@
 
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
-      title: '<fmt:message key="supprimerAttachment" />',
-      height: 300,
-      width: 350,
+      title: '<fmt:message key="attachment.dialog.delete" />',
+      height: 'auto',
+      width: 400,
       modal: true,
       buttons: {
-        '<fmt:message key="GML.ok"/>': function() {
+        '<fmt:message key="GML.delete"/>': function() {
           deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id");
             $.ajax({
               url: deleteUrl,
@@ -274,104 +275,117 @@
         }
       });
 
-      $("#dialog-attachment-add").dialog({
-        autoOpen: false,
-        height: 350,
-        width: 600,
-        modal: true,
-        buttons: {
-          '<fmt:message key="GML.ok"/>': function() { 
-            var filename =  $.trim( $("#file_create").val().split('\\').pop());
-            if( filename === '') { 
-              return false;
-            }
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' +encodeURIComponent(filename);
-            if ("FormData" in window) {
-                var formData = new FormData($("#add-attachment-form")[0]);
-                $.ajax(submitUrl, {
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                dataType: "json",
-                data: formData,
-                success:function(data) {
-                  reloadPage();
-                  $(this).dialog("close");
-                }
-              });
-            } else {              
-              $('#add-attachment-form').attr('action', submitUrl);
-              $('#add-attachment-form').submit();
-            }
-          }, '<fmt:message key="GML.cancel"/>': function() {
-              $(this).dialog("close");
-            }
-          },
-          close: function() {
-          }
-        });
+    var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
+      var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${silfn:formatMemSize(maximumFileSize)})\n";
+      $.closeProgressMessage();
+      window.alert(errorMsg);
+    };
 
-      $("#dialog-attachment-update").dialog({
-        autoOpen: false,
-        height: 350,
-        width: 600,
-        modal: true,
-        buttons: {
-          '<fmt:message key="GML.ok"/>': function() {
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
-            var filename =  $.trim( $("#file_upload").val().split('\\').pop());
-            if( filename !== '') { 
-              submitUrl = submitUrl + '/' +encodeURIComponent(filename);
-            } else {
-              submitUrl = submitUrl + '/no_file';
-            }  
-            if ("FormData" in window) {
-                var formData = new FormData($("#update-attachment-form")[0]);
-                $.ajax(submitUrl, {
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                dataType: "json",
-                data: formData,
-                success:function(data) {
-                  reloadPage();
-                  $(this).dialog("close");
-                }
-              });
-            } else { 
-              $('#update-attachment-form').attr('action', submitUrl);
-              $('#update-attachment-form').submit();
-            } },
-          '<fmt:message key="GML.delete"/>': function() {
-            $.ajax({
-              url: '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/content/' + $("#fileLang").val(),
-                type: "DELETE",
-                contentType: "application/json",
-                dataType: "json",
-                cache: false,
-                success: function(data) {
-                  reloadPage();
-                  $(this).dialog("close");
-                }
-              });
-              $(this).dialog("close");
-            },
-            '<fmt:message key="GML.cancel"/>': function() {
+    $("#dialog-attachment-add").dialog({
+      autoOpen : false,
+      title : "<fmt:message key="attachment.dialog.add" />",
+      height : 'auto',
+      width : 550,
+      modal : true,
+      buttons : {
+        '<fmt:message key="GML.ok"/>' : function() {
+          var filename = $.trim($("#file_create").val().split('\\').pop());
+          if (filename === '') {
+            return false;
+          }
+          var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+          submitUrl = submitUrl + '/' + encodeURIComponent(filename);
+          $.progressMessage();
+          if ("FormData" in window) {
+            var formData = new FormData($("#add-attachment-form")[0]);
+            $.ajax(submitUrl, {
+              processData : false,
+              contentType : false,
+              type : 'POST',
+              dataType : "json",
+              data : formData,
+              success : function(data) {
+                reloadPage();
+              },
+              error : performDialogAddOrUpdateError
+            });
+          } else {
+            $('#add-attachment-form').attr('action', submitUrl);
+            $('#add-attachment-form').submit();
+          }
+        }, '<fmt:message key="GML.cancel"/>' : function() {
+          $(this).dialog("close");
+        }
+      },
+      close : function() {
+      }
+    });
+
+    $("#dialog-attachment-update").dialog({
+      autoOpen : false,
+      title : "<fmt:message key="attachment.dialog.update" />",
+      height : 'auto',
+      width : 550,
+      modal : true,
+      buttons : {
+        '<fmt:message key="GML.ok"/>' : function() {
+          var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+              $(this).data('attachmentId');
+          var filename = $.trim($("#file_upload").val().split('\\').pop());
+          if (filename !== '') {
+            submitUrl = submitUrl + '/' + encodeURIComponent(filename);
+          } else {
+            submitUrl = submitUrl + '/no_file';
+          }
+          $.progressMessage();
+          if ("FormData" in window) {
+            var formData = new FormData($("#update-attachment-form")[0]);
+            $.ajax(submitUrl, {
+              processData : false,
+              contentType : false,
+              type : 'POST',
+              dataType : "json",
+              data : formData,
+              success : function(data) {
+                reloadPage();
+              },
+              error : performDialogAddOrUpdateError
+            });
+          } else {
+            $('#update-attachment-form').attr('action', submitUrl);
+            $('#update-attachment-form').submit();
+          }
+        },
+        '<fmt:message key="GML.delete"/>' : function() {
+          $.ajax({
+            url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+                $(this).data('attachmentId'),
+            type : "DELETE",
+            contentType : "application/json",
+            dataType : "json",
+            cache : false,
+            success : function(data) {
+              reloadPage();
               $(this).dialog("close");
             }
-          },
-          close: function() {
-          }
-        });
-        $("#attachmentModalDialog").dialog({
-          autoOpen: false,
-          modal: true,
-          title: '<fmt:message key="attachment.dialog.delete" />',
-          height: 'auto',
-          width: 400
-        });
-      });
+          });
+          $(this).dialog("close");
+        },
+        '<fmt:message key="GML.cancel"/>' : function() {
+          $(this).dialog("close");
+        }
+      },
+      close : function() {
+      }
+    });
+    $("#attachmentModalDialog").dialog({
+      autoOpen : false,
+      modal : true,
+      title : '<fmt:message key="attachment.dialog.delete" />',
+      height : 'auto',
+      width : 400
+    });
+  });
 
   function reloadPage() {
     location.reload();
@@ -406,7 +420,7 @@
             </div>
           </c:when>
           <c:otherwise>
-            <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
+            <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
             <c:url var="dropUrl" value="/DragAndDrop/drop">
               <c:param name="UserId" value="${mainSessionController.userId}" />
               <c:param name="ComponentId" value="${componentId}" />
@@ -554,3 +568,5 @@
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
 </div>
+
+<view:progressMessage/>

@@ -26,8 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.ejb.EJB;
@@ -337,9 +341,11 @@ public class PublicationBmEJB implements PublicationBm {
       InfoDAO.deleteInfoDetailByInfoPK(con, infoPK);
       // delete translations
       PublicationI18NDAO.removeTranslations(con, pk);
+      
+      deleteIndex(pk);
+      
       // delete publication from database
       PublicationDAO.deleteRow(con, pk);
-      deleteIndex(pk);
     } catch (java.sql.SQLException e) {
       throw new PublicationRuntimeException("PublicationEJB.ejbRemove()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_DELETE_ENTITY",
@@ -359,7 +365,6 @@ public class PublicationBmEJB implements PublicationBm {
   public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
     Connection con = getConnection();
     try {
-      PublicationDetail publi = PublicationDAO.loadRow(con, detail.getPK());
       int indexOperation = detail.getIndexOperation();
       updateDetail(detail, forceUpdateDate);
       if (detail.isRemoveTranslation()) {
@@ -394,10 +399,6 @@ public class PublicationBmEJB implements PublicationBm {
           SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
           "detail = " + detail, re);
     } catch (PublicationTemplateException re) {
-      throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
-          "detail = " + detail, re);
-    } catch (SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
           SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
           "detail = " + detail, re);
@@ -798,6 +799,34 @@ public class PublicationBmEJB implements PublicationBm {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public List<Alias> setAlias(PublicationPK pubPK, List<Alias> alias) {
+    List<Alias> oldAliases = (List<Alias>) getAlias(pubPK);
+    List<Alias> newAliases = new ArrayList<Alias>(alias.size());
+    List<Alias> remAliases = new ArrayList<Alias>(oldAliases.size());
+    // Compute the remove list
+    for (Alias a : oldAliases) {
+      if (!alias.contains(a)) {
+        remAliases.add(a);
+      }
+    }
+    // Compute the add and stay list
+    for (Alias a : alias) {
+      if (!oldAliases.contains(a)) {
+        newAliases.add(a);
+      }
+    }
+    addAlias(pubPK, newAliases);
+    removeAlias(pubPK, remAliases);
+    
+    if (!newAliases.isEmpty() || !remAliases.isEmpty()) {
+      // aliases have changed... index it
+      indexAliases(pubPK, null);
+    }
+    
+    return newAliases;
+  }
 
   @Override
   public void addAlias(PublicationPK pubPK, List<Alias> aliases) {
@@ -826,6 +855,7 @@ public class PublicationBmEJB implements PublicationBm {
         for (Alias alias : aliases) {
           PublicationFatherDAO.removeAlias(con, pubPK, alias);
           PublicationDAO.invalidateLastPublis(alias.getInstanceId());
+          unindexAlias(pubPK, alias);
         }
       }
     } catch (SQLException e) {
@@ -1502,6 +1532,22 @@ public class PublicationBmEJB implements PublicationBm {
   public void createIndex(PublicationPK pubPK) {
     createIndex(pubPK, true);
   }
+  
+  private FullIndexEntry getFullIndexEntry(PublicationDetail publi, boolean processContent) {
+    FullIndexEntry indexEntry = null;
+    if (publi != null) {
+      // Index the Publication Header
+      indexEntry = getFullIndexEntry(publi);
+      // Index the Publication Content
+      if (processContent) {
+        updateIndexEntryWithWysiwygContent(indexEntry, publi);
+        updateIndexEntryWithXMLFormContent(indexEntry, publi);
+      }
+      AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+      IndexEngineProxy.addIndexEntry(indexEntry);
+    }
+    return indexEntry;
+  }
 
   private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
     SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
@@ -1514,14 +1560,11 @@ public class PublicationBmEJB implements PublicationBm {
         PublicationDetail pubDetail = getDetail(pubPK);
         if (pubDetail != null) {
           // Index the Publication Header
-          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
-          // Index the Publication Content
-          if (processContent) {
-            updateIndexEntryWithWysiwygContent(indexEntry, pubDetail);
-            updateIndexEntryWithXMLFormContent(indexEntry, pubDetail);
-          }
-          AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
           IndexEngineProxy.addIndexEntry(indexEntry);
+          
+          // process aliases
+          indexAliases(pubPK, indexEntry);
         }
       } catch (Exception e) {
         SilverTrace.error("publication", "PublicationBmEJB.createIndex()",
@@ -1530,7 +1573,7 @@ public class PublicationBmEJB implements PublicationBm {
       }
     }
   }
-
+  
   private void createIndex(PublicationPK pubPK, boolean processWysiwygContent) {
     createIndex(pubPK, processWysiwygContent, IndexManager.ADD);
   }
@@ -1540,8 +1583,9 @@ public class PublicationBmEJB implements PublicationBm {
 
     if (pubDetail != null) {
       // Index the Publication Header
-      indexEntry = new FullIndexEntry(pubDetail.getPK().getComponentName(),
-          "Publication", pubDetail.getPK().getId());
+      indexEntry =
+          new FullIndexEntry(getIndexEntryPK(pubDetail.getPK().getComponentName(), pubDetail
+              .getPK().getId()));
       indexEntry.setIndexId(true);
 
       Iterator<String> languages = pubDetail.getLanguages();
@@ -1578,6 +1622,14 @@ public class PublicationBmEJB implements PublicationBm {
           // name
         }
       }
+      
+      // set path(s) to publication into the index
+      Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
+      List<String> paths = new ArrayList<String>();
+      for (NodePK father : fathers) {
+        paths.add(nodeBm.getDetail(father).getFullPath());
+      }
+      indexEntry.setPaths(paths);
 
       try {
         ThumbnailDetail thumbnail = pubDetail.getThumbnail();
@@ -1603,9 +1655,9 @@ public class PublicationBmEJB implements PublicationBm {
   public void deleteIndex(PublicationPK pubPK) {
     SilverTrace.info("publication", "PublicationBmEJB.deleteIndex()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK);
-    IndexEntryPK indexEntry = new IndexEntryPK(pubPK.getComponentName(), "Publication", pubPK
-        .getId());
+    IndexEntryPK indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
+    unindexAlias(pubPK);
     // Suppression du nuage de tags lors de la suppression de l'index (et pas
     // lors de l'envoi de la publication dans la corbeille).
     if (useTagCloud) {
@@ -1614,6 +1666,58 @@ public class PublicationBmEJB implements PublicationBm {
     // idem pour les notations
     if (useNotation) {
       deleteNotation(pubPK);
+    }
+  }
+  
+  private IndexEntryPK getIndexEntryPK(String instanceId, String publiId) {
+    return new IndexEntryPK(instanceId, "Publication", publiId);
+  }
+  
+  private void unindexAlias(PublicationPK pk, Alias alias) {
+    IndexEngineProxy.removeIndexEntry(getIndexEntryPK(alias.getInstanceId(), pk.getId()));
+  }
+  
+  private void unindexAlias(PublicationPK pk) {
+    // get all apps where alias are
+    Collection<Alias> aliases = getAlias(pk);
+    Set<String> componentIds = new HashSet<String>();
+    for (Alias alias : aliases) {
+      if (!alias.getInstanceId().equals(pk.getInstanceId())) {
+        //it's a true alias
+        componentIds.add(alias.getInstanceId());
+      }
+    }
+    // remove publication index in these apps
+    for (String componentId : componentIds) {
+      IndexEngineProxy.removeIndexEntry(getIndexEntryPK(componentId, pk.getId()));
+    }
+  }
+  
+  private void indexAliases(PublicationPK pubPK, FullIndexEntry indexEntry) {
+    if (indexEntry == null) {
+      PublicationDetail publi = getDetail(pubPK);
+      indexEntry = getFullIndexEntry(publi, true);
+    }
+    
+    Collection<Alias> aliases = getAlias(pubPK);
+    Map<IndexEntryPK, List<String>> pathsByIndex = new HashMap<IndexEntryPK, List<String>>();
+    for (Alias alias : aliases) {
+      if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
+        //it's a true alias
+        IndexEntryPK pk = getIndexEntryPK(alias.getInstanceId(), pubPK.getId());
+        if (pathsByIndex.get(pk) == null) {
+          pathsByIndex.put(pk, new ArrayList<String>());
+        }
+        pathsByIndex.get(pk).add(
+            nodeBm.getDetail(new NodePK(alias.getId(), alias.getInstanceId())).getFullPath());
+      }
+    }
+    
+    for (IndexEntryPK indexEntryPK : pathsByIndex.keySet()) {
+      FullIndexEntry aliasIndexEntry = indexEntry.clone();
+      aliasIndexEntry.setPK(indexEntryPK);
+      aliasIndexEntry.setPaths(pathsByIndex.get(indexEntryPK));
+      IndexEngineProxy.addIndexEntry(aliasIndexEntry);
     }
   }
 
@@ -1961,6 +2065,21 @@ public class PublicationBmEJB implements PublicationBm {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public Collection<PublicationDetail> getDraftsByUser(String userId) {
+    Connection con = getConnection();
+    try {
+      return PublicationDAO.getDraftsByUser(con, userId);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getDraftsByUser()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED", "userId = "
+          + userId, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
   private static final boolean useTagCloud;
   private static final boolean useNotation;
   private static final boolean indexAuthorName;

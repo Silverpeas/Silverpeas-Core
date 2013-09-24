@@ -26,9 +26,9 @@
 -->
 
 <faqs xmlns="http://maven.apache.org/FML/1.0.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
-  title="Frequently Asked Questions" toplink="false">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+      title="Frequently Asked Questions" toplink="false">
 
   <part id="tech-admin">
     <title>Technical Administration</title>
@@ -37,18 +37,18 @@
         JBoss is listening only on <b>localhost</b>. How do I configure the binding address(es) ?
       </question>
       <answer>
-        <p>Symptoms: </p>        
+        <p>Symptoms: </p>
         <ul>
-          <li>You can only reach Silverpeas using <i>localhost</i> or <i>127.0.0.1</i>.</li>         
+          <li>You can only reach Silverpeas using <i>localhost</i> or <i>127.0.0.1</i>.</li>
         </ul>
         <ol>
           <li>Stop Silverpeas.</li>
-          <li>Edit the file 
-            <i>silverpeas_start_jboss.sh</i> or<i>silverpeas_start_jboss.cmd</i> and on the last line append             
+          <li>Edit the file
+            <i>silverpeas_start_jboss.sh</i> or<i>silverpeas_start_jboss.cmd</i> and on the last line append
             <source>-b 0.0.0.0</source> before the <b>-c</b>.
           </li>
           <li>Restart Silverpeas </li>
-        </ol>                
+        </ol>
         <p>Jboss should be listening on every IP address.</p>
       </answer>
     </faq>
@@ -59,8 +59,8 @@
       <answer>
         <ol>
           <li>Stop Silverpeas.</li>
-          <li>Edit your specific properties configuration file (i.e. <i>CustomerSettings.xml</i>, see below) 
-            and append             
+          <li>Edit your specific properties configuration file (i.e. <i>CustomerSettings.xml</i>, see below)
+            and append
             <source>
 <![CDATA[<fileset root="${JBOSS_CONF}/bindingservice.beans/META-INF/">
   <xmlfile name="bindings-jboss-beans.xml">
@@ -73,8 +73,9 @@
           <li>Configure JBOSS_SSL_LISTEN_PORT in $SILVERPEAS_HOME/setup/settings/config.properties. For example : <source>JBOSS_SSL_LISTEN_PORT=8443</source></li>
           <li>Launch SilverpeasSettings script (.bat or .sh)</li>
           <li>Restart Silverpeas</li>
-        </ol>                
-        <p><strong>Warning</strong> : this is not enabling a SSL connector. For this purpose, you still need to uncomment the SSL connector in JBoss server.xml</p>
+        </ol>
+        <p>
+          <strong>Warning</strong> : this is not enabling a SSL connector. For this purpose, you still need to uncomment the SSL connector in JBoss server.xml</p>
       </answer>
     </faq>
     <faq id="jboss-win-service">
@@ -86,21 +87,21 @@
           <li>Stop Silverpeas.</li>
           <li>Edit $JBOSS_HOME/bin/run.conf.bat. Add an empty ADDITIONAL_JAVA_OPTS variable, initialize PROFILE variable and add the <em>-server</em> option at the first JAVA_OPTS line :
             <source>rem # these variables will be set by SilverpeasSettings script
-<strong>set ADDITIONAL_JAVA_OPTS=
-set PROFILE=default</strong>
+              <strong>set ADDITIONAL_JAVA_OPTS=
+                set PROFILE=default</strong>
 
-rem # JVM memory allocation pool parameters - modify as appropriate. Memory params will be set by SilverpeasSettings script
-set "JAVA_OPTS=<strong>-server</strong> -Xmx2048m -Xms2048m -XX:MaxPermSize=512m"</source>
+              rem # JVM memory allocation pool parameters - modify as appropriate. Memory params will be set by SilverpeasSettings script
+              set "JAVA_OPTS=<strong>-server</strong> -Xmx2048m -Xms2048m -XX:MaxPermSize=512m"</source>
           </li>
           <li>You can customize service name, display name and description by editing SVCNAME, SVCDISP and SVCDESC in $JBOSS_HOME/bin/service.bat. For example :
             <source>if "x%SVCNAME%" == "x" (
-    set "SVCNAME=Silverpeas"
-)
-set SVCDISP=Silverpeas X.X
-set SVCDESC=Silverpeas X.X on a JBoss Application Server 6.1.0</source>
+              set "SVCNAME=Silverpeas"
+              )
+              set SVCDISP=Silverpeas X.X
+              set SVCDESC=Silverpeas X.X on a JBoss Application Server 6.1.0</source>
           </li>
           <li>Edit your specific properties configuration file (i.e. <i>CustomerSettings.xml</i>, see below) so that the SilverpeasSettings script update some parameters (Java options and JBoss profile) in the same way as start/debug commands. Append :
-<source>
+            <source>
 <![CDATA[<fileset root="${JBOSS_HOME}/bin/">
   <textfile name="run.conf.bat">
     <parameter key="-Xms[0-9]+m" use-regex="true">-Xms${RAM_MIN}m</parameter>
@@ -113,7 +114,8 @@ set SVCDESC=Silverpeas X.X on a JBoss Application Server 6.1.0</source>
           </li>
           <li>Launch SilverpeasSettings script (.bat or .sh)</li>
           <li>Install service : <source>cd /d %JBOSS_HOME%\bin
-service.bat install</source></li>
+              service.bat install</source>
+          </li>
           <li>Silverpeas can now be launched as a service</li>
         </ol>
       </answer>
@@ -123,17 +125,17 @@ service.bat install</source></li>
         On my Mac OS X I can't access a local Silverpeas installation.
       </question>
       <answer>
-        <p>Symptoms: </p>        
+        <p>Symptoms: </p>
         <ul>
-          <li>My Mac doesn't resolve <i>localhost</i> or <i>127.0.0.1</i> when offline.</li>         
+          <li>My Mac doesn't resolve <i>localhost</i> or <i>127.0.0.1</i> when offline.</li>
         </ul>
         <ol>
           <li>Stop Silverpeas.</li>
-          <li>Execute the foloowing command:      
+          <li>Execute the foloowing command:
             <source>sudo ifconfig en0 alias 127.0.0.1</source>.
           </li>
           <li>Restart Silverpeas </li>
-        </ol>                
+        </ol>
         <p>You should be able to resolve <b>localhost</b> on your Mac now.</p>
         <p>Thanks to Galder Zamarreño for the answer (<a href="http://stackoverflow.com/questions/7892609/inetaddress-getlocalhost-resolution-on-osx-lion-when-offline">InetAddress.getLocalHost() resolution on OSX Lion when offline</a>)</p>
       </answer>
@@ -143,21 +145,21 @@ service.bat install</source></li>
         JBoss Hornet Q won't start with AIO library ?
       </question>
       <answer>
-        <p>Symptoms: </p>        
+        <p>Symptoms: </p>
         <ul>
           <li>Silverpeas doesn't start.</li>
-          <li>You have something like this in the 
+          <li>You have something like this in the
             <i>boot.log</i>
           </li>
         </ul>
         <source>
-ERROR [AbstractKernelController] Error installing to Start: name=JMSServerManager state=Create: HornetQException[errorCode=205 message=Can't open file]
-        at org.hornetq.core.asyncio.impl.AsynchronousFileImpl.init(Native Method) [:6.0.0.20100911-M5]
-        at org.hornetq.core.asyncio.impl.AsynchronousFileImpl.open(AsynchronousFileImpl.java:206) [:6.0.0.20100911-M5]
+          ERROR [AbstractKernelController] Error installing to Start: name=JMSServerManager state=Create: HornetQException[errorCode=205 message=Can't open file]
+          at org.hornetq.core.asyncio.impl.AsynchronousFileImpl.init(Native Method) [:6.0.0.20100911-M5]
+          at org.hornetq.core.asyncio.impl.AsynchronousFileImpl.open(AsynchronousFileImpl.java:206) [:6.0.0.20100911-M5]
         </source>
         <ol>
           <li>Stop Silverpeas.</li>
-          <li>Edit the file 
+          <li>Edit the file
             <i>hornetq-configuration.xml</i> adding just before the closing tag
             <b>"configuration"</b> :
             <source><![CDATA[<journal-type>NIO</journal-type>]]>
@@ -165,7 +167,7 @@ ERROR [AbstractKernelController] Error installing to Start: name=JMSServerManage
           </li>
           <li>Restart Silverpeas </li>
           <li>Check the logs for verifying that the fix is done.</li>
-        </ol>                
+        </ol>
         <p>Jboss should be ok.</p>
       </answer>
     </faq>
@@ -174,37 +176,37 @@ ERROR [AbstractKernelController] Error installing to Start: name=JMSServerManage
         How to fix a corrupted JCR ?
       </question>
       <answer>
-        <p>Symptoms: </p>        
+        <p>Symptoms: </p>
         <ul>
           <li>Silverpeas doesn't start.</li>
-          <li>You have something like this in the 
+          <li>You have something like this in the
             <i>traces.txt</i>
           </li>
         </ul>
         <source>
-ERROR : failed to read bundle: b623a49a-d944-4f33-9412-efca41c7a75f: java.lang.IllegalArgumentException: Invalid namespace index: 11
-ERROR : Node /attachments/kmelia76/Attachment/Images/4825 (ac61b0c4-1b92-429d-b695-f62950e73627) has missing child 'Cahier de gestion de l Education juin 2010.xls' (b623a49a-d944-4f33-9412-efca41c7a75f)
-ERROR : Failed to initialize workspace 'jackrabbit'
-javax.jcr.RepositoryException: Error indexing workspace: Error indexing workspace: Error indexing workspace
+          ERROR : failed to read bundle: b623a49a-d944-4f33-9412-efca41c7a75f: java.lang.IllegalArgumentException: Invalid namespace index: 11
+          ERROR : Node /attachments/kmelia76/Attachment/Images/4825 (ac61b0c4-1b92-429d-b695-f62950e73627) has missing child 'Cahier de gestion de l Education juin 2010.xls' (b623a49a-d944-4f33-9412-efca41c7a75f)
+          ERROR : Failed to initialize workspace 'jackrabbit'
+          javax.jcr.RepositoryException: Error indexing workspace: Error indexing workspace: Error indexing workspace
         </source>
         <ol>
           <li>Stop Silverpeas.</li>
-          <li>Edit the file 
-            <i>repository.xml</i> adding into the section 
+          <li>Edit the file
+            <i>repository.xml</i> adding into the section
             <b>"PersistenceManager"</b> :
             <source><![CDATA[<param name="consistencyCheck" value="true" />
 <param name="consistencyFix" value="true" />]]>
             </source>
           </li>
-          <li> Comment the section 
+          <li> Comment the section
             <b>"SearchIndex"</b>
           </li>
           <li>Restart Silverpeas </li>
           <li>Check the traces for verifying that the fix is done.</li>
-          <li>Stop Silverpeas and put the file 
+          <li>Stop Silverpeas and put the file
             <i>repository.xml</i> into its previous state.
           </li>
-        </ol>                
+        </ol>
         <p>The JCR should be ok.</p>
       </answer>
     </faq>
@@ -213,10 +215,10 @@ javax.jcr.RepositoryException: Error indexing workspace: Error indexing workspac
         How do I upgrade my Silverpeas installation ?
       </question>
       <answer>
-        <p>Edit the file 
+        <p>Edit the file
           <i>$SILVERPEAS_HOME/bin/pom.xml</i> and change the version value (fort example, use 5.3.).
           <br/>
-        In order to know the last available version got to 
+          In order to know the last available version got to
           <a href="http://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=0&amp;with_subprojects=1">http://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=0&amp;with_subprojects=1</a>.
         </p>
       </answer>
@@ -226,12 +228,12 @@ javax.jcr.RepositoryException: Error indexing workspace: Error indexing workspac
         How do I configure the maximum size for an uploaded file ?
       </question>
       <answer>
-        <p>The maximum size for an uploaded file is configured in the file 
-          <i>${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/uploads/uploadSettings</i>.
-You have to change the value for the key 
+        <p>The maximum size for an uploaded file is configured in the file
+          <i>${SILVERPEAS_HOME}/properties/org/silverpeas/util/uploads/uploadSettings</i>.
+          You have to change the value for the key
           <source>MaximumFileSize</source> with a size expressed  in bytes.
           <br/>
-For example to limit the size of an uploaded file to 15 Mo, the value should be (15 x 1024 x 1024) :
+          For example to limit the size of an uploaded file to 15 Mo, the value should be (15 x 1024 x 1024) :
           <source>MaximumFileSize=15728640</source>
         </p>
       </answer>
@@ -241,7 +243,7 @@ For example to limit the size of an uploaded file to 15 Mo, the value should be 
         How do I restore files sent into a workflow ?
       </question>
       <answer>
-        <p>The files are stored in the directory 
+        <p>The files are stored in the directory
           <source>${SILVERPEAS_DATA_HOME}/data/workspaces/Attachment</source>
         </p>
       </answer>
@@ -251,26 +253,26 @@ For example to limit the size of an uploaded file to 15 Mo, the value should be 
         How to configure Silverpeas to use rolling log files?
       </question>
       <answer>
-        <p>The file 
+        <p>The file
           <i>traces.txt</i> can grow significally. You can use a rolling file for the logs.
           <br/>
-        This can be achieved by configuring the 
+          This can be achieved by configuring the
           <b>Silvertrace</b>.
           <br/>
-        Edit the file 
+          Edit the file
           <i>${SILVERPEAS_HOME}/silvertrace/rootModule.properties</i> and configure like this :
           <br/>
           <source>
-appender0.enabled=true
-appender0.type=APPENDER_ROLLING_FILE
-appender0.module=root
-appender0.layout=LAYOUT_DETAILED
-appender0.fileName=@ErrorDir@/traces.txt
-appender0.rollingMode=ROLLING_MODE_WEEK
+            appender0.enabled=true
+            appender0.type=APPENDER_ROLLING_FILE
+            appender0.module=root
+            appender0.layout=LAYOUT_DETAILED
+            appender0.fileName=@ErrorDir@/traces.txt
+            appender0.rollingMode=ROLLING_MODE_WEEK
           </source>
         </p>
-        <p> Thus the file 
-          <i>traces.txt</i> will be renammed each week. 
+        <p> Thus the file
+          <i>traces.txt</i> will be renammed each week.
         </p>
       </answer>
     </faq>
@@ -280,17 +282,17 @@ appender0.rollingMode=ROLLING_MODE_WEEK
       </question>
       <answer>
         <p>
-You must pay attention not to manually change properties because you will lose them when you will upgrade Silverpeas.<br/>
-Silverpeas provides an XML file called "CustomerSettings.xml" which is dedicated to that.<br/>
-this file located in $SILVERPEAS_HOME/setup/settings contains all the specific settings.<br/>
-In the extract of this file below you will see how to change a simple properties file such as an XML configuration file.
+          You must pay attention not to manually change properties because you will lose them when you will upgrade Silverpeas.<br/>
+          Silverpeas provides an XML file called "CustomerSettings.xml" which is dedicated to that.<br/>
+          this file located in $SILVERPEAS_HOME/setup/settings contains all the specific settings.<br/>
+          In the extract of this file below you will see how to change a simple properties file such as an XML configuration file.
 <br/>
-<source><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+          <source><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <silverpeas-settings product="Custom">
   <!-- simple properties file -->
-  <!-- Change the property userSessionTimeout inside ${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/peasCore/SessionManager.properties file -->
-	<fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/peasCore/">
-    <!-- Path of the properties file is 
+  <!-- Change the property userSessionTimeout inside ${SILVERPEAS_HOME}/properties/org/silverpeas/peasCore/SessionManager.properties file -->
+	<fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/peasCore/">
+    <!-- Path of the properties file is
 		<configfile name="SessionManager.properties">
 			<!-- Change the session timeout in minute -->
 			<parameter key="adminSessionTimeout">360</parameter>
@@ -309,11 +311,11 @@ In the extract of this file below you will see how to change a simple properties
   <!-- Copy file from ${SILVERPEAS_HOME}/path/to/source.txt to ${SILVERPEAS_DATA_HOME}/path/to/target.txt -->
   <fileset root="${SILVERPEAS_HOME}/path/to/">
     <copyfile name="source.txt">${SILVERPEAS_DATA_HOME}/path/to/target.txt</copyfile>
-  </fileset>  
+  </fileset>
 </silverpeas-settings>
 ]]>
-</source>
-Be careful that all the paths are case sensitive (XPath and file Path).<br/>
+          </source>
+          Be careful that all the paths are case sensitive (XPath and file Path).<br/>
         </p>
       </answer>
     </faq>
@@ -327,19 +329,20 @@ Be careful that all the paths are case sensitive (XPath and file Path).<br/>
         What is the format of the CSV file for importing users in Silverpeas ?
       </question>
       <answer>
-        <p>The format is :</p><source>LastName;FirstName;Login;Email;Profile(Ex: Admin, AdminPdc, AdminDomain, User, Guest);Password</source>
+        <p>The format is :</p>
+        <source>LastName;FirstName;Login;Email;Profile(Ex: Admin, AdminPdc, AdminDomain, User, Guest);Password</source>
       </answer>
     </faq>
     <faq id="unactivate-publication-stars">
       <question>
-        How do I unactivate the display of the importance of a publication (the stars) in 
+        How do I unactivate the display of the importance of a publication (the stars) in
         <b>Theme Tracker</b> ?
       </question>
       <answer>
-        <p>This can be done by editing the value of 
-          <b>showImportance</b> in the file 
-          <i>$SILVERPEAS_HOME/properties/com/stratelia/webactiv/kmelia/settings/kmeliaSettings.properties</i>.
-        The accepted values are : 
+        <p>This can be done by editing the value of
+          <b>showImportance</b> in the file
+          <i>$SILVERPEAS_HOME/properties/org/silverpeas/kmelia/settings/kmeliaSettings.properties</i>.
+          The accepted values are :
           <ul>
             <li>yes : activated</li>
             <li>no : desactivated</li>
@@ -347,24 +350,45 @@ Be careful that all the paths are case sensitive (XPath and file Path).<br/>
         </p>
       </answer>
     </faq>
-     <faq id="how-to-setup-default-language">
+    <faq id="how-to-setup-default-language">
       <question>
         How do I put all of Silverpeas in <b>English</b> ?
       </question>
       <answer>
         <p>There are two kinds of languages in Silverpeas : one for content and one for displaying the portal.<br/>
-           Thus you have two files to edit : 
-          <b>showImportance</b> in the file 
-          <i>$SILVERPEAS_HOME/properties/com/stratelia/webactiv/kmelia/settings/kmeliaSettings.properties</i>.
-        The accepted values are : 
+          Thus you have two files to edit :
+          <b>showImportance</b> in the file
+          <i>$SILVERPEAS_HOME/properties/org/silverpeas/kmelia/settings/kmeliaSettings.properties</i>.
+          The accepted values are :
           <ul>
-            <li><i>org.silverpeas.personalizationPeas.settings.personalizationPeasSettings.properties</i> : the key <b>DefaultLanguage</b> defines the default language for new users.</li>
-            <li><i>org.silverpeas.util.i18n.properties</i> : the key <b>languages</b> defines the languages of the content.</li>
+            <li>
+              <i>org.silverpeas.personalizationPeas.settings.personalizationPeasSettings.properties</i> : the key <b>DefaultLanguage</b> defines the default language for new users.</li>
+            <li>
+              <i>org.silverpeas.util.i18n.properties</i> : the key <b>languages</b> defines the languages of the content.</li>
           </ul>
         </p>
       </answer>
     </faq>
 
+    <faq id="anonymous-access">
+      <question>
+        How to put accessible some applications in Silverpeas by anyone without requiring an authentication?
+      </question>
+      <answer>
+        <p>First, the applications having to be accessed by anyone must have their parameter <i>public access</i> at true.</p>
+        <p>Then, in order to access anonymously to Silverpeas, the following steps have to be done:</p>
+        <ul>
+          <li>Create a guest user with <i>guest</i> as both login and password and keep in mind the internal identifier of the newly created user;</li>
+          <li>Update the configuration file <i>$SILVERPEAS_HOME/properties/org/silverpeas/lookAndFeel/generalLook.properties</i> as follow:
+            <ul>
+              <li>Set the value of the parameter <i>loginPage</i> with the value <i>loginAuto.jsp</i>;</li>
+              <li>Set the value of the parameter <i>anonymousId</i> with the internal identifier of the guest user.</li>
+            </ul>
+          </li>
+          <li>restart Silverpeas</li>
+        </ul>
+      </answer>
+    </faq>
   </part>
 
 </faqs>

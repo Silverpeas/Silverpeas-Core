@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -44,151 +45,10 @@
 
 <c:set var="dataTypes" value="${requestScope.ComponentSearchType}"></c:set>
 
-<%!
-
-String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {
-	String synonyms = "";
-	boolean first = true;
-	if (jargon != null && activeThesaurus.booleanValue()) {//activated
-		//synonymes du terme
-		String				idUser			= jargon.getIdUser();
-		ThesaurusManager	thesaurus		= new ThesaurusManager();
-		Collection			listSynonyms	= thesaurus.getSynonymsAxis(Integer.toString(axisId), idUser);
-		Iterator			it				= listSynonyms.iterator();
-		synonyms += "<i>";
-		while (it.hasNext()) {
-			String name = (String) it.next();
-			if (first) {
-				synonyms += "- "+name;
-			}
-			else
-				synonyms += ", "+name;
-			first = false;
-		}
-		synonyms += "</i>";
-	}
-	return synonyms;
-}
-
-String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, Value value) throws ThesaurusException {
-	String	synonyms	= "";
-	boolean first		= true;
-	String	idTree		= value.getTreeId();
-	String	idTerm		= value.getPK().getId();
-	if (jargon != null && activeThesaurus.booleanValue()) {//activated
-		//synonymes du terme
-		String				idUser			= jargon.getIdUser();
-		ThesaurusManager	thesaurus		= new ThesaurusManager();
-		Collection			listSynonyms	= thesaurus.getSynonyms(new Long(idTree).longValue(), new Long(idTerm).longValue(), idUser);
-		Iterator			it				= listSynonyms.iterator();
-		synonyms += "<i>";
-		while (it.hasNext()) {
-			String name = (String) it.next();
-			if (first) {
-				synonyms += "- "+name;
-			}
-			else
-				synonyms += ", "+name;
-			first = false;
-		}
-		synonyms += "</i>";
-	}
-	return synonyms;
-}
-
-String getValueIdFromPdcSearchContext(int axisId, SearchContext searchContext)
-{
-	SearchCriteria criteria = searchContext.getCriteriaOnAxis(axisId);
-	if (criteria != null)
-		return criteria.getValue();
-	else
-		return null;
-}
-
-void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws ThesaurusException, IOException {
-	SearchAxis	searchAxis			= null;
-	int			axisId				= -1;
-	String		axisName			= null;
-	int			nbPositions			= -1;
-	String		valueInContext		= null;
-	Value		value				= null;
-	String		increment			= "";
-	String		selected			= "";
-	String		sNbObjects			= "";
-	String		language			= resource.getLanguage();
-	
-		// il peut y avoir aucun axe primaire dans un 1er temps
-		if (axis != null && axis.size()>0){
-		  	out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
-            for (int i=0; i<axis.size(); i++){
-				searchAxis		= (SearchAxis) axis.get(i);
-                axisId			= searchAxis.getAxisId();
-                axisName		= EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName(language));
-                nbPositions 	= searchAxis.getNbObjects();
-                valueInContext 	= getValueIdFromPdcSearchContext(axisId, searchContext);
-                if (nbPositions != 0)
-                {
-                    out.println("<tr>");
-                    out.println("<td class=\"txtlibform\" width=\"30%\" nowrap><img src=\""+axisTypeIcon+"\" alt=\""+axisLabel+"\" align=\"absmiddle\"/>&nbsp;"+axisName+"&nbsp;"+displaySynonymsAxis(activeThesaurus, jargon, axisId)+":</td>");
-                    if (showAllAxis)
-                    	out.println("<td><select name=\"Axis"+axisId+"\" size=\"1\">");
-                    else
-                    	out.println("<td><select name=\"Axis"+axisId+"\" size=\"1\" onchange=\"javascript:addValue(this, '"+axisId+"');\">");
-                    out.println("<option value=\"\"></option>");
-                    List values = searchAxis.getValues();
-                    for (int v=0; v<values.size(); v++)
-                    {
-                    	value = (Value) values.get(v);
-                    	
-                    	for (int inc=0; inc<value.getLevelNumber(); inc++)
-                    	{
-                    		increment += "&nbsp;&nbsp;&nbsp;&nbsp;";
-                    	}
-                    	
-                    	if (searchContext.isEmpty())
-                    	{
-                    		sNbObjects = " ("+value.getNbObjects()+")";
-                    	}
-                    	else if (valueInContext == null)
-                    	{
-                    		sNbObjects = " ("+value.getNbObjects()+")";
-                    	}
-                    	else if (value.getFullPath().equals(valueInContext))
-                    	{
-                    		selected = " selected";
-                    		sNbObjects = " ("+value.getNbObjects()+")";
-                    	}
-                    	else if (value.getFullPath().indexOf(valueInContext)!=-1)
-                    		sNbObjects = " ("+value.getNbObjects()+")";
-                    	
-                    	out.println("<option value=\""+value.getFullPath()+"\""+selected+">"+increment+value.getName(language));
-                    	if (!showAllAxis) {
-	                    	out.println(sNbObjects);
-	                    }
-                    	out.println(displaySynonymsValue(activeThesaurus, jargon, value));
-                    	out.println("</option>");
-                    	
-                    	increment 	= "";
-                    	selected	= "";
-                    	sNbObjects	= "";
-                    }
-                    out.println("</select></td>");
-                    out.println("</tr>");                        
-               }
-			}// fin du for
-            out.println("</table>");
-		}
-}
-
-%>
 <%
 //recuperation des parametres pour le PDC
-List			primaryAxis			= (List) request.getAttribute("ShowPrimaryAxis");
-List			secondaryAxis		= (List) request.getAttribute("ShowSecondaryAxis");
 String			showSndSearchAxis	= (String) request.getAttribute("ShowSndSearchAxis");
 SearchContext	searchContext		= (SearchContext) request.getAttribute("SearchContext");
-Jargon			jargon				= (Jargon) request.getAttribute("Jargon");
-Boolean			activeThesaurus		= (Boolean) request.getAttribute("ActiveThesaurus");
 Boolean 		activeSelection 	= (Boolean) request.getAttribute("ActiveSelection");
 boolean			xmlSearchVisible	= (Boolean) request.getAttribute("XmlSearchVisible");
 boolean			expertSearchVisible = (Boolean) request.getAttribute("ExpertSearchVisible");
@@ -215,7 +75,7 @@ String showNotOnlyPertinentAxisAndValues = (String) request.getAttribute("showAl
 boolean showAllAxis = ("true".equals(showNotOnlyPertinentAxisAndValues));
 showNotOnlyPertinentAxisAndValues = showAllAxis ? showNotOnlyPertinentAxisAndValues : "";
 
-List			allComponents		= (List) request.getAttribute("ComponentList");
+List<ComponentInstLight> allComponents		= (List<ComponentInstLight>) request.getAttribute("ComponentList");
 List			allSpaces			= (List) request.getAttribute("SpaceList");
 QueryParameters query				= (QueryParameters) request.getAttribute("QueryParameters");
 String			spaceSelected		= null;
@@ -226,6 +86,7 @@ String			createBeforeDate	= null;
 String			updateAfterDate		= null;
 String			updateBeforeDate	= null;
 UserDetail		userDetail			= null;
+String			folder				= null;
 if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
@@ -235,6 +96,7 @@ if (query != null) {
 	updateAfterDate		= DateUtil.getInputDate(query.getAfterUpdateDate(), language);
 	updateBeforeDate	= DateUtil.getInputDate(query.getBeforeUpdateDate(), language);
 	userDetail			= query.getCreatorDetail();
+	folder				= query.getFolder();
 }
 
 if (keywords == null) {
@@ -254,11 +116,6 @@ if (updateBeforeDate == null) {
 }
 
 String itemType = (String) request.getAttribute("ItemType");
-
-// Retrieve data search space
-List<String[]> searchDomains			= (List<String[]>) request.getAttribute("searchDomains");
-String currentSearchDomainId	= (String) request.getAttribute("currentSearchDomainId");
-currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
 
 boolean			isEmptySearchContext = true;
 SearchCriteria	searchCriteria		= null;
@@ -280,14 +137,14 @@ String icoUser	= m_context + "/util/icons/user.gif";
 Board board = gef.getBoard();
 
 ButtonPane buttonPane = gef.getButtonPane();
-Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
+Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 %>
 
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
@@ -523,6 +380,11 @@ function deleteUser()
 	document.getElementById("deleteURL").style.visibility = "hidden";
 }
 
+function showExplorer() {
+	var componentId = $("#componentSearch").val();
+	SP_openWindow('<%=URLManager.getApplicationURL()%>/explorer/jsp/explorer.jsp?elementHidden=<%=QueryParameters.PARAM_FOLDER %>&elementVisible=pathAsString&resultType=path&scope='+componentId,'explorer',400,600,'scrollbars=yes');
+}
+
  $(document).ready(function(){
     <% if(resource.getSetting("enableAutocompletion", false)){ %>
   		//used for keywords autocompletion
@@ -637,7 +499,7 @@ if (!activeSelection.booleanValue())
 						selected = "";
 						choice = (String) it.next();
 						if(choice.equals(nbResToDisplay.toString())) {
-							selected = "selected";
+							selected = " selected=\"selected\"";
 						}
 						out.println("<option value=\""+choice+"\""+selected+">"+choice+"</option>");
 					}
@@ -650,7 +512,7 @@ if (!activeSelection.booleanValue())
 				for (int i=1; i<=7; i++) {
 					selected = "";
 					if(sortValue.intValue() == i) {
-						selected = "selected";
+						selected = " selected=\"selected\"";
 					}
 					out.println("<option value=\""+i+"\""+selected+">"+resource.getString("pdcPeas.SortValueSearch."+i)+"</option>");
 				}
@@ -679,12 +541,12 @@ if (!activeSelection.booleanValue())
 	out.println(board.printAfter());
 	if (searchType >= 1) 
 	{
-		out.println("<br>");
+		out.println("<br/>");
 		out.println(board.printBefore());
 %>
         <table border="0" cellspacing="0" cellpadding="5" width="100%">
         <tr align="center" id="space-filter">
-          <td valign="top" nowrap="nowrap" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.DomainSelect")%></td>
+          <td valign="top" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.DomainSelect")%></td>
           <td align="left"><select name="spaces" size="1" onchange="javascript:viewAdvancedSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
@@ -710,26 +572,36 @@ if (!activeSelection.booleanValue())
         <!-- Affichage des composants -->
         <tr align="center" id="component-filter">
 			<%
-				out.println("<td valign=\"top\" nowrap align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
+				out.println("<td valign=\"top\"  align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
 				out.println("<td align=\"left\">");
-				out.println("<select name=\"componentSearch\" size=\"1\" onChange=\"javascript:viewAdvancedSearch()\">");
+				out.println("<select id=\"componentSearch\" name=\"componentSearch\" size=\"1\" onchange=\"javascript:viewAdvancedSearch()\">");
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
-				ComponentInstLight component = null;
-				for(int nI = 0; allComponents!=null && nI < allComponents.size(); nI++) {
-						selected	= "";
-						component	= (ComponentInstLight) allComponents.get(nI);
-						if (component.getId().equals(componentSelected)){
-							selected = " selected";
-						}
-						out.println("<option value=\""+component.getId()+"\""+selected+">"+component.getLabel(language)+"</option>");
+				if (allComponents != null) {
+					for(ComponentInstLight component : allComponents) {
+							selected = "";
+							if (component.getId().equals(componentSelected)){
+								selected = " selected=\"selected\"";
+							}
+							out.println("<option value=\""+component.getId()+"\""+selected+">"+component.getLabel(language)+"</option>");
+					}
 				}
 				out.println("</select>");
 				out.println("</td>");
 			%>
         </tr>
+        <% if (StringUtil.isDefined(componentSelected) && componentSelected.startsWith("kmelia")) { %>
+        <tr id="folder-filter">
+        	<td class="txtlibform"><%=resource.getString("GML.theme")%></td>
+        	<td>
+        		<input type="text" id="pathAsString" size="60" disabled="disabled"/>
+        		<input type="hidden" id="<%=QueryParameters.PARAM_FOLDER %>" name="<%=QueryParameters.PARAM_FOLDER %>" value="<%=folder %>" /> 
+        		<a href="#" onclick="javascript:showExplorer();" title="<%=resource.getString("GML.upload.choose.browse")%>"><img src="<%=resource.getIcon("pdcPeas.folder")%>" alt="<%=resource.getString("GML.upload.choose.browse")%>"/></a>
+        	</td>
+        </tr>
+        <% } %>
         <!-- Affichage du type des publications -->
         <tr align="center" id="contribution-type-filter">
-          <td valign="top" nowrap align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>
+          <td valign="top"  align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>
           <td align="left">
     		<select name="dataType" id="dataType">
       			<option value="0"><%=resource.getString("pdcPeas.AllAuthors")%></option>
@@ -743,7 +615,7 @@ if (!activeSelection.booleanValue())
         </tr>
         
           <tr align="center" id="publisher-filter">
-          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.AuthorSelect")%></td>
+          <td valign="top"  align="left" class="txtlibform"><%=resource.getString("pdcPeas.AuthorSelect")%></td>
 				<td align="left">
             <%
 				String selectedUserId = "";
@@ -758,30 +630,30 @@ if (!activeSelection.booleanValue())
 			%>
 					<input type="hidden" name="authorSearch" id="userId" value="<%=selectedUserId%>"/>
 					<table><tr>
-						<td id="userName" nowrap="nowrap"><%=selectedUserName%></td>
-						<td width="100%" nowrap="nowrap">
-							<a href="javascript:callUserPanel()" style="visibility:visible"><img src="<%=icoUser%>" alt="<%=resource.getString("pdcPeas.openUserPanelPeas")%>" title="<%=resource.getString("pdcPeas.openUserPanelPeas")%>" border="0" align="absmiddle"/></a>&nbsp;<a id="deleteURL" href="javascript:deleteUser()" style="<%=deleteIconStyle%>"><img src="<%=m_context + "/util/icons/delete.gif"%>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" border="0" align="absmiddle"/></a>
+						<td id="userName"><%=selectedUserName%></td>
+						<td width="100%">
+							<a href="javascript:callUserPanel()" style="visibility:visible"><img src="<%=icoUser%>" alt="<%=resource.getString("pdcPeas.openUserPanelPeas")%>" title="<%=resource.getString("pdcPeas.openUserPanelPeas")%>" border="0" /></a>&nbsp;<a id="deleteURL" href="javascript:deleteUser()" style="<%=deleteIconStyle%>"><img src="<%=m_context + "/util/icons/delete.gif"%>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" border="0"/></a>
 						</td>
 					</tr></table>
 			</td>            
         </tr>
         <tr align="center" id="creation-date-filter">
-          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.CreateAfterDate")%></td>
+          <td valign="top" align="left" class="txtlibform"><%=resource.getString("pdcPeas.CreateAfterDate")%></td>
           <td align="left"><input type="text" class="dateToPick" name="createafterdate" size="12" value="<%=createAfterDate%>"/>
             <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="createbeforedate" size="12" value="<%=createBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
         <tr align="center" id="update-date-filter">
-          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.UpdateAfterDate")%></td>
-          <td align="left"><input type="text" class="dateToPick" name="updateafterdate" size="12" value="<%=updateAfterDate%>">
+          <td valign="top" align="left" class="txtlibform"><%=resource.getString("pdcPeas.UpdateAfterDate")%></td>
+          <td align="left"><input type="text" class="dateToPick" name="updateafterdate" size="12" value="<%=updateAfterDate%>"/>
             <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="updatebeforedate" size="12" value="<%=updateBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
         <tr align="center" id="favorite-request-filter">
-              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%>
+              <td valign="top" align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%>
               </td>
               <td align="left">
-                <select name="iCenterId" size="1" onChange="javascript:loadICenter()">
+                <select name="iCenterId" size="1" onchange="javascript:loadICenter()">
                  <option value="-1"></option>
                  <%
                      String			requestId		= "";
@@ -791,7 +663,7 @@ if (!activeSelection.booleanValue())
 						favoriteRequest = (InterestCenter) favoriteRequests.get(i);
 						requestId		= new Integer(favoriteRequest.getId()).toString();
 						if (requestId.equals(requestSelected)){
-							 selected = " selected";
+							 selected = " selected=\"selected\"";
 						}
 						out.println("<option value=" + requestId +selected+">"+ favoriteRequest.getName() + "</option>");
                      }
@@ -820,27 +692,27 @@ if (activeSelection.booleanValue() || searchType == 2) {%>
 <% if (!showAllAxis) { %>
 	<div class="inlineMessage">
 	<table width="100%" border="0"><tr><td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content3")%><br>
+		<%=resource.getString("pdcPeas.helpCol1Header")%><br/><br/>
+		<%=resource.getString("pdcPeas.helpCol1Content1")%><br/>
+		<%=resource.getString("pdcPeas.helpCol1Content2")%><br/>
+		<%=resource.getString("pdcPeas.helpCol1Content3")%><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
+		<%=resource.getString("pdcPeas.helpCol2Header")%><br/><br/>
 		<%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
 		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
-		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>
+		<%=resource.getString("pdcPeas.helpCol2Content3")%><br/>
+		<%=resource.getString("pdcPeas.helpCol2Content4")%><br/>
+		<%=resource.getString("pdcPeas.helpCol2Content5")%><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol3Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol3Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
+		<%=resource.getString("pdcPeas.helpCol3Header")%><br/><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content1")%><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content2")%><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content3")%><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content4")%><br/>
 		</td>
 		</tr></table>
 	</div>

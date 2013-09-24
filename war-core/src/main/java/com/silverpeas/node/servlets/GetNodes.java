@@ -207,6 +207,7 @@ public class GetNodes extends HttpServlet {
       role += "-root";
     }
     o.put("rel", role);
+    o.put("path", node.getFullPath());
     return o;
   }
 

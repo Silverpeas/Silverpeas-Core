@@ -26,6 +26,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
+
 <html>
 <head>
   <title>Infos</title>
@@ -47,6 +50,7 @@
         <p class="information">Silverpeas version is
           <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
       </div>
+      <c:if test="${currentUserId != null && currentUserId >= 0}">
       <p class="information">
         Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}"/></b>
         with the version
@@ -60,6 +64,7 @@
         Silverpeas is running with the following configuration:<br/><i><%=System
           .getenv("JAVA_OPTS")%>
       </i></p>
+      </c:if>
     </div>
   </div>
 </div>

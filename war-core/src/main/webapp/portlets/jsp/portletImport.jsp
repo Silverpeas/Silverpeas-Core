@@ -70,5 +70,6 @@ GraphicElementFactory	gef = (GraphicElementFactory) session.getAttribute("Sessio
 String  language = m_MainSessionCtrl.getFavoriteLanguage();
 ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
 ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+ResourceLocator portletsBundle = new ResourceLocator("org.silverpeas.portlets.multilang.portletsBundle", language);
 String m_sContext = GeneralPropertiesManager.getString("ApplicationURL");
 %>

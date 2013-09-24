@@ -93,11 +93,12 @@
       </div>
       <p><label><%=actionLabel %>
       </label></p>
-      <br/>
 
-      <p>
-        <a href="#" class="submit" onclick="location.href='<%=request.getContextPath()%>/Login.jsp'"><img src="../images/bt-ok.png"/></a>
-      </p>
+      <div class="submit">
+        <p>
+          <a href="#" class="submit" onclick="location.href='<%=request.getContextPath()%>/Login.jsp'"><span><span>OK</span></span></a>
+        </p>
+      </div>
     </div>
   </div>
 </div>

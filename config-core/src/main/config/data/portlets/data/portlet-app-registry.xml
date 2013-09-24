@@ -26,33 +26,6 @@
 -->
 
 <PortletAppRegistry version="1.0">
-  <PortletApp name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas Space Responsibles Portlet"/>
-      <String name="shortTitle" value="Silverpeas Space Responsibles Portlet"/>
-      <String name="description" value="Silverpeas SpaceResponsiblesPortlet"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Responsables de l'espace"/>
-        <String name="en" value="Responsibles for application"/>
-        <String name="de" value="Responsibles for application"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="SpaceResponsiblesPortlet"/>
-        <String name="en" value="SpaceResponsiblesPortlet"/>
-        <String name="de" value="SpaceResponsiblesPortlet"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>
   <PortletApp name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -334,6 +307,60 @@
           <String value="VIEW"/>
           <String value="EDIT"/>
           <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>
+  <PortletApp name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My drafts portlet"/>
+      <String name="shortTitle" value="My drafts"/>
+      <String name="description" value="My publications in status Draft"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes brouillons"/>
+        <String name="en" value="My drafts"/>
+        <String name="de" value="My drafts"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Mes publications en mode Brouillon"/>
+        <String name="en" value="My publications in status Draft"/>
+        <String name="de" value="My publications in status Draft"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>
+  <PortletApp name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas Space Responsibles Portlet"/>
+      <String name="shortTitle" value="Silverpeas Space Responsibles Portlet"/>
+      <String name="description" value="Silverpeas SpaceResponsiblesPortlet"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Responsables de l'espace"/>
+        <String name="en" value="Responsibles for application"/>
+        <String name="de" value="Responsibles for application"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="SpaceResponsiblesPortlet"/>
+        <String name="en" value="SpaceResponsiblesPortlet"/>
+        <String name="de" value="SpaceResponsiblesPortlet"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
         </Collection>
       </Collection>
     </Properties>

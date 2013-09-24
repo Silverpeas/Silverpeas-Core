@@ -28,11 +28,25 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -48,18 +62,6 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.WysiwygException;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Central service to manage Wysiwyg.
@@ -134,6 +136,12 @@ public class WysiwygController {
     return imagesList;
   }
 
+  public static String getWebsiteRepository() {
+    ResourceLocator websiteSettings = new ResourceLocator(
+        "org.silverpeas.webSites.settings.webSiteSettings", "");
+    return websiteSettings.getString("uploadsPath");
+  }
+
   /**
    * Get images of the website.
    *
@@ -144,6 +152,7 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static String[][] getWebsiteImages(String path, String componentId) throws WysiwygException {
+    checkPath(path);
     try {
       Collection<File> listImages = FileFolderManager.getAllImages(path);
       Iterator<File> i = listImages.iterator();
@@ -176,6 +185,7 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static String[][] getWebsitePages(String path, String componentId) throws WysiwygException {
+    checkPath(path);
     try {
       Collection<File> listPages = FileFolderManager.getAllWebPages(getNodePath(path, componentId));
       Iterator<File> i = listPages.iterator();
@@ -679,6 +689,7 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static String loadFileWebsite(String path, String fileName) throws WysiwygException {
+    checkPath(path);
     try {
       return FileFolderManager.getCode(path, fileName);
     } catch (UtilException e) {
@@ -732,7 +743,9 @@ public class WysiwygController {
    * @param contenuFichier
    * @param nomFichier
    */
-  public static void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier) {
+  public static void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier)
+      throws WysiwygException {
+    checkPath(cheminFichier);
     SilverTrace.info("wysiwyg", "WysiwygController.updateWebsite()", "root.MSG_GEN_PARAM_VALUE",
         "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
     createFile(cheminFichier, nomFichier, contenuFichier);
@@ -746,7 +759,9 @@ public class WysiwygController {
    * @param contenuFichier the content of the file.
    * @return the created file.
    */
-  protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier) {
+  protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier)
+      throws WysiwygException {
+    checkPath(cheminFichier);
     SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_ENTER_METHOD",
         "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
     FileFolderManager.createFile(cheminFichier, nomFichier, contenuFichier);
@@ -766,13 +781,14 @@ public class WysiwygController {
    * @param userId
    * @see
    */
-  public static void copy(String oldComponentId, String oldObjectId, String componentId,
+  public static Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
       String objectId, String userId) {
     SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
+    Map<String, String> fileIds = new HashMap<String, String>();
     for (SimpleDocument doc : documents) {
       doc.getFile().setCreatedBy(userId);
       SimpleDocumentPK pk = AttachmentServiceFactory.getAttachmentService().copyDocument(doc,
@@ -787,12 +803,13 @@ public class WysiwygController {
       for (SimpleDocument image : images) {
         SimpleDocumentPK imageCopyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
             image, targetPk);
+        fileIds.put(image.getId(), imageCopyPk.getId());
         content = replaceInternalImageId(content, image.getPk(), imageCopyPk);
       }
       AttachmentServiceFactory.getAttachmentService().updateAttachment(copy,
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)), true, true);
     }
-
+    return fileIds;
   }
 
   static String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,
@@ -825,10 +842,9 @@ public class WysiwygController {
       String diQua = "Directory=Attachment%5C" + getImagesFileName(oldObjectId);
 
       int begin = 0;
-      int end = 0;
+      int end;
 
       // search for "ComponentId=" and replace
-      begin = 0;
       end = wysiwygContent.indexOf(co, begin);
       while (end != -1) {
         newStr += wysiwygContent.substring(begin, end);
@@ -1020,6 +1036,20 @@ public class WysiwygController {
     } catch (UtilException e) {
       throw new AttachmentException("Wysiwyg.createPath(spaceId, componentId, context)",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_CREATE_FILE", e);
+    }
+  }
+
+  /**
+   * Checks the specified path is valid according to some security rules. For example, check there
+   * is no attempt to go up the path to access a forbidden resource.
+   *
+   * @param path the patch to check.
+   * @throws WysiwygException if the path breaks some security rules.
+   */
+  private static void checkPath(String path) throws WysiwygException {
+    if (path.contains("..")) {
+      throw new WysiwygException(WysiwygController.class.getSimpleName() + ".checkPath",
+          SilverpeasException.ERROR, "peasCore.RESOURCE_ACCESS_FORBIDDEN");
     }
   }
 }
