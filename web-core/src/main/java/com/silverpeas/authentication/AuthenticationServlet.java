@@ -141,7 +141,10 @@ public class AuthenticationServlet extends HttpServlet {
       }
 
       String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
-      writeSessionCookie(response, session, securedAccess);
+      // The session must again be recovered from the HTTP request because of opening a session
+      // that could to induce the creation of a new HttpSession instance that is setted to the
+      // request
+      writeSessionCookie(response, request.getSession(), securedAccess);
       response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
       return;
     }

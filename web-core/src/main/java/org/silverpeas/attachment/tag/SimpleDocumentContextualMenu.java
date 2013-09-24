@@ -40,7 +40,6 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import static com.silverpeas.util.StringUtil.newline;
-import static javax.servlet.jsp.tagext.Tag.EVAL_PAGE;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 /**
@@ -162,7 +161,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         .escapeEcmaScript(attachment.getFilename()) + "');", resources.getString("GML.delete"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
-    prepareMenuItem(builder, "ShareAttachment('" + attachment.getId() + "');", resources.getString(
+    prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(
         "attachment.share"));
 
     builder.append("</ul>").append(newline);

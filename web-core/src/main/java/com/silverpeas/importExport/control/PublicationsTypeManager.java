@@ -60,7 +60,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -108,7 +107,6 @@ public class PublicationsTypeManager {
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
       boolean bExportPublicationPath) throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     PublicationsType publicationsType = new PublicationsType();
     List<PublicationType> listPubType = new ArrayList<PublicationType>();
     PdcImportExport pdc_impExp = new PdcImportExport();
@@ -189,7 +187,7 @@ public class PublicationsTypeManager {
               exportPublicationPath, xmlModel);
         }
       }
-      exportAttachments(attachmentIE, versioningIE, componentInst, publicationType,
+      exportAttachments(attachmentIE, componentInst, publicationType,
           publicationDetail.getPK(), exportPublicationRelativePath, exportPublicationPath);
       exportPdc(pdc_impExp, pubId, gedIE, publicationType);
       int nbThemes = 1;
@@ -266,27 +264,15 @@ public class PublicationsTypeManager {
     }
   }
 
-  void exportAttachments(AttachmentImportExport attachmentIE, VersioningImportExport versioningIE,
-      ComponentInst componentInst, PublicationType publicationType, PublicationPK publicationPK,
-      String exportRelativePath, String exportPath)
-      throws ImportExportException {
+  void exportAttachments(AttachmentImportExport attachmentIE, ComponentInst componentInst,
+      PublicationType publicationType, PublicationPK publicationPK, String exportRelativePath,
+      String exportPath) throws ImportExportException {
     // Récupération des attachments et copie des fichiers
-    try {
-      List<AttachmentDetail> attachments;
-      if (ImportExportHelper.isVersioningUsed(componentInst)) {
-        attachments =
-            versioningIE.exportDocuments(publicationPK, exportPath, exportRelativePath, null);
-      } else {
-        attachments =
-            attachmentIE.getAttachments(publicationPK, exportPath, exportRelativePath, null);
-      }
-      if (attachments != null && !attachments.isEmpty() && publicationType != null) {
-        publicationType.setAttachmentsType(new AttachmentsType());
-        publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
-      }
-    } catch (RemoteException ex) {
-      // En cas d"objet non trouvé: pas d'exception gérée par le système
-      throw new ImportExportException("importExport", "importExport.EX_CANT_GET_ATTACHMENTS", ex);
+    List<AttachmentDetail> attachments =
+        attachmentIE.getAttachments(publicationPK, exportPath, exportRelativePath, null);
+    if (attachments != null && !attachments.isEmpty() && publicationType != null) {
+      publicationType.setAttachmentsType(new AttachmentsType());
+      publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
     }
   }
 
@@ -457,7 +443,6 @@ public class PublicationsTypeManager {
       List<WAAttributeValuePair> listItemsToExport, String exportPath, String nodeRootId)
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     
     GEDImportExport gedIE = null;
     NodeImportExport nodeIE = new NodeImportExport();
@@ -480,7 +465,7 @@ public class PublicationsTypeManager {
       
       if (!StringUtil.isDefined(nodeRootId)) {
         // exporting all attachments in same directory
-        exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", exportPath);
+        exportAttachments(attachmentIE, componentInst, null, pk, "", exportPath);
       } else {
         // exporting attachments in directories according to place of publications
         List<NodePK> folderPKs = gedIE.getAllTopicsOfPublication(pubId, componentId);
@@ -499,7 +484,7 @@ public class PublicationsTypeManager {
           }
           if (rightFolderPK != null) {
             String attachmentsExportPath = createDirectoryPathForExport(exportPath, nodeRootId, rightFolderPK.getId(), componentId, true);
-            exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", attachmentsExportPath);
+            exportAttachments(attachmentIE, componentInst, null, pk, "", attachmentsExportPath);
             break;
           }
         }
@@ -511,15 +496,12 @@ public class PublicationsTypeManager {
       UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath,
       boolean useNameForFolders) throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     List<AttachmentDetail> result = new ArrayList<AttachmentDetail>();
 
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
-      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
-          .getComponentInst(componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 
       // Récupération du PublicationType
@@ -528,26 +510,11 @@ public class PublicationsTypeManager {
       fillPublicationType(gedIE, publicationType);
       String exportPublicationPath = exportPath;
 
-      try {
-        List<AttachmentDetail> attachments;
-        if (ImportExportHelper.isVersioningUsed(componentInst)) {
-          attachments = versioningIE
-              .exportDocuments(publicationDetail.getPK(), exportPublicationPath, null, "pdf");
+      List<AttachmentDetail> attachments = attachmentIE.getAttachments(publicationDetail.getPK(), exportPublicationPath, null, "pdf");
 
-        } else {
-          attachments = attachmentIE
-              .getAttachments(publicationDetail.getPK(), exportPublicationPath, null, "pdf");
-        }
-
-        if (attachments != null && !attachments.isEmpty()) {
-          result.addAll(attachments);
-        }
-
-      } catch (Exception ex) {
-        // En cas d'objet non trouvé: pas d'exception gérée par le système
-        throw new ImportExportException("importExport", "importExport.EX_CANT_GET_ATTACHMENTS", ex);
+      if (attachments != null && !attachments.isEmpty()) {
+        result.addAll(attachments);
       }
-
     }
 
     return result;

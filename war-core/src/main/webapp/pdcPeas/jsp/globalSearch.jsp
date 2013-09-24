@@ -248,14 +248,19 @@ function addValue(selectItem, axisId)
 
 function sendQuery() {
 	var values = $('#used_pdc').pdc('selectedValues');
-  if (values.length > 0) {
-    document.AdvancedSearch.AxisValueCouples.value = values.flatten();
-  }
-  if (document.AdvancedSearch.query.value == "*")
+  	if (values.length > 0) {
+      document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+    }
+    if (document.AdvancedSearch.query.value == "*") {
 		document.AdvancedSearch.query.value = "";
-	if (checkDates())
-	{
-		top.topFrame.document.searchForm.query.value = "";
+    }
+	if (checkDates()) {
+		try {
+		  // clear global input search
+		  top.topFrame.document.searchForm.query.value = "";
+		} catch (e) {
+		  // catch exceptions if this input does not exist
+		}
 		document.AdvancedSearch.action = "AdvancedSearch";
 		
 		$.progressMessage();
