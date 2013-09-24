@@ -112,9 +112,12 @@ public class PublicationImportExport {
             "PublicationImportExport.convertFileInfoToPublicationDetail",
             "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
       }
-    } else if (settings.isPoiUsed()) {
-      try {
-        MetaData metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+    } else {
+      // it's a classical file (not an email)
+      MetaData metaData = null;
+      if (settings.isPoiUsed()) {
+        // extract title, subject and keywords
+        metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
         if (StringUtil.isDefined(metaData.getTitle())) {
           nomPub = metaData.getTitle();
         }
@@ -124,18 +127,19 @@ public class PublicationImportExport {
         if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
           motsClefs = StringUtils.join(metaData.getKeywords(), ';');
         }
-        if (settings.useFileDates()) {
-          if (metaData.getCreationDate() != null) {
-            creationDate = metaData.getCreationDate();
-          }
-          if (metaData.getLastSaveDateTime() != null) {
-            lastModificationDate = metaData.getLastSaveDateTime();
-          }
+      }
+      
+      if (settings.useFileDates()) {
+        // extract creation and last modification dates
+        if (metaData == null) {
+          metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
         }
-      } catch (Exception ex) {
-        SilverTrace.error("importExport",
-            "PublicationImportExport.convertFileInfoToPublicationDetail",
-            "importExport.EX_CANT_EXTRACT_PUBLICATION_METADATA_FROM_FILE", ex);
+        if (metaData.getCreationDate() != null) {
+          creationDate = metaData.getCreationDate();
+        }
+        if (metaData.getLastSaveDateTime() != null) {
+          lastModificationDate = metaData.getLastSaveDateTime();
+        }
       }
     }
     PublicationDetail publication = new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
