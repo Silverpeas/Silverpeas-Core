@@ -266,35 +266,48 @@ public class HtmlSearchResultTag extends TagSupport {
           (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ? gsr.getIndexEntry()
           .getServerName() : "unknown");
     }
-
-    result.append("<tr class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
+    
+    result.append("<li class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
     result.append(componentName).append(" ");
     result.append(gsr.getInstanceId()).append(" ");
     result.append(serverName).append("\">");
-
-    if (settings.getSetting("PertinenceVisible", false)) {
-      result.append("<td class=\"pertinence\">").append(
-          ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("&nbsp;</td>");
-    }
-
+    
     if (activeSelection || exportEnabled) {
       if (gsr.isExportable()) {
         String checked = "";
         if (gsr.isSelected()) {
-          checked = "checked";
+          checked = "checked=\"checked\"";
         }
-        result.append("<td class=\"selection\"><input type=\"checkbox\" ").append(checked).append(
+        result.append("<input class=\"selection\" type=\"checkbox\" ").append(checked).append(
             " name=\"resultObjects\" value=\"").append(gsr.getId()).append("-").append(
-            gsr.getInstanceId()).append("\"></td>");
+            gsr.getInstanceId()).append("\"/>");
       } else {
         result
-            .append(
-                "<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\"")
-            .append(
-                gsr.getId()).append("-").append(gsr.getInstanceId()).append("\"></td>");
+            .append("<input class=\"selection\" type=\"checkbox\" disabled=\"disabled\" name=\"resultObjects\" value=\"")
+            .append(gsr.getId()).append("-").append(gsr.getInstanceId()).append("\"/>");
       }
     }
-
+    
+    if (settings.getSetting("PertinenceVisible", false)) {
+      result.append("<div class=\"pertinence\">").append(
+          ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("</div>");
+    }
+        
+    result.append("<div class=\"content\">");
+    
+    if (StringUtil.isDefined(gsr.getThumbnailURL())) {
+      result.append("<div class=\"thumb\">");
+      if ("UserFull".equals(gsr.getType())) {
+        result.append("<img class=\"avatar\" src=\"").append(
+            URLManager.getApplicationURL()).append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
+      } else {
+        result.append("<img src=\"").append(gsr.getThumbnailURL()).append(
+            "\" border=\"0\" width=\"").append(gsr.getThumbnailWidth()).append(
+            "\" height=\"").append(gsr.getThumbnailHeight()).append("\"/>");
+      }
+      result.append("</div>");
+    }
+    
     if (gsr.getType() != null &&
         (gsr.getType().startsWith("Attachment") || gsr.getType().startsWith("Versioning") || gsr
         .getType().equals("LinkedFile"))) {
@@ -305,34 +318,18 @@ public class HtmlSearchResultTag extends TagSupport {
       }
       sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
     }
-
-    result.append("<td class=\"content\">");
-
-    result.append("<table cellspacing=\"0\" cellpadding=\"0\"><tr>");
-
-    if (StringUtil.isDefined(gsr.getThumbnailURL())) {
-      if ("UserFull".equals(gsr.getType())) {
-        result.append("<td><img class=\"avatar\" src=\"").append(
-            URLManager.getApplicationURL()).append(gsr.getThumbnailURL()).append("\" /></td>");
-      } else {
-        result.append("<td><img src=\"").append(gsr.getThumbnailURL()).append(
-            "\" border=\"0\" width=\"").append(gsr.getThumbnailWidth()).append(
-            "\" height=\"").append(gsr.getThumbnailHeight()).append("\"/></td>");
-      }
-      result.append("<td>&nbsp;</td>");
-    }
-
-    result.append("<td>");
+    
+    result.append("<div class=\"locationTitle\">");
     String curResultId = "readSpanId_" + gsr.getResultId();
     if (activeSelection) {
       result.append("<span id=\"").append(curResultId).append(
           "\" class=\"textePetitBold\">").append(sName).append("</span>");
     } else {
-      String cssClass = "textePetitBold";
+      String cssClass = "";
       String cssClassDisableVisited = "";
       if (gsr.isHasRead()) {
-        cssClass = "markedkAsRead";
-        cssClassDisableVisited = "markedkAsReadDisableVisited";
+        cssClass = "markedAsRead";
+        cssClassDisableVisited = "markedAsReadDisableVisited";
       }
       result.append("<a href=\"").append(sURL).append("\" class=\"").append(
           cssClassDisableVisited).append("\"><span id=\"").append(curResultId).append(
@@ -341,34 +338,13 @@ public class HtmlSearchResultTag extends TagSupport {
     if (gsr.getIndexEntry().isAlias()) {
       result.append(" (").append(settings.getString("GML.alias")).append(")");
     }
+    
     if (StringUtil.isDefined(sDownloadURL)) {
       // affiche le lien pour le téléchargement
-      result.append("<a href=\"").append(sDownloadURL).append("\" target=\"_blank\">").append(
+      result.append("<a href=\"").append(sDownloadURL).append("\" class=\"fileDownload\" target=\"_blank\">").append(
           downloadSrc).append("</a>");
     }
-    if (StringUtil.isDefined(sCreatorName)) {
-      result.append("<br/><span class=\"creatorName\">").append(
-          EncodeHelper.javaStringToHtmlString(sCreatorName)).append("</span>");
-    }
-    if (StringUtil.isDefined(sCreationDate)) {
-      result.append(" <span class=\"creationDate\"> - ").append(sCreationDate).append(" </span>");
-    }
-
-    if (StringUtil.isDefined(sDescription)) {
-      result.append("<span class=\"description\"><br/><i> ").append(
-          EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</i></span>");
-    }
-
-    if (sortValue == 7 && gsr.getHits() >= 0) {
-      result.append("<br/><span class=\"popularity\">").append(
-          settings.getStringWithParam("pdcPeas.popularity",
-          Integer.toString(gsr.getHits()))).append("</span>");
-    }
-
-    if (StringUtil.isDefined(sLocation)) {
-      result.append("<span class=\"location\"> <br/>").append(
-          EncodeHelper.javaStringToHtmlString(sLocation)).append("</span>");
-    }
+    
     if (gsr.isPreviewable()) {
       result.append(" <img onclick=\"javascript:previewFile(this, '").append(gsr.getAttachmentId())
           .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
@@ -383,15 +359,45 @@ public class HtmlSearchResultTag extends TagSupport {
           .append("\" alt=\"").append(settings.getString("GML.view")).append("\" title=\"")
           .append(settings.getString("GML.view")).append("\"/>");
     }
+    
+    result.append("</div>");
+    
+    if (StringUtil.isDefined(sDescription)) {
+      result.append("<div class=\"description\">").append(EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</div>");
+    }
+    
     if (StringUtil.isDefined(extraInformation)) {
       result.append("<div class=\"extra\">");
       result.append(extraInformation);
       result.append("</div>");
     }
-    result.append("<td>");
-    result.append("</tr></table>");
-    result.append("</td>");
-    result.append("</tr>");
+    
+    if (sortValue == 7 && gsr.getHits() >= 0) {
+      result.append("<div class=\"popularity\">").append(
+          settings.getStringWithParam("pdcPeas.popularity",
+          Integer.toString(gsr.getHits()))).append(" | </div>");
+    }
+    
+    if (StringUtil.isDefined(sCreationDate)) {
+      result.append("<div class=\"creationDate\"> ").append(sCreationDate).append(" | </div>");
+    }
+    
+    if (StringUtil.isDefined(sCreatorName)) {
+      result.append("<div class=\"creatorName\">").append(
+          EncodeHelper.javaStringToHtmlString(sCreatorName)).append(" | </div>");
+    }
+    
+    if (StringUtil.isDefined(serverName)) {
+      result.append("<div class=\"serveurName\"> ").append(serverName).append(" | </div>"); 
+    }
+    
+    if (StringUtil.isDefined(sLocation)) {
+      result.append("<div class=\"location\">").append(EncodeHelper.javaStringToHtmlString(sLocation)).append("</div>");
+    }
+    
+    result.append("</div>");
+    
+    result.append("</li>");
 
     return result.toString();
   }
