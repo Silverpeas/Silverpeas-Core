@@ -2304,8 +2304,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /* class used to mark as read the link of results page  */
 .markedAsRead {
-  font-size: 11px;
-  font-weight: bold;
+  font-size: 13px;
   color: #006600;
   text-decoration: none;
 }
@@ -2368,7 +2367,8 @@ ul#globalResultListDetails {
 .lineResult .creatorName,
 .lineResult .creationDate,
 .lineResult .serveurName,
-.lineResult .location{
+.lineResult .location,
+.lineResult .popularity {
 	display:inline;
 	color:#666;
 }
@@ -2377,9 +2377,6 @@ ul#globalResultListDetails {
 	position:absolute;
 	top:0;
 	right:0;
-}
-.lineResult .pertinence{
-	display:none;
 }
 
 .lineResult .pertinence, .lineResult .selection, .lineResult .content {

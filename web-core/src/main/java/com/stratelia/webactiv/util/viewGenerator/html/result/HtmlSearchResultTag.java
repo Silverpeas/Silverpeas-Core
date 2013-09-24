@@ -241,7 +241,7 @@ public class HtmlSearchResultTag extends TagSupport {
     StringBuilder result = new StringBuilder();
     String downloadSrc = "<img src=\"" + settings.getIcon("pdcPeas.download") +
         "\" class=\"fileDownload\" alt=\"" + settings.getString("pdcPeas.DownloadInfo") +
-        "\"/>";
+        "\" title=\"" + settings.getString("pdcPeas.DownloadInfo") + "\"/>";
     String language = getSettings().getLanguage();
     String sName = EncodeHelper.javaStringToHtmlString(gsr.getName(language));
     String sDescription = StringUtil.abbreviate(gsr.getDescription(language), 400);
@@ -281,10 +281,6 @@ public class HtmlSearchResultTag extends TagSupport {
         result.append("<input class=\"selection\" type=\"checkbox\" ").append(checked).append(
             " name=\"resultObjects\" value=\"").append(gsr.getId()).append("-").append(
             gsr.getInstanceId()).append("\"/>");
-      } else {
-        result
-            .append("<input class=\"selection\" type=\"checkbox\" disabled=\"disabled\" name=\"resultObjects\" value=\"")
-            .append(gsr.getId()).append("-").append(gsr.getInstanceId()).append("\"/>");
       }
     }
     
