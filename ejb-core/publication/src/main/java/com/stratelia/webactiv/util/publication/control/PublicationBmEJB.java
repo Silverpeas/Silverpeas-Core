@@ -1717,6 +1717,7 @@ public class PublicationBmEJB implements PublicationBm {
       FullIndexEntry aliasIndexEntry = indexEntry.clone();
       aliasIndexEntry.setPK(indexEntryPK);
       aliasIndexEntry.setPaths(pathsByIndex.get(indexEntryPK));
+      aliasIndexEntry.setAlias(true);
       IndexEngineProxy.addIndexEntry(aliasIndexEntry);
     }
   }

@@ -193,6 +193,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ResultFilterVO selectedFacetEntries = null;
   private boolean platformUsesPDC = false;
   private boolean includeUsers = false;
+  
+  private static final String locationSeparator = ">";
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
@@ -721,7 +723,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String location = result.getLocation();
     String type = result.getType();
     if (!blackList.contains(type) && StringUtil.isDefined(location)) {
-      String appLocation = location.substring(location.lastIndexOf('/') + 1);
+      String appLocation = location.substring(location.lastIndexOf(locationSeparator) + 1);
       FacetEntryVO facetEntry = new FacetEntryVO(appLocation, instanceId);
       if (getSelectedFacetEntries() != null) {
         if (instanceId.equals(getSelectedFacetEntries().getComponentId())) {
@@ -1357,7 +1359,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             UserDetail user = getOrganisationController().getUserDetail(
                 componentId.substring(5, componentId.indexOf("_")));
             String component = componentId.substring(componentId.indexOf("_") + 1);
-            place = user.getDisplayedName() + " / " + component;
+            place = user.getDisplayedName() + " " + locationSeparator + " " + component;
           } else if (componentId.equals("pdc")) {
             place = getString("pdcPeas.pdc");
           } else if (componentId.equals("users")) {
@@ -1371,8 +1373,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
                   componentId);
               if (componentInst != null) {
-                place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
-                    + componentInst.getLabel(getLanguage());
+                place =
+                    getSpaceLabel(componentInst.getDomainFatherId()) + " " + locationSeparator +
+                        " " + componentInst.getLabel(getLanguage());
                 places.put(componentId, place);
               }
             }
@@ -1501,7 +1504,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       UserDetail user = getOrganisationController().getUserDetail(
           componentId.substring(5, componentId.indexOf("_")));
       String component = componentId.substring(componentId.indexOf("_") + 1);
-      location = user.getDisplayedName() + " / " + component;
+      location = user.getDisplayedName() + " " + locationSeparator + " " + component;
     } else if (componentId.equals("pdc")) {
       location = getString("pdcPeas.pdc");
     } else if (componentId.equals("users")) {
@@ -1510,7 +1513,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
           componentId);
       if (componentInst != null) {
-        location = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
+        location = getSpaceLabel(componentInst.getDomainFatherId()) + " " + locationSeparator + " "
             + componentInst.getLabel(getLanguage());
       }
     }
