@@ -405,6 +405,7 @@ public class WAIndexSearcher {
     indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
     indexEntry.setFilename(doc.get(IndexManager.FILENAME));
+    indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
     indexEntry.setScore(scoreDoc.score); // TODO check the score.
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
