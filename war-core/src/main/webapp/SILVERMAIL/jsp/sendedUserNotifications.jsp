@@ -111,7 +111,7 @@ function deleteAllMessages() {
     ArrayCellText cell = line.addArrayCellText(link + resource.getOutputDate(notifDate) + "</a>");
     cell.setCompareOn(notifDate);
     line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>");
-    line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getTitle()) + "</a>");
+    line.addArrayCellText(link + message.getTitle() + "</a>");
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();

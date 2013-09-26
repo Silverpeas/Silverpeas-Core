@@ -134,7 +134,7 @@ function newMessage() {
     else
 		line.addArrayCellText( "" );    
     
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSubject()) + "</a>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + message.getSubject() + "</a>" + hasBeenReadenOrNotEnd);
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();

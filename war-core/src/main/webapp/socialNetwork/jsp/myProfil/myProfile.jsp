@@ -105,7 +105,7 @@ function updateAvatar() {
 function getExtension(filename) {
   var indexPoint = filename.lastIndexOf(".");
   // on verifie qu il existe une extension au nom du fichier
-  if (indexPoint != -1) {
+  if (indexPoint !== -1) {
     // le fichier contient une extension. On recupere l extension
     var ext = filename.substring(indexPoint + 1);
     return ext;
@@ -125,7 +125,7 @@ function isFileCorrect(image) {
       errorNb++;
     } else {
       extension = extension.toLowerCase();
-      if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
+      if ( (extension !== "gif") && (extension !== "jpeg") && (extension !== "jpg") && (extension !== "png") ) {
         errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
         errorNb++;
       }
@@ -161,7 +161,7 @@ $(document).ready(function(){
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
 						var status = $("#newStatus");
-						$( "#myProfileFiche .statut").html(status.val());
+
 
 					    var url = "<%=m_context %>/RmyProfilJSON?Action=updateStatus";
 						url+='&status='+encodeURIComponent(status.val());
@@ -169,9 +169,12 @@ $(document).ready(function(){
 						// prevents from IE amazing cache
 						url+='&IEFix='+Math.round(new Date().getTime());
 				        $.getJSON(url, function(data){
-				        	if(data.status == "silverpeastimeout") {
+						if(data.status === "silverpeastimeout") {
 				        		alert("<fmt:message key="myProfile.status.timeout" />")
-				        	}
+						} else {
+                    $( "#myProfileFiche .statut").html(data.status);
+                    $("#newStatus").html(data.status);
+                  }
 				        });
 						$( this ).dialog( "close" );
 				},
@@ -235,6 +238,7 @@ $(document).ready(function(){
     };
     $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
 
+    $("#newStatus").html("<%= userFull.getStatus() %>");
 });
 
 function hideImageFile() {

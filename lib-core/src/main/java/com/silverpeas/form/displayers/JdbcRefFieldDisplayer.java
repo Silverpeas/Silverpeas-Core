@@ -1,30 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
-import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
@@ -33,21 +28,21 @@ import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.ecs.AlignType;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.A;
-import org.apache.ecs.html.IMG;
-import org.apache.ecs.html.Input;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import org.apache.ecs.AlignType;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.html.A;
+import org.apache.ecs.html.IMG;
+import org.apache.ecs.html.Input;
 
 public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> {
 
+  @Override
   public void display(PrintWriter out, JdbcRefField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
@@ -93,7 +88,7 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
         .append(URLManager.getApplicationURL()).append("/RselectionPeas/jsp/Main")
         .append("?SelectionType=JdbcConnector")
         .append("&formIndex=").append(pagesContext.getFormIndex());
-    final String[] parametersKeys = { "beanName", "componentId", "method", "tableName" };
+    final String[] parametersKeys = {"beanName", "componentId", "method", "tableName"};
     Map<String, String> parameters = template.getParameters(language);
     for (int i = 0, n = parametersKeys.length; i < n; i++) {
       if (parameters.containsKey(parametersKeys[i])) {
@@ -142,8 +137,8 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
 
     if (template.isMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("     errorMsg += \"  - '" + label + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n\";");
+      out.println("     errorMsg += \"  - '" + label + "' " + Util.getString("GML.MustBeFilled",
+          language) + "\\n\";");
       out.println("     errorNb++;");
       out.println("   }");
     }
@@ -175,5 +170,4 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
     }
     return new ArrayList<String>();
   }
-
 }

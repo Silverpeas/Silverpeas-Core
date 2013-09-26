@@ -23,17 +23,6 @@
  */
 package com.silverpeas.socialnetwork.myProfil.control;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.exception.AuthenticationException;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialnetwork.invitation.Invitation;
@@ -48,7 +37,6 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -65,6 +53,16 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.owasp.encoder.Encode;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.exception.AuthenticationException;
 
 /**
  * @author Bensalem Nabil
@@ -150,11 +148,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       // It is important to load user data the most later possible because of potential updates
       // of user data by password management services
       UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
-      theModifiedUser.setLastName(userLastName);
-      theModifiedUser.setFirstName(userFirstName);
-      theModifiedUser.seteMail(userEMail);
-      theModifiedUser.setLoginQuestion(userLoginQuestion);
-      theModifiedUser.setLoginAnswer(userLoginAnswer);
+      theModifiedUser.setLastName(Encode.forHtml(userLastName));
+      theModifiedUser.setFirstName(Encode.forHtml(userFirstName));
+      theModifiedUser.seteMail(Encode.forHtml(userEMail));
+      theModifiedUser.setLoginQuestion(Encode.forHtml(userLoginQuestion));
+      theModifiedUser.setLoginAnswer(Encode.forHtml(userLoginAnswer));
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
         theModifiedUser.setPassword(newPassword);
@@ -224,8 +222,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void sendInvitation(String receiverId, String message) {
+    String safeMessage = Encode.forHtml(message);
     Invitation invitation =
-        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
+        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), safeMessage,
         new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);
@@ -268,7 +267,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         notifMetaData.addLanguage(language, localizedMessage.getString(
             "myProfile.invitations.notification.send.subject", subject), "");
       }
-      if (message != null && message.trim().length() > 0) {
+      if (StringUtil.isDefined(message)) {
         setNotificationContent(notifMetaData, message, "fr");
         setNotificationContent(notifMetaData, message, "en");
         setNotificationContent(notifMetaData, message, "de");

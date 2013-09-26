@@ -1,33 +1,28 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,25 +34,20 @@ import java.util.List;
 public class SequenceField extends TextField {
 
   private static final long serialVersionUID = -6526406111012877271L;
-
   public static final String TYPE = "sequence";
-
   private static final String VALUES_QUERY = "select distinct(f.fieldValue)"
       + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
       + " where t.templateId = r.templateId"
       + " and r.recordId = f.recordId"
       + " and f.fieldName = ?"
       + " and t.externalId = ?";
-
   private static final String GLOBAL_VALUES_QUERY = "select distinct(f.fieldValue)"
       + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
       + " where t.templateId = r.templateId"
       + " and r.recordId = f.recordId"
       + " and f.fieldName = ?"
       + " and t.externalId like ?";
-
   private static final int NUMBER_ERROR = -1;
-
   private String value = "";
 
   public SequenceField() {
@@ -108,7 +98,7 @@ public class SequenceField extends TextField {
   public String getNextValue(String fieldName, String templateName, String componentId,
       int minLength, int startValue, boolean reuseAvailableValues, boolean global) {
     List<Integer> values = getValues(fieldName, templateName, componentId, global);
-    int newValue = 0;
+    int newValue;
     if (values.isEmpty()) {
       newValue = startValue;
     } else {
@@ -131,7 +121,8 @@ public class SequenceField extends TextField {
    * @param global Indicates whether all values of same form is gathered between instances
    * @return The list of values from the sequence which are already used.
    */
-  private List<Integer> getValues(String fieldName, String templateName, String componentId, boolean global) {
+  private List<Integer> getValues(String fieldName, String templateName, String componentId,
+      boolean global) {
     List<Integer> values = new ArrayList<Integer>();
     Connection connection = null;
     PreparedStatement statement = null;
@@ -142,22 +133,20 @@ public class SequenceField extends TextField {
       // if global, all values of same form is gathered between instances
       if (global) {
         statement = connection.prepareStatement(GLOBAL_VALUES_QUERY);
-      }
-      else {
+      } else {
         statement = connection.prepareStatement(VALUES_QUERY);
       }
 
       statement.setString(1, fieldName);
       if (global) {
-        statement.setString(2, "%:"+templateName);
-      }
-      else {
+        statement.setString(2, "%:" + templateName);
+      } else {
         statement.setString(2, componentId + ":" + templateName);
       }
 
       SilverTrace.debug("form", "SequenceField.getValues", "root.MSG_GEN_PARAM_VALUE",
           "fieldName = " + fieldName + ", componentId = " + componentId + ", templateName = "
-          + templateName + " ,global="+global);
+          + templateName + " ,global=" + global);
 
       rs = statement.executeQuery();
       while (rs.next()) {
@@ -215,5 +204,4 @@ public class SequenceField extends TextField {
     }
     return NUMBER_ERROR;
   }
-
 }
