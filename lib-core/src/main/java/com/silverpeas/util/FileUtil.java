@@ -20,9 +20,22 @@
  */
 package com.silverpeas.util;
 
+import com.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.exec.util.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.util.mail.Mail;
+
+import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -37,17 +50,6 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import javax.activation.MimetypesFileTypeMap;
-import org.apache.commons.exec.util.StringUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.silverpeas.util.mail.Mail;
 
 public class FileUtil implements MimeTypes {
 
@@ -58,11 +60,11 @@ public class FileUtil implements MimeTypes {
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
       new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-    @Override
-    public ConfigurationClassLoader run() {
-      return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-    }
-  });
+        @Override
+        public ConfigurationClassLoader run() {
+          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+        }
+      });
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -85,9 +87,9 @@ public class FileUtil implements MimeTypes {
    * @return the name of the migrated resource.
    */
   public static String convertResourceName(final String resource) {
-    return resource.replace("com/silverpeas", "org/silverpeas").replace(
-        "com/stratelia/silverpeas", "org/silverpeas").replace("com/stratelia/webactiv",
-        "org/silverpeas");
+    return resource.replace("com/silverpeas", "org/silverpeas")
+        .replace("com/stratelia/silverpeas", "org/silverpeas")
+        .replace("com/stratelia/webactiv", "org/silverpeas");
   }
 
   /**
@@ -321,6 +323,18 @@ public class FileUtil implements MimeTypes {
   static boolean isMsOfficeExtension(final String mimeType) {
     return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
         || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
+  }
+
+  /**
+   * Checking that the path doesn't contain relative navigation between pathes.
+   * @param path
+   * @throws RelativeFileAccessException
+   */
+  public static void checkPathNotRelative(String path) throws RelativeFileAccessException {
+    String unixPath = FilenameUtils.separatorsToUnix(path);
+    if (unixPath != null && (unixPath.contains("../") || unixPath.contains("/.."))) {
+      throw new RelativeFileAccessException();
+    }
   }
 
   public static Collection<File> listFiles(File directory, String[] extensions, boolean recursive) {
