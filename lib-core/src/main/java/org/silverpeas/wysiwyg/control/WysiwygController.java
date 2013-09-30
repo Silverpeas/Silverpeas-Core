@@ -134,8 +134,7 @@ public class WysiwygController {
     String[][] imagesList = new String[nbImages][2];
     for (int i = 0; i < nbImages; i++) {
       SimpleDocument attD = attachments.get(i);
-      String path = attD.getAttachmentPath();
-      imagesList[i][0] = path;
+      imagesList[i][0] = attD.getAttachmentURL();
       imagesList[i][1] = attD.getFilename();
       SilverTrace.info("wysiwyg", "WysiwygController.getImages()",
           "root.MSG_GEN_PARAM_VALUE", imagesList[i][0] + "] [" + imagesList[i][1]);
