@@ -438,7 +438,6 @@ public class WysiwygController {
   private static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       DocumentType context, String userId, String contentLanguage, boolean indexIt,
       boolean invokeCallback) {
-    checkNoJavascriptInHTML(textHtml);
     String fileName = getWysiwygFileName(foreignKey.getId(), contentLanguage);
     if (!StringUtil.isDefined(textHtml)) {
       return;
@@ -501,7 +500,6 @@ public class WysiwygController {
    */
   private static void saveFile(String textHtml, WAPrimaryKey foreignKey, DocumentType context,
       String userId, String language, boolean indexIt) {
-    checkNoJavascriptInHTML(textHtml);
     String fileName = getWysiwygFileName(foreignKey.getId(), language);
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
         "root.MSG_GEN_PARAM_VALUE", "fileName=" + fileName + " context=" + context + "objectId="
