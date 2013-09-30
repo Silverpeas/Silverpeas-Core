@@ -253,6 +253,9 @@ public class FileRepositoryManager {
     if (!StringUtil.isDefined(extension)) {
       extension = filename;
     }
+    if (extension == null) {
+      extension = "";
+    }
     String fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
     if (fileIcon == null) {
       fileIcon = unknownFileIcon;

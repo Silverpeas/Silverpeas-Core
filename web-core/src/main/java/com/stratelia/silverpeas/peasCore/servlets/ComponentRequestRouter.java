@@ -38,13 +38,9 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.authentication.exception.AuthenticationException;
-
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -53,7 +49,7 @@ import java.util.Date;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
-    HttpServlet {
+    SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
@@ -82,15 +78,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       MainSessionController mainSessionCtrl, ComponentContext componentContext);
 
   @Override
-  public void doPost(HttpServletRequest SPrequest, HttpServletResponse response) {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
-    String destination = computeDestination(SPrequest, response);
+    String destination = computeDestination(request);
     SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE", "response = " + response);
     if (!StringUtil.isDefined(destination)) {
-      destination = GeneralPropertiesManager.getString("sessionTimeout");
+      throwUserSessionExpiration();
     }
-    redirectService(SPrequest, response, destination);
-
+    redirectService(request, response, destination);
   }
 
   @Override
@@ -99,25 +94,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     doPost(request, response);
   }
 
-  private String computeDestination(HttpServletRequest request, HttpServletResponse response) {
+  private String computeDestination(HttpServletRequest request) {
     String destination;
-    // get the main session controller
-    HttpSession session = request.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
-        MAIN_SESSION_CONTROLLER_ATT);
-    if (mainSessionCtrl == null) {
-      SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
-          "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
-      return GeneralPropertiesManager.getString("sessionTimeout");
-    }
+    HttpSession session = request.getSession(false);
 
-    // Verify that the user can login
-    try {
-      AuthenticationUserVerifierFactory
-          .getUserCanLoginVerifier(mainSessionCtrl.getCurrentUserDetail()).verify();
-    } catch (AuthenticationException e) {
-      return GeneralPropertiesManager.getString("sessionTimeout");
-    }
+    // Get the main session controller
+    MainSessionController mainSessionCtrl = getMainSessionController(request);
 
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
