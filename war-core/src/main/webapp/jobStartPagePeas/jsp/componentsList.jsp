@@ -135,7 +135,7 @@ height:100%;
 									</c:if>
 									
 									<h3 class="applicationName"><c:out value="${component.label}" /></h3>
-									<p class="applicationDescription">${component.description}</p>
+									<p class="applicationDescription"><c:out value="${component.description}"/></p>
 								</a>
 							</li>
 				  </c:if>

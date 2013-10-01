@@ -20,22 +20,7 @@
  */
 package com.stratelia.webactiv.util.contact.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.contact.info.InfoDAO;
@@ -47,8 +32,19 @@ import com.stratelia.webactiv.util.contact.model.ContactRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
-@Stateless(name="ContactBm", description = "EJB to manage a user's contacts.")
+@Stateless(name = "ContactBm", description = "EJB to manage a user's contacts.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ContactBmEJB implements ContactBm {
 
@@ -194,11 +190,12 @@ public class ContactBmEJB implements ContactBm {
   }
 
   /**
-   * 
+   *
    * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
    * designed by originPK.
+   *
    * @param originPK
-   * @param pubPK 
+   * @param pubPK
    */
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -245,7 +242,9 @@ public class ContactBmEJB implements ContactBm {
     }
   }
 
-  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK pubPK, String publisherId,
+  @Override
+  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK pubPK,
+      String publisherId,
       String nodeId) {
     Connection con = getConnection();
     try {
@@ -262,6 +261,7 @@ public class ContactBmEJB implements ContactBm {
   /**
    * getAllFatherPK
    */
+  @Override
   public Collection<NodePK> getAllFatherPK(ContactPK pubPK) {
     Connection con = getConnection();
     try {
@@ -278,18 +278,20 @@ public class ContactBmEJB implements ContactBm {
    * getDetailsByFatherPK() return a ContactDetail collection of all contact visible from the node
    * identified by "fatherPK" parameter
    */
+  @Override
   public Collection<ContactDetail> getDetailsByFatherPK(NodePK fatherPK) {
     Connection con = getConnection();
     try {
       return ContactDAO.selectByFatherPK(con, fatherPK);
     } catch (Exception re) {
       throw new ContactRuntimeException("ContactBmEJB.getDetailsByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED",re);
+          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
     }
   }
 
+  @Override
   public Collection<ContactDetail> getDetailsByLastName(ContactPK pk, String query) {
     Connection con = getConnection();
     try {
@@ -302,6 +304,7 @@ public class ContactBmEJB implements ContactBm {
     }
   }
 
+  @Override
   public Collection<ContactDetail> getDetailsByLastNameOrFirstName(ContactPK pk, String query) {
     Connection con = getConnection();
     try {
@@ -315,6 +318,7 @@ public class ContactBmEJB implements ContactBm {
     }
   }
 
+  @Override
   public Collection<ContactDetail> getDetailsByLastNameAndFirstName(ContactPK pk,
       String lastName, String firstName) {
     Connection con = getConnection();
@@ -343,6 +347,7 @@ public class ContactBmEJB implements ContactBm {
     }
   }
 
+  @Override
   public CompleteContact getCompleteContact(ContactPK pubPK, String modelId) {
     Connection con = getConnection();
     try {
@@ -358,7 +363,7 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  public Collection<ContactDetail> getContacts(Collection<ContactPK>  contactPKs)  {
+  public Collection<ContactDetail> getContacts(Collection<ContactPK> contactPKs) {
     Connection con = getConnection();
     try {
       return ContactDAO.selectByContactPKs(con, contactPKs);
@@ -371,7 +376,7 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  public int getNbPubInFatherPKs(Collection<NodePK>  fatherPKs)  {
+  public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs) {
     Connection con = getConnection();
     try {
       int result = ContactDAO.getNbPubInFatherPKs(con, fatherPKs);
@@ -386,7 +391,7 @@ public class ContactBmEJB implements ContactBm {
 
   @Override
   public Collection<ContactFatherDetail> getDetailsByFatherPKs(Collection<NodePK> fatherPKs,
-      ContactPK pubPK, NodePK nodePK)  {
+      ContactPK pubPK, NodePK nodePK) {
     Connection con = getConnection();
     try {
       return ContactDAO.selectByFatherPKs(con, fatherPKs, pubPK, nodePK);
@@ -398,8 +403,8 @@ public class ContactBmEJB implements ContactBm {
     }
   }
 
-  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath)
-       {
+  @Override
+  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath) {
     Connection con = getConnection();
     try {
       return ContactDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
@@ -410,7 +415,6 @@ public class ContactBmEJB implements ContactBm {
       DBUtil.close(con);
     }
   }
-
 
   private Connection getConnection() {
     try {
@@ -453,5 +457,4 @@ public class ContactBmEJB implements ContactBm {
 
   public ContactBmEJB() {
   }
-
 }

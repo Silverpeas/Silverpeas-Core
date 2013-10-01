@@ -99,11 +99,11 @@
                     </tr>
                     <tr>
                       <td class="txtlibform"><fmt:message key="title"/></td>
-                      <td><c:out value="${notif.title}" /></td>
+                      <td>${notif.title}</td>
                     </tr>
                     <tr>
                       <td class="txtlibform"></td>
-                      <td><c:out value="${notif.body}" escapeXml="false"/></td>
+                      <td>${notif.body}</td>
                     </tr>
                 </table>
                 </form>

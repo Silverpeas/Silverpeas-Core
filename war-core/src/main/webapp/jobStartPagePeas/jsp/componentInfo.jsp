@@ -167,12 +167,11 @@ for (ProfileInst theProfile : m_Profiles) {
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript">
-<!--
 var currentLanguage = "<%=compoInst.getLanguage()%>";
 <%
 	for (String lang : compoInst.getTranslations().keySet()) {
-		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
+		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(compoInst.getLabel(lang)))+"\";\n");
+		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(compoInst.getDescription(lang)))+"\";\n");
 	}
 %>
 
@@ -209,7 +208,6 @@ function clipboardCopy() {
 function clipboardCut() {
     top.IdleFrame.location.href = 'Cut?Type=Component&Id=<%=compoInst.getId()%>';
 }
--->
 </script>
 </head>
 <body id="admin-component">
@@ -233,7 +231,7 @@ out.println(frame.printBefore());
 	</tr>
 	<tr>
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name") %> :</td>
-		<td align="left" valign="baseline" width="100%" id="compoName"><%=compoInst.getLabel(resource.getLanguage())%></td>
+    <td align="left" valign="baseline" width="100%" id="compoName"><%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel(resource.getLanguage()))%></td>
 	</tr>
 	<% if (StringUtil.isDefined(compoInst.getDescription(resource.getLanguage()))) { %>
 		<tr>

@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -38,16 +34,16 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can
  * retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -62,7 +58,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[] { MultipleUserField.TYPE };
+    return new String[]{MultipleUserField.TYPE};
   }
 
   /**
@@ -75,6 +71,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template,
       PagesContext PagesContext) throws java.io.IOException {
     String language = PagesContext.getLanguage();
@@ -108,6 +105,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out, MultipleUserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display",
@@ -187,9 +185,11 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   *
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(String newIds, MultipleUserField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (MultipleUserField.TYPE.equals(field.getTypeName())) {
@@ -205,12 +205,13 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     return new ArrayList<String>();
   }
 
+  @Override
   public List<String> update(List<FileItem> items, MultipleUserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.
+        isDefined(value)) {
       return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
@@ -218,6 +219,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
@@ -227,6 +229,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
@@ -234,5 +237,4 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
       PagesContext pagesContext) {
     return 2;
   }
-
 }

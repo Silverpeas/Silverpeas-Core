@@ -1,42 +1,38 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.node.web;
 
+import com.silverpeas.profile.web.UserProfileEntity;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.profile.web.UserProfileEntity;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.owasp.encoder.Encode;
 
 @XmlRootElement
 public class NodeAttrEntity {
@@ -69,11 +65,11 @@ public class NodeAttrEntity {
   private Date creationDate;
 
   public NodeAttrEntity() {
-    
   }
- 
+
   /**
    * Creates a new node entity from the specified node.
+   *
    * @param node the node to entitify.
    * @return the entity representing the specified node.
    */
@@ -86,22 +82,22 @@ public class NodeAttrEntity {
   }
 
   private NodeAttrEntity(final NodeDetail node, URI uri, String lang) {
-    this.setComponentId(node.getNodePK().getInstanceId());
-    this.setId(node.getNodePK().getId());
-    this.setUri(uri);
+    this.componentId = node.getNodePK().getInstanceId();
+    this.id = node.getNodePK().getId();
+    this.uri = uri;
     if (node.getNbObjects() != -1) {
-      this.setNbItems(String.valueOf(node.getNbObjects()));
+      this.nbItems = String.valueOf(node.getNbObjects());
     }
-    this.setStatus(node.getStatus());
-    this.setRole(node.getUserRole());
-    this.setCreatorId(node.getCreatorId());
-    this.setDescription(node.getDescription(lang));
+    this.status = node.getStatus();
+    this.role = node.getUserRole();
+    this.creatorId = node.getCreatorId();
+    this.description = Encode.forHtml(node.getDescription(lang));
     UserDetail user = UserDetail.getById(node.getCreatorId());
     if (user != null) {
-      setCreator(UserProfileEntity.fromUser(user));
+      this.creator = UserProfileEntity.fromUser(user);
     }
     try {
-      this.setCreationDate(DateUtil.parse(node.getCreationDate()));
+      this.creationDate = DateUtil.parse(node.getCreationDate());
     } catch (ParseException e) {
     }
   }
@@ -170,7 +166,7 @@ public class NodeAttrEntity {
   public String getStatus() {
     return status;
   }
-  
+
   public void setOrder(int order) {
     this.order = order;
   }

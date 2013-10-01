@@ -20,32 +20,7 @@
  */
 package com.stratelia.webactiv.util.questionContainer.control;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.util.ForeignPK;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -70,6 +45,25 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 /**
  * Class declaration
@@ -397,6 +391,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return scores;
   }
 
+  @Override
   public Collection<ScoreDetail> getBestScoresByFatherId(
       QuestionContainerPK questionContainerPK, int nbBestScores) {
     SilverTrace.info("questionContainer",
@@ -419,6 +414,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public Collection<ScoreDetail> getWorstScoresByFatherId(
       QuestionContainerPK questionContainerPK, int nbScores) {
     SilverTrace.info("questionContainer",
@@ -441,6 +437,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
@@ -466,6 +463,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getAverageScoreByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
@@ -485,6 +483,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public QuestionContainerDetail getQuestionContainer(
       QuestionContainerPK questionContainerPK, String userId) {
     SilverTrace.info("questionContainer",
@@ -538,6 +537,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
         comments, userVotes);
   }
 
+  @Override
   public QuestionContainerHeader getQuestionContainerHeader(
       QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer",
@@ -563,6 +563,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return questionContainerHeader;
   }
 
+  @Override
   public QuestionContainerDetail getQuestionContainerByParticipationId(
       QuestionContainerPK questionContainerPK, String userId,
       int participationId) {
@@ -654,6 +655,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public int getNbVotersByQuestionContainer(
       QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer",
@@ -682,7 +684,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
-      String userId, Hashtable<String, Vector<String>> reply) {
+      String userId, Map<String, List<String>> reply) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
@@ -701,11 +703,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     int questionUserScore;
     int userScore = 0;
 
-    Enumeration<String> keys = reply.keys();
-
-    while (keys.hasMoreElements()) {
+    for (String questionId : reply.keySet()) {
       questionUserScore = 0;
-      String questionId = keys.nextElement();
 
       questionPK = new QuestionPK(questionId, questionContainerPK);
       Question question;
@@ -719,14 +718,14 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
             "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
       }
 
-      Vector<String> answers = reply.get(questionId);
+      List<String> answers = reply.get(questionId);
       String answerId;
       int vectorSize = answers.size();
       int newVectorSize = vectorSize;
       int vectorBegin = 0;
       // Treatment of the first vector element
       // to know if the clue has been read
-      String cluePenalty = answers.firstElement();
+      String cluePenalty = answers.get(0);
       int penaltyValue = 0;
 
       if (cluePenalty.startsWith("PC")) {
@@ -737,7 +736,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
 
       // Treatment of the last vector element
       // to know if the answer is opened
-      String openedAnswer = answers.lastElement();
+      String openedAnswer = answers.get(vectorSize - 1);
 
       if (openedAnswer.startsWith("OA")) {
         SilverTrace.info("questionContainer",
@@ -862,7 +861,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
-      String userId, Hashtable<String, Vector<String>> reply, String comment,
+      String userId, Map<String, List<String>> reply, String comment,
       boolean isAnonymousComment) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_ENTER_METHOD",
@@ -891,6 +890,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public QuestionContainerPK createQuestionContainer(QuestionContainerPK questionContainerPK,
       QuestionContainerDetail questionContainerDetail, String userId) {
     SilverTrace.info("questionContainer", "QuestionContainerBmEJB.createQuestionContainer()",
@@ -979,6 +979,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public void deleteVotes(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteVotes()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
@@ -1086,6 +1087,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getSuggestions()", "root.MSG_GEN_ENTER_METHOD",
@@ -1147,6 +1149,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return votes;
   }
 
+  @Override
   public float getAveragePoints(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getAveragePoints()",
@@ -1170,6 +1173,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return averagePoints;
   }
 
+  @Override
   public int getUserNbParticipationsByFatherId(
       QuestionContainerPK questionContainerPK, String userId) {
     SilverTrace.info("questionContainer",
@@ -1195,6 +1199,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return nbPart;
   }
 
+  @Override
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(
       QuestionContainerPK questionContainerPK, String userId,
       int participationId) {
@@ -1272,6 +1277,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
   /**
    * Called on : - deleteQuestionContainer()
    */
+  @Override
   public void deleteIndex(QuestionContainerPK pk) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
@@ -1282,6 +1288,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
+  @Override
   public int getSilverObjectId(QuestionContainerPK pk) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getSilverObjectId()",
@@ -1305,6 +1312,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return silverObjectId;
   }
 
+  @Override
   public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
     List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
     StringBuffer csvRow = new StringBuffer();
@@ -1366,7 +1374,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
       }
       csvRows.add(csvRow);
     } catch (Exception e) {
-      e.printStackTrace();
+      SilverTrace.error("questionContainer", getClass().getSimpleName() + ".exportCSV()",
+          "root.EX_NO_MESSAGE", e);
     }
     return writeCSVFile(csvRows);
   }
@@ -1401,7 +1410,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
       }
     } catch (Exception e) {
       csvFilename = null;
-      e.printStackTrace();
+      SilverTrace.error("questionContainer", getClass().getSimpleName() + ".writeCSVFile()",
+          "root.EX_NO_MESSAGE", e);
     } finally {
       if (fileOutput != null) {
         try {
@@ -1409,7 +1419,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
           fileOutput.close();
         } catch (IOException e) {
           csvFilename = null;
-          e.printStackTrace();
+          SilverTrace.error("questionContainer", getClass().getSimpleName() + ".writeCSVFile()",
+              "root.EX_NO_MESSAGE", e);
         }
       }
     }
@@ -1425,6 +1436,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
   }
 
+  @Override
   public String getHTMLQuestionPath(QuestionContainerDetail questionDetail) {
     String htmlPath;
     try {

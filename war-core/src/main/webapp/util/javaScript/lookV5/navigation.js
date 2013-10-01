@@ -43,17 +43,17 @@ var enableAllUFSStates = false;
 
 var displayContextualPDC = true;
 
-String.prototype.startsWith = function (str) {
-  return this.indexOf(str) == 0;
+String.prototype.startsWith = function(str) {
+  return this.indexOf(str) === 0;
 };
 
 
 function openMySpace() {
-  if (displayMySpace == "off") {
+  if (displayMySpace === "off") {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'SpaceId=-10');
     displayMySpace = "on";
     try {
-      homePage = getPersoHomepage()
+      homePage = getPersoHomepage();
       if (homePage.indexOf('?', 0) > 0) {
         homePage = homePage + '&SpaceId=-10';
       } else {
@@ -62,7 +62,7 @@ function openMySpace() {
       parent.MyMain.location.href = getContext() + homePage;
     }
     catch (e) {
-      homePage = getHomepage()
+      homePage = getHomepage();
       if (homePage.indexOf('?', 0) > 0) {
         homePage = homePage + '&SpaceId=-20';
       } else {
@@ -87,42 +87,42 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
     if (!mainFrame.startsWith('/')) {
       mainFrame = '/admin/jsp/' + mainFrame;
     }
-  } catch(err) {
+  } catch (err) {
     mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
   }
-  
-  if (spaceLook != currentLook || spaceWithCSSToApply != currentSpaceWithCSSApplied) {
+
+  if (spaceLook !== currentLook || spaceWithCSSToApply !== currentSpaceWithCSSApplied) {
     top.location = getContext() + mainFrame + "?RedirectToSpaceId=" + spaceId;
   }
 
   closeCurrentComponent();
 
-  if (currentSpaceId == spaceId) {
+  if (currentSpaceId === spaceId) {
     closeSpace(spaceId, currentSpaceLevel, true);
 
     //Envoi de la requete pour afficher le contenu de l'espace
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-        'GetPDC=' + displayPDC(), 'SpaceId=' + spaceId);
+            'GetPDC=' + displayPDC(), 'SpaceId=' + spaceId);
   }
   else {
-    var closePDC = (spaceLevel == 0);
-    if (currentSpaceId != "-1" && spaceLevel == currentSpaceLevel) {
+    var closePDC = (spaceLevel === 0);
+    if (currentSpaceId !== "-1" && spaceLevel === currentSpaceLevel) {
       closeSpace(currentSpaceId, currentSpaceLevel, closePDC);
 
-      if (spaceLevel == 0) {
+      if (spaceLevel === 0) {
         hideTransverseSpace();
       }
     }
     else {
-      if (spaceLevel == 0 && currentSpacePath.length > 0) {
+      if (spaceLevel === 0 && currentSpacePath.length > 0) {
         closeSpace(currentSpacePath.substring(0, currentSpacePath.indexOf("/")), 0, closePDC);
         hideTransverseSpace();
         currentSpacePath = spaceId;
       }
     }
-    if (spaceLevel == currentSpaceLevel) {
+    if (spaceLevel === currentSpaceLevel) {
       currentSpacePath = currentSpacePath.substring(0,
-          currentSpacePath.lastIndexOf("/") + 1) + spaceId;
+              currentSpacePath.lastIndexOf("/") + 1) + spaceId;
     }
     if (spaceLevel > currentSpaceLevel) {
       currentSpacePath += "/" + spaceId;
@@ -139,7 +139,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
 
     //Envoi de la requ�te pour afficher le contenu de l'espace
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-        'GetPDC=' + displayPDC(), 'SpaceId=' + spaceId);
+            'GetPDC=' + displayPDC(), 'SpaceId=' + spaceId);
   }
 
   currentSpaceId = spaceId;
@@ -179,7 +179,7 @@ function displayPDCFrame(spaceId, componentId) {
   if (displayContextualPDC) {
     try {
       var footerPage = getFooterPage();
-      top.pdcFrame.location.href =  footerPage + "spaces=" + spaceId + "&componentSearch=" + componentId + "&FromPDCFrame=true";
+      top.pdcFrame.location.href = footerPage + "spaces=" + spaceId + "&componentSearch=" + componentId + "&FromPDCFrame=true";
     }
     catch (e) {
       //frame named 'pdcFrame' does not exist
@@ -209,7 +209,7 @@ function showTransverseSpace() {
 }
 
 function closeSpace(spaceId, spaceLevel, closePDC) {
-  if (spaceLevel == 0) {
+  if (spaceLevel === 0) {
     var spaceHeader = document.getElementById(spaceId);
     if (spaceHeader) {
       spaceHeader.setAttribute("class", "spaceLevel1");
@@ -242,19 +242,19 @@ function openComponent(componentId, componentLevel, componentURL) {
   componentActiv.setAttribute("class", "browseComponentActiv");
   componentActiv.setAttribute("className", "browseComponentActiv");
 
-  if (componentId != currentComponentId) {
+  if (componentId !== currentComponentId) {
     closeCurrentComponent();
   }
-  
+
   //Remove active class on subtree
-  jQuery("#"+componentId).parent().find(".spaceOn").removeClass("spaceOn");
+  jQuery("#" + componentId).parent().find(".spaceOn").removeClass("spaceOn");
 
   currentAxisId = "-1";
   currentValuePath = "-1";
 
   currentComponentId = componentId;
 
-  if (componentURL.substring(0, 11).toLowerCase() != "javascript:") {
+  if (componentURL.substring(0, 11).toLowerCase() !== "javascript:") {
     parent.MyMain.location.href = getContext() + componentURL;
   }
   else {
@@ -263,7 +263,7 @@ function openComponent(componentId, componentLevel, componentURL) {
 
   //Envoi de la requete pour afficher le plan de classement du composant
   ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-      'GetPDC=' + displayPDC(), 'ComponentId=' + currentComponentId);
+          'GetPDC=' + displayPDC(), 'ComponentId=' + currentComponentId);
 
   refreshPDCFrame();
   refreshTopFrame();
@@ -276,7 +276,7 @@ function openComponent(componentId, componentLevel, componentURL) {
 }
 
 function closeCurrentComponent() {
-  if (currentComponentId != "") {
+  if (currentComponentId !== "") {
     try {
       document.getElementById("img" + currentComponentId).src = "icons/1px.gif";
       document.getElementById("img" + currentComponentId).width = "1";
@@ -295,7 +295,7 @@ function closeCurrentComponent() {
 }
 
 function pdcAxisExpand(axisId) {
-  if (currentAxisId != "-1") {
+  if (currentAxisId !== "-1") {
     pdcAxisCollapse(currentAxisId);
   }
 
@@ -308,17 +308,17 @@ function pdcAxisExpand(axisId) {
   img.setAttribute("height", "22");
   img.setAttribute("align", "absmiddle");
   document.getElementById("jsAxis" + axisId).setAttribute("href",
-      "javaScript:pdcAxisCollapse('" + axisId + "')");
+          "javaScript:pdcAxisCollapse('" + axisId + "')");
 
   //Envoi de la requete pour afficher le contenu de l'axe
   if (isPDCContextual()) {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-        'SpaceId=' + currentSpaceId, 'ComponentId=' + currentComponentId, 'AxisId=' + axisId,
-        'ValuePath=' + currentValuePath);
+            'SpaceId=' + currentSpaceId, 'ComponentId=' + currentComponentId, 'AxisId=' + axisId,
+            'ValuePath=' + currentValuePath);
   }
   else {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'AxisId=' + axisId,
-        'ValuePath=' + currentValuePath);
+            'ValuePath=' + currentValuePath);
   }
 }
 
@@ -327,9 +327,9 @@ function pdcAxisCollapse(axisId) {
   currentValuePath = "-1";
 
   document.getElementById("imgAxis" + axisId).setAttribute("src",
-      "icons/silverpeasV5/pdcPeas_maximize.gif");
+          "icons/silverpeasV5/pdcPeas_maximize.gif");
   document.getElementById("jsAxis" + axisId).setAttribute("href",
-      "javaScript:pdcAxisExpand('" + axisId + "')");
+          "javaScript:pdcAxisExpand('" + axisId + "')");
 
   var value = document.getElementById("axisContent" + axisId).firstChild;
   while (value != null) {
@@ -366,25 +366,25 @@ function pdcValueExpand(valuePath) {
   img.setAttribute("height", "22");
   img.setAttribute("align", "absmiddle");
   document.getElementById("jsValue" + valuePath).setAttribute("href",
-      "javaScript:pdcValueCollapse('" + valuePath + "')");
+          "javaScript:pdcValueCollapse('" + valuePath + "')");
 
   //Envoi de la requete pour afficher le contenu de la valeur de l'axe
   if (isPDCContextual()) {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-        'SpaceId=' + currentSpaceId, 'ComponentId=' + currentComponentId, 'AxisId=' + currentAxisId,
-        'ValuePath=' + valuePath);
+            'SpaceId=' + currentSpaceId, 'ComponentId=' + currentComponentId, 'AxisId=' + currentAxisId,
+            'ValuePath=' + valuePath);
   }
   else {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-        'AxisId=' + currentAxisId, 'ValuePath=' + valuePath);
+            'AxisId=' + currentAxisId, 'ValuePath=' + valuePath);
   }
 }
 
 function pdcValueCollapse(valuePath) {
   document.getElementById("imgValue" + valuePath).setAttribute("src",
-      "icons/silverpeasV5/pdcPeas_maximize.gif");
+          "icons/silverpeasV5/pdcPeas_maximize.gif");
   document.getElementById("jsValue" + valuePath).setAttribute("href",
-      "javaScript:pdcValueExpand('" + valuePath + "')");
+          "javaScript:pdcValueExpand('" + valuePath + "')");
 
   var value = document.getElementById("valueContent" + valuePath).firstChild;
   while (value != null) {
@@ -402,7 +402,7 @@ function displayPDCNotContextual() {
   else {
     notContextualPDCDisplayed = true;
     document.getElementById("pdc").style.visibility = "visible";
-    if (notContextualPDCLoaded == false) {
+    if (notContextualPDCLoaded === false) {
       notContextualPDCLoaded = true;
       ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'Pdc=1');
     }
@@ -423,7 +423,7 @@ function isPDCContextual() {
   var contextualPDC = true;
   try {
     contextualPDC = displayContextualPDC();
-  } catch(e) {
+  } catch (e) {
   }
   return contextualPDC;
 }
@@ -449,7 +449,7 @@ function getUserMenuDisplayMode() {
   if (document.getElementById("userMenuDisplayModeId")) {
     // Check value to enable/disable user favorite space
     var userMenuDispMode = document.getElementById("userMenuDisplayModeId").value;
-    if (userMenuDispMode == "BOOKMARKS" || userMenuDispMode == "ALL") {
+    if (userMenuDispMode === "BOOKMARKS" || userMenuDispMode === "ALL") {
       displayUserFavoriteSpace = true;
       // Check contains user favorite space mode
       enableAllUFSStates = (jQuery("#enableAllUFSpaceStatesId").val() == "true") ? true : false;
@@ -468,9 +468,9 @@ function getUserMenuDisplayMode() {
 function openTab(tabId) {
   //alert("opentTab(" + tabId + ") call");
   // Check tab change
-  if (tabId != jQuery("#userMenuDisplayModeId").val()) {
+  if (tabId !== jQuery("#userMenuDisplayModeId").val()) {
     // Check tab change
-    if (tabId == 'ALL') {
+    if (tabId === 'ALL') {
       jQuery("#tabsBookMarkSelectedDivId").hide();
       jQuery("#tabsAllSelectedDivId").show();
     } else {
@@ -483,7 +483,7 @@ function openTab(tabId) {
     jQuery.ajax({
       url: getContext() + '/RAjaxSilverpeasV5/dummy',
       data: {ResponseId: 'spaceUpdater',
-        Init:1,
+        Init: 1,
         UserMenuDisplayMode: tabId},
       success: function(data) {
         if (jQuery("#spaceMenuDivId").isMasked()) {
@@ -495,7 +495,7 @@ function openTab(tabId) {
         spaceUpdater.ajaxUpdate(xmlResponse);
         spaceUpdater.displayTree(xmlResponse.childNodes[0]);
       },
-      error : function() {
+      error: function() {
         alert("XMLHttpRequest error ");
       },
       dataType: 'xml'
@@ -512,9 +512,9 @@ function openTab(tabId) {
 function changeFavoriteSpace(spaceId) {
   var curImg = jQuery("#favoriteimg" + spaceId);
   var curState = curImg.attr("title");
-  if (curState == "favorite") {
+  if (curState === "favorite") {
     removeFavoriteSpace(spaceId);
-  } else if (curState == "favorite_empty" || curState == "favorite_contains") {
+  } else if (curState === "favorite_empty" || curState === "favorite_contains") {
     addFavoriteSpace(spaceId);
   }
 }
@@ -543,7 +543,7 @@ function addFavoriteSpace(spaceId) {
         });
       }
     },
-    error : function() {
+    error: function() {
       alert("XMLHttpRequest error ");
     },
     dataType: 'json'
@@ -576,7 +576,7 @@ function removeFavoriteSpace(spaceId) {
       }
 
     },
-    error : function() {
+    error: function() {
       alert("XMLHttpRequest error ");
     },
     dataType: 'json'
@@ -586,10 +586,10 @@ function removeFavoriteSpace(spaceId) {
 function updateUserFavoriteSpaceStatus(spaceId) {
   var curDiv = jQuery("#favoriteimg" + spaceId);
   var curState = curDiv.attr("title");
-  if (curState == "favorite") {
+  if (curState === "favorite") {
     curDiv.addClass("favorite_empty");
     curDiv.removeClass("favorite");
-  } else if (curState == "favorite_empty" || curState == "favorite_contains") {
+  } else if (curState === "favorite_empty" || curState === "favorite_contains") {
     curDiv.addClass("favorite");
     curDiv.removeClass("favorite_empty");
   }
@@ -601,7 +601,7 @@ function updateUserFavoriteSpaceStatus(spaceId) {
 function disableUserFavoriteSpaceStatus(spaceId, data) {
   var curDiv = jQuery("#favoriteimg" + spaceId);
   if (enableAllUFSStates) {
-    if (data.spacestate == "contains") {
+    if (data.spacestate === "contains") {
       curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
       curDiv.attr("title", "favorite_contains");
     } else {
@@ -619,10 +619,10 @@ function disableUserFavoriteSpaceStatus(spaceId, data) {
 
 function disableParentSpaceStatus(spaceId, spaceStatus) {
   var curDiv = jQuery("#favoriteimg" + spaceId);
-  if (spaceStatus == "contains") {
+  if (spaceStatus === "contains") {
     curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
     curDiv.attr("title", "favorite_contains");
-  } else if (spaceStatus == "favorite") {
+  } else if (spaceStatus === "favorite") {
     curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_12px.gif");
     curDiv.attr("title", "favorite");
   } else {
@@ -644,7 +644,7 @@ function enableUserFavoriteParentStatus(spaceId) {
   var curDiv = jQuery("#favoriteimg" + spaceId);
   if (curDiv) {
     //alert("curDiv.attr(title) = " + curDiv.attr("title"));
-    if (curDiv.attr("title") == "favorite_empty") {
+    if (curDiv.attr("title") === "favorite_empty") {
       curDiv.attr("title", "favorite_contains");
       curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
     }
@@ -659,12 +659,12 @@ jQuery(document).ready(function() {
   // Handler for .ready() called.
   currentLook = getLook();
   try {
-	  currentSpaceWithCSSApplied = getSpaceWithCSSToApply();
-	  //alert("set currentSpaceCSS to "+getSpaceWithCSSToApply());
+    currentSpaceWithCSSApplied = getSpaceWithCSSToApply();
+    //alert("set currentSpaceCSS to "+getSpaceWithCSSToApply());
   } catch (e) {
-	  // look do not provide getSpaceCSS() function
+    // look do not provide getSpaceCSS() function
   }
-  
+
   hideTransverseSpace();
 
   spaceUpdater = new SpaceUpdater();
@@ -673,8 +673,8 @@ jQuery(document).ready(function() {
 
   //Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
   ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=1',
-      'GetPDC=' + displayPDC(), 'SpaceId=' + getSpaceIdToInit(),
-      'ComponentId=' + getComponentIdToInit(), 'UserMenuDisplayMode=' + getUserMenuDisplayMode());
+          'GetPDC=' + displayPDC(), 'SpaceId=' + getSpaceIdToInit(),
+          'ComponentId=' + getComponentIdToInit(), 'UserMenuDisplayMode=' + getUserMenuDisplayMode());
 
   try {
     displayContextualPDC = displayContextualPDC();
@@ -686,7 +686,7 @@ jQuery(document).ready(function() {
 });
 
 function displayFavoriteSpaceIcon(space, spaceId, newSpace) {
-  if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() == "ALL") {
+  if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() === "ALL") {
     var favSpace = space.getAttribute("favspace");
     var favDiv = document.createElement("div");
     favDiv.setAttribute("id", "favdiv");
@@ -699,9 +699,9 @@ function displayFavoriteSpaceIcon(space, spaceId, newSpace) {
     if (favSpace == "true") {
       imgFavorite.setAttribute("src", "/silverpeas/util/icons/iconlook_favorites_12px.gif");
       imgFavorite.setAttribute("title", "favorite");
-    } else if (favSpace == "contains" && enableAllUFSStates) {
+    } else if (favSpace === "contains" && enableAllUFSStates) {
       imgFavorite.setAttribute("src",
-          "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
+              "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
       imgFavorite.setAttribute("title", "favorite_contains");
     } else { // false
       imgFavorite.setAttribute("src", "/silverpeas/util/icons/iconlook_favorites_empty_12px.gif");
@@ -724,13 +724,13 @@ SpaceUpdater.prototype = {
     //alert("ajaxUpdate call, ajaxResponse=" + ajaxResponse);
     var nbElements = ajaxResponse.childNodes.length;
     //console.log("nbElements="+nbElements + ",ajaxResponse.childNodes[0].tagName=" + ajaxResponse.childNodes[0].tagName);
-    if (ajaxResponse.childNodes[0].tagName == "spacePerso") {
+    if (ajaxResponse.childNodes[0].tagName === "spacePerso") {
       this.displayMySpace(ajaxResponse.childNodes[0]);
     }
     else {
       //console.log("currentSpaceId=" + currentSpaceId);
       if (currentSpaceId == "-1") {
-        if (ajaxResponse.childNodes[0].tagName == "item") {
+        if (ajaxResponse.childNodes[0].tagName === "item") {
           //it's a transversal space
           this.displaySpaceTransverse(ajaxResponse.childNodes[0], "true");
 
@@ -739,13 +739,13 @@ SpaceUpdater.prototype = {
           this.displayAxis(ajaxResponse.childNodes[2]);
         }
         else {
-          if (ajaxResponse.childNodes[0].tagName == "spaces") {
+          if (ajaxResponse.childNodes[0].tagName === "spaces") {
             this.displayTree(ajaxResponse.childNodes[0]);
             this.displayAxis(ajaxResponse.childNodes[1]);
           }
           else {
-            if (ajaxResponse.childNodes[0].tagName == "pdc") {
-              if (currentAxisId != "-1") {
+            if (ajaxResponse.childNodes[0].tagName === "pdc") {
+              if (currentAxisId !== "-1") {
                 this.displayValue(ajaxResponse.childNodes[0]);
               }
               else {
@@ -756,7 +756,7 @@ SpaceUpdater.prototype = {
         }
       }
       else {
-        if (currentSpaceId != -1) {
+        if (currentSpaceId !== -1) {
           //hide inProgress image
           var imgSpace = document.getElementById("img" + currentSpaceId);
           try {
@@ -767,10 +767,10 @@ SpaceUpdater.prototype = {
           catch (e) {
           }
         }
-        if (nbElements == 2) {
+        if (nbElements === 2) {
           var child = ajaxResponse.childNodes[0];
           var type = child.getAttribute("type");
-          if (type == "spaceTransverse") {
+          if (type === "spaceTransverse") {
             this.displaySpaceTransverse(ajaxResponse.childNodes[0]);
           }
           else {
@@ -779,8 +779,8 @@ SpaceUpdater.prototype = {
           this.displayAxis(ajaxResponse.childNodes[1]);
         }
         else {
-          if (ajaxResponse.childNodes[0].tagName == "pdc") {
-            if (currentAxisId != "-1") {
+          if (ajaxResponse.childNodes[0].tagName === "pdc") {
+            if (currentAxisId !== "-1") {
               this.displayValue(ajaxResponse.childNodes[0]);
             }
             else {
@@ -807,7 +807,7 @@ SpaceUpdater.prototype = {
 
       var newSpaceURL = document.createElement("a");
       newSpaceURL.setAttribute("href",
-          "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '"+css+"')");
+              "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '" + css + "')");
       newSpaceURL.setAttribute("onfocus", "this.blur()");
       newSpaceURL.setAttribute("class", "spaceURL");
       newSpaceURL.setAttribute("className", "spaceURL");
@@ -842,7 +842,7 @@ SpaceUpdater.prototype = {
       }
     }
     // Add alert message if user is in display favorite space mode without favorite space selected.
-    if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() == "BOOKMARKS" && nbSpaces == 0) {
+    if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() === "BOOKMARKS" && nbSpaces === 0) {
       jQuery('#spaces').html("<span class='noFavoriteSpace'>" + jQuery('#noFavoriteSpaceMsgId').val() + "</span> ");
     }
 
@@ -864,7 +864,7 @@ SpaceUpdater.prototype = {
 
     var newSpaceURL = document.createElement("a");
     newSpaceURL.setAttribute("href",
-        "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '" + css + "')");
+            "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '" + css + "')");
     newSpaceURL.setAttribute("onfocus", "this.blur()");
     newSpaceURL.setAttribute("class", "spaceURL");
     newSpaceURL.setAttribute("className", "spaceURL");
@@ -894,7 +894,7 @@ SpaceUpdater.prototype = {
     //add new entry to list
     document.getElementById("spaceTransverse").appendChild(newSpace);
 
-    if (open == "true") {
+    if (open === "true") {
       currentRootSpaceId = spaceId;
       this.displaySpace(space, "true");
     }
@@ -907,7 +907,7 @@ SpaceUpdater.prototype = {
     //alert("currentSpaceLevel = "+currentSpaceLevel);
 
     var spaceHeader = document.getElementById(currentSpaceId);
-    if (currentSpaceLevel == 0) {
+    if (currentSpaceLevel === 0) {
       currentRootSpaceId = currentSpaceId;
       spaceHeader.setAttribute("class", "spaceLevel1On");
       spaceHeader.setAttribute("className", "spaceLevel1On");
@@ -916,7 +916,7 @@ SpaceUpdater.prototype = {
     }
 
     if (init == "true") {
-      if (currentSpacePath == "") {
+      if (currentSpacePath === "") {
         currentSpacePath = currentSpaceId;
       }
       else {
@@ -955,7 +955,7 @@ SpaceUpdater.prototype = {
       //create new entry
       var newEntry = document.createElement("div");
       newEntry.setAttribute("id", itemId);
-      if (itemType == "component") {
+      if (itemType === "component") {
         newEntry.setAttribute("class", "browseComponent");
         newEntry.setAttribute("className", "browseComponent");
       } else {
@@ -971,7 +971,7 @@ SpaceUpdater.prototype = {
 
       var newEntryIconSel = document.createElement("img");
 
-      if (itemType == "component") {
+      if (itemType === "component") {
         newEntryIconSel.setAttribute("id", "img" + itemId);
         if (itemOpen == "true") {
           newEntry.setAttribute("class", "browseComponentActiv");
@@ -982,11 +982,11 @@ SpaceUpdater.prototype = {
           newEntryIconSel.setAttribute("src", "icons/1px.gif");
         }
         newEntryURL.setAttribute("href",
-            "javaScript:openComponent('" + itemId + "'," + itemLevel + ",'" + itemURL + "')");
+                "javaScript:openComponent('" + itemId + "'," + itemLevel + ",'" + itemURL + "')");
 
         if (displayComponentsIcons()) {
           newEntryIcon.setAttribute("src",
-              getContext() + "/util/icons/component/" + itemKind + "Small.gif");
+                  getContext() + "/util/icons/component/" + itemKind + "Small.gif");
           newEntryIcon.setAttribute("class", "browseIconComponent");
           newEntryIcon.setAttribute("className", "browseIconComponent");
         }
@@ -1000,7 +1000,7 @@ SpaceUpdater.prototype = {
         newEntryIcon.setAttribute("id", "img" + itemId);
         newEntryIcon.setAttribute("src", "icons/1px.gif");
         newEntryURL.setAttribute("href",
-            "javaScript:openSpace('" + itemId + "'," + itemLevel + ",'" + look + "', '" + css + "')");
+                "javaScript:openSpace('" + itemId + "'," + itemLevel + ",'" + look + "', '" + css + "')");
       }
       var newEntryLabel = document.createTextNode(item.getAttribute("name"));
       newEntryURL.appendChild(newEntryLabel);
@@ -1008,7 +1008,7 @@ SpaceUpdater.prototype = {
       newEntry.appendChild(newEntryIcon);
       newEntry.appendChild(newEntryURL);
 
-      if (itemType == "component") {
+      if (itemType === "component") {
         newEntry.appendChild(newEntryIconSel);
       } else {
         // Space type
@@ -1018,11 +1018,11 @@ SpaceUpdater.prototype = {
       //add new entry to list
       spaceContentDiv.appendChild(newEntry);
 
-      if (itemOpen == "true") {
-        if (itemType == "space") {
+      if (itemOpen === "true") {
+        if (itemType === "space") {
           this.displaySpace(item, "true");
         }
-        if (itemType == "component") {
+        if (itemType === "component") {
           currentSpaceLevel = parseInt(itemLevel) - 1;
           currentComponentId = itemId;
         }
@@ -1061,7 +1061,7 @@ SpaceUpdater.prototype = {
       var itemURL = item.getAttribute("url");
 
       var newEntry = getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen,
-          itemURL, item.getAttribute("name"));
+              itemURL, item.getAttribute("name"));
 
       //add new entry to list
       spaceContentDiv.appendChild(newEntry);
@@ -1201,7 +1201,7 @@ SpaceUpdater.prototype = {
       if (valueLevel > 1) {
         var ancetre = "/0/";
         for (v = 0; v < valueIds.length; v++) {
-          if (valueIds[v] != "" && valueIds[v] != "0") {
+          if (valueIds[v] !== "" && valueIds[v] !== "0") {
             //alert("valueIds[v] = "+valueIds[v]);
 
             ancetre += valueIds[v] + "/";
@@ -1240,7 +1240,7 @@ SpaceUpdater.prototype = {
       newValue.appendChild(newValueContent);
 
       //add new entry to list
-      if (currentValuePath != "-1" && currentValuePath != "/0/") {
+      if (currentValuePath !== "-1" && currentValuePath !== "/0/") {
         document.getElementById("valueContent" + currentValuePath).appendChild(newValue);
       }
       else {
@@ -1249,7 +1249,7 @@ SpaceUpdater.prototype = {
     }
 
     var img = null;
-    if (currentValuePath == "/0/") {
+    if (currentValuePath === "/0/") {
       img = document.getElementById("imgAxis" + currentAxisId);
       img.setAttribute("src", "icons/silverpeasV5/pdcPeas_minimize.gif");
     }
@@ -1263,7 +1263,7 @@ SpaceUpdater.prototype = {
 };
 
 function getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen, itemURL,
-    itemName) {
+        itemName) {
   //create new entry
   var newEntry = document.createElement("div");
   newEntry.setAttribute("id", itemId);
@@ -1278,7 +1278,7 @@ function getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen
   newEntryIconSel.setAttribute("id", "img" + itemId);
   newEntryIconSel.setAttribute("src", "icons/1px.gif");
   newEntryURL.setAttribute("href",
-      "javaScript:openComponent('" + itemId + "'," + itemLevel + ",'" + itemURL + "')");
+          "javaScript:openComponent('" + itemId + "'," + itemLevel + ",'" + itemURL + "')");
 
   newEntryIcon.setAttribute("src", "icons/1px.gif");
 
@@ -1290,7 +1290,7 @@ function getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen
 
   newEntry.appendChild(newEntryIconSel);
 
-  if (itemKind == "personalComponent") {
+  if (itemKind === "personalComponent") {
     newEntry.onmouseover = function() {
       document.getElementById('imgDel' + this.id).style.visibility = 'visible';
     };

@@ -20,19 +20,16 @@
  */
 package com.stratelia.webactiv.util.questionContainer.control;
 
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.Local;
-
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.Local;
 
 /**
  * Interface declaration
@@ -52,7 +49,7 @@ public interface QuestionContainerBm {
    * @see
    */
   public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
-      String userId, Hashtable<String, Vector<String>> reply);
+      String userId, Map<String, List<String>> reply);
 
   /**
    * Method declaration
@@ -66,7 +63,7 @@ public interface QuestionContainerBm {
    * @see
    */
   public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
-      String userId, Hashtable<String, Vector<String>> reply, String comment,
+      String userId, Map<String, List<String>> reply, String comment,
       boolean isAnonymousComment);
 
   /**
@@ -394,4 +391,7 @@ public interface QuestionContainerBm {
    * @
    */
   public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore);
+
+  public Collection<ScoreDetail> getWorstScoresByFatherId(QuestionContainerPK questionContainerPK,
+      int nbScores);
 }

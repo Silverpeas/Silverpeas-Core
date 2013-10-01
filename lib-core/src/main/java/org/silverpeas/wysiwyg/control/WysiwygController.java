@@ -107,6 +107,13 @@ public class WysiwygController {
     return path;
   }
 
+  private static void checkNoJavascriptInHTML(String textHtml) {
+    if (textHtml.matches("(?i)(?u)(?s).*<.+[ ]+on[a-z]+[ ]*=.*>.*") || textHtml.matches(
+        "(?i)(?u)(?s).*<[ ]*script.*>.*")) {
+      throw new AssertionError("The WYSIWYG contains javascript code!");
+    }
+  }
+
   public WysiwygController() {
   }
 
