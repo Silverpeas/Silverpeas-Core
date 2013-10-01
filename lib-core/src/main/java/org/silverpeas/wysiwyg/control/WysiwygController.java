@@ -109,6 +109,13 @@ public class WysiwygController {
     return path;
   }
 
+  private static void checkNoJavascriptInHTML(String textHtml) {
+    if (textHtml.matches("(?i)(?u)(?s).*<.+[ ]+on[a-z]+[ ]*=.*>.*") || textHtml.matches(
+        "(?i)(?u)(?s).*<[ ]*script.*>.*")) {
+      throw new AssertionError("The WYSIWYG contains javascript code!");
+    }
+  }
+
   public WysiwygController() {
   }
 
@@ -413,6 +420,7 @@ public class WysiwygController {
   private static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       DocumentType context, String userId, String contentLanguage, boolean indexIt,
       boolean invokeCallback) {
+    checkNoJavascriptInHTML(textHtml);
     String fileName = getWysiwygFileName(foreignKey.getId(), contentLanguage);
     if (!StringUtil.isDefined(textHtml)) {
       return;
@@ -501,6 +509,7 @@ public class WysiwygController {
    */
   private static void saveFile(String textHtml, WAPrimaryKey foreignKey, DocumentType context,
       String userId, String language, boolean indexIt) {
+    checkNoJavascriptInHTML(textHtml);
     String fileName = getWysiwygFileName(foreignKey.getId(), language);
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
         "root.MSG_GEN_PARAM_VALUE", "fileName=" + fileName + " context=" + context + "objectId="

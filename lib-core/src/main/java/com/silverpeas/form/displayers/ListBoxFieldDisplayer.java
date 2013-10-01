@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -34,7 +30,6 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +39,7 @@ import java.util.StringTokenizer;
 /**
  * A ListBoxFieldDisplayer is an object which can display a listbox in HTML the content of a listbox
  * to a end user and can retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -61,7 +57,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[] { TextField.TYPE };
+    return new String[]{TextField.TYPE};
   }
 
   /**
@@ -74,6 +70,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
       throws java.io.IOException {
 
@@ -86,8 +83,8 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n \";");
+      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
+          "GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
@@ -103,11 +100,12 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String value = "";
     String keys = "";
-    String values = "";
+    String values;
     String html = "";
     String language = PagesContext.getLanguage();
     String cssClass = null;
@@ -126,13 +124,15 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass))
+      if (StringUtil.isDefined(cssClass)) {
         cssClass = "class=\"" + cssClass + "\"";
+      }
     }
-    if (StringUtil.isDefined(cssClass))
+    if (StringUtil.isDefined(cssClass)) {
       html += "<select " + cssClass + " id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
-    else
+    } else {
       html += "<select id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+    }
 
     if (template.isDisabled() || template.isReadOnly()) {
       html += " disabled";
@@ -152,8 +152,8 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
     StringTokenizer stValues = new StringTokenizer(values, "##");
-    String optKey = "";
-    String optValue = "";
+    String optKey;
+    String optValue;
     int nbTokens = stKeys.countTokens();
 
     if (stKeys.countTokens() != stValues.countTokens()) {
@@ -175,14 +175,15 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     html += "</select>\n";
 
-    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-        !template.isHidden() && PagesContext.useMandatory()) {
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
+        isHidden() && PagesContext.useMandatory()) {
       html += Util.getMandatorySnippet();
     }
 
     out.println(html);
   }
 
+  @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
 
@@ -200,10 +201,12 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     return new ArrayList<String>();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }

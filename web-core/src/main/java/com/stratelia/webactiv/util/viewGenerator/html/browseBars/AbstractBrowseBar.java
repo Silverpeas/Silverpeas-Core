@@ -1,69 +1,62 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
  * ArrayPaneWA.java
- * 
+ *
  * Created on 10 octobre 2000, 16:11
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.owasp.encoder.Encode;
 
 /**
  * The default implementation of ArrayPane interface
+ *
  * @author squere
  * @version 1.0
  */
 public abstract class AbstractBrowseBar implements BrowseBar {
+
   private String domainName = null;
   private String componentName = null;
   private String componentLink = null;
   private String information = null;
   private String path = null;
-
   private I18NBean i18nBean = null;
   private String language = null;
   private String url = null;
   private List<String> languages = null;
-
   private String spaceId = null;
   private String componentId = null;
   private MainSessionController mainSessionController = null;
-
   private final List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
-
   private String spaceJavascriptCallback = null;
   private String componentJavascriptCallback = null;
   private boolean clickable = true;
@@ -72,6 +65,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public AbstractBrowseBar() {
@@ -79,6 +73,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Constructor declaration
+   *
    * @param domainName
    * @param componentName
    * @param information
@@ -95,6 +90,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @param domainName
    * @see
    */
@@ -105,6 +101,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -114,6 +111,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @param componentName
    * @see
    */
@@ -125,6 +123,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @param componentName
    * @param link
    * @see
@@ -137,6 +136,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -146,6 +146,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -155,6 +156,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @param information
    * @see
    */
@@ -162,13 +164,16 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   public void setExtraInformation(String information) {
     if (information != null) {
       if (information.length() > 0) {
-        this.information = EncodeHelper.javaStringToHtmlString(information);
+        if (information.contains("<") || information.contains(">")) {
+          this.information = Encode.forHtml(information);
+        }
       }
     }
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -178,6 +183,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @param path
    * @see
    */
@@ -190,6 +196,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -199,6 +206,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -261,8 +269,8 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public boolean isI18N() {
-    return I18NHelper.isI18N &&
-        (getI18NBean() != null || getUrl() != null || getLanguages() != null);
+    return I18NHelper.isI18N
+        && (getI18NBean() != null || getUrl() != null || getLanguages() != null);
   }
 
   public String getI18NHTMLLinks() {
@@ -276,6 +284,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */

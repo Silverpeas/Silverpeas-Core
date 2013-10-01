@@ -1,35 +1,27 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
-
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -41,24 +33,30 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Class declaration
+ *
  * @author
  * @version %I%, %G%
  */
 public class SILVERMAILSessionController extends AbstractComponentSessionController {
+
   protected String currentFunction;
   protected long currentMessageId = -1;
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public SILVERMAILSessionController(MainSessionController mainSessionCtrl,
@@ -77,6 +75,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @param currentFunction
    * @see
    */
@@ -86,6 +85,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -95,18 +95,22 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @param folderName
    * @return
    * @see
    */
   public Collection<SILVERMAILMessage> getFolderMessageList(String folderName)
       throws SILVERMAILException {
-    return SILVERMAILPersistence.getMessageOfFolder(Integer
+    Collection<SILVERMAILMessage> messages = SILVERMAILPersistence.getMessageOfFolder(Integer
         .parseInt(getUserId()), folderName);
+    secureMessageForHTML(messages);
+    return messages;
   }
 
   /**
    * Method declaration
+   *
    * @param userId
    * @return
    * @throws NotificationManagerException
@@ -115,14 +119,14 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   public List<SendedNotificationDetail> getUserMessageList()
       throws NotificationManagerException {
     String userId = getUserId();
-    List<SendedNotificationDetail> notifByUser = new ArrayList<SendedNotificationDetail>();
+    List<SendedNotificationDetail> notifByUser;
     List<SendedNotificationDetail> sendedNotifByUser = new ArrayList<SendedNotificationDetail>();
     try {
       notifByUser = getNotificationInterface().getAllNotifByUser(userId);
       for (SendedNotificationDetail sendedNotif : notifByUser) {
         sendedNotif.setSource(getSource(sendedNotif.getComponentId()));
+        secureMessageForHTML(sendedNotif);
         sendedNotifByUser.add(sendedNotif);
-
       }
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
@@ -134,6 +138,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @param userId
    * @return
    * @throws NotificationManagerException
@@ -145,6 +150,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     try {
       sendedNotification = getNotificationInterface().getNotification(Integer.parseInt(notifId));
       sendedNotification.setSource(getSource(sendedNotification.getComponentId()));
+      secureMessageForHTML(sendedNotification);
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
           "NotificationSender.getUserMessageList()",
@@ -209,17 +215,21 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @param messageId
    * @return
    * @see
    */
   public SILVERMAILMessage getMessage(long messageId)
       throws SILVERMAILException {
-    return SILVERMAILPersistence.getMessage(messageId);
+    SILVERMAILMessage msg = SILVERMAILPersistence.getMessage(messageId);
+    secureMessageForHTML(msg);
+    return msg;
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -229,6 +239,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @param value
    * @see
    */
@@ -237,7 +248,22 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
-    return SILVERMAILPersistence.getMessage(currentMessageId);
+    return getMessage(currentMessageId);
   }
 
+  private void secureMessageForHTML(SendedNotificationDetail notif) {
+    // it is expected the message body is already securized against XSS attack
+    notif.setTitle(Encode.forHtml(notif.getTitle()));
+  }
+
+  private void secureMessageForHTML(SILVERMAILMessage msg) {
+    // it is expected the message ody is already securized against XSS attack
+    msg.setSubject(Encode.forHtml(msg.getSubject()));
+  }
+
+  private void secureMessageForHTML(Collection<SILVERMAILMessage> messages) {
+    for (SILVERMAILMessage msg : messages) {
+      secureMessageForHTML(msg);
+    }
+  }
 }

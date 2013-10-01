@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -34,7 +30,6 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +39,7 @@ import java.util.StringTokenizer;
 /**
  * A RadioButtonDisplayer is an object which can display a radio button in HTML the content of a
  * radio button to a end user and can retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -76,6 +72,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
 
@@ -88,11 +85,11 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.println(" var checked = $('input[type=radio][name=" + fieldName +
-          "]:checked').length == 1;\n");
+      out.println(" var checked = $('input[type=radio][name=" + fieldName
+          + "]:checked').length == 1;\n");
       out.println(" if(checked == false) {");
-      out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\";");
+      out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
+          "GML.MustBeFilled", language) + "\";");
       out.println("   errorNb++;");
       out.println(" }");
     }
@@ -108,6 +105,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext)
       throws FormException {
@@ -142,8 +140,9 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
 
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass))
+      if (StringUtil.isDefined(cssClass)) {
         cssClass = "class=\"" + cssClass + "\"";
+      }
     }
 
     try {
@@ -179,8 +178,8 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
 
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
     StringTokenizer stValues = new StringTokenizer(values, "##");
-    String optKey = "";
-    String optValue = "";
+    String optKey;
+    String optValue;
     int nbTokens = getNbHtmlObjectsDisplayed(template, pageContext);
 
     if (stKeys.countTokens() != stValues.countTokens()) {
@@ -199,11 +198,12 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
 
-        if (StringUtil.isDefined(cssClass))
+        if (StringUtil.isDefined(cssClass)) {
           html += "<span " + cssClass + ">";
+        }
         html +=
-            "<input type=\"radio\" id=\"" + fieldName + "_" + i + "\" name=\"" + fieldName +
-            "\" value=\"" + optKey + "\" ";
+            "<input type=\"radio\" id=\"" + fieldName + "_" + i + "\" name=\"" + fieldName
+            + "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled=\"disabled\" ";
@@ -215,12 +215,13 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
 
         html += "/>&nbsp;" + optValue;
 
-        if (StringUtil.isDefined(cssClass))
+        if (StringUtil.isDefined(cssClass)) {
           html += "</span>";
+        }
 
         if (i == nbTokens - 1) {
-          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-              !template.isHidden() && pageContext.useMandatory()) {
+          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+              && !template.isHidden() && pageContext.useMandatory()) {
             html += Util.getMandatorySnippet();
           }
         }
@@ -246,9 +247,11 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   *
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
 
@@ -286,9 +289,6 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     // take the same for keys and values
     if (keys.equals("") && !values.equals("")) {
       keys = values;
-    }
-    if (values.equals("") && !keys.equals("")) {
-      values = keys;
     }
 
     // Calculate numbers of html elements

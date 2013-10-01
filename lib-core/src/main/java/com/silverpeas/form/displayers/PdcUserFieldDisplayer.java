@@ -1,30 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
-
-import java.io.PrintWriter;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -38,12 +32,14 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A PdcUserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via
  * HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -55,7 +51,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[] { PdcUserField.TYPE };
+    String[] s = new String[]{PdcUserField.TYPE};
     return s;
   }
 
@@ -69,6 +65,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template,
       PagesContext PagesContext) throws java.io.IOException {
     String language = PagesContext.getLanguage();
@@ -103,6 +100,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out, PdcUserField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
 
@@ -122,8 +120,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
     if (!field.getTypeName().equals(PdcUserField.TYPE)) {
       SilverTrace
           .info("form", "PdcUserFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", PdcUserField.TYPE + ", type courant=" +
-          field.getTypeName());
+          "form.INFO_NOT_CORRECT_TYPE", PdcUserField.TYPE + ", type courant=" + field.getTypeName());
 
     } else {
       userCardIds = field.getUserCardIds();
@@ -135,21 +132,21 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
 
     html +=
         "<INPUT type=hidden"
-        + " name=\"" + fieldName + "$$id\" value=\"" +
-        EncodeHelper.javaStringToHtmlString(userCardIds) + "\" >";
+        + " name=\"" + fieldName + "$$id\" value=\"" + EncodeHelper.javaStringToHtmlString(
+        userCardIds) + "\" >";
 
     if (!template.isHidden()) {
       html +=
           "<INPUT type=\"text\" disabled size=\"50\" "
-          + " id=\"" + fieldName + "$$name\" name=\"" + fieldName + "$$name\" value=\"" +
-          EncodeHelper.javaStringToHtmlString(userNames) + "\" >";
+          + " id=\"" + fieldName + "$$name\" name=\"" + fieldName + "$$name\" value=\""
+          + EncodeHelper.javaStringToHtmlString(userNames) + "\" >";
     }
 
     if (!template.isHidden() && !template.isDisabled()
         && !template.isReadOnly()) {
       html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
-          URLManager.getApplicationURL() + "/RpdcSearchUserWrapper/jsp/Open"
+          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" + URLManager.
+          getApplicationURL() + "/RpdcSearchUserWrapper/jsp/Open"
           + "?formName=" + PagesContext.getFormName()
           + "&elementId=" + fieldName + "$$id"
           + "&elementName=" + fieldName + "$$name"
@@ -172,9 +169,11 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   *
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(String newId, PdcUserField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (PdcUserField.TYPE.equals(field.getTypeName())) {
@@ -193,6 +192,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
@@ -202,11 +202,11 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 2;
   }
-
 }

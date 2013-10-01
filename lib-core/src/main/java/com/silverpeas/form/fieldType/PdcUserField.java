@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
 import com.silverpeas.form.Field;
@@ -33,13 +29,13 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A PdcUserField stores a the users references
+ *
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
 public class PdcUserField implements Field {
 
   private static final long serialVersionUID = -1365851085995310180L;
-
   /**
    * The text field type name.
    */
@@ -48,6 +44,7 @@ public class PdcUserField implements Field {
   /**
    * Returns the type name.
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
@@ -83,6 +80,7 @@ public class PdcUserField implements Field {
    * Returns the string value of this field : the user names (FirstName LastName,FirstName
    * LastName,FirstName LastName, ...)
    */
+  @Override
   public String getValue() {
     String theUserCardIds = getUserCardIds(); // userCardId-userId,userCardId-userId
     // ....
@@ -93,23 +91,21 @@ public class PdcUserField implements Field {
     try {
 
       theUserCardIds += ",";
-      String userCardIdUserId = null;
-      int index = -1;
-      String userCardId = null;
-      String userId = null;
-      UserDetail user = null;
-      StringBuffer names = new StringBuffer("");
+      String userCardIdUserId;
+      int index;
+      String userCardId;
+      String userId;
+      UserDetail user;
+      StringBuilder names = new StringBuilder("");
       int begin = 0;
-      int end = 0;
-
-      end = theUserCardIds.indexOf(',', begin);
+      int end = theUserCardIds.indexOf(',', begin);
       while (end != -1) {
         userCardIdUserId = theUserCardIds.substring(begin, end); // userCardId-userId
         index = userCardIdUserId.indexOf("-");
         userCardId = userCardIdUserId.substring(0, index);
         userId = userCardIdUserId.substring(index + 1);
 
-        user =  OrganisationControllerFactory.getOrganisationController().getUserDetail(userId);
+        user = OrganisationControllerFactory.getOrganisationController().getUserDetail(userId);
         if (user == null) {
           names.append("userCardId(").append(userCardId).append(")");
         } else {
@@ -136,6 +132,7 @@ public class PdcUserField implements Field {
    * Returns the local value of this field. There is no local format for a user field, so the
    * language parameter is unused.
    */
+  @Override
   public String getValue(String language) {
     return getValue();
   }
@@ -143,18 +140,21 @@ public class PdcUserField implements Field {
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
+  @Override
   public void setValue(String value) throws FormException {
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
+  @Override
   public void setValue(String value, String language) throws FormException {
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
+  @Override
   public boolean acceptValue(String value) {
     return false;
   }
@@ -162,6 +162,7 @@ public class PdcUserField implements Field {
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
+  @Override
   public boolean acceptValue(String value, String language) {
     return false;
   }
@@ -169,6 +170,7 @@ public class PdcUserField implements Field {
   /**
    * Returns the userCardIds referenced by this field.
    */
+  @Override
   public Object getObjectValue() {
     if (getUserCardIds() == null) {
       return null;
@@ -179,6 +181,7 @@ public class PdcUserField implements Field {
   /**
    * Set userCardIds referenced by this field.
    */
+  @Override
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof String) {
       setUserCardIds((String) value);
@@ -191,6 +194,7 @@ public class PdcUserField implements Field {
   /**
    * Returns true if the value is a String and this field isn't read only.
    */
+  @Override
   public boolean acceptObjectValue(Object value) {
     if (value instanceof String) {
       return !isReadOnly();
@@ -202,6 +206,7 @@ public class PdcUserField implements Field {
   /**
    * Returns this field value as a normalized String : a user id
    */
+  @Override
   public String getStringValue() {
     return getUserCardIds();
   }
@@ -209,6 +214,7 @@ public class PdcUserField implements Field {
   /**
    * Set this field value from a normalized String : a user id
    */
+  @Override
   public void setStringValue(String value) {
     setUserCardIds(value);
   }
@@ -216,6 +222,7 @@ public class PdcUserField implements Field {
   /**
    * Returns true if this field isn't read only.
    */
+  @Override
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
@@ -223,15 +230,18 @@ public class PdcUserField implements Field {
   /**
    * Returns true if this field is not set.
    */
+  @Override
   public boolean isNull() {
     return (getUserCardIds() == null);
   }
 
   /**
    * Set to null this field.
+   *
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */
+  @Override
   public void setNull() throws FormException {
     setUserCardIds(null);
   }
@@ -239,6 +249,7 @@ public class PdcUserField implements Field {
   /**
    * Tests equality beetwen this field and the specified field.
    */
+  @Override
   public boolean equals(Object o) {
     String s = getUserCardIds();
 
@@ -253,6 +264,7 @@ public class PdcUserField implements Field {
   /**
    * Compares this field with the specified field.
    */
+  @Override
   public int compareTo(Object o) {
     String s = getValue();
     if (s == null) {
@@ -280,14 +292,13 @@ public class PdcUserField implements Field {
     }
   }
 
+  @Override
   public int hashCode() {
     String s = getUserCardIds();
     return ("" + s).hashCode();
   }
-
   /**
    * The referenced userCardIds.
    */
   private String userCardIds = null;
-
 }

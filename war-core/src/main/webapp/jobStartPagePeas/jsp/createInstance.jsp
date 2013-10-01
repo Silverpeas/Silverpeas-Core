@@ -142,7 +142,7 @@ List 			hiddenParameters 	= (List) request.getAttribute("HiddenParameters");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
-String m_JobPeas = component.getLabel();
+String m_JobPeas = EncodeHelper.javaStringToHtmlString(component.getLabel());
 String m_ComponentType = component.getName();
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+m_ComponentType+"Small.gif";
@@ -287,7 +287,7 @@ out.println(board.printBefore());
 				<%
 					for (int i = 0; i < brothers.length; i++)
 					{
-						out.println("<OPTION value=\"" + brothers[i].getId() + "\">" + brothers[i].getLabel() + "</OPTION>");
+						out.println("<OPTION value=\"" + brothers[i].getId() + "\">" + EncodeHelper.javaStringToHtmlString(brothers[i].getLabel()) + "</OPTION>");
 					}
 				%>
 				<OPTION value="-1" selected><%=resource.getString("JSPP.PlaceLast")%></OPTION>

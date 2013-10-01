@@ -111,11 +111,11 @@
                 </tr>
                 <tr>
                   <td class="txtlibform" nowrap="nowrap"><fmt:message key="subject" /> :&nbsp;</td>
-                  <td><c:out value="${msg.subject}" /></td>
+                  <td>${msg.subject}</td>
                 </tr>
                 <tr>
                   <td class="txtlibform"></td>
-                  <td><c:out value="${msg.body}" escapeXml="false" /></td>
+                  <td>${msg.body}</td>
                 </tr>
               </table>
         </view:board>
