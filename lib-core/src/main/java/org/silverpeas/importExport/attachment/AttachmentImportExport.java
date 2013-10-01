@@ -156,11 +156,14 @@ public class AttachmentImportExport {
         updateRule);
     attachment.setLogicalName(logicalName);
 
-    // On instancie l'objet attachment e creer
+    Date creationDate = attachment.getCreationDate();
+    if (creationDate == null) {
+      creationDate = new Date();
+    }
     SimpleDocument ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
         new SimpleAttachment(attachment.getLogicalName(), attachment.getLanguage(), attachment.
         getTitle(), attachment.getInfo(), attachment.getSize(),
-        FileUtil.getMimeType(attachment.getPhysicalName()), userId, new Date(), attachment.
+        FileUtil.getMimeType(attachment.getPhysicalName()), userId, creationDate, attachment.
         getXmlForm()));
     return AttachmentServiceFactory.getAttachmentService().createAttachment(ad_toCreate, input,
         indexIt);

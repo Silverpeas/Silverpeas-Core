@@ -41,6 +41,8 @@ import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -87,6 +89,8 @@ import static java.io.File.separator;
  * @author sdevolder
  */
 public class PublicationsTypeManager {
+  
+  final static MetadataExtractor metadataExtractor = new MetadataExtractor();
 
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
@@ -753,6 +757,28 @@ public class PublicationsTypeManager {
                   if (fileSize > maximumFileSize) {
                     unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                   } else {
+                    MetaData metaData = null;
+                    if (settings.isPoiUsed()) {
+                      // extract title, subject and keywords
+                      metaData = metadataExtractor.extractMetadata(attdetail.getAttachmentPath());
+                      if (!StringUtil.isDefined(attdetail.getTitle()) &&
+                          StringUtil.isDefined(metaData.getTitle())) {
+                        attdetail.setTitle(metaData.getTitle());
+                      }
+                      if (!StringUtil.isDefined(attdetail.getInfo()) &&
+                          StringUtil.isDefined(metaData.getSubject())) {
+                        attdetail.setInfo(metaData.getSubject());
+                      }
+                    }
+                    if (settings.useFileDates()) {
+                      // extract creation date
+                      if (metaData == null) {
+                        metaData = metadataExtractor.extractMetadata(attdetail.getAttachmentPath());
+                      }
+                      if (metaData.getCreationDate() != null) {
+                        attdetail.setCreationDate(metaData.getCreationDate());
+                      }
+                    }
                     attachmentsSizeOk.add(attdetail);
                   }
                 }
