@@ -1010,7 +1010,7 @@
 
       function ShareAttachment(id) {
         var url = '<c:url value="/RfileSharing/jsp/NewTicket"><c:param name="componentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /></c:url>&objectId=' + id;
-        SP_openWindow(url, "NewTicket", "700", "300", "scrollbars=no, resizable, alwaysRaised");
+        SP_openWindow(url, "NewTicket", "700", "360", "scrollbars=no, resizable, alwaysRaised");
       }
   </c:if>
 

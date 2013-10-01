@@ -63,33 +63,33 @@ public class ResultSearchRendererUtil {
     StringBuilder stars = new StringBuilder();
     if (score <= 0.2) {
       for (int l = 0; l < 1; l++) {
-        stars.append("").append(fullStarSrc);
+        stars.append(fullStarSrc);
       }
       for (int k = 2; k <= 5; k++) {
-        stars.append("").append(emptyStarSrc);
+        stars.append(emptyStarSrc);
       }
     } else if (score > 0.2 && score <= 0.4) {
       for (int l = 0; l < 2; l++) {
-        stars.append("").append(fullStarSrc);
+        stars.append(fullStarSrc);
       }
       for (int k = 3; k <= 5; k++) {
-        stars.append("").append(emptyStarSrc);
+        stars.append(emptyStarSrc);
       }
     } else if (score > 0.4 && score <= 0.6) {
       for (int l = 0; l < 3; l++) {
-        stars.append("").append(fullStarSrc);
+        stars.append(fullStarSrc);
       }
       for (int k = 4; k <= 5; k++) {
-        stars.append("").append(emptyStarSrc);
+        stars.append(emptyStarSrc);
       }
     } else if (score > 0.6 && score <= 0.8) {
       for (int l = 0; l < 4; l++) {
-        stars.append("").append(fullStarSrc);
+        stars.append(fullStarSrc);
       }
-      stars.append("").append(emptyStarSrc);
+      stars.append(emptyStarSrc);
     } else if (score > 0.8) {
       for (int l = 0; l < 5; l++) {
-        stars.append("").append(fullStarSrc);
+        stars.append(fullStarSrc);
       }
     }
     return stars.toString();

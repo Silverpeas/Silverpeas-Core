@@ -1023,6 +1023,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <location>/Error401.jsp</location>
   </error-page>
   <error-page>
+    <error-code>403</error-code>
+    <location>/Error403.jsp</location>
+  </error-page>
+  <error-page>
     <error-code>404</error-code>
     <location>/Error404.jsp</location>
   </error-page>
