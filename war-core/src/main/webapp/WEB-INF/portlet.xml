@@ -199,7 +199,7 @@
  </portlet>
  
  <portlet>
-        <description>Mes fichiers rï¿½servï¿½s</description>
+        <description>Mes fichiers reserves</description>
         <portlet-name>MyCheckOutFiles</portlet-name>
         <display-name>MyCheckOutFiles</display-name>
         <portlet-class>com.silverpeas.portlets.MyCheckOutFiles</portlet-class>
@@ -267,6 +267,23 @@
         <portlet-info>
             <title>Drafts of connected user</title>
             <short-title>My drafts</short-title>
+        </portlet-info>
+ </portlet>
+ 
+  <portlet>
+        <description>Dernieres publications consultées</description>
+        <portlet-name>MyLastPubliReadPortlet</portlet-name>
+        <display-name>MyLastPubliReadPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyLastPubliReadPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyLastPubliReadPortlet title</title>
+            <short-title>MyLastPubliReadPortlet shortTitle</short-title>
         </portlet-info>
  </portlet>
   

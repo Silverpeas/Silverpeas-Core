@@ -96,4 +96,15 @@ public interface StatisticBm {
 
   public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
       String objectType, Date startDate, Date endDate, List<String> userIds);
+  
+
+  
+  /**
+   * @param userId
+   * @param actionType
+   * @param objectType
+   * @param nbObjects
+   * @return list of objects consulted by the user
+   */
+  public Collection<HistoryObjectDetail> getHistoryByUser(String userId, int actionType, String objectType, int nbObjects);
 }

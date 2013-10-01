@@ -484,5 +484,63 @@ public class HistoryObjectDAO {
     }
     return results;
   }
+  
+  public static Collection<HistoryObjectDetail> getHistoryDetailByUser(Connection con, String userId, int actionType, String objectType, int nbObjects)
+      throws SQLException {
+    SilverTrace.info("statistic",
+        "HistoryObjectDAO.getHistoryDetailByUser",
+        "root.MSG_GEN_ENTER_METHOD");
+    
+    String selectStatement = "select distinct componentId, objectId, MAX(datestat), MAX(heurestat)"
+        + " from SB_Statistic_History" 
+        + " where userId='" + userId + "'"
+        + " and actionType="+actionType
+        + " and objectType='"+objectType+"'"
+        + " group by componentId, objectId"
+        + " order by MAX(dateStat) desc, MAX(heureStat) desc";
+
+    Statement stmt = null;
+    ResultSet rs = null;
+    List<HistoryObjectDetail> list = new ArrayList<HistoryObjectDetail>();
+    int nbObjectsResult = 0;
+        
+    try {
+      stmt = con.createStatement();
+      rs = stmt.executeQuery(selectStatement);
+      
+      String componentId = "";
+      String foreignId = "";
+      Date date;
+
+      while (rs.next() && nbObjectsResult < nbObjects) {
+        componentId = rs.getString(1);
+        foreignId = String.valueOf(rs.getInt(2));
+        ForeignPK foreignPK = new ForeignPK(foreignId, componentId);
+        try {
+          date = DateUtil.parse(rs.getString(3));
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(date);
+          String hhmm = rs.getString(4);
+          String hh = hhmm.substring(0, 2);
+          String mm = hhmm.substring(3, 5);
+          cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hh));
+          cal.set(Calendar.MINUTE, Integer.parseInt(mm));
+          date = cal.getTime();
+        } catch (java.text.ParseException e) {
+          throw new StatisticRuntimeException(
+              "HistoryObjectDAO.getHistoryDetailByUser()",
+              SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
+        }
+        HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, foreignPK);
+
+        list.add(detail);
+        nbObjectsResult ++;
+      }
+        
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+    return list;
+  }
 
 }

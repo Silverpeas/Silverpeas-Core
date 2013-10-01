@@ -365,4 +365,32 @@
       </Collection>
     </Properties>
   </PortletApp>
+  <PortletApp name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My last publications read portlet"/>
+      <String name="shortTitle" value="My last publications read"/>
+      <String name="description" value="Last publications consulted"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Dernières publications lues"/>
+		<String name="en" value="Latest publications read"/>
+		<String name="de" value="Aktuelle VeröffentlichungenVeröffentlichung lesen"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Les dernières publications que j'ai consultées"/>
+        <String name="en" value="The latest publications consulted"/>
+        <String name="de" value="Die neuesten Publikationen konsultiert"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>
 </PortletAppRegistry>

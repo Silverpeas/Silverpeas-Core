@@ -143,4 +143,13 @@
                <String name="row" value="6"/>
           </Properties>
      </PortletWindow>
+     <PortletWindow lang="" name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet" remote="false">
+          <Properties>
+               <String name="title" value="portlet.MyLastPubliReadPortlet.title"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|MyLastPubliReadPortlet"/>
+               <String name="row" value="5"/>
+          </Properties>
+     </PortletWindow>
 </PortletWindowRegistry>
