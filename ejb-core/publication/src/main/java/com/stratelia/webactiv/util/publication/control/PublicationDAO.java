@@ -506,10 +506,14 @@ public class PublicationDAO {
       prepStmt.setString(11, detail.getKeywords());
       prepStmt.setString(12, detail.getContent());
       prepStmt.setString(13, detail.getStatus());
-      if (detail.getCreationDate() == null) {
-        prepStmt.setString(14, DateUtil.today2SQLDate());
+      if (detail.isUpdateDateMustBeSet() && detail.getUpdateDate() != null) {
+        prepStmt.setString(14, DateUtil.formatDate(detail.getUpdateDate()));
       } else {
-        prepStmt.setString(14, DateUtil.formatDate(detail.getCreationDate()));
+        if (detail.getCreationDate() == null) {
+          prepStmt.setString(14, DateUtil.today2SQLDate());
+        } else {
+          prepStmt.setString(14, DateUtil.formatDate(detail.getCreationDate()));
+        }
       }
       prepStmt.setString(15, detail.getPK().getComponentName());
       prepStmt.setString(16, detail.getCreatorId());
