@@ -78,6 +78,10 @@
     <Properties/>
   </PortletWindowPreference>
   <PortletWindowPreference name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet" userName="default">
-    <Properties/>
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbPublis" value="5"/>
+      </Collection>
+    </Properties>
   </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

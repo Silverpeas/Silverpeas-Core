@@ -183,7 +183,7 @@
  </portlet>
  
  <portlet>
-        <description>Actualitï¿½s</description>
+        <description>Actualites</description>
         <portlet-name>QuickInfosPortlet</portlet-name>
         <display-name>QuickInfosPortlet</display-name>
         <portlet-class>com.silverpeas.portlets.QuickInfosPortlet</portlet-class>
@@ -253,7 +253,7 @@
  </portlet>
  
  <portlet>
-        <description>Drafts of connected user</description>
+        <description>Mes brouillons</description>
         <portlet-name>MyDraftsPortlet</portlet-name>
         <display-name>MyDraftsPortlet</display-name>
         <portlet-class>com.silverpeas.portlets.MyDrafts</portlet-class>
@@ -261,8 +261,6 @@
         <supports>
             <mime-type>text/html</mime-type>          
             <portlet-mode>VIEW</portlet-mode>
-            <!-- <portlet-mode>EDIT</portlet-mode>
-            <portlet-mode>HELP</portlet-mode> -->
         </supports>
         <portlet-info>
             <title>Drafts of connected user</title>
@@ -271,7 +269,7 @@
  </portlet>
  
   <portlet>
-        <description>Dernieres publications consultées</description>
+        <description>Dernieres publications consultees</description>
         <portlet-name>MyLastPubliReadPortlet</portlet-name>
         <display-name>MyLastPubliReadPortlet</display-name>
         <portlet-class>com.silverpeas.portlets.MyLastPubliReadPortlet</portlet-class>

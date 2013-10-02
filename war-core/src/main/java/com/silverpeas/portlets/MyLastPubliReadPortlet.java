@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
@@ -52,7 +53,11 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
             PortletSession.APPLICATION_SCOPE);
 
     Collection<PublicationDetail> listPubli = new ArrayList<PublicationDetail>();
+    PortletPreferences pref = request.getPreferences();
     int nbPublis = 5;
+    if (StringUtil.isInteger(pref.getValue("nbPublis", "5"))) {
+      nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
+    }
     Collection<HistoryObjectDetail> listObject = getStatisticBm().getHistoryByUser(mainSessionCtrl.getUserId(), 1, "Publication", nbPublis);
     for(HistoryObjectDetail object : listObject) {
       PublicationPK pubPk = new PublicationPK(object.getForeignPK().getId(), object.getForeignPK().getComponentName());
