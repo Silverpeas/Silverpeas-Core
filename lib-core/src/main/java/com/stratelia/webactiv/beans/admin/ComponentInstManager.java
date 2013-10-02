@@ -24,6 +24,12 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
@@ -37,11 +43,6 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class ComponentInstManager {
 
@@ -109,6 +110,16 @@ public class ComponentInstManager {
       newInstance.spaceId = idAsInt(sFatherId);
       ddManager.getOrganization().instance.createComponentInstance(newInstance);
       String sComponentNodeId = idAsString(newInstance.id);
+      
+      // duplicates existing translations
+      Map<String, Translation> translations = componentInst.getTranslations();
+      for (String lang : translations.keySet()) {
+        ComponentI18N translation = (ComponentI18N) translations.get(lang);
+        ComponentInstanceI18NRow row =
+            new ComponentInstanceI18NRow(newInstance.id, lang, translation.getName(),
+                translation.getDescription());
+        ddManager.getOrganization().instanceI18N.createTranslation(row);
+      }
 
       // Add the parameters if necessary
       List<Parameter> parameters = componentInst.getParameters();
