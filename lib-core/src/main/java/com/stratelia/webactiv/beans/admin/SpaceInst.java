@@ -780,8 +780,9 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
           UnitUtil.memUnit.MB));
     }
-    SpaceInstLight space = OrganisationControllerFactory.getFactory().getOrganisationController()
-        .getSpaceInstLightById(quotaReached.getResourceId());
+    SpaceInstLight space =
+        OrganisationControllerFactory.getOrganisationController().getSpaceInstLightById(
+            quotaReached.getResourceId());
     final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "admin/space/quota");
     template.setAttribute("quota", quotaReached);
@@ -841,6 +842,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     List<SpaceProfileInst> profiles = getProfiles();
     for (SpaceProfileInst profile : profiles) {
       clone.addSpaceProfileInst(profile.clone());
+    }
+    
+    for (String lang : getTranslations().keySet()) {
+      SpaceI18N translation = (SpaceI18N) getTranslation(lang);
+      clone.addTranslation(translation);
     }
 
     // clone components

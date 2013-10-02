@@ -1168,6 +1168,9 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       PublicationDetail detail = PublicationDAO.loadRow(con, pubPK);
+      if (I18NHelper.isI18N) {
+        setTranslations(con, detail);
+      }
       InfoPK infoPK = new InfoPK(detail.getInfoId(), pubPK);
       InfoDetail infoDetail = InfoDAO.getInfoDetailByInfoPK(con, infoPK);
       ModelDetail modelDetail = InfoDAO.getModelDetail(con, infoPK);
@@ -1727,6 +1730,9 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private PublicationDetail loadTranslations(PublicationDetail detail) {
+    if (!I18NHelper.isI18N) {
+      return detail;
+    }
     PublicationI18N translation = new PublicationI18N(detail.getLanguage(), detail.getName(), detail
         .getDescription(), detail.getKeywords());
     List translations = new ArrayList();
