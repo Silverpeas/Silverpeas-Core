@@ -50,4 +50,11 @@ public class SpaceI18NRow {
     name = space.name;
     description = space.description;
   }
+  
+  public SpaceI18NRow(int spaceId, String lang, String name, String description) {
+    this.spaceId = spaceId;
+    this.lang = lang;
+    this.name = name;
+    this.description = description;
+  }
 }

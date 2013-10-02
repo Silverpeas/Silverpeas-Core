@@ -836,6 +836,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       clone.addSpaceProfileInst(profile.clone());
     }
 
+    for (String lang : getTranslations().keySet()) {
+      SpaceI18N translation = (SpaceI18N) getTranslation(lang);
+      clone.addTranslation(translation);
+    }
+
     // clone components
     List<ComponentInst> allComponents = getAllComponentsInst();
     for (ComponentInst component : allComponents) {
