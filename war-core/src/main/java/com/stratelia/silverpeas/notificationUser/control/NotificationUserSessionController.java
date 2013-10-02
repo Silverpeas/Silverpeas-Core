@@ -1,33 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationUser.control;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Properties;
 
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -49,7 +40,12 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Properties;
+import org.owasp.encoder.Encode;
 
 /**
  * @author tleroi
@@ -67,6 +63,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * Constructor declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @see
@@ -88,6 +85,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * Method declaration
+   *
    * @return
    * @throws NotificationManagerException
    * @see
@@ -109,6 +107,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * Method declaration
+   *
    * @return
    * @throws NotificationManagerException
    * @see
@@ -120,12 +119,13 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * Method declaration
+   *
    * @return
    * @throws NotificationUserException
    * @see
    */
   public ArrayList<Properties> getAvailableGroups() throws NotificationUserException {
-    Group[] allGroups = null;
+    Group[] allGroups;
     Properties p;
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();
@@ -142,11 +142,12 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   public ArrayList<Properties> getAvailableUsers() {
-    UserDetail[] allUsers = null;
+    UserDetail[] allUsers;
     Properties p;
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();
@@ -193,8 +194,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
       currentPriorityId = "0";
     }
 
+    String safeMessage = Encode.forHtml(txtMessage);
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        Integer.parseInt(currentPriorityId), txtTitle, txtMessage);
+        Integer.parseInt(currentPriorityId), txtTitle, safeMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
     notifMetaData.addUserRecipients(selectedUsers);
@@ -204,6 +206,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * Method declaration
+   *
    * @param src
    * @return
    * @see
@@ -219,7 +222,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   public String buildOptions(ArrayList<Properties> ar, String selectValue, String selectText,
       boolean bSorted) {
     StringBuilder valret = new StringBuilder();
-    Properties elmt = null;
+    Properties elmt;
 
     ArrayList<Properties> arToDisplay = ar;
     int i;
@@ -237,13 +240,12 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     if (bSorted) {
       Properties[] theList = ar.toArray(new Properties[ar.size()]);
       Arrays.sort(theList, new Comparator<Properties>() {
-
         @Override
         public int compare(Properties o1, Properties o2) {
           return o1.getProperty("name").toUpperCase().compareTo(
               o2.getProperty("name").toUpperCase());
-          }
-                });
+        }
+      });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
@@ -338,7 +340,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     Properties p;
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();
-    UserDetail[] selectedUsers = null;
+    UserDetail[] selectedUsers;
 
     if (selectedUersId != null && selectedUersId.length > 0) {
       selectedUsers = this.getUserDetailList(selectedUersId);
@@ -366,7 +368,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     SilverTrace.debug("notificationUser",
         "NotificationUsersessionController.getSelectedGroups()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
-    Group[] selectedGroups = null;
+    Group[] selectedGroups;
     Properties p;
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();

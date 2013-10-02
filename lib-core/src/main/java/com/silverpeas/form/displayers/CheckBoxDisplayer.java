@@ -1,38 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -43,8 +29,15 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
@@ -65,10 +58,11 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
   /**
    * Returns the name of the managed types.
-   * @return 
+   *
+   * @return
    */
   public String[] getManagedTypes() {
-    String[] s = new String[] { TextField.TYPE };
+    String[] s = new String[]{TextField.TYPE};
     return s;
   }
 
@@ -81,6 +75,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * <li>the fieldName is unknown by the template.
    * <li>the field type is not a managed type.
    * </ul>
+   *
    * @param out
    * @param template
    * @param pagesContext
@@ -116,6 +111,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param field
    * @param template
@@ -296,9 +292,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     // take the same for keys and values
     if (keys.equals("") && !values.equals("")) {
       keys = values;
-    }
-    if (values.equals("") && !keys.equals("")) {
-      values = keys;
     }
 
     // Calculate numbers of html elements

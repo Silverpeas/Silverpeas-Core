@@ -23,6 +23,11 @@
  */
 package org.silverpeas.util.mail;
 
+import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.util.EncodeHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,19 +41,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
-
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.converter.DocumentFormatConverterFactory;
-import com.silverpeas.util.EncodeHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +51,7 @@ import org.apache.poi.hsmf.datatypes.AttachmentChunks;
 import org.apache.poi.hsmf.datatypes.Chunks;
 import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
+import org.silverpeas.util.Charsets;
 
 import static com.silverpeas.converter.DocumentFormat.*;
 
@@ -96,12 +91,12 @@ public class MSGExtractor implements MailExtractor {
         mail.setDate(extractDateOfReception());
       }
     } catch (ChunkNotFoundException e) {
-      SilverTrace.warn("info", "MSGExtractor.getMail()", "", e);
+      SilverTrace.warn("util", "MSGExtractor.getMail()", "", e);
     }
     try {
       mail.setSubject(message.getSubject());
     } catch (ChunkNotFoundException e) {
-      SilverTrace.warn("info", "MSGExtractor.getMail()", "", e);
+      SilverTrace.warn("util", "MSGExtractor.getMail()", "", e);
     }
 
     Chunks mainChunks = message.getMainChunks();
@@ -128,7 +123,7 @@ public class MSGExtractor implements MailExtractor {
       }
       mail.setBody(body);
     } catch (ChunkNotFoundException e) {
-      SilverTrace.warn("info", "MSGExtractor.getMail()", "", e);
+      SilverTrace.warn("util", "MSGExtractor.getMail()", "", e);
     }
     return mail;
   }

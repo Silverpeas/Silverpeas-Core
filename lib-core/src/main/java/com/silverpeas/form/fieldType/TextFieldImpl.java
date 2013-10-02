@@ -1,29 +1,31 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,22 +35,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-
 /**
  * A TextFieldImpl stores use a String attribute to store its value.
  */
 public class TextFieldImpl extends TextField {
 
   private static final long serialVersionUID = 1L;
-
   private String value = "";
-
   private static final String suggestionsQuery = "select distinct(f.fieldValue)"
       + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
       + " where t.templateId = r.templateId"
@@ -63,6 +56,7 @@ public class TextFieldImpl extends TextField {
   /**
    * Returns the string value of this field.
    */
+  @Override
   public String getStringValue() {
     return value;
   }
@@ -70,6 +64,7 @@ public class TextFieldImpl extends TextField {
   /**
    * Set the string value of this field.
    */
+  @Override
   public void setStringValue(String value) {
     this.value = value;
   }
@@ -77,6 +72,7 @@ public class TextFieldImpl extends TextField {
   /**
    * Returns true if the value is read only.
    */
+  @Override
   public boolean isReadOnly() {
     return false;
   }
@@ -102,11 +98,12 @@ public class TextFieldImpl extends TextField {
 
       rs = statement.executeQuery();
 
-      String oneSuggestion = "";
+      String oneSuggestion;
       while (rs.next()) {
         oneSuggestion = rs.getString(1);
-        if (StringUtil.isDefined(oneSuggestion))
+        if (StringUtil.isDefined(oneSuggestion)) {
           suggestions.add(oneSuggestion);
+        }
       }
     } catch (Exception e) {
       SilverTrace.error("formTemplate", "TextFieldImpl.getSuggestions",
@@ -114,8 +111,9 @@ public class TextFieldImpl extends TextField {
     } finally {
       DBUtil.close(rs, statement);
       try {
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (SQLException e) {
         SilverTrace.error("formTemplate", "TextFieldImpl.getSuggestions",
             "root.EX_CONNECTION_CLOSE_FAILED", e);
@@ -127,7 +125,8 @@ public class TextFieldImpl extends TextField {
   public static void printSuggestionsIncludes(PagesContext pageContext,
       String fieldName, PrintWriter out) {
     int zindex =
-        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex())) * 9000;
+        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex()))
+        * 9000;
     out.println("<style type=\"text/css\">\n");
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out.println("		width:15em;\n");
@@ -157,21 +156,22 @@ public class TextFieldImpl extends TextField {
 
       out.println("\"" + EncodeHelper.javaStringToJsString(val) + "\"");
 
-      if (itRes.hasNext())
+      if (itRes.hasNext()) {
         out.println(",");
+      }
     }
 
     out.println("];\n");
     out.println("</script>\n");
 
     out.println("<script type=\"text/javascript\">\n");
-    out.println(" this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray" +
-        fieldName + ");\n");
+    out.println(" this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray"
+        + fieldName + ");\n");
     out.println("	this.oAutoComp" + fieldName
         + " = new YAHOO.widget.AutoComplete('" + fieldName + "','container"
         + fieldName + "', this.oACDS" + fieldName + ");\n");
-    out.println("	this.oAutoComp" + fieldName +
-        ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
+    out.println("	this.oAutoComp" + fieldName
+        + ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
     out.println("	this.oAutoComp" + fieldName + ".typeAhead = true;\n");
     out.println("	this.oAutoComp" + fieldName + ".useShadow = true;\n");
     out.println("	this.oAutoComp" + fieldName + ".minQueryLength = 0;\n");
@@ -185,5 +185,4 @@ public class TextFieldImpl extends TextField {
     out.println("	});\n");
     out.println("</script>\n");
   }
-
 }

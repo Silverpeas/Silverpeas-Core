@@ -77,6 +77,7 @@ public class PublicationImportExport {
     String motsClefs = "";
     String content = "";
     Date creationDate = new Date();
+    Date lastModificationDate = null;
 
     if (FileUtil.isMail(file.getName())) {
       try {
@@ -111,9 +112,12 @@ public class PublicationImportExport {
             "PublicationImportExport.convertFileInfoToPublicationDetail",
             "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
       }
-    } else if (settings.isPoiUsed()) {
-      try {
-        MetaData metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+    } else {
+      // it's a classical file (not an email)
+      MetaData metaData = null;
+      if (settings.isPoiUsed()) {
+        // extract title, subject and keywords
+        metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
         if (StringUtil.isDefined(metaData.getTitle())) {
           nomPub = metaData.getTitle();
         }
@@ -123,14 +127,28 @@ public class PublicationImportExport {
         if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
           motsClefs = StringUtils.join(metaData.getKeywords(), ';');
         }
-      } catch (Exception ex) {
-        SilverTrace.error("importExport",
-            "PublicationImportExport.convertFileInfoToPublicationDetail",
-            "importExport.EX_CANT_EXTRACT_PUBLICATION_METADATA_FROM_FILE", ex);
+      }
+      
+      if (settings.useFileDates()) {
+        // extract creation and last modification dates
+        if (metaData == null) {
+          metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+        }
+        if (metaData.getCreationDate() != null) {
+          creationDate = metaData.getCreationDate();
+        }
+        if (metaData.getLastSaveDateTime() != null) {
+          lastModificationDate = metaData.getLastSaveDateTime();
+        }
       }
     }
-    return new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
+    PublicationDetail publication = new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
         settings.getUser().getId(), "5", null, motsClefs, content);
+    if (lastModificationDate != null) {
+      publication.setUpdateDate(lastModificationDate);
+      publication.setUpdateDateMustBeSet(true);
+    }
+    return publication;
   }
 
   /**
