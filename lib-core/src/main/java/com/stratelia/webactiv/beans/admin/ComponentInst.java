@@ -24,15 +24,14 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.util.i18n.AbstractI18NBean;
 
 public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
     Comparable<ComponentInst> {
@@ -80,7 +79,6 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public Object clone() {
     ComponentInst ci = new ComponentInst();
-    Iterator<ProfileInst> it;
 
     ci.m_sId = m_sId;
     ci.m_sName = m_sName;
@@ -96,12 +94,17 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
       ci.m_alProfileInst = null;
     } else {
       ci.m_alProfileInst = new ArrayList<ProfileInst>();
-      it = m_alProfileInst.iterator();
-      while (it.hasNext()) {
-        ci.m_alProfileInst.add((ProfileInst) it.next().clone());
+      for (ProfileInst profile : m_alProfileInst) {
+        ci.m_alProfileInst.add((ProfileInst) profile.clone());
       }
     }
     ci.parameters = new ArrayList<Parameter>(this.parameters);
+    
+    for (String lang : getTranslations().keySet()) {
+      ComponentI18N translation = (ComponentI18N) getTranslation(lang);
+      ci.addTranslation(translation);
+    }
+    
     return ci;
   }
 

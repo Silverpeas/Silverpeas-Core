@@ -50,4 +50,11 @@ public class ComponentInstanceI18NRow {
     name = component.name;
     description = component.description;
   }
+
+  public ComponentInstanceI18NRow(int componentId, String lang, String name, String description) {
+    this.componentId = componentId;
+    this.lang = lang;
+    this.name = name;
+    this.description = description;
+  }
 }
