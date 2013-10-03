@@ -29,9 +29,10 @@ import java.util.Set;
 
 import org.silverpeas.notification.jsondiff.Operation;
 
+import com.silverpeas.admin.notification.ComponentJsonPatch;
+
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.notification.ComponentJsonPatch;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 
 public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
@@ -103,6 +104,11 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     ci.parameters = new ArrayList<Parameter>(this.parameters.size());
     for (Parameter param : this.parameters) {
       ci.parameters.add(param.clone());
+    }
+
+    for (String lang : getTranslations().keySet()) {
+      ComponentI18N translation = (ComponentI18N) getTranslation(lang);
+      ci.addTranslation(translation);
     }
     return ci;
   }
