@@ -66,7 +66,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
@@ -1402,8 +1401,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     for (SilverContentInterface sci : silverContentTempo) {
       UserDetail creatorDetail = pdcSC.getOrganisationController().getUserDetail(sci.getCreatorId());
 
-      GlobalSilverContent gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(
-          instanceId, pdcSC));
+      GlobalSilverContent gsc =
+          processor.getGlobalSilverContent(sci, creatorDetail, pdcSC.getLocation(instanceId));
 
       alSilverContents.add(gsc);
     }
@@ -1500,29 +1499,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     return containerPeasPDC.getContainerInterface();
   }
 
-  /**
-   * Retourne l'emplacement du document "PDC"
-   *
-   * @param instanceId - l'id de l'instance
-   * @return l'emplacement du document
-   */
-  private String getLocation(String instanceId, PdcSearchSessionController pdcSC) throws Exception {
-    String spaceId = getSpaceId(instanceId, pdcSC); // recherche l'espace contenant l'instanceId
-    return pdcSC.getSpaceLabel(spaceId) + " / " + pdcSC.getComponentLabel(spaceId, instanceId);
-  }
-
-  private String getSpaceId(String componentId, PdcSearchSessionController pdcSC) throws Exception {
-    // recherche PDC Uniquement
-    String spaceId = "";
-    ComponentInstLight componentInst =
-        pdcSC.getOrganisationController().getComponentInstLight(componentId);
-    if (componentInst != null) {
-      spaceId = componentInst.getDomainFatherId();
-    }
-
-    return spaceId;
-  }
-
   private void clearUserChoices(PdcSearchSessionController pdcSC) {
     pdcSC.clearQueryParameters();
     pdcSC.removeAllCriterias();
@@ -1532,6 +1508,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     pdcSC.getQueryParameters().setXmlTitle(null);
     pdcSC.clearXmlTemplateAndData();
     pdcSC.setDataType(PdcSearchSessionController.ALL_DATA_TYPE);
+    pdcSC.setSelectedFacetEntries(null);
   }
 
   /**

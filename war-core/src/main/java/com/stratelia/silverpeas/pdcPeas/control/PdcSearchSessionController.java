@@ -1371,14 +1371,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             }
             place = places.get(componentId);
             if (place == null) {
-              ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
-                  componentId);
-              if (componentInst != null) {
-                place =
-                    getSpaceLabel(componentInst.getDomainFatherId()) + " " + locationSeparator +
-                        " " + componentInst.getLabel(getLanguage());
-                places.put(componentId, place);
-              }
+              place = getLocation(componentId);
+              places.put(componentId, place);
             }
           }
           String userId = result.getCreationUser();
@@ -1392,6 +1386,23 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       places.clear();
     }
     return results;
+  }
+  
+  /**
+   * Get location of result
+   *
+   * @param instanceId - application id
+   * @return location as a String
+   */
+  public String getLocation(String instanceId) {
+    ComponentInstLight componentInst =
+        getOrganisationController().getComponentInstLight(instanceId);
+    if (componentInst != null) {
+      String spaceId = componentInst.getDomainFatherId();
+      return getSpaceLabel(spaceId) + " " + locationSeparator + " " +
+          getComponentLabel(spaceId, instanceId);
+    }
+    return "";
   }
 
   private boolean isWysiwyg(String filename, List<String> wysiwygSuffixes) {
@@ -1511,12 +1522,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else if (componentId.equals("users")) {
       location = "";
     } else {
-      ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
-          componentId);
-      if (componentInst != null) {
-        location = getSpaceLabel(componentInst.getDomainFatherId()) + " " + locationSeparator + " "
-            + componentInst.getLabel(getLanguage());
-      }
+      location = getLocation(componentId);
     }
 
     gsr.setLocation(location);
