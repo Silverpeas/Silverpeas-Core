@@ -196,7 +196,7 @@ public class PublicationBmEJB implements PublicationBm {
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_TRANSLATIONS", ex);
         }
       }
-      getTranslations(detail);
+      loadTranslations(detail);
       detail.setIndexOperation(indexOperation);
       createIndex(detail);
       if (useTagCloud) {
@@ -539,29 +539,12 @@ public class PublicationBmEJB implements PublicationBm {
           }
         }
       }
-      getTranslations(publi);
+      loadTranslations(publi);
       PublicationDAO.storeRow(con, publi);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationEJB.ejbStore()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "PubId = "
           + pubDetail.getPK().getId(), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  private void getTranslations(PublicationDetail publi) {
-    PublicationI18N translation = new PublicationI18N(publi.getLanguage(), publi.getName(), publi
-        .getDescription(), publi.getKeywords());
-    List<Translation> translations = new ArrayList<Translation>();
-    translations.add(translation);
-    Connection con = getConnection();
-    try {
-      translations.addAll(PublicationI18NDAO.getTranslations(con, publi.getPK()));
-      publi.setTranslations(translations);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationEJB.getTranslations()",
-          SilverpeasRuntimeException.ERROR, "publication.CANNOT_GET_TRANSLATIONS", e);
     } finally {
       DBUtil.close(con);
     }
@@ -1831,24 +1814,23 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private PublicationDetail loadTranslations(PublicationDetail detail) {
-    if (!I18NHelper.isI18N) {
-      return detail;
-    }
     PublicationI18N translation = new PublicationI18N(detail.getLanguage(), detail.getName(), detail
         .getDescription(), detail.getKeywords());
-    List translations = new ArrayList();
+    List<Translation> translations = new ArrayList<Translation>();
     translations.add(translation);
-    Connection con = getConnection();
-    try {
-      translations.addAll(PublicationI18NDAO.getTranslations(con, detail.getPK()));
-      detail.setTranslations(translations);
-      return detail;
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationEJB.getTranslations()",
-          SilverpeasRuntimeException.ERROR, "publication.CANNOT_GET_TRANSLATIONS", e);
-    } finally {
-      DBUtil.close(con);
+    if (I18NHelper.isI18N) {
+      Connection con = getConnection();
+      try {
+        translations.addAll(PublicationI18NDAO.getTranslations(con, detail.getPK()));
+      } catch (SQLException e) {
+        throw new PublicationRuntimeException("PublicationEJB.getTranslations()",
+            SilverpeasRuntimeException.ERROR, "publication.CANNOT_GET_TRANSLATIONS", e);
+      } finally {
+        DBUtil.close(con);
+      }
     }
+    detail.setTranslations(translations);
+    return detail;
   }
 
   /**
