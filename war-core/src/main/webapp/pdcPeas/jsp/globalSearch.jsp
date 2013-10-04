@@ -173,13 +173,13 @@ function onLoadStart() {
 
 function saveAsInterestCenter() {
 	
-  var values = $('#used_pdc').pdc('selectedValues');
-	document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+	setPositionIntoForm();
 	
-	if (document.AdvancedSearch.iCenterId.selectedIndex)
+	if (document.AdvancedSearch.iCenterId.selectedIndex) {
 		icName = document.AdvancedSearch.iCenterId.options[document.AdvancedSearch.iCenterId.selectedIndex].text;
-	else
+	} else {
 		icName = "";
+	}
 	url			= "<%=m_context%><%=URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)%>newICenter.jsp?icName="+icName;
 	windowName = "createICenter";
 	width		= "600";
@@ -247,10 +247,7 @@ function addValue(selectItem, axisId)
 }
 
 function sendQuery() {
-	var values = $('#used_pdc').pdc('selectedValues');
-  	if (values.length > 0) {
-      document.AdvancedSearch.AxisValueCouples.value = values.flatten();
-    }
+	setPositionIntoForm();
     if (document.AdvancedSearch.query.value == "*") {
 		document.AdvancedSearch.query.value = "";
     }
@@ -266,6 +263,15 @@ function sendQuery() {
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
+}
+
+function setPositionIntoForm() {
+	<% if (activeSelection.booleanValue() || searchType == 2) { %>
+	var values = $('#used_pdc').pdc('selectedValues');
+  	if (values.length > 0) {
+      document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+    }
+  	<% } %>
 }
 
 function sendSelectionQuery() {
