@@ -1730,9 +1730,6 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private PublicationDetail loadTranslations(PublicationDetail detail) {
-    if (!I18NHelper.isI18N) {
-      return detail;
-    }
     PublicationI18N translation = new PublicationI18N(detail.getLanguage(), detail.getName(), detail
         .getDescription(), detail.getKeywords());
     List translations = new ArrayList();
