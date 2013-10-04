@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -245,8 +245,8 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Properties used in the site generation -->
-    <installer_stable_version>5.12.3</installer_stable_version>
-    <installer_version>5.13-SNAPSHOT</installer_version>
+    <installer_stable_version>5.12.4</installer_stable_version>
+    <installer_version>5.13</installer_version>
   </properties>
 
 </project>
