@@ -62,6 +62,7 @@ String resultType = request.getParameter("resultType");
 if (!StringUtil.isDefined(resultType)) {
   resultType = "default";
 }
+boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("DedicatedToWriters"));
 %>
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -122,6 +123,7 @@ $(function () {
 			"types" : {
 				"valid_children" : [ "default" ],
 				types : {
+					<% if (dedicatedToWriters) { %>
 					"user" : {
 						"max_children"	: -1,
 						"max_depth"		: -1,
@@ -136,6 +138,7 @@ $(function () {
 						"hover_node" 	: false,
 						"select_node"	: false
 					},
+					<% } %>
 					"user-root" : {
 						"max_children"	: -1,
 						"max_depth"		: -1,
