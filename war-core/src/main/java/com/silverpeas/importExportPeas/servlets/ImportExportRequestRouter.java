@@ -35,6 +35,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
@@ -98,8 +100,8 @@ public class ImportExportRequestRouter extends
       } else if ("SelectExportMode".equals(function)) {
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
-        String rootId = (String) request.getAttribute("RootId");
-        importExportSC.saveItems(itemPKs, rootId);
+        NodePK rootPK = (NodePK) request.getAttribute("RootPK");
+        importExportSC.saveItems(itemPKs, rootPK);
         destination = "/importExportPeas/jsp/selectExportMode.jsp";
       } else if ("ExportSavedItems".equals(function)) {
         String mode = request.getParameter("ExportMode");
@@ -109,9 +111,9 @@ public class ImportExportRequestRouter extends
         @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
             "selectedResultsWa");
-        String rootId = (String) request.getAttribute("RootId");
+        NodePK rootPK = (NodePK) request.getAttribute("RootPK");
         if (itemPKs != null && !itemPKs.isEmpty()) {
-          importExportSC.processExport(itemPKs, rootId);
+          importExportSC.processExport(itemPKs, rootPK);
           destination = "/importExportPeas/jsp/pingExport.jsp";
         } else {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
