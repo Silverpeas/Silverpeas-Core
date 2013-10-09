@@ -998,7 +998,7 @@ public class PublicationDAO {
       selectStatement.append(" ) ");
     }
     selectStatement.append(" and F.pubId = P.pubId ");
-    selectStatement.append(" and P.instanceId='").append(
+    selectStatement.append(" and F.instanceId='").append(
         pubPK.getComponentName()).append("'");
 
     if (status != null && status.size() > 0) {
