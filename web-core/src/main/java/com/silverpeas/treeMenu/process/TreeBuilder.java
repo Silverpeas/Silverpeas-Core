@@ -20,18 +20,10 @@
  */
 package com.silverpeas.treeMenu.process;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationController;
-
 import com.silverpeas.treeMenu.model.MenuItem;
 import com.silverpeas.treeMenu.model.MenuRuntimeException;
 import com.silverpeas.treeMenu.model.NodeType;
 import com.silverpeas.treeMenu.model.TreeFilter;
-
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -40,6 +32,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.owasp.encoder.Encode;
+import org.silverpeas.core.admin.OrganisationController;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
@@ -105,7 +103,8 @@ public class TreeBuilder {
           continue;
         }
         MenuItem menuItem =
-            new MenuItem(nodeDetail.getName(language), nodeDetail.getNodePK().getId(),
+            new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
+            nodeDetail.getNodePK().getId(),
             nodeDetail.getLevel(), NodeType.THEME, false, father, father.getKey());
         menuItem.setNbObjects(nodeDetail.getNbObjects());
         children.add(menuItem);
@@ -125,19 +124,18 @@ public class TreeBuilder {
       // gets the component
       String[] componentIds = controller.getAvailCompoIdsAtRoot(father.getKey(),
           userId);
-      ComponentInstLight component = null;
       int level = father.getLevel() + 1;
       boolean isLeaf = false;
       List<String> allowedComponents = filter.getComponents();
       for (String componentId : componentIds) {
 
-        component = controller.getComponentInstLight(componentId);
+        ComponentInstLight component = controller.getComponentInstLight(componentId);
         // Default case : display all the component in the menu
         if (allowedComponents.isEmpty() && filter.acceptNodeType(NodeType.COMPONENT)) {
           isLeaf = getLeafValue(componentId);
 
           MenuItem item =
-              new MenuItem(component.getLabel(language), componentId, level,
+              new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
               NodeType.COMPONENT, isLeaf, father, null);
           item.setComponentName(component.getName());
           item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
@@ -146,7 +144,7 @@ public class TreeBuilder {
           // Alternative case : filter the component to display in the menu
           if (allowedComponents.contains(component.getName())) {
             MenuItem item =
-                new MenuItem(component.getLabel(language), componentId, level,
+                new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
                 NodeType.COMPONENT, isLeaf, father, componentId);
             item.setComponentName(component.getName());
             item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
@@ -161,7 +159,8 @@ public class TreeBuilder {
       Collection<NodeDetail> nodeDetails = getNodeBm().getChildrenDetails(nodePK);
       for (NodeDetail nodeDetail : nodeDetails) {
         MenuItem menuItem =
-            new MenuItem(nodeDetail.getName(language), nodeDetail.getNodePK().getId(),
+            new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
+            nodeDetail.getNodePK().getId(),
             nodeDetail.getLevel(), NodeType.THEME, false, father, father.getComponentId());
         menuItem.setNbObjects(nodeDetail.getNbObjects());
         children.add(menuItem);
@@ -209,15 +208,14 @@ public class TreeBuilder {
         }
       }// the component
     } else if (filter.acceptNodeType(NodeType.COMPONENT) && !filter.getComponents().isEmpty()) {
-      List<ComponentInstLight> componentList = null;
       for (String componentName : filter.getComponents()) {
-        componentList =
+        List<ComponentInstLight> componentList =
             controller.getAvailComponentInstLights(userId, componentName);
         // FIXME : externalize components specific in a properties
         boolean isLeaf = getLeafValue(componentName);
         for (ComponentInstLight compo : componentList) {
           MenuItem subElement =
-              new MenuItem(compo.getLabel(language), compo.getId(), 0,
+              new MenuItem(Encode.forHtml(compo.getLabel(language)), compo.getId(), 0,
               NodeType.COMPONENT, isLeaf, null, null);
           item.setComponentName(compo.getName());
           item.setLabelStyle(ICON_STYLE_PREFIX + compo.getName());
