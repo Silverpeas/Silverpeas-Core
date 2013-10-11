@@ -69,6 +69,7 @@ import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
+import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -969,12 +970,21 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return - liste des nodesPk de la publication
    * @throws ImportExportException
    */
-  public List<NodePK> getAllTopicsOfPublication(String pubId, String componentId)
+  public List<NodePK> getAllTopicsOfPublication(PublicationPK pubPK)
       throws ImportExportException {
-    PublicationPK pubPK = new PublicationPK(pubId, "Useless", componentId);
     Collection<NodePK> listNodePk = getPublicationBm().getAllFatherPK(pubPK);
     return new ArrayList<NodePK>(listNodePk);
-
+  }
+  
+  public List<NodePK> getAliases(PublicationPK pubPK) throws ImportExportException {
+    List<NodePK> pks = new ArrayList<NodePK>();
+    Collection<Alias> aliases = getPublicationBm().getAlias(pubPK);
+    for (Alias alias : aliases) {
+      if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
+        pks.add(new NodePK(alias.getId(), alias.getInstanceId()));
+      }
+    }
+    return pks;
   }
 
   public List<NodePK> getTopicTree(NodePK pk) throws ImportExportException {

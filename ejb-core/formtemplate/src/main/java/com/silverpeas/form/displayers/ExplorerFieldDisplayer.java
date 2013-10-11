@@ -163,6 +163,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
           + URLManager.getApplicationURL() + "/explorer/jsp/explorer.jsp"
           + "?elementHidden=" + fieldName
           + "&elementVisible=" + fieldName + "_path"
+          + "&dedicatedToWriters=true"
           + "&scope=" + scope;
       html += "','explorer',400,600,'scrollbars=yes');\" >";
       html += "<img src=\""
