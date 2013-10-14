@@ -86,6 +86,11 @@ public class AdminServlet extends HttpServlet {
 
     if (isParameterPresent(request, AdminConstants.CREATE_PORTLET_WINDOW_SUBMIT)) {
       createPortletWindow(request, portletAdminData, session);
+      if (isDefined(spaceId)) {
+        portletsRenderer = "/dt?"+WindowInvokerConstants.DRIVER_SPACEID+"="+spaceId+"&"+WindowInvokerConstants.DRIVER_ROLE+"=Admin";
+      } else {
+        portletsRenderer = "/dt";
+      }
     } else if (isParameterPresent(request, AdminConstants.MODIFY_PORTLET_WINDOW_SUBMIT)) {
       updatePortletWindow(request, portletAdminData, session);
     } else if (isParameterPresent(request, AdminConstants.MOVE_PORTLET_WINDOW)) {

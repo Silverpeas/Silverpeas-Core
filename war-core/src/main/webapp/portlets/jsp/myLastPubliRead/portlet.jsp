@@ -31,8 +31,6 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 
 <%@ include file="../portletImport.jsp"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

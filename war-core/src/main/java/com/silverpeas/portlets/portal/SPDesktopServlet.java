@@ -20,13 +20,13 @@
  */
 package com.silverpeas.portlets.portal;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.PortletType;
@@ -52,6 +52,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -131,10 +133,10 @@ public class SPDesktopServlet extends HttpServlet {
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
       DesktopMessages.init(mainSessionController.getFavoriteLanguage());
-      SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "DesktopMessages initialized !");
       DriverUtil.init(request);
-      SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "DriverUtil initialized !");
       response.setContentType(SERVLET_HTML_CONTENT_TYPE);
 
@@ -143,7 +145,7 @@ public class SPDesktopServlet extends HttpServlet {
         ServletContextThreadLocalizer.set(context);
         PortletRegistryContext portletRegistryContext =
             DriverUtil.getPortletRegistryContext(spContext);
-        SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
             "portletRegistryContext retrieved !");
         String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
         PortletContent portletContent =
@@ -184,6 +186,11 @@ public class SPDesktopServlet extends HttpServlet {
               getPortletWindowContents(request, portletContents, portletRegistryContext,
               spContext);
           setPortletWindowData(request, portletWindowContents);
+          
+          //set all existing portlets in session
+          List<String> portletsName = portletRegistryContext.getAvailablePortlets(); 
+          setPortletNames(request, mainSessionController.getFavoriteLanguage(), portletsName);
+          
           InvokerUtil.setResponseProperties(request, response,
               portletContent.getResponseProperties());
           RequestDispatcher rd = context.getRequestDispatcher(getPresentationURI(request));
@@ -191,7 +198,7 @@ public class SPDesktopServlet extends HttpServlet {
           InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
         }
       } catch (Exception e) {
-        SilverTrace.error("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.error("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
             "Portlets exception !", e);
       } finally {
         ServletContextThreadLocalizer.set(null);
@@ -701,5 +708,29 @@ public class SPDesktopServlet extends HttpServlet {
       sDestination = sParsed;
     }
     return sDestination;
+  }
+  
+  
+  /**
+   * Set the existing portletNames in session
+   * @param request
+   * @param language
+   * @param portletNames
+   */
+  private void setPortletNames(final HttpServletRequest request, final String language, 
+      final List<String> portletNames) {
+    HttpSession session = request.getSession(true);
+    ResourceLocator resource = new ResourceLocator("org.silverpeas.portlet.multilang.portletBundle", language);
+    Collection<Map> listPortlet = new ArrayList<Map>();//list of HashMap key=portletName, value=title of the portlet
+    for(String portletName : portletNames) {
+      String shortName = portletName.substring(11); //portletName = silverpeas.LastPublicationsPortlet
+      String defaultTitle = resource.getString("portlet."+shortName+".title", ""); //shortName = LastPublicationsPortlet, key = portlet.LastPublicationsPortlet.title
+      Map<String, String> hashPortlet = new HashMap<String, String>();//key=portletName, value=title of the portlet
+      hashPortlet.put(portletName, defaultTitle);
+      listPortlet.add(hashPortlet);
+    }
+    
+    session.removeAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS);
+    session.setAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS, listPortlet);
   }
 }
