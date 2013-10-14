@@ -31,4 +31,5 @@ public interface DesktopConstants {
   public static String PORTLET_CONTENT = "content";
   public static String PORTLET_TITLE = "title";
   public static String PORTLET_WINDOWS = "com.sun.portal.portletcontainer.driver.portletWindows";
+  public static String AVAILABLE_PORTLET_WINDOWS = "existingPortlets";
 }

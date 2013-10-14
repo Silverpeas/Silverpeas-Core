@@ -77,4 +77,11 @@
   <PortletWindowPreference name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet" userName="default">
     <Properties/>
   </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbPublis" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

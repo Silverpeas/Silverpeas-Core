@@ -26,25 +26,23 @@
 -->
 
 <PortletAppRegistry version="1.0">
-  <PortletApp name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet">
+  <PortletApp name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas My Todos Portlet"/>
-      <String name="shortTitle" value="Silverpeas My Todos Portlet"/>
-      <String name="description" value="Silverpeas MyTodosPortlet"/>
+      <String name="title" value="Silverpeas QuickInfosPortlet"/>
+      <String name="shortTitle" value="Silverpeas QuickInfosPortlet"/>
+      <String name="description" value="Silverpeas QuickInfosPortlet"/>
       <String name="archiveName" value="war-ic-exp.war"/>
       <Collection name="supportedContentTypes">
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes Tâches"/>
-        <String name="en" value="My Todos"/>
-		<String name="de" value="Meine Aufgaben"/>
+        <String name="fr" value="Actualités"/>
+		<String name="en" value="Breaking news"/>
+		<String name="de" value="Neuigkeiten"/>
       </Collection>
       <Collection name="descriptionMap">
-        <String name="fr" value="MyTodosPortlet"/>
-        <String name="en" value="MyTodosPortlet"/>
-		<String name="de" value="MyTodosPortlet"/>
+        <String name="fr" value="QuickInfosPortlet"/>
       </Collection>
       <Collection name="supportsMap">
         <Collection name="text/html">
@@ -77,7 +75,7 @@
         </Collection>
       </Collection>
     </Properties>
-  </PortletApp>
+  </PortletApp>  
   <PortletApp name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -104,7 +102,137 @@
         </Collection>
       </Collection>
     </Properties>
+  </PortletApp>  
+  <PortletApp name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My last publications read portlet"/>
+      <String name="shortTitle" value="My last publications consulted"/>
+      <String name="description" value="Last publications consulted"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Dernières publications consultées"/>
+		<String name="en" value="Latest publications consulted"/>
+		<String name="de" value="Aktuelle VeröffentlichungenVeröffentlichung lesen"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Les dernières publications que j'ai consultées"/>
+        <String name="en" value="The latest publications consulted"/>
+        <String name="de" value="Die neuesten Publikationen konsultiert"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>  
+  <PortletApp name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My drafts portlet"/>
+      <String name="shortTitle" value="My drafts"/>
+      <String name="description" value="My publications in status Draft"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes brouillons"/>
+        <String name="en" value="My drafts"/>
+        <String name="de" value="My drafts"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Mes publications en mode Brouillon"/>
+        <String name="en" value="My publications in status Draft"/>
+        <String name="de" value="My publications in status Draft"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
   </PortletApp>
+  <PortletApp name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas MyCheckOutFiles"/>
+      <String name="shortTitle" value="Silverpeas MyCheckOutFiles"/>
+      <String name="description" value="Silverpeas MyCheckOutFiles"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes fichiers réservés"/>
+		<String name="en" value="My reserved files"/>
+		<String name="de" value="Meine Reservierte Dateien"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="MyCheckOutFiles"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp> 
+  <PortletApp name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas MyBookmarksPortlet"/>
+      <String name="shortTitle" value="Silverpeas MyBookmarksPortlet"/>
+      <String name="description" value="Silverpeas MyBookmarksPortlet"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes liens favoris"/>
+		<String name="en" value="Favourite links"/>
+		<String name="de" value="Meine Favoriten"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="MyBookmarksPortlet"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp> 
+  <PortletApp name="silverpeas.MyNotificationsPortlet" portletName="silverpeas.MyNotificationsPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas MyNotificationsPortlet"/>
+      <String name="shortTitle" value="Silverpeas MyNotificationsPortlet"/>
+      <String name="description" value="Silverpeas MyNotificationsPortlet"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes notifications"/>
+		<String name="en" value="My notifications"/>
+		<String name="de" value="Meine Benachrichtigungen"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="MyNotificationsPortlet"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>  
   <PortletApp name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -131,34 +259,7 @@
         </Collection>
       </Collection>
     </Properties>
-  </PortletApp>
-  <PortletApp name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas ComponentInstancePortlet"/>
-      <String name="shortTitle" value="Silverpeas ComponentInstancePortlet"/>
-      <String name="description" value="Silverpeas ComponentInstancePortlet"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Une application"/>
-        <String name="en" value="An application"/>
-        <String name="de" value="Eine Komponente"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="ComponentInstancePortlet"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
-          <String value="EDIT"/>
-          <String value="HELP"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>
+  </PortletApp> 
   <PortletApp name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -183,99 +284,26 @@
         </Collection>
       </Collection>
     </Properties>
-  </PortletApp>
-  <PortletApp name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet">
+  </PortletApp>  
+  <PortletApp name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas MyBookmarksPortlet"/>
-      <String name="shortTitle" value="Silverpeas MyBookmarksPortlet"/>
-      <String name="description" value="Silverpeas MyBookmarksPortlet"/>
+      <String name="title" value="Silverpeas My Todos Portlet"/>
+      <String name="shortTitle" value="Silverpeas My Todos Portlet"/>
+      <String name="description" value="Silverpeas MyTodosPortlet"/>
       <String name="archiveName" value="war-ic-exp.war"/>
       <Collection name="supportedContentTypes">
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes liens favoris"/>
-		<String name="en" value="Favourite links"/>
-		<String name="de" value="Meine Favoriten"/>
+        <String name="fr" value="Mes Tâches"/>
+        <String name="en" value="My Todos"/>
+		<String name="de" value="Meine Aufgaben"/>
       </Collection>
       <Collection name="descriptionMap">
-        <String name="fr" value="MyBookmarksPortlet"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>
-  <PortletApp name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas QuickInfosPortlet"/>
-      <String name="shortTitle" value="Silverpeas QuickInfosPortlet"/>
-      <String name="description" value="Silverpeas QuickInfosPortlet"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Actualités"/>
-		<String name="en" value="Breaking news"/>
-		<String name="de" value="Neuigkeiten"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="QuickInfosPortlet"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>
-  <PortletApp name="silverpeas.MyNotificationsPortlet" portletName="silverpeas.MyNotificationsPortlet">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas MyNotificationsPortlet"/>
-      <String name="shortTitle" value="Silverpeas MyNotificationsPortlet"/>
-      <String name="description" value="Silverpeas MyNotificationsPortlet"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Mes notifications"/>
-		<String name="en" value="My notifications"/>
-		<String name="de" value="Meine Benachrichtigungen"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="MyNotificationsPortlet"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>
-  <PortletApp name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas MyCheckOutFiles"/>
-      <String name="shortTitle" value="Silverpeas MyCheckOutFiles"/>
-      <String name="description" value="Silverpeas MyCheckOutFiles"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Mes fichiers réservés"/>
-		<String name="en" value="My reserved files"/>
-		<String name="de" value="Meine Reservierte Dateien"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="MyCheckOutFiles"/>
+        <String name="fr" value="MyTodosPortlet"/>
+        <String name="en" value="MyTodosPortlet"/>
+		<String name="de" value="MyTodosPortlet"/>
       </Collection>
       <Collection name="supportsMap">
         <Collection name="text/html">
@@ -310,34 +338,7 @@
         </Collection>
       </Collection>
     </Properties>
-  </PortletApp>
-  <PortletApp name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas My drafts portlet"/>
-      <String name="shortTitle" value="My drafts"/>
-      <String name="description" value="My publications in status Draft"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Mes brouillons"/>
-        <String name="en" value="My drafts"/>
-        <String name="de" value="My drafts"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="Mes publications en mode Brouillon"/>
-        <String name="en" value="My publications in status Draft"/>
-        <String name="de" value="My publications in status Draft"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>
+  </PortletApp> 
   <PortletApp name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -361,6 +362,33 @@
       <Collection name="supportsMap">
         <Collection name="text/html">
           <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>  
+  <PortletApp name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas ComponentInstancePortlet"/>
+      <String name="shortTitle" value="Silverpeas ComponentInstancePortlet"/>
+      <String name="description" value="Silverpeas ComponentInstancePortlet"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Une application"/>
+        <String name="en" value="An application"/>
+        <String name="de" value="Eine Komponente"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="ComponentInstancePortlet"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="EDIT"/>
+          <String value="HELP"/>
         </Collection>
       </Collection>
     </Properties>

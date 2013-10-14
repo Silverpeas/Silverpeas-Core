@@ -46,7 +46,6 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class StatisticBmEJB implements StatisticBm {
 
-  private static final long serialVersionUID = 1L;
   private final static String historyTableName = "SB_Statistic_History";
   private final static int ACTION_ACCESS = 1;
 
@@ -378,5 +377,20 @@ public class StatisticBmEJB implements StatisticBm {
 
     }
     return nb;
+  }
+  
+  @Override
+  public Collection<HistoryObjectDetail> getHistoryByUser(String userId, int actionType, String objectType, int nbObjects) {
+    SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByUser",
+        "root.MSG_GEN_ENTER_METHOD");
+    Connection con = getConnection();
+    try {
+      return HistoryObjectDAO.getHistoryDetailByUser(con, userId, actionType, objectType, nbObjects);
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().getHistoryByUser()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+    } finally {
+      DBUtil.close(con);
+    }
   }
 }

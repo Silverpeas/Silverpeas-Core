@@ -28,7 +28,7 @@
 <PortletWindowRegistry version="1.0">
      <PortletWindow lang="JAVA" name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.LastPublications.title"/>
+               <String name="title" value="portlet.LastPublicationsPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|LastPublicationsPortlet"/>
@@ -37,7 +37,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.FavoriteQueries.title"/>
+               <String name="title" value="portlet.FavoriteQueriesPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|FavoriteQueriesPortlet"/>
@@ -46,7 +46,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.NextEvents.title"/>
+               <String name="title" value="portlet.NextEventsPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|NextEventsPortlet"/>
@@ -55,7 +55,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.silverpeas.SpaceResponsiblesPortlet.title"/>
+               <String name="title" value="portlet.SpaceResponsiblesPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|SpaceResponsiblesPortlet"/>
@@ -64,11 +64,11 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.silverpeas.MyTodosPortlet.title"/>
+               <String name="title" value="portlet.MyTodosPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|MyTodosPortlet"/>
-               <String name="row" value="3"/>
+               <String name="row" value="4"/>
           </Properties>
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyNotificationsPortlet" portletName="silverpeas.MyNotificationsPortlet" remote="false">
@@ -77,12 +77,12 @@
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|MyNotificationsPortlet"/>
-               <String name="row" value="4"/>
+               <String name="row" value="5"/>
           </Properties>
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.HelloSilverpeasPortlet" portletName="silverpeas.HelloSilverpeasPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.HelloSilverpeas.title"/>
+               <String name="title" value="portlet.HelloSilverpeasPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|HelloSilverpeasPortlet"/>
@@ -91,7 +91,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.MyBookmarks.title"/>
+               <String name="title" value="portlet.MyBookmarksPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyBookmarksPortlet"/>
@@ -109,7 +109,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.QuickInfos.title"/>
+               <String name="title" value="portlet.QuickInfosPortlet.title"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|QuickInfosPortlet"/>
@@ -118,8 +118,8 @@
      </PortletWindow>
      <PortletWindow lang="" name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.ComponentInstance.title"/>
-               <String name="visible" value="false"/>
+               <String name="title" value="portlet.ComponentInstancePortlet.title"/>
+               <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|ComponentInstancePortlet"/>
                <String name="row" value="4"/>
@@ -127,19 +127,28 @@
      </PortletWindow>
      <PortletWindow lang="" name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet" remote="false">
           <Properties>
-               <String name="title" value="portlet.IFrame.title"/>
-               <String name="visible" value="false"/>
-               <String name="width" value="thin"/>
+               <String name="title" value="portlet.IFramePortlet.title"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|IFramePortlet"/>
-               <String name="row" value="5"/>
+               <String name="row" value="6"/>
           </Properties>
      </PortletWindow>
 	 <PortletWindow lang="" name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet" remote="false">
           <Properties>
                <String name="title" value="portlet.MyDraftsPortlet.title"/>
-               <String name="visible" value="false"/>
+               <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyDraftsPortlet"/>
+               <String name="row" value="5"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="" name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet" remote="false">
+          <Properties>
+               <String name="title" value="portlet.MyLastPubliReadPortlet.title"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|MyLastPubliReadPortlet"/>
                <String name="row" value="6"/>
           </Properties>
      </PortletWindow>
