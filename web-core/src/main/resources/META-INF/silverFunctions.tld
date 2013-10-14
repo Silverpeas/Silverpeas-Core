@@ -136,4 +136,40 @@
     <function-class>com.silverpeas.util.i18n.I18NHelper</function-class>
     <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
   </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatDate</name>
+    <function-class>com.stratelia.webactiv.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDate(java.util.Date,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDate(date, "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatDateAndHour</name>
+    <function-class>com.stratelia.webactiv.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDateAndHour(java.util.Date,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDateAndHour(date, "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatStringDate</name>
+    <function-class>com.stratelia.webactiv.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDate(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDate("yyyy/MM/dd", "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatStringDateAndHour</name>
+    <function-class>com.stratelia.webactiv.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDateAndHour(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
+    </example>
+  </function>
 </taglib>
