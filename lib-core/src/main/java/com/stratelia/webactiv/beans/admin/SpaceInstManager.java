@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,6 +20,12 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
@@ -32,19 +38,12 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class SpaceInstManager {
 
   static ComponentInstManager componentInstManager = new ComponentInstManager();
   static SpaceProfileInstManager spaceProfileInstManager = new SpaceProfileInstManager();
 
-  /**
-   * Constructor
-   */
   public SpaceInstManager() {
   }
 
@@ -120,6 +119,16 @@ public class SpaceInstManager {
       String sSpaceNodeId = "";
       ddManager.getOrganization().space.createSpace(newSpaceRow);
       sSpaceNodeId = idAsString(newSpaceRow.id);
+      
+      // duplicates existing translations
+      Map<String, Translation> translations = spaceInst.getTranslations();
+      for (String lang : translations.keySet()) {
+        SpaceI18N translation = (SpaceI18N) translations.get(lang);
+        SpaceI18NRow row =
+            new SpaceI18NRow(newSpaceRow.id, lang, translation.getName(),
+                translation.getDescription());
+        ddManager.getOrganization().spaceI18N.createTranslation(row);
+      }
 
       // Create the SpaceProfile nodes
       for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {

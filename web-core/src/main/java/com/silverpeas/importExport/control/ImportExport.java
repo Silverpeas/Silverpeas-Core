@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -414,24 +414,24 @@ public class ImportExport {
   }
 
   public ExportReport processExport(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport, String rootId, int mode)
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK, int mode)
       throws ImportExportException {
     ExportReport report = null;
     switch (mode) {
       case ImportExport.EXPORT_FULL:
-        report = processExport(userDetail, language, listItemsToExport, rootId);
+        report = processExport(userDetail, language, listItemsToExport, rootPK);
         break;
       case ImportExport.EXPORT_FILESONLY:
-        report = processExportOfFilesOnly(userDetail, language, listItemsToExport, rootId);
+        report = processExportOfFilesOnly(userDetail, language, listItemsToExport, rootPK);
         break;
       case ImportExport.EXPORT_PUBLICATIONSONLY:
-        report = processExportOfPublicationsOnly(userDetail, language, listItemsToExport, rootId);
+        report = processExportOfPublicationsOnly(userDetail, language, listItemsToExport, rootPK);
     }
     return report;
   }
 
   private ExportReport processExport(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
     // pour le multilangue
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.silverpeas.importExport.multilang.importExportBundle", language);
@@ -462,7 +462,7 @@ public class ImportExport {
         // création des répertoires avec le nom des thèmes et des
         // publications
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), true, true);
+            fileExportDir.getPath(), true, true, rootPK);
         if (publicationsType == null) {
           // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
           // création des répertoires avec les Id des thèmes et des publications
@@ -481,7 +481,7 @@ public class ImportExport {
             tempDir = FileRepositoryManager.getTemporaryPath();
             fileExportDir = new File(tempDir + thisExportDir);
             publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail,
-                listItemsToExport, fileExportDir.getPath(), false, true);
+                listItemsToExport, fileExportDir.getPath(), false, true, rootPK);
           } catch (IOException e) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
           }
@@ -513,7 +513,7 @@ public class ImportExport {
         silverPeasExch.setPdcType(pdcIE.getPdc(listClassifyPosition));
       }
 
-      if (rootId == null) {
+      if (rootPK == null) {
         // dans le cas de l'export depuis le moteur de recherche, créer l'index "a plat"
         createSummary(exportReport, thisExportDir, tempDir, fileExportDir);
       } else {
@@ -526,7 +526,7 @@ public class ImportExport {
           createTopicHtmlFile(thisExportDir, tempDir, htmlGenerator, topicIds, topicId);
         }
         createEmptySummary(thisExportDir, tempDir, htmlGenerator);
-        createTreeview(rootId, thisExportDir, tempDir, nodeTreesType, htmlGenerator, topicIds);
+        createTreeview(rootPK.getId(), thisExportDir, tempDir, nodeTreesType, htmlGenerator, topicIds);
         createExportDirectory(thisExportDir, tempDir);
       }
       // Création du fichier XML de mapping
@@ -668,7 +668,7 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public ExportPDFReport processExportPDF(UserDetail userDetail,
-      List<WAAttributeValuePair> itemsToExport) throws ImportExportException {
+      List<WAAttributeValuePair> itemsToExport, NodePK rootPK) throws ImportExportException {
     ExportPDFReport report = new ExportPDFReport();
     report.setDateDebut(new Date());
 
@@ -690,7 +690,7 @@ public class ImportExport {
     try {
       // création des répertoires avec le nom des thèmes et des publications
       List<AttachmentDetail> pdfList = pubTypeManager.processPDFExport(report, userDetail,
-          itemsToExport, fileExportDir.getPath(), true);
+          itemsToExport, fileExportDir.getPath(), true, rootPK);
 
       try {
         int pageOffset = 0;
@@ -824,7 +824,7 @@ public class ImportExport {
       try {
         // création des répertoires avec le nom des publications
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, itemsToExport,
-            fileExportDir.getPath(), false, true);
+            fileExportDir.getPath(), false, true, null);
       } catch (IOException e) {
         throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
       }
@@ -907,8 +907,8 @@ public class ImportExport {
               pubDetail.getId()), componentId);
           publicationFileNameRelativePath = componentLabel + separator + pubDetail.getId()
               + separator + "index.html";
-          pub_Typ_Mger.fillPublicationType(gedIE, publicationType);
-          int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType);
+          pub_Typ_Mger.fillPublicationType(gedIE, publicationType, null);
+          int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType, null);
           HtmlExportPublicationGenerator unbalanced = new HtmlExportPublicationGenerator(
               publicationType, null, null, publicationFileNameRelativePath, nbThemes);
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
@@ -1006,7 +1006,7 @@ public class ImportExport {
 
           // Récupération du PublicationType
           PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
-          pub_Typ_Mger.fillPublicationType(gedIE, publicationType);
+          pub_Typ_Mger.fillPublicationType(gedIE, publicationType, null);
           publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
           List<CoordinatePoint> listCoordinatesPositions = new ArrayList<CoordinatePoint>();
           Collection<Coordinate> coordinates = gedIE.getPublicationCoordinates(pubId, componentId);
@@ -1060,7 +1060,7 @@ public class ImportExport {
 
           publicationFileNameRelativePath = componentLabel + separator + pubId
               + separator + "index.html";
-          int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType);
+          int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType, null);
           HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
               null, null, publicationFileNameRelativePath, nbThemes);
           exportReport.addHtmlIndex(pubId, s);
@@ -1154,7 +1154,7 @@ public class ImportExport {
   }
 
   private ExportReport processExportOfFilesOnly(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
@@ -1164,7 +1164,7 @@ public class ImportExport {
     // Export files attached to publications
     try {
       pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
-          fileExportDir.getPath(), rootId);
+          fileExportDir.getPath(), rootPK);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
     }
@@ -1174,7 +1174,7 @@ public class ImportExport {
   }
 
   private ExportReport processExportOfPublicationsOnly(UserDetail userDetail, String language,
-      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
+      List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
@@ -1186,7 +1186,7 @@ public class ImportExport {
     try {
       // création des répertoires avec le nom des thèmes et des publications
       pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-          fileExportDir.getPath(), true, StringUtil.isDefined(rootId));
+          fileExportDir.getPath(), true, rootPK != null, rootPK);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     }

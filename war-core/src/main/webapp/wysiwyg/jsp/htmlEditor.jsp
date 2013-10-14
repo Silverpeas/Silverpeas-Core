@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -148,6 +148,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
     } else {
       SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId=" + objectId);
       collectionImages = WysiwygController.getImages(objectId, componentId);
+      specificURL = URLManager.getApplicationURL();
     }
   }
   if("SaveHtmlAndExit".equals(actionWysiwyg)) {
@@ -215,6 +216,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
     specificURL = "/website/" + componentId + "/" + objectId + "/";
   } else {
     collectionImages = WysiwygController.getImages(objectId, componentId);
+    specificURL = URLManager.getApplicationURL();
   }
   session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 

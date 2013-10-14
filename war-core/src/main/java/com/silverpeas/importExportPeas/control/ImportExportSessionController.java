@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   ExportReport exportReport = null;
 
   private List<WAAttributeValuePair> items = null;
-  private String rootId = null;
+  private NodePK rootPK = null;
 
   public ImportExportSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle, String iconBundle) {
@@ -70,17 +71,17 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    * @param rootId
    * @throws ImportExportException
    */
-  public void processExport(List<WAAttributeValuePair> itemsToExport, String rootId)
+  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK)
       throws ImportExportException {
-    processExport(itemsToExport, rootId, ImportExport.EXPORT_FULL);
+    processExport(itemsToExport, rootPK, ImportExport.EXPORT_FULL);
   }
 
-  public void processExport(List<WAAttributeValuePair> itemsToExport, String rootId, int mode)
+  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, int mode)
       throws ImportExportException {
     SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
         "root.MSG_GEN_ENTER_METHOD");
     if (exportThread == null) {
-      exportThread = new ExportXMLThread(this, itemsToExport, getLanguage(), rootId, mode);
+      exportThread = new ExportXMLThread(this, itemsToExport, getLanguage(), rootPK, mode);
       errorOccured = null;
       exportReport = null;
       exportThread.startTheThread();
@@ -128,7 +129,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
       throws ImportExportException {
     ImportExport importExport = new ImportExport();
 
-    return importExport.processExportPDF(getUserDetail(), itemsToExport);
+    return importExport.processExportPDF(getUserDetail(), itemsToExport, rootPK);
   }
 
   /**
@@ -149,17 +150,17 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   }
 
   public void processExportOfSavedItems(String mode) throws ImportExportException {
-    processExport(this.items, this.rootId, Integer.parseInt(mode));
+    processExport(this.items, this.rootPK, Integer.parseInt(mode));
   }
 
-  public void saveItems(List<WAAttributeValuePair> items, String rootId) {
+  public void saveItems(List<WAAttributeValuePair> items, NodePK rootPK) {
     this.items = items;
-    this.rootId = rootId;
+    this.rootPK = rootPK;
   }
 
   public void clearItems() {
     this.items = null;
-    this.rootId = null;
+    this.rootPK = null;
   }
 
 }
