@@ -128,7 +128,7 @@
     <function-class>com.stratelia.webactiv.util.DateUtil</function-class>
     <function-signature>java.lang.String getOutputDate(java.lang.String,java.lang.String)</function-signature>
     <example>
-      &lt;c:out value="${silfn:formatDate("yyyy/MM/dd", "fr")}">
+      &lt;c:out value="${silfn:formatStringDate("yyyy/MM/dd", "fr")}">
     </example>
   </function>
   <function>
@@ -137,7 +137,7 @@
     <function-class>com.stratelia.webactiv.util.DateUtil</function-class>
     <function-signature>java.lang.String getOutputDateAndHour(java.lang.String,java.lang.String)</function-signature>
     <example>
-      &lt;c:out value="${silfn:formatDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
+      &lt;c:out value="${silfn:formatStringDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
     </example>
   </function>
 </taglib>

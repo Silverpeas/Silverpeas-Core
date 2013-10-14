@@ -36,9 +36,9 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
-      response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-      response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-      response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkPopup.jsp" %>
 
@@ -59,88 +59,91 @@
     <c:set var="senderName" value="${popupMsg.senderName}"/>
     <c:set var="answerAllowed" value="${popupMsg.answerAllowed}"/>
 
-<html>
-  <head>
-    <title><fmt:message key="GML.popupTitle"/></title>
-    <view:looknfeel/>
+    <html>
+    <head>
+      <title><fmt:message key="GML.popupTitle"/></title>
+      <view:looknfeel/>
 
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript">
-      window.opener.location = "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID=${popupMsgId}";
-      function closeWindow()
-      {
-        window.close();
-      }
+      <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+      <script type="text/javascript">
+        window.opener.location =
+            "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID=${popupMsgId}";
+        function closeWindow() {
+          window.close();
+        }
 
-      function answerMessage()
-      {
-        document.popupForm.submit();
-      }
+        function answerMessage() {
+          document.popupForm.submit();
+        }
 
-      $(document).ready(function(){
-        $('#messageAux').focus();
-      });
-    </script>
+        $(document).ready(function() {
+          $('#messageAux').focus();
+        });
+      </script>
 
-  </head>
-  <body>
-  <view:browseBar path="<fmt:message key='message' />"/>
-  <view:window>
-    <view:frame>
-      <view:board>
+    </head>
+    <body>
+    <view:browseBar path="<fmt:message key='message' />"/>
+    <view:window>
+      <view:frame>
+        <view:board>
 
-    <form name="popupForm" Action="ToAlert" Method="POST">
-    <div style="text-align: center;">
-      <table border="0" cellspacing="0" cellpadding="0" width="100%">
-          <input type="hidden" name="theUserId" value="${senderId}">
-          <c:if test="${answerAllowed}">
-          <tr>
-            <td>&nbsp;</td>
-            <td align=left valign="baseline">
+          <form name="popupForm" Action="ToAlert" Method="POST">
+            <div style="text-align: center;">
+              <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                <input type="hidden" name="theUserId" value="${senderId}">
+                <c:if test="${answerAllowed}">
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align=left valign="baseline">
               <span class="txtlibform"><fmt:message key="messageFrom"/>
                   ${senderName}</span><span> - ${silfn:formatStringDate(popupMsgDate, language)}
               <fmt:message key="messageAt"/> ${popupMsgTime}</span>
-            </td>
-          </tr>
-          </c:if>
-          <tr>
-            <td>&nbsp;</td>
-            <td align=left valign="baseline">
-              <table class="">
+                    </td>
+                  </tr>
+                </c:if>
                 <tr>
-                  <td>${popupMsgBody}</td>
+                  <td>&nbsp;</td>
+                  <td align=left valign="baseline">
+                    <table class="">
+                      <tr>
+                        <td>${popupMsgBody}</td>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
+                <c:if test="${answerAllowed}">
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align=left valign="baseline" class="txtlibform" style="font-weight: bold;">
+                      <fmt:message key="answer"/> :
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align=left valign="baseline">
+                      <textarea id="messageAux" rows="5" cols="80" name="messageAux"></textarea>
+                    </td>
+                  </tr>
+                </c:if>
               </table>
-            </td>
-          </tr>
-        <c:if test="${answerAllowed}">
-          <tr><td>&nbsp;</td></tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td align=left valign="baseline" class="txtlibform" style="font-weight: bold;"><fmt:message key="answer"/> :</td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td align=left valign="baseline">
-              <textarea id="messageAux" rows="5" cols="80" name="messageAux"></textarea>
-            </td>
-          </tr>
-        </c:if>
-      </table>
-    </div>
-    </form>
-      </view:board>
-      <view:buttonPane>
-        <c:if test="${answerAllowed}">
-          <fmt:message key='send' var="label"/>
-          <view:button label="${label}" action="javascript:onClick=answerMessage();" disabled="false"/>
-        </c:if>
-        <fmt:message key='close' var="label"/>
-        <view:button label="${label}" action="javascript:onClick=closeWindow();" disabled="false"/>
-      </view:buttonPane>
-    </view:frame>
-  </view:window>
-  </BODY>
-</HTML>
+            </div>
+          </form>
+        </view:board>
+        <view:buttonPane>
+          <c:if test="${answerAllowed}">
+            <fmt:message key='send' var="label"/>
+            <view:button label="${label}" action="javascript:onClick=answerMessage();" disabled="false"/>
+          </c:if>
+          <fmt:message key='close' var="label"/>
+          <view:button label="${label}" action="javascript:onClick=closeWindow();" disabled="false"/>
+        </view:buttonPane>
+      </view:frame>
+    </view:window>
+    </BODY>
+    </HTML>
   </c:otherwise>
 </c:choose>
