@@ -25,40 +25,48 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%-- Set resource bundle --%>
+<c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
 <%
       response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
       response.setHeader("Pragma", "no-cache"); //HTTP 1.0
       response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkPopup.jsp" %>
-<%@ page import="com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessage"%>
 
-<%
-      String action = (String) request.getAttribute("action");
-      if ("Close".equals(action)) {
-%>
-<html>
-  <body onload="javascript:window.close();">
-  </body>
-</html>
-<%    } else {
-      POPUPMessage msg = popupScc.getMessage(popupScc.getCurrentMessageId());
-      String senderId = msg.getSenderId();
-      boolean answerAllowed = msg.isAnswerAllowed();
-%>
+<c:choose>
+  <c:when test="${requestScope.action == 'Close'}">
+    <html>
+    <body onload="window.close();">
+    </body>
+    </html>
+  </c:when>
+  <c:otherwise>
+    <c:set var="popupMsg" value="<%=popupScc.getMessage(popupScc.getCurrentMessageId())%>"/>
+    <c:set var="popupMsgId" value="${popupMsg.id}"/>
+    <c:set var="popupMsgDate" value="${popupMsg.date}"/>
+    <c:set var="popupMsgTime" value="${popupMsg.time}"/>
+    <c:set var="popupMsgBody" value="${popupMsg.body}"/>
+    <c:set var="senderId" value="${popupMsg.senderId}"/>
+    <c:set var="senderName" value="${popupMsg.senderName}"/>
+    <c:set var="answerAllowed" value="${popupMsg.answerAllowed}"/>
 
 <html>
   <head>
-    <title><%=resource.getString("GML.popupTitle")%></title>
-    <%
-          out.println(gef.getLookStyleSheet());
-    %>
+    <title><fmt:message key="GML.popupTitle"/></title>
+    <view:looknfeel/>
 
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript">
-      var messageId = <%=msg.getId()%>;
-      window.opener.location = "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID="+messageId;
-				
+      window.opener.location = "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID=${popupMsgId}";
       function closeWindow()
       {
         window.close();
@@ -66,82 +74,73 @@
 
       function answerMessage()
       {
-        window.opener.location = "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID="+messageId;
         document.popupForm.submit();
       }
+
+      $(document).ready(function(){
+        $('#messageAux').focus();
+      });
     </script>
 
   </head>
-  <body marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-    <%
-          BrowseBar browseBar = window.getBrowseBar();
-          browseBar.setComponentName(popupScc.getString("Popup"));
-          browseBar.setPath(popupScc.getString("message"));
-          out.println(window.printBefore());
-          out.println(frame.printBefore());
-          out.println(board.printBefore());
-    %>
+  <body>
+  <view:browseBar path="<fmt:message key='message' />"/>
+  <view:window>
+    <view:frame>
+      <view:board>
 
-    <center>
+    <form name="popupForm" Action="ToAlert" Method="POST">
+    <div style="text-align: center;">
       <table border="0" cellspacing="0" cellpadding="0" width="100%">
-        <form name="popupForm" Action="ToAlert" Method="POST">
-          <input type="hidden" name="theUserId" value="<%=senderId%>">
-          <% if (answerAllowed) {%>
+          <input type="hidden" name="theUserId" value="${senderId}">
+          <c:if test="${answerAllowed}">
           <tr>
             <td>&nbsp;</td>
             <td align=left valign="baseline">
-              <span class="txtlibform"><%=popupScc.getString("messageFrom")%>
-                <%=msg.getSenderName()%>&nbsp;</span>
-          				-&nbsp;<%=DateUtil.getOutputDate(msg.getDate(), popupScc.getLanguage())%>
-              <%=popupScc.getString("messageAt")%>&nbsp;<%=msg.getTime()%>
+              <span class="txtlibform"><fmt:message key="messageFrom"/>
+                  ${senderName}</span><span> - ${silfn:formatStringDate(popupMsgDate, language)}
+              <fmt:message key="messageAt"/> ${popupMsgTime}</span>
             </td>
           </tr>
-          <% }%>
+          </c:if>
           <tr>
             <td>&nbsp;</td>
             <td align=left valign="baseline">
               <table class="">
                 <tr>
-                  <td><%=Encode.javaStringToHtmlParagraphe(msg.getBody())%></td>
+                  <td>${popupMsgBody}</td>
                 </tr>
               </table>
             </td>
           </tr>
-          <% if (answerAllowed) {%>
+        <c:if test="${answerAllowed}">
           <tr><td>&nbsp;</td></tr>
           <tr>
             <td>&nbsp;</td>
-            <td align=left valign="baseline" class="txtlibform"><b><%=popupScc.getString("answer")%> :</b></td>
+            <td align=left valign="baseline" class="txtlibform" style="font-weight: bold;"><fmt:message key="answer"/> :</td>
           </tr>
           <tr>
             <td>&nbsp;</td>
             <td align=left valign="baseline">
-              <textarea rows="5" cols="80" name="messageAux"></textarea>
+              <textarea id="messageAux" rows="5" cols="80" name="messageAux"></textarea>
             </td>
           </tr>
-          <% }%>
-        </form>
+        </c:if>
       </table>
-    </center>
-    <%
-          out.println(board.printAfter());
-          ButtonPane buttonPane = gef.getButtonPane();
-          if (answerAllowed) {
-            buttonPane.addButton((Button) gef.getFormButton(popupScc.getString("send"), "javascript:onClick=answerMessage();", false));
-          }
-          buttonPane.addButton((Button) gef.getFormButton(popupScc.getString("close"), "javascript:onClick=closeWindow();", false));
-      out.println("<br/><center>" + buttonPane.print() + "</center>");%>
-    <%
-          out.println(frame.printAfter());
-          out.println(window.printAfter());
-    %>
+    </div>
+    </form>
+      </view:board>
+      <view:buttonPane>
+        <c:if test="${answerAllowed}">
+          <fmt:message key='send' var="label"/>
+          <view:button label="${label}" action="javascript:onClick=answerMessage();" disabled="false"/>
+        </c:if>
+        <fmt:message key='close' var="label"/>
+        <view:button label="${label}" action="javascript:onClick=closeWindow();" disabled="false"/>
+      </view:buttonPane>
+    </view:frame>
+  </view:window>
   </BODY>
 </HTML>
-<% if (answerAllowed) {%>
-<script type="text/javascript" language="javascript">
-  document.popupForm.messageAux.focus();
-</script>
-<% }%>
-<%
-      }
-%>
+  </c:otherwise>
+</c:choose>
