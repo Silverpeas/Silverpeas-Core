@@ -31,6 +31,7 @@
 <%@page import="com.sun.portal.portletcontainer.driver.admin.AdminConstants" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:set var="spaceId" value="${requestScope['SpaceId']}"/>
 
@@ -53,7 +54,7 @@
   browseBar.setComponentId(null);
   browseBar.setDomainName(message.getString("portlets.homepage"));
 
-    if (!disableMove.booleanValue())
+    if (!disableMove)
     {
         OperationPane operationPane = window.getOperationPane();
         if (currentSpaceId != null) {
@@ -97,22 +98,21 @@
     out.println(window.printAfter());
 %>
 
-<% if (!disableMove.booleanValue()) { %>
+<% if (!disableMove) { %>
 <script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/demo.js"></script>
 <% } %>
 
-<script type='text/javascript' src='<%=m_context%>/util/javaScript/silverpeas-popup.js' language='Javascript'></script>
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
 
-  function openAdmin()
-  {
-	  $("#addPortletDialog").popup('validation', {
-	    title : "<fmt:message key="portlets.homepage"/> > <fmt:message key="portlets.createPortlet"/>",
-		callback : function() {
-	      document.createForm.submit();
-	      return true;
-	    }
-	});
+  function openAdmin() {
+    $("#addPortletDialog").popup('validation', {
+      title : "<fmt:message key="portlets.homepage"/> > <fmt:message key="portlets.createPortlet"/>",
+      callback : function() {
+        document.createForm.submit();
+        return true;
+      }
+    });
   }
   
   function getSilverpeasContext()
@@ -122,46 +122,50 @@
 
   function getSpaceId()
   {
-    return "<c:out value="${spaceId}"/>";
+    return "${spaceId}";
   }
-  
+
   function selectPortlet() {
-	$('#title').val($('#portletList option:selected').text());
+    $('#title').val($('#portletList option:selected').text());
   }
-  
+
   $(document).ready(function() {
-	selectPortlet();
+    selectPortlet();
   });
 
 </script>
 
-<!-- Dialog to add Portlet --> 
+<!-- Dialog to add Portlet -->
 <div id="addPortletDialog" style="display: none">
-	<form id="create-portlet" name="createForm" method="post" action="<%=m_context%>/portletAdmin?<%=WindowInvokerConstants.DRIVER_SPACEID%>=<c:out value="${spaceId}"/>">
-	<c:set value="${sessionScope['com.silverpeas.portletcontainer.driver.admin.silverpeasSpaceId']}" var="silverpeasSpaceId" />
-	<view:setConstant var="existingPortlets" constant="com.silverpeas.portlets.portal.DesktopConstants.AVAILABLE_PORTLET_WINDOWS" />
-	<c:set var="list" value="${sessionScope[existingPortlets]}" />
-		<table cellpadding="5">
-			<tr>
-				<td class="txtlibform"><fmt:message key="portlets.selectBasePortlet"/> :</td>
-				<td>
-					<select id="portletList" name="<%=AdminConstants.PORTLET_LIST%>" onchange="selectPortlet()">
-						<c:forEach items="${list}" var="portlet">
-							<c:forEach items="${portlet}" var="portletName">
-								<option value="<c:out value="${portletName.key}" />"><c:out value="${portletName.value}" /></option>
-							</c:forEach>
-						</c:forEach>
-					</select>
-					<input type="hidden" name="<%=AdminConstants.CREATE_PORTLET_WINDOW_SUBMIT%>" value="1"/>
-					<input type="hidden" name="<%=WindowInvokerConstants.DRIVER_SPACEID%>" value="<c:out value="${silverpeasSpaceId}"/>"/>
-				</td>
-			</tr>
-			<tr>
-				<td class="txtlibform"><fmt:message key="portlets.portletTitle"/> :</td>
-				<td><input id="title" type="text" size="40" name="<%=AdminConstants.PORTLET_WINDOW_TITLE%>" value="" maxlength="50" /></td>
-			</tr>
-		</table>
-	</form>
+  <view:setConstant var="DRIVER_SPACEID" constant="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants.DRIVER_SPACEID"/>
+  <c:url value="/portletAdmin?${DRIVER_SPACEID}=${spaceId}" var="actionUrl" />
+  <form id="create-portlet" name="createForm" method="post" action="${actionUrl}">
+    <c:set value="${sessionScope['com.silverpeas.portletcontainer.driver.admin.silverpeasSpaceId']}" var="silverpeasSpaceId"/>
+    <view:setConstant var="existingPortlets" constant="com.silverpeas.portlets.portal.DesktopConstants.AVAILABLE_PORTLET_WINDOWS"/>
+    <c:set var="list" value="${sessionScope[existingPortlets]}"/>
+    <table cellpadding="5">
+      <tr>
+        <td class="txtlibform"><fmt:message key="portlets.selectBasePortlet"/> :</td>
+        <td>
+          <select id="portletList" name="<%=AdminConstants.PORTLET_LIST%>" onchange="selectPortlet()">
+            <c:forEach items="${list}" var="portlet">
+              <c:forEach items="${portlet}" var="portletName">
+                <option value="${portletName.key}">${portletName.value}</option>
+              </c:forEach>
+            </c:forEach>
+          </select>
+          <input type="hidden" name="<%=AdminConstants.CREATE_PORTLET_WINDOW_SUBMIT%>" value="1"/>
+          <input type="hidden" name="<%=WindowInvokerConstants.DRIVER_SPACEID%>" value="${silverpeasSpaceId}"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="portlets.portletTitle"/> :</td>
+        <td>
+          <input id="title" type="text" size="40" name="<%=AdminConstants.PORTLET_WINDOW_TITLE%>" value="" maxlength="50"/>
+        </td>
+      </tr>
+    </table>
+  </form>
 </div>
 
 </body>

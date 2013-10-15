@@ -24,19 +24,6 @@
 
 package com.stratelia.webactiv.util.statistic.ejb;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -49,6 +36,21 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.model.HistoryNodePublicationActorDetail;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Class declaration
@@ -484,63 +486,68 @@ public class HistoryObjectDAO {
     }
     return results;
   }
-  
-  public static Collection<HistoryObjectDetail> getHistoryDetailByUser(Connection con, String userId, int actionType, String objectType, int nbObjects)
+
+  /**
+   * Gets the last history detail of each object associated to a user. The result is sorted on
+   * the date time from the youngest to the oldest
+   * @param con
+   * @param userId
+   * @param actionType
+   * @param objectType
+   * @param nbObjects
+   * @return
+   * @throws SQLException
+   */
+  public static Collection<HistoryObjectDetail> getLastHistoryDetailOfObjectsForUser(Connection con,
+      String userId, int actionType, String objectType, int nbObjects)
       throws SQLException {
-    SilverTrace.info("statistic",
-        "HistoryObjectDAO.getHistoryDetailByUser",
+    SilverTrace.info("statistic", "HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser",
         "root.MSG_GEN_ENTER_METHOD");
-    
-    String selectStatement = "select distinct componentId, objectId, MAX(datestat), MAX(heurestat)"
-        + " from SB_Statistic_History" 
+
+    String selectStatement =
+        "select componentId, objectId, datestat, heurestat"
+        + " from SB_Statistic_History"
         + " where userId='" + userId + "'"
         + " and actionType="+actionType
         + " and objectType='"+objectType+"'"
-        + " group by componentId, objectId"
-        + " order by MAX(dateStat) desc, MAX(heureStat) desc";
+        + " order by datestat desc, heurestat desc";
 
     Statement stmt = null;
     ResultSet rs = null;
-    List<HistoryObjectDetail> list = new ArrayList<HistoryObjectDetail>();
-    int nbObjectsResult = 0;
-        
+    List<HistoryObjectDetail> result = new ArrayList<HistoryObjectDetail>();
+    Set<ForeignPK> performedIds = new HashSet<ForeignPK>(nbObjects * 2);
+    Date date;
+
     try {
       stmt = con.createStatement();
+      // Setting a cursor to avoid performance problems
+      stmt.setFetchSize(50);
       rs = stmt.executeQuery(selectStatement);
-      
-      String componentId = "";
-      String foreignId = "";
-      Date date;
 
-      while (rs.next() && nbObjectsResult < nbObjects) {
-        componentId = rs.getString(1);
-        foreignId = String.valueOf(rs.getInt(2));
+      while (rs.next() && performedIds.size() < nbObjects) {
+
+        // Id
+        String componentId = rs.getString(1);
+        String foreignId = String.valueOf(rs.getInt(2));
         ForeignPK foreignPK = new ForeignPK(foreignId, componentId);
-        try {
-          date = DateUtil.parse(rs.getString(3));
-          Calendar cal = Calendar.getInstance();
-          cal.setTime(date);
-          String hhmm = rs.getString(4);
-          String hh = hhmm.substring(0, 2);
-          String mm = hhmm.substring(3, 5);
-          cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hh));
-          cal.set(Calendar.MINUTE, Integer.parseInt(mm));
-          date = cal.getTime();
-        } catch (java.text.ParseException e) {
-          throw new StatisticRuntimeException(
-              "HistoryObjectDAO.getHistoryDetailByUser()",
-              SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
-        }
-        HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, foreignPK);
 
-        list.add(detail);
-        nbObjectsResult ++;
+        // If id is already performed, then it is skiped
+        if (performedIds.add(foreignPK)) {
+          try {
+            // First the date of the day is parsed
+            date = DateUtil.parse(rs.getString(3));
+            // Then the hour is set
+            date = DateUtil.getDate(date, rs.getString(4));
+          } catch (java.text.ParseException e) {
+            throw new StatisticRuntimeException("HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser()",
+                SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
+          }
+          result.add(new HistoryObjectDetail(date, userId, foreignPK));
+        }
       }
-        
     } finally {
       DBUtil.close(rs, stmt);
     }
-    return list;
+    return result;
   }
-
 }

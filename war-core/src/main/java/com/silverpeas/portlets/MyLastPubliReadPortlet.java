@@ -58,9 +58,12 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
     if (StringUtil.isInteger(pref.getValue("nbPublis", "5"))) {
       nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
     }
-    Collection<HistoryObjectDetail> listObject = getStatisticBm().getHistoryByUser(mainSessionCtrl.getUserId(), 1, "Publication", nbPublis);
-    for(HistoryObjectDetail object : listObject) {
-      PublicationPK pubPk = new PublicationPK(object.getForeignPK().getId(), object.getForeignPK().getComponentName());
+    Collection<HistoryObjectDetail> listObject =
+        getStatisticBm().getLastHistoryOfObjectsForUser(mainSessionCtrl.getUserId(), 1,
+            "Publication", nbPublis);
+    for (HistoryObjectDetail object : listObject) {
+      PublicationPK pubPk = new PublicationPK(object.getForeignPK().getId(),
+          object.getForeignPK().getComponentName());
       PublicationDetail pubDetail = getPublicationBm().getDetail(pubPk);
       listPubli.add(pubDetail);
     }

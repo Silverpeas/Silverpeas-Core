@@ -75,7 +75,7 @@ public class AdminServlet extends HttpServlet {
     DesktopMessages.init(language);
     response.setContentType("text/html;charset=UTF-8");
     HttpSession session = AdminUtils.getClearedSession(request);
-    PortletAdminData portletAdminData = null;
+    PortletAdminData portletAdminData;
     String portletsRenderer = "/portlet/jsp/jsr/admin.jsp";
     try {
       portletAdminData = PortletAdminDataFactory.getPortletAdminData(elementId);
@@ -117,7 +117,7 @@ public class AdminServlet extends HttpServlet {
   private boolean isParameterPresent(HttpServletRequest request,
       String parameter) {
     String name = request.getParameter(parameter);
-    return (name == null ? false : true);
+    return (name != null);
   }
 
   private void setSelectedPortletWindow(HttpSession session,
@@ -138,8 +138,7 @@ public class AdminServlet extends HttpServlet {
     }
   }
 
-  private String getUserIdOrSpaceId(HttpServletRequest request,
-      boolean getSpaceIdOnly) {
+  private String getUserIdOrSpaceId(HttpServletRequest request, boolean getSpaceIdOnly) {
     String spaceId = getSpaceId(request);
 
     if (getSpaceIdOnly) {
@@ -195,10 +194,7 @@ public class AdminServlet extends HttpServlet {
 
   private void createPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
       HttpSession session) {
-    // String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_NAME);
-    Date timestamp = new Date();
-    String portletWindowName = String.valueOf(timestamp.getTime());
-    timestamp = null;
+    String portletWindowName = String.valueOf(new Date().getTime());
 
     String portletName = request.getParameter(AdminConstants.PORTLET_LIST);
     String title = request.getParameter(AdminConstants.PORTLET_WINDOW_TITLE);
@@ -267,12 +263,7 @@ public class AdminServlet extends HttpServlet {
     setSelectedPortletWindow(session, portletWindowName);
     String width = request.getParameter(AdminConstants.WIDTH_LIST);
     String visibleValue = request.getParameter(AdminConstants.VISIBLE_LIST);
-    boolean visible;
-    if (PortletRegistryConstants.VISIBLE_TRUE.equals(visibleValue)) {
-      visible = true;
-    } else {
-      visible = false;
-    }
+    boolean visible = PortletRegistryConstants.VISIBLE_TRUE.equals(visibleValue);
     if (portletWindowName == null) {
       String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
       session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);

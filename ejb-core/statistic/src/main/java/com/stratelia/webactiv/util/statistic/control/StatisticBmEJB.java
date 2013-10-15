@@ -380,14 +380,16 @@ public class StatisticBmEJB implements StatisticBm {
   }
   
   @Override
-  public Collection<HistoryObjectDetail> getHistoryByUser(String userId, int actionType, String objectType, int nbObjects) {
-    SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByUser",
+  public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
+      int actionType, String objectType, int nbObjects) {
+    SilverTrace.info("statistic", "StatisticBmEJB.getLastHistoryOfObjectsForUser",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getHistoryDetailByUser(con, userId, actionType, objectType, nbObjects);
+      return HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser(con, userId, actionType,
+          objectType, nbObjects);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getHistoryByUser()",
+      throw new StatisticRuntimeException("StatisticBmEJB().getLastHistoryOfObjectsForUser()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
     } finally {
       DBUtil.close(con);

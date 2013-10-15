@@ -100,11 +100,14 @@ public interface StatisticBm {
 
   
   /**
+   * Gets the last history detail of each object associated to a user. The result is sorted on
+   * the date time from the youngest to the oldest and limited according to the nbObjects parameter.
    * @param userId
    * @param actionType
    * @param objectType
    * @param nbObjects
-   * @return list of objects consulted by the user
+   * @return ordered list of unique objects used by the user
    */
-  public Collection<HistoryObjectDetail> getHistoryByUser(String userId, int actionType, String objectType, int nbObjects);
+  public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
+      int actionType, String objectType, int nbObjects);
 }
