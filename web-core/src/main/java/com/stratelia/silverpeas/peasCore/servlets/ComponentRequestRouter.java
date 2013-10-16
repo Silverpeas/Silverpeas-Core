@@ -37,7 +37,6 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -229,15 +228,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
-    boolean isAllowed;
-
-    if (componentId == null) { // Personal space
-      isAllowed = true;
-    } else {
-      isAllowed = controller.getOrganisationController().isComponentAvailable(
-          componentId, controller.getUserId());
-    }
-    return true;
+    return componentId == null || controller.getOrganisationController()
+        .isComponentAvailable(componentId, controller.getUserId());
   }
 
   private void redirectService(HttpServletRequest request,

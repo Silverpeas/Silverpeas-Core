@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.notification.jsondiff.Operation;
 
 import com.silverpeas.admin.notification.ComponentJsonPatch;

@@ -31,7 +31,6 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
