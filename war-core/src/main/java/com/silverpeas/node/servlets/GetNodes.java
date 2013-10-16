@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,27 +24,6 @@
 
 package com.silverpeas.node.servlets;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -54,9 +33,25 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public class GetNodes extends HttpServlet {
 
@@ -70,12 +65,9 @@ public class GetNodes extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException,
-      IOException {
-
+      throws ServletException,  IOException {
     response.setContentType("application/json");
     Writer writer = response.getWriter();
-
     HttpSession session = request.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
         MAIN_SESSION_CONTROLLER_ATT);
@@ -95,7 +87,7 @@ public class GetNodes extends HttpServlet {
       // retain only available instances for current user
       List<String> availableComponentIds = new ArrayList<String>();
       for (String componentId : componentIds) {
-        if (mainSessionCtrl.getOrganizationController().isComponentAvailable(componentId,
+        if (mainSessionCtrl.getOrganisationController().isComponentAvailable(componentId,
             mainSessionCtrl.getUserId())) {
           availableComponentIds.add(componentId);
         }
@@ -103,22 +95,14 @@ public class GetNodes extends HttpServlet {
 
       if (availableComponentIds.size() == 1) {
         // only one instance is available, root must be expanded by default
-        try {
           NodeDetail node = getRoot(availableComponentIds.get(0), mainSessionCtrl);
           JSONObject root = getNodeAsJSTreeObject(node, mainSessionCtrl, "open");
           writer.write(root.toString());
-        } catch (CreateException e) {
-          writer.write("Silverpeas Node Service is unavailable");
-        }
       } else {
         // at least two instances are available, only root of instances have to be displayed
         List<NodeDetail> nodes = new ArrayList<NodeDetail>();
         for (String componentId : availableComponentIds) {
-          try {
             nodes.add(getRoot(componentId, mainSessionCtrl));
-          } catch (CreateException e) {
-            writer.write("Silverpeas Node Service is unavailable");
-          }
         }
         writer.write(getListAsJSONArray(nodes, mainSessionCtrl));
       }
@@ -130,7 +114,6 @@ public class GetNodes extends HttpServlet {
         id = "0";
       }
       NodePK nodePK = new NodePK(id, componentId);
-
       getChildren(nodePK, mainSessionCtrl, writer);
     }
 
@@ -138,20 +121,15 @@ public class GetNodes extends HttpServlet {
 
   private void getChildren(NodePK pk, MainSessionController session, Writer writer)
       throws IOException {
-    try {
       NodeDetail node = getNodeBm().getDetail(pk);
       List<NodeDetail> availableChildren = getAvailableChildren(node.getChildrenDetails(), session);
       writer.write(getListAsJSONArray(availableChildren, session));
-    } catch (CreateException e) {
-      writer.write("Silverpeas Node Service is unavailable");
-    }
   }
 
-  private NodeDetail getRoot(String componentId, MainSessionController session)
-      throws RemoteException, CreateException {
+  private NodeDetail getRoot(String componentId, MainSessionController session) {
     NodeDetail node = getNodeBm().getHeader(new NodePK("0", componentId));
     ComponentInstLight component =
-        session.getOrganizationController().getComponentInstLight(componentId);
+        session.getOrganisationController().getComponentInstLight(componentId);
     if (component != null) {
       node.setName(component.getLabel(session.getFavoriteLanguage()));
     }
@@ -159,18 +137,18 @@ public class GetNodes extends HttpServlet {
   }
 
   private List<NodeDetail> getAvailableChildren(Collection<NodeDetail> children,
-      MainSessionController session) throws RemoteException, CreateException {
+      MainSessionController session) {
     List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
     for (NodeDetail child : children) {
       String childId = child.getNodePK().getId();
-      if (child.getNodePK().isTrash() || childId.equals("2")) {
+      if (child.getNodePK().isTrash() || "2".equals(childId)) {
         // do not add these nodes
       } else if (!child.haveRights()) {
         availableChildren.add(child);
       } else {
         int rightsDependsOn = child.getRightsDependsOn();
         boolean nodeAvailable =
-            session.getOrganizationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE,
+            session.getOrganisationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE,
             child.getNodePK().getInstanceId(), session.getUserId());
         if (nodeAvailable) {
           availableChildren.add(child);
@@ -184,7 +162,7 @@ public class GetNodes extends HttpServlet {
               // same rights of father (which is not available) so it is not available too
             } else {
               // different rights of father check if it is available
-              if (session.getOrganizationController().isObjectAvailable(
+              if (session.getOrganisationController().isObjectAvailable(
                   descendant.getRightsDependsOn(), ObjectType.NODE, child.getNodePK().
                   getInstanceId(), session.getUserId())) {
                 childAllowed = true;
@@ -229,6 +207,7 @@ public class GetNodes extends HttpServlet {
       role += "-root";
     }
     o.put("rel", role);
+    o.put("path", node.getFullPath());
     return o;
   }
 
@@ -242,17 +221,17 @@ public class GetNodes extends HttpServlet {
       return SilverpeasRole.user.toString();
     }
     if (!isRightsEnabled(session, node.getNodePK().getInstanceId())) {
-      return getProfile(session.getOrganizationController().getUserProfiles(session.getUserId(),
+      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId()));
     }
 
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
       int rightsDependsOn = node.getRightsDependsOn();
-      return getProfile(session.getOrganizationController().getUserProfiles(session.getUserId(),
+      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId(), rightsDependsOn, ObjectType.NODE));
     } else {
-      return getProfile(session.getOrganizationController().getUserProfiles(session.getUserId(),
+      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId()));
     }
   }
@@ -280,10 +259,8 @@ public class GetNodes extends HttpServlet {
     return flag.toString();
   }
 
-  private NodeBm getNodeBm() throws RemoteException, CreateException {
-    NodeBmHome nodeBmHome =
-        EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-    return nodeBmHome.create();
+  private NodeBm getNodeBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 
   private boolean isPublicationAllowedOnRoot(NodePK pk, MainSessionController session) {

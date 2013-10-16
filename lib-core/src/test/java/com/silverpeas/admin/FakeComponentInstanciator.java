@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,10 +24,9 @@
 
 package com.silverpeas.admin;
 
-import java.sql.Connection;
-
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import java.sql.Connection;
 
 public class FakeComponentInstanciator implements ComponentsInstanciatorIntf {
 

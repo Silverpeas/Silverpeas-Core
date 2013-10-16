@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+    <name>Classifieds</name>
+    <description>Données complémentaires pour les petites annonces</description>
+	<image>/weblib/xmlForms/model1.gif</image>
+    <visible>true</visible>
+	<applications>
+        <application>classifieds</application>
+    </applications>
+    <viewFileName>classifieds/view.xml</viewFileName>
+    <viewTypeFile></viewTypeFile>
+    <updateFileName>classifieds/update.xml</updateFileName>
+    <updateTypeFile></updateTypeFile>
+    <searchFileName>classifieds/search.xml</searchFileName>
+    <dataFileName>classifieds/data.xml</dataFileName>
+</publicationTemplate>

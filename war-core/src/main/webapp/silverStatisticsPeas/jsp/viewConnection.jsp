@@ -1,6 +1,7 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -53,7 +54,7 @@
 	String filterLib = (String)request.getAttribute("FilterLib");
 	String filterId = (String)request.getAttribute("FilterId");
   Collection cResultData = (Collection)request.getAttribute("ResultData");
-  String userProfile = (String)request.getAttribute("UserProfile");
+  UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
   
   String[] item = null;
   String theValue = null;
@@ -111,7 +112,7 @@
 <body>
 <view:window>
 <%
-          if (userProfile.equals("A")) {
+          if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 %>
 <view:tabs>
 	<fmt:message var="userTabLabel" key="silverStatisticsPeas.usersWithSession" />

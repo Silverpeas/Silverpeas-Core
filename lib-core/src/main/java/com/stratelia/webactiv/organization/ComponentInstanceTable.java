@@ -1,39 +1,36 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
+
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * A ComponentInstanceTable object manages the ST_ComponentInstance table.
@@ -46,11 +43,12 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   }
 
   private final CallBackManager callBackManager = CallBackManager.get();
-  static final private String INSTANCE_COLUMNS =
-      "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime,removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang,isInheritanceBlocked";
+  static final private String INSTANCE_COLUMNS
+      = "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime,removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang,isInheritanceBlocked";
 
   /**
    * Fetch the current instance row from a resultSet.
+   *
    * @param rs
    * @return the current instance row from a resultSet.
    * @throws SQLException
@@ -98,6 +96,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns the instance whith the given id.
+   *
    * @param id
    * @return the instance whith the given id.
    * @throws AdminPersistenceException
@@ -111,6 +110,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns the ComponentInstance of a given user role.
+   *
    * @param userRoleId
    * @return the ComponentInstance of a given user role.
    * @throws AdminPersistenceException
@@ -127,6 +127,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns all the instances in a given space
+   *
    * @param spaceId
    * @return all the instances in a given space
    * @throws AdminPersistenceException
@@ -143,6 +144,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns all the instance ids in a given space
+   *
    * @param spaceId
    * @return all the instance ids in a given space
    * @throws AdminPersistenceException
@@ -152,12 +154,12 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_SPACE_INSTANCE_IDS =
-      "select id from ST_ComponentInstance "
+  static final private String SELECT_ALL_SPACE_INSTANCE_IDS = "select id from ST_ComponentInstance "
       + "where spaceId = ? and componentStatus is null" + " order by orderNum";
 
   /**
    * Returns all components which has been removed but not definitely deleted
+   *
    * @return all components which has been removed but not definitely deleted
    * @throws AdminPersistenceException
    */
@@ -172,21 +174,23 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns the ComponentInstance whose fields match those of the given sample instance fields.
+   *
    * @param sampleInstance
    * @return the ComponentInstance whose fields match those of the given sample instance fields.
    * @throws AdminPersistenceException
    */
   public ComponentInstanceRow[] getAllMatchingComponentInstances(ComponentInstanceRow sampleInstance)
       throws AdminPersistenceException {
-    String[] columns = new String[] { "componentName", "name", "description" };
-    String[] values = new String[] { sampleInstance.componentName, sampleInstance.name,
-        sampleInstance.description };
+    String[] columns = new String[]{"componentName", "name", "description"};
+    String[] values = new String[]{sampleInstance.componentName, sampleInstance.name,
+      sampleInstance.description};
     List<ComponentInstanceRow> rows = getMatchingRows(INSTANCE_COLUMNS, columns, values);
     return rows.toArray(new ComponentInstanceRow[rows.size()]);
   }
 
   /**
    * Inserts in the database a new instance row.
+   *
    * @param instance
    * @throws AdminPersistenceException
    */
@@ -242,7 +246,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   }
 
   public void updateComponentOrder(int componentId, int orderNum) throws AdminPersistenceException {
-    int[] values = new int[] { orderNum, componentId };
+    int[] values = new int[]{orderNum, componentId};
     updateRelation(UPDATE_COMPONENT_ORDER, values);
   }
 
@@ -255,7 +259,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     if (inheritanceBlocked) {
       iInheritance = 1;
     }
-    int[] values = new int[] { iInheritance, componentId };
+    int[] values = new int[]{iInheritance, componentId};
     updateRelation(UPDATE_COMPONENT_INHERITANCE, values);
   }
 
@@ -264,6 +268,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Updates in the database an instance row.
+   *
    * @param instance
    * @throws AdminPersistenceException
    */
@@ -279,6 +284,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Delete the space and all his component instances.
+   *
    * @param id
    * @param tempLabel
    * @param userId
@@ -303,12 +309,13 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     }
   }
 
-  static final private String SEND_COMPONENT_IN_BASKET =
-      "update ST_ComponentInstance set name = ?, "
+  static final private String SEND_COMPONENT_IN_BASKET
+      = "update ST_ComponentInstance set name = ?, "
       + "removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
 
   /**
    * Remove the space from the basket Space will be available again
+   *
    * @param id
    * @throws AdminPersistenceException
    */
@@ -329,8 +336,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     }
   }
 
-  static final private String RESTORE_COMPONENT_FROM_BASKET =
-      "update ST_ComponentInstance set removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
+  static final private String RESTORE_COMPONENT_FROM_BASKET
+      = "update ST_ComponentInstance set removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
 
   public void moveComponentInstance(int spaceId, int componentId) throws AdminPersistenceException {
     int[] param = new int[2];
@@ -375,6 +382,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Delete a component instance and all his user role sets.
+   *
    * @param id
    * @throws AdminPersistenceException
    */

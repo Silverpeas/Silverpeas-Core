@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,33 +39,23 @@ import com.stratelia.silverpeas.classifyEngine.Position;
 import com.stratelia.silverpeas.containerManager.ContainerInterface;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
-import com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence;
-import com.stratelia.silverpeas.pdc.model.AxisPK;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.control.TreeBm;
 import com.stratelia.silverpeas.treeManager.control.TreeBmImpl;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
 import com.stratelia.silverpeas.util.JoinStatement;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
+
+import javax.inject.Named;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -77,7 +67,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.inject.Named;
 
 @Named("pdcBm")
 public class PdcBmImpl implements PdcBm, ContainerInterface {
@@ -134,8 +123,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     }
   }
 
-  private List<AxisHeader> persistence2AxisHeaders(Collection<AxisHeaderPersistence> silverpeasBeans)
-      throws PersistenceException, PdcException {
+  private List<AxisHeader> persistence2AxisHeaders(Collection<AxisHeaderPersistence> silverpeasBeans) {
     List<AxisHeader> resultingAxisHeaders = new ArrayList<AxisHeader>();
     if (silverpeasBeans != null) {
       for (AxisHeaderPersistence silverpeasBean : silverpeasBeans) {
@@ -889,8 +877,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
       if (!isManager) {
         // If not, check if at least one of his groups it is
-        OrganizationController controller = new OrganizationController();
-        String[] groupIds = controller.getAllGroupIdsOfUser(userId);
+        String[] groupIds = OrganisationControllerFactory
+            .getOrganisationController().getAllGroupIdsOfUser(userId);
 
         isManager = isGroupManager(groupIds);
       }
@@ -1004,8 +992,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @return a list of each pathes found
    * @throws PdcException
    */
-  private ArrayList<String> getPathes(Connection con, String refValue, String treeId)
-      throws PdcException {
+  private ArrayList<String> getPathes(Connection con, String refValue, String treeId) {
     ArrayList<String> pathList = new ArrayList<String>();
     TreeNodePK refNodePK = new TreeNodePK(refValue);
     try {
@@ -1827,7 +1814,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     }
     return usedAxis;
   }
-  
+
   public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
       throws PdcException {
     List<UsedAxis> usedAxis = getUsedAxisByInstanceId(instanceId);

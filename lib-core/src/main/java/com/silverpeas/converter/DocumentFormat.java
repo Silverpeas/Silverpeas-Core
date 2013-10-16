@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -46,7 +46,11 @@ public enum DocumentFormat {
   /**
    * The OpenDocument format for text. ISO 26300:2006 standard format.
    */
-  odt(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT);
+  odt(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT),
+  /**
+   * The HTML format.
+   */
+  html(MimeTypes.HTML_MIME_TYPE);
 
   /**
    * A helper method to improve readability in method calls with a document format as argument.

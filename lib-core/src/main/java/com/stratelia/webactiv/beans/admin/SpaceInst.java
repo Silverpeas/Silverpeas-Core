@@ -1,44 +1,26 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.admin.space.SpaceServiceFactory;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.quota.constant.QuotaType;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.util.UnitUtil;
-
-import com.google.common.base.Objects;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -46,6 +28,20 @@ import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.quota.constant.QuotaType;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.quota.model.Quota;
+import org.silverpeas.util.UnitUtil;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -55,7 +51,6 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public static final String PERSONAL_SPACE_ID = "-10";
   public static final String DEFAULT_SPACE_ID = "-20";
-
   private static final long serialVersionUID = 4695928610067045964L;
   // First page possible types
   final public static int FP_TYPE_STANDARD = 0; // Page d'acueil standard
@@ -111,13 +106,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
-
   /**
    * This data is not used in equals and hashcode process as it is an extra information.
    */
   private Quota componentSpaceQuota = null;
   private Quota componentSpaceQuotaReached = null;
-
   /**
    * This data is not used in equals and hashcode process as it is an extra information.
    */
@@ -138,18 +131,20 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     orderNum = 0;
     components = new ArrayList<ComponentInst>();
     spaceProfiles = new ArrayList<SpaceProfileInst>();
-    subSpaceIds = new String[0];
+    subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
   }
 
+  @Override
   public int compareTo(SpaceInst o) {
     return orderNum - o.orderNum;
   }
 
   /**
    * Set the space id
+   *
    * @param sId new space id
    */
   public void setId(String sId) {
@@ -158,6 +153,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space id
+   *
    * @return the requested space id
    */
   public String getId() {
@@ -166,6 +162,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space father id
+   *
    * @param sDomainFatherId The space father id
    */
   public void setDomainFatherId(String sDomainFatherId) {
@@ -174,6 +171,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the domain father id
+   *
    * @return the space father id. If space has no father, returns an empty string.
    */
   public String getDomainFatherId() {
@@ -182,6 +180,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space name
+   *
    * @param sName The new space name
    */
   public void setName(String sName) {
@@ -190,6 +189,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space name
+   *
    * @return the space name
    */
   public String getName() {
@@ -216,6 +216,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space description
+   *
    * @param sDescription The new space description
    */
   public void setDescription(String sDescription) {
@@ -224,6 +225,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space description
+   *
    * @return The space description
    */
   public String getDescription() {
@@ -245,6 +247,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space creator id
+   *
    * @param sCreatorUserId The user id of person who created the space
    */
   public void setCreatorUserId(String sCreatorUserId) {
@@ -253,6 +256,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space creator id
+   *
    * @return The user id of person who created the space
    */
   public String getCreatorUserId() {
@@ -261,6 +265,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space first page type
+   *
    * @param iFirstPageType
    */
   public void setFirstPageType(int iFirstPageType) {
@@ -269,6 +274,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space first page type
+   *
    * @return The space first page type
    */
   public int getFirstPageType() {
@@ -277,6 +283,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space relative order num
+   *
    * @param iOrderNum
    */
   public void setOrderNum(int iOrderNum) {
@@ -285,6 +292,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space relative order num
+   *
    * @return
    */
   public int getOrderNum() {
@@ -293,6 +301,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the space first page extra parameter
+   *
    * @param sFirstPageExtraParam
    */
   public void setFirstPageExtraParam(String sFirstPageExtraParam) {
@@ -301,6 +310,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the space first page extra parameter
+   *
    * @return The space first page extra parameter
    */
   public String getFirstPageExtraParam() {
@@ -309,18 +319,20 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Set the list of children space ids
+   *
    * @param asSubSpaceIds Array of String containing all the children space ids
    */
   public void setSubSpaceIds(String[] asSubSpaceIds) {
     if (asSubSpaceIds == null) {
-      subSpaceIds = new String[0];
+      subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
-      subSpaceIds = asSubSpaceIds;
+      subSpaceIds = asSubSpaceIds.clone();
     }
   }
 
   /**
    * Get the list of children space ids
+   *
    * @return Array of String containing all the children space ids
    */
   public String[] getSubSpaceIds() {
@@ -329,6 +341,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the number of components in that space
+   *
    * @return The number of components in that space
    */
   public int getNumComponentInst() {
@@ -338,6 +351,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Add a component in component list (WARNING : component will not be added in database, only in
    * that spaceInst object !!!)
+   *
    * @param componentInst component instance to be added
    */
   public void addComponentInst(ComponentInst componentInst) {
@@ -347,6 +361,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Remove a component from component list (WARNING : component will not be removed from database,
    * only in that spaceInst object !!!)
+   *
    * @param componentInst component instance to be removed
    */
   public void deleteComponentInst(ComponentInst componentInst) {
@@ -360,6 +375,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get all the components in that space
+   *
    * @return The components in that space
    */
   public ArrayList<ComponentInst> getAllComponentsInst() {
@@ -377,6 +393,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Add a component in component list (WARNING : component will not be added in database, only in
    * that spaceInst object !!!)
+   *
    * @param componentName component instance to be added
    */
   public ComponentInst getComponentInst(String componentName) {
@@ -393,6 +410,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Get a component from component list, given its name (WARNING : if more than one component
    * instance match the given name, the first one will be returned)
+   *
    * @param nIndex
    * @return
    */
@@ -402,6 +420,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get the number of space profiles in that space
+   *
    * @return The number of space profiles in that space
    */
   public int getNumSpaceProfileInst() {
@@ -411,6 +430,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Add a space profile in space profile list (WARNING : space profile will not be added in
    * database, only in that spaceInst object !!!)
+   *
    * @param spaceProfileInst space profile to be added
    */
   public void addSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
@@ -424,6 +444,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Remove a space profile from space profile list (WARNING : space profile will not be removed
    * from database, only from that spaceInst object !!!)
+   *
    * @param spaceProfileInst space profile to be removed
    */
   public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
@@ -437,6 +458,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Get all the space profiles from space profile list
+   *
    * @return The space profiles of that space
    */
   public ArrayList<SpaceProfileInst> getAllSpaceProfilesInst() {
@@ -454,6 +476,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Get a space profile from space profiles list, given its name (WARNING : if more than one space
    * profile match the given name, the first one will be returned)
+   *
    * @param sSpaceProfileName name of requested space profile
    */
   public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileName) {
@@ -476,6 +499,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Get a space profile from space profiles list, given its name (WARNING : if more than one space
    * profile match the given name, the first one will be returned)
+   *
    * @param nIndex position of requested space profile in space profile list
    */
   public SpaceProfileInst getSpaceProfileInst(int nIndex) {
@@ -643,6 +667,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Indicates if the quota of the space or of a parent space is reached.
+   *
    * @return
    */
   public boolean isComponentSpaceQuotaReached() {
@@ -653,6 +678,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Gets the error message about component space quota reached.
+   *
    * @param language
    * @return
    */
@@ -666,9 +692,8 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   private void loadComponentSpaceQuota() {
     try {
-      componentSpaceQuota =
-          SpaceServiceFactory.getComponentSpaceQuotaService()
-              .get(ComponentSpaceQuotaKey.from(this));
+      componentSpaceQuota = SpaceServiceFactory.getComponentSpaceQuotaService()
+          .get(ComponentSpaceQuotaKey.from(this));
     } catch (final QuotaException qe) {
       throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
           "root.EX_CANT_GET_COMPONENT_SPACE_QUOTA", qe);
@@ -697,6 +722,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Indicates if the quota of the space or of a parent space is reached.
+   *
    * @return
    */
   public boolean isDataStorageQuotaReached() {
@@ -707,6 +733,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Gets the error message about data storage space quota reached.
+   *
    * @param language
    * @return
    */
@@ -719,9 +746,8 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   private void loadDataStorageQuota() {
     try {
-      dataStorageQuota =
-          SpaceServiceFactory.getDataStorageSpaceQuotaService().get(
-              DataStorageSpaceQuotaKey.from(this));
+      dataStorageQuota = SpaceServiceFactory.getDataStorageSpaceQuotaService().get(
+          DataStorageSpaceQuotaKey.from(this));
     } catch (final QuotaException qe) {
       throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
           "root.EX_CANT_GET_DATA_STORAGE_QUOTA", qe);
@@ -730,6 +756,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /**
    * Centralized the error message about reached quota.
+   *
    * @param quotaReached
    * @param language
    * @param stringTemplateFile
@@ -746,11 +773,10 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
           UnitUtil.memUnit.MB));
     }
-    SpaceInstLight space =
-        OrganizationControllerFactory.getFactory().getOrganizationController()
-            .getSpaceInstLightById(quotaReached.getResourceId());
-    final SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
+    SpaceInstLight space = OrganisationControllerFactory.getOrganisationController()
+        .getSpaceInstLightById(quotaReached.getResourceId());
+    final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
+        "admin/space/quota");
     template.setAttribute("quota", quotaReached);
     if (!space.getShortId().equals(new SpaceInstLight(this).getShortId())) {
       template.setAttribute("fromSpaceId", space.getShortId());
@@ -769,24 +795,24 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     }
     if (obj instanceof SpaceInst) {
       SpaceInst other = (SpaceInst) obj;
-      return Objects.equal(other.createDate, createDate)
-          && Objects.equal(other.id, id)
-          && Objects.equal(other.level, level)
-          && Objects.equal(other.look, look)
-          && Objects.equal(other.firstPageType, firstPageType)
-          && Objects.equal(other.orderNum, orderNum)
-          && Objects.equal(other.creatorUserId, creatorUserId)
-          && Objects.equal(other.description, description)
-          && Objects.equal(other.domainFatherId, domainFatherId)
-          && Objects.equal(other.firstPageExtraParam, firstPageExtraParam)
-          && Objects.equal(other.name, name);
+      return ObjectUtils.equals(other.createDate, createDate)
+          && ObjectUtils.equals(other.id, id)
+          && ObjectUtils.equals(other.level, level)
+          && ObjectUtils.equals(other.look, look)
+          && ObjectUtils.equals(other.firstPageType, firstPageType)
+          && ObjectUtils.equals(other.orderNum, orderNum)
+          && ObjectUtils.equals(other.creatorUserId, creatorUserId)
+          && ObjectUtils.equals(other.description, description)
+          && ObjectUtils.equals(other.domainFatherId, domainFatherId)
+          && ObjectUtils.equals(other.firstPageExtraParam, firstPageExtraParam)
+          && ObjectUtils.equals(other.name, name);
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(createDate, id, level, look, firstPageType, orderNum,
+    return ObjectUtils.hashCodeMulti(createDate, id, level, look, firstPageType, orderNum,
         creatorUserId, description, domainFatherId, firstPageExtraParam, name);
   }
 
@@ -810,9 +836,14 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       clone.addSpaceProfileInst(profile.clone());
     }
 
+    for (String lang : getTranslations().keySet()) {
+      SpaceI18N translation = (SpaceI18N) getTranslation(lang);
+      clone.addTranslation(translation);
+    }
+
     // clone components
-    List<ComponentInst> components = getAllComponentsInst();
-    for (ComponentInst component : components) {
+    List<ComponentInst> allComponents = getAllComponentsInst();
+    for (ComponentInst component : allComponents) {
       clone.addComponentInst((ComponentInst) component.clone());
     }
 

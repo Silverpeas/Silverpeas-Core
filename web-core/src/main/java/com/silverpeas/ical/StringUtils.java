@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Based on code from 
+// Based on code from
 // GCALDaemon is an OS-independent Java program that offers two-way
-// synchronization between Google Calendar and various iCalalendar (RFC 2445)
+// synchronization between Google SilverpeasCalendar and various iCalalendar (RFC 2445)
 // compatible calendar applications (Sunbird, Rainlendar, iCal, Lightning, etc).
 // Project home:
 // http://gcaldaemon.sourceforge.net
@@ -32,6 +32,7 @@
 package com.silverpeas.ical;
 
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.Charsets;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
@@ -40,10 +41,8 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 
-import org.silverpeas.util.Charsets;
-
 /**
- * Common String utilities (formatters, converters, etc). 
+ * Common String utilities (formatters, converters, etc).
  */
 public final class StringUtils {
 
@@ -71,19 +70,16 @@ public final class StringUtils {
     return array;
   }
 
-  public static String decodeToString(byte[] bytes, String encoding)
-      throws UnsupportedEncodingException {
+  public static String decodeToString(byte[] bytes, String encoding) {
     return new String(decodeToArray(bytes, Charsets.toCharset(encoding)));
   }
- 
-  
-  public static String decodeToString(byte[] bytes, Charset encoding)
-      throws UnsupportedEncodingException {
+
+
+  public static String decodeToString(byte[] bytes, Charset encoding) {
     return new String(decodeToArray(bytes, encoding));
   }
 
-  static char[] decodeToArray(byte[] bytes, Charset encoding)
-      throws UnsupportedEncodingException {
+  static char[] decodeToArray(byte[] bytes, Charset encoding) {
     if (CharEncoding.US_ASCII.equals(encoding.name())) {
       char[] array = new char[bytes.length];
       for (int i = 0; i < array.length; i++) {
@@ -195,9 +191,9 @@ public final class StringUtils {
    * Decodes a BASE64-encoded string.
    * @param string BASE64 string
    * @return String the decoded bytes
-   * @throws UnsupportedEncodingException  
+   * @throws UnsupportedEncodingException
    */
-  public static String decodeBASE64(String string) throws UnsupportedEncodingException {
+  public static String decodeBASE64(String string) {
     return decodeToString(DatatypeConverter.parseBase64Binary(string), CharEncoding.UTF_8);
   }
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,22 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialnetwork.myProfil.control;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.invitation.model.InvitationUser;
@@ -49,8 +37,6 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -67,7 +53,16 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.owasp.encoder.Encode;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.exception.AuthenticationException;
 
 /**
  * @author Bensalem Nabil
@@ -81,17 +76,17 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl,
-        componentContext,
-        "com.silverpeas.social.multilang.socialNetworkBundle",
-        "com.silverpeas.social.settings.socialNetworkIcons",
-        "com.silverpeas.social.settings.socialNetworkSettings");
+    super(mainSessionCtrl, componentContext,
+        "org.silverpeas.social.multilang.socialNetworkBundle",
+        "org.silverpeas.social.settings.socialNetworkIcons",
+        "org.silverpeas.social.settings.socialNetworkSettings");
     adminCtrl = new AdminController(getUserId());
     invitationService = new InvitationService();
   }
 
   /**
    * get all RelationShips ids for this user.
+   *
    * @param: userId
    * @return:List<String>
    */
@@ -105,70 +100,14 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return new ArrayList<String>();
   }
 
-  public boolean isAContact(String userId) {
-    if (StringUtil.isDefined(userId)) {
-      try {
-        return relationShipService.isInRelationShip(Integer.parseInt(getUserId()), Integer
-            .parseInt(
-            userId));
-      } catch (SQLException e) {
-        SilverTrace.error("MyContactProfilSessionController",
-            "MyContactProfilSessionController.getContactsForUser", "", e);
-      }
-    }
-    return false;
-  }
-
   /**
    * get this user with full information
+   *
    * @param userId
    * @return UserFull
    */
   public UserFull getUserFul(String userId) {
-    return this.getOrganizationController().getUserFull(userId);
-  }
-
-  /**
-   * update the properties of user
-   * @param idUser
-   * @param properties
-   * @throws SocialNetworkException
-   */
-  public void modifyUser(String idUser, Map<String, String> properties) throws
-      SocialNetworkException {
-    UserFull theModifiedUser = null;
-    String idRet = null;
-
-    SilverTrace.info("personalizationPeas",
-        "PersonalizationPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
-
-    theModifiedUser = adminCtrl.getUserFull(idUser);
-    if (theModifiedUser == null) {
-      throw new SocialNetworkException(
-          "MyProfilSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
-    }
-    // process extra properties
-    Set<String> keys = properties.keySet();
-    Iterator<String> iKeys = keys.iterator();
-    String key = null;
-    String value = null;
-    while (iKeys.hasNext()) {
-      key = iKeys.next();
-      value = properties.get(key);
-
-      theModifiedUser.setValue(key, value);
-    }
-
-    idRet = adminCtrl.updateUserFull(theModifiedUser);
-    if (idRet == null || idRet.length() <= 0) {
-      throw new SocialNetworkException(
-          "MyProfilSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
-    }
-
+    return this.getOrganisationController().getUserFull(userId);
   }
 
   public boolean isUserDomainRW() {
@@ -186,14 +125,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return domainActions;
   }
 
-  public int getMinLengthPwd() {
-    return JobDomainSettings.m_MinLengthPwd;
-  }
-
-  public boolean isBlanksAllowedInPwd() {
-    return JobDomainSettings.m_BlanksAllowedInPwd;
-  }
-
   public void modifyUser(String idUser, String userLastName, String userFirstName,
       String userEMail, String userAccessLevel, String oldPassword, String newPassword,
       String userLoginQuestion, String userLoginAnswer, Map<String, String> properties)
@@ -203,47 +134,47 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
         + userAccessLevel);
 
-    UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
+    UserDetail user = UserDetail.getById(idUser);
 
+    AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(user.getLogin())
+        .withAsPassword(oldPassword).withAsDomainId(user.getDomainId());
     if (isUserDomainRW()) {
-      theModifiedUser.setLastName(userLastName);
-      theModifiedUser.setFirstName(userFirstName);
-      theModifiedUser.seteMail(userEMail);
-      theModifiedUser.setLoginQuestion(userLoginQuestion);
-      theModifiedUser.setLoginAnswer(userLoginAnswer);
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
         // In this case, this method checks if oldPassword and actual password match !
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword, theModifiedUser.
-            getDomainId());
+        changePassword(credential, newPassword);
+      }
 
+      // It is important to load user data the most later possible because of potential updates
+      // of user data by password management services
+      UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
+      theModifiedUser.setLastName(Encode.forHtml(userLastName));
+      theModifiedUser.setFirstName(Encode.forHtml(userFirstName));
+      theModifiedUser.seteMail(Encode.forHtml(userEMail));
+      theModifiedUser.setLoginQuestion(Encode.forHtml(userLoginQuestion));
+      theModifiedUser.setLoginAnswer(Encode.forHtml(userLoginAnswer));
+      // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
+      if (newPassword != null && newPassword.length() != 0) {
         theModifiedUser.setPassword(newPassword);
       }
 
       // process extra properties
-      Set<String> keys = properties.keySet();
-      Iterator<String> iKeys = keys.iterator();
-      String key = null;
-      String value = null;
-      while (iKeys.hasNext()) {
-        key = iKeys.next();
-        value = properties.get(key);
-        theModifiedUser.setValue(key, value);
+      for (Map.Entry<String, String> property : properties.entrySet()) {
+        theModifiedUser.setValue(property.getKey(), property.getValue());
       }
       adminCtrl.updateUserFull(theModifiedUser);
 
     } else {
       if (StringUtil.isDefined(newPassword)) {
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword,
-            theModifiedUser.getDomainId());
+        changePassword(credential, newPassword);
       }
     }
   }
 
-  private void changePassword(String login, String oldPassword, String newPassword, String domainId)
+  private void changePassword(AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
-    LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
-    auth.changePassword(login, oldPassword, newPassword, domainId);
+    AuthenticationService authenticator = new AuthenticationService();
+    authenticator.changePassword(credential, newPassword);
   }
 
   public UserPreferences getPreferences() {
@@ -254,16 +185,13 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     SilverpeasServiceProvider.getPersonalizationService().saveUserSettings(preferences);
   }
 
-  public List<String> getAllLanguages() {
-    return DisplayI18NHelper.getLanguages();
-  }
-
   public List<SpaceInstLight> getSpaceTreeview() {
-    return getOrganizationController().getSpaceTreeview(getUserId());
+    return getOrganisationController().getSpaceTreeview(getUserId());
   }
 
   /**
    * return my invitation list sent
+   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsSent() {
@@ -279,6 +207,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list Received
+   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsReceived() {
@@ -293,8 +222,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void sendInvitation(String receiverId, String message) {
+    String safeMessage = Encode.forHtml(message);
     Invitation invitation =
-        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
+        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), safeMessage,
         new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);
@@ -311,8 +241,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       // Send a notification to alert people about a new relationship ask.
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       String subject = getString("myProfile.invitations.notification.send.subject");
-      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName() +
-          ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName()
+          + ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
@@ -320,7 +250,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       UserDetail senderUser = getUserDetail();
       notifMetaData.setSource(senderUser.getDisplayedName());
-      notifMetaData.setLink(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "MyInvitations");
+      notifMetaData.setLink(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null)
+          + "MyInvitations");
 
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
@@ -332,11 +263,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
         ResourceLocator localizedMessage = new ResourceLocator(
-            "com.silverpeas.social.multilang.socialNetworkBundle", language);
+            "org.silverpeas.social.multilang.socialNetworkBundle", language);
         notifMetaData.addLanguage(language, localizedMessage.getString(
             "myProfile.invitations.notification.send.subject", subject), "");
       }
-      if (message != null && message.trim().length() > 0) {
+      if (StringUtil.isDefined(message)) {
         setNotificationContent(notifMetaData, message, "fr");
         setNotificationContent(notifMetaData, message, "en");
         setNotificationContent(notifMetaData, message, "de");
@@ -356,7 +287,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * @param id the invitation identifier
-   * @see InvitationService.ignoreInvitation
+   * @see InvitationService#ignoreInvitation(int)
    */
   public void ignoreInvitation(String id) {
     invitationService.ignoreInvitation(Integer.parseInt(id));
@@ -373,7 +304,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param message
+   * @param relationShipId
    */
   private void acceptInvitationNotif(int relationShipId) {
     RelationShip curRelation = invitationService.getRelationShip(relationShipId);
@@ -385,11 +316,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       NotificationSender notificationSender = new NotificationSender(null);
       // Send a notification to alert people about new relationship.
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      String subject =
-          displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
+      String subject = displayedName + " " + getString(
+          "myProfile.invitations.notification.accept.subject");
 
-      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName() +
-          ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName()
+          + ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
@@ -406,7 +337,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
         ResourceLocator localizedMessage = new ResourceLocator(
-            "com.silverpeas.social.multilang.socialNetworkBundle", language);
+            "org.silverpeas.social.multilang.socialNetworkBundle", language);
         notifMetaData.addLanguage(language, localizedMessage.getString(
             "myProfile.invitations.notification.accept.subject", subject), "");
       }
@@ -434,11 +365,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * Get all social networks linked to current user account
+   *
    * @return
    */
   public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
-    Map<SocialNetworkID, ExternalAccount> networks =
-        new HashMap<SocialNetworkID, ExternalAccount>();
+    Map<SocialNetworkID, ExternalAccount> networks = new HashMap<SocialNetworkID, ExternalAccount>();
 
     List<ExternalAccount> externalAccounts =
         SocialNetworkService.getInstance().getUserExternalAccounts(getUserId());
@@ -452,5 +383,4 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public void unlinkSocialNetworkFromSilverpeas(SocialNetworkID networkId) {
     SocialNetworkService.getInstance().removeExternalAccount(getUserId(), networkId);
   }
-
 }

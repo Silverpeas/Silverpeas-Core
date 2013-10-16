@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,30 +23,35 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.personalization.UserPreferences;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import com.silverpeas.ui.DisplayI18NHelper;
-import static com.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.Exposable;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
+import static com.silverpeas.util.StringUtil.isDefined;
+
 /**
  * The profile of a user that is exposable in the WEB. It is a web entity representing the profile
- * of a user that can be serialized into a given media type (JSON, XML). It is a
- * decorator that decorates a UserDetail object with additional properties concerning its exposition
- * in the WEB.
+ * of a user that can be serialized into a given media type (JSON, XML). It is a decorator that
+ * decorates a UserDetail object with additional properties concerning its exposition in the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -68,7 +73,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
    * Decorates the specified user details with the required WEB exposition features.
    *
    * @param users a list of details on some users.
-   * @param baseURI the URI at which the specified users are defined.
+   * @param usersUri the URI at which the specified users are defined.
    * @return a list of web entities representing the profile of the specified users.
    */
   public static UserProfileEntity[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
@@ -81,23 +86,26 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     return selectableUsers;
   }
   private UserDetail user = null;
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private URI uri;
   @XmlElement
   private String webPage;
   @XmlElement
   private String tchatPage;
-  @XmlElement(required=true) @NotNull @Size(min=1)
+  @XmlElement(required = true)
+  @NotNull
+  @Size(min = 1)
   private String avatar;
   @XmlElement
   private String domainName;
-  @XmlElement(required=true, defaultValue="") @NotNull
+  @XmlElement(required = true, defaultValue = "")
+  @NotNull
   private String fullName = "";
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private String language = "";
-  @XmlElement(defaultValue="false")
+  @XmlElement(defaultValue = "false")
   private boolean connected = false;
-  @XmlElement(defaultValue="false")
+  @XmlElement(defaultValue = "false")
   private boolean anonymous = false;
 
   protected UserProfileEntity(UserDetail user) {
@@ -108,12 +116,10 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     } else {
       this.language = DisplayI18NHelper.getDefaultLanguage();
     }
-    try {
-      this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
-              getName();
-    } catch (Exception e) {
-      // Potential errors during getting domain should not break service
-      SilverTrace.warn("util", "UserProfileEntity.constructor", "root.EX_IGNORED", e);
+    if (user.getDomain() == null) {
+      this.domainName = "";
+    } else {
+      this.domainName = user.getDomain().getName();
     }
     this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
@@ -124,14 +130,14 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   }
 
   @Override
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   public String getId() {
     return user.getId();
   }
 
   @Override
-  @XmlElement(required=true)
-  public String getAccessLevel() {
+  @XmlElement(required = true)
+  public UserAccessLevel getAccessLevel() {
     return this.user.getAccessLevel();
   }
 
@@ -142,13 +148,13 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   }
 
   @Override
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   public String getFirstName() {
     return this.user.getFirstName();
   }
 
   @Override
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   public String getLastName() {
     return this.user.getLastName();
   }
@@ -161,6 +167,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   /**
    * Gets the language used by the user.
+   *
    * @return the code of the language used by the user.
    */
   public String getLanguage() {
@@ -168,14 +175,14 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   }
 
   @Override
-  public void setAccessLevel(String sAccessLevel) {
-    this.user.setAccessLevel(sAccessLevel);
+  public void setAccessLevel(UserAccessLevel accessLevel) {
+    this.user.setAccessLevel(accessLevel);
   }
 
   @Override
   public void setDomainId(String sDomainId) {
     this.user.setDomainId(sDomainId);
-    this.domainName = UserDetail.getOrganizationController().getDomain(sDomainId).getName();
+    this.domainName = user.getDomain().getId();
   }
 
   @Override
@@ -205,6 +212,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   /**
    * Gets the URL of the WEB page in which is presented the profile of this user.
+   *
    * @return the URL of the user profile WEB page.
    */
   public String getWebPage() {
@@ -216,6 +224,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   /**
    * Gets the URL of the tchat WEB page opened to discuss with this user.
+   *
    * @return the URL of the user tchat page.
    */
   public String getTchatPage() {
@@ -227,6 +236,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   /**
    * Gets the full name of the user. The full name is made up of its firstname and of its lastname.
+   *
    * @return the user fullname.
    */
   public String getFullName() {
@@ -235,6 +245,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   /**
    * Is this user connected to Silverpeas?
+   *
    * @return true if the user is connected, false otherwise.
    */
   @Override
@@ -265,13 +276,12 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   }
 
   @Override
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   public String getStatus() {
     return user.getStatus();
   }
 
   public void setStatus(String newStatus) {
-
   }
 
   public String getDomainName() {
@@ -324,7 +334,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     String avatarURI = this.user.getAvatar();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
-      avatarURI =  context.getServletContext().getContextPath() + avatarURI;
+      avatarURI = context.getServletContext().getContextPath() + avatarURI;
     }
     return avatarURI;
   }
@@ -333,7 +343,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
-      pageUri =  context.getServletContext().getContextPath() + pageUri;
+      pageUri = context.getServletContext().getContextPath() + pageUri;
     } else {
       pageUri = URLManager.getApplicationURL() + pageUri;
     }
@@ -344,7 +354,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     String pageUri = "/RcommunicationUser/jsp/OpenDiscussion?userId=" + this.user.getId();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
-      pageUri =  context.getServletContext().getContextPath() + pageUri;
+      pageUri = context.getServletContext().getContextPath() + pageUri;
     } else {
       pageUri = URLManager.getApplicationURL() + pageUri;
     }

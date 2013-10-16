@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -61,14 +61,15 @@
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
 {
-  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
 
 GraphicElementFactory	gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String  language = m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-ResourceLocator 		homePageSettings 	= new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
-String 					m_sContext 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+ResourceLocator portletsBundle = new ResourceLocator("org.silverpeas.portlets.multilang.portletsBundle", language);
+String m_sContext = GeneralPropertiesManager.getString("ApplicationURL");
 %>

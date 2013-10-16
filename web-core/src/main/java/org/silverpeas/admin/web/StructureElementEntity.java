@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,9 +23,11 @@
  */
 package org.silverpeas.admin.web;
 
-import static org.silverpeas.admin.web.AdminResourceURIs.buildURI;
-
-import java.net.URI;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -35,13 +37,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.net.URI;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import static org.silverpeas.admin.web.AdminResourceURIs.USERS_AND_GROUPS_ROLES_URI_PART;
+import static org.silverpeas.admin.web.AdminResourceURIs.buildURI;
 
 /**
  * The component instance light entity is a ComponentInstLight object that is exposed in the web as
@@ -52,8 +51,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class StructureElementEntity<T extends StructureElementEntity<T>> extends
-    AbstractTypeEntity {
+public abstract class StructureElementEntity<T extends StructureElementEntity<T>>
+    extends AbstractTypeEntity {
 
   private static final long serialVersionUID = -2205892819135663318L;
 
@@ -62,6 +61,9 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
 
   @XmlElement(defaultValue = "")
   private URI parentURI;
+
+  @XmlElement(defaultValue = "")
+  private URI usersAndGroupsRolesURI;
 
   @XmlElement(required = true)
   @NotNull
@@ -96,9 +98,9 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
   @SuppressWarnings("unchecked")
   public T withURI(final URI uri) {
     this.uri = uri;
-    this.parentURI =
-        buildURI(StringUtil.isDefined(parentId) && !SpaceInstLight.isRoot(parentId)
-            ? getStringParentBaseURI() : null, parentId);
+    this.parentURI = buildURI(StringUtil.isDefined(parentId) && !SpaceInstLight.isRoot(parentId) ?
+        getStringParentBaseURI() : null, parentId);
+    this.usersAndGroupsRolesURI = buildURI(uri.toString(), USERS_AND_GROUPS_ROLES_URI_PART);
     return (T) this;
   }
 
@@ -113,6 +115,10 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
 
   protected URI getParentURI() {
     return parentURI;
+  }
+
+  public URI getUsersAndGroupsRolesURI() {
+    return usersAndGroupsRolesURI;
   }
 
   protected String getId() {
@@ -153,7 +159,6 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
 
   /**
    * Instantiating a new web entity from the corresponding data
-   * @param component
    */
   protected StructureElementEntity(final String type, final String id, final String parentId,
       final String label, final String description, final String status, final int rank,

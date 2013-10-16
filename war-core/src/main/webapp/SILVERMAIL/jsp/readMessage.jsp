@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -111,11 +111,11 @@
                 </tr>
                 <tr>
                   <td class="txtlibform" nowrap="nowrap"><fmt:message key="subject" /> :&nbsp;</td>
-                  <td><c:out value="${msg.subject}" /></td>
+                  <td>${msg.subject}</td>
                 </tr>
                 <tr>
                   <td class="txtlibform"></td>
-                  <td><c:out value="${msg.body}" escapeXml="false" /></td>
+                  <td>${msg.body}</td>
                 </tr>
               </table>
         </view:board>

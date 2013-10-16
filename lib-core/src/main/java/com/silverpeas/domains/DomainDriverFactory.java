@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -44,10 +44,8 @@ public class DomainDriverFactory implements ApplicationContextAware {
     return instance;
   }
 
-  private static DomainDriver loadDomainDriverFromSpring(String name)
-      throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-    if (getDomainDriverFactory() == null ||
-        getDomainDriverFactory().getApplicationContext() == null) {
+  private static DomainDriver loadDomainDriverFromSpring(String name) throws ClassNotFoundException {
+    if (getDomainDriverFactory() == null || getDomainDriverFactory().getApplicationContext() == null) {
       return null;
     }
     if (getDomainDriverFactory().getApplicationContext().containsBean(name)) {

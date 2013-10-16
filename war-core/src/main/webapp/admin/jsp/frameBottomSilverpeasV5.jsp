@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -45,13 +45,9 @@ int framesetWidth = Integer.parseInt(rsc.getString("domainsBarFramesetWidth"));
 String paramsForDomainsBar = "";
 if ("1".equals(request.getParameter("FromTopBar"))) {
 	paramsForDomainsBar = (spaceId == null) ? "" : "?privateDomain="+spaceId+"&privateSubDomain="+subSpaceId+"&FromTopBar=1";
-} 
-else if (componentId != null) 
-{
+}  else if (componentId != null)  {
 	paramsForDomainsBar = "?privateDomain=&component_id="+componentId;
-} 
-else
-{
+} else {
 	paramsForDomainsBar = "?privateDomain="+spaceId;
 }
 
@@ -64,21 +60,15 @@ if (StringUtil.isDefined(loginHomepage) && StringUtil.isDefined(login) &&
 }
 
 String frameURL = "";
-if (displayLoginHomepage)
-{
+if (displayLoginHomepage) {
 	frameURL = loginHomepage;
-}
-else if (strGoToNew==null)
-{
-	if (StringUtil.isDefined(componentId))
-	{
+} else if (strGoToNew == null) {
+	if (StringUtil.isDefined(componentId)) {
 		frameURL = URLManager.getApplicationURL()+URLManager.getURL(null, componentId)+"Main";
-	}
-	else
-	{
+	} else {
 		String homePage = rsc.getString("defaultHomepage", "/dt");
 		String param = "";
-		if (StringUtil.isDefined(spaceId)){
+		if (StringUtil.isDefined(spaceId)) {
 		    param = "?SpaceId=" + spaceId;
 		}
 		frameURL = URLManager.getApplicationURL()+homePage+param;
@@ -126,9 +116,10 @@ function resizeFrame(contractsetting){
 		setframevalue(columntype, contractsetting)
 }
 
-function init(){
-	if (!document.all && !document.getElementById) return
-	if (document.body!=null){
+function init() {
+	if (!document.all && !document.getElementById) 
+    return
+	if (document.body != null){
 		columntype=(document.body.cols)? "cols" : "rows"
 		defaultsetting=(document.body.cols)? document.body.cols : document.body.rows
 	} 

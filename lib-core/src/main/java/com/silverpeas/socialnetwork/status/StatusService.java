@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -50,7 +50,7 @@ public class StatusService {
    * @throws UtilException
    * @throws SQLException
    */
-  private Connection getConnection() throws UtilException, SQLException {
+  private Connection getConnection() throws UtilException {
     return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }
 

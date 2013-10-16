@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -41,38 +41,38 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     super();
   }
 
-  /**
-   * Method declaration
-   * @param iconPath
-   * @param label
-   * @param action
-   * @see
-   */
-  public void addOperation(String iconPath, String label, String action) {
+  @Override
+  public void addOperation(final String iconPath, final String label, final String action,
+      final String classes) {
     StringBuilder operation = new StringBuilder();
 
+    String operationLabel = label;
     if (!StringUtil.isDefined(label)) {
-      label = action;
+      operationLabel = action;
     }
 
-    operation.append(
-        "<li class=\"yuimenuitem\"><a title=\"\" class=\"yuimenuitemlabel\" href=\"")
-        .append(action).append("\">").append(label).append("</a></li>");
+    String operationClasses = "yuimenuitemlabel";
+    if (StringUtil.isDefined(classes)) {
+      operationClasses += " " + classes.trim();
+    }
+
+    operation.append("<li class=\"yuimenuitem\"><a title=\"\" class=\"").append(operationClasses)
+        .append("\" href=\"").append(action).append("\">").append(operationLabel)
+        .append("</a></li>");
 
     getStack().add(operation.toString());
   }
-  
-  public void addOperationOfCreation(String icon, String label, String action) {
-    addOperation(icon, label, action);
-    getCreationItems().add(
-        "<a href=\"" + EncodeHelper.javaStringToJsString(action) + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon +
-            "\" alt=\"\"/>" + EncodeHelper.javaStringToJsString(label) + "</span></a>");
+
+  @Override
+  public void addOperationOfCreation(final String icon, final String label, final String action,
+      final String classes) {
+    addOperation(icon, label, action, classes);
+    getCreationItems().add("<a href=\"" + EncodeHelper.javaStringToJsString(action) +
+        "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon +
+        "\" alt=\"\"/>" + EncodeHelper.javaStringToJsString(label) + "</span></a>");
   }
 
-  /**
-   * Method declaration
-   * @see
-   */
+  @Override
   public void addLine() {
     getStack().add(line);
   }
@@ -82,6 +82,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    * @return
    * @see
    */
+  @Override
   public String print() {
     StringBuilder result = new StringBuilder();
     Vector<String> stack = getStack();
@@ -144,10 +145,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     if (highlightCreationItems()) {
       result.append("if ($('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
           .append("').length > 0) {");
-      if (getCreationItems().isEmpty()) {
+      if (!getCreationItems().isEmpty()) {
         result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
-          .append("').css({'display':'none'});");
-      } else {
+        .append("').css({'display':'block'});");
         for (String item : getCreationItems()) {
           result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
               .append("').append('").append(item).append("');");
@@ -155,6 +155,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
       }
       result.append("}");
     }
+
+    // Once the menu is rendered this below event is triggered
+    result.append("$(document).trigger('menuRendered');");
 
     result.append("});");
     result.append("</script>");

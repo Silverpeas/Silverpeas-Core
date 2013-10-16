@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,6 +34,8 @@ public class ResultGroupFilter {
   private Facet authorFacet = null;
   private Facet componentFacet = null;
   private Facet datatypeFacet = null;
+  private Facet filetypeFacet = null;
+
   private List<Facet> formfieldFacets;
 
   /**
@@ -80,6 +82,7 @@ public class ResultGroupFilter {
     Collections.sort(authorFacet.getEntries(), comparator);
     Collections.sort(componentFacet.getEntries(), comparator);
     Collections.sort(datatypeFacet.getEntries(), comparator);
+    Collections.sort(filetypeFacet.getEntries(), comparator);
     
     for (Facet formFieldFacet : formfieldFacets) {
       Collections.sort(formFieldFacet.getEntries(), comparator);
@@ -92,6 +95,14 @@ public class ResultGroupFilter {
 
   public Facet getDatatypeFacet() {
     return datatypeFacet;
+  }
+  
+  public Facet getFiletypeFacet() {
+    return filetypeFacet;
+  }
+
+  public void setFiletypeFacet(Facet filetypeFacet) {
+    this.filetypeFacet = filetypeFacet;
   }
 
   private class EntryComparator implements Comparator<FacetEntryVO>{

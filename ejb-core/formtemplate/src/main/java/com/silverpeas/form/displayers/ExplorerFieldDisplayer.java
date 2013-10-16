@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -163,6 +163,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
           + URLManager.getApplicationURL() + "/explorer/jsp/explorer.jsp"
           + "?elementHidden=" + fieldName
           + "&elementVisible=" + fieldName + "_path"
+          + "&dedicatedToWriters=true"
           + "&scope=" + scope;
       html += "','explorer',400,600,'scrollbars=yes');\" >";
       html += "<img src=\""

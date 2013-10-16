@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,42 +23,29 @@
  */
 package org.silverpeas.admin.web;
 
-import static org.hamcrest.Matchers.arrayWithSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.silverpeas.admin.web.AdminResourceURIs.FORCE_GETTING_FAVORITE_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.GET_NOT_USED_COMPONENTS_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.GET_USED_COMPONENTS_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.GET_USED_TOOLS_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_APPEARANCE_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_BASE_URI;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_COMPONENTS_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_CONTENT_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_PERSONAL_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_SPACES_URI_PART;
-import static org.silverpeas.admin.web.AdminTestResources.JAVA_PACKAGE;
-import static org.silverpeas.admin.web.AdminTestResources.SPRING_CONTEXT;
-import static org.silverpeas.admin.web.AdminTestResources.getComponentBuilder;
-import static org.silverpeas.admin.web.AdminTestResources.getSpaceBuilder;
-import static org.silverpeas.admin.web.SpaceEntityMatcher.matches;
-
-import java.util.Map;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.silverpeas.admin.web.ComponentEntity;
-import org.silverpeas.admin.web.SpaceAppearanceEntity;
-import org.silverpeas.admin.web.SpaceEntity;
-
 import com.silverpeas.web.ResourceGettingTest;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import javax.ws.rs.core.Response.Status;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.silverpeas.admin.web.AdminResourceURIs.*;
+import static org.silverpeas.admin.web.AdminTestResources.*;
+import static org.silverpeas.admin.web.SpaceEntityMatcher.matches;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
@@ -240,6 +227,24 @@ public class SpaceGettingTest extends ResourceGettingTest<AdminTestResources> {
         assertThat("true", is(entity.getFavorite()));
       }
     }
+  }
+
+  @Test
+  public void getUsersAndGroupsRoles() {
+    when(getTestResources().getOrganizationControllerMock().getSpaceInstById(anyString()))
+        .thenAnswer(new Answer<SpaceInst>() {
+
+          @Override
+          public SpaceInst answer(final InvocationOnMock invocation) throws Throwable {
+            SpaceInst spaceInst = new SpaceInst();
+            spaceInst.setId((String) invocation.getArguments()[0]);
+            return spaceInst;
+          }
+        });
+    final Map<SilverpeasRole, UsersAndGroupsRoleEntity> entity =
+        getAt(aResourceURI(expected.getShortId()) + "/" +
+            USERS_AND_GROUPS_ROLES_URI_PART, Map.class);
+    assertNotNull(entity);
   }
 
   private SpaceAppearanceEntity assertAppearance(final SpaceInstLight expected,

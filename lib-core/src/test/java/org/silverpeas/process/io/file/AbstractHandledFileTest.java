@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,20 +23,18 @@
  */
 package org.silverpeas.process.io.file;
 
-import static com.stratelia.webactiv.util.GeneralPropertiesManager.getString;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.sizeOf;
-import static org.apache.commons.io.FileUtils.touch;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+
 import org.silverpeas.process.session.ProcessSession;
+
+import static com.stratelia.webactiv.util.GeneralPropertiesManager.getString;
+import static org.apache.commons.io.FileUtils.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Yohann Chastagnier

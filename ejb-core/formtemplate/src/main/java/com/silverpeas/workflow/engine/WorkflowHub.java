@@ -1,25 +1,22 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.workflow.engine;
@@ -31,6 +28,7 @@ import com.silverpeas.workflow.api.*;
  * several workflow components and exports them as services interfaces.
  */
 public class WorkflowHub {
+
   /**
    * @return the TimeoutManager
    */
@@ -108,6 +106,7 @@ public class WorkflowHub {
   /**
    * As a singleton class, the constructor is private. After creation the init method <em>must </em>
    * be called.
+   *
    * @see createInstance()
    * @see init()
    */
@@ -117,16 +116,10 @@ public class WorkflowHub {
   /**
    * Creates the singleton instance.
    */
-  static synchronized private final WorkflowHub createInstance()
-      throws WorkflowException {
+  private static synchronized WorkflowHub createInstance() throws WorkflowException {
     if (instance == null) {
       instance = new WorkflowHub();
-      try {
-        instance.init();
-      } catch (WorkflowException e) {
-        instance = null;
-        throw e;
-      }
+      instance.init();
     }
     return instance;
   }
@@ -134,14 +127,14 @@ public class WorkflowHub {
   /**
    * Builds the differents components.
    */
-  private void init() throws WorkflowException {
+  private void init() {
     timeoutManager = new com.silverpeas.workflow.engine.timeout.TimeoutManagerImpl();
     errorManager = new com.silverpeas.workflow.engine.error.ErrorManagerImpl();
     userManager = new com.silverpeas.workflow.engine.user.UserManagerImpl();
     taskManager = new com.silverpeas.workflow.engine.task.TaskManagerImpl();
     processModelManager = new com.silverpeas.workflow.engine.model.ProcessModelManagerImpl();
-    processInstanceManager =
-        new com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl();
+    processInstanceManager
+        = new com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl();
     workflowEngine = new WorkflowEngineImpl();
   }
 

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -154,14 +154,14 @@ function areYouSure(){
 }
 
 function newSubscription() {
-        chemin = '<%=m_context%>/RpdcSearch/jsp/PDCSubscription?showNotOnlyPertinentAxisAndValues=true&mode=clear';
+        chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PDCSubscription';
                 largeur = "600";
                 hauteur = "440";
                 SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
 }
 
 function editSubscription(scid) {
-		chemin = '<%=m_context%>/RpdcSearch/jsp/PDCSubscription?showNotOnlyPertinentAxisAndValues=true&pdcSId=' + scid ;
+		chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PDCSubscription?pdcSId=' + scid ;
                 largeur = "600";
                 hauteur = "440";
                 SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
@@ -203,9 +203,11 @@ function deleteSubscription() {
  	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("pdc"), "#", true);
 	tabbedPane.addTab(resource.getString("thematique"), "ViewSubscriptionTheme?userId="+userId+"&action="+action, false);
+   tabbedPane.addTab(resource.getString("application"),
+       "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);
 
       if (!isReadOnly) {
-          operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),"javascript:newSubscription()");
+          operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),m_context + "/RpdcSubscriptionPeas/jsp/PDCSubscription");
           if (subscriptionList != null && subscriptionList.size() > 0) {
               operationPane.addOperation(iconDelete , resource.getString("DeleteSC"),"javascript:deleteSubscription()");
           }
@@ -240,7 +242,7 @@ function deleteSubscription() {
 
 		  iconPane	= gef.getIconPane();
           updateIcon = iconPane.addIcon();
-          updateIcon.setProperties(iconEdit, resource.getString("EditSC"), "javascript:onClick=editSubscription('"+ps.getId()+"')");
+          updateIcon.setProperties(iconEdit, resource.getString("EditSC"), m_context + "/RpdcSubscriptionPeas/jsp/PDCSubscription?pdcSId="+ps.getId());
 
 		  if (!isReadOnly) {
 			  ligne.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\"/>");

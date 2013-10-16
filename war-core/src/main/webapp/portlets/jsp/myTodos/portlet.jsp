@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -38,22 +38,25 @@
 
 <%
 RenderRequest 	pReq 	= (RenderRequest)request.getAttribute("javax.portlet.request");
-Iterator 		todos 	= (Iterator) pReq.getAttribute("Todos");
+Iterator<ToDoHeader> todos 	= (Iterator<ToDoHeader>) pReq.getAttribute("Todos");
 
 if (!todos.hasNext()) {
 	out.println(message.getString("NoTodos"));
 } else {
-	ToDoHeader todo = null;
+  	out.println("<ul>"); 
 	while (todos.hasNext()) {
-		todo = (ToDoHeader) todos.next();
+	  	ToDoHeader todo = todos.next();
 		if (todo.getPercentCompleted() != 100) {
-			out.println("&#149; <a href=\""+m_sContext+URLManager.getURL(URLManager.CMP_TODO)+"todo.jsp\">" + EncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
-			if (todo.getPercentCompleted() != -1)
-				out.println(" <i>("+todo.getPercentCompleted()+"%)</i><br/>");
-			else
-				out.println(" <i>(0%)</i><br/>");
+			out.println("<li><a href=\""+m_sContext+URLManager.getURL(URLManager.CMP_TODO)+"todo.jsp\">" + EncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
+			if (todo.getPercentCompleted() != -1) {
+				out.println(" <i>("+todo.getPercentCompleted()+"%)</i>");
+			} else {
+				out.println(" <i>(0%)</i>");
+			}
+			out.println("</li>");
 		}
 	}
+	out.println("</ul>");
 }
 out.flush();
 %>

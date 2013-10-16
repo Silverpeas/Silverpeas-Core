@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -45,14 +45,14 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerRuntimeException;
 
 /**
- * This class is made to access database only (table SB_QuestionContainer_QC et
+ * This class is made to access database only (table SB_QuestionContainer_QC and
  * SB_QuestionContainer_Comment)
  * @author neysseri
  */
 public class QuestionContainerDAO {
 
   public static final String QUESTIONCONTAINERCOLUMNNAMES =
-      "qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, anonymous, instanceId";
+      "qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, instanceId, anonymous, resultMode, resultView";
   public static final String COMMENTCOLUMNNAMES =
       "commentId, commentFatherId, userId, commentComment, commentIsAnonymous, commentDate";
 
@@ -113,8 +113,10 @@ public class QuestionContainerDAO {
     int nbMaxParticipations = rs.getInt(12);
     int nbParticipationsBeforeSolution = rs.getInt(13);
     int maxTime = rs.getInt(14);
-    boolean anonymous = (rs.getInt(15) == 1);
-    String instanceId = rs.getString(16);
+    String instanceId = rs.getString(15);
+    boolean anonymous = (rs.getInt(16) == 1);
+    int resultMode = rs.getInt(17);
+    int resultView = rs.getInt(18);
 
     questionContainerPK.setComponentName(instanceId);
 
@@ -122,7 +124,7 @@ public class QuestionContainerDAO {
         new QuestionContainerPK(id, questionContainerPK), title, description,
         comment, creatorId, creationDate, beginDate, endDate, closed, nbVoters,
         nbQuestionsPage, nbMaxParticipations, nbParticipationsBeforeSolution,
-        maxTime, anonymous);
+        maxTime, anonymous, resultMode, resultView);
     return result;
   }
 
@@ -465,7 +467,7 @@ public class QuestionContainerDAO {
 
     String insertStatement = "insert into "
         + questionContainerHeader.getPK().getTableName()
-        + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+        + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
     try {
       /* Retrieve next sequence identifier */
@@ -515,7 +517,9 @@ public class QuestionContainerDAO {
       } else {
         prepStmt.setInt(16, 0);
       }
-
+      prepStmt.setInt(17, questionContainerHeader.getResultMode());
+      prepStmt.setInt(18, questionContainerHeader.getResultView());
+      
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -542,7 +546,8 @@ public class QuestionContainerDAO {
         + " qcDescription = ?," + " qcComment = ?," + " qcBeginDate = ?,"
         + " qcEndDate = ?," + " qcNbVoters = ?," + " qcNbQuestionsPage = ?,"
         + " qcNbMaxParticipations = ?," + " qcNbTriesBeforeSolution = ?,"
-        + " qcMaxTime = ?, " + " instanceId = ?, " + " anonymous = ?"
+        + " qcMaxTime = ?, " + " instanceId = ?, " + " anonymous = ?, "
+        + " resultMode = ?, " + " resultView = ?"
         + " where qcId = ?";
 
     PreparedStatement prepStmt = null;
@@ -575,7 +580,9 @@ public class QuestionContainerDAO {
       } else {
         prepStmt.setInt(12, 0);
       }
-      prepStmt.setInt(13, Integer.parseInt(questionContainerHeader.getPK().getId()));
+      prepStmt.setInt(13, questionContainerHeader.getResultMode());
+      prepStmt.setInt(14, questionContainerHeader.getResultView());
+      prepStmt.setInt(15, Integer.parseInt(questionContainerHeader.getPK().getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

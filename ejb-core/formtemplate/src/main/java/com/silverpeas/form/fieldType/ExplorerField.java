@@ -1,61 +1,56 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * An ExplorerField stores a node reference.
+ *
  * @see Field
  * @see FieldDisplayer
  */
 public class ExplorerField implements Field {
 
   private static final long serialVersionUID = -4982574221213514901L;
-
   /**
    * The text field type name.
    */
@@ -214,6 +209,7 @@ public class ExplorerField implements Field {
 
   /**
    * Set to null this field.
+   *
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */
@@ -269,16 +265,10 @@ public class ExplorerField implements Field {
     String s = getNodePK();
     return ("" + s).hashCode();
   }
-
   /**
    * The referenced node.
    */
   private String pk = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
 
   /**
    * Returns the access path of the object.
@@ -288,22 +278,22 @@ public class ExplorerField implements Field {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces = organizationController.getSpacePathToComponent(componentId);
+      List<SpaceInst> listSpaces = OrganisationControllerFactory.getOrganisationController()
+          .getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
         path += space.getName(language) + " > ";
       }
 
       // Service
-      path += organizationController.getComponentInstLight(componentId).getLabel(language);
+      path += OrganisationControllerFactory.getOrganisationController().getComponentInstLight(
+          componentId).getLabel(language);
 
       // Theme > SubTheme
       String pathString = "";
       if (nodeId != null) {
         NodeBm nodeBm = null;
         try {
-          NodeBmHome nodeBmHome =
-              EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-          nodeBm = nodeBmHome.create();
+          nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
         } catch (Exception e) {
           SilverTrace.error("form", "ExplorerFieldDisplayer.display",
               "form.EX_CANT_CREATE_NODEBM_HOME", e);
@@ -311,14 +301,7 @@ public class ExplorerField implements Field {
 
         if (nodeBm != null) {
           NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection<NodeDetail> listPath = null;
-          try {
-            listPath = nodeBm.getPath(nodePk);
-          } catch (RemoteException e) {
-            SilverTrace.error("form", "ExplorerFieldDisplayer.display",
-                "form.EX_CANT_GET_PATH_NODE", nodeId);
-          }
-
+          Collection<NodeDetail> listPath = nodeBm.getPath(nodePk);
           if (listPath != null) {
             Collections.reverse((List<NodeDetail>) listPath);
             String nodeName;
@@ -339,7 +322,6 @@ public class ExplorerField implements Field {
           }
         }
       }
-
       if (pathString.length() > 0) {
         path += " > " + pathString;
       }
@@ -347,5 +329,4 @@ public class ExplorerField implements Field {
 
     return path;
   }
-
 }

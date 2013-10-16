@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,6 +49,8 @@ public class ThumbnailDAO {
       "SELECT instanceid, objectid, objecttype, "
           + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, "
           + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
+  private static final String MOVE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail "
+    + " SET instanceId = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
 
   public ThumbnailDAO() {
   }
@@ -132,6 +134,21 @@ public class ThumbnailDAO {
       DBUtil.close(prepStmt);
     }
   }
+  
+  public void moveThumbnail(Connection con, ThumbnailDetail thumbToUpdate, String toInstanceId) throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(MOVE_THUMBNAIL);
+      prepStmt.setString(1, toInstanceId);
+      prepStmt.setInt(2, thumbToUpdate.getObjectId());
+      prepStmt.setInt(3, thumbToUpdate.getObjectType());
+      prepStmt.setString(4, thumbToUpdate.getInstanceId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
 
   public void deleteAllThumbnails(Connection con, String instanceId) throws SQLException {
     PreparedStatement prepStmt = null;

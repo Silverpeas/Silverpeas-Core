@@ -1,32 +1,29 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import com.google.common.base.CharMatcher;
 import java.io.Serializable;
 import java.util.Set;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +32,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -44,24 +40,35 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "domainsp_user")
-@NamedQueries( {
-    @NamedQuery(name = "SPUser.findByFirstname", query = "SELECT s FROM SPUser s WHERE s.firstname = :firstname"),
-    @NamedQuery(name = "SPUser.findByLastname", query = "SELECT s FROM SPUser s WHERE s.lastname = :lastname"),
-    @NamedQuery(name = "SPUser.findByPhone", query = "SELECT s FROM SPUser s WHERE s.phone = :phone"),
-    @NamedQuery(name = "SPUser.findByHomephone", query = "SELECT s FROM SPUser s WHERE s.homephone = :homephone"),
-    @NamedQuery(name = "SPUser.findByCellphone", query = "SELECT s FROM SPUser s WHERE s.cellphone = :cellphone"),
-    @NamedQuery(name = "SPUser.findByFax", query = "SELECT s FROM SPUser s WHERE s.fax = :fax"),
-    @NamedQuery(name = "SPUser.findByAddress", query = "SELECT s FROM SPUser s WHERE s.address = :address"),
-    @NamedQuery(name = "SPUser.findByTitle", query = "SELECT s FROM SPUser s WHERE s.title = :title"),
-    @NamedQuery(name = "SPUser.findByCompany", query = "SELECT s FROM SPUser s WHERE s.company = :company"),
-    @NamedQuery(name = "SPUser.findByPosition", query = "SELECT s FROM SPUser s WHERE s.position = :position"),
-    @NamedQuery(name = "SPUser.findByBoss", query = "SELECT s FROM SPUser s WHERE s.boss = :boss"),
-    @NamedQuery(name = "SPUser.findByLogin", query = "SELECT s FROM SPUser s WHERE s.login = :login"),
-    @NamedQuery(name = "SPUser.findByPassword", query = "SELECT s FROM SPUser s WHERE s.password = :password"),
-    @NamedQuery(name = "SPUser.findByPasswordvalid", query = "SELECT s FROM SPUser s WHERE s.passwordvalid = :passwordvalid"),
-    @NamedQuery(name = "SPUser.findByLoginmail", query = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
-    @NamedQuery(name = "SPUser.findByEmail", query = "SELECT s FROM SPUser s WHERE s.email = :email") })
+@NamedQueries({
+  @NamedQuery(name = "SPUser.findByFirstname", query
+      = "SELECT s FROM SPUser s WHERE s.firstname = :firstname"),
+  @NamedQuery(name = "SPUser.findByLastname", query
+      = "SELECT s FROM SPUser s WHERE s.lastname = :lastname"),
+  @NamedQuery(name = "SPUser.findByPhone", query = "SELECT s FROM SPUser s WHERE s.phone = :phone"),
+  @NamedQuery(name = "SPUser.findByHomephone", query
+      = "SELECT s FROM SPUser s WHERE s.homephone = :homephone"),
+  @NamedQuery(name = "SPUser.findByCellphone", query
+      = "SELECT s FROM SPUser s WHERE s.cellphone = :cellphone"),
+  @NamedQuery(name = "SPUser.findByFax", query = "SELECT s FROM SPUser s WHERE s.fax = :fax"),
+  @NamedQuery(name = "SPUser.findByAddress", query
+      = "SELECT s FROM SPUser s WHERE s.address = :address"),
+  @NamedQuery(name = "SPUser.findByTitle", query = "SELECT s FROM SPUser s WHERE s.title = :title"),
+  @NamedQuery(name = "SPUser.findByCompany", query
+      = "SELECT s FROM SPUser s WHERE s.company = :company"),
+  @NamedQuery(name = "SPUser.findByPosition", query
+      = "SELECT s FROM SPUser s WHERE s.position = :position"),
+  @NamedQuery(name = "SPUser.findByBoss", query = "SELECT s FROM SPUser s WHERE s.boss = :boss"),
+  @NamedQuery(name = "SPUser.findByLogin", query = "SELECT s FROM SPUser s WHERE s.login = :login"),
+  @NamedQuery(name = "SPUser.findByPassword", query
+      = "SELECT s FROM SPUser s WHERE s.password = :password"),
+  @NamedQuery(name = "SPUser.findByPasswordvalid", query
+      = "SELECT s FROM SPUser s WHERE s.passwordvalid = :passwordvalid"),
+  @NamedQuery(name = "SPUser.findByLoginmail", query
+      = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
+  @NamedQuery(name = "SPUser.findByEmail", query = "SELECT s FROM SPUser s WHERE s.email = :email")})
 public class SPUser implements Serializable {
+
   private static final long serialVersionUID = 2645559023438948622L;
 
   @Id
@@ -115,7 +122,7 @@ public class SPUser implements Serializable {
   @Size(min = 1, max = 50)
   @Column(name = "login")
   private String login;
-  @Size(max = 32)
+  @Size(max = 123)
   @Column(name = "password")
   private String password;
   @Basic(optional = false)
@@ -133,9 +140,6 @@ public class SPUser implements Serializable {
   private String email;
   @ManyToMany(mappedBy = "users")
   private Set<SPGroup> groups;
-
-  @Transient
-  static final CharMatcher booleanConverter = CharMatcher.is('Y').or(CharMatcher.is('y'));
 
   public SPUser() {
     this.title = "";
@@ -276,7 +280,7 @@ public class SPUser implements Serializable {
   }
 
   public boolean isPasswordValid() {
-    return booleanConverter.matches(passwordvalid);
+    return 'Y' == passwordvalid || 'y' == passwordvalid;
   }
 
   public void setPasswordValid(boolean passwordvalid) {

@@ -1,40 +1,35 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.ical;
+
+import java.io.File;
+import java.net.URL;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import java.io.File;
-import java.net.URL;
 
 /**
  * @author dle
@@ -43,7 +38,7 @@ public class SynchroIcalManager {
 
   public final static String SYNCHRO_SUCCEEDED = "0";
   private AgendaSessionController agendaSessionController;
-  private CalendarBm calendarBm;
+  private SilverpeasCalendar calendarBm;
 
   public SynchroIcalManager(AgendaSessionController agendaSessionController) {
     this.agendaSessionController = agendaSessionController;
@@ -52,6 +47,7 @@ public class SynchroIcalManager {
 
   /**
    * Import remote calendar into Silverpeas calendar (update event if necessary)
+   *
    * @param urlCalendar
    * @param localCalendar
    * @param loginICalendar
@@ -68,7 +64,7 @@ public class SynchroIcalManager {
       // Creates a synchronizer engine
       SyncEngine engine = new SyncEngine();
       // Do the synchronization :
-      // Remote Calendar -> localfile Calendar
+      // Remote SilverpeasCalendar -> localfile SilverpeasCalendar
       String remoteConnect = engine.synchronize(localCalendar, remoteCalendar,
           loginICalendar, pwdIcalendar);
       if (SyncEngine.REMOTE_CONNECT_SUCCEEDED.equals(remoteConnect)) {
@@ -93,13 +89,14 @@ public class SynchroIcalManager {
 
   /**
    * Method declaration
+   *
    * @see
    */
   private void setCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class).create();
+        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
+            SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new AgendaRuntimeException("ImportIcalManager.setCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

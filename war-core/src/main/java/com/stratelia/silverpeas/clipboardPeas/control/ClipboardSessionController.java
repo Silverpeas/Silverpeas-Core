@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,8 +32,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.search.indexEngine.model.IndexEntry;
+
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessage;
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -44,7 +48,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 /**
  * A servlet ClipboardSessionControler acts as a proxy for a ClipboardBm EJB.
@@ -275,7 +278,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return the list of object (IndexEntry format) in clipboard.
    * @throws java.rmi.RemoteException
    */
-  public synchronized Collection<IndexEntry> getIndexEntryObjects() throws java.rmi.RemoteException {
+  public synchronized Collection<IndexEntry> getIndexEntryObjects() throws ClipboardException {
     SilverTrace.info("clipboardPeas",
         "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -289,14 +292,12 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
           indexEntry = (IndexEntry) clipObject.getTransferData(ClipboardSelection.IndexFlavor);
           result.add(indexEntry);
         } catch (Exception e) {
-          SilverTrace.error("clipboardPeas",
-              "ClipboardSessionController.getIndexEntryObjects()",
+          SilverTrace.error("clipboardPeas", "ClipboardSessionController.getIndexEntryObjects()",
               "root.EX_CLIPBOARD_PASTE_FAILED", "", e);
         }
       }
     }
-    SilverTrace.info("clipboardPeas",
-        "ClipboardSessionController.getStrateliaReferenceObjects()",
+    SilverTrace.info("clipboardPeas", "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_EXIT_METHOD");
     return result;
   }
@@ -308,17 +309,15 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @throws javax.naming.NamingException
    * @throws java.sql.SQLException
    */
-  public synchronized Collection<ClipboardSelection> getObjects() throws java.rmi.RemoteException,
+  public synchronized Collection<ClipboardSelection> getObjects() throws ClipboardException,
       javax.naming.NamingException, java.sql.SQLException {
-    List<ClipboardSelection> result = new ArrayList<ClipboardSelection>(getClipboardObjects());
-    return result;
+    return new ArrayList<ClipboardSelection>(getClipboardObjects());
   }
 
   @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
-      settings = new ResourceLocator(
-          "com.stratelia.webactiv.clipboard.settings.clipboardSettings", "");
+      settings = new ResourceLocator("org.silverpeas.clipboard.settings.clipboardSettings", "");
     }
     return settings;
   }
@@ -329,7 +328,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return the label of the given domain/space
    */
   public String getSpaceLabel(String spaceId) {
-    SpaceInst spaceInst = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
     if (spaceInst != null) {
       return spaceInst.getName();
     }
@@ -342,7 +341,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return
    */
   public String getComponentLabel(String componentId) {
-    ComponentInst componentInst = getOrganizationController().getComponentInst(componentId);
+    ComponentInst componentInst = getOrganisationController().getComponentInst(componentId);
     if (componentInst != null) {
       if (componentInst.getLabel().length() > 0) {
         return componentInst.getLabel();

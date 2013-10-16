@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,20 +24,24 @@
 package com.silverpeas.annotation;
 
 import java.lang.annotation.*;
-import org.springframework.stereotype.Component;
 
 /**
- * This annotation is to tag an object as being a business service. Beans annoted with this
- * annotation are marked to be managed by the underlying IoC container.
- * 
+ * This annotation is to tag an object as being a business service. A business service is an object
+ * whose goal is to provide transverse functionnalities wthin which can be implied one or more types
+ * of business objects.
+ *
+ * Beans annoted with this annotation are marked to be managed by the underlying IoC container.
+ *
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
- * possible to change the IoC container (Spring or CDI for example) by changing the wrapped annnotation
- * to those specific at this IoC implementation without impacting the annotated IoC managed beans..
+ * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
+ * annnotation to those specific at this IoC implementation without impacting the annotated IoC
+ * managed beans..
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Component
+@org.springframework.stereotype.Service
 public @interface Service {
-  
+
+  public String value() default "";
 }

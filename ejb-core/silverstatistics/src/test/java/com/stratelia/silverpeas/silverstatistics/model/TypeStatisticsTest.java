@@ -1,50 +1,46 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.stratelia.silverpeas.silverstatistics.model;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.silverpeas.jcrutil.RandomGenerator;
+import java.util.Arrays;
 import java.util.Collection;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+
+import com.silverpeas.jcrutil.RandomGenerator;
+
+import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.rules.ExpectedException;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
 public class TypeStatisticsTest {
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   public TypeStatisticsTest() {
   }
@@ -57,35 +53,41 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     String expResult = "";
     String result = instance.getName();
-    assertEquals(expResult, result);
+    assertThat(result, is(expResult));
   }
 
   /**
    * Test of setName method, of class TypeStatistics.
    */
   @Test
-  public void testSetName() throws Exception {
+  public void testSetNullName() throws SilverStatisticsTypeStatisticsException {
+    expectedException.expect(SilverStatisticsTypeStatisticsException.class);
+    expectedException.expectMessage("silverstatistics.MSG_NAME_STATS_EMPTY");
+    TypeStatistics instance = new TypeStatistics();
+    instance.setName(null);
+  }
+
+  /**
+   * Test of setName method, of class TypeStatistics.
+   */
+  @Test
+  public void testSetName() throws SilverStatisticsTypeStatisticsException {
     String name = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
     instance.setName(name);
-    assertEquals(name, instance.getName());
+    assertThat(instance.getName(), is(name));
+  }
 
-    instance = new TypeStatistics();
-    try {
-      instance.setName(null);
-      fail();
-    } catch (SilverStatisticsTypeStatisticsException e) {
-      assertEquals("silverstatistics.MSG_NAME_STATS_EMPTY", e.getMessage());
-    }
-
-
-    instance = new TypeStatistics();
-    try {
-      instance.setName("");
-      fail();
-    } catch (SilverStatisticsTypeStatisticsException e) {
-      assertEquals("silverstatistics.MSG_NAME_STATS_EMPTY", e.getMessage());
-    }
+  /**
+   * Test of setName method, of class TypeStatistics.
+   */
+  @Test
+  public void testSetEmptyName() throws SilverStatisticsTypeStatisticsException {
+    expectedException.expect(SilverStatisticsTypeStatisticsException.class);
+    expectedException.expectMessage("silverstatistics.MSG_NAME_STATS_EMPTY");
+    String name = RandomGenerator.getRandomString();
+    TypeStatistics instance = new TypeStatistics();
+    instance.setName("");
   }
 
   /**
@@ -96,7 +98,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     StatisticMode expResult = StatisticMode.Add;
     StatisticMode result = instance.getModeCumul();
-    assertEquals(expResult, result);
+    assertThat(result, is(expResult));
   }
 
   /**
@@ -107,7 +109,7 @@ public class TypeStatisticsTest {
     StatisticMode mode = StatisticMode.Replace;
     TypeStatistics instance = new TypeStatistics();
     instance.setModeCumul(mode);
-    assertEquals(StatisticMode.Replace, instance.getModeCumul());
+    assertThat(instance.getModeCumul(), is(StatisticMode.Replace));
   }
 
   /**
@@ -118,7 +120,7 @@ public class TypeStatisticsTest {
     boolean value = false;
     TypeStatistics instance = new TypeStatistics();
     instance.setIsRun(value);
-    assertEquals(value, instance.isRun());
+    assertThat(instance.isRun(), is(value));
   }
 
   /**
@@ -129,7 +131,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     boolean expResult = true;
     boolean result = instance.isRun();
-    assertEquals(expResult, result);
+    assertThat(result, is(expResult));
   }
 
   /**
@@ -141,7 +143,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     instance.setIsAsynchron(value);
     boolean result = instance.isAsynchron();
-    assertEquals(value, result);
+    assertThat(result, is(value));
   }
 
   /**
@@ -152,7 +154,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     boolean expResult = true;
     boolean result = instance.isAsynchron();
-    assertEquals(expResult, result);
+    assertThat(result, is(expResult));
   }
 
   /**
@@ -163,7 +165,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     int expResult = 3;
     int result = instance.getPurge();
-    assertEquals(expResult, result);
+    assertThat(result, is(expResult));
   }
 
   /**
@@ -174,7 +176,7 @@ public class TypeStatisticsTest {
     int purgeInMonth = 5;
     TypeStatistics instance = new TypeStatistics();
     instance.setPurge(purgeInMonth);
-    assertEquals(purgeInMonth, instance.getPurge());
+    assertThat(instance.getPurge(), is(purgeInMonth));
   }
 
   /**
@@ -185,7 +187,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     String expResult = "";
     String result = instance.getTableName();
-    assertEquals(expResult, result);
+    assertThat(result, is(expResult));
   }
 
   /**
@@ -197,7 +199,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     instance.setTableName(name);
     String result = instance.getTableName();
-    assertEquals(name, result);
+    assertThat(result, is(name));
   }
 
   /**
@@ -207,7 +209,7 @@ public class TypeStatisticsTest {
   public void testGetAllKeys() {
     TypeStatistics instance = new TypeStatistics();
     Collection<String> result = instance.getAllKeys();
-    assertNotNull(result);
+    assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(0));
   }
 
@@ -218,11 +220,11 @@ public class TypeStatisticsTest {
   public void testSetAllKeys() {
     String value1 = RandomGenerator.getRandomString();
     String value2 = RandomGenerator.getRandomString();
-    Collection<String> allTags = Lists.newArrayList(value1, value2);
+    Collection<String> allTags = Arrays.asList(value1, value2);
     TypeStatistics instance = new TypeStatistics();
     instance.setAllKeys(allTags);
     Collection<String> allKeys = instance.getAllKeys();
-    assertNotNull(allKeys);
+    assertThat(allKeys, is(notNullValue()));
     assertThat(allKeys, hasSize(2));
     assertThat(allKeys, contains(value1, value2));
   }
@@ -234,17 +236,17 @@ public class TypeStatisticsTest {
   public void testAddKey() throws Exception {
     String value1 = RandomGenerator.getRandomString();
     String value2 = RandomGenerator.getRandomString();
-    Collection<String> allTags = Lists.newArrayList(value1, value2);
+    Collection<String> allTags = Arrays.asList(value1, value2);
     TypeStatistics instance = new TypeStatistics();
     instance.setAllKeys(allTags);
     Collection<String> allKeys = instance.getAllKeys();
-    assertNotNull(allKeys);
+    assertThat(allKeys, is(notNullValue()));
     assertThat(allKeys, hasSize(2));
     assertThat(allKeys, contains(value1, value2));
     String value3 = RandomGenerator.getRandomString();
     instance.addKey(value3, StatDataType.VARCHAR);
     allKeys = instance.getAllKeys();
-    assertNotNull(allKeys);
+    assertThat(allKeys, is(notNullValue()));
     assertThat(allKeys, hasSize(3));
     assertThat(allKeys, contains(value1, value2, value3));
   }
@@ -259,7 +261,7 @@ public class TypeStatisticsTest {
     instance.addKey(keyName, StatDataType.INTEGER);
     instance.addCumulKey(keyName);
     Collection<String> allKeys = instance.getAllKeys();
-    assertNotNull(allKeys);
+    assertThat(allKeys, is(notNullValue()));
     assertThat(allKeys, hasSize(1));
     assertThat(allKeys, contains(keyName));
   }
@@ -273,10 +275,10 @@ public class TypeStatisticsTest {
     String value2 = RandomGenerator.getRandomString();
     String value3 = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    Collection<String> allKeys = Lists.newArrayList(value1, value2, value3);
+    Collection<String> allKeys = Arrays.asList(value1, value2, value3);
     instance.setAllKeys(allKeys);
     int result = instance.indexOfKey(value2);
-    assertEquals(1, result);
+    assertThat(result, is(1));
   }
 
   /**
@@ -291,10 +293,10 @@ public class TypeStatisticsTest {
     instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     instance.addCumulKey(cumulKeyName);
     Collection<String> allKeys = instance.getAllKeys();
-    assertNotNull(allKeys);
+    assertThat(allKeys, is(notNullValue()));
     assertThat(allKeys, hasSize(2));
-    assertFalse(instance.isCumulKey(notCumulKeyName));
-    assertTrue(instance.isCumulKey(cumulKeyName));
+    assertThat(instance.isCumulKey(notCumulKeyName), is(false));
+    assertThat(instance.isCumulKey(cumulKeyName), is(true));
   }
 
   /**
@@ -304,10 +306,10 @@ public class TypeStatisticsTest {
   public void testIsDateStatKeyExist() throws Exception {
     TypeStatistics instance = new TypeStatistics();
     boolean result = instance.isDateStatKeyExist();
-    assertFalse(result);
+    assertThat(result, is(false));
     instance.addKey(TypeStatistics.STATISTIC_DATE_KEY, StatDataType.VARCHAR);
     result = instance.isDateStatKeyExist();
-    assertTrue(result);
+    assertThat(result, is(true));
   }
 
   /**
@@ -318,16 +320,16 @@ public class TypeStatisticsTest {
     String typeName = "";
     TypeStatistics instance = new TypeStatistics();
     boolean result = instance.isAGoodType(typeName);
-    assertFalse(result);
+    assertThat(result, is(false));
     typeName = StatDataType.INTEGER.name();
     result = instance.isAGoodType(typeName);
-    assertTrue(result);
+    assertThat(result, is(true));
     typeName = StatDataType.VARCHAR.name();
     result = instance.isAGoodType(typeName);
-    assertTrue(result);
+    assertThat(result, is(true));
     typeName = StatDataType.DECIMAL.name();
     result = instance.isAGoodType(typeName);
-    assertTrue(result);
+    assertThat(result, is(true));
   }
 
   /**
@@ -341,8 +343,8 @@ public class TypeStatisticsTest {
     instance.addKey(cumulKeyName, StatDataType.INTEGER);
     instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     instance.addCumulKey(cumulKeyName);
-    assertFalse(instance.hasACumulType(notCumulKeyName));
-    assertTrue(instance.hasACumulType(cumulKeyName));
+    assertThat(instance.hasACumulType(notCumulKeyName), is(false));
+    assertThat(instance.hasACumulType(cumulKeyName), is(true));
   }
 
   /**
@@ -355,9 +357,9 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     instance.addKey(cumulKeyName, StatDataType.INTEGER);
     instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
-    assertFalse(instance.hasGoodCumulKey());
+    assertThat(instance.hasGoodCumulKey(), is(false));
     instance.addCumulKey(cumulKeyName);
-    assertTrue(instance.hasGoodCumulKey());
+    assertThat(instance.hasGoodCumulKey(), is(true));
   }
 
   /**
@@ -371,8 +373,8 @@ public class TypeStatisticsTest {
     instance.addKey(cumulKeyName, StatDataType.INTEGER);
     instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     instance.addCumulKey(cumulKeyName);
-    assertEquals(StatDataType.INTEGER, instance.getKeyType(cumulKeyName));
-    assertEquals(StatDataType.VARCHAR, instance.getKeyType(notCumulKeyName));
+    assertThat(instance.getKeyType(cumulKeyName), is(StatDataType.INTEGER));
+    assertThat(instance.getKeyType(notCumulKeyName), is(StatDataType.VARCHAR));
   }
 
   /**
@@ -384,9 +386,9 @@ public class TypeStatisticsTest {
     String value2 = RandomGenerator.getRandomString();
     String value3 = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    Collection<String> allKeys = Lists.newArrayList(value1, value2, value3);
+    Collection<String> allKeys = Arrays.asList(value1, value2, value3);
     instance.setAllKeys(allKeys);
     int result = instance.numberOfKeys();
-    assertEquals(allKeys.size(), result);
+    assertThat(result, is(allKeys.size()));
   }
 }

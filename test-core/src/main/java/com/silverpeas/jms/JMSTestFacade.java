@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -99,11 +99,11 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
     return super.getTopic(string);
   }
 
-  private void prepareJndi() throws IOException {
+  private void prepareJndi() {
     SimpleMemoryContextFactory.setUpAsInitialContext();
   }
 
-  private void cleanJndi() throws IOException {
+  private void cleanJndi() {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 

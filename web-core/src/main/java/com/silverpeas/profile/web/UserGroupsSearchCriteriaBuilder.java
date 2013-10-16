@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@
 package com.silverpeas.profile.web;
 
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -81,6 +82,13 @@ public class UserGroupsSearchCriteriaBuilder {
     return this;
   }
 
+  public UserGroupsSearchCriteriaBuilder withGroupIds(String[] groupIds) {
+    if (groupIds != null && groupIds.length > 0) {
+      searchCriteria.onGroupIds(groupIds);
+    }
+    return this;
+  }
+
   public UserGroupsSearchCriteriaBuilder withSuperGroupId(String groupId) {
     if (isDefined(groupId)) {
       searchCriteria.onSuperGroupId(groupId);
@@ -107,6 +115,11 @@ public class UserGroupsSearchCriteriaBuilder {
     if (userIds != null && userIds.length > 0) {
       searchCriteria.onUserIds(userIds);
     }
+    return this;
+  }
+
+  public UserGroupsSearchCriteriaBuilder withPaginationPage(final PaginationPage page) {
+    searchCriteria.onPagination(page);
     return this;
   }
   

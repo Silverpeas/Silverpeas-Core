@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -449,9 +449,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    */
   @Override
   public String getProcessModelDir() {
-    String dir = settings.getString("ProcessModelDir");
-    dir = dir.replace('/', File.separatorChar);
-    dir = dir.replace('\\', File.separatorChar);
+    String dir = FileUtil.convertPathToServerOS(settings.getString("ProcessModelDir"));
     if (dir != null && !dir.endsWith(File.separator)) {
       dir = dir + File.separatorChar;
     }
@@ -496,17 +494,15 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * Search the cache for the required process model.
    */
-  private ProcessModel getCachedProcessModel(String modelId)
-      throws WorkflowException {
-    ProcessModel model = (ProcessModel) models.get(modelId);
+  private ProcessModel getCachedProcessModel(String modelId) {
+    ProcessModel model = models.get(modelId);
     return model;
   }
 
   /**
    * Put the given process model in the the cache.
    */
-  private void cacheProcessModel(String modelId, ProcessModel model,
-      String filename) throws WorkflowException {
+  private void cacheProcessModel(String modelId, ProcessModel model, String filename) {
     synchronized (models) {
       models.put(modelId, model);
     }

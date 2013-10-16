@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,7 @@ public class DomainAuthenticationPropertiesAlreadyExistsException extends Domain
   private static final long serialVersionUID = -1196587632333002256L;
 
   public DomainAuthenticationPropertiesAlreadyExistsException(String domainName) {
-    super("AbstractDomainService", "admin.DOMAIN_AUTHENTICATION_PROPERTIES_ALREADY_EXISTS",
+    super("AbstractDomainService", "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_AUTHENTICATION_PROPERTIES",
         domainName);
   }
 }

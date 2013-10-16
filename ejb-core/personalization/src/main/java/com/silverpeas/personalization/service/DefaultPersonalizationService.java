@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,14 +24,18 @@
 
 package com.silverpeas.personalization.service;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
+import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationDetailDao;
 import com.silverpeas.ui.DisplayI18NHelper;
+
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.List;
-import javax.inject.Inject;
-import com.silverpeas.annotation.Service;
+
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,7 +50,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
   private PersonalizationDetailDao dao;
   private static final long serialVersionUID = 6776141343859788723L;
   private final ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+      "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
 
   private boolean getDefaultWebDAVEditingStatus() {
     return settings.getBoolean("DefaultWebDAVEditingStatus", true);

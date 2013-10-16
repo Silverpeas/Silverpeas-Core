@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,25 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function login()
-{
-	var loginField 	= document.authForm.Login.value;
-	if (loginField.length != 0) 
-	{
-		document.authForm.action = getContext()+"/AuthenticationServlet";
-		document.authForm.submit();
-	}
+function login() {
+  var loginField = document.authForm.Login.value;
+  if (loginField.length != 0) {
+    document.authForm.action = getContext() + "/AuthenticationServlet";
+    document.authForm.submit();
+  }
 }
 
-function logout()
-{
-	document.authForm.action = getContext()+"/LogoutServlet";
-	document.authForm.submit();
+function logout() {
+  document.authForm.action = getContext() + "/LogoutServlet";
+  document.authForm.submit();
 }
 
-function checkSubmitToLogin(ev)
-{
-	var touche = ev.keyCode;
-	if (touche == 13)
-		login();
+function checkSubmitToLogin(ev) {
+  var touche = ev.keyCode;
+  if (touche == 13) {
+    login();
+  }
 }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -32,9 +32,10 @@
 
 	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
     UserFull	userObject 		= (UserFull)request.getAttribute("UserFull");
-    
-    if (domObject != null)
-        browseBar.setComponentName(getDomainLabel(domObject, resource));
+
+  if (domObject != null) {
+    browseBar.setComponentName(getDomainLabel(domObject, resource));
+  }
 %>
 <html>
 <head>
@@ -88,44 +89,42 @@ out.println(board.printBefore());
 		<td class="textePetitBold"><%=resource.getString("GML.login") %> :</td>
 		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%></td>
 	</tr>
-	
-	<% 
-        		String[] properties = userObject.getPropertiesNames();
-				String property = null;
-				for (int p=0; p<properties.length; p++)
-				{
-					property = (String) properties[p];
-					if (!property.startsWith("password"))
-					{
-		%>
-				<tr>			
-					<td class="textePetitBold">
-					<%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
-					</td>
-					
-					<td>
-					<%
-				if("STRING".equals(userObject.getPropertyType(property)) ||
-					"USERID".equals(userObject.getPropertyType(property))) {
-					
-					out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
-		
-				} else if("BOOLEAN".equals(userObject.getPropertyType(property))) {
-					 
-					 if (userObject.getValue(property) != null && "1".equals(userObject.getValue(property))) {
-					 	out.print(resource.getString("GML.yes"));
-					 } else if (userObject.getValue(property) == null || "".equals(userObject.getValue(property)) || "0".equals(userObject.getValue(property))) { 
-					 	out.print(resource.getString("GML.no")); 
-					 }
-				}
-		%>
-					</td>
-				</tr>
-		<%
-					}
-				}
-        %>
-        
+
+  <%
+    String[] properties = userObject.getPropertiesNames();
+    for (final String property : properties) {
+      if (!property.startsWith("password")) {
+  %>
+  <tr>
+    <td class="textePetitBold">
+      <%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
+    </td>
+
+    <td>
+      <%
+        if ("STRING".equals(userObject.getPropertyType(property)) ||
+            "USERID".equals(userObject.getPropertyType(property))) {
+
+          out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
+
+        } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
+
+          if (userObject.getValue(property) != null && "1".equals(userObject.getValue(property))) {
+            out.print(resource.getString("GML.yes"));
+          } else if (userObject.getValue(property) == null ||
+              "".equals(userObject.getValue(property)) ||
+              "0".equals(userObject.getValue(property))) {
+            out.print(resource.getString("GML.no"));
+          }
+        }
+      %>
+    </td>
+  </tr>
+  <%
+      }
+    }
+  %>
+
 </table>
 <%
 out.println(board.printAfter());

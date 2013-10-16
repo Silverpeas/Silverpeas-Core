@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.12-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>it-test-core</artifactId>
-  <version>5.12-SNAPSHOT</version>
+  <version>5.14-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Integration Test Core - ${project.version}</name>
   <description>
@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -77,6 +77,7 @@
             <directory>src/test/resources</directory>
             <filtering>true</filtering>
             <excludes>
+              <exclude>**/*.rtf</exclude>
               <exclude>**/*.doc</exclude>
               <exclude>**/*.docx</exclude>
               <exclude>**/*.jpEg</exclude>
@@ -90,12 +91,15 @@
               <exclude>**/*.txt</exclude>
               <exclude>**/*.xls</exclude>
               <exclude>**/*.xlsx</exclude>
+              <exclude>**/*.msg</exclude>
+              <exclude>**/*.eml</exclude>
             </excludes>
           </testResource>
           <testResource>
             <directory>src/test/resources</directory>
             <filtering>false</filtering>
             <includes>
+              <include>**/*.rtf</include>
               <include>**/*.doc</include>
               <include>**/*.docx</include>
               <include>**/*.jpEg</include>
@@ -109,6 +113,8 @@
               <include>**/*.txt</include>
               <include>**/*.xls</include>
               <include>**/*.xlsx</include>
+              <include>**/*.msg</include>
+              <include>**/*.eml</include>
             </includes>
           </testResource>
         </testResources>

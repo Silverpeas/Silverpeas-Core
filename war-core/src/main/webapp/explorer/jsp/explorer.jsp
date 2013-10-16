@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -46,7 +46,7 @@
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (mainSessionCtrl == null) {
-  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
@@ -58,6 +58,11 @@ Button btn = gef.getFormButton(message.getString("GML.validate"), "javascript:se
 String targetElementIdHidden = request.getParameter("elementHidden");
 String targetElementIdVisible = request.getParameter("elementVisible");
 String scope = request.getParameter("scope");
+String resultType = request.getParameter("resultType");
+if (!StringUtil.isDefined(resultType)) {
+  resultType = "default";
+}
+boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("DedicatedToWriters"));
 %>
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -118,6 +123,7 @@ $(function () {
 			"types" : {
 				"valid_children" : [ "default" ],
 				types : {
+					<% if (dedicatedToWriters) { %>
 					"user" : {
 						"max_children"	: -1,
 						"max_depth"		: -1,
@@ -132,6 +138,7 @@ $(function () {
 						"hover_node" 	: false,
 						"select_node"	: false
 					},
+					<% } %>
 					"user-root" : {
 						"max_children"	: -1,
 						"max_depth"		: -1,
@@ -181,13 +188,17 @@ $(function () {
 			newPath += path[i];
 		}
 		$("#explicitPath").val(newPath);
-		$("#nodeId").val(data.rslt.obj.attr("instanceId")+"-"+data.rslt.obj.attr("id"));		
+		<% if ("path".equals(resultType)) { %>
+			$("#result").val(data.rslt.obj.attr("path"));
+		<% } else { %>
+			$("#result").val(data.rslt.obj.attr("instanceId")+"-"+data.rslt.obj.attr("id"));
+		<% } %>
 	});
 });
 
 function setPath() {
 	window.opener.document.getElementById("<%=targetElementIdVisible%>").value = $("#explicitPath").val();
-	window.opener.document.getElementById("<%=targetElementIdHidden%>").value = $("#nodeId").val();
+	window.opener.document.getElementById("<%=targetElementIdHidden%>").value = $("#result").val();
 	window.close();
 }
 </script>
@@ -196,6 +207,6 @@ function setPath() {
 <div class="selection"><%=message.getString("GML.selection") %> : <input type="text" id="explicitPath" size="40"/> <%=btn.print() %></div>
 <div id="explorer" class="demo" style="height:100px;">
 </div>
-<input type="hidden" id="nodeId"/>
+<input type="hidden" id="result"/>
 </body>
 </html>

@@ -1,49 +1,34 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationManager;
 
 /**
- * Title:        Notification Manager
- * Description:  La fonction de ce manager est de décider en fonction de règles pré-établies,
- * de la destination des messages qu'il est chargé d'envoyer.
- * La fonction technique d'envoi de messages est déléguée au "Notification Server"
- * Copyright:    Copyright (c) 2001
- * Company:      STRATELIA
+ * Title: Notification Manager Description: La fonction de ce manager est de décider en fonction de
+ * règles pré-établies, de la destination des messages qu'il est chargé d'envoyer. La fonction
+ * technique d'envoi de messages est déléguée au "Notification Server" Copyright: Copyright (c) 2001
+ * Company: STRATELIA
+ *
  * @author Eric BURGEL
  * @version 1.0
  */
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
@@ -71,9 +56,18 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import org.apache.commons.lang.StringUtils;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration
+ *
  * @author
  * @version %I%, %G%
  */
@@ -101,6 +95,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * get the notifications addresses of a user
+   *
    * @param aUserId : id of the user as in the "id" field of "ST_USER" table.
    * @return an ArrayList of properties containing "name", "type", "usage" and "address" keys
    * @throws NotificationManagerException
@@ -160,6 +155,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aNotificationAddressId
    * @return
    * @throws NotificationManagerException
@@ -240,6 +236,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aUserId
    * @return The user's default address Id
    * @throws NotificationManagerException
@@ -274,6 +271,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * get All the priorities types
+   *
    * @return an ArrayList of properties containing "id" and "name" keys
    */
   public ArrayList<Properties> getNotifPriorities() {
@@ -299,6 +297,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * get All the usage types
+   *
    * @return an ArrayList of properties containing "id" and "name" keys
    */
   public ArrayList<Properties> getNotifUsages() {
@@ -325,6 +324,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * get All the channel types from the database.
+   *
    * @return an ArrayList of properties containing "id" and "name" keys
    * @throws NotificationManagerException
    */
@@ -359,6 +359,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * get the notifications preferences of a user
+   *
    * @param aUserId : id of the user as in the "id" field of "ST_USER" table.
    * @return an ArrayList of properties containing "name", "type", "usage" and "address" keys
    * @throws NotificationManagerException
@@ -392,6 +393,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aUserId
    * @return
    * @throws NotificationManagerException
@@ -419,6 +421,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aNotificationAddressId
    * @param aUserId
    * @throws NotificationManagerException
@@ -496,6 +499,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aUserId
    * @param aInstanceId
    * @param aMessageType
@@ -563,6 +567,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aNotificationAddressId
    * @param aUserId
    * @param aNotifName
@@ -616,6 +621,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aPreferenceId
    * @throws NotificationManagerException
    * @see
@@ -651,6 +657,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aNotificationAddressId
    * @throws NotificationManagerException
    * @see
@@ -685,6 +692,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param userId
    * @throws NotificationManagerException
    * @see
@@ -721,6 +729,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Send a test message to the given notification address Id
+   *
    * @param aNotificationAddressId of the table ST_NotifAddress row to send notification to.
    */
   public void testNotifAddress(int aNotificationAddressId, int aUserId)
@@ -761,6 +770,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param params
    * @param aUserIds
    * @throws NotificationManagerException
@@ -772,7 +782,7 @@ public class NotificationManager extends AbstractNotification
 
     // First Tests if the user is a guest
     // Then notify himself that he cant notify anyone
-    if ("G".equalsIgnoreCase(getUserAccessLevel(params.iFromUserId))) {
+    if (UserAccessLevel.GUEST.equals(getUserAccessLevel(params.iFromUserId))) {
       params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "\n"
           + params.sTitle + "\n\n"
           + m_Multilang.getString("guestNotAllowedBody2");
@@ -801,11 +811,11 @@ public class NotificationManager extends AbstractNotification
       schema = new NotifSchema();
       params.traceObject();
       for (String userId : aUserIds) {
-        try {          
+        try {
           SilverTrace.info("notificationManager",
               "NotificationManager.notifyUsers()", "root.MSG_GEN_PARAM_VALUE",
               "notifUserId : " + userId);
-          
+
           for (final DelayedNotificationData dnd : createAllDelayedNotificationData(params, userId,
               schema)) {
             DelayedNotificationDelegate.executeNewNotification(dnd);
@@ -833,6 +843,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param groupId
    * @return
    * @throws NotificationManagerException
@@ -856,6 +867,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param compInst
    * @return
    * @throws NotificationManagerException
@@ -867,6 +879,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param compInst
    * @param separator
    * @param isPathToComponent
@@ -916,8 +929,8 @@ public class NotificationManager extends AbstractNotification
     return valret;
   }
 
-  protected String getUserAccessLevel(int userId) {
-    String valret = "";
+  protected UserAccessLevel getUserAccessLevel(int userId) {
+    UserAccessLevel valret = UserAccessLevel.UNKNOWN;
 
     if (userId > -1) {
       try {
@@ -951,6 +964,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param aUserId
    * @param npr
    * @param canEdit
@@ -993,6 +1007,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param nar
    * @param canEdit
    * @param canDelete
@@ -1044,9 +1059,9 @@ public class NotificationManager extends AbstractNotification
    * NotifSchema schema) throws UtilException { return getNotifAddressRow(params, aUserId, schema,
    * false); }
    */
-
   /**
    * Method declaration
+   *
    * @param params
    * @param aUserId
    * @param schema
@@ -1100,9 +1115,9 @@ public class NotificationManager extends AbstractNotification
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC POPUP");
         nar =
             new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_POPUP, aUserId,
-                m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
-                Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                params.iMessagePriority);
+            m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
+            Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+            params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_REMOVE:
         SilverTrace.info("notificationManager",
@@ -1110,8 +1125,8 @@ public class NotificationManager extends AbstractNotification
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC REMOVE");
         nar =
             new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_REMOVE, aUserId,
-                m_Multilang.getString("defaultAddressREMOVE"), NotifChannel.REMOVE.getId(), "",
-                NotificationParameters.USAGE_PRO, params.iMessagePriority);
+            m_Multilang.getString("defaultAddressREMOVE"), NotifChannel.REMOVE.getId(), "",
+            NotificationParameters.USAGE_PRO, params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_SILVERMAIL:
         SilverTrace.info("notificationManager",
@@ -1119,9 +1134,9 @@ public class NotificationManager extends AbstractNotification
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SILVERMAIL");
         nar =
             new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SILVERMAIL, aUserId,
-                m_Multilang.getString("defaultAddressSILVERMAIL"), NotifChannel.SILVERMAIL.getId(),
-                Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                params.iMessagePriority);
+            m_Multilang.getString("defaultAddressSILVERMAIL"), NotifChannel.SILVERMAIL.getId(),
+            Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+            params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_SMTP_MAIL:
         SilverTrace.info("notificationManager",
@@ -1129,8 +1144,8 @@ public class NotificationManager extends AbstractNotification
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SMTP MAIL");
         nar =
             new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, aUserId,
-                m_Multilang.getString("defaultAddressSPMAIL"), NotifChannel.SMTP.getId(),
-                getUserEmail(aUserId), NotificationParameters.USAGE_PRO, params.iMessagePriority);
+            m_Multilang.getString("defaultAddressSPMAIL"), NotifChannel.SMTP.getId(),
+            getUserEmail(aUserId), NotificationParameters.USAGE_PRO, params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_SERVER:
         SilverTrace.info("notificationManager",
@@ -1138,9 +1153,9 @@ public class NotificationManager extends AbstractNotification
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SERVER");
         nar =
             new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SERVER, aUserId,
-                m_Multilang.getString("defaultAddressSERVER"), NotifChannel.SERVER.getId(),
-                Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                params.iMessagePriority);
+            m_Multilang.getString("defaultAddressSERVER"), NotifChannel.SERVER.getId(),
+            Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+            params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER:
         SilverTrace.info("notificationManager",
@@ -1148,9 +1163,9 @@ public class NotificationManager extends AbstractNotification
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC COMMUNICATION USER");
         nar =
             new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_POPUP, aUserId,
-                m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
-                Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                params.iMessagePriority);
+            m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
+            Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+            params.iMessagePriority);
         break;
       default:
         SilverTrace.info("notificationManager",
@@ -1222,9 +1237,9 @@ public class NotificationManager extends AbstractNotification
               "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC POPUP");
           curNar =
               new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_POPUP, aUserId,
-                  m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
-                  Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                  params.iMessagePriority);
+              m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
+              Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+              params.iMessagePriority);
           break;
         case NotificationParameters.ADDRESS_BASIC_REMOVE:
           SilverTrace.info("notificationManager",
@@ -1232,8 +1247,8 @@ public class NotificationManager extends AbstractNotification
               "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC REMOVE");
           curNar =
               new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_REMOVE, aUserId,
-                  m_Multilang.getString("defaultAddressREMOVE"), NotifChannel.REMOVE.getId(), "",
-                  NotificationParameters.USAGE_PRO, params.iMessagePriority);
+              m_Multilang.getString("defaultAddressREMOVE"), NotifChannel.REMOVE.getId(), "",
+              NotificationParameters.USAGE_PRO, params.iMessagePriority);
           break;
         case NotificationParameters.ADDRESS_BASIC_SILVERMAIL:
           SilverTrace.info("notificationManager",
@@ -1241,9 +1256,9 @@ public class NotificationManager extends AbstractNotification
               "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SILVERMAIL");
           curNar =
               new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SILVERMAIL, aUserId,
-                  m_Multilang.getString("defaultAddressSILVERMAIL"),
-                  NotifChannel.SILVERMAIL.getId(), Integer.toString(aUserId),
-                  NotificationParameters.USAGE_PRO, params.iMessagePriority);
+              m_Multilang.getString("defaultAddressSILVERMAIL"),
+              NotifChannel.SILVERMAIL.getId(), Integer.toString(aUserId),
+              NotificationParameters.USAGE_PRO, params.iMessagePriority);
           break;
         case NotificationParameters.ADDRESS_BASIC_SMTP_MAIL:
           SilverTrace.info("notificationManager",
@@ -1251,8 +1266,8 @@ public class NotificationManager extends AbstractNotification
               "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SMTP MAIL");
           curNar =
               new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, aUserId,
-                  m_Multilang.getString("defaultAddressSPMAIL"), NotifChannel.SMTP.getId(),
-                  getUserEmail(aUserId), NotificationParameters.USAGE_PRO, params.iMessagePriority);
+              m_Multilang.getString("defaultAddressSPMAIL"), NotifChannel.SMTP.getId(),
+              getUserEmail(aUserId), NotificationParameters.USAGE_PRO, params.iMessagePriority);
           break;
         case NotificationParameters.ADDRESS_BASIC_SERVER:
           SilverTrace.info("notificationManager",
@@ -1260,9 +1275,9 @@ public class NotificationManager extends AbstractNotification
               "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SERVER");
           curNar =
               new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SERVER, aUserId,
-                  m_Multilang.getString("defaultAddressSERVER"), NotifChannel.SERVER.getId(),
-                  Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                  params.iMessagePriority);
+              m_Multilang.getString("defaultAddressSERVER"), NotifChannel.SERVER.getId(),
+              Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+              params.iMessagePriority);
           break;
         case NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER:
           SilverTrace.info("notificationManager",
@@ -1270,9 +1285,9 @@ public class NotificationManager extends AbstractNotification
               "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC COMMUNICATION USER");
           curNar =
               new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_POPUP, aUserId,
-                  m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
-                  Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
-                  params.iMessagePriority);
+              m_Multilang.getString("defaultAddressPOPUP"), NotifChannel.POPUP.getId(),
+              Integer.toString(aUserId), NotificationParameters.USAGE_PRO,
+              params.iMessagePriority);
           break;
         default:
           SilverTrace.info("notificationManager",
@@ -1289,6 +1304,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
+   *
    * @param params
    * @param aUserId
    * @param schema
@@ -1431,9 +1447,11 @@ public class NotificationManager extends AbstractNotification
     return nd;
   }
 
-  protected List<DelayedNotificationData> createAllDelayedNotificationData(NotificationParameters params,
+  protected List<DelayedNotificationData> createAllDelayedNotificationData(
+      NotificationParameters params,
       String aUserId, NotifSchema schema) throws UtilException {
-    final List<NotifAddressRow> nars = getAllNotifAddressRow(params, Integer.parseInt(aUserId), schema);
+    final List<NotifAddressRow> nars = getAllNotifAddressRow(params, Integer.parseInt(aUserId),
+        schema);
     final List<DelayedNotificationData> dnds = new ArrayList<DelayedNotificationData>(nars.size());
 
     NotifChannelRow notifChannelRow;
@@ -1456,8 +1474,8 @@ public class NotificationManager extends AbstractNotification
       delayedNotificationData.setNotificationData(notificationData);
       delayedNotificationData.setNotificationParameters(params);
       dnds.add(delayedNotificationData);
-      
-      StringBuffer theMessage = new StringBuffer(100);
+
+      StringBuilder theMessage = new StringBuilder(100);
       Map<String, Object> theExtraParams = new HashMap<String, Object>();
       // set the channel
       notificationData.setTargetChannel(notifChannelRow.getName());
@@ -1527,11 +1545,11 @@ public class NotificationManager extends AbstractNotification
             final String componentFullName =
                 getComponentFullName(String.valueOf(params.iComponentInstance));
             theExtraParams.put(NotificationParameterNames.SOURCE, componentFullName);
-            if (delayedNotificationData.getResource() != null &&
-                StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
+            if (delayedNotificationData.getResource() != null && StringUtils.isBlank(
+                delayedNotificationData.getResource().getResourceLocation())) {
               delayedNotificationData.getResource().setResourceLocation(
                   getComponentFullName(String.valueOf(params.iComponentInstance),
-                      NotificationResourceData.LOCATION_SEPARATOR, true));
+                  NotificationResourceData.LOCATION_SEPARATOR, true));
             }
           } catch (Exception e) {
             SilverTrace.warn("notificationManager", "NotificationManager.createNotificationData()",
@@ -1633,6 +1651,7 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Is the multichannel notification supported?
+   *
    * @return true if notifications can be done through several channels, false otherwise.
    */
   public boolean isMultiChannelNotification() {
@@ -1644,6 +1663,7 @@ public class NotificationManager extends AbstractNotification
    * Gets the addresses as default notification channels. If the multi channel isn't supported, then
    * returns only one among the channels set up as default. In the case no default channels are set
    * up, then the previous behaviour is used; the SMTP is used as default channel.
+   *
    * @return a set of default notification channels.
    */
   protected List<Integer> getDefaultNotificationAddresses() {
@@ -1680,5 +1700,4 @@ public class NotificationManager extends AbstractNotification
     }
     return mediaIds;
   }
-
 }

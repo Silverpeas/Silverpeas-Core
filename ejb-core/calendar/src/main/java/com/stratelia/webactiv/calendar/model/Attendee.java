@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,12 +34,13 @@ public class Attendee implements java.io.Serializable {
   }
 
   public Attendee(String userId) {
-    setUserId(userId);
+    this.userId = userId;
   }
 
   public Attendee(String userId, String participationStatus) {
-    setUserId(userId);
-    getParticipationStatus().setString(participationStatus);
+    this.userId = userId;
+    this.participationStatus = new ParticipationStatus();
+    this.participationStatus.setString(participationStatus);
   }
 
   public String getUserId() {

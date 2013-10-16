@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,10 @@
 package com.silverpeas.form;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import com.silverpeas.util.ForeignPK;
+
+import java.util.Map;
 
 /**
  * A RecordSet manages a set of DataRecord built on a same RecordTemplate.
@@ -72,8 +76,6 @@ public interface RecordSet {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
-   * @see insert
-   * @see update
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the insert or update fail.
@@ -83,13 +85,12 @@ public interface RecordSet {
   /**
    * Index the given DataRecord into the indexEntry. formName looks like allFields (ie template
    * filename allFields.xml without extension)
-   * @param data
    * @param formName
    * @param indexEntry
    * @throws FormException
    */
-  public void indexRecord(String recordId, String formName,
-      FullIndexEntry indexEntry) throws FormException;
+  public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
+      throws FormException;
 
   /**
    * Deletes the given DataRecord and set to null its id.
@@ -99,13 +100,21 @@ public interface RecordSet {
    */
   public void delete(DataRecord record) throws FormException;
 
+  public void delete(String objectId) throws FormException;
+
+  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+      Map<String, String> oldAndNewFileIds) throws FormException;
+
+  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+      throws FormException;
+
   /**
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.
    */
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException;
+      String cloneComponentId, Map<String, String> attachmentIds) throws FormException;
 
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException;
+      String toComponentId, Map<String, String> attachmentIds) throws FormException;
 
 }

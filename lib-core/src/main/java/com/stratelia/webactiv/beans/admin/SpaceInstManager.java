@@ -1,28 +1,30 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -37,19 +39,11 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 public class SpaceInstManager {
 
   static ComponentInstManager componentInstManager = new ComponentInstManager();
   static SpaceProfileInstManager spaceProfileInstManager = new SpaceProfileInstManager();
 
-  /**
-   * Constructor
-   */
   public SpaceInstManager() {
   }
 
@@ -125,6 +119,16 @@ public class SpaceInstManager {
       String sSpaceNodeId = "";
       ddManager.getOrganization().space.createSpace(newSpaceRow);
       sSpaceNodeId = idAsString(newSpaceRow.id);
+      
+      // duplicates existing translations
+      Map<String, Translation> translations = spaceInst.getTranslations();
+      for (String lang : translations.keySet()) {
+        SpaceI18N translation = (SpaceI18N) translations.get(lang);
+        SpaceI18NRow row =
+            new SpaceI18NRow(newSpaceRow.id, lang, translation.getName(),
+                translation.getDescription());
+        ddManager.getOrganization().spaceI18N.createTranslation(row);
+      }
 
       // Create the SpaceProfile nodes
       for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
@@ -142,6 +146,7 @@ public class SpaceInstManager {
 
   /**
    * Get the space instance with the given space id
+   *
    * @param spaceInstId driver space id
    * @return Space information as SpaceInst object
    */
@@ -253,7 +258,7 @@ public class SpaceInstManager {
     }
   }
 
-  private SpaceInst spaceRow2SpaceInst(SpaceRow space) throws AdminException {
+  private SpaceInst spaceRow2SpaceInst(SpaceRow space) {
     // Set the attributes of the space Inst
     SpaceInst spaceInst = new SpaceInst();
     spaceInst.setId(idAsString(space.id));
@@ -298,6 +303,7 @@ public class SpaceInstManager {
 
   /**
    * Get the space instance with the given space id
+   *
    * @param spaceId driver space id
    * @return Space information as SpaceInst object
    */
@@ -347,8 +353,7 @@ public class SpaceInstManager {
     }
   }
 
-  private int getSpaceLevel(int spaceId)
-      throws AdminException {
+  private int getSpaceLevel(int spaceId) {
     return TreeCache.getSpaceLevel(Integer.toString(spaceId));
   }
 
@@ -362,7 +367,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
@@ -381,7 +386,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
@@ -410,20 +415,23 @@ public class SpaceInstManager {
 
   /**
    * Return subspaces of a space
+   *
    * @return a List of SpaceInstLight
    */
-  public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
-    Connection con = null;
+  public List<SpaceInstLight> getSubSpaces(DomainDriverManager ddManager, String spaceId) throws
+      AdminException {
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      ddManager.getOrganizationSchema();
+      List<SpaceRow> rows = ddManager.getOrganization().space.getDirectSubSpaces(Integer.parseInt(
+          spaceId));
 
-      return SpaceDAO.getSubSpaces(con, Integer.parseInt(spaceId));
+      return spaceRows2SpaceInstLights(ddManager, rows.toArray(new SpaceRow[0]));
 
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getSubSpaces",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES", e);
     } finally {
-      DBUtil.close(con);
+      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -465,13 +473,12 @@ public class SpaceInstManager {
   private List<SpaceInstLight> spaceRows2SpaceInstLights(DomainDriverManager ddManager,
       SpaceRow[] spaceRows) {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
-    SpaceInstLight spaceLight = null;
-    for (int s = 0; spaceRows != null && s < spaceRows.length; s++) {
-      SpaceRow row = spaceRows[s];
-      spaceLight = new SpaceInstLight(row);
-
+    if (spaceRows == null) {
+      return spaces;
+    }
+    for (SpaceRow row : spaceRows) {
+      SpaceInstLight spaceLight = new SpaceInstLight(row);
       setTranslations(ddManager, spaceLight, row);
-
       spaces.add(spaceLight);
     }
     return spaces;
@@ -489,7 +496,7 @@ public class SpaceInstManager {
       if (asSpaceProfileIds != null) {
         return asSpaceProfileIds;
       } else {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceProfileIds",
@@ -565,7 +572,7 @@ public class SpaceInstManager {
           "spaceId = " + spaceId, e);
     }
   }
-  
+
   /*
    * Move space from current location to space defined by fatherId
    */
@@ -673,6 +680,7 @@ public class SpaceInstManager {
 
   /**
    * Tests if a space with given space id exists
+   *
    * @param ddManager
    * @param sSpaceInstId
    * @return true if the given space instance name is an existing space.

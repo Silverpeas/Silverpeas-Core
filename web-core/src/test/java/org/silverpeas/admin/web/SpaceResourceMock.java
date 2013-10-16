@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.admin.web.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.admin.web.tools.AbstractTool;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.look.web.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;

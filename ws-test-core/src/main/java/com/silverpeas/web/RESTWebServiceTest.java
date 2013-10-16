@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2000 - 2012 Silverpeas
+* Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -23,24 +23,8 @@
 */
 package com.silverpeas.web;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.junit.Before;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.request.RequestContextListener;
-
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.web.mock.AccessControllerMock;
-import com.silverpeas.web.mock.SpaceAccessControllerMock;
-import com.silverpeas.web.mock.UserDetailWithProfiles;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -50,6 +34,24 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
+import org.junit.Before;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
+
+import org.silverpeas.core.admin.OrganisationController;
+
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.web.mock.AccessControllerMock;
+import com.silverpeas.web.mock.SpaceAccessControllerMock;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
 * The base class for testing REST web services in Silverpeas.
@@ -87,7 +89,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   /**
 * Gets the component instances to take into account in tests. Theses component instances will be
-* considered as existing. Others than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+* considered as existing. Others than those will be rejected with an HTTP error 404 (NOT FOUND).
 * @return an array with the identifier of the component instances to take into account in tests.
 * The array cannot be null but it can be empty.
 */
@@ -95,7 +97,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   /**
    * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
-   * than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+   * than those will be rejected with an HTTP error 404 (NOT FOUND).
    * @return an array with the identifier of tools to take into account in tests. The array cannot
    * be null but it can be empty.
    */
@@ -175,21 +177,21 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 * @param componentId the unique identifier of the component instance to use in tests.
 */
   public void addComponentInstance(String componentId) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.isComponentExist(componentId)).thenReturn(true);
   }
 
   public void addTool(String toolId) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.isToolAvailable(toolId)).thenReturn(true);
   }
 
   public void setComponentAccessibilityToUser(String componentId, String userId) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
   }
 
-  protected OrganizationController getOrganizationControllerMock() {
+  protected OrganisationController getOrganizationControllerMock() {
     return getTestResources().getOrganizationControllerMock();
   }
 

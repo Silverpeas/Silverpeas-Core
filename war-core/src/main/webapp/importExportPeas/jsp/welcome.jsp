@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -62,7 +62,7 @@ out.println(board.printBefore());
 out.println(board.printAfter());
 out.println(frame.printMiddle());
 ButtonPane buttonPane = gef.getButtonPane();
-Button button = (Button) gef.getFormButton(resource.getString("importExportPeas.Import"), "javaScript:launchImport();", false);
+Button button = gef.getFormButton(resource.getString("importExportPeas.Import"), "javaScript:launchImport();", false);
 buttonPane.addButton(button);
 out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
 out.println(frame.printAfter());

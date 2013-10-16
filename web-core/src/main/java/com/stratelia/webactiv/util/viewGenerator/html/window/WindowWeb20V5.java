@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,10 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType;
+
 /**
  * The default implementation of Window interface
  * @author neysseri
@@ -40,13 +44,46 @@ public class WindowWeb20V5 extends AbstractWindow {
   }
 
   /**
+   * Add an operation that permits to display responsibles for a space or an application.
+   */
+  private void addSpaceOrComponentResponsibleOperation() {
+    if (!getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
+        !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
+      if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
+          StringUtil.isDefined(getGEF().getSpaceId())) ||
+          StringUtil.isDefined(getGEF().getComponentId())) {
+        if (getOperationPane().nbOperations() > 0) {
+          getOperationPane().addLine();
+        }
+        final String label;
+        final String action;
+        if (OperationPaneType.space.equals(getOperationPane().getType())) {
+          label = GeneralPropertiesManager.getString("GML.space.responsibles", "Responsables")
+              .replaceAll("''", "'");
+          action = "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
+              "','" +
+              getGEF().getSpaceId() + "')";
+        } else {
+          label = GeneralPropertiesManager.getString("GML.component.responsibles", "Responsables")
+              .replaceAll("''", "'");
+          action =
+              "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
+                  "','" + getGEF().getComponentId() + "')";
+        }
+        getOperationPane().addOperation("", label, "javascript:" + action + ";",
+            "space-or-component-responsibles-operation");
+      }
+    }
+  }
+
+  /**
    * Method declaration
    * @return
    * @see
    */
   @Override
   public String printBefore() {
-    StringBuilder result = new StringBuilder(200);
+    StringBuilder result = new StringBuilder(300);
     String width = getWidth();
 
     int nbCols = 1;
@@ -65,6 +102,7 @@ public class WindowWeb20V5 extends AbstractWindow {
     result.append("</td>");
     if (nbCols == 2) {
       result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+      addSpaceOrComponentResponsibleOperation();
       result.append(getOperationPane().print());
       result.append("</td>");
     } else {

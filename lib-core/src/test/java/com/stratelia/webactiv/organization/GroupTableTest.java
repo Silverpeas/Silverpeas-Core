@@ -1,30 +1,29 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.organization;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.List;
+
 import com.mockrunner.jdbc.JDBCTestModule;
 import com.mockrunner.jdbc.PreparedStatementResultSetHandler;
 import com.mockrunner.mock.jdbc.JDBCMockObjectFactory;
@@ -37,8 +36,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -91,7 +88,6 @@ public class GroupTableTest {
 //    // TODO review the generated test code and remove the default call to fail.
 //    fail("The test case is a prototype.");
 //  }
-
   /**
    * Test of getGroup method, of class GroupTable.
    */
@@ -108,19 +104,19 @@ public class GroupTableTest {
     resultSet.addColumn("name");
     resultSet.addColumn("description");
     resultSet.addColumn("synchroRule");
-    resultSet.addRow(Lists.newArrayList(String.valueOf(id), "3", "0", "8", "Group for test",
+    resultSet.addRow(Arrays.asList(String.valueOf(id), "3", "0", "8", "Group for test",
         "Fake group", "DS_AccessLevel = *"));
-    handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, " +
-        "description, synchroRule FROM ST_Group WHERE id = ?", resultSet);
+    handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, "
+        + "description, synchroRule FROM ST_Group WHERE id = ?", resultSet);
     OrganizationSchema schema = new OrganizationSchema(connexion);
-    GroupTable instance = new GroupTable(schema);    
-    
+    GroupTable instance = new GroupTable(schema);
+
     GroupRow result = instance.getGroup(id);
-    
+
     module.verifyAllStatementsClosed();
     module.verifyAllResultSetsClosed();
-    List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, " +
-        "superGroupId, name, description, synchroRule FROM ST_Group WHERE id = ?");
+    List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, "
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE id = ?");
     assertThat(statements, is(notNullValue()));
     assertThat(statements.size(), is(1));
     assertThat(result, is(notNullValue()));
@@ -137,7 +133,7 @@ public class GroupTableTest {
    * Test of getGroupBySpecificId method, of class GroupTable.
    */
   @Test
-  public void testGetGroupBySpecificId() throws Exception {   
+  public void testGetGroupBySpecificId() throws Exception {
     int domainId = 0;
     String specificId = "3";
     MockConnection connexion = factory.getMockConnection();
@@ -150,26 +146,26 @@ public class GroupTableTest {
     resultSet.addColumn("name");
     resultSet.addColumn("description");
     resultSet.addColumn("synchroRule");
-    resultSet.addRow(Lists.newArrayList("5", specificId, String.valueOf(domainId), "8", "Group for test",
+    resultSet.addRow(Arrays.asList("5", specificId, String.valueOf(domainId), "8", "Group for test",
         "Fake group", "DS_AccessLevel = *"));
-    handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, description, " +
-        "synchroRule FROM ST_Group WHERE domainId = ? AND specificId = ?", resultSet);
+    handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, description, "
+        + "synchroRule FROM ST_Group WHERE domainId = ? AND specificId = ?", resultSet);
     OrganizationSchema schema = new OrganizationSchema(connexion);
-    GroupTable instance = new GroupTable(schema);    
-    
+    GroupTable instance = new GroupTable(schema);
+
     GroupRow result = instance.getGroupBySpecificId(domainId, specificId);
-    
+
     module.verifyAllStatementsClosed();
     module.verifyAllResultSetsClosed();
-    List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, " +
-        "superGroupId, name, description, synchroRule FROM ST_Group WHERE domainId = ? AND " +
-        "specificId = ?");
-    assertThat((Integer)module.getPreparedStatementParameter("SELECT id, specificId, domainId, " +
-        "superGroupId, name, description, synchroRule FROM ST_Group WHERE domainId = ? AND " +
-        "specificId = ?", 1), is(domainId));
-    assertThat((String)module.getPreparedStatementParameter("SELECT id, specificId, domainId, " +
-        "superGroupId, name, description, synchroRule FROM ST_Group WHERE domainId = ? AND " +
-        "specificId = ?", 2), is(specificId));
+    List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, "
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE domainId = ? AND "
+        + "specificId = ?");
+    assertThat((Integer) module.getPreparedStatementParameter("SELECT id, specificId, domainId, "
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE domainId = ? AND "
+        + "specificId = ?", 1), is(domainId));
+    assertThat((String) module.getPreparedStatementParameter("SELECT id, specificId, domainId, "
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE domainId = ? AND "
+        + "specificId = ?", 2), is(specificId));
     assertThat(statements, is(notNullValue()));
     assertThat(statements.size(), is(1));
     assertThat(result, is(notNullValue()));
@@ -198,23 +194,23 @@ public class GroupTableTest {
     resultSet.addColumn("name");
     resultSet.addColumn("description");
     resultSet.addColumn("synchroRule");
-    resultSet.addRow(Lists.newArrayList("5", "3", "0", null, name, "Fake group", 
+    resultSet.addRow(Arrays.asList("5", "3", "0", null, name, "Fake group",
         "DS_AccessLevel = *"));
-    handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, description, " +
-        "synchroRule FROM ST_Group WHERE superGroupId IS NULL AND name = ?", resultSet);
+    handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, description, "
+        + "synchroRule FROM ST_Group WHERE superGroupId IS NULL AND name = ?", resultSet);
     OrganizationSchema schema = new OrganizationSchema(connexion);
-    GroupTable instance = new GroupTable(schema);    
-    
+    GroupTable instance = new GroupTable(schema);
+
     GroupRow result = instance.getRootGroup(name);
-    
+
     module.verifyAllStatementsClosed();
     module.verifyAllResultSetsClosed();
-    List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, " +
-        "superGroupId, name, description, synchroRule FROM ST_Group WHERE superGroupId IS NULL " +
-        "AND name = ?");
-    assertThat((String)module.getPreparedStatementParameter("SELECT id, specificId, domainId, " +
-        "superGroupId, name, description, synchroRule FROM ST_Group WHERE superGroupId IS NULL " +
-        "AND name = ?", 1), is(name));
+    List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, "
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE superGroupId IS NULL "
+        + "AND name = ?");
+    assertThat((String) module.getPreparedStatementParameter("SELECT id, specificId, domainId, "
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE superGroupId IS NULL "
+        + "AND name = ?", 1), is(name));
     assertThat(statements, is(notNullValue()));
     assertThat(statements.size(), is(1));
     assertThat(result, is(notNullValue()));
@@ -235,7 +231,8 @@ public class GroupTableTest {
     int superGroupId = 8;
     String name = "Group for test";
     MockConnection connexion = factory.getMockConnection();
-    PreparedStatementResultSetHandler statementHandler = connexion.getPreparedStatementResultSetHandler();
+    PreparedStatementResultSetHandler statementHandler = connexion
+        .getPreparedStatementResultSetHandler();
     MockResultSet resultSet = statementHandler.createResultSet();
     resultSet.addColumn("id");
     resultSet.addColumn("specificId");
@@ -244,21 +241,21 @@ public class GroupTableTest {
     resultSet.addColumn("name");
     resultSet.addColumn("description");
     resultSet.addColumn("synchroRule");
-    resultSet.addRow(Lists.newArrayList("5", "3", "0", "8", "Group for test", "Fake group", 
+    resultSet.addRow(Arrays.asList("5", "3", "0", "8", "Group for test", "Fake group",
         "DS_AccessLevel = *"));
     statementHandler.prepareResultSet("SELECT id, specificId, domainId, "
-          + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
-          + "superGroupId = ? AND name = ?", resultSet);
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
+        + "superGroupId = ? AND name = ?", resultSet);
     OrganizationSchema schema = new OrganizationSchema(connexion);
-    GroupTable instance = new GroupTable(schema);    
-    
+    GroupTable instance = new GroupTable(schema);
+
     GroupRow result = instance.getGroup(superGroupId, name);
-    
+
     module.verifyAllStatementsClosed();
     module.verifyAllResultSetsClosed();
     List<?> statements = module.getPreparedStatements("SELECT id, specificId, domainId, "
-          + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
-          + "superGroupId = ? AND name = ?");
+        + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
+        + "superGroupId = ? AND name = ?");
     assertThat(statements, is(notNullValue()));
     assertThat(statements.size(), is(1));
     assertThat(result, is(notNullValue()));
@@ -277,7 +274,8 @@ public class GroupTableTest {
   @Test
   public void testGetAllGroups() throws Exception {
     MockConnection connexion = factory.getMockConnection();
-    PreparedStatementResultSetHandler statementHandler = connexion.getPreparedStatementResultSetHandler();
+    PreparedStatementResultSetHandler statementHandler = connexion
+        .getPreparedStatementResultSetHandler();
     MockResultSet resultSet = statementHandler.createResultSet();
     resultSet.addColumn("id");
     resultSet.addColumn("specificId");
@@ -286,21 +284,20 @@ public class GroupTableTest {
     resultSet.addColumn("name");
     resultSet.addColumn("description");
     resultSet.addColumn("synchroRule");
-    resultSet.addRow(Lists.newArrayList("5", "3", "0", "8", "Group for test", "Fake group", 
+    resultSet.addRow(Arrays.asList("5", "3", "0", "8", "Group for test", "Fake group",
         "DS_AccessLevel = *"));
-    resultSet.addRow(Lists.newArrayList("1", "4", "0", null, "Root", "Fake group", 
-        "DS_AccessLevel = A"));
+    resultSet.addRow(Arrays.asList("1", "4", "0", null, "Root", "Fake group", "DS_AccessLevel = A"));
     statementHandler.prepareResultSet("select id, specificId, domainId, "
-          + "superGroupId, name, description, synchroRule from ST_Group", resultSet);
+        + "superGroupId, name, description, synchroRule from ST_Group", resultSet);
     OrganizationSchema schema = new OrganizationSchema(connexion);
-    GroupTable instance = new GroupTable(schema);    
-    
+    GroupTable instance = new GroupTable(schema);
+
     GroupRow[] result = instance.getAllGroups();
-    
+
     module.verifyAllStatementsClosed();
     module.verifyAllResultSetsClosed();
     List<?> statements = module.getPreparedStatements("select id, specificId, domainId, "
-          + "superGroupId, name, description, synchroRule from ST_Group");
+        + "superGroupId, name, description, synchroRule from ST_Group");
     assertThat(statements, is(notNullValue()));
     assertThat(statements.size(), is(1));
     assertThat(result, is(notNullValue()));
@@ -311,7 +308,7 @@ public class GroupTableTest {
     assertThat(result[0].specificId, is("3"));
     assertThat(result[0].domainId, is(0));
     assertThat(result[0].superGroupId, is(8));
-    
+
     assertThat(result[1].id, is(1));
     assertThat(result[1].description, is("Fake group"));
     assertThat(result[1].name, is("Root"));

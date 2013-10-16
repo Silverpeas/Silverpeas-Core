@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -41,7 +41,7 @@ public class SwfToolManager {
   @PostConstruct
   public void initialize() throws Exception {
 
-    // Im4java settings
+    // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
       if ("path".equals(entry.getKey().toLowerCase())) {
         Process process = null;

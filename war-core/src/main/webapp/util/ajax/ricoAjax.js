@@ -5,9 +5,9 @@ Rico.AjaxEngine = Class.create();
 Rico.AjaxEngine.prototype = {
 
    initialize: function() {
-      this.ajaxElements = new Array();
-      this.ajaxObjects  = new Array();
-      this.requestURLS  = new Array();
+      this.ajaxElements = [];
+      this.ajaxObjects  = [];
+      this.requestURLS  = [];
       this.options = {};
    },
 
@@ -108,7 +108,7 @@ Rico.AjaxEngine.prototype = {
    },
 
    _createQueryString: function( theArgs, offset ) {
-      var queryString = ""
+      var queryString = "";
       for ( var i = offset ; i < theArgs.length ; i++ ) {
           if ( i != offset )
             queryString += "&";
@@ -116,28 +116,24 @@ Rico.AjaxEngine.prototype = {
           var anArg = theArgs[i];
 
           if ( anArg.name != undefined && anArg.value != undefined ) {
-//Patch DLE use with accents
-//	        	  queryString += anArg.name +  "=" + escape(anArg.value);
               queryString += anArg.name +  "=" + encodeURIComponent(anArg.value);
           }
           else {
              var ePos  = anArg.indexOf('=');
              var argName  = anArg.substring( 0, ePos );
              var argValue = anArg.substring( ePos + 1 );
-//Patch DLE use with accents
-//	             queryString += argName + "=" + escape(argValue);
              queryString += argName + "=" + encodeURIComponent(argValue);
-             
+
           }
       }
 
-	  d = new Date();
-	  trick = d.getYear() + "ie" + d.getMonth() + "t" + d.getDate() + "r" + d.getHours() + "i" 
-		+ d.getMinutes() + "c" + d.getSeconds() + "k" + d.getMilliseconds();
-		
-	  queryString += "&ietrick="+trick;
+     var d = new Date();
+     var trick = d.getYear() + "ie" + d.getMonth() + "t" + d.getDate() + "r" + d.getHours() + "i" +
+         d.getMinutes() + "c" + d.getSeconds() + "k" + d.getMilliseconds();
 
-      return queryString;
+     queryString += "&ietrick=" + trick;
+
+     return queryString;
    },
 
    _onRequestComplete : function(request) {
@@ -151,7 +147,7 @@ Rico.AjaxEngine.prototype = {
       if (response == null || response.length != 1)
          return;
       this._processAjaxResponse( response[0].childNodes );
-      
+
       // Check if user has set a onComplete function
       var onRicoComplete = this.options.onRicoComplete;
       if (onRicoComplete != null)
@@ -186,7 +182,7 @@ Rico.AjaxEngine.prototype = {
       ajaxElement.innerHTML = RicoUtil.getContentAsString(responseElement);
    }
 
-}
+};
 
 var ajaxEngine = new Rico.AjaxEngine();
 

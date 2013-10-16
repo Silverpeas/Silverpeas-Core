@@ -21,10 +21,9 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
 
 <%!
-String m_context         	= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = URLManager.getApplicationURL();
 
 // Icones operationBar
 String agendaAddSrc         = m_context + "/util/icons/create-action/add-event.png";
@@ -60,7 +59,7 @@ String arrLeft				= m_context + "/util/icons/arrow/arrowLeft.gif";
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
   }
-  
+
   Board board = graphicFactory.getBoard();
 %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

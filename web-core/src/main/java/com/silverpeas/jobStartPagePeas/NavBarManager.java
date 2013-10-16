@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jobStartPagePeas;
 
 import com.silverpeas.util.StringUtil;
@@ -33,32 +29,30 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import org.owasp.encoder.Encode;
 
 public class NavBarManager {
   // Constants used by urlFactory
+
   final static int SPACE = 0;
   final static int COMPONENT = 1;
   final static int COMPONENTPOPUP = 7;
-
   final static int SPACE_COLLAPSE = 2;
   final static int SPACE_EXPANDED = 3;
   final static int SPACE_COMPONENT = 4;
   final static int SUBSPACE_COMPONENT = 5;
   final static int SUBSPACE_LAST_COMPONENT = 6;
   final static String POPUP_PARAM_NAME = "popupDisplay";
-
   UserDetail m_user = null;
   AdminController m_administrationCtrl = null;
   AbstractComponentSessionController m_SessionCtrl = null;
   String m_sContext;
   HashSet<String> m_ManageableSpaces = new HashSet<String>();
-
   DisplaySorted[] m_Spaces = null;
   String m_CurrentSpaceId = null;
   DisplaySorted[] m_SpaceComponents = null;
@@ -183,7 +177,6 @@ public class NavBarManager {
 
   // Spaces functions
   // ----------------
-
   public DisplaySorted[] getAvailableSpaces() {
     return m_Spaces;
   }
@@ -241,7 +234,6 @@ public class NavBarManager {
 
   // Sub-Spaces functions
   // --------------------
-
   public DisplaySorted[] getAvailableSubSpaces() {
     if (m_CurrentSpaceId == null) {
       return new DisplaySorted[0];
@@ -410,10 +402,11 @@ public class NavBarManager {
         objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED
             : SPACE_COLLAPSE;
         link = "GoToSubSpace?SubSpace=" + space.id;
-        if (m_SessionCtrl.isSpaceInMaintenance(space.id))
+        if (m_SessionCtrl.isSpaceInMaintenance(space.id)) {
           spaceName = space.name + " (M)";
-        else
+        } else {
           spaceName = space.name;
+        }
         for (int i = 0; i < space.deep - 1; i++) {
           spacesSpaces.append("&nbsp&nbsp");
         }
@@ -426,11 +419,13 @@ public class NavBarManager {
       } else {
         StringBuilder sb = new StringBuilder();
         sb.append("<option ");
-        if (space.id.equals(m_CurrentSpaceId))
+        if (space.id.equals(m_CurrentSpaceId)) {
           sb.append("selected ");
+        }
         sb.append("value=").append(space.id).append(">").append(space.name);
-        if (m_SessionCtrl.isSpaceInMaintenance(space.id))
+        if (m_SessionCtrl.isSpaceInMaintenance(space.id)) {
           sb.append(" (M)");
+        }
         sb.append("</option>");
         space.htmlLine = sb.toString();
       }
@@ -463,7 +458,6 @@ public class NavBarManager {
     int objType;
     boolean isTheSpaceAdmin =
         m_user.isAccessAdmin() || isAdminOfSpace(new SpaceInstLight(spaceInst));
-    StringBuffer componentsSpaces = new StringBuffer();
     List<DisplaySorted> result = new ArrayList<DisplaySorted>();
     int i = 0;
     for (ComponentInst ci : components) {
@@ -491,7 +485,7 @@ public class NavBarManager {
         } else {
           objType = SPACE_COMPONENT;
         }
-        componentsSpaces = new StringBuffer();
+        StringBuilder componentsSpaces = new StringBuilder();
         for (int j = 0; j < ds.deep - 1; j++) {
           componentsSpaces.append("&nbsp;&nbsp;");
         }
@@ -539,7 +533,8 @@ public class NavBarManager {
         boldEnd = "";
         break;
     }
-    imageLinked = "<img name=\"" + elementLabel + "\" src=\"" + m_sContext
+    String safeElementLabel = Encode.forHtml(elementLabel);
+    imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext
         + "/util/icons/component/" + imageLinked
         + "Small.gif\" class=\"component-icon\"/>";
     switch (imageType) {
@@ -548,7 +543,7 @@ public class NavBarManager {
             .append("><img src=\"").append(m_sContext).append(
             "/util/icons/plusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
-            + elementLabel
+            + safeElementLabel
             + "\" src=\""
             + m_sContext
             + "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" align=\"absmiddle\">";
@@ -564,7 +559,7 @@ public class NavBarManager {
             .append(
             "/util/icons/minusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
-            + elementLabel
+            + safeElementLabel
             + "\" src=\""
             + m_sContext
             + "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" align=\"absmiddle\">";
@@ -580,12 +575,12 @@ public class NavBarManager {
             "/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
         break;
     }
+    String safeLabelLinked = Encode.forHtml(labelLinked);
     result.append("<a href=\"").append(link).append("\" ").append(target)
         .append(">").append(imageLinked).append("&nbsp</a>");
     result.append("<a href=\"").append(link).append("\" ").append(target)
-        .append(">").append(boldStart).append(labelLinked).append(boldEnd)
+        .append(">").append(boldStart).append(safeLabelLinked).append(boldEnd)
         .append("</a><br/>");
     return result.toString();
   }
-
 }

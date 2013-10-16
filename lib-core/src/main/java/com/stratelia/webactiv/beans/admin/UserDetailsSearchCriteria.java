@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public static String[] ANY_GROUPS = ANY;
 
+  private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
   private static final String ROLE_NAMES = "roleIds";
@@ -42,6 +45,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   private static final String RESOURCE_ID = "resourceId";
   private static final String INSTANCE_ID = "instanceId";
   private static final String NAME = "name";
+  private static final String PAGINATION = "pagination";
   private Map<String, Object> criteria = new HashMap<String, Object>();
 
   @Override
@@ -79,6 +83,12 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     if (isDefined(domainId)) {
       criteria.put(DOMAIN_IDS, domainId);
     }
+    return this;
+  }
+
+  @Override
+  public SearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
+    criteria.put(USER_ACCESS_LEVELS, accessLevels);
     return this;
   }
 
@@ -122,8 +132,16 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return criteria.containsKey(DOMAIN_IDS);
   }
 
+  public boolean isCriterionOnAccessLevelsSet() {
+    return criteria.containsKey(USER_ACCESS_LEVELS);
+  }
+
   public boolean isCriterionOnNameSet() {
     return criteria.containsKey(NAME);
+  }
+
+  public boolean isCriterionOnPaginationSet() {
+    return criteria.containsKey(PAGINATION);
   }
 
   /**
@@ -175,11 +193,27 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   /**
+   * Gets access level criterion.
+   * @return the access level criterion.
+   */
+  public UserAccessLevel[] getCriterionOnAccessLevels() {
+    return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
+  }
+
+  /**
    * Gets the pattern on the name the group or the user name must satisfy.
    * @return a pattern on the user or group name.
    */
   public String getCriterionOnName() {
     return (String) criteria.get(NAME);
+  }
+
+  /**
+   * Gets the pagination page into which the groups to return has to be part.
+   * @return the page in a pagination mechanism to fetch.
+   */
+  public PaginationPage getCriterionOnPagination() {
+    return (PaginationPage) criteria.get(PAGINATION);
   }
 
   @Override
@@ -228,5 +262,11 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
+  }
+
+  @Override
+  public SearchCriteria onPagination(PaginationPage page) {
+    criteria.put(PAGINATION, page);
+    return this;
   }
 }

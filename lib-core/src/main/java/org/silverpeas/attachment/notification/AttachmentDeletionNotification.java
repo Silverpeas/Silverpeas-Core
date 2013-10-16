@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,9 +24,12 @@
 
 package org.silverpeas.attachment.notification;
 
+import com.silverpeas.notification.SilverpeasNotificationCause;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
 
 /**
  * Notification about the deletion of an attachment in a given component instance.
@@ -35,11 +38,12 @@ public class AttachmentDeletionNotification extends SilverpeasNotification {
 
   private static final long serialVersionUID = 3354035649186264026L;
 
-  protected AttachmentDeletionNotification(final AttachmentDetail attachment) {
-    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), attachment);
+  protected AttachmentDeletionNotification(final SimpleDocument attachment) {
+    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()),
+        SilverpeasNotificationCause.DELETION, new AttachmentRef(attachment));
   }
 
-  public AttachmentDetail getAttachment() {
-    return (AttachmentDetail) getObject();
+  public AttachmentRef getAttachment() {
+    return (AttachmentRef) getObject();
   }
 }

@@ -1,52 +1,45 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
-
 package com.stratelia.silverpeas.genericPanel;
 
 import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
 public class GenericPanel {
-  final static public String OPERATION_VALIDATE = "GENERICPANELVALIDATE";
 
+  final static public String OPERATION_VALIDATE = "GENERICPANELVALIDATE";
   protected String m_goBackURL;
   protected String m_cancelURL;
   protected String m_zoomToItemURL;
-
   protected String[] m_selectedElements;
   protected PanelProvider m_panelProvider;
   protected boolean m_popupMode;
   protected boolean m_multiSelect;
   protected boolean m_selectable;
   protected boolean m_zoomToItemInPopup;
-
   protected PanelOperation[] m_panelOperations;
   protected String m_selectedOperation;
-
   protected String m_hostSpaceName;
   protected PairObject m_hostComponentName;
   protected PairObject[] m_hostPath;
@@ -55,7 +48,7 @@ public class GenericPanel {
     resetAll();
   }
 
-  public void resetAll() {
+  public final void resetAll() {
     m_goBackURL = "";
     m_cancelURL = "";
     m_zoomToItemURL = null;
@@ -93,7 +86,7 @@ public class GenericPanel {
   }
 
   public void setHostPath(PairObject[] hostPath) {
-    m_hostPath = hostPath;
+    m_hostPath = (hostPath != null ? hostPath.clone() : new PairObject[0]);
   }
 
   public PairObject[] getHostPath() {
@@ -171,7 +164,7 @@ public class GenericPanel {
   }
 
   public void setPanelOperations(PanelOperation[] panelOperations) {
-    m_panelOperations = panelOperations;
+    m_panelOperations = (panelOperations != null ? panelOperations.clone() : new PanelOperation[0]);
   }
 
   public String getSelectedOperation() {
@@ -187,6 +180,7 @@ public class GenericPanel {
   }
 
   public void setSelectedElements(String[] selectedElements) {
-    m_selectedElements = selectedElements;
+    m_selectedElements = (selectedElements != null ? selectedElements.clone()
+        : ArrayUtil.EMPTY_STRING_ARRAY);
   }
 }

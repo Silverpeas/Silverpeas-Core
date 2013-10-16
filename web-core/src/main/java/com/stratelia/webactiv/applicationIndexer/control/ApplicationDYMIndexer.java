@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,8 +27,9 @@ package com.stratelia.webactiv.applicationIndexer.control;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Executes a partial or full reindexing of spelling indexes
@@ -57,10 +58,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(),
-        "ApplicationDYMIndexer.indexComponent()",
-        "applicationIndexer.MSG_START_INDEXING_COMPONENT",
-        "component = " + componentId);
+    SilverTrace.info(ApplicationDYMIndexer.class.toString(),  "ApplicationDYMIndexer.indexComponent()",
+        "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + componentId);
     try {
       String ComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
           .getAbsoluteIndexPath(null, componentId);

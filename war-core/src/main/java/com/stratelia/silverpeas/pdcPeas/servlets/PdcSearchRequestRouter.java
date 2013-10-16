@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,23 +20,6 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItem;
-
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.PagesContext;
@@ -44,12 +27,12 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.pdc.web.AxisValueCriterion;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.containerManager.ContainerInterface;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
@@ -83,11 +66,23 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
@@ -138,13 +133,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String destination = "";
     // controller to inform the request
     try {
-      PdcSubscriptionHelper.init(pdcSC, request);
-      if (function.startsWith("PDCSubscription") || function.startsWith("addSubscription")
-          || function.startsWith("updateSubscription")) {
-        // Processing of the Pdc subscriptions actions
-        destination = processPDCSubscriptionActions(function, pdcSC, request);
-
-      } else if (function.startsWith("ToSearchToSelect")
+      if (function.startsWith("ToSearchToSelect")
           || function.startsWith("ValidateSelectedObjects")) {
 
         // Processing of the Pdc selection actions
@@ -556,6 +545,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
               PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, false);
         }
 
+        // Filters by the axis' values on the PdC the content to seek should be positioned.
+        String axisValues = request.getParameter("AxisValueCouples");
+        List<AxisValueCriterion> axisValueCriteria = AxisValueCriterion.fromFlattenedAxisValues(
+            axisValues);
+        for (AxisValueCriterion anAxisValueCriterion : axisValueCriteria) {
+          pdcSC.getSearchContext().addCriteria(anAxisValueCriterion);
+        }
+
         // Optional. Managing direct search on one axis.
         String axisId = request.getParameter("AxisId");
         String valueId = request.getParameter("ValueId"); // looks like /0/2/
@@ -832,13 +829,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         if (!StringUtil.isDefined(curSpaceId)) {
           curSpaceId = null;
         }
-        searchParameters.setSpaceId(curSpaceId);
         String strComponentIds = request.getParameter("componentSearch");
         List<String> componentIds = null;
         if (StringUtil.isDefined(strComponentIds)) {
           componentIds = Arrays.asList(strComponentIds.split(",\\s*"));
         }
-        searchParameters.setInstanceId(strComponentIds);
+        searchParameters.setSpaceIdAndInstanceId(curSpaceId, strComponentIds);
         pdcSC.buildCustomComponentListWhereToSearch(curSpaceId, componentIds);
 
         if (pdcSC.getSearchContext() != null && !pdcSC.getSearchContext().isEmpty()) {
@@ -924,6 +920,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
     String datatype = request.getParameter("datatypeFilter");
+    String filetype = request.getParameter("filetypeFilter");
 
     ResultFilterVO filter = new ResultFilterVO();
 
@@ -936,6 +933,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
     if (StringUtil.isDefined(datatype)) {
       filter.setDatatype(datatype);
+    }
+    if (StringUtil.isDefined(filetype)) {
+      filter.setFiletype(filetype);
     }
 
     // check form field facets
@@ -1399,10 +1399,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         (IGlobalSilverContentProcessor) BasicDaoFactory.getBean(contentProcessorId);
 
     for (SilverContentInterface sci : silverContentTempo) {
-      UserDetail creatorDetail = pdcSC.getOrganizationController().getUserDetail(sci.getCreatorId());
+      UserDetail creatorDetail = pdcSC.getOrganisationController().getUserDetail(sci.getCreatorId());
 
-      GlobalSilverContent gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(
-          instanceId, pdcSC));
+      GlobalSilverContent gsc =
+          processor.getGlobalSilverContent(sci, creatorDetail, pdcSC.getLocation(instanceId));
 
       alSilverContents.add(gsc);
     }
@@ -1499,29 +1499,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     return containerPeasPDC.getContainerInterface();
   }
 
-  /**
-   * Retourne l'emplacement du document "PDC"
-   *
-   * @param instanceId - l'id de l'instance
-   * @return l'emplacement du document
-   */
-  private String getLocation(String instanceId, PdcSearchSessionController pdcSC) throws Exception {
-    String spaceId = getSpaceId(instanceId, pdcSC); // recherche l'espace contenant l'instanceId
-    return pdcSC.getSpaceLabel(spaceId) + " / " + pdcSC.getComponentLabel(spaceId, instanceId);
-  }
-
-  private String getSpaceId(String componentId, PdcSearchSessionController pdcSC) throws Exception {
-    // recherche PDC Uniquement
-    String spaceId = "";
-    ComponentInstLight componentInst =
-        pdcSC.getOrganizationController().getComponentInstLight(componentId);
-    if (componentInst != null) {
-      spaceId = componentInst.getDomainFatherId();
-    }
-
-    return spaceId;
-  }
-
   private void clearUserChoices(PdcSearchSessionController pdcSC) {
     pdcSC.clearQueryParameters();
     pdcSC.removeAllCriterias();
@@ -1531,6 +1508,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     pdcSC.getQueryParameters().setXmlTitle(null);
     pdcSC.clearXmlTemplateAndData();
     pdcSC.setDataType(PdcSearchSessionController.ALL_DATA_TYPE);
+    pdcSC.setSelectedFacetEntries(null);
   }
 
   /**
@@ -1550,25 +1528,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
 
     return res;
-  }
-
-  private String processPDCSubscriptionActions(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    String destination = "";
-
-    if (function.startsWith("PDCSubscription")) {
-      clearUserChoices(pdcSC);
-      PdcSubscriptionHelper.loadSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-    } else if (function.startsWith("addSubscription")) {
-      PdcSubscriptionHelper.addSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-
-    } else if (function.startsWith("updateSubscription")) {
-      PdcSubscriptionHelper.updateSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-    }
-    return destination;
   }
 
   private String processPDCSelectionActions(String function, PdcSearchSessionController pdcSC,
@@ -1844,10 +1803,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
     } else {
       String spaceId = request.getParameter("spaces");
-      pdcSC.getQueryParameters().setSpaceId(spaceId);
-
       String instanceId = request.getParameter("componentSearch");
-      pdcSC.getQueryParameters().setInstanceId(instanceId);
+      pdcSC.getQueryParameters().setSpaceIdAndInstanceId(spaceId, instanceId);
 
       if (pdcSC.isPlatformUsesPDC()) {
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);

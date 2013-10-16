@@ -4,20 +4,15 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.12-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>publication</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Publication - ${project.version}</name>
-	
+
   <dependencies>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>node</artifactId>
@@ -45,12 +40,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>notation</artifactId>
-      <version>${project.parent.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>versioning</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>

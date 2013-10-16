@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,16 +23,21 @@
  */
 package com.silverpeas.profile.web;
 
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.ListSlice;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -44,18 +49,16 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
+import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -74,7 +77,7 @@ public class UserProfileResource extends RESTWebService {
 
   /**
    * The HTTP header parameter that provides the real size of the user profiles that match a query.
-   * This parameter is usefull for clients that use the pagination to filter the count of user
+   * This parameter is useful for clients that use the pagination to filter the count of user
    * profiles to sent back.
    */
   public static final String RESPONSE_HEADER_USERSIZE = "X-Silverpeas-UserSize";
@@ -105,6 +108,7 @@ public class UserProfileResource extends RESTWebService {
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
    *
+   * @param userIds requested user identifiers
    * @param groupId the unique identifier of the group the users must belong to. The particular
    * identifier "all" means all user groups.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
@@ -118,11 +122,12 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getUsers(
+  public Response getUsers(@QueryParam("id") Set<String> userIds,
       @QueryParam("group") String groupId,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
-      @QueryParam("domain") String domain) {
+      @QueryParam("domain") String domain,
+      @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels) {
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -131,15 +136,21 @@ public class UserProfileResource extends RESTWebService {
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
     }
-    UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
+    UserProfilesSearchCriteriaBuilder criteriaBuilder = aSearchCriteria().withDomainId(domainId).
         withGroupId(groupId).
         withName(name).
-        build();
-    UserDetail[] users = getOrganizationController().searchUsers(criteria);
-    UserDetail[] paginatedUsers = paginate(users, page);
+        withPaginationPage(fromPage(page));
+    if (CollectionUtil.isNotEmpty(userIds)) {
+      criteriaBuilder.withUserIds(userIds.toArray(new String[userIds.size()]));
+    }
+    if (CollectionUtil.isNotEmpty(accessLevels)) {
+      criteriaBuilder
+          .withAccessLevels(accessLevels.toArray(new UserAccessLevel[accessLevels.size()]));
+    }
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
-        asWebEntity(Arrays.asList(paginatedUsers), locatedAt(getUriInfo().getAbsolutePath()))).
-        header(RESPONSE_HEADER_USERSIZE, users.length).build();
+        asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -220,13 +231,12 @@ public class UserProfileResource extends RESTWebService {
         withResourceId(resource).
         withGroupId(groupId).
         withName(name).
-        build();
-    UserDetail[] users = getOrganizationController().searchUsers(criteria);
-    UserDetail[] paginatedUsers = paginate(users, page);
+        withPaginationPage(fromPage(page)).build();
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-        asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, users.length).build();
+        asWebEntity(users, locatedAt(usersUri))).
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -268,7 +278,7 @@ public class UserProfileResource extends RESTWebService {
     UserDetail theUser = getUserDetailMatching(userId);
     String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
     String[] contactIds = getContactIds(theUser.getId());
-    UserDetail[] contacts;
+    ListSlice<UserDetail> contacts;
     if (contactIds.length > 0) {
       UserDetailsSearchCriteria criteria = aSearchCriteria().
           withComponentInstanceId(instanceId).
@@ -277,16 +287,15 @@ public class UserProfileResource extends RESTWebService {
           withResourceId(resource).
           withUserIds(contactIds).
           withName(name).
-          build();
-      contacts = getOrganizationController().searchUsers(criteria);
+          withPaginationPage(fromPage(page)).build();
+      contacts = getOrganisationController().searchUsers(criteria);
     } else {
-      contacts = new UserDetail[0];
+      contacts = new ListSlice<UserDetail>(0, 0, 0);
     }
-    UserDetail[] paginatedUsers = paginate(contacts, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-        asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, contacts.length).build();
+        asWebEntity(contacts, locatedAt(usersUri))).
+        header(RESPONSE_HEADER_USERSIZE, contacts.getOriginalListSize()).build();
   }
 
   @Override
@@ -361,31 +370,6 @@ public class UserProfileResource extends RESTWebService {
     }
   }
 
-  private UserDetail[] paginate(UserDetail[] users, String pagination) {
-    try {
-      UserDetail[] paginatedUsers;
-      if (pagination != null && !pagination.isEmpty()) {
-        String[] page = pagination.split(";");
-        int nth = Integer.valueOf(page[0]);
-        int count = Integer.valueOf(page[1]);
-        int begin = (nth - 1) * count;
-        int end = begin + count;
-        if (end > users.length) {
-          end = users.length;
-        }
-        paginatedUsers = new UserDetail[end - begin];
-        for (int i = begin, j = 0; i < end; i++, j++) {
-          paginatedUsers[j] = users[i];
-        }
-      } else {
-        paginatedUsers = users;
-      }
-      return paginatedUsers;
-    } catch (Exception ex) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
-  }
-
   /**
    * Gets the detail about the user that matchs the specified identifier. The identifier is a
    * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
@@ -403,9 +387,10 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets all details about the user that matchs the specified identifier. The identifier is a pattern
-   * that accepts either a user unique identifier or the specific word <i>me</i>. Latest means the
-   * current user of the underlying HTTP session.
+   * Gets all details about the user that matchs the specified identifier. The identifier is a
+   * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
+   * means the current user of the underlying HTTP session.
+   *
    * @param identifier an identifier.
    * @return the detail about a user.
    */
@@ -415,5 +400,16 @@ public class UserProfileResource extends RESTWebService {
     } else {
       return getUserFullById(identifier);
     }
+  }
+
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      paginationPage = new PaginationPage(nth, count);
+    }
+    return paginationPage;
   }
 }

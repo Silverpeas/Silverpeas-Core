@@ -1,39 +1,50 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.look;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -43,25 +54,11 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
-  private OrganizationController orga = null;
+  private OrganisationController orga = null;
   private ResourceLocator resources = null;
   private ResourceLocator messages = null;
   private ResourceLocator defaultMessages = null;
@@ -201,7 +198,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public final void init(MainSessionController mainSessionController, ResourceLocator resources) {
     this.mainSC = mainSessionController;
-    this.orga = mainSessionController.getOrganizationController();
+    this.orga = mainSessionController.getOrganisationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
@@ -227,8 +224,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     } else {
       displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
           PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
-      if (isMenuPersonalisationEnabled() &&
-          mainSC.getPersonalization().getDisplay().isNotDefault()) {
+      if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
         this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
       }
       enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
@@ -246,7 +242,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return mainSC;
   }
 
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return orga;
   }
 
@@ -374,8 +370,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
     int nbConnectedUsers = 0;
     if (shouldDisplayConnectedUsers) {
       // Remove the current user
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
       nbConnectedUsers =
-          SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().
+          sessionManagement.getNbConnectedUsersList(getMainSessionController().
           getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
@@ -516,15 +514,30 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getSpaceWallPaper() {
-    String wallpaperURL = null;
+    String theSpaceId = getCurrentDeepestSpaceId();
+    if (StringUtil.isDefined(theSpaceId)) {
+      return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(theSpaceId);
+    }
+    return null;
+  }
+
+  @Override
+  public String getSpaceWithCSSToApply() {
+    String spaceId = getCurrentDeepestSpaceId();
+    if (StringUtil.isDefined(spaceId)) {
+      return SilverpeasLook.getSilverpeasLook().getSpaceWithCSS(spaceId);
+    }
+    return null;
+  }
+
+  private String getCurrentDeepestSpaceId() {
     String theSpaceId = getSpaceId();
     if (StringUtil.isDefined(theSpaceId)) {
       if (StringUtil.isDefined(getSubSpaceId())) {
         theSpaceId = getSubSpaceId();
       }
-      wallpaperURL = SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(theSpaceId);
     }
-    return wallpaperURL;
+    return theSpaceId;
   }
 
   public String getComponentURL(String key, String function) {
@@ -587,14 +600,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   @Override
   public List<PublicationDetail> getValidPublications(NodePK nodePK) {
-    List<PublicationDetail> publis = null;
-    try {
-      publis = (List<PublicationDetail>) getPublicationBm().getDetailsByFatherPK(nodePK, null,
-          true);
-    } catch (RemoteException e) {
-      SilverTrace.error("lookSilverpeasV5", "LookSilverpeasV5Helper.getPublications",
-          "root.MSG_GEN_PARAM_VALUE", e);
-    }
+    List<PublicationDetail> publis = (List<PublicationDetail>) getPublicationBm().
+        getDetailsByFatherPK(nodePK, null, true);
     List<PublicationDetail> filteredPublis = new ArrayList<PublicationDetail>();
     PublicationDetail publi;
     for (int i = 0; publis != null && i < publis.size(); i++) {
@@ -609,9 +616,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class).create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -621,13 +627,13 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
       throws UnsupportedEncodingException {
-    SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst spaceStruct = getOrganisationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
     if (spaceStruct != null
         && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
         && spaceStruct.getFirstPageExtraParam() != null
         && spaceStruct.getFirstPageExtraParam().length() > 0) {
-      if (getOrganizationController().isComponentAvailable(
+      if (getOrganisationController().isComponentAvailable(
           spaceStruct.getFirstPageExtraParam(), getUserId())) {
         return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
             spaceStruct.getFirstPageExtraParam());
@@ -700,6 +706,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   /**
    * Returns a list of shortcuts to display on a page (home page, heading page...)
+   *
    * @param id identify the area of shorcuts
    * @param nb the number of shortcuts to retrieve
    * @return a List of Shorcut

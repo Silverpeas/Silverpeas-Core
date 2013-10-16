@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,8 +28,8 @@ import java.util.Collection;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
-import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -58,9 +58,8 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
    */
   public MyLinksPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-        "com.silverpeas.mylinks.multilang.myLinksBundle",
-        "com.silverpeas.mylinks.settings.myLinksIcons");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.mylinks.multilang.myLinksBundle",
+        "org.silverpeas.mylinks.settings.myLinksIcons");
   }
 
   public Collection<LinkDetail> getAllLinksByUser() {
@@ -175,12 +174,9 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   private MyLinksBm getMyLinksBm() {
     MyLinksBm myLinksBm = null;
     try {
-      MyLinksBmHome myLinksBmHome = (MyLinksBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBmHome.class);
-      myLinksBm = myLinksBmHome.create();
+      myLinksBm = EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBm.class);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException(
-          "MyLInksSessionController.getMyLInksBm()",
+      throw new MyLinksRuntimeException("MyLInksSessionController.getMyLInksBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return myLinksBm;

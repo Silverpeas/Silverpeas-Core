@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -384,11 +384,15 @@ public class Parameter implements Cloneable {
     param.setLabel((HashMap<String, String>) getLabel().clone());
     param.setMandatory(mandatory);
     param.setName(name);
-    List<Option> newOptions = new ArrayList<Option>(getOptions().size());
-    for (Option option : getOptions()) {
-      newOptions.add(option.clone());
+    if (options == null) {
+      param.setOptions(new ArrayList<Option>());
+    } else {
+      List<Option> newOptions = new ArrayList<Option>(options.size());
+      for (Option option : options) {
+        newOptions.add(option.clone());
+      }
+      param.setOptions(newOptions);
     }
-    param.setOptions(newOptions);
     param.setOrder(order);
     param.setPersonalSpaceValue(personalSpaceValue);
     param.setSize(size);
@@ -416,4 +420,5 @@ public class Parameter implements Cloneable {
           "root.EX_IGNORED", "ParameterName=" + name, ex);
     }
   }
+
 }

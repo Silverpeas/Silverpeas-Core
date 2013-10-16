@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -49,6 +49,9 @@
   <PortletWindowPreference name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" userName="default">
     <Properties/>
   </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
   <PortletWindowPreference name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" userName="default">
     <Properties/>
   </PortletWindowPreference>
@@ -70,5 +73,15 @@
   </PortletWindowPreference>
   <PortletWindowPreference name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" userName="default">
     <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbPublis" value="5"/>
+      </Collection>
+    </Properties>
   </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

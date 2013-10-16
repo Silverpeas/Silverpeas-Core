@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recordTemplate>
+    <fieldTemplate>
+        <fieldName>wysiwyg1</fieldName>
+        <typeName>text</typeName>
+        <displayerName>wysiwyg</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <isFacet>false</isFacet>
+        <label>
+            <labelName>Wysiwyg #1</labelName>
+            <language>fr</language>
+        </label>
+        <parameter>
+            <name>height</name>
+            <value lang="fr">300</value>
+        </parameter>
+        <parameter>
+            <name>galleries</name>
+            <value lang="fr">false</value>
+        </parameter>
+        <parameter>
+            <name>fileStorages</name>
+            <value lang="fr">false</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>wysiwyg2</fieldName>
+        <typeName>text</typeName>
+        <displayerName>wysiwyg</displayerName>
+        <isMandatory>false</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <isFacet>false</isFacet>
+        <label>
+            <labelName>Wysiwyg #2</labelName>
+            <language>fr</language>
+        </label>
+        <parameter>
+            <name>width</name>
+            <value lang="fr">700</value>
+        </parameter>
+        <parameter>
+            <name>galleries</name>
+            <value lang="fr">false</value>
+        </parameter>
+        <parameter>
+            <name>fileStorages</name>
+            <value lang="fr">false</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>aFile</fieldName>
+        <typeName>file</typeName>
+        <displayerName>file</displayerName>
+        <isMandatory>false</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <isFacet>false</isFacet>
+        <label>
+            <labelName>Fichier</labelName>
+            <language>fr</language>
+        </label>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>anExplorer</fieldName>
+        <typeName>explorer</typeName>
+        <displayerName>explorer</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <isFacet>false</isFacet>
+        <label>
+            <labelName>Dossier</labelName>
+            <language>fr</language>
+        </label>
+        <parameter>
+            <name>scope</name>
+            <value lang="fr">kmelia1</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>aPdc</fieldName>
+        <typeName>pdc</typeName>
+        <displayerName>pdc</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <isFacet>false</isFacet>
+        <label>
+            <labelName>PDC</labelName>
+            <language>fr</language>
+        </label>
+        <label>
+            <labelName>zdsdsd</labelName>
+            <language>en</language>
+        </label>
+        <parameter>
+            <name>pdcAxis</name>
+            <value lang="fr">1,1,1,1</value>
+        </parameter>
+    </fieldTemplate>
+</recordTemplate>

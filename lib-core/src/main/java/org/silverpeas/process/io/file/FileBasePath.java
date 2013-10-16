@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@ import java.io.File;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
+
 /**
  * This enumeration represents all root pathes that are handled by Silverpeas.
  * For each definition is associated a real path on the file system and its assiocated node path.
@@ -35,6 +36,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
  */
 public enum FileBasePath {
   UPLOAD_PATH(FileRepositoryManager.getUploadPath(), "~uploads~");
+
 
   private String path;
   private String handledNodeName;

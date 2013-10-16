@@ -1,47 +1,43 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdcSubscriptionPeas.servlets;
 
+import com.silverpeas.pdc.web.AxisValueCriterion;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-public class PdcSubscriptionPeasRequestRouter extends
-    ComponentRequestRouter<PdcSubscriptionSessionController> {
+public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<PdcSubscriptionSessionController> {
 
   private static final long serialVersionUID = -441269066150311066L;
 
+  @Override
   public PdcSubscriptionSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSubscriptionSessionController(mainSessionCtrl,
@@ -53,6 +49,7 @@ public class PdcSubscriptionPeasRequestRouter extends
    * control bean name to be put in the request object ex : for notificationUser, returns
    * "notificationUser"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "pdcSubscriptionPeas";
   }
@@ -60,16 +57,19 @@ public class PdcSubscriptionPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, PdcSubscriptionSessionController pdcSC,
       HttpServletRequest request) {
     String destination = "";
     request.setAttribute("language", pdcSC.getLanguage());
+    request.setAttribute("currentUserId", pdcSC.getUserId());
     String rootDest = "/pdcSubscriptionPeas/jsp/";
 
     try {
@@ -85,8 +85,7 @@ public class PdcSubscriptionPeasRequestRouter extends
         String userId = request.getParameter("userId");
         String action = request.getParameter("action");
         // passage des parametres ...
-        Collection<Collection<NodeDetail>> subscribeThemeList = pdcSC.getUserSubscribe(userId);
-        request.setAttribute("SubscribeThemeList", subscribeThemeList);
+        request.setAttribute("subscriptions", pdcSC.getNodeUserSubscriptions(userId));
         request.setAttribute("action", action);
         request.setAttribute("userId", userId);
         destination = rootDest + "viewSubscriptionTheme.jsp";
@@ -97,6 +96,45 @@ public class PdcSubscriptionPeasRequestRouter extends
           pdcSC.deleteThemes(themes);
         }
         destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
+      } else if (function.equals("ViewSubscriptionComponent")) {
+        String userId = request.getParameter("userId");
+        String action = request.getParameter("action");
+        // passage des parametres ...
+        request.setAttribute("subscriptions", pdcSC.getComponentUserSubscriptions(userId));
+        request.setAttribute("action", action);
+        request.setAttribute("userId", userId);
+        destination = rootDest + "viewSubscriptionComponent.jsp";
+      } else if (function.equals("DeleteComponentSubscription")) {
+        Object o = request.getParameterValues("subscriptionCheckbox");
+        if (o != null) {
+          String[] subscriptions = (String[]) o;
+          pdcSC.deleteComponentSubscription(subscriptions);
+        }
+        destination = getDestination("ViewSubscriptionComponent", pdcSC, request);
+      } else if (function.startsWith("PDCSubscription")) {
+        String subscriptionId = request.getParameter("pdcSId");
+        if (StringUtil.isDefined(subscriptionId)) {
+          PDCSubscription pdcSubscription = pdcSC.setAsCurrentPDCSubscription(subscriptionId);
+          request.setAttribute("PDCSubscription", pdcSubscription);
+          request.setAttribute("PDCSubscriptionName", pdcSubscription.getName());
+          request.setAttribute("IsNewPDCSubscription", false);
+        } else {
+          request.setAttribute("PDCSubscriptionName", "");
+          request.setAttribute("IsNewPDCSubscription", true);
+        }
+        destination = rootDest + "subscription.jsp";
+      } else if (function.startsWith("addSubscription")) {
+        String name = request.getParameter("SubscriptionName");
+        String values = request.getParameter("AxisValueCouples");
+        List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
+        pdcSC.createPDCSubscription(name, criteria);
+        destination = getDestination("subscriptionList", pdcSC, request);
+      } else if (function.startsWith("updateSubscription")) {
+        String name = request.getParameter("SubscriptionName");
+        String values = request.getParameter("AxisValueCouples");
+        List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
+        pdcSC.updateCurrentSubscription(name, criteria);
+        destination = getDestination("subscriptionList", pdcSC, request);
       }
     } catch (Exception e) {
       SilverTrace.error("pdcSubscriptionPeas",
@@ -148,7 +186,9 @@ public class PdcSubscriptionPeasRequestRouter extends
   }
 
   /**
-   * Performs <code>Request</code> initialization for furure use in subscriptionList.jsp
+   * Performs
+   * <code>Request</code> initialization for furure use in subscriptionList.jsp
+   *
    * @param request a <code>HttpServletRequest</code> to be forwarded
    * @param subscriptions a list of loaded PDCSubscription to be shown
    * @return jsp name
@@ -165,4 +205,8 @@ public class PdcSubscriptionPeasRequestRouter extends
     return "subscriptionList.jsp";
   }
 
+  public List<? extends Criteria> criteriasFromAxisValues(String axisValues) {
+    List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(axisValues);
+    return criteria;
+  }
 }

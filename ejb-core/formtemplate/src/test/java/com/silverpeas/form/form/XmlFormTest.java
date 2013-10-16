@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -77,9 +77,6 @@ public class XmlFormTest {
     context.bind(JNDINames.FORMTEMPLATE_DATASOURCE, ds);
     PublicationTemplateManager.templateDir = TARGET_DIR + SEPARATOR + "test-classes"
             + SEPARATOR + "templateRepository";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = TARGET_DIR + SEPARATOR
-            + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping"
-            + SEPARATOR + "templateFilesMapping.xml";
     PublicationTemplateManager.mappingRecordTemplateFilePath = TARGET_DIR + SEPARATOR
             + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping"
             + SEPARATOR + "templateMapping.xml";

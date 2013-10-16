@@ -1,8 +1,8 @@
 <div style="font-family:Arial;font-size:11px">
 Hello $fullName$
 
-Thank you for being registered on Silverpeas.
-Besides being able to connect from your favorite social network, you can also identify you with the following codes:
+Thank you for registering on Silverpeas.
+Besides being able to connect from your favorite social network, you can also login with the following codes:
 
 <b> Username: </ b> $login$
 <b> Password: </ b> $password$

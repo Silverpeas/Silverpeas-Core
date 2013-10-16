@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -170,10 +170,37 @@ function jumpToComponent(componentId) {
 	
 }
 
+function areYouSure(){
+    return confirm("<%=todo.getString("deleteSelectedTodoConfirm")%>");
+}
+
+function deleteSelectedToDo() {
+	  var boxItems = document.todoCheckForm.todoCheck;
+    var selectItems = "";
+    if (boxItems != null){
+	    // au moins une checkbox existe
+	    var nbBox = boxItems.length;
+	    if ( (nbBox == null) && (boxItems.checked == true) ){
+	            selectItems += boxItems.value;
+	    } else{
+	      for (i=0;i<boxItems.length ;i++ ){
+		  if (boxItems[i].checked == true){
+	         selectItems += boxItems[i].value+",";
+	        }
+	      }
+	      selectItems = selectItems.substring(0,selectItems.length-1);
+	    }
+    }
+    if ( (selectItems.length > 0) && (areYouSure()) ) {
+	    document.todoCheckForm.action = "DeleteTodo";
+    	document.todoCheckForm.submit();
+    }
+}
+
 </script>
 </head>
 <body>
-
+<form name="todoCheckForm" action="todo.jsp" method="post">
 <%
 	Window window = graphicFactory.getWindow();
 
@@ -183,6 +210,7 @@ function jumpToComponent(componentId) {
 	OperationPane operationPane = window.getOperationPane();
 	 
 	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
+	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("deleteSelectedTodo"), "javascript:onClick=deleteSelectedToDo()");
 
 	out.println(window.printBefore());
 %>
@@ -211,6 +239,8 @@ function jumpToComponent(componentId) {
 
 	ArrayColumn column = arrayPane.addArrayColumn(todo.getString("actions"));
 	column.setSortable(false);
+	ArrayColumn columnOp = arrayPane.addArrayColumn(todo.getString("GML.operation"));
+	columnOp.setSortable(false);
 	
 	Collection		todos		= todo.getToDos();
     Iterator		i			= todos.iterator();
@@ -256,10 +286,11 @@ function jumpToComponent(componentId) {
             ArrayCellText cellText = arrayLine.addArrayCellText(todo.getString("priorite"+todoHeader.getPriority().getValue()));
             cellText.setCompareOn(todoHeader.getPriority());
             StringBuffer text = new StringBuffer();
+            Collection attendees = todo.getToDoAttendees(todoHeader.getId());
+            Iterator att;
             if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW) 
             {
-              Collection attendees = todo.getToDoAttendees(todoHeader.getId());
-              Iterator att = attendees.iterator();
+              att = attendees.iterator();
               int countAttendees = 0;
               while (att.hasNext()) {
                 if (countAttendees > 0)
@@ -316,7 +347,7 @@ function jumpToComponent(componentId) {
 									text.append("on.gif");
 								text.append("\" alt=\""+String.valueOf(k*10)+"%\" title=\""+String.valueOf(k*10)+"%\"/></a>");
 						}
-					} else
+					} else {
 						if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW) {
 							text.append("<a href=\"javascript:onclick=closeToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/unlock.gif\" alt=\""+(todo.getString("cadenas_ouvert"))+"\" title=\""+(todo.getString("cadenas_ouvert"))+"\"/>" ).append("</a>");
 						}
@@ -325,16 +356,31 @@ function jumpToComponent(componentId) {
 							text.append("<a href=\"javascript:onclick=reopenToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/lock.gif\" alt=\""+(todo.getString("cadenas_clos"))+"\" title=\""+(todo.getString("cadenas_clos"))+"\"/>" ).append("</a>");
 						} 
 						else text.append("&nbsp;");
+					}
 					j++;
 
 					arrayLine.addArrayCellText(text.toString());
+					if (todoHeader.getDelegatorId().equals(todo.getUserId())) {//je peux supprimer les taches manuelles dont je suis l'organisateur (le créateur)
+					  arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
+					} else {
+					 arrayLine.addArrayCellText("");
+					}
+			} else {
+			  arrayLine.addArrayCellText("");
+			  att = attendees.iterator();
+			  Attendee firstAttendee = (Attendee) att.next();
+			  if (attendees.size() == 1 && todoHeader.getDelegatorId().equals(firstAttendee.getUserId())) {//je peux supprimer les taches automatiques dont je suis l'initiateur (le créateur) et le responsable
+			     arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
+			  } else {
+			    arrayLine.addArrayCellText("");
+			  }
 			}
-
         }
 				out.println(arrayPane.print());
 			out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+</form>
 
 <form name="todoEditForm" action="todoEdit.jsp" method="post">
   <input type="hidden" name="ToDoId"/>

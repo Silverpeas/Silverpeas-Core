@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,27 +24,77 @@
 package org.silverpeas.search.indexEngine.model;
 
 import java.io.File;
-import java.util.Date;
-import org.junit.After;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import org.silverpeas.attachment.AttachmentServiceTest;
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.PathTestUtil;
+
+import com.stratelia.webactiv.util.DBUtil;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import com.silverpeas.util.PathTestUtil;
-import static org.junit.Assert.*;
-
-/**
- *
- * @author ehugonnet
- */
 public class RepositoryIndexerTest {
 
-  private static final  RepositoryIndexer instance = new RepositoryIndexer("", "kmelia18");
+  private static final RepositoryIndexer instance = new RepositoryIndexer("", "kmelia18");
+  private static EmbeddedDatabase dataSource;
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
+
   public RepositoryIndexerTest() {
   }
 
- 
+  @BeforeClass
+  public static void loadSpringContext() throws Exception {
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
+    Reader reader = new InputStreamReader(AttachmentServiceTest.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+      SimpleMemoryContextFactory.setUpAsInitialContext();
+      context = new ClassPathXmlApplicationContext("/spring-pure-memory-jcr.xml");
+      repository = context.getBean("repository", JackrabbitRepository.class);
+
+      BasicDaoFactory.getInstance().setApplicationContext(context);
+      SilverpeasRegister.registerNodeTypes(reader);
+      System.out.println(" -> node types registered");
+
+      EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+      dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript(
+          "classpath:/org/silverpeas/attachment/repository/create-database.sql").build();
+      DBUtil.getInstanceForTest(dataSource.getConnection());
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
+  }
+
+  @AfterClass
+  public static void tearAlldown() throws Exception {
+    repository.shutdown();
+    dataSource.shutdown();
+    DBUtil.clearTestInstance();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    dataSource.shutdown();
+    DBUtil.clearTestInstance();
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
+    FileUtils.deleteQuietly(new File(PathTestUtil.BUILD_PATH + "temp"));
+  }
 
   /**
    * Test of pathIndexer method, of class RepositoryIndexer.
@@ -55,7 +105,7 @@ public class RepositoryIndexerTest {
         + "large";
     String creationDate = "";
     String creatorId = "";
-   
+
     instance.pathIndexer(path, creationDate, creatorId, RepositoryIndexer.ADD_ACTION);
   }
 
@@ -71,8 +121,8 @@ public class RepositoryIndexerTest {
         + File.separatorChar + "large", "fond tableau calque.tif");
     instance.indexFile(action, creationDate, creatorId, file);
   }
-  
-   /**
+
+  /**
    * Test of indexFile method, of class RepositoryIndexer.
    */
   @Test
@@ -90,12 +140,11 @@ public class RepositoryIndexerTest {
    */
   @Test
   public void testIndexFileNotClosingIndex() {
-     String action = RepositoryIndexer.ADD_ACTION;
+    String action = RepositoryIndexer.ADD_ACTION;
     String creationDate = "";
     String creatorId = "";
     File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
         + File.separatorChar + "large", "fond tableau calque.tif");
-    instance.indexFile(action, creationDate, creatorId, file, false); 
-    instance.indexFile(action, creationDate, creatorId, file, true);
+    instance.indexFile(action, creationDate, creatorId, file);
   }
 }

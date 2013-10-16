@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,6 @@
 
 <%@ include file="checkAgenda.jsp.inc" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="com.stratelia.webactiv.servlets.TempFileServer"%>
 
 <%
 
@@ -46,7 +45,6 @@
 		{
 			 statusMessage = resources.getString("agenda.ExportSucceeded");
 			 calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX + agenda.getUserId() + ".ics";
-			 //urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName, calendarIcsFileName, "text/calendar");
        urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName);
 		 }
 		else

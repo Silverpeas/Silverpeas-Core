@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -50,7 +50,7 @@
 
 <%
   	//test si la page source n'est pas Main
-	String uri = (String)request.getAttribute("com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI");
+	String uri = (String)request.getAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI");
 	if (uri == null || (uri != null && uri.indexOf("/Main") != -1)) {
 		// le cas echeant, l'erreur est affichee dans la page
 		getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpageMain.jsp").forward(request, response);

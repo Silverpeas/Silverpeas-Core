@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,12 +37,21 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.crypto.CryptoException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -114,7 +123,7 @@ public class TemplateDesignerRequestRouter extends
         request.setAttribute("context", context);
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
-        destination = root + "templateHeader.jsp";
+        destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
       } else if (function.equals("EditTemplate")) {
         String fileName = request.getParameter("FileName");
         PublicationTemplate template;
@@ -125,6 +134,10 @@ public class TemplateDesignerRequestRouter extends
         }
         request.setAttribute("Template", template);
 
+        destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
+      } else if ("GoToTemplateHeader".equals(function)) {
+        request.setAttribute("ComponentsUsingForms", templateDesignerSC.getComponentsUsingForms());
+        request.setAttribute("EncryptionAvailable", templateDesignerSC.isEncryptionAvailable());
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
@@ -132,8 +145,13 @@ public class TemplateDesignerRequestRouter extends
         destination = getDestination("ViewFields", templateDesignerSC, request);
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
-        templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
-        destination = getDestination("Main", templateDesignerSC, request);
+        try {
+          templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
+          destination = getDestination("Main", templateDesignerSC, request);
+        } catch (CryptoException e) {
+          request.setAttribute("CryptoException", e);
+          destination = getDestination("EditTemplate", templateDesignerSC, request);
+        }
       } else if ("ViewFields".equals(function)) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
         request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
@@ -274,25 +292,70 @@ public class TemplateDesignerRequestRouter extends
     }
   }
 
-  private PublicationTemplate request2Template(HttpServletRequest request) {
-    String name = request.getParameter("Name");
-    String description = request.getParameter("Description");
-    boolean visible = StringUtil.getBooleanValue(request.getParameter("Visible"));
-    String thumbnail = request.getParameter("Thumbnail");
-    boolean searchable = StringUtil.getBooleanValue(request.getParameter("Searchable"));
+  private PublicationTemplate request2Template(HttpServletRequest request) throws IOException {
+    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+    String name = FileUploadUtil.getParameter(parameters, "Name");
+    String description = FileUploadUtil.getParameter(parameters, "Description");
+    boolean visible = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Visible"));
+    String thumbnail = FileUploadUtil.getParameter(parameters, "Thumbnail");
+    boolean searchable = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Searchable"));
+    boolean encrypted = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Encrypted"));
 
     PublicationTemplateImpl template = new PublicationTemplateImpl();
     template.setName(name);
     template.setDescription(description);
     template.setThumbnail(thumbnail);
     template.setVisible(visible);
-
+    template.setDataEncrypted(encrypted);
+    
     if (searchable) {
       template.setSearchFileName("dummy");
     } else {
       template.setSearchFileName(null);
     }
-
+    
+    boolean deleteViewLayer = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "DeleteViewLayer"));
+    FileItem viewLayer = FileUploadUtil.getFile(parameters, "ViewLayer");
+    if (viewLayer != null && StringUtil.isDefined(viewLayer.getName())) {
+      File file = new File(FileRepositoryManager.getTemporaryPath()+System.currentTimeMillis(), "view.html");
+      FileUploadUtil.saveToFile(file, viewLayer);
+      template.setViewLayerFileName(file.getAbsolutePath());
+      template.setViewLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
+    } else if (deleteViewLayer) {
+      template.setViewLayerAction(PublicationTemplateImpl.LAYER_ACTION_REMOVE);
+    }
+    
+    boolean deleteUpdateLayer = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "DeleteUpdateLayer"));
+    FileItem updateLayer = FileUploadUtil.getFile(parameters, "UpdateLayer");
+    if (updateLayer != null && StringUtil.isDefined(updateLayer.getName())) {
+      File file = new File(FileRepositoryManager.getTemporaryPath()+System.currentTimeMillis(), "update.html");
+      FileUploadUtil.saveToFile(file, updateLayer);
+      template.setUpdateLayerFileName(file.getAbsolutePath());
+      template.setUpdateLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
+    } else if (deleteUpdateLayer) {
+      template.setUpdateLayerAction(PublicationTemplateImpl.LAYER_ACTION_REMOVE);
+    }
+    
+    String paramSpaceIds = request.getParameter("Visibility_Spaces");
+    if (StringUtil.isDefined(paramSpaceIds)) {
+      String[] spaceIds = paramSpaceIds.split(" ");
+      if (spaceIds != null) {
+        template.setSpaces(Arrays.asList(spaceIds));
+      }
+    }
+    
+    String[] applications = request.getParameterValues("Visibility_Applications");
+    if (applications != null) {
+      template.setApplications(Arrays.asList(applications));
+    }
+    
+    String paramInstances = request.getParameter("Visibility_Instances");
+    if (StringUtil.isDefined(paramInstances)) {
+      String[] instanceIds = paramInstances.split(" ");
+      if (instanceIds != null) {
+        template.setInstances(Arrays.asList(instanceIds));
+      }
+    }
     return template;
   }
 
@@ -343,7 +406,6 @@ public class TemplateDesignerRequestRouter extends
     field.setSearchable(searchable);
     field.setUsedAsFacet(usedAsFacet);
 
-    @SuppressWarnings("unchecked")
     Enumeration<String> paramNames = request.getParameterNames();
     while (paramNames.hasMoreElements()) {
       String paramName = paramNames.nextElement();

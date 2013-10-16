@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -26,5 +26,7 @@
 -->
 
 <dataset>
+  <sb_sn_externalaccount profileid="1233" networkId="LINKEDIN" silverpeasUserId="10"/>
   <sb_sn_externalaccount profileid="1234" networkId="LINKEDIN" silverpeasUserId="11"/>
+  <sb_sn_externalaccount profileid="1235" networkId="LINKEDIN" silverpeasUserId="12"/>
 </dataset>

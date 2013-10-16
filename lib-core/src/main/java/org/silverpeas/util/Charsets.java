@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -58,6 +58,10 @@ public class Charsets {
    * UTF-16: UTF-16 byte order identified by an optional byte-order mark.
    */
   public static final Charset UTF_16 = Charset.forName(CharEncoding.UTF_16);
+
+  private Charsets() {    
+  }
+
 
   /**
    * Returns a Charset for the named charset. If the name is null, return the default Charset.

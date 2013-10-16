@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,10 +30,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 import org.springframework.context.annotation.Primary;
 
 /**
- * Extension of Spring @Primary annoation to have something more like CDI.
+ * Extension of Spring @Primary annotation to have something more like CDI.
  * @author ehugonnet
  */
 @Target( { ElementType.TYPE, ElementType.METHOD })

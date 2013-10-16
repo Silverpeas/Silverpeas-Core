@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -61,7 +61,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
   /**
    * Decorates the specified user groups with required WEB exposition features.
    *
-   * @param users a list of user groups to decorate.
+   * @param groups a list of user groups to decorate.
    * @param groupsURI the URI at which the specified groups are defined.
    * @return a list of web entities representing the specified group profiles.
    */
@@ -91,7 +91,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
 
   private UserGroupProfileEntity(Group group) {
     this.group = group;
-    this.domainName = Group.getOrganizationController().getDomain(group.getDomainId()).getName();
+    this.domainName = Group.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalNbUsers();
   }
 
@@ -105,7 +105,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
     if (isDefined(getSuperGroupId())) {
       this.parentUri = computeParentUriOfGroupByUri(groupUri);
     }
-    this.usersUri = computeUsersUriOfGroupById(getId());
+    this.usersUri = computeUsersUriOfGroupById(groupUri, getId());
     return this;
   }
 
@@ -203,7 +203,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
   @Override
   public void setDomainId(String newDomainId) {
     this.group.setDomainId(newDomainId);
-    this.domainName = Group.getOrganizationController().getDomain(newDomainId).getName();
+    this.domainName = Group.getOrganisationController().getDomain(newDomainId).getName();
   }
 
   @Override

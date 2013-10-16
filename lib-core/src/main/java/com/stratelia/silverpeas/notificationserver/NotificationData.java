@@ -1,42 +1,35 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.notificationserver;
 
 import java.io.Serializable;
-
-import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.Map;
 
-/**
- * Title: Notification Server Description: contains a Notification structure Copyright: Copyright
- * (c) 2000 Company: Stratelia
- * @author : eDurand
- * @version 1.0
- */
+import com.silverpeas.util.MapUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import org.apache.commons.lang3.ObjectUtils;
+
 public class NotificationData implements Serializable {
 
   private static final long serialVersionUID = -3772511721152323046L;
@@ -62,6 +55,7 @@ public class NotificationData implements Serializable {
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public NotificationData() {
@@ -69,6 +63,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mNotificationId
    */
   public long getNotificationId() {
@@ -77,6 +72,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mLoginUser
    */
   public String getLoginUser() {
@@ -85,6 +81,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mLoginPassword
    */
   public String getLoginPassword() {
@@ -93,6 +90,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mMessage
    */
   public String getMessage() {
@@ -101,6 +99,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mComment
    */
   public String getComment() {
@@ -109,6 +108,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mSenderName
    */
   public String getSenderName() {
@@ -117,6 +117,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mSenderId
    */
   public String getSenderId() {
@@ -125,6 +126,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mTargetChannel
    */
   public String getTargetChannel() {
@@ -133,6 +135,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mTargetReceipt
    */
   public String getTargetReceipt() {
@@ -141,6 +144,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mTargetName
    */
   public String getTargetName() {
@@ -149,6 +153,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mTargetParam
    */
   public Map<String, Object> getTargetParam() {
@@ -157,6 +162,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mPrioritySpeed
    */
   public String getPrioritySpeed() {
@@ -165,6 +171,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mReportToSenderStatus
    */
   public String getReportToSenderStatus() {
@@ -173,6 +180,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mReportToSenderTargetChannel
    */
   public String getReportToSenderTargetChannel() {
@@ -181,6 +189,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mReportToSenderTargetReceipt
    */
   public String getReportToSenderTargetReceipt() {
@@ -189,6 +198,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mReportToSenderTargetParam
    */
   public String getReportToSenderTargetParam() {
@@ -197,6 +207,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mReportToLogStatus
    */
   public String getReportToLogStatus() {
@@ -205,6 +216,7 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
+   *
    * @return mAnswerAllowed
    */
   public boolean isAnswerAllowed() {
@@ -213,6 +225,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pNotificationId
    */
   public void setNotificationId(long pNotificationId) {
@@ -221,6 +234,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pUser
    */
   public void setLoginUser(String pUser) {
@@ -229,6 +243,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pPassword
    */
   public void setLoginPassword(String pPassword) {
@@ -237,6 +252,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pMessage
    */
   public void setMessage(String pMessage) {
@@ -245,6 +261,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pComment
    */
   public void setComment(String pComment) {
@@ -253,6 +270,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pSenderName
    */
   public void setSenderName(String pSenderName) {
@@ -261,6 +279,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pSenderId
    */
   public void setSenderId(String pSenderId) {
@@ -269,6 +288,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pTargetChannel
    */
   public void setTargetChannel(String pTargetChannel) {
@@ -277,6 +297,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pTargetReceipt
    */
   public void setTargetReceipt(String pTargetReceipt) {
@@ -285,6 +306,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pTargetName
    */
   public void setTargetName(String pTargetName) {
@@ -293,6 +315,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pTargetParam
    */
   public void setTargetParam(Map<String, Object> pTargetParam) {
@@ -301,6 +324,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pPrioritySpeed
    */
   public void setPrioritySpeed(String pPrioritySpeed) {
@@ -309,6 +333,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pReportToSenderStatus
    */
   public void setReportToSenderStatus(String pReportToSenderStatus) {
@@ -317,6 +342,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pReportToSenderTargetChannel
    */
   public void setReportToSenderTargetChannel(String pReportToSenderTargetChannel) {
@@ -325,6 +351,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pReportToSenderTargetReceipt
    */
   public void setReportToSenderTargetReceipt(String pReportToSenderTargetReceipt) {
@@ -333,6 +360,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pReportToSenderTargetParam
    */
   public void setReportToSenderTargetParam(String pReportToSenderTargetParam) {
@@ -341,6 +369,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param pReportToLogStatus
    */
   public void setReportToLogStatus(String pReportToLogStatus) {
@@ -349,6 +378,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
+   *
    * @param answerAllowed
    */
   public void setAnswerAllowed(boolean answerAllowed) {
@@ -414,55 +444,55 @@ public class NotificationData implements Serializable {
       return false;
     }
     NotificationData that = (NotificationData) o;
-    if (!Objects.equal(mAnswerAllowed, that.mAnswerAllowed)) {
+    if (!ObjectUtils.equals(mAnswerAllowed, that.mAnswerAllowed)) {
       return false;
     }
-    if (!Objects.equal(mComment, that.mComment)) {
+    if (!ObjectUtils.equals(mComment, that.mComment)) {
       return false;
     }
-    if (!Objects.equal(mLoginPassword, that.mLoginPassword)) {
+    if (!ObjectUtils.equals(mLoginPassword, that.mLoginPassword)) {
       return false;
     }
-    if (!Objects.equal(mLoginUser, that.mLoginUser)) {
+    if (!ObjectUtils.equals(mLoginUser, that.mLoginUser)) {
       return false;
     }
-    if (!Objects.equal(mMessage, that.mMessage)) {
+    if (!ObjectUtils.equals(mMessage, that.mMessage)) {
       return false;
     }
-    if (!Objects.equal(mPrioritySpeed, that.mPrioritySpeed)) {
+    if (!ObjectUtils.equals(mPrioritySpeed, that.mPrioritySpeed)) {
       return false;
     }
-    if (!Objects.equal(mReportToLogStatus, that.mReportToLogStatus)) {
+    if (!ObjectUtils.equals(mReportToLogStatus, that.mReportToLogStatus)) {
       return false;
     }
-    if (!Objects.equal(mReportToSenderStatus, that.mReportToSenderStatus)) {
+    if (!ObjectUtils.equals(mReportToSenderStatus, that.mReportToSenderStatus)) {
       return false;
     }
-    if (!Objects.equal(mReportToSenderTargetChannel, that.mReportToSenderTargetChannel)) {
+    if (!ObjectUtils.equals(mReportToSenderTargetChannel, that.mReportToSenderTargetChannel)) {
       return false;
     }
-    if (!Objects.equal(mReportToSenderTargetParam, that.mReportToSenderTargetParam)) {
+    if (!ObjectUtils.equals(mReportToSenderTargetParam, that.mReportToSenderTargetParam)) {
       return false;
     }
-    if (!Objects.equal(mReportToSenderTargetReceipt, that.mReportToSenderTargetReceipt)) {
+    if (!ObjectUtils.equals(mReportToSenderTargetReceipt, that.mReportToSenderTargetReceipt)) {
       return false;
     }
-    if (!Objects.equal(mSenderId, that.mSenderId)) {
+    if (!ObjectUtils.equals(mSenderId, that.mSenderId)) {
       return false;
     }
-    if (!Objects.equal(mSenderName, that.mSenderName)) {
+    if (!ObjectUtils.equals(mSenderName, that.mSenderName)) {
       return false;
     }
-    if (!Objects.equal(mTargetChannel, that.mTargetChannel)) {
+    if (!ObjectUtils.equals(mTargetChannel, that.mTargetChannel)) {
       return false;
     }
-    if (!Objects.equal(mTargetName, that.mTargetName)) {
+    if (!ObjectUtils.equals(mTargetName, that.mTargetName)) {
       return false;
     }
-    if (!Maps.difference(mTargetParam, that.mTargetParam).areEqual()) {
+    if (!MapUtil.equals(mTargetParam, that.mTargetParam)) {
       return false;
     }
-    if (!Objects.equal(mTargetReceipt, that.mTargetReceipt)) {
+    if (!ObjectUtils.equals(mTargetReceipt, that.mTargetReceipt)) {
       return false;
     }
 
@@ -484,25 +514,17 @@ public class NotificationData implements Serializable {
     hash = 83 * hash + (this.mTargetName != null ? this.mTargetName.hashCode() : 0);
     hash = 83 * hash + (this.mTargetParam != null ? this.mTargetParam.hashCode() : 0);
     hash = 83 * hash + (this.mPrioritySpeed != null ? this.mPrioritySpeed.hashCode() : 0);
-    hash =
-        83 * hash
+    hash = 83 * hash
         + (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
-    hash =
-        83
-        *
-        hash
-        +
-        (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel
+    hash = 83
+        * hash
+        + (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel
         .hashCode() : 0);
-    hash =
-        83
-        *
-        hash
-        +
-        (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt
+    hash = 83
+        * hash
+        + (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt
         .hashCode() : 0);
-    hash =
-        83
+    hash = 83
         * hash
         + (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode()
         : 0);

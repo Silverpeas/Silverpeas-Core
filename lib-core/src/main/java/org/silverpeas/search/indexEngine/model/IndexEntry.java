@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -29,20 +29,19 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the web'activ index. A
  * IndexEntry is create by a web'activ's component when it creates a new element or document. This
  * IndexEntry will be return later when the document matchs a query.
  */
-public class IndexEntry implements Serializable {
+public class IndexEntry implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -4817004188601716658L;
-  /**
-   * The primary key is fixed at construction time.
-   */
-  private final IndexEntryPK pk;
+  private IndexEntryPK pk;
   /**
    * The IndexEntry attributes are null by default. The title should been set in order to display
    * the entry to the user when the document match his query. The index engine may set with a
@@ -63,6 +62,9 @@ public class IndexEntry implements Serializable {
   private Map<String, String> previews = null;
   private Map<String, String> keywordsI18N = null;
   private String serverName = null;
+  private String filename = null;
+  private List<String> paths = null;
+  private boolean alias = false;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -166,7 +168,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getTitle(String lang) {
-    return getTitles().get(I18NHelper.checkLanguage(lang));
+    String title = getTitles().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(title)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        title = getTitles().get(language);
+        if (StringUtil.isDefined(title)) {
+          return title;
+        }
+      }
+    }
+    return title;
   }
 
   /**
@@ -193,7 +205,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getKeywords(String lang) {
-    return getKeywords().get(I18NHelper.checkLanguage(lang));
+    String keywords = getKeywords().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(keywords)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        keywords = getKeywords().get(language);
+        if (StringUtil.isDefined(keywords)) {
+          return keywords;
+        }
+      }
+    }
+    return keywords;
   }
 
   /**
@@ -222,7 +244,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getPreview(String lang) {
-    return getPreviews().get(I18NHelper.checkLanguage(lang));
+    String preview = getPreviews().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(preview)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        preview = getPreviews().get(language);
+        if (StringUtil.isDefined(preview)) {
+          return preview;
+        }
+      }
+    }
+    return preview;
   }
 
   /**
@@ -450,4 +482,44 @@ public class IndexEntry implements Serializable {
   public void setServerName(String serverName) {
     this.serverName = serverName;
   }
+  
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
+  public void setPaths(List<String> paths) {
+    this.paths = paths;
+  }
+
+  public List<String> getPaths() {
+    return paths;
+  }
+  
+  public void setPK(IndexEntryPK pk) {
+    this.pk = pk;
+  }
+  
+  public boolean isAlias() {
+    return alias;
+  }
+
+  public void setAlias(boolean alias) {
+    this.alias = alias;
+  }
+  
+  @Override
+  public IndexEntry clone() {
+    IndexEntry clone;
+    try {
+      clone = (IndexEntry) super.clone();
+    } catch (final CloneNotSupportedException e) {
+      clone = null;
+    }
+    return clone;
+  }
+
 }

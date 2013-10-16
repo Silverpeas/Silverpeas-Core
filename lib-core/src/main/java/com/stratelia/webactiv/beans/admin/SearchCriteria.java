@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.beans.admin;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Criteria to use in a search of resources managed and exposed in Silverpeas (like user profiles or
@@ -83,6 +85,15 @@ public interface SearchCriteria {
   SearchCriteria onGroupIds(String... groupIds);
 
   /**
+   * Appends a criterion on the user access level for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
+   * @param accessLevels the access levels aimed.
+   * @return the criteria enriched with a criterion on the user access level.
+   */
+  SearchCriteria onAccessLevels(UserAccessLevel... accessLevels);
+
+  /**
    * Appends a criterion on the resources name for which the search must be constrained to. The name
    * of the resources to fetch have to satisfy this criterion.
    *
@@ -108,6 +119,16 @@ public interface SearchCriteria {
    * @return the criteria enriched with a criterion on the user identifiers.
    */
   SearchCriteria onUserIds(String... userIds);
+
+  /**
+   * Appends a criteria on a resources pagination. The pagination is a mechanism to distribute the
+   * resources to fetch in one or more pages of same size and to navigate among theses different
+   * available pages.
+   * Yet, this criterion is about the page of resources to fetch.
+   * @param page the page of resources to fetch.
+   * @return the criteria enriched with a criterion on the resources pagination.
+   */
+  SearchCriteria onPagination(final PaginationPage page);
 
   /**
    * Appends a criteria disjonction.

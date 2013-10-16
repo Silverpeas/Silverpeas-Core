@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
+* Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,12 @@ date 14/09/2000
 */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+import com.silverpeas.admin.components.PasteDetail;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.quota.exception.QuotaException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,12 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.spaces.SpaceTemplate;
-import com.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
 This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
 It provides access functions to query and modify the domains as well as the company organization
@@ -204,7 +204,7 @@ public class AdminController implements java.io.Serializable {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       UserDetail user = getAdminService().getUserDetail(sUserId);
-      if (user.getAccessLevel().equals("A") || sUserId.equals("0")) {
+      if (user.isAccessAdmin() || sUserId.equals("0")) {
         return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
         return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(sUserId));
@@ -1237,8 +1237,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().getUserFull(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull",
-          "admin.EX_ERR_GET_USER_DETAIL", "user Id : '" + sUserId + "'", e);
+      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
+          "user Id : '" + sUserId + "'", e);
       return null;
     }
   }
@@ -1262,8 +1262,7 @@ public class AdminController implements java.io.Serializable {
       return getAdminService().getUserIdByLoginAndDomain(sLogin, sDomainId);
     } catch (Exception e) {
       SilverTrace.warn("admin", "AdminController.getUserIdByLoginAndDomain",
-          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = "
-          + sDomainId, e);
+          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = " + sDomainId, e);
       return null;
     }
   }
@@ -1278,8 +1277,8 @@ public class AdminController implements java.io.Serializable {
       }
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserDetails",
-          "admin.EX_ERR_GET_USER_DETAILS", e);
+      SilverTrace.error("admin", "AdminController.getUserDetails", "admin.EX_ERR_GET_USER_DETAILS",
+          e);
       return null;
     }
   }
@@ -1294,6 +1293,40 @@ public class AdminController implements java.io.Serializable {
       SilverTrace.error("admin", "AdminController.addUser",
           "admin.EX_ERR_ADD_USER", e);
       return "";
+    }
+  }
+
+  /**
+   * Updates the acceptance date of a user from its id.
+   */
+  public void userAcceptsTermsOfService(String userId) {
+    SilverTrace
+        .info("admin", "AdminController.userAcceptsTermsOfService", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().userAcceptsTermsOfService(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.userAcceptsTermsOfService",
+          "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE", e);
+    }
+  }
+
+  /** Block the given user */
+  public void blockUser(String userId) {
+    SilverTrace.info("admin", "AdminController.blockUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().blockUser(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.blockUser", "admin.EX_ERR_BLOCK_USER", e);
+    }
+  }
+
+  /** Unblock the given user */
+  public void unblockUser(String userId) {
+    SilverTrace.info("admin", "AdminController.unblockUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().unblockUser(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.unblockUser", "admin.EX_ERR_UNBLOCK_USER", e);
     }
   }
 
@@ -1686,14 +1719,14 @@ public class AdminController implements java.io.Serializable {
     getAdminService().reloadCache();
   }
 
-  public String copyAndPasteComponent(String componentId, String spaceId, String userId)
+  public String copyAndPasteComponent(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
-    return getAdminService().copyAndPasteComponent(componentId, spaceId, userId);
+    return getAdminService().copyAndPasteComponent(pasteDetail);
   }
 
-  public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
+  public String copyAndPasteSpace(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
-    return getAdminService().copyAndPasteSpace(spaceId, toSpaceId, userId);
+    return getAdminService().copyAndPasteSpace(pasteDetail);
   }
 
 }

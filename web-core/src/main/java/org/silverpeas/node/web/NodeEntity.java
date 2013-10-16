@@ -1,28 +1,29 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.node.web;
 
+import com.silverpeas.util.i18n.Translation;
+import com.silverpeas.web.Exposable;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,20 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.util.i18n.Translation;
-import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import org.owasp.encoder.Encode;
 
 @XmlRootElement
 public class NodeEntity implements Exposable {
 
   private static final long serialVersionUID = -5740937039604775733L;
-
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(required = true)
@@ -60,11 +55,11 @@ public class NodeEntity implements Exposable {
   private String state = "closed";
 
   public NodeEntity() {
-    
   }
-  
+
   /**
    * Creates a new node entity from the specified node.
+   *
    * @param node the node to entitify.
    * @return the entity representing the specified node.
    */
@@ -94,19 +89,19 @@ public class NodeEntity implements Exposable {
   }
 
   private NodeEntity(final NodeDetail node, URI uri, String lang) {
-    this.setData(node.getName(lang));
+    this.data = Encode.forHtml(node.getName(lang));
     this.uri = uri;
-    this.setAttr(NodeAttrEntity.fromNodeDetail(node, uri, lang));
+    this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
 
     // set translations
-    Map<String, Translation> translations = node.getTranslations();
+    Map<String, Translation> theTranslations = node.getTranslations();
     List<NodeTranslationEntity> translationEntities = new ArrayList<NodeTranslationEntity>();
-    for (Translation translation : translations.values()) {
+    for (Translation translation : theTranslations.values()) {
       NodeTranslationEntity translationEntity =
           new NodeTranslationEntity(translation.getId(), translation.getLanguage(), node);
       translationEntities.add(translationEntity);
     }
-    setTranslations(translationEntities.toArray(new NodeTranslationEntity[0]));
+    this.translations = translationEntities.toArray(new NodeTranslationEntity[0]);
 
     // set children data
     setChildrenURI(getChildrenURI(uri));
@@ -141,14 +136,14 @@ public class NodeEntity implements Exposable {
   }
 
   public void setChildren(NodeEntity[] children) {
-    this.children = children;
+    this.children = children.clone();
   }
 
   public NodeEntity[] getChildren() {
     return children;
   }
 
-  public void setData(String data) {
+  public final void setData(String data) {
     this.data = data;
   }
 
@@ -156,7 +151,7 @@ public class NodeEntity implements Exposable {
     return data;
   }
 
-  public void setAttr(NodeAttrEntity attr) {
+  public final void setAttr(NodeAttrEntity attr) {
     this.attr = attr;
   }
 
@@ -172,12 +167,12 @@ public class NodeEntity implements Exposable {
     return state;
   }
 
-  public void setChildrenURI(URI childrenURI) {
+  public final void setChildrenURI(URI childrenURI) {
     this.childrenURI = childrenURI;
     this.attr.setChildrenURI(childrenURI);
   }
 
-  public URI getChildrenURI(URI uri) {
+  public final URI getChildrenURI(URI uri) {
     try {
       return new URI(uri + "/children");
     } catch (URISyntaxException ex) {
@@ -190,18 +185,19 @@ public class NodeEntity implements Exposable {
     return childrenURI;
   }
 
-  public void setTranslations(NodeTranslationEntity[] translations) {
-    this.translations = translations;
+  public final void setTranslations(NodeTranslationEntity[] translations) {
+    this.translations = (translations != null ? translations.clone() : null);
   }
 
   public NodeTranslationEntity[] getTranslations() {
     return translations;
   }
-  
+
   /**
-  * Gets the node pk objet that this entity represents.
-  * @return a node PK.
-  */
+   * Gets the node pk objet that this entity represents.
+   *
+   * @return a node PK.
+   */
   public NodePK toNodePK() {
     NodePK nodePk = new NodePK(this.attr.getId(), this.attr.getComponentId());
     return nodePk;

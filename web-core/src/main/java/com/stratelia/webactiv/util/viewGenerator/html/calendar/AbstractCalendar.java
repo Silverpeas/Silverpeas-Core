@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,14 +24,14 @@
 
 /*
  * AbstractCalendar.java
- * this class implements Calendar interface
+ * this class implements SilverpeasCalendar interface
  * this class implements the functionalities of a calendar.
  * for the use, you must necessarily create a new class inheriting this one
  * This class must implement the method String print().
  * for thue use:
  * 1 creates a new class extend AbstractCalendar and implements String print()
- * 2 uses method addEvents(Collection events), in order to initialize the list of the events 
- * 
+ * 2 uses method addEvents(Collection events), in order to initialize the list of the events
+ *
  * @version
  */
 

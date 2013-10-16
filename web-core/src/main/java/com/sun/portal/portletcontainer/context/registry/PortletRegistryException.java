@@ -30,22 +30,23 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * A <code>PortletRegistryException</code> is thrown when there are errors related to registry
+ * A
+ * <code>PortletRegistryException</code> is thrown when there are errors related to registry
  * read/write.
  */
-
 public class PortletRegistryException extends Exception {
 
   public static final String RESOURCE_BASE = "com.silverpeas.portlets.multilang.PortletRegistry";
-
   static Locale locale = Locale.getDefault();
-
+  private static final long serialVersionUID = 7738268731991950804L;
   protected Throwable originalException = null;
   protected String key = null;
   protected Object[] tokens = null;
 
   /**
-   * Constructs an instance of the <code>PortletRegistryException</code> class.
+   * Constructs an instance of the
+   * <code>PortletRegistryException</code> class.
+   *
    * @param key key string to index into resource bundle to retieve localized message
    */
   public PortletRegistryException(String key) {
@@ -54,18 +55,22 @@ public class PortletRegistryException extends Exception {
   }
 
   /**
-   * Constructs an instance of the <code>PortletRegistryException</code> class.
+   * Constructs an instance of the
+   * <code>PortletRegistryException</code> class.
+   *
    * @param key key string to index into resource bundle to retieve localized message
    * @param tokens array of tokens to be used by the exception message
    */
   public PortletRegistryException(String key, Object[] tokens) {
     super(key);
     this.key = key;
-    this.tokens = tokens;
+    this.tokens = (tokens != null ? tokens.clone() : null);
   }
 
   /**
-   * Constructs an instance of the <code>PortletRegistryException</code> class.
+   * Constructs an instance of the
+   * <code>PortletRegistryException</code> class.
+   *
    * @param key key string to index into resource bundle to retieve localized message
    * @param t Throwable object provided by the object which is throwing
    */
@@ -76,7 +81,9 @@ public class PortletRegistryException extends Exception {
   }
 
   /**
-   * Constructs an instance of the <code>PortletRegistryException</code> class.
+   * Constructs an instance of the
+   * <code>PortletRegistryException</code> class.
+   *
    * @param key key string to index into resource bundle to retieve localized message
    * @param t Throwable object provided by the object which is throwing
    * @param tokens array of tokens to be used by the exception message
@@ -85,11 +92,13 @@ public class PortletRegistryException extends Exception {
     super(key);
     originalException = t;
     this.key = key;
-    this.tokens = tokens;
+    this.tokens = (tokens != null ? tokens.clone() : null);
   }
 
   /**
-   * Constructs an instance of the <code>PortletRegistryException</code> class.
+   * Constructs an instance of the
+   * <code>PortletRegistryException</code> class.
+   *
    * @param t Throwable object provided by the object which is throwing the exception
    */
   public PortletRegistryException(Throwable t) {
@@ -102,6 +111,7 @@ public class PortletRegistryException extends Exception {
     locale = loc;
   }
 
+  @Override
   public String getMessage() {
     // non-localized resource bundle
     ResourceBundle rb = FileUtil.loadBundle(RESOURCE_BASE, Locale.getDefault());
@@ -113,7 +123,7 @@ public class PortletRegistryException extends Exception {
   }
 
   public String getWrappedMessage() {
-    String msg = null;
+    String msg;
     if (originalException != null) {
       msg = originalException.getMessage();
     } else {
@@ -122,10 +132,11 @@ public class PortletRegistryException extends Exception {
     return msg;
   }
 
+  @Override
   public String getLocalizedMessage() {
     // localized resource bundle
     ResourceBundle rb = FileUtil.loadBundle(RESOURCE_BASE, locale);
-    String msg = null;
+    String msg;
     try {
       msg = getMessageFromRB(rb, key, tokens);
     } catch (MissingResourceException mrex) {
@@ -137,7 +148,7 @@ public class PortletRegistryException extends Exception {
   private String getMessageFromRB(ResourceBundle rb, String key, Object[] tokens)
       throws MissingResourceException {
 
-    String message = null;
+    String message;
     try {
       String msg = rb.getString(key);
       if (tokens != null && tokens.length > 0) {
@@ -154,6 +165,7 @@ public class PortletRegistryException extends Exception {
     return message;
   }
 
+  @Override
   public void printStackTrace() {
     if (originalException != null) {
       originalException.printStackTrace();
@@ -162,6 +174,7 @@ public class PortletRegistryException extends Exception {
     }
   }
 
+  @Override
   public void printStackTrace(PrintWriter pw) {
     if (originalException != null) {
       originalException.printStackTrace(pw);

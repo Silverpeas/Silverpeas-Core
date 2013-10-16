@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,12 +24,15 @@
 
 package com.silverpeas.admin.spaces;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.PathTestUtil;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Test;
+
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.PathTestUtil;
+
 import static org.junit.Assert.*;
 
 /**

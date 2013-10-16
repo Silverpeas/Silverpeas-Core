@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
@@ -30,16 +26,24 @@ import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.Axis;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
+import org.silverpeas.core.admin.OrganisationController;
+
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
 
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
@@ -59,10 +63,13 @@ public class PdcServiceProvider {
   private ContentManager contentManager;
   @Inject
   private PdcClassificationService classificationService;
+  @Inject
+  private OrganisationController organisationController;
 
   /**
    * A convenient method to enhance the readability of method calls when a component identifier is
    * expected as argument.
+   *
    * @param componentId the identifier of a Silverpeas component instance.
    * @return the identifier.
    */
@@ -73,6 +80,7 @@ public class PdcServiceProvider {
   /**
    * A convenient method to enhance the readability of method calls when a resource content
    * identifier is expected as argument.
+   *
    * @param contentId the identifier of a Silverpeas resource content.
    * @return the identifier.
    */
@@ -83,6 +91,7 @@ public class PdcServiceProvider {
   /**
    * Adds a new position of the specified resource content on the PdC configured for the specified
    * Silverpeas component instance. Once added, an identifier is set for the specified position.
+   *
    * @param position the classification position to add.
    * @param contentId the identifier of the content for which a new position is created on the PdC.
    * @param componentId the identifier of the component instance that owns the PdC instance.
@@ -101,6 +110,7 @@ public class PdcServiceProvider {
    * Updates the specified position of the specified resource content on the PdC configured for the
    * specified Silverpeas component instance. The position of the content on the PdC whose the
    * identifier is the one of the specified position is replaced by the passed position.
+   *
    * @param position the classification position to update.
    * @param contentId the identifier of the content for which the position is to update on the PdC.
    * @param componentId the identifier of the component instance that owns the PdC instance.
@@ -117,6 +127,7 @@ public class PdcServiceProvider {
   /**
    * Deletes the specified position of the specified resource content on the PdC configured for the
    * specified component instance.
+   *
    * @param positionId the identifier of the position to delete.
    * @param componentId the identifier of the component that owns the PdC instance.
    * @throws PdcException if the position or the component identifier doesn't exist or if the
@@ -141,6 +152,7 @@ public class PdcServiceProvider {
   /**
    * Gets the positions of the specified resource content on the PdC of the specified component
    * instance.
+   *
    * @param contentId the identifier of the content.
    * @param componentId the identifier of the Silverpeas component instance.
    * @return a list of classification positions of the specified content.
@@ -158,6 +170,7 @@ public class PdcServiceProvider {
    * Finds the predefined PdC classification to use for classifying new contents in the specified
    * node of the specified component instance. If the node isn't set, then the predefined PdC
    * classification of the component instance is looked for.
+   *
    * @param nodeId the unique identifier of the node. A node is a generic way in Silverpeas to
    * categorize contents in a Silverpeas component.
    * @param componentId the unique identifier of the component.
@@ -171,6 +184,7 @@ public class PdcServiceProvider {
    * Gets the predefined PdC classification that is associated with the specified node of the
    * specified component instance. If the node isn't set, then the predefined PdC classification
    * associated with the component instance is looked for.
+   *
    * @param nodeId the unique identifier of the node. A node is a generic way in Silverpeas to
    * categorize contents in a Silverpeas component.
    * @param componentId the unique identifier of the component.
@@ -188,6 +202,7 @@ public class PdcServiceProvider {
    * closest parent node is taken as the one for the related node (if any). If there is no
    * predefined classification associated with a parent node or with the component instance, then
    * NONE_CLASSIFICATION is returned.
+   *
    * @param predefinedClassification the predefined classification to save or to update.
    * @return the classification used for the related node or component instance or NONE_CLASSICATION
    * if there is no predefined classification with the component instance.
@@ -209,6 +224,7 @@ public class PdcServiceProvider {
    * the positions of the resource content on the invariant axis are kept as the only possible value
    * on theses axis. In the case no axis are specifically used for the component instance, then all
    * the PdC axis are sent back as axis that can be used to classify the specified content.
+   *
    * @param contentId the identifier of the content to classify (or to refine the classification).
    * It is used to find its previous classification in order to fix the value of the invariant axis.
    * @param inComponentId the identifier of the component instance.
@@ -225,6 +241,7 @@ public class PdcServiceProvider {
 
   /**
    * Gets the axis used in the PdC configured for the specified Silverpeas component instance.
+   *
    * @param componentId the unique identifier of the component instance.
    * @return a list of axis used in the PdC configured for the component instance.
    * @throws PdcException if the axis cannot be fetched.
@@ -235,11 +252,65 @@ public class PdcServiceProvider {
 
   /**
    * Gets a holder of the thesaurus for the specified user.
+   *
    * @param user the user for which a holder will hold the thesaurus.
    * @return a UserThesaurusHolder instance.
    */
   public UserThesaurusHolder getThesaurusOfUser(final UserDetail user) {
     return UserThesaurusHolder.holdThesaurus(getThesaurusManager(), forUser(user));
+  }
+
+  /**
+   * Gets the axis and, for each of them, the values that are used in the classification of the
+   * contents that match the specified criteria.
+   *
+   * @param criteria the criteria the classified contents have to satisfy. The expected criteria are
+   * on the component instance or the workspace in which they were published, on some axis values
+   * with which they were classified, and on the inclusion of the secondary axis.
+   * @return the axis with the values used in a classification. The secondary axis are inserted at
+   * the end of the list.
+   * @throws PdcException if an error occurs while getting the PdC's axis that are used in a
+   * classification.
+   */
+  public List<UsedAxis> getAxisUsedInClassificationsByCriteria(final PdcFilterCriteria criteria)
+      throws PdcException {
+    List<UsedAxis> usedAxis = new ArrayList<UsedAxis>();
+
+    ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().
+        onComponentInstance(criteria.getComponentInstanceId()).
+        onWorkspace(criteria.getWorkspaceId()).
+        onUser(criteria.getUser());
+    SearchContext searchContext = setUpSearchContextFromCriteria(criteria);
+    List<String> availableComponents = getOrganisationController().
+        getSearchableComponentsByCriteria(searchCriteria);
+
+    List<AxisHeader> allAxis = getPdcBm().getAxisByType(PdcBm.PRIMARY_AXIS);
+    List<UsedAxis> filteredAxis = filterAxis(allAxis, searchContext, availableComponents);
+    usedAxis.addAll(filteredAxis);
+
+    if (criteria.hasSecondaryAxisToBeIncluded()) {
+      allAxis = getPdcBm().getAxisByType(PdcBm.SECONDARY_AXIS);
+      filteredAxis = filterAxis(allAxis, searchContext, availableComponents);
+      usedAxis.addAll(filteredAxis);
+    }
+    return usedAxis;
+  }
+
+  /**
+   * Gets all the axis of the PdC in Silverpeas.
+   *
+   * @return the axis of the PdC.
+   * @throws PdcException if an error occurs while getting the PdC's axis.
+   */
+  public List<Axis> getAllAxis() throws PdcException {
+    List<Axis> pdcAxis = new ArrayList<Axis>();
+    List<AxisHeader> headers = getPdcBm().getAxis();
+    for (AxisHeader aHeader : headers) {
+      String treeId = getPdcBm().getTreeId(aHeader.getPK().getId());
+      List<Value> values = getPdcBm().getAxisValues(Integer.valueOf(treeId));
+      pdcAxis.add(new Axis(aHeader, values));
+    }
+    return pdcAxis;
   }
 
   private PdcBm getPdcBm() {
@@ -254,8 +325,51 @@ public class PdcServiceProvider {
     return this.thesaurusManager;
   }
 
+  public OrganisationController getOrganisationController() {
+    return organisationController;
+  }
+
   private int getSilverObjectId(String ofTheContent, String inTheComponent) throws
       ContentManagerException {
     return getContentManager().getSilverContentId(ofTheContent, inTheComponent);
+  }
+
+  private SearchContext setUpSearchContextFromCriteria(final PdcFilterCriteria criteria) {
+    SearchContext context = new SearchContext();
+    if (criteria.hasCriterionOnUser()) {
+      context.setUserId(criteria.getUser().getId());
+    }
+    if (criteria.hasCriterionOnAxisValues()) {
+      for (AxisValueCriterion axisValueCriterion : criteria.getAxisValues()) {
+        context.addCriteria(axisValueCriterion);
+      }
+    }
+    return context;
+  }
+
+  private UsedAxis createUsedAxis(AxisHeader axisHeader, List<Value> values) throws PdcException {
+    UsedAxis axis = new UsedAxis(axisHeader.getPK().getId(), "", axisHeader.getRootId(), 0, 0, 1);
+    axis._setAxisHeader(axisHeader);
+    axis._setAxisName(axisHeader.getName());
+    axis._setAxisType(axisHeader.getAxisType());
+    axis._setBaseValueName(axisHeader.getName());
+    axis._setAxisRootId(Integer.parseInt(
+        getPdcBm().getRoot(axisHeader.getPK().getId()).getValuePK().getId()));
+    axis._setAxisValues(values);
+    return axis;
+  }
+
+  private List<UsedAxis> filterAxis(List<AxisHeader> axisHeaders,
+      SearchContext searchContext, List<String> availableComponents) throws PdcException {
+    List<UsedAxis> filteredAxis = new ArrayList<UsedAxis>();
+    for (AxisHeader axisHeader : axisHeaders) {
+      List<Value> values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
+          searchContext, axisHeader.getPK().getId(), "0", availableComponents);
+      if (values != null && !values.isEmpty()) {
+        UsedAxis usedAxis = createUsedAxis(axisHeader, values);
+        filteredAxis.add(usedAxis);
+      }
+    }
+    return filteredAxis;
   }
 }

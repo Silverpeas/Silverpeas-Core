@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,49 +26,44 @@ package org.silverpeas.viewer.util;
 import java.util.Collection;
 
 /**
- * Some document info
+ * Information about the pdf to be converted.
+ *
  * @author Yohann Chastagnier
  */
 public class DocumentInfo {
+
   private int nbPages = 0;
   private int maxWidh = 0;
   private int maxHeight = 0;
 
   /**
    * Initializing data from output SwfTools query
+   *
    * @param swfOutput
    * @return
    */
   protected DocumentInfo addFromSwfToolsOutput(final Collection<String> swfOutput) {
-    boolean widthOk;
-    boolean heightOk;
-    try {
-      for (final String outputLine : swfOutput) {
-        try {
-          widthOk = false;
-          heightOk = false;
-          for (final String info : outputLine.split(" ")) {
-            if (info.indexOf("width") >= 0) {
-              maxWidh =
-                  Math.max(maxWidh,
-                      Integer.valueOf(info.replaceAll("width=", "").replaceAll("\\.[0-9]{1,}", "")));
-              widthOk = true;
-            } else if (info.indexOf("height") >= 0) {
-              maxHeight =
-                  Math.max(maxHeight, Integer.valueOf(info.replaceAll("height=", "").replaceAll(
-                      "\\.[0-9]{1,}", "")));
-              heightOk = true;
-            }
+    for (final String outputLine : swfOutput) {
+      try {
+        boolean widthOk = false;
+        boolean heightOk = false;
+        for (final String info : outputLine.split(" ")) {
+          if (info.contains("width")) {
+            maxWidh = Math.max(maxWidh, Integer.valueOf(info.replaceAll("width=", "").replaceAll(
+                "\\.[0-9]+", "")));
+            widthOk = true;
+          } else if (info.contains("height")) {
+            maxHeight = Math.max(maxHeight, Integer.valueOf(info.replaceAll("height=", "")
+                .replaceAll("\\.[0-9]+", "")));
+            heightOk = true;
           }
-          if (widthOk && heightOk) {
-            nbPages++;
-          }
-        } catch (final Exception e) {
-          // Nothing to do, just pass to the next line
         }
+        if (widthOk && heightOk) {
+          nbPages++;
+        }
+      } catch (final NumberFormatException e) {
+        // Nothing to do, just pass to the next line
       }
-    } catch (final Exception e) {
-      // Nothing to do
     }
     return this;
   }
