@@ -42,9 +42,11 @@ import com.silverpeas.portlets.portal.DesktopMessages;
 import com.silverpeas.portlets.portal.PortletWindowDataImpl;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import static com.silverpeas.util.StringUtil.*;
 
@@ -178,6 +180,14 @@ public class AdminServlet extends HttpServlet {
       // Display the space homepage
       if (!spaceId.startsWith("space")) {
         spaceId = "space" + spaceId;
+      }
+
+      // If the home page of the space is the standard one, then spaceId is unset
+      SpaceInst spaceStruct =
+          OrganisationControllerFactory.getOrganisationController()
+              .getSpaceInstById(spaceId.replace("space", ""));
+      if (spaceStruct == null || spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
+        spaceId = null;
       }
     }
     return spaceId;
