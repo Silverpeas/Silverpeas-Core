@@ -219,7 +219,7 @@ public class SpacesAndComponentsTest {
 
     assertThat(TreeCache.getSpaceInstLight("1"), is(notNullValue()));
     assertThat(TreeCache.getSubSpaces("1"), hasSize(1));
-    assertThat(TreeCache.getComponentsInSpaceAndSubspaces("1"), hasSize(2));
+    assertThat(TreeCache.getComponentsInSpaceAndSubspaces("1"), hasSize(3));
     assertThat(TreeCache.getComponent("kmelia1"), is(notNullValue()));
     assertThat(TreeCache.getComponent("almanach2"), is(notNullValue()));
   }
@@ -315,6 +315,11 @@ public class SpacesAndComponentsTest {
     ProfileInst p = component.getInheritedProfileInst("admin");
     assertThat(p.getAllUsers(), hasSize(1));
     assertThat(ac.isComponentAvailable(componentId, userId), is(true));
+    
+    // test non inheritance
+    String anotherComponentId = "kmelia4";
+    component = ac.getComponentInst(anotherComponentId);
+    assertThat(component.getAllProfilesInst().size(), is(0));
 
     // remove users from space profile
     profile = ac.getSpaceProfileInst(profileId);
@@ -327,7 +332,15 @@ public class SpacesAndComponentsTest {
     assertThat(p.isEmpty(), is(true));
 
     // component is always available due to inheritance policy
-    assertThat(ac.isComponentAvailable("almanach2", userId), is(true));
+    assertThat(ac.isComponentAvailable(componentId, userId), is(true));
+    
+    // test non inheritance
+    component = ac.getComponentInst(anotherComponentId);
+    assertThat(component.getAllProfilesInst().size(), is(0));
+    assertThat(p.isEmpty(), is(true));
+    
+    // another component is always unavailable
+    assertThat(ac.isComponentAvailable(anotherComponentId, userId), is(false));
   }
 
   @Test
@@ -477,7 +490,7 @@ public class SpacesAndComponentsTest {
     String targetSpaceId = "WA3";
     String componentId = ac.copyAndPasteComponent("almanach2", targetSpaceId, userId);
 
-    String expectedComponentId = "almanach4";
+    String expectedComponentId = "almanach5";
     assertThat(componentId, is(expectedComponentId));
 
     ComponentInst component = ac.getComponentInst(expectedComponentId);
@@ -515,9 +528,9 @@ public class SpacesAndComponentsTest {
     SpaceInst space = ac.getSpaceInstById(expectedSpaceId);
 
     // test pasted component
-    String expectedComponentId = "kmelia4";
+    String expectedComponentId = "kmelia5";
     List<ComponentInst> components = space.getAllComponentsInst();
-    assertThat(components.size(), is(1));
+    assertThat(components.size(), is(2));
     ComponentInst component = components.get(0);
     assertThat(component.getId(), is(expectedComponentId));
 
@@ -557,7 +570,7 @@ public class SpacesAndComponentsTest {
     SpaceInst space = ac.getSpaceInstById(expectedSpaceId);
 
     // test pasted component
-    String expectedComponentId = "almanach4";
+    String expectedComponentId = "almanach5";
     List<ComponentInst> components = space.getAllComponentsInst();
     assertThat(components.size(), is(1));
     ComponentInst component = components.get(0);
@@ -782,7 +795,7 @@ public class SpacesAndComponentsTest {
     List<ComponentInst> components = dest.getAllComponentsInst();
     admin.moveComponentInst(destId, componentId, "",components.toArray(new ComponentInst[components.size()]));
     SpaceInst source = admin.getSpaceInstById(sourceId);
-    assertThat(source.getAllComponentsInst().size(), is(0));
+    assertThat(source.getAllComponentsInst().size(), is(1));
     dest = admin.getSpaceInstById(destId);
     assertThat(dest.getAllComponentsInst().size(), is(2));
 

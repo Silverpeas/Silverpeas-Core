@@ -88,6 +88,7 @@ public class ComponentDAO {
     i.setDomainFatherId(Integer.toString(rs.getInt(2)));
     i.setLabel(rs.getString(3));
     i.setName(name);
+    i.setInheritanceBlocked(rs.getInt("isInheritanceBlocked") == 1);
 
     return i;
   }
