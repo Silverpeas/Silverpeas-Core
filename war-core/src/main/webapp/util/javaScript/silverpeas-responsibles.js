@@ -35,22 +35,22 @@
   var cache = [];
 
   $.responsibles = {
-    labels : {
-      platformResponsible : '',
-      sendMessage : ''
+    labels: {
+      platformResponsible: '',
+      sendMessage: ''
     },
-    renderSpaceResponsibles : function(target, userId, spaceId) {
+    renderSpaceResponsibles: function(target, userId, spaceId) {
       __loadMissingPlugins(false);
       var data = __getResponsibles(true, spaceId);
       $(target).empty();
       __prepareContent($(target), userId, true, data.usersAndGroupsRoles);
       __loadUserZoomPlugins();
     },
-    displaySpaceResponsibles : function(userId, spaceId) {
+    displaySpaceResponsibles: function(userId, spaceId) {
       __loadMissingPlugins(true);
       __display(userId, true, spaceId);
     },
-    displayComponentResponsibles : function(userId, componentId) {
+    displayComponentResponsibles: function(userId, componentId) {
       __loadMissingPlugins(true);
       __display(userId, false, componentId);
     }
@@ -67,20 +67,20 @@
     var $display = $('#responsible-popup-content');
     var data = __getResponsibles(isSpace, id);
     var title = $('<div>').append($('.space-or-component-responsibles-operation').text() +
-        " ").append($('<b>').append(data.label)).html();
-    if ($display.length != 0) {
+            " ").append($('<b>').append(data.label)).html();
+    if ($display.length !== 0) {
       $display.dialog('destroy');
       $display.remove();
     }
-    $display = $('<div>', {id : 'responsible-popup-content'}).css('display',
-        'none').appendTo(document.body);
+    $display = $('<div>', {id: 'responsible-popup-content'}).css('display',
+            'none').appendTo(document.body);
     __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles);
     __loadUserZoomPlugins();
 
     // Popup
     $display.popup('free', {
-      title : title,
-      width : '500px'
+      title: title,
+      width: '500px'
     });
   }
 
@@ -95,11 +95,11 @@
     var result = cache[(isSpace ? 'space-' : 'component-') + id];
     if (!result) {
       var spaceOrComponent = __getJSonData(webServiceContext + '/' +
-          (isSpace ? 'spaces' : 'components') + '/' + id);
+              (isSpace ? 'spaces' : 'components') + '/' + id);
       var usersAndGroupsRoles = __getJSonData(spaceOrComponent.usersAndGroupsRolesURI + '?roles=' +
-          (isSpace ? 'Manager' : 'admin'));
+              (isSpace ? 'Manager' : 'admin'));
       result = {
-        usersAndGroupsRoles : usersAndGroupsRoles
+        usersAndGroupsRoles: usersAndGroupsRoles
       };
       $.extend(result, spaceOrComponent);
     }
@@ -122,8 +122,8 @@
       if (dataOfUsers.length > 0) {
         $target.append($newLine);
         if (isSpace) {
-          $target.append($('<h5>',{
-            'class' : 'textePetitBold title-list-responsible-user'
+          $target.append($('<h5>', {
+            'class': 'textePetitBold title-list-responsible-user'
           }).append(usersAndGroups.label));
         }
         __prepareRoleResponsibles($target, userId, dataOfUsers);
@@ -134,8 +134,8 @@
       var administrators = [];
       var userProfiles = new UserProfileManagement();
       userProfiles.get({
-        async : false,
-        accessLevels : ['ADMINISTRATOR']
+        async: false,
+        accessLevels: ['ADMINISTRATOR']
       }, function(users) {
         $(users).each(function(index, administrator) {
           administrators.push(administrator);
@@ -144,7 +144,7 @@
       if (administrators.length > 0) {
         $target.append($newLine);
         $target.append($('<h5>',
-            {'class' : 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
+                {'class': 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
         __prepareRoleResponsibles($target, userId, administrators);
         $newLine = $('<br/>');
       }
@@ -160,26 +160,26 @@
    */
   function __prepareRoleResponsibles($target, userId, dataOfUsers) {
     if ($.isArray(dataOfUsers) && dataOfUsers.length > 0) {
-      var $users = $('<ul>', {'class' : 'list-responsible-user'});
+      var $users = $('<ul>', {'class': 'list-responsible-user'});
       $.each(dataOfUsers, function(index, user) {
         var $user = $('<span>').append(' ' + user.fullName);
         if (userId !== user.id && !user.anonymous) {
           $user.addClass('userToZoom');
           $user.attr('rel', user.id);
         }
-        var $photoProfil = $('<div>', {'class' : 'profilPhoto'}).append($('<a>').append($('<img>',
-            {'class' : 'avatar', src : user.avatar})));
-        var $userName = $('<div>', {'class' : 'userName'});
+        var $photoProfil = $('<div>', {'class': 'profilPhoto'}).append($('<a>').append($('<img>',
+                {'class': 'avatar', src: user.avatar})));
+        var $userName = $('<div>', {'class': 'userName'});
         var $action = null;
         if (userId !== user.id && !user.anonymous) {
-          $userName.append($('<a>', {'class' : 'userToZoom', rel : user.id}).append(user.fullName));
-          $action = $('<div>', {'class' : 'action'}).append($('<a>',
-              {href : '#', 'class' : 'link notification'}).append($.responsibles.labels.sendMessage)).messageMe(user);
+          $userName.append($('<a>', {'class': 'userToZoom', rel: user.id}).append(user.fullName));
+          $action = $('<div>', {'class': 'action'}).append($('<a>',
+                  {href: '#', 'class': 'link notification'}).append($.responsibles.labels.sendMessage)).messageMe(user);
         } else {
           $userName.append($('<a>').append(user.fullName));
         }
-        $users.append($('<li>', {'class' : 'intfdcolor'}).append($('<div>',
-            {'class' : 'content'}).append($photoProfil).append($userName).append($action)));
+        $users.append($('<li>', {'class': 'intfdcolor'}).append($('<div>',
+                {'class': 'content'}).append($photoProfil).append($userName).append($action)));
       });
       $target.append($users);
     }
@@ -246,23 +246,23 @@
   function __loadMissingPlugins(isPopup) {
     if (isPopup && !$.popup) {
       $.ajax({
-        url : webContext + "/util/javaScript/silverpeas-popup.js",
-        async : false,
-        dataType : "script"
+        url: webContext + "/util/javaScript/silverpeas-popup.js",
+        async: false,
+        dataType: "script"
       });
     }
     if (typeof UserProfile !== 'function') {
       $.ajax({
-        url : webContext + "/util/javaScript/silverpeas-profile.js",
-        async : false,
-        dataType : "script"
+        url: webContext + "/util/javaScript/silverpeas-profile.js",
+        async: false,
+        dataType: "script"
       });
     }
     if (!$.messageMe) {
       $.ajax({
-        url : webContext + "/util/javaScript/silverpeas-messageme.js",
-        async : false,
-        dataType : "script"
+        url: webContext + "/util/javaScript/silverpeas-messageme.js",
+        async: false,
+        dataType: "script"
       });
     }
   }
@@ -272,12 +272,12 @@
    */
   function __loadUserZoomPlugins() {
     $.ajax({
-      url : webContext + "/util/javaScript/silverpeas-invitme.js",
-      dataType : "script"
+      url: webContext + "/util/javaScript/silverpeas-invitme.js",
+      dataType: "script"
     });
     $.ajax({
-      url : webContext + "/util/javaScript/silverpeas-userZoom.js",
-      dataType : "script"
+      url: webContext + "/util/javaScript/silverpeas-userZoom.js",
+      dataType: "script"
     });
   }
 
@@ -288,7 +288,7 @@
    * @private
    */
   function __getJSonData(url) {
-    return __performAjaxRequest({url : url, type : 'GET', dataType : 'json'});
+    return __performAjaxRequest({url: url, type: 'GET', dataType: 'json'});
   }
 
   /**
@@ -302,14 +302,14 @@
     // Default options.
     // url, type, dataType are missing.
     var options = {
-      cache : false,
-      async : false,
-      success : function(data) {
+      cache: false,
+      async: false,
+      success: function(data) {
         result = data;
       },
-      error : function(jqXHR, textStatus, errorThrown) {
+      error: function(jqXHR, textStatus, errorThrown) {
         window.console &&
-        window.console.log('Silverpeas Responsible JQuery Plugin - ERROR - ' + errorThrown);
+                window.console.log('Silverpeas Responsible JQuery Plugin - ERROR - ' + errorThrown);
       }
     };
 

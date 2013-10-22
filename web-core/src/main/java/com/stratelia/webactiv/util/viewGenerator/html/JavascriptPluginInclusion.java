@@ -35,15 +35,17 @@ import org.apache.ecs.xhtml.script;
  * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
+ *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath =
-      URLManager.getApplicationURL() + "/util/styleSheets/";
+  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
+  private static final String angularjsPath = javascriptPath + "angularjs/";
+  private static final String angularjsServicesPath = javascriptPath + "angularjs/services/";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
@@ -87,6 +89,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
+   *
    * @param src
    * @return
    */
@@ -96,6 +99,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
+   *
    * @param content
    * @return
    */
@@ -105,6 +109,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of link instantiation.
+   *
    * @param href
    * @return
    */
@@ -156,7 +161,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeUserZoom(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_USERZOOM));
@@ -164,13 +169,13 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeInvitMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
     return xhtml;
   }
 
   public static ElementContainer includeMessageMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
     return xhtml;
   }
@@ -186,10 +191,10 @@ public class JavascriptPluginInclusion {
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.platform.responsibles", "")).append("';");
+        .getString("GML.platform.responsibles", "")).append("';");
     responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.notification.send", "")).append("';");
+        .getString("GML.notification.send", "")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }

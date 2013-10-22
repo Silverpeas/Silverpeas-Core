@@ -118,6 +118,7 @@ public class UserProfileResource extends RESTWebService {
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
    * @param domain the unique identifier of the domain the users have to be related.
+   * @param accessLevels filters the users by the access level in Silverpeas.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
@@ -349,7 +350,7 @@ public class UserProfileResource extends RESTWebService {
         equals(getUserDetail().getDomainId())) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
           + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
-        userId});
+            userId});
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

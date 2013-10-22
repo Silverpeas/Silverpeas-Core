@@ -52,16 +52,10 @@
     }
 
     return this.each(function() {
-      var $this = $(this), profile = user;
-      if (!(profile instanceof UserProfile)) {
-        profile = new UserProfile(user);
-      }
-      if (profile.id == null || profile.fullName == null)
-        profile.load(function(user) {
-          render($this, user);
-        });
-      else
-        render($this, profile);
+      var $this = $(this), theUser = user;
+      if (!user.fullName)
+        theUser = User.get(user.id);
+      render($this, theUser);
     });
   };
 
@@ -88,33 +82,33 @@
       }).append($('<form>').append($('<table>').append($('<tr>').
               append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.subject') + '&nbsp;:')).
               append($('<td>').append($('<input>', {
-        'type': 'text',
-        'name': 'textSubject',
-        'id': 'notification-subject',
-        'maxlength': '1023',
-        'size': '50',
-        'value': ''
-      })).append('&nbsp;').append($('<img>', {
-        'src': webContext + '/util/icons/mandatoryField.gif',
-        'width': '5',
-        'height': '5',
-        'alt': 'mandatoryField'
-      })))).append($('<tr>').
+                'type': 'text',
+                'name': 'textSubject',
+                'id': 'notification-subject',
+                'maxlength': '1023',
+                'size': '50',
+                'value': ''
+              })).append('&nbsp;').append($('<img>', {
+                'src': webContext + '/util/icons/mandatoryField.gif',
+                'width': '5',
+                'height': '5',
+                'alt': 'mandatoryField'
+              })))).append($('<tr>').
               append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
               append($('<td>').append($('<textarea>', {
-        'name': 'textMessage',
-        'id': 'notification-message',
-        'cols': '60',
-        'rows': '8'
-      })))).
+                'name': 'textMessage',
+                'id': 'notification-message',
+                'cols': '60',
+                'rows': '8'
+              })))).
               append($('<tr>').append($('<td>', {
-        'colspan': 2
-      }).append($('<img>', {
-        'src': webContext + '/util/icons/mandatoryField.gif',
-        'width': '5',
-        'height': '5',
-        'alt': 'mandatoryField'
-      })).append('&nbsp;: ' + $.i18n.prop('GML.requiredField')))))).appendTo($(document.body));
+                'colspan': 2
+              }).append($('<img>', {
+                'src': webContext + '/util/icons/mandatoryField.gif',
+                'width': '5',
+                'height': '5',
+                'alt': 'mandatoryField'
+              })).append('&nbsp;: ' + $.i18n.prop('GML.requiredField')))))).appendTo($(document.body));
 
       $("#notificationDialog").dialog({
         autoOpen: false,
@@ -170,14 +164,14 @@
 jQuery(document).ready(function() {
   jQuery('.notification').each(function(i, element) {
     var userParams = jQuery(element).attr('rel');
-    if (userParams != null && userParams.length > 1) {
+    if (userParams && userParams.length > 1) {
       userParams = userParams.split(',');
-      if (jQuery(element).data('messageMe') == null) {
+      if (!jQuery(element).data('messageMe')) {
         jQuery(element).messageMe({
           id: userParams[0],
           fullName: userParams[1]
         });
       }
     }
-  })
+  });
 });

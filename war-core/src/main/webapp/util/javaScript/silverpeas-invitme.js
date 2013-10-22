@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,20 +52,10 @@
     }
 
     return this.each(function() {
-      var $this = $(this);
-      if (user.fullName === null || user.fullName === undefined) {
-        var injector = angular.injector(['silverpeas', 'ng']);
-        injector.invoke(function(User) {
-          User.get(user.id).then(function(theUser) {
-            render($this, theUser);
-          });
-        });
-      }
-//      profile.load(function(user) {
-//          render($this, user);
-//        });
-      else
-        render($this, user);
+      var $this = $(this), theUser = user;
+      if (!user.fullName)
+        theUser = User.get(user.id);
+      render($this, theUser);
     });
   };
 
@@ -91,11 +81,11 @@
       }).append($('<form>').append($('<table>').append($('<tr>').
               append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
               append($('<td>').append($('<textarea>', {
-        'name': 'textMessage',
-        'id': 'invitation-message',
-        'cols': '60',
-        'rows': '8'
-      })))))).appendTo($(document.body));
+                'name': 'textMessage',
+                'id': 'invitation-message',
+                'cols': '60',
+                'rows': '8'
+              })))))).appendTo($(document.body));
 
       $("#invitationDialog").dialog({
         autoOpen: false,
