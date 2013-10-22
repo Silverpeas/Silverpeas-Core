@@ -52,10 +52,12 @@
     }
 
     return this.each(function() {
-      var $this = $(this), theUser = user;
+      var $this = $(this), profile = user;
       if (!user.fullName)
-        theUser = User.get(user.id);
-      render($this, theUser);
+        User.get(user.id).then(function(theUser) {
+          profile = theUser;
+        });
+      render($this, profile);
     });
   };
 

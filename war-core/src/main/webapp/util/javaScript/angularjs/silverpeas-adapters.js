@@ -25,6 +25,8 @@
 (function() {
   /**
    * An adapter to access the web resources published as a REST-based services.
+   * @param {Angular.Service} $http an HTTP client for AJAX requesting with a Promise support.
+   * @param {Angular.Service} $q a service to handle the Promises.
    */
   angular.module('silverpeas.adapters').factory('RESTAdapter', ['$http', '$q', function($http, $q) {
 

@@ -46,6 +46,13 @@
 angular.module('silverpeas', []);
 
 /**
+ * Defines the context object used to share application contextual properties with the different
+ * services in Silverpeas.
+ * By default, the context is empty.
+ */
+angular.module('silverpeas').value('context', {});
+
+/**
  * @module silverpeas.adapters
  * @desc This module gathers all the adapters used to communicate with external services like the
  * web resources published by Silverpeas in a REST way or a local storage for examples.
@@ -75,11 +82,3 @@ angular.module('silverpeas.services', ['silverpeas', 'silverpeas.adapters']);
  */
 angular.module('silverpeas.directives', ['silverpeas']);
 
-/**
- * The injector of objects in AngularJS. It can be used bu plain old javascript code to access the
- * Silverpeas services registered within Angularjs.
- *
- * @type {Angular.Module} - The injector service defined in AngularJS to perform the dependency
- * injection and from which the different services can be retrieved.
- */
-var injector = angular.injector(['silverpeas', 'silverpeas.adapters', 'silverpeas.services', 'ng']);

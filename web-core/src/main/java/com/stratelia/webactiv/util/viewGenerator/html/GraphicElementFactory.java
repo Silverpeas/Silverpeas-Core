@@ -110,6 +110,7 @@ public class GraphicElementFactory {
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   protected static final String ANGULAR_JS = "angular.min.js";
   protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
+  protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**
@@ -370,6 +371,9 @@ public class GraphicElementFactory {
         "/util/javaScript/angularjs/").append(ANGULAR_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ANGULAR_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
+            "\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");

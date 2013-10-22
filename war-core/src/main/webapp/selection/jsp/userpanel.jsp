@@ -68,11 +68,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
     <view:includePlugin name="breadcrumb"/>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/adapters/silverpeas-adapters.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/services/silverpeas-profile.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/directives/silverpeas-searchbox.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/directives/silverpeas-pagination.js"></script>
-    <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/silverpeas-selection.js"></script>
+    <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/selection.js"></script>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
       html, body {height:100%; overflow:hidden; margin:0px; padding:0px}
@@ -201,7 +200,7 @@
         /* configure for the current application the context of the module silverpeas in which all
          * are defined the business objects and services */
         angular.module('silverpeas').
-                constant('context', {
+                value('context', {
           currentUserId: '${currentUserId}',
           multiSelection: ${multipleSelection},
           selectionScope: '${selectionScope}',

@@ -54,46 +54,49 @@
       this.target = target;
     },
     initialize: function() {
-      this.currentUser = User.get('me');
-      this.currentUser.isInMyContacts = function(user) {
-        var isOk = false;
-        user.relationships().then(function(contacts) {
-          for (var i in contacts) {
-            if (this.id === contacts[i].id) {
-              isOk = true;
-              ;
+      var self = this;
+      User.get('me').then(function(me) {
+        self.currentUser = me;
+        self.currentUser.isInMyContacts = function(aUser) {
+          var isOk = false;
+          aUser.relationships().then(function(contacts) {
+            for (var i in contacts) {
+              if (this.id === contacts[i].id) {
+                isOk = true;
+                ;
+              }
+            }
+          });
+          return isOk;
+        };
+
+        self.currentUser.isInMyInvitations = function(aUser) {
+          var invitations = this.sentInvitations;
+          for (var i in invitations) {
+            if (invitations[i].receiverId === aUser.id) {
+              return true;
             }
           }
-        });
-        return isOk;
-      };
+          return false;
+        };
 
-      this.currentUser.isInMyInvitations = function(user) {
-        var invitations = this.sentInvitations;
-        for (var i in invitations) {
-          if (invitations[i].receiverId === user.id) {
-            return true;
-          }
-        }
-        return false;
-      };
-
-      this.currentUser.onMySentInvitations = function(callback) {
-        $.ajax({
-          url: webContext + '/services/invitations/outbox',
-          type: 'GET',
-          dataType: 'json',
-          cache: false,
-          success: function(invitations, status, jqXHR) {
-            this.sentInvitations = invitations;
-            if (callback)
-              callback(invitations);
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            alert(errorThrown);
-          }
-        });
-      };
+        self.currentUser.onMySentInvitations = function(callback) {
+          $.ajax({
+            url: webContext + '/services/invitations/outbox',
+            type: 'GET',
+            dataType: 'json',
+            cache: false,
+            success: function(invitations, status, jqXHR) {
+              this.sentInvitations = invitations;
+              if (callback)
+                callback(invitations);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              alert(errorThrown);
+            }
+          });
+        };
+      });
 
       this.initialized = true;
     }
@@ -197,9 +200,12 @@
       var profile = user, $this = $(this);
       $this.data('userZoom', new Date());
       if (!(profile.fullName && profile.lastName && profile.avatar && profile.status !== null &&
-              profile.status !== undefined && profile.connected !== null && profile.connected !== undefined))
-        profile = User.get(user.id);
-      render($this, profile);
+              profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
+        User.get(user.id).then(function(theUser) {
+          profile = theUser;
+          render($this, profile);
+        });
+      }
     });
   };
 

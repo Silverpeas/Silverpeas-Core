@@ -24,7 +24,6 @@
 
 (function() {
 
-
   /**
    * The module silverpeas within which the business objects are defined.
    * @type {Angular.Module} the silverpeas.services module.
@@ -40,11 +39,14 @@
    */
   silverpeas.factory('User', ['context', 'RESTAdapter', function(context, RESTAdapter) {
       return new function() {
-        var defaultParameters = {
-          resource: context.resource,
-          domain: context.domain,
-          roles: context.roles
-        };
+        var defaultParameters = {};
+        if (context) {
+          defaultParameters = {
+            resource: context.resource,
+            domain: context.domain,
+            roles: context.roles
+          };
+        }
 
         var adapter = RESTAdapter.get(webContext + '/services/profile/users', function(data) {
           var users;
@@ -97,11 +99,14 @@
    */
   silverpeas.factory('UserGroup', ['context', 'User', 'RESTAdapter', function(context, User, RESTAdapter) {
       return new function() {
-        var defaultParameters = {
-          resource: context.resource,
-          domain: context.domain,
-          roles: context.roles
-        };
+        var defaultParameters = {};
+        if (context) {
+          defaultParameters = {
+            resource: context.resource,
+            domain: context.domain,
+            roles: context.roles
+          };
+        }
 
         var adapter = RESTAdapter.get(webContext + '/services/profile/groups', function(data) {
           var groups = [];
@@ -153,43 +158,13 @@
 })();
 
 /**
- * Fetcher of the User angularjs service for plain old javascript code.
+ * Provider of the User angularjs service for plain old javascript code.
  * @type {User}
  */
-var User = new function() {
-  /**
-   * Get one or several users matching the specified parameters.
-   * @param {object} params the query parameters.
-   * @returns {User|Array} either a User object or an array of such objects.
-   */
-  this.get = function(params) {
-    var result;
-    injector.invoke(function(User) {
-      User.get(params).then(function(users) {
-        result = users;
-      });
-    });
-    return result;
-  };
-};
+var User = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('User');
 
 /**
  * Fetcher of the UserGroup angularjs service for plain old javascript code.
  * @type {UserGroup}
  */
-var UserGroup = new function() {
-  /**
-   * Get one or several user groups matching the specified parameters.
-   * @param {object} params the query parameters.
-   * @returns {UserGroup|Array} either a UserGroup object or an array of such objects.
-   */
-  this.get = function(params) {
-    var result;
-    injector.invoke(function(User) {
-      User.get(params).then(function(users) {
-        result = users;
-      });
-    });
-    return result;
-  };
-};
+var UserGroup = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('UserGroup');
