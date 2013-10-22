@@ -83,13 +83,13 @@
           <view:arrayLine>
             <c:choose>
               <c:when test="${ticket.resource ne null && ticket.resource.URL ne null}"> 
-                <c:url var="lien" value="${ticket.resource.URL}"/>
+                <c:set var="lien" value="${ticket.resource.URL}"/>
               </c:when>
               <c:otherwise>
                 <c:set var="lien" value="''" />
               </c:otherwise>
             </c:choose>
-            <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\'>${ticket.resource.name}</a>" />
+            <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\' target=\'_blank\'>${ticket.resource.name}</a>" />
             <%
               IconPane iconPane = gef.getIconPane();
               Icon keyIcon = iconPane.addIcon();
