@@ -46,8 +46,10 @@ public class JavascriptPluginInclusion {
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
   private static final String angularjsServicesPath = javascriptPath + "angularjs/services/";
+  private static final String angularjsDirectivesPath = javascriptPath + "angularjs/directives/";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
+  private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
@@ -152,6 +154,7 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePagination(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryCssPath + PAGINATION_TOOL + ".css"));
     xhtml.addElement(script((jqueryPath + PAGINATION_TOOL + ".js")));
+    xhtml.addElement(script((angularjsDirectivesPath + SILVERPEAS_PAGINATOR)));
     return xhtml;
   }
 

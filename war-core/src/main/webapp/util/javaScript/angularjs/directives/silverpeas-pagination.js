@@ -24,9 +24,12 @@
 
 (function() {
 
+  /**
+   * Directives to generate an HTML paginator. It depends on the JQuery plugin smartpaginator.
+   */
   angular.module('silverpeas.directives').directive('silverpeasPagination', function() {
     return {
-      template: '<div class="pageNav_pagination"></div>',
+      template: '<div class="pageNav_silverpeas"></div>',
       restrict: 'E',
       scope: {
         items: '@',
@@ -37,23 +40,17 @@
       replace: true,
       link: function postLink(scope, element, attrs) {
         var $pagination = angular.element(element);
-        var pagination = {
-          items: scope.items,
-          pageSize: scope.pageSize,
-          itemsSize: scope.itemsSize,
-          onPage: scope.onPage
-        };
 
         function renderPagination() {
-          if (pagination.itemsSize > 0) {
+          if (scope.itemsSize > 0) {
             if (!$pagination.is(':visible'))
               $pagination.show();
             $pagination.smartpaginator({
               display: 'single',
-              totalrecords: pagination.itemsSize,
-              recordsperpage: pagination.pageSize,
+              totalrecords: scope.itemsSize,
+              recordsperpage: scope.pageSize,
               length: 6,
-              datacontainer: pagination.items,
+              datacontainer: scope.items,
               dataelement: 'li',
               next: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowRight.gif'}),
               prev: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowLeft.gif'}),
@@ -61,8 +58,8 @@
               last: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleRight.gif'}),
               theme: 'pageNav',
               onchange: function(pageNb) {
-                if (pagination.onPage) {
-                  pagination.onPage({page: pageNb});
+                if (scope.onPage) {
+                  scope.onPage({page: pageNb});
                   return true;
                 } else {
                   alert("silverpeas-pagination: on-page not set!");
@@ -77,7 +74,6 @@
 
         scope.$watch('itemsSize', function(value) {
           if (value !== undefined) {
-            pagination.itemsSize = value;
             $pagination.children().remove();
             renderPagination();
           }

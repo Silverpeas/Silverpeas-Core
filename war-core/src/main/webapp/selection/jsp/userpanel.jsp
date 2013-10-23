@@ -68,9 +68,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
     <view:includePlugin name="breadcrumb"/>
+    <view:includePlugin name="pagination"/>
     <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/services/silverpeas-profile.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/directives/silverpeas-searchbox.js"></script>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/directives/silverpeas-pagination.js"></script>
     <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/selection.js"></script>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
@@ -115,7 +115,7 @@
                   <a href="#" ng-show="selectedGroups.indexOf(group) < 0" ng-click="selectGroup(group)" id="{{ 'add_group_' + group.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add group"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
-              <silverpeas-pagination id="group_list_pagination" class="pageNav_results_userPanel" items="group_list" page-size="groupPageSize" items-size="totalGroupsSize" on-page="changeGroupListingPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination id="group_list_pagination" items="group_list" page-size="groupPageSize" items-size="totalGroupsSize" on-page="changeGroupListingPage(page)"></silverpeas-pagination>
             </div>
           </div>
         </c:if>
@@ -133,7 +133,7 @@
                   <a href="#" ng-show="selectedUsers.indexOf(user) < 0" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
-              <silverpeas-pagination id="user_list_pagination" class="pageNav_results_userPanel" items="user_list" page-size="userPageSize" items-size="totalUsersSize" on-page="changeUserListingPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination id="user_list_pagination" items="user_list" page-size="userPageSize" items-size="totalUsersSize" on-page="changeUserListingPage(page)"></silverpeas-pagination>
             </div>
           </div>
         </c:if>
@@ -156,7 +156,7 @@
                   <a ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
                 </li>
               </ul>
-              <silverpeas-pagination id="selected_group_list_pagination" class="pageNav_results_userPanel" items="selected_group_list" page-size="groupSelectionPageSize" items-size="selectedGroups.length" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination id="selected_group_list_pagination" items="selected_group_list" page-size="groupSelectionPageSize" items-size="selectedGroups.length" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
             </div>
           </div>
           </c:if>
@@ -174,7 +174,7 @@
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                 </li>
               </ul>
-              <silverpeas-pagination id="selected_user_list_pagination" class="pageNav_results_userPanel" items="selected_user_list" page-size="userSelectionPageSize" items-size="selectedUsers.length" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination id="selected_user_list_pagination" items="selected_user_list" page-size="userSelectionPageSize" items-size="selectedUsers.length" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
             </div>
           </div>
           </c:if>
@@ -184,12 +184,12 @@
             <input id="group-selection" type="hidden" name="GroupSelection" value=""/>
             <input id="user-selection" type="hidden" name="UserSelection" value=""/>
             <br clear="all"/>
-            <div id="validate">
+            <div id="validate" class="buttonPane milieuBoutonV5">
               <fmt:message var="selectLabel" key="GML.validate"/>
               <fmt:message var="cancelLabel" key="GML.cancel"/>
-              <a class="milieuBoutonV5" href="#"  ng-click="validate()">${selectLabel}</a>
+              <a class="button" href="#"  ng-click="validate()">${selectLabel}</a>
               <c:if test='${not fn:endsWith(cancelationURL, "userpanel.jsp")}'>
-                <a class="milieuBoutonV5" href="#" ng-click="cancel()">${cancelLabel}</a>
+                <a class="button" href="#" ng-click="cancel()">${cancelLabel}</a>
               </c:if>
             </div>
           </form>

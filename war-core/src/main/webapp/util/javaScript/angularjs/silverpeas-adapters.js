@@ -95,8 +95,15 @@
         }
         var requestedUrl = url;
         for (var param in criteria) {
-          if (criteria[param])
-            requestedUrl += (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param];
+          if (criteria[param]) {
+            if (criteria[param] instanceof Array) {
+              for (var i = 0; i < criteria[param].length; i++) {
+                requestedUrl += (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param][i];
+              }
+            } else {
+              requestedUrl += (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param];
+            }
+          }
         }
         return _get(requestedUrl, this.converter);
       };

@@ -132,22 +132,20 @@
     });
     if (isSpace) {
       var administrators = [];
-      var userProfiles = new UserProfileManagement();
-      userProfiles.get({
-        async: false,
-        accessLevels: ['ADMINISTRATOR']
-      }, function(users) {
+      User.get({
+        accessLevel: ['ADMINISTRATOR']
+      }).then(function(users) {
         $(users).each(function(index, administrator) {
           administrators.push(administrator);
+          if (administrators.length > 0) {
+            $target.append($newLine);
+            $target.append($('<h5>',
+                    {'class': 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
+            __prepareRoleResponsibles($target, userId, administrators);
+            $newLine = $('<br/>');
+          }
         });
       });
-      if (administrators.length > 0) {
-        $target.append($newLine);
-        $target.append($('<h5>',
-                {'class': 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
-        __prepareRoleResponsibles($target, userId, administrators);
-        $newLine = $('<br/>');
-      }
     }
   }
 
@@ -251,9 +249,9 @@
         dataType: "script"
       });
     }
-    if (typeof UserProfile !== 'function') {
+    if (User === undefined) {
       $.ajax({
-        url: webContext + "/util/javaScript/silverpeas-profile.js",
+        url: webContext + "/util/javaScript/angularjs/services/silverpeas-profile.js",
         async: false,
         dataType: "script"
       });
