@@ -23,15 +23,11 @@
  */
 package org.silverpeas.admin.space.quota.process.check;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
@@ -40,12 +36,17 @@ import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
@@ -120,10 +121,13 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     }
 
     // Loading all SpaceInst detected
-    final List<SpaceInst> spaces = new ArrayList<SpaceInst>();
+    final List<SpaceInst> handledSpaces = new ArrayList<SpaceInst>();
     for (final String spaceId : spaceIds) {
-      spaces.add(organizationController.getSpaceInstById(spaceId));
+      SpaceInst handledSpace = organizationController.getSpaceInstById(spaceId);
+      if (!QuotaLoad.UNLIMITED.equals(handledSpace.getDataStorageQuota().getLoad())) {
+        handledSpaces.add(handledSpace);
+      }
     }
-    return spaces;
+    return handledSpaces;
   }
 }

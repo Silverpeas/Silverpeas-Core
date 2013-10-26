@@ -47,8 +47,6 @@
 <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
-<view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
-<fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <c:set var="id" value="${param.Id}" />
 <c:set var="Silverpeas_Attachment_ObjectId" scope="session" value="${id}" />
@@ -101,6 +99,7 @@
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
+<view:includePlugin name="notifier"/>
 <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
 <c:choose>
   <c:when test="${view:booleanValue(isComponentVersioned)}">
@@ -276,9 +275,12 @@
       });
 
     var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
-      var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${silfn:formatMemSize(maximumFileSize)})\n";
+      var errorMsg = jqXHR.responseText;
+      if (!$.trim(errorMsg)) {
+        errorMsg = errorThrown;
+      }
       $.closeProgressMessage();
-      window.alert(errorMsg);
+      notyError(errorMsg);
     };
 
     $("#dialog-attachment-add").dialog({

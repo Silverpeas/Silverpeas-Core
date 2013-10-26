@@ -28,19 +28,18 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.DummyHandledFile;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -65,9 +64,15 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
     // Treatment on write only
     if (IOAccess.READ_WRITE.equals(fileHandler.getIoAccess())) {
 
+      // Loading all ComponentInst detected
+      final Set<String> componentInstanceIds =
+          indentifyComponentInstances(processExecutionProcess, fileHandler);
+
       // Checking authorized and forbidden files on each component detected
-      for (final ComponentInst component : indentifyComponentInstances(processExecutionProcess,
-          fileHandler)) {
+      for (final String componentInstanceId : componentInstanceIds) {
+
+        final ComponentInst component =
+            organizationController.getComponentInst(componentInstanceId);
 
         // Component file filter that contains authorized and forbidden rules
         final ComponentFileFilterParameter componentFileFilter =
@@ -79,7 +84,19 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
               .listFiles(sessionDirectory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
 
             // Verifying current file if it is authorized
-            componentFileFilter.verifyFileAuthorized(sessionFile);
+            if (sessionFile.getPath().contains(component.getId())) {
+              componentFileFilter.verifyFileAuthorized(sessionFile);
+            }
+          }
+        }
+
+        // Checking dummy handled files
+        for (DummyHandledFile dummyHandledFile : fileHandler
+            .getDummyHandledFiles(componentInstanceId)) {
+          if (!dummyHandledFile.isDeleted() &&
+              !componentFileFilter.isMimeTypeAuthorized(dummyHandledFile.getMimeType())) {
+            throw new ComponentFileFilterException(componentFileFilter,
+                dummyHandledFile.getName());
           }
         }
       }
@@ -87,12 +104,12 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
   }
 
   /**
-   * Identifying all components aimed by the process chained execution
+   * Identifying all component instances aimed by the process chained execution
    * @param processExecutionProcess
    * @param fileHandler
    * @return
    */
-  private Collection<ComponentInst> indentifyComponentInstances(
+  private Set<String> indentifyComponentInstances(
       final ProcessExecutionContext processExecutionProcess, final FileHandler fileHandler) {
     final Set<String> componentInstanceIds = new HashSet<String>();
 
@@ -103,12 +120,6 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
     // Component instance ids from the session
     componentInstanceIds.addAll(fileHandler.getSessionHandledRootPathNames(true));
-
-    // Loading all ComponentInst detected
-    final List<ComponentInst> components = new ArrayList<ComponentInst>();
-    for (final String componentInstanceId : componentInstanceIds) {
-      components.add(organizationController.getComponentInst(componentInstanceId));
-    }
-    return components;
+    return componentInstanceIds;
   }
 }

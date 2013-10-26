@@ -203,8 +203,8 @@ public class AuthenticationParameters {
   private UserDetail getUserByInternalAuthToken(HttpServletRequest request) {
     String internalAuthToken = (String) request.getAttribute("internalAuthToken");
     if (StringUtil.isDefined(internalAuthToken)) {
-      if (CacheServiceFactory.getCacheService().get(internalAuthToken) instanceof UserDetail) {
-        return (UserDetail) CacheServiceFactory.getCacheService().remove(internalAuthToken);
+      if (CacheServiceFactory.getApplicationCacheService().get(internalAuthToken) instanceof UserDetail) {
+        return (UserDetail) CacheServiceFactory.getApplicationCacheService().remove(internalAuthToken);
       }
     }
     return null;

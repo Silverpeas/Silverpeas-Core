@@ -109,13 +109,6 @@ public class WysiwygController {
     return path;
   }
 
-  private static void checkNoJavascriptInHTML(String textHtml) {
-    if (textHtml.matches("(?i)(?u)(?s).*<.+[ ]+on[a-z]+[ ]*=.*>.*") || textHtml.matches(
-        "(?i)(?u)(?s).*<[ ]*script.*>.*")) {
-      throw new AssertionError("The WYSIWYG contains javascript code!");
-    }
-  }
-
   public WysiwygController() {
   }
 
@@ -816,6 +809,21 @@ public class WysiwygController {
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)), true, true);
     }
     return fileIds;
+  }
+
+  public static void move(String fromComponentId, String fromObjectId, String componentId,
+      String objectId) {
+    ForeignPK fromForeignPK = new ForeignPK(fromObjectId, fromComponentId);
+    List<SimpleDocument> documents =
+          AttachmentServiceFactory.getAttachmentService().listAllDocumentsByForeignKey(
+              fromForeignPK, null);
+    ForeignPK toForeignPK = new ForeignPK(objectId, componentId);
+    for (SimpleDocument document : documents) {
+      AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
+    }
+
+    // change images path in wysiwyg
+    wysiwygPlaceHaveChanged(fromComponentId, fromObjectId, componentId, objectId);
   }
 
   static String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,

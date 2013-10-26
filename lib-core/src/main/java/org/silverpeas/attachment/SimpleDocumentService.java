@@ -23,6 +23,48 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.annotation.Service;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ActionType;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.annotation.Action;
+import com.stratelia.webactiv.util.annotation.TargetObject;
+import com.stratelia.webactiv.util.annotation.TargetPK;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.webdav.WebdavRepository;
+import org.silverpeas.process.annotation.SimulationActionProcess;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,46 +78,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
-import com.silverpeas.annotation.Service;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 
 /**
  *
@@ -243,9 +245,11 @@ public class SimpleDocumentService implements AttachmentService {
    * called, <code>false</code> for ignoring thoose callbacks.
    * @return the stored document.
    */
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, InputStream content,
-      boolean indexIt, boolean invokeCallback) {
+  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+      InputStream content, boolean indexIt, boolean invokeCallback) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -412,9 +416,11 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.UPDATE)
   @Override
-  public void updateAttachment(SimpleDocument document, InputStream in, boolean indexIt,
-      boolean invokeCallback) {
+  public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, InputStream in,
+      boolean indexIt, boolean invokeCallback) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();

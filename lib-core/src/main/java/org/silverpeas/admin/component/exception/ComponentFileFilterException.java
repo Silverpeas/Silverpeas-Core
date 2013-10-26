@@ -36,18 +36,18 @@ import static com.silverpeas.util.StringUtil.isDefined;
 public class ComponentFileFilterException extends RuntimeException {
 
   private final ComponentFileFilterParameter fromComponentFileFilter;
-  private final File forbiddenFile;
+  private final String forbiddenFileName;
   private String language;
 
   /**
    * Default constructor
    * @param fromComponentFileFilter
-   * @param forbiddenFile
+   * @param forbiddenFileName
    */
   public ComponentFileFilterException(final ComponentFileFilterParameter fromComponentFileFilter,
-      final File forbiddenFile) {
+      final String forbiddenFileName) {
     this.fromComponentFileFilter = fromComponentFileFilter;
-    this.forbiddenFile = forbiddenFile;
+    this.forbiddenFileName = forbiddenFileName;
   }
 
   /**
@@ -75,7 +75,7 @@ public class ComponentFileFilterException extends RuntimeException {
    * @return thr forbidden file name
    */
   public String getForbiddenFileName() {
-    return forbiddenFile != null ? forbiddenFile.getName() : "";
+    return forbiddenFileName;
   }
 
   /**

@@ -23,36 +23,25 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath;
-import static org.apache.commons.io.FileUtils.sizeOfDirectory;
-
-import java.io.File;
-
+import com.silverpeas.annotation.Service;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
-import com.silverpeas.annotation.Service;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.File;
+
+import static com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath;
+import static org.apache.commons.io.FileUtils.sizeOfDirectory;
 
 /**
  * @author Yohann Chastagnier
  */
 @Service
-public class DefaultDataStorageSpaceQuotaService extends
-    AbstractSpaceQuotaService<DataStorageSpaceQuotaKey> implements DataStorageSpaceQuotaService {
-  private static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
-  static {
-    final ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
-    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
-        settings.getLong("quota.personalspace.datastorage.default.maxCount", 0);
-    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
-      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
-    }
-  }
+public class DefaultDataStorageSpaceQuotaService
+    extends AbstractSpaceQuotaService<DataStorageSpaceQuotaKey>
+    implements DataStorageSpaceQuotaService {
 
   /*
    * (non-Javadoc)
@@ -78,8 +67,9 @@ public class DefaultDataStorageSpaceQuotaService extends
     // space could be null if user space is performed
     if (key.getSpace() != null) {
       File file;
-      for (final ComponentInst component : key.getSpace().getAllComponentsInst()) {
-        file = new File(getAbsolutePath(component.getId()));
+      for (final String componentId : OrganisationControllerFactory.getOrganisationController()
+          .getAllComponentIdsRecur(key.getSpace().getId())) {
+        file = new File(getAbsolutePath(componentId));
         if (file.exists()) {
           currentCount += sizeOfDirectory(file);
         }
@@ -104,6 +94,10 @@ public class DefaultDataStorageSpaceQuotaService extends
       if (key.getSpace().isPersonalSpace()) {
         // Setting a dummy id
         quota.setId(-1L);
+        // The type
+        quota.setType(key.getQuotaType());
+        // The resource id
+        quota.setResourceId(key.getResourceId());
         // Setting the max count
         quota.setMaxCount(dataStorageInPersonalSpaceQuotaDefaultMaxCount);
         // Verifying

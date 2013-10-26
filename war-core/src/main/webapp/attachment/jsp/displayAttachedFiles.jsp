@@ -33,17 +33,15 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
+<%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
 <%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
-<view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
-<fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
@@ -51,6 +49,7 @@
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="notifier"/>
 <c:choose>
   <c:when test="${isVersionActive}">
     <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
@@ -281,7 +280,7 @@
             <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.history))}" />
             <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
                 <span class="linkAllVersions">
-                  <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')" /><fmt:message key="allVersions" /></a>
+                  <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')"><fmt:message key="allVersions" /></a>
                 </span>
             </c:if>
             <c:if test="${contextualMenuEnabled}">
@@ -784,9 +783,12 @@
     });
 
       var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
-        var errorMsg = "<fmt:message key='attachment.dialog.errorFileSize' /> <fmt:message key='attachment.dialog.maximumFileSize'/> (${silfn:formatMemSize(maximumFileSize)})\n";
+        var errorMsg = jqXHR.responseText;
+        if (!$.trim(errorMsg)) {
+          errorMsg = errorThrown;
+        }
         $.closeProgressMessage();
-        window.alert(errorMsg);
+        notyError(errorMsg);
       };
 
       $("#dialog-attachment-add").dialog({

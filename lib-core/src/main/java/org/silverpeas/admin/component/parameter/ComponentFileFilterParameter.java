@@ -27,6 +27,7 @@ import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.admin.component.exception.ComponentFileFilterException;
+import org.silverpeas.attachment.model.DocumentType;
 
 import java.io.File;
 import java.util.Collection;
@@ -190,23 +191,7 @@ public class ComponentFileFilterParameter {
    * @return
    */
   public boolean isFileAuthorized(final File file) {
-    if (file != null) {
-      if (!getMimeTypes().isEmpty()) {
-        final String fileMimeType = FileUtil.getMimeType(file.getPath());
-
-        // File mime-type has to be found
-        if (!isDefined(fileMimeType)) {
-          return false;
-        }
-
-        // On authorized check, fileMimeType has to be contained in authorized files defined.
-        // On forbidden check, fileMimeType has not to be contained in forbidden files defined.
-        return isAuthorization() ? getMimeTypes().contains(fileMimeType) :
-            !getMimeTypes().contains(fileMimeType);
-      }
-      return true;
-    }
-    return false;
+    return file != null && isMimeTypeAuthorized(FileUtil.getMimeType(file.getPath()));
   }
 
   /**
@@ -215,7 +200,34 @@ public class ComponentFileFilterParameter {
    */
   public void verifyFileAuthorized(final File file) {
     if (!isFileAuthorized(file)) {
-      throw new ComponentFileFilterException(this, file);
+      throw new ComponentFileFilterException(this, (file != null ? file.getName() : ""));
     }
+  }
+
+  /**
+   * Checks if the given mime type is authorized. If parameter is null, it is considered as
+   * forbidden.
+   * @param mimeType
+   * @return
+   */
+  public boolean isMimeTypeAuthorized(final String mimeType) {
+    if (!getMimeTypes().isEmpty()) {
+
+      // If the mime-type corresponds to a technical file, it is authorized.
+      if (DocumentType.decode(mimeType) != null) {
+        return true;
+      }
+
+      // File mime-type has to be found
+      if (!isDefined(mimeType)) {
+        return false;
+      }
+
+      // On authorized check, fileMimeType has to be contained in authorized files defined.
+      // On forbidden check, fileMimeType has not to be contained in forbidden files defined.
+      return isAuthorization() ? getMimeTypes().contains(mimeType) :
+          !getMimeTypes().contains(mimeType);
+    }
+    return true;
   }
 }

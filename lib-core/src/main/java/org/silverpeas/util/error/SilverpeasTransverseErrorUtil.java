@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,9 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.peasCore.servlets;
+package org.silverpeas.util.error;
 
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.webactiv.util.exception.WithNested;
@@ -32,45 +31,38 @@ import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuota
 import org.silverpeas.util.UnitUtil;
 
 import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
 
 /**
- * Centralized treatment of transverse exceptions.
+ * Centralized treatment of transverse exceptions :
+ * {@link DataStorageQuotaException}
+ * {@link ComponentFileFilterException}
  * @author Yohann Chastagnier
  */
-public class SilverpeasWebErrorManager {
-
-  private static final String SERVLET_JSP_EXCEPTION_ATTRIBUTE = "javax.servlet.jsp.jspException";
+public class SilverpeasTransverseErrorUtil {
 
   /**
-   * Checks if a DataStorageQuotaException is registred in the servlet request
-   * @param request the http servlet request
+   * Checks from a throwable if an runtime transverse exception has to be thrown
+   * @param throwable the http servlet request
    * @param language the language of current user
-   * @throws DataStorageQuotaException, ComponentFileFilterException
    */
-  public static void verifyErrorFromRequest(final HttpServletRequest request, final String language)
+  public static void throwTransverseErrorIfAny(Throwable throwable, final String language)
       throws DataStorageQuotaException, ComponentFileFilterException {
-    final Object servletJspExceptionAttribute =
-        request.getAttribute(SERVLET_JSP_EXCEPTION_ATTRIBUTE);
-    if (servletJspExceptionAttribute instanceof Throwable) {
-      final Throwable throwable = (Throwable) servletJspExceptionAttribute;
 
-      // Data storage quota exception
-      final DataStorageQuotaException dataStorageQuotaException =
-          retrieveDataStorageQuotaException(throwable);
-      if (dataStorageQuotaException != null) {
-        dataStorageQuotaException.setLanguage(language);
-        throw dataStorageQuotaException;
-      }
+    // Data storage quota exception
+    final DataStorageQuotaException dataStorageQuotaException =
+        retrieveDataStorageQuotaException(throwable);
+    if (dataStorageQuotaException != null) {
+      dataStorageQuotaException.setLanguage(language);
+      throw dataStorageQuotaException;
+    }
 
-      // Component file filter exception
-      final ComponentFileFilterException componentFileFilterException =
-          retrieveComponentFileFilterException(throwable);
-      if (componentFileFilterException != null) {
-        componentFileFilterException.setLanguage(language);
-        throw componentFileFilterException;
-      }
+    // Component file filter exception
+    final ComponentFileFilterException componentFileFilterException =
+        retrieveComponentFileFilterException(throwable);
+    if (componentFileFilterException != null) {
+      componentFileFilterException.setLanguage(language);
+      throw componentFileFilterException;
     }
   }
 
@@ -80,7 +72,7 @@ public class SilverpeasWebErrorManager {
    * @return
    */
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-  private static String performExceptionMessage(Throwable throwable, String language) {
+  public static String performExceptionMessage(Throwable throwable, String language) {
     String message = "";
     final SilverpeasTemplate template;
 
@@ -114,16 +106,6 @@ public class SilverpeasWebErrorManager {
     }
 
     return message;
-  }
-
-  /**
-   * Retrieves a unformatted exception message if any handled from a given throwable
-   * @param throwable
-   * @return
-   */
-  public static String performAppletAlertExceptionMessage(Throwable throwable, String language) {
-    return EncodeHelper.htmlStringToJavaString(performExceptionMessage(throwable, language))
-        .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9 ]*/?>", "").replaceAll("\\n", "\\\\n");
   }
 
   /**

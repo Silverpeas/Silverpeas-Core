@@ -23,11 +23,8 @@
  */
 package org.silverpeas.process.io.file;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.*;
-
+import com.silverpeas.util.MapUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -36,7 +33,10 @@ import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.management.ProcessManagement;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Bases of file handler functionnalities whose a lot of these are protected and only usable by
@@ -56,6 +56,8 @@ public abstract class AbstractFileHandler {
   private final File sessionRootPath = new File(FileRepositoryManager.getTemporaryPath());
   private final ProcessSession session;
   private final Map<FileBasePath, Set<File>> toDelete = new HashMap<FileBasePath, Set<File>>();
+  private final Map<String, Set<DummyHandledFile>> dummyHandledFiles =
+      new HashMap<String, Set<DummyHandledFile>>();
   private IOAccess ioAccess = IOAccess.READ_ONLY;
 
   /**
@@ -255,11 +257,37 @@ public abstract class AbstractFileHandler {
   /**
    * This method calculates the size of files contained in the given relative root path from the
    * session and subtracts from the previous result the size of files marked to be deleted.
+   * Dummy handled files are included (according to relativeRootPath that is normally a list of
+   * component instance ids).
    */
   public long sizeOfSessionWorkingPath(final String... relativeRootPath) {
     long size = 0;
     for (final FileBasePath basePath : handledBasePath) {
       size += sizeOfSessionWorkingPath(basePath, relativeRootPath);
+    }
+
+    // Finally adding/removing the size of dummy handled files
+    Set<String> componentInstanceIds = new HashSet<String>();
+    if (relativeRootPath != null) {
+      // Only a part of dummy files is aimed
+      Collections.addAll(componentInstanceIds, relativeRootPath);
+    }
+    if (componentInstanceIds.isEmpty()) {
+      // If relativeRootPath is empty, then all dummy files are aimed
+      componentInstanceIds.addAll(dummyHandledFiles.keySet());
+    }
+    for (String componentInstanceId : componentInstanceIds) {
+      Set<DummyHandledFile> dummyHandledFilesOfCurrentComponentInstanceId =
+          dummyHandledFiles.get(componentInstanceId);
+      if (dummyHandledFilesOfCurrentComponentInstanceId != null) {
+        for (DummyHandledFile dummyHandledFile : dummyHandledFilesOfCurrentComponentInstanceId) {
+          if (dummyHandledFile.isDeleted()) {
+            size -= dummyHandledFile.getSize();
+          } else {
+            size += dummyHandledFile.getSize();
+          }
+        }
+      }
     }
     return size;
   }
@@ -308,6 +336,7 @@ public abstract class AbstractFileHandler {
 
   /**
    * Gets handled root directories from the session. (reads, writes, deletes)
+   * The result contains root directories of dummy handled files.
    * @param skipDeleted
    * @return
    */
@@ -316,6 +345,7 @@ public abstract class AbstractFileHandler {
     for (final FileBasePath basePath : handledBasePath) {
       rootPathNames.addAll(getSessionHandledRootPathNames(basePath, skipDeleted));
     }
+    rootPathNames.addAll(dummyHandledFiles.keySet());
     return rootPathNames;
   }
 
@@ -515,5 +545,35 @@ public abstract class AbstractFileHandler {
    */
   private void setIoAccess(final IOAccess ioAccess) {
     this.ioAccess = ioAccess;
+  }
+
+  /**
+   * Add a dummy file.
+   * It can be useful for process check operations.
+   * @param dummyHandledFile
+   */
+  public void addDummyHandledFile(DummyHandledFile dummyHandledFile) {
+    setIoAccess(IOAccess.READ_WRITE);
+    MapUtil
+        .putAddSet(dummyHandledFiles, dummyHandledFile.getComponentInstanceId(), dummyHandledFile);
+  }
+
+  /**
+   * Remove a dummy file.
+   * It can be useful for process check operations.
+   * @param dummyHandledFile
+   */
+  public void removeDummyHandledFile(DummyHandledFile dummyHandledFile) {
+    MapUtil.removeValueSet(dummyHandledFiles, dummyHandledFile.getComponentInstanceId(),
+        dummyHandledFile);
+  }
+
+  /**
+   * Gets the dummy handled files from a given component instance id.
+   * A component instance id can be see as a root handled directory.
+   * @return
+   */
+  public Set<DummyHandledFile> getDummyHandledFiles(String componentInstanceId) {
+    return dummyHandledFiles.get(componentInstanceId);
   }
 }

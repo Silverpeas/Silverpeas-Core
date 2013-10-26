@@ -26,9 +26,11 @@ package com.silverpeas.web;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationController;
 
 import javax.inject.Inject;
@@ -58,6 +60,8 @@ public abstract class RESTWebService {
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
   private Collection<SilverpeasRole> userRoles = null;
+
+  private ResourceLocator bundle = null;
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
@@ -182,5 +186,24 @@ public abstract class RESTWebService {
    */
   protected OrganisationController getOrganisationController() {
     return organizationController;
+  }
+
+  /**
+   * Gets the location of the bundle to use.
+   * @return
+   */
+  protected String getBundleLocation() {
+    return null;
+  }
+
+  /**
+   * Gets the bundle to use.
+   * @return
+   */
+  protected ResourceLocator getBundle() {
+    if (bundle == null) {
+      bundle = new ResourceLocator(getBundleLocation(), getUserPreferences().getLanguage());
+    }
+    return bundle;
   }
 }

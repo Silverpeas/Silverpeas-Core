@@ -44,6 +44,9 @@ import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSI
  * Date: 20/09/13
  */
 public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
+
+  private static final long serialVersionUID = 3879578969267125005L;
+
   private static final SilverpeasSessionOpener silverpeasSessionOpener =
       new SilverpeasSessionOpener();
 
@@ -97,7 +100,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   /**
    * Expires the current user session (even if no user session exists) and stop all treatments.
-   * Sends an RemoteException.
+   * Sends an RuntimeException.
    */
   protected void throwUserSessionExpiration() {
     throw new UserSessionExpirationException();

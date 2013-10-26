@@ -23,28 +23,17 @@
  */
 package org.silverpeas.quota.model;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-import static java.util.EnumSet.of;
+import org.silverpeas.quota.constant.QuotaLoad;
+import org.silverpeas.quota.constant.QuotaType;
+import org.silverpeas.quota.exception.QuotaException;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.silverpeas.quota.constant.QuotaLoad;
-import org.silverpeas.quota.constant.QuotaType;
-import org.silverpeas.quota.exception.QuotaException;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static java.util.EnumSet.of;
 
 /**
  * @author Yohann Chastagnier
@@ -320,5 +309,22 @@ public class Quota implements Serializable, Cloneable {
       quota = null;
     }
     return quota;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Quota infos for ");
+    builder.append("resourceId=").append(getResourceId()).append(" and ");
+    builder.append("type=").append(getType()).append(": ");
+    if (!exists()) {
+      builder.append("does not exist");
+    } else {
+      builder.append("load=").append(getLoad()).append(", ");
+      builder.append("count=").append(getCount()).append(", ");
+      builder.append("mincount=").append(getMinCount()).append(", ");
+      builder.append("maxcount=").append(getMaxCount());
+    }
+    return builder.toString();
   }
 }

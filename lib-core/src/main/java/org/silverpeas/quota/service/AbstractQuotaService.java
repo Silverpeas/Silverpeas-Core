@@ -23,8 +23,7 @@
  */
 package org.silverpeas.quota.service;
 
-import javax.inject.Inject;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
@@ -39,6 +38,8 @@ import org.silverpeas.quota.service.dao.QuotaDAO;
 import org.silverpeas.quota.service.dao.jdbc.JDBCQuotaDAO;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 /**
  * @author Yohann Chastagnier
@@ -169,8 +170,17 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    */
   protected Quota verify(final T key, final Quota quota,
       final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
+
+    SilverTrace
+        .debug("quota", "AbstractQuotaService.verify()", "quota.BEFORE_VERIFY", quota.toString());
+
     if (quota.exists()) {
-      quota.setCount(getCurrentCount(key) + countingOffset.getOffset());
+      long offset = countingOffset.getOffset();
+      quota.setCount(getCurrentCount(key) + offset);
+
+      SilverTrace.debug("quota", "AbstractQuotaService.verify()", "quota.AFTER_VERIFY",
+          quota.toString() + ", APPLIED OFFSET=" + offset);
+
       final QuotaLoad quotaLoad = quota.getLoad();
       if (QuotaLoad.OUT_OF_BOUNDS.equals(quotaLoad)) {
         throw new QuotaOutOfBoundsException(quota);

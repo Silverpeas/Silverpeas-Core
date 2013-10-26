@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -44,8 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
-
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     SilverpeasAuthenticatedHttpServlet {
@@ -192,7 +191,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     destination = getDestination(function, component, request);
 
     // Check existence of a transverse exception
-    SilverpeasWebErrorManager.verifyErrorFromRequest(request, component.getLanguage());
+    SilverpeasTransverseWebErrorUtil.verifyErrorFromRequest(request, component.getLanguage());
 
     if (selectionProcessor.isSelectionAsked(destination)) {
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
