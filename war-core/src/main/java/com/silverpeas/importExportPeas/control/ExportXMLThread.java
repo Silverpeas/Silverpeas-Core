@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,20 +29,21 @@ import java.util.List;
 import com.silverpeas.importExport.control.ImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class ExportXMLThread extends ExportThread {
 
   private final List<WAAttributeValuePair> pksToExport;
   private final String language;
-  private final String rootId;
+  private final NodePK rootPK;
   private final int mode;
 
   public ExportXMLThread(ImportExportSessionController toAwake, List<WAAttributeValuePair> pks,
-      String language, String rootId, int mode) {
+      String language, NodePK rootPK, int mode) {
     super(toAwake);
     pksToExport = pks;
     this.language = language;
-    this.rootId = rootId;
+    this.rootPK = rootPK;
     this.mode = mode;
   }
 
@@ -54,7 +55,7 @@ public class ExportXMLThread extends ExportThread {
       ImportExport importExport = new ImportExport();
       m_ExportReport =
           importExport.processExport(super.m_toAwake.getUserDetail(), language, pksToExport,
-          rootId, mode);
+          rootPK, mode);
       SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
           "------------TOUT EST OK-----------");
       m_isEncours = false;

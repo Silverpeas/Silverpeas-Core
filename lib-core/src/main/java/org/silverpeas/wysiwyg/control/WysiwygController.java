@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -109,6 +109,13 @@ public class WysiwygController {
     return path;
   }
 
+  private static void checkNoJavascriptInHTML(String textHtml) {
+    if (textHtml.matches("(?i)(?u)(?s).*<.+[ ]+on[a-z]+[ ]*=.*>.*") || textHtml.matches(
+        "(?i)(?u)(?s).*<[ ]*script.*>.*")) {
+      throw new AssertionError("The WYSIWYG contains javascript code!");
+    }
+  }
+
   public WysiwygController() {
   }
 
@@ -127,8 +134,7 @@ public class WysiwygController {
     String[][] imagesList = new String[nbImages][2];
     for (int i = 0; i < nbImages; i++) {
       SimpleDocument attD = attachments.get(i);
-      String path = attD.getAttachmentPath();
-      imagesList[i][0] = path;
+      imagesList[i][0] = attD.getAttachmentURL();
       imagesList[i][1] = attD.getFilename();
       SilverTrace.info("wysiwyg", "WysiwygController.getImages()",
           "root.MSG_GEN_PARAM_VALUE", imagesList[i][0] + "] [" + imagesList[i][1]);

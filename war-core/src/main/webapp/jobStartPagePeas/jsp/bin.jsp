@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -128,7 +128,7 @@ out.println(frame.printBefore());
 			if (space.isRoot())
 				cellLabel = line.addArrayCellText(space.getName());
 			else
-				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+Encode.javaStringToJsString(space.getPath(" > "))+"\"/>"+space.getName()+"</a>");
+				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+EncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+EncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
 			cellLabel.setCompareOn(space.getName());
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemoveDate())+"&nbsp;("+space.getRemoverName()+")");
 			cell.setCompareOn(space.getRemoveDate());
@@ -161,7 +161,7 @@ out.println(frame.printBefore());
 		{
 			ArrayLine line = arrayPane.addArrayLine();
 			ComponentInstLight component = (ComponentInstLight) it.next();
-			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+component.getLabel()+"</a>");
+			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+EncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemoveDate())+"&nbsp;("+component.getRemoverName()+")");
 			cell.setCompareOn(component.getRemoveDate());
 		

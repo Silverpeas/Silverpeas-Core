@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,5 +49,12 @@ public class ComponentInstanceI18NRow {
     lang = component.lang;
     name = component.name;
     description = component.description;
+  }
+
+  public ComponentInstanceI18NRow(int componentId, String lang, String name, String description) {
+    this.componentId = componentId;
+    this.lang = lang;
+    this.name = name;
+    this.description = description;
   }
 }

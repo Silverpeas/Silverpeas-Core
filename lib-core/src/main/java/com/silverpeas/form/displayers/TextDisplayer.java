@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -46,6 +42,7 @@ import java.util.StringTokenizer;
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
  * to a end user and can retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -61,6 +58,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
 
   /**
    * Returns the name of the managed types.
+   *
    * @return
    */
   public String[] getManagedTypes() {
@@ -79,6 +77,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param template
    * @param PagesContext
@@ -96,6 +95,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param field
    * @param template
@@ -207,6 +207,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   *
    * @param newValue
    * @param field
    * @param template

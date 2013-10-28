@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.owasp.encoder.Encode;
 
 @XmlRootElement
 public class NodeEntity implements Exposable {
@@ -88,9 +89,9 @@ public class NodeEntity implements Exposable {
   }
 
   private NodeEntity(final NodeDetail node, URI uri, String lang) {
-    this.setData(node.getName(lang));
+    this.data = Encode.forHtml(node.getName(lang));
     this.uri = uri;
-    this.setAttr(NodeAttrEntity.fromNodeDetail(node, uri, lang));
+    this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
 
     // set translations
     Map<String, Translation> theTranslations = node.getTranslations();
@@ -100,7 +101,7 @@ public class NodeEntity implements Exposable {
           new NodeTranslationEntity(translation.getId(), translation.getLanguage(), node);
       translationEntities.add(translationEntity);
     }
-    setTranslations(translationEntities.toArray(new NodeTranslationEntity[0]));
+    this.translations = translationEntities.toArray(new NodeTranslationEntity[0]);
 
     // set children data
     setChildrenURI(getChildrenURI(uri));

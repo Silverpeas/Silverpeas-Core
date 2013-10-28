@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,17 +20,11 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
@@ -39,6 +33,11 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class ComponentInstManager {
 
@@ -108,6 +107,16 @@ public class ComponentInstManager {
       newInstance.spaceId = idAsInt(sFatherId);
       ddManager.getOrganization().instance.createComponentInstance(newInstance);
       String sComponentNodeId = idAsString(newInstance.id);
+
+      // duplicates existing translations
+      Map<String, Translation> translations = componentInst.getTranslations();
+      for (String lang : translations.keySet()) {
+        ComponentI18N translation = (ComponentI18N) translations.get(lang);
+        ComponentInstanceI18NRow row =
+            new ComponentInstanceI18NRow(newInstance.id, lang, translation.getName(),
+            translation.getDescription());
+        ddManager.getOrganization().instanceI18N.createTranslation(row);
+      }
 
       // Add the parameters if necessary
       List<Parameter> parameters = componentInst.getParameters();
@@ -653,9 +662,8 @@ public class ComponentInstManager {
   private List<ComponentInstLight> componentInstanceRows2ComponentInstLights(
       ComponentInstanceRow[] rows) {
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
-    ComponentInstLight componentLight = null;
     for (int s = 0; rows != null && s < rows.length; s++) {
-      componentLight = new ComponentInstLight(rows[s]);
+      ComponentInstLight componentLight = new ComponentInstLight(rows[s]);
       componentLight.setId(componentLight.getName() + componentLight.getId());
       componentLight.setDomainFatherId("WA" + componentLight.getDomainFatherId());
       components.add(componentLight);

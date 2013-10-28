@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -506,10 +506,14 @@ public class PublicationDAO {
       prepStmt.setString(11, detail.getKeywords());
       prepStmt.setString(12, detail.getContent());
       prepStmt.setString(13, detail.getStatus());
-      if (detail.getCreationDate() == null) {
-        prepStmt.setString(14, DateUtil.today2SQLDate());
+      if (detail.isUpdateDateMustBeSet() && detail.getUpdateDate() != null) {
+        prepStmt.setString(14, DateUtil.formatDate(detail.getUpdateDate()));
       } else {
-        prepStmt.setString(14, DateUtil.formatDate(detail.getCreationDate()));
+        if (detail.getCreationDate() == null) {
+          prepStmt.setString(14, DateUtil.today2SQLDate());
+        } else {
+          prepStmt.setString(14, DateUtil.formatDate(detail.getCreationDate()));
+        }
       }
       prepStmt.setString(15, detail.getPK().getComponentName());
       prepStmt.setString(16, detail.getCreatorId());
@@ -994,7 +998,7 @@ public class PublicationDAO {
       selectStatement.append(" ) ");
     }
     selectStatement.append(" and F.pubId = P.pubId ");
-    selectStatement.append(" and P.instanceId='").append(
+    selectStatement.append(" and F.instanceId='").append(
         pubPK.getComponentName()).append("'");
 
     if (status != null && status.size() > 0) {

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -173,13 +173,13 @@ function onLoadStart() {
 
 function saveAsInterestCenter() {
 	
-  var values = $('#used_pdc').pdc('selectedValues');
-	document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+	setPositionIntoForm();
 	
-	if (document.AdvancedSearch.iCenterId.selectedIndex)
+	if (document.AdvancedSearch.iCenterId.selectedIndex) {
 		icName = document.AdvancedSearch.iCenterId.options[document.AdvancedSearch.iCenterId.selectedIndex].text;
-	else
+	} else {
 		icName = "";
+	}
 	url			= "<%=m_context%><%=URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)%>newICenter.jsp?icName="+icName;
 	windowName = "createICenter";
 	width		= "600";
@@ -247,20 +247,31 @@ function addValue(selectItem, axisId)
 }
 
 function sendQuery() {
-	var values = $('#used_pdc').pdc('selectedValues');
-  if (values.length > 0) {
-    document.AdvancedSearch.AxisValueCouples.value = values.flatten();
-  }
-  if (document.AdvancedSearch.query.value == "*")
+	setPositionIntoForm();
+    if (document.AdvancedSearch.query.value == "*") {
 		document.AdvancedSearch.query.value = "";
-	if (checkDates())
-	{
-		top.topFrame.document.searchForm.query.value = "";
+    }
+	if (checkDates()) {
+		try {
+		  // clear global input search
+		  top.topFrame.document.searchForm.query.value = "";
+		} catch (e) {
+		  // catch exceptions if this input does not exist
+		}
 		document.AdvancedSearch.action = "AdvancedSearch";
 		
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
+}
+
+function setPositionIntoForm() {
+	<% if (activeSelection.booleanValue() || searchType == 2) { %>
+	var values = $('#used_pdc').pdc('selectedValues');
+  	if (values.length > 0) {
+      document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+    }
+  	<% } %>
 }
 
 function sendSelectionQuery() {

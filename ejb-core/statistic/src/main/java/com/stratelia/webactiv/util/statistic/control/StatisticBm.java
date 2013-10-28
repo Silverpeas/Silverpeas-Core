@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -96,4 +96,18 @@ public interface StatisticBm {
 
   public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
       String objectType, Date startDate, Date endDate, List<String> userIds);
+  
+
+  
+  /**
+   * Gets the last history detail of each object associated to a user. The result is sorted on
+   * the date time from the youngest to the oldest and limited according to the nbObjects parameter.
+   * @param userId
+   * @param actionType
+   * @param objectType
+   * @param nbObjects
+   * @return ordered list of unique objects used by the user
+   */
+  public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
+      int actionType, String objectType, int nbObjects);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.silverpeas.domains.ldapdriver.LDAPUtility;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -156,13 +155,12 @@ public class UserTable extends Table<UserRow> {
     }
 
     StringBuilder clauseIN = new StringBuilder("(");
-    String specificId;
     for (int s = 0; s < specificIds.size(); s++) {
       if (s != 0) {
         clauseIN.append(", ");
       }
-      specificId = specificIds.get(s);
-      clauseIN.append("'").append(LDAPUtility.dblBackSlashesForDNInFilters(specificId)).append("'");
+      String specificId = specificIds.get(s);
+      clauseIN.append("'").append(specificId).append("'");
     }
     clauseIN.append(")");
     String query = SELECT_USERS_BY_SPECIFICIDS + clauseIN;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -227,7 +227,14 @@ public class RepositoriesTypeManager {
       document.setFilename(file.getName());
       document.setSize(fileSize);
       document.getFile().setCreatedBy(userDetail.getId());
-      document.setCreated(new Date());
+      if (settings.useFileDates()) {
+        document.setCreated(pubDetailToCreate.getCreationDate());
+        if (pubDetailToCreate.getUpdateDate() != null) {
+          document.setUpdated(pubDetailToCreate.getUpdateDate());
+        }
+      } else {
+        document.setCreated(new Date());
+      }
       document.setForeignId(pubDetailToCreate.getPK().getId());
       document.setContentType(FileUtil.getMimeType(file.getName()));
       AttachmentServiceFactory.getAttachmentService()

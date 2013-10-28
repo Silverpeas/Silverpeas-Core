@@ -1,29 +1,29 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.FormException;
+import com.stratelia.webactiv.util.DBUtil;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,35 +32,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FormException;
-import com.stratelia.webactiv.util.DBUtil;
-
 /**
  * A JdbcField stores a value of database field.
+ *
  * @see Field
  * @see FieldDisplayer
  */
 public class JdbcField extends TextField {
 
   private static final long serialVersionUID = 1L;
-
   /**
    * The jdbc field type name.
    */
   static public final String TYPE = "jdbc";
-
   /**
    * The jdbc field dynamic variable userId.
    */
   static public final String VARIABLE_USER_ID = "$$userId";
-
   /**
    * The jdbc field dynamic variable userId for regex.
    */
   static private final String VARIABLE_REGEX_USER_ID = "\\$\\$userId";
-
   private String value = "";
 
   public JdbcField() {
@@ -69,6 +61,7 @@ public class JdbcField extends TextField {
   /**
    * Returns the type name.
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
@@ -76,6 +69,7 @@ public class JdbcField extends TextField {
   /**
    * Returns the string value of this field.
    */
+  @Override
   public String getStringValue() {
     return value;
   }
@@ -83,6 +77,7 @@ public class JdbcField extends TextField {
   /**
    * Set the string value of this field.
    */
+  @Override
   public void setStringValue(String value) {
     this.value = value;
   }
@@ -90,6 +85,7 @@ public class JdbcField extends TextField {
   /**
    * Returns true if the value is read only.
    */
+  @Override
   public boolean isReadOnly() {
     return false;
   }
@@ -147,9 +143,7 @@ public class JdbcField extends TextField {
       } catch (SQLException e) {
         throw new FormException("JdbcField.selectSql",
             "form.EX_CANT_BROWSE_RESULT_JDBC", e);
-      }
-
-      finally {
+      } finally {
         DBUtil.close(rs, prepStmt);
       }
     }

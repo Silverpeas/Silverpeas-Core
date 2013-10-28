@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.13-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>

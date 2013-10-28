@@ -1,43 +1,24 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialnetwork.myProfil.servlets;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
 
 import com.silverpeas.directory.servlets.ImageProfil;
 import com.silverpeas.look.LookHelper;
@@ -49,9 +30,7 @@ import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.util.crypto.CryptMD5;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
@@ -62,8 +41,20 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.util.crypto.CryptMD5;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
 
@@ -105,10 +96,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
 
-        boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() ||
-            (snUserFull.getUserFull().isPasswordValid() &&
-            snUserFull.getUserFull().isPasswordAvailable()) ||
-            myProfilSC.updatablePropertyExists());
+        boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() || (snUserFull.
+            getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable())
+            || myProfilSC.updatablePropertyExists());
 
         if (updateIsAllowed) {
           request.setAttribute("Action", "userModify");
@@ -206,6 +196,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   /**
    * method to change profile Photo
+   *
    * @param request
    * @param nameAvatar
    * @return String
@@ -246,6 +237,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   /**
    * method to choose (x) contacts for display it in the page profil x is the number of contacts the
    * methode use Random rule
+   *
    * @param contactIds
    * @return List<SNContactUser>
    */
@@ -290,8 +282,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       SilverTrace.info(getSessionControlBeanName(),
           "PersoPeasRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-              + " - userLastName=" + userLastName + " userEmail="
-              + userEmail);
+          + " - userLastName=" + userLastName + " userEmail="
+          + userEmail);
 
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion = (userLoginQuestion != null
@@ -315,8 +307,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       Map<String, String> properties = new HashMap<String, String>();
       @SuppressWarnings("unchecked")
       Enumeration<String> parameters = request.getParameterNames();
-      String parameterName = null;
-      String property = null;
+      String parameterName;
+      String property;
       while (parameters.hasMoreElements()) {
         parameterName = parameters.nextElement();
         if (parameterName.startsWith("prop_")) {

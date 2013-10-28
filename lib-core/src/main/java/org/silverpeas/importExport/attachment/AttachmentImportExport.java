@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -23,13 +23,14 @@ package org.silverpeas.importExport.attachment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -41,15 +42,11 @@ import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
@@ -123,67 +120,6 @@ public class AttachmentImportExport {
   }
 
   /**
-   * Methode de copie de fichier utilisee par la methode
-   * importAttachement(String,String,AttachmentDetail)
-   *
-   * @param componentId - id du composant contenant la publication e laquelle est destine
-   * l'attachement
-   * @param a_Detail - objet contenant les informations sur le fichier e copier
-   * @param path - chemin oe doit etre copie le fichier
-   * @return renvoie l'objet des informations sur le fichier e copier complete par les nouvelles
-   * donnees issues de la copie
-   */
-  public AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail, String path) {
-    return copyFile(componentId, a_Detail, path, true);
-  }
-
-  public AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail, String path,
-      boolean updateLogicalName) {
-
-    String fileToUpload = a_Detail.getPhysicalName();
-
-    // Get parameters of file to create
-    String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
-    String type = logicalName.substring(logicalName.lastIndexOf('.') + 1, logicalName.length());
-    String mimeType = FileUtil.getMimeType(logicalName);
-    String physicalName = System.currentTimeMillis() + "." + type;
-    File fileToCreate = new File(path + physicalName);
-    while (fileToCreate.exists()) {
-      SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
-          "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists=" + fileToCreate
-          .getAbsolutePath());
-
-      // To prevent overwriting
-      physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
-      fileToCreate = new File(path + physicalName);
-    }
-    SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
-        "root.MSG_GEN_PARAM_VALUE", "fileName=" + logicalName);
-
-    long size = 0;
-    try {
-      FileUtils.copyFile(new File(fileToUpload), fileToCreate);
-      size = fileToCreate.length();
-    } catch (IOException e) {
-      SilverTrace.error("attachment", "AttachmentImportExport.copyFile()",
-          "attachment.EX_FILE_COPY_ERROR", e);
-    }
-
-    // Complements sur les attachmentDetail
-    a_Detail.setSize(size);
-    a_Detail.setType(mimeType);
-    a_Detail.setPhysicalName(physicalName);
-    if (updateLogicalName) {
-      a_Detail.setLogicalName(logicalName);
-    }
-    a_Detail.setOriginalPath(fileToUpload);
-
-    AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
-    a_Detail.setPK(pk);
-    return a_Detail;
-  }
-
-  /**
    * Methode utilisee par la methode importAttachement(String,String,AttachmentDetail) pour creer un
    * attachement sur la publication creee dans la methode citee.
    *
@@ -220,11 +156,14 @@ public class AttachmentImportExport {
         updateRule);
     attachment.setLogicalName(logicalName);
 
-    // On instancie l'objet attachment e creer
+    Date creationDate = attachment.getCreationDate();
+    if (creationDate == null) {
+      creationDate = new Date();
+    }
     SimpleDocument ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
         new SimpleAttachment(attachment.getLogicalName(), attachment.getLanguage(), attachment.
         getTitle(), attachment.getInfo(), attachment.getSize(),
-        FileUtil.getMimeType(attachment.getPhysicalName()), userId, new Date(), attachment.
+        FileUtil.getMimeType(attachment.getPhysicalName()), userId, creationDate, attachment.
         getXmlForm()));
     return AttachmentServiceFactory.getAttachmentService().createAttachment(ad_toCreate, input,
         indexIt);
@@ -307,8 +246,7 @@ public class AttachmentImportExport {
 
   private void copyAttachment(SimpleDocument attDetail, String exportPath) {
     String fichierJointExport = exportPath + File.separatorChar + FileServerUtils.
-        replaceAccentChars(
-        attDetail.getFilename());
+        replaceAccentChars(attDetail.getFilename());
     AttachmentServiceFactory.getAttachmentService().getBinaryContent(new File(fichierJointExport),
         attDetail.getPk(), null);
   }
@@ -329,7 +267,6 @@ public class AttachmentImportExport {
     if (!StringUtil.isDefined(attachment.getLogicalName())) {
       attachment.setLogicalName(file.getName());
     }
-    attachment.setSize(file.length());
     return file;
   }
 }

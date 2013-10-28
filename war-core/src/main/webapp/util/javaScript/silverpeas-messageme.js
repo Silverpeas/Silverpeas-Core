@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,25 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function( $ ){
-  
+(function($) {
+
   $.messageMe = {
     userId: null,
     currentElement: null,
     initialized: false
   };
-  
+
   /**
    * The user messaging Silverpeas plugin built atop of JQuery.
    * It binds the click events onto the HTML element for which it opens a popup window through which a user
    * can send a message to another one.
    */
-  $.fn.messageMe = function( user ) {
-    
-    if (! this.length)
+  $.fn.messageMe = function(user) {
+
+    if (!this.length)
       return this;
-    
-    if (! $.messageMe.initialized) {
+
+    if (!$.messageMe.initialized) {
       $.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/com/silverpeas/social/multilang/',
@@ -50,7 +50,7 @@
       prepareMessagingPopup();
       $.messageMe.initialized = true;
     }
-      
+
     return this.each(function() {
       var $this = $(this), profile = user;
       if (!(profile instanceof UserProfile)) {
@@ -62,10 +62,10 @@
         });
       else
         render($this, profile);
-    })
+    });
   };
-  
-  function render( target, user ) {
+
+  function render(target, user) {
     target.data('messageMe', true);
     target.click(function() {
       $.messageMe.userId = user.id;
@@ -74,40 +74,40 @@
       $("#notificationDialog").dialog("open");
     });
   }
-  
+
   function closeMessagingPopup() {
     $("#notificationDialog").dialog("close");
     $("#notification-subject").val("");
     $("#notification-message").val("");
   }
-  
+
   function prepareMessagingPopup() {
-    if ($("#notificationDialog").length == 0) {
+    if ($("#notificationDialog").length === 0) {
       $('<div>', {
         'id': 'notificationDialog'
       }).append($('<form>').append($('<table>').append($('<tr>').
-        append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.subject') + '&nbsp;:')).
-        append($('<td>').append($('<input>', {
-          'type': 'text',
-          'name': 'textSubject',
-          'id': 'notification-subject',
-          'maxlength': '1023',
-          'size': '50',
-          'value':''
-        })).append('&nbsp;').append($('<img>', {
-          'src': webContext + '/util/icons/mandatoryField.gif',
-          'width': '5',
-          'height': '5',
-          'alt': 'mandatoryField'
-        })))).append($('<tr>').
-        append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
-        append($('<td>').append($('<textarea>', {
-          'name': 'textMessage',
-          'id': 'notification-message',
-          'cols': '60',
-          'rows': '8'
-        })))).
-      append($('<tr>').append($('<td>', {
+              append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.subject') + '&nbsp;:')).
+              append($('<td>').append($('<input>', {
+        'type': 'text',
+        'name': 'textSubject',
+        'id': 'notification-subject',
+        'maxlength': '1023',
+        'size': '50',
+        'value': ''
+      })).append('&nbsp;').append($('<img>', {
+        'src': webContext + '/util/icons/mandatoryField.gif',
+        'width': '5',
+        'height': '5',
+        'alt': 'mandatoryField'
+      })))).append($('<tr>').
+              append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
+              append($('<td>').append($('<textarea>', {
+        'name': 'textMessage',
+        'id': 'notification-message',
+        'cols': '60',
+        'rows': '8'
+      })))).
+              append($('<tr>').append($('<td>', {
         'colspan': 2
       }).append($('<img>', {
         'src': webContext + '/util/icons/mandatoryField.gif',
@@ -115,7 +115,7 @@
         'height': '5',
         'alt': 'mandatoryField'
       })).append('&nbsp;: ' + $.i18n.prop('GML.requiredField')))))).appendTo($(document.body));
-      
+
       $("#notificationDialog").dialog({
         autoOpen: false,
         resizable: false,
@@ -123,45 +123,45 @@
         height: "auto",
         width: 550,
         buttons: [
-        {
-          text: $.i18n.prop('GML.ok'),
-          click: function() {
-            var subject = $("#notification-subject").val();
-            var message = $("#notification-message").val();
-            if ($.trim(subject).length == 0)
-              alert($.i18n.prop('GML.thefield') + ' ' + $.i18n.prop('GML.notification.subject') + ' ' + $.i18n.prop('GML.isRequired'));
-            else
-              $.ajax({
-                url: webContext + '/DirectoryJSON',
-                type: 'GET',
-                data: {
-                  Action: 'SendMessage',
-                  Title: subject,
-                  Message: message,
-                  TargetUserId: $.messageMe.userId
-                },
-                dataType: 'json',
-                cache: false,
-                success: function(data, status, jqXHR) {
-                  closeMessagingPopup();
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                  alert(errorThrown);
-                }
-              });
+          {
+            text: $.i18n.prop('GML.ok'),
+            click: function() {
+              var subject = $("#notification-subject").val();
+              var message = $("#notification-message").val();
+              if ($.trim(subject).length === 0)
+                alert($.i18n.prop('GML.thefield') + ' ' + $.i18n.prop('GML.notification.subject') + ' ' + $.i18n.prop('GML.isRequired'));
+              else
+                $.ajax({
+                  url: webContext + '/DirectoryJSON',
+                  type: 'GET',
+                  data: {
+                    Action: 'SendMessage',
+                    Title: subject,
+                    Message: message,
+                    TargetUserId: $.messageMe.userId
+                  },
+                  dataType: 'json',
+                  cache: false,
+                  success: function(data, status, jqXHR) {
+                    closeMessagingPopup();
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                  }
+                });
+            }
+          },
+          {
+            text: $.i18n.prop('GML.cancel'),
+            click: function() {
+              closeMessagingPopup();
+            }
           }
-        },
-        {
-          text: $.i18n.prop('GML.cancel'),
-          click: function() {
-            closeMessagingPopup();
-          }
-        }
         ]
       });
     }
   }
-})( jQuery );
+})(jQuery);
 
 /**
  * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
@@ -174,8 +174,8 @@ jQuery(document).ready(function() {
       userParams = userParams.split(',');
       if (jQuery(element).data('messageMe') == null) {
         jQuery(element).messageMe({
-          id : userParams[0],
-          fullName : userParams[1]
+          id: userParams[0],
+          fullName: userParams[1]
         });
       }
     }

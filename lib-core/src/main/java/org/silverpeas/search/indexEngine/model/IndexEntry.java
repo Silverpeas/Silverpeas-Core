@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -64,6 +64,7 @@ public class IndexEntry implements Serializable, Cloneable {
   private String serverName = null;
   private String filename = null;
   private List<String> paths = null;
+  private boolean alias = false;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -500,6 +501,14 @@ public class IndexEntry implements Serializable, Cloneable {
   
   public void setPK(IndexEntryPK pk) {
     this.pk = pk;
+  }
+  
+  public boolean isAlias() {
+    return alias;
+  }
+
+  public void setAlias(boolean alias) {
+    this.alias = alias;
   }
   
   @Override

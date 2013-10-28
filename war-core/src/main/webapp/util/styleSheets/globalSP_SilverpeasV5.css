@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -2303,13 +2303,12 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /* class used to mark as read the link of results page  */
-.markedkAsRead {
-  font-size: 11px;
-  font-weight: bold;
+.markedAsRead {
+  font-size: 13px;
   color: #006600;
   text-decoration: none;
 }
-.markedkAsReadDisableVisited a:visited {
+.markedAsReadDisableVisited a:visited {
   display:none;
 }
 
@@ -2327,12 +2326,66 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /* Class for search group facet */
+ul#globalResultListDetails {
+	list-style-type:none;
+	padding:0;
+	margin:0;
+}
+
+.lineResult {
+	padding:0 0 0 25px;
+	margin:0;
+	position:relative;
+	clear:both;
+}
+
+.lineResult input.selection{
+	position:absolute;
+	top:3px;
+	left:0;
+}
+
+.lineResult .thumb{
+	float:left;
+	margin:0 5px 5px 0;
+}
+
+.lineResult .locationTitle,
+.lineResult .description {
+	margin-bottom:5px;
+}
+
+.lineResult .locationTitle a{
+	font-size:13px;
+	color:#F1790F;
+}
+
+.lineResult .locationTitle img{
+	vertical-align:middle;
+}
+
+.lineResult .creatorName,
+.lineResult .creationDate,
+.lineResult .serveurName,
+.lineResult .location,
+.lineResult .popularity {
+	display:inline;
+	color:#666;
+}
+
+.lineResult .pertinence{
+	position:absolute;
+	top:0;
+	right:0;
+}
+
 .lineResult .pertinence, .lineResult .selection, .lineResult .content {
   padding-top: 5px;
   padding-left: 5px;
   vertical-align: top;
 }
-
+.lineResult .description {
+}
 .lineResult .selection {
   padding-top: 2px;
 }
@@ -5813,4 +5866,36 @@ ul.tagit li.tagit-choice a.tagit-close {
 
 #advanced-search table.tableBoard tr td:first-child {
   width:180px;
+}
+
+/*responsive design */
+@media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
+	.rightContent {
+		width: 230px;
+	}
+	.rightContent .attachments {
+		min-width:auto;
+	}
+	.principalContent {
+    	margin-right: 245px;
+	}
+}
+
+@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+	.rightContent {
+		clear: inherit;
+		float: none;
+		margin-top: 10px;
+		width: auto;
+	}
+	.rightContent .attachments {
+		min-width:auto;
+	}
+	.principalContent {
+    	margin-right: 0;
+    	margin-top: 10px;
+	}
+	.header h4 {
+    	min-width: auto;
+	}
 }

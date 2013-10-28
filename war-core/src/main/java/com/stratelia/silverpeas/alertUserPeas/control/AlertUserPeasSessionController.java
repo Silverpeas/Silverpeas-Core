@@ -1,33 +1,27 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.alertUserPeas.control;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import java.util.Arrays;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -44,12 +38,16 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.Arrays;
+import org.owasp.encoder.Encode;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class AlertUserPeasSessionController extends AbstractComponentSessionController {
+
   protected AlertUser m_AlertUser = null;
   protected Selection m_Selection = null;
   protected NotificationSender notificationSender = null;
@@ -59,6 +57,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -83,7 +82,6 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   // ------------------------------------------- Navigation Functions
   // ----------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-
   public PairObject getHostComponentName() {
     return m_AlertUser.getHostComponentName();
   }
@@ -134,7 +132,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     }
     sug.setComponentId(getHostComponentId());
     m_Selection.setExtraParams(sug);
-    
+
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
@@ -157,10 +155,11 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     for (String groupId : SelectionUsersGroups.getGroupIds(getGroupRecipients())) {
       notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
     }
-    if (StringUtil.isDefined(message) &&
-        (getUserRecipients().length > 0 || getGroupRecipients().length > 0)) {
+    if (StringUtil.isDefined(message) && (getUserRecipients().length > 0
+        || getGroupRecipients().length > 0)) {
+      String safeMessage = Encode.forHtml(message);
       for (String language : I18NHelper.getAllSupportedLanguages()) {
-        setNotificationContent(message, language);
+        setNotificationContent(safeMessage, language);
       }
     }
   }
@@ -179,5 +178,4 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
           "root.EX_NOTIFY_USERS_FAILED", e);
     }
   }
-
 }

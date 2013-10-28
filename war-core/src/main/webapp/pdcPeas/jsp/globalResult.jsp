@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -62,8 +62,8 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 
 void displayFacet(Facet facet, ResourcesWrapper resource, JspWriter out) throws IOException {
 	if (facet != null && !facet.isEmpty()) {
-	  	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));
-		int nbDefaultFacetEntries = Integer.parseInt(resource.getSetting("searchengine.facet.default.nbEntries", "5"));
+	  	int facetResultLength = resource.getSetting("searchengine.facet.max.length", 30);
+		int nbDefaultFacetEntries = resource.getSetting("searchengine.facet.default.nbEntries", 5);
 		String facetId = facet.getId().replace("$$", "__"); // $$ is not supported by jQuery
     	out.println("<div class=\"facet\" id=\"facet-"+facetId+"\">");
         out.println("<div id=\"searchGroupTitle\"><span class=\""+facetId+"\">"+facet.getName()+"</span></div>");
@@ -611,11 +611,10 @@ function viewFile(target, attachmentId, versioned, componentId) {
 	if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){
 %>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
-			<tr >
+			<tr>
 				<td>
 					<span class="spellText" >
 						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%>
-
 					</span>
 					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords.get(0)%></span></b></a>
 					<p>&nbsp;</p>
@@ -626,11 +625,11 @@ function viewFile(target, attachmentId, versioned, componentId) {
 
 %>
   <c:if test="${not empty results}">
-    <table border="0" id="globalResultListDetails" cellspacing="0" cellpadding="0">
+    <ul id="globalResultListDetails">
       <c:forEach var="result" items="${results}">
         <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}" settings="<%=resource %>"></view:displayResult>
       </c:forEach>
-    </table>
+    </ul>
   </c:if>
 <%
 		out.println("</td></tr>");

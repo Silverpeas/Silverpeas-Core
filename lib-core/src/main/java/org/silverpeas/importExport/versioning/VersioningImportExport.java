@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,19 +20,18 @@
  */
 package org.silverpeas.importExport.versioning;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -41,7 +40,6 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.attachment.AttachmentPK;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
@@ -49,18 +47,10 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
 /**
  * @author neysseri
@@ -79,12 +69,6 @@ public class VersioningImportExport {
       int userId, boolean indexIt) throws RemoteException, IOException {
     return importDocuments(objectId, componentId, attachments, userId,
         DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, null);
-  }
-
-  public int importDocuments(String objectId, String componentId,
-      List<AttachmentDetail> attachments, int userId, int versionType, boolean indexIt)
-      throws RemoteException, IOException {
-    return importDocuments(objectId, componentId, attachments, userId, versionType, indexIt, null);
   }
 
   /**
@@ -154,55 +138,6 @@ public class VersioningImportExport {
     return nbFilesProcessed;
   }
 
-  /**
-   * @param pk
-   * @param exportPath
-   * @param relativeExportPath
-   * @param extensionFilter : permet de filtrer un type de document en particulier, par son
-   * extension.
-   * @return
-   * @throws RemoteException
-   */
-  public List<AttachmentDetail> exportDocuments(WAPrimaryKey pk, String exportPath,
-      String relativeExportPath, String extensionFilter) throws RemoteException {
-
-    String componentId = pk.getInstanceId();
-    ForeignPK pubPK = new ForeignPK(pk.getId(), componentId);
-    // get existing documents of object
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(pubPK, null);
-    List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>(documents.size());
-    // retrieve last public versions of each document
-    for (SimpleDocument document : documents) {
-      SimpleDocument lastVersion = document.getLastPublicVersion();
-      if (extensionFilter == null || FilenameUtils.isExtension(lastVersion.getFilename(),
-          extensionFilter)) {
-        attachments.add(copyAttachment(document, exportPath, relativeExportPath));
-      }
-    }
-
-    if (attachments.isEmpty()) {
-      return null;
-    }
-    return attachments;
-  }
-
-  private AttachmentDetail copyAttachment(SimpleDocument document, String exportPath,
-      String relativeExportPath) {
-    AttachmentDetail attachmentCopy = getAttachmentDetail(document);
-    String fichierJointExport = exportPath + File.separator
-        + FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName());
-    AttachmentServiceFactory.getAttachmentService().getBinaryContent(new File(fichierJointExport),
-        document.getPk(), document.getLanguage());
-
-    // Le nom physique correspond maintenant au fichier copié
-    attachmentCopy.setPhysicalName(relativeExportPath + File.separator
-        + FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
-    attachmentCopy.setLogicalName(FileServerUtils.
-        replaceAccentChars(attachmentCopy.getLogicalName()));
-    return attachmentCopy;
-  }
-
   private SimpleDocument isDocumentExist(List<SimpleDocument> documents, AttachmentDetail attachment) {
     String documentName = attachment.getTitle();
     if (!StringUtil.isDefined(documentName)) {
@@ -214,16 +149,6 @@ public class VersioningImportExport {
       }
     }
     return null;
-  }
-
-  private AttachmentDetail getAttachmentDetail(SimpleDocument version) {
-    AttachmentPK pk = new AttachmentPK("useless", "useless", version.getPk().getInstanceId());
-    AttachmentDetail attachment = new AttachmentDetail(pk, version.getAttachmentPath(), version.
-        getFilename(), version.getDescription(), version.getContentType(), version.getSize(),
-        "Versioning", version.getCreated(), new ForeignPK(version.getForeignId(), version.
-        getInstanceId()));
-    attachment.setTitle(version.getTitle());
-    return attachment;
   }
 
   public List<SimpleDocument> importDocuments(ForeignPK objectPK, List<Document> documents,
@@ -356,70 +281,6 @@ public class VersioningImportExport {
       }
     }
     return null;
-  }
-
-  public List<DocumentVersion> copyFiles(String componentId, List<Document> documents, String path) {
-    List<DocumentVersion> copiedAttachments = new ArrayList<DocumentVersion>(documents.size());
-    for (Document document : documents) {
-      List<DocumentVersion> versions = document.getVersionsType().getListVersions();
-      for (DocumentVersion version : versions) {
-        copyFile(componentId, version, path);
-        if (version.getSize() != 0) {
-          copiedAttachments.add(version);
-        }
-      }
-    }
-    return copiedAttachments;
-  }
-
-  private void copyFile(String componentId, DocumentVersion version, String path) {
-    String fileToUpload = version.getPhysicalName();
-    // Préparation des paramètres du fichier à creer
-    String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
-    String type = FileRepositoryManager.getFileExtension(logicalName);
-    String mimeType = FileUtil.getMimeType(logicalName);
-    String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
-
-    File fileToCreate = new File(path + physicalName);
-    while (fileToCreate.exists()) {
-      SilverTrace.info("versioning", "VersioningImportExport.copyFile()",
-          "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists="
-          + fileToCreate.getAbsolutePath());
-
-      // To prevent overwriting
-      physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
-      fileToCreate = new File(path + physicalName);
-    }
-    SilverTrace.info("versioning", "VersioningImportExport.copyFile()",
-        "root.MSG_GEN_PARAM_VALUE", "fileName=" + logicalName);
-
-    long size = 0;
-    try {
-      // Copie du fichier dans silverpeas
-      size = copyFileToDisk(fileToUpload, fileToCreate);
-    } catch (Exception e) {
-      SilverTrace.error("versioning", "VersioningImportExport.copyFile()",
-          "attachment.EX_FILE_COPY_ERROR", e);
-    }
-
-    // Compléments sur l'objet DocumentVersion
-    version.setSize((int) size);
-    version.setMimeType(mimeType);
-    version.setPhysicalName(physicalName);
-    version.setLogicalName(logicalName);
-    version.setInstanceId(componentId);
-
-    DocumentVersionPK pk = new DocumentVersionPK(-1, "useless", componentId);
-    version.setPk(pk);
-  }
-
-  private long copyFileToDisk(String from, File to) throws IOException {
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(to));
-    try {
-      return FileUtils.copyFile(new File(from), out);
-    } finally {
-      IOUtils.closeQuietly(out);
-    }
   }
 
   protected SimpleDocument addVersion(DocumentVersion version, SimpleDocument existingDocument,

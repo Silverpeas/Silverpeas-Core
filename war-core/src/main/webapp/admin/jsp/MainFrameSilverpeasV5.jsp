@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -43,10 +43,11 @@
 <%
 String			componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");
 String			spaceIdFromRedirect 	= (String) session.getAttribute("RedirectToSpaceId");
-if (!StringUtil.isDefined(spaceIdFromRedirect))
+if (!StringUtil.isDefined(spaceIdFromRedirect)) {
 	spaceIdFromRedirect 	= request.getParameter("RedirectToSpaceId");
+}
 String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId");
-ResourceLocator generalMessage			= new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
+ResourceLocator generalMessage			= new ResourceLocator("org.silverpeas.multilang.generalMultilang", language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= false;
@@ -73,7 +74,7 @@ if (m_MainSessionCtrl == null) {
 	}
 
 	if (!componentExists) {
-		String spaceId = m_MainSessionCtrl.getFavoriteSpace();
+		String spaceId = helper.getDefaultSpaceId();
 		boolean spaceExists = false;
 		if (StringUtil.isDefined(spaceIdFromRedirect)) {
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
@@ -88,8 +89,7 @@ if (m_MainSessionCtrl == null) {
 		}
 		helper.setSpaceIdAndSubSpaceId(spaceId);
 
-		String 	workSpace 	= "?SpaceId="+spaceId;
-		frameBottomParams 	= workSpace;
+		frameBottomParams 	= "?SpaceId="+spaceId;
 	} else {
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
 		frameBottomParams 	= "?SpaceId=&amp;ComponentId="+componentIdFromRedirect;
@@ -184,8 +184,7 @@ border: none;
 }
 </style>
 </head>
-<% if (attachmentId != null)
-   {
+<% if (attachmentId != null) {
    	session.setAttribute("RedirectToAttachmentId", null);
    	String mapping = (String) session.getAttribute("RedirectToMapping");
 %>
@@ -209,6 +208,4 @@ border: none;
 	</noframes>
 </frameset>
 </html>
-<%
-}
-%>
+<% } %>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -96,6 +96,7 @@ public class IndexManager {
   public static final String FIELDS_FOR_FACETS = "fieldsForFacet";
   public static final String FILENAME = "filename";
   public static final String PATH = "path";
+  public static final String ALIAS = "alias";
 
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
@@ -529,6 +530,7 @@ public class IndexManager {
         doc.add(new Field(PATH, path, Store.YES, Index.NOT_ANALYZED));
       }
     }
+    doc.add(new Field(ALIAS, Boolean.toString(indexEntry.isAlias()), Store.YES, Index.NO));
     
     return doc;
   }

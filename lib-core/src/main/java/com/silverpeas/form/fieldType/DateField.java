@@ -1,39 +1,35 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
-
-import java.text.ParseException;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+import java.text.ParseException;
 
 /**
  * A TextField stores a text value.
+ *
  * @see Field
  * @see FieldDisplayer
  */
@@ -48,24 +44,29 @@ public abstract class DateField implements Field {
   /**
    * Returns the type name.
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
 
   public abstract boolean isReadOnly();
 
+  @Override
   public String getValue() {
     return getStringValue();
   }
 
+  @Override
   public String getValue(String language) {
     return formatClient(getStringValue(), language);
   }
 
+  @Override
   public void setValue(String value) throws FormException {
     setStringValue(value);
   }
 
+  @Override
   public void setValue(String value, String language) throws FormException {
     setStringValue(formatBD(value, language));
   }
@@ -104,10 +105,12 @@ public abstract class DateField implements Field {
     return dateBD;
   }
 
+  @Override
   public boolean acceptValue(String value) {
     return !isReadOnly();
   }
 
+  @Override
   public boolean acceptValue(String value, String language) {
     return !isReadOnly();
   }
@@ -115,15 +118,18 @@ public abstract class DateField implements Field {
   /**
    * Returns the value of this field.
    */
+  @Override
   public Object getObjectValue() {
     return getStringValue();
   }
 
   /**
    * Set this field value.
+   *
    * @throw FormException when the field is readOnly.
    * @throw FormException when the value is not a String.
    */
+  @Override
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof String) {
       setStringValue((String) value);
@@ -137,6 +143,7 @@ public abstract class DateField implements Field {
     }
   }
 
+  @Override
   public boolean acceptObjectValue(Object value) {
     if (value instanceof String) {
       return !isReadOnly();
@@ -145,10 +152,12 @@ public abstract class DateField implements Field {
     }
   }
 
+  @Override
   public boolean isNull() {
     return (getStringValue() == null || getStringValue().trim().equals(""));
   }
 
+  @Override
   public void setNull() throws FormException {
     setStringValue(null);
   }
@@ -156,6 +165,7 @@ public abstract class DateField implements Field {
   /**
    * Tests equality beetwen this field and the specified field.
    */
+  @Override
   public boolean equals(Object o) {
     String s = getStringValue();
     if (s == null) {
@@ -177,6 +187,7 @@ public abstract class DateField implements Field {
   /**
    * Compares this field with the specified field.
    */
+  @Override
   public int compareTo(Object o) {
     String s = getStringValue();
     if (s == null) {
@@ -195,9 +206,9 @@ public abstract class DateField implements Field {
     }
   }
 
+  @Override
   public int hashCode() {
     String s = getStringValue();
     return ("" + s).hashCode();
   }
-
 }
