@@ -516,6 +516,7 @@ public class WysiwygController {
       document.setLanguage(I18NHelper.checkLanguage(language));
       document.setSize(textHtml.getBytes(Charsets.UTF_8).length);
       document.setDocumentType(context);
+      document.setUpdatedBy(userId);
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
           new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, true);
     } else {
