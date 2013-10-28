@@ -80,6 +80,10 @@ public class SilverpeasHttpServlet extends HttpServlet {
   protected void throwHttpForbiddenError() {
     throw new HttpError(HttpServletResponse.SC_FORBIDDEN);
   }
+  
+  protected void throwHttpNotFoundError() {
+    throw new HttpError(HttpServletResponse.SC_NOT_FOUND);
+  }
 
   /**
    * Internal exception class management
