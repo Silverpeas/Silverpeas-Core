@@ -26,8 +26,10 @@ package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.jsp.JspException;
 
@@ -82,7 +84,13 @@ public class BrowseBarTag extends NeedWindowTag {
       browseBar.setPath(path);
     }
     if (StringUtil.isDefined(componentId)) {
-      browseBar.setComponentId(componentId);
+      ComponentInstLight component = OrganisationControllerFactory.getOrganisationController()
+          .getComponentInstLight(componentId);
+      if (component == null) {
+        browseBar.setComponentName(componentId);
+      } else {
+        browseBar.setComponentId(componentId);
+      }
     }
     browseBar.setIgnoreComponentLink(ignoreComponentLink);
     browseBar.setClickable(clickable);

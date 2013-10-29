@@ -28,68 +28,37 @@
 
 <%@ include file="checkPersonalization.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<c:set var="isMultiChannelNotif" value="<%=personalizationScc.isMultiChannelNotification()%>" />
 <c:set var="validationMessage" value="${requestScope.validationMessage}" />
-
-<%
-  //Retrieve parameters
-  String action = (String) request.getParameter("Action");
-  String id = (String) request.getParameter("id");
-  String testExplanation = "";
-  
-  boolean isMultiChannelNotif = personalizationScc.isMultiChannelNotification();
-  
-  // Liste des adresses de notification pour ce user.
-  ArrayList<Properties> notifAddresses = null;
-  
-  //Mise a jour de l'espace
-  if (action != null) {
-  	if (action.equals("test")) {
-  		personalizationScc.testNotifAddress(id);
-  		if (id.equals("-10")) {
-  			testExplanation = resource
-  					.getString("TestPopUpExplanation");
-  		} else if (id.equals("-12")) {
-  			testExplanation = resource
-  					.getString("TestSilverMailExplanation");
-  		} else {
-  			testExplanation = resource
-  					.getString("TestSMTPExplanation");
-  		}
-  		action = "NotificationView";
-  	}
-  	if (action.equals("setDefault")) {
-  		personalizationScc.setDefaultAddress(id);  
-  		action = "NotificationView";
-      %><fmt:message key='GML.validation.update' var="validationMessage" /><%
-  	}
-    if (action.equals("setFrequency")) {
-      personalizationScc.saveDelayedUserNotificationFrequency(id);  
-      action = "NotificationView";
-      %><fmt:message key='GML.validation.update' var="validationMessage" /><%
-    }
-  	if (action.equals("delete")) {
-  		personalizationScc.deleteNotifAddress(id);
-  		action = "NotificationView";
-      %><fmt:message key='GML.validation.delete' var="validationMessage" /><%
-  	}
-  } else
-  	action = "NotificationView";
-  notifAddresses = personalizationScc.getNotificationAddresses();
-%>
+<c:set var="testExplanation" value="${requestScope.testExplanation}"/>
+<c:set var="isMultiChannelNotif" value="${requestScope.multichannel}"/>
+<c:set var="notifAddresses" value="${requestScope.notificationAddresses}"/>
+<c:url value="/util/javaScript/animation.js" var="animationJS"/>
+<c:url value="/RSILVERMAIL/jsp/Main" var="silvermailURL"/>
+<c:url value="/RSILVERMAIL/jsp/SendedUserNotifications" var="sendedNotificationsURL"/>
+<fmt:message key="MesNotifications" var="myNotifications"/>
+<fmt:message key="ParametrerNotification" var="parametrize"/>
+<fmt:message key="operationPane_addadress" var="addAddress"/>
+<fmt:message key="operationPane_paramnotif" var="parametrizeNotif"/>
+<fmt:message key="LireNotification" var="viewNotif"/>
+<fmt:message key="SendedUserNotifications" var="sendedNotif"/>
+<fmt:message key="ParametrerNotification" var="parametrizeNotif"/>
+<fmt:message key="arrayPane_Default" var="defaultColumn"/>
+<fmt:message key="arrayPane_Nom" var="nameColumn"/>
+<fmt:message key="arrayPane_Adresse" var="addressColumn"/>
+<fmt:message key="arrayPane_Operations" var="operationsColumn"/>
+<fmt:message key="GML.validate" var="buttonValidationLabel"/>
 
 <html>
 <head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script>
+<title><fmt:message key="GML.popupTitle"/></title>
+  <view:looknfeel/>
+  <script type="text/javascript" src="${animationJS}"></script>
+  <script>
 function editNotif(id){
 	SP_openWindow("editNotification.jsp?id=" + id,"addNotif","600","250","scrollbars=yes");
 }
@@ -97,9 +66,26 @@ function paramNotif(){
 	SP_openWindow("paramNotif.jsp","paramNotif","750","400","scrollbars=yes");
 }
 function deleteCanal(id){
-	if (window.confirm("<%=resource.getString("MessageSuppressionCanal")%>")) {
-	   location.href = "personalization_Notification.jsp?id=" + id + "&Action=delete";
+	if (window.confirm("<fmt:message key='MessageSuppressionCanal'/>")) {
+    document.channelForm.action = "ParametrizeNotification";
+    document.channelForm.Action.value = "Delete";
+    document.channelForm.id.value = id;
+    document.channelForm.submit();
 	}
+}
+
+function setDefault(id) {
+  document.channelForm.action = "ParametrizeNotification";
+  document.channelForm.Action.value = "SetDefault";
+  document.channelForm.id.value = id;
+  document.channelForm.submit();
+}
+
+function testNotification(id) {
+  document.channelForm.action = "ParametrizeNotification";
+  document.channelForm.Action.value = "Test";
+  document.channelForm.id.value = id;
+  document.channelForm.submit();
 }
 
 function sendChoiceChannel() {
@@ -143,197 +129,168 @@ function getFrequency()
 
 function onChangeFrequency()
 {
-  location.href = "personalization_Notification.jsp?id=" + getFrequency() + "&Action=setFrequency";
+  document.channelForm.action = "ParametrizeNotification";
+  document.channelForm.Action.value = "SetFrequency";
+  document.channelForm.id.value = getFrequency();
+  document.channelForm.submit();
 }
 
-</script>
+  </script>
 </head>
 <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
 
-<%
-  browseBar.setComponentName(resource.getString("MesNotifications"));
-  browseBar.setPath(resource.getString("ParametrerNotification"));
-  
-  OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperation(addProtocol, resource
-  		.getString("operationPane_addadress"),
-  		"javascript:editNotif(-1)");
-  operationPane.addLine();
-  operationPane.addOperation(paramNotif, resource
-  		.getString("operationPane_paramnotif"),
-  		"javascript:paramNotif()");
-  out.println(window.printBefore());
-  
-  //Onglets
-  TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(resource.getString("LireNotification"), m_context
-  		+ URLManager.getURL(URLManager.CMP_SILVERMAIL, null, null) + "Main",
-  		false);
-  tabbedPane.addTab(resource.getString("SendedUserNotifications"),
-  		m_context + URLManager.getURL(URLManager.CMP_SILVERMAIL, null, null)
-  				+ "SendedUserNotifications", false);
-  tabbedPane.addTab(resource.getString("ParametrerNotification"),
-  		"personalization_Notification.jsp?Action=LanguageView",
-  		true);
-  out.println(tabbedPane.print());
-%>
-<c:if test="${not empty validationMessage}">
-  <div class="inlineMessage-ok">
-    <c:out value="${validationMessage}" />
-  </div>
-</c:if>
-<%
-  out.println(frame.printBefore());
-%>
+<view:browseBar componentId="${myNotifications}" path="${parametrize}"/>
+<view:operationPane>
+  <view:operation icon="${addProtocol}" altText="${addAddress}" action="javascript:editNotif(-1);"/>
+  <view:operationSeparator/>
+  <view:operation icon="${param.notif}" altText="parametrizeNotif" action="javascript:paramNotif();"/>
+</view:operationPane>
+<view:window>
+  <view:tabs>
+    <view:tab label="${viewNotif}" action="${silvermailURL}" selected="false"/>
+    <view:tab label="${sendedNotif}" action="${sendedNotificationsURL}" selected="false"/>
+    <view:tab label="${parametrizeNotif}" action="ParametrizeNotification" selected="true"/>
+  </view:tabs>
+
+  <c:if test="${not empty validationMessage}">
+    <div class="inlineMessage-ok">
+      <c:out value="${validationMessage}" />
+    </div>
+  </c:if>
+
+  <view:frame>
 
 <!-- AFFICHAGE HEADER -->
-<p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
-<form name="channelForm">
-  <input type="hidden" name="SelectedChannels">
-  <input type="hidden" name="SelectedFrequency">
-<%
+  <p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
+  <form name="channelForm">
+    <input type="hidden" name="Action"/>
+    <input type="hidden" name="id"/>
+    <input type="hidden" name="SelectedChannels"/>
+    <input type="hidden" name="SelectedFrequency"/>
 
-  if (testExplanation.length() > 0) {
-    out.println("<font color=red><b>" + testExplanation
-      + "<b></font><br><br>");
-  }
+    <c:if test="${not empty testExplanation}">
+      <span style="color:red;"><b>${testExplanation}</b></span>
+      <br/><br/>
+    </c:if>
+    
+    <view:arrayPane var="personalization" routingAddress="ParametrizeNotification">
+      <view:arrayColumn title="${defaultColumn}" sortable="false"/>
+      <view:arrayColumn title="${nameColumn}" sortable="true"/>
+      <view:arrayColumn title="${addressColumn}" sortable="true"/>
+      <view:arrayColumn title="${operationsColumn}" sortable="false"/>
+      <c:forEach var="props" items="${notifAddresses}">
+        <c:set var="name" value="${fn:escapeXml(props['name'])}"/>
+        <c:set var="address" value="${fn:escapeXml(props['address'])}"/>
+        <view:arrayLine>
+          <%
+            IconPane actions = gef.getIconPane();
+            Properties props = (Properties) pageContext.getAttribute("props");
+            ArrayLine arrayLine = (ArrayLine) pageContext.getAttribute(ArrayLineTag.ARRAY_LINE_PAGE_ATT);
+            String id = Encode.forHtml(props.getProperty("id"));
+          %>
+          <c:choose>
+            <c:when test="${!isMultiChannelNotif}">
+              <%
+                Icon anAction = actions.addIcon();
+                if (props.getProperty("isDefault").equalsIgnoreCase("true")) {
+                  anAction.setProperties(on_default, "", "");
+                } else {
+                  anAction.setProperties(off_default, resource.getString("iconPane_Default"),
+                      "javascript:setDefault('" + id + "');");
+                }
+                arrayLine.addArrayCellIconPane(actions);
+              %>
+            </c:when>
+            <c:otherwise>
+              <%
+                // print the choice cases for a multiple selection
+                String usedCheck = "";
+                if (props.getProperty("isDefault").equalsIgnoreCase("true")) {
+                  usedCheck = "checked";
+                }
+                pageContext.setAttribute("cellText",
+                    "<input type='checkbox' name='SelectChannel' value='" + id + "' " + usedCheck + ">");
+              %>
+              <view:arrayCellText text="${cellText}"/>
+            </c:otherwise>
+          </c:choose>
+          <view:arrayCellText text="${name}"/>
+          <view:arrayCellText text="${address}"/>
+          <%
+            // add the icons related to the suppression and to the modification
+            actions = gef.getIconPane();
+            if (props.getProperty("canEdit").equalsIgnoreCase("true")) {
+              Icon modifier = actions.addIcon();
+              modifier.setProperties(modif, resource
+                  .getString("GML.modify"), "javascript:editNotif(" + id + ");");
+            } else {
+              Icon modifier = actions.addIcon();
+              modifier.setProperties(ArrayPnoColorPix, "", "");
+            }
+            if (props.getProperty("canDelete").equalsIgnoreCase("true")) {
+              Icon del = actions.addIcon();
+              del.setProperties(delete, resource.getString("GML.delete"),
+                  "javascript:deleteCanal('" + id + "');");
+            } else {
+              Icon del = actions.addIcon();
+              del.setProperties(ArrayPnoColorPix, "", "");
+            }
 
-  IconPane actions;
-  
-  // Arraypane notif
-  ArrayPane notif = gef.getArrayPane("personalization",
-  		"personalization_Notification.jsp", request, session);
-  ArrayColumn arrayColumn00 = notif.addArrayColumn(resource
-  		.getString("arrayPane_Default"));
-  arrayColumn00.setSortable(false);
-  ArrayColumn arrayColumn0 = notif.addArrayColumn(resource
-  		.getString("arrayPane_Nom"));
-  arrayColumn0.setSortable(true);
-  ArrayColumn arrayColumn3 = notif.addArrayColumn(resource
-  		.getString("arrayPane_Adresse"));
-  arrayColumn3.setSortable(true);
-  ArrayColumn arrayColumn4 = notif.addArrayColumn(resource
-  		.getString("arrayPane_Operations"));
-  arrayColumn4.setSortable(false);
-  
-  Properties p = null;
-  ArrayLine arrayLine = null;
-  Icon def = null;
-  for (int i = 0; i < notifAddresses.size(); i++) {
-  
-  	p = (Properties) notifAddresses.get(i);
-  	arrayLine = notif.addArrayLine();
-  
-  	// Ajout l'icone de default
-  	actions = gef.getIconPane();
-  
-  	if (!isMultiChannelNotif) {
-  		def = actions.addIcon();
-  		if (p.getProperty("isDefault").equalsIgnoreCase("true")) {
-  			def.setProperties(on_default, "", "");
-  		} else {
-  			def.setProperties(off_default, resource
-  					.getString("iconPane_Default"),
-  					"personalization_Notification.jsp?id="
-  							+ p.getProperty("id")
-  							+ "&Action=setDefault");
-  		}
-  		arrayLine.addArrayCellIconPane(actions);
-  	} else {
-  		// afficher les choix en case a cocher pour une selection multiple
-  		String usedCheck = "";
-  		if (p.getProperty("isDefault").equalsIgnoreCase("true")) {
-  			usedCheck = "checked";
-  		}
-		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"SelectChannel\" value=\""
-						+ EncodeHelper.javaStringToHtmlString(p.getProperty("id")) + "\" "
-						+ usedCheck
-						+ ">");
-  	}
-  	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(p.getProperty("name")));
-  	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(p.getProperty("address")));
-  
-  	// Ajout des icones de modification et de suppression
-  	actions = gef.getIconPane();
-  
-  	if (p.getProperty("canEdit").equalsIgnoreCase("true")) {
-  		Icon modifier = actions.addIcon();
-  		modifier.setProperties(modif, resource
-  				.getString("GML.modify"), "javascript:editNotif("
-  				+ p.getProperty("id") + ")");
-  	} else {
-  		Icon modifier = actions.addIcon();
-  		modifier.setProperties(ArrayPnoColorPix, "", "");
-  	}
-  
-  	if (p.getProperty("canDelete").equalsIgnoreCase("true")) {
-  		Icon del = actions.addIcon();
-  		del.setProperties(delete, resource.getString("GML.delete"),
-  				"javascript:deleteCanal('" + p.getProperty("id")
-  						+ "')");
-  	} else {
-  		Icon del = actions.addIcon();
-  		del.setProperties(ArrayPnoColorPix, "", "");
-  	}
-  
-  	if (p.getProperty("canTest").equalsIgnoreCase("true")) {
-  		Icon tst = actions.addIcon();
-  		tst.setProperties(test,
-  				resource.getString("iconPane_Test"),
-  				"personalization_Notification.jsp?id="
-  						+ p.getProperty("id") + "&Action=test");
-  	} else {
-  		Icon tst = actions.addIcon();
-  		tst.setProperties(ArrayPnoColorPix, "", "");
-  	}
-  
-  	arrayLine.addArrayCellIconPane(actions);
-  }
-  
-  out.println(notif.print());
-%>
-  <br/>
-  <p align="left"><b><fmt:message key="frequencyChoiceLabel" /></b>
-  <fmt:message key="frequency${requestScope.delayedNotification.defaultFrequency.name}" var="defaultFrequencyLabel" />
-  <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
-  <c:set var="frequencyOnChange" value="" />
-  <c:if test="${!isMultiChannelNotif}">
-    <c:set var="frequencyOnChange" value="javascript:onChangeFrequency();" />
-  </c:if>
-  <select id="SelectFrequency" name="SelectFrequency" onchange="${frequencyOnChange}">
-    <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
-    <c:choose>
-      <c:when test="${empty currentUserFrequencyCode or empty requestScope.delayedNotification.frequencies}">
-        <option value="" selected="selected"><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
-      </c:when>
-      <c:otherwise>
-        <option value=""><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
-      </c:otherwise>
-    </c:choose>
-    <c:forEach items="${requestScope.delayedNotification.frequencies}" var="frequency">
-      <c:choose>
-        <c:when test="${frequency.code eq currentUserFrequencyCode}">
-          <option value="${frequency.code}" selected="selected"><fmt:message key="frequency${frequency.name}" /></option>
-        </c:when>
-        <c:otherwise>
-          <option value="${frequency.code}"><fmt:message key="frequency${frequency.name}" /></option>
-        </c:otherwise>
-      </c:choose>
-    </c:forEach>
-  </select>
-  </p>
-<%
-  if (isMultiChannelNotif) {
-    // ajout bouton de validation des choix des canaux
-    Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendChoiceChannel();", false);
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
-  }
-  out.println(frame.printAfter());
-  out.println(window.printAfter());
-%>
+            if (props.getProperty("canTest").equalsIgnoreCase("true")) {
+              Icon tst = actions.addIcon();
+              tst.setProperties(test,
+                  resource.getString("iconPane_Test"),
+                  "javascript:testNotification('" + id + "');");
+            } else {
+              Icon tst = actions.addIcon();
+              tst.setProperties(ArrayPnoColorPix, "", "");
+            }
 
-</form>
+            arrayLine.addArrayCellIconPane(actions);
+          %>
+
+        </view:arrayLine>
+      </c:forEach>
+    </view:arrayPane>
+
+    <br/>
+    <p align="left"><b><fmt:message key="frequencyChoiceLabel" /></b>
+      <fmt:message key="frequency${requestScope.delayedNotification.defaultFrequency.name}" var="defaultFrequencyLabel" />
+      <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
+      <c:set var="frequencyOnChange" value="" />
+      <c:if test="${!isMultiChannelNotif}">
+        <c:set var="frequencyOnChange" value="javascript:onChangeFrequency();" />
+      </c:if>
+      <select id="SelectFrequency" name="SelectFrequency" onchange="${frequencyOnChange}">
+        <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
+        <c:choose>
+          <c:when test="${empty currentUserFrequencyCode or empty requestScope.delayedNotification.frequencies}">
+            <option value="" selected="selected"><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
+          </c:when>
+          <c:otherwise>
+            <option value=""><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
+          </c:otherwise>
+        </c:choose>
+        <c:forEach items="${requestScope.delayedNotification.frequencies}" var="frequency">
+          <c:choose>
+            <c:when test="${frequency.code eq currentUserFrequencyCode}">
+              <option value="${frequency.code}" selected="selected"><fmt:message key="frequency${frequency.name}" /></option>
+            </c:when>
+            <c:otherwise>
+              <option value="${frequency.code}"><fmt:message key="frequency${frequency.name}" /></option>
+            </c:otherwise>
+          </c:choose>
+        </c:forEach>
+      </select>
+    </p>
+
+    <c:if test="${isMultiChannelNotif}">
+      <view:buttonPane verticalPosition="center">
+        <view:button label="${buttonValidationLabel}" action="javascript:onClick=sendChoiceChannel();" disabled="false"/>
+      </view:buttonPane>
+    </c:if>
+  </form>
+  </view:frame>
+</view:window>
 </body>
 </html>
