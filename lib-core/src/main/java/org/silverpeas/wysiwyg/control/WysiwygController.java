@@ -817,6 +817,21 @@ public class WysiwygController {
     }
     return fileIds;
   }
+  
+  public static void move(String fromComponentId, String fromObjectId, String componentId,
+      String objectId) {
+    ForeignPK fromForeignPK = new ForeignPK(fromObjectId, fromComponentId);
+    List<SimpleDocument> documents =
+          AttachmentServiceFactory.getAttachmentService().listAllDocumentsByForeignKey(
+              fromForeignPK, null);
+    ForeignPK toForeignPK = new ForeignPK(objectId, componentId);
+    for (SimpleDocument document : documents) {
+      AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
+    }
+
+    // change images path in wysiwyg
+    wysiwygPlaceHaveChanged(fromComponentId, fromObjectId, componentId, objectId);
+  }
 
   static String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,
       SimpleDocumentPK newPK) {
