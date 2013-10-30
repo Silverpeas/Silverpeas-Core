@@ -47,6 +47,9 @@ import java.util.Map;
  * @see FieldDisplayer
  */
 public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
+  
+  static public final String PARAM_ROWS = "rows";
+  static public final String PARAM_COLS = "cols";
 
   /**
    * Constructeur
@@ -74,16 +77,16 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
       throws IOException {
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
 
     if (!TextField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "TextAreaFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
 
-    if (template.isMandatory() && PagesContext.useMandatory()) {
+    if (template.isMandatory() && pageContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n \";");
@@ -91,14 +94,26 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       out.println("	}");
     }
 
-    out.println("	if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
+    String maxLength = getMaxLength(template, pageContext);
+    out.println("	if (! isValidText(field, " + maxLength + ")) {");
     out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-        + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
+        + Util.getString("ContainsTooLargeText", language) + maxLength + " "
         + Util.getString("Characters", language) + "\\n \";");
     out.println("		errorNb++;");
     out.println("	}");
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+  }
+  
+  private String getMaxLength(FieldTemplate fieldTemplate, PagesContext pageContext) {
+    Map<String, String> parameters = fieldTemplate.getParameters(pageContext.getLanguage());
+    if (parameters.containsKey(TextField.PARAM_MAXLENGTH)) {
+      String value = parameters.get(TextField.PARAM_MAXLENGTH);
+      if (StringUtil.isInteger(value)) {
+        return value;
+      }
+    }
+    return Util.getSetting("nbMaxCar");
   }
 
   /**
@@ -113,8 +128,8 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String value = "";
-    String rows = "6";
-    String cols = "48";
+    String rows = "8";
+    String cols = "100";
     String html = "";
     String cssClass = null;
 
@@ -143,13 +158,13 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
-    if (parameters.containsKey("rows")) {
-      rows = parameters.get("rows");
+    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
+      rows = parameters.get(TextAreaFieldDisplayer.PARAM_ROWS);
     }
     html += " rows=\"" + rows + "\"";
 
-    if (parameters.containsKey("cols")) {
-      cols = parameters.get("cols");
+    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
+      cols = parameters.get(TextAreaFieldDisplayer.PARAM_COLS);
     }
     html += " cols=\"" + cols + "\"";
 
