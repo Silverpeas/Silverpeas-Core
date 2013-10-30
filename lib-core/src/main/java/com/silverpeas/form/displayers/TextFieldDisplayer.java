@@ -120,7 +120,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       }
     }
 
-    String nbMaxCar = (parameters.containsKey("maxLength") ? parameters.get("maxLength") : Util.
+    String nbMaxCar = (parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters.get(TextField.PARAM_MAXLENGTH) : Util.
         getSetting("nbMaxCar"));
     script.append("		if (! isValidText(field, ").append(nbMaxCar).append(")) {\n");
     script.append("			errorMsg+=\"  - '").append(label).append("' ").
@@ -191,8 +191,8 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     textInput.setID(template.getFieldName());
     textInput.setValue(EncodeHelper.javaStringToHtmlString(value));
     textInput.setType(template.isHidden() ? input.hidden : input.text);
-    textInput.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
-        : "1000");
+    textInput.setMaxlength(parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters
+        .get(TextField.PARAM_MAXLENGTH) : "1000");
     textInput.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
     if (parameters.containsKey("border")) {
       textInput.setBorder(Integer.parseInt(parameters.get("border")));

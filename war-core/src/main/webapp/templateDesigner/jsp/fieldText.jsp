@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.form.fieldType.TextField"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
@@ -44,8 +45,8 @@
 	
 	if (field != null)
 	{
-		if (parameters.containsKey("maxLength")) {
-			maxLength = (String) parameters.get("maxLength");
+		if (parameters.containsKey(TextField.PARAM_MAXLENGTH)) {
+			maxLength = parameters.get(TextField.PARAM_MAXLENGTH);
 		}
 		
 		if (parameters.containsKey("size")) {
@@ -67,7 +68,7 @@
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_size" value="<%=size%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.maxLength")%> :</td><td><input type="text" name="Param_maxLength" value="<%=maxLength%>" size="5" maxLength="3"/></td>
+<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.maxLength")%> :</td><td><input type="text" name="Param_<%=TextField.PARAM_MAXLENGTH %>" value="<%=maxLength%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.suggestions")%> :</td><td><input type="checkbox" name="Param_suggestions" value="true" <%=suggestionsChecked%>/></td>
