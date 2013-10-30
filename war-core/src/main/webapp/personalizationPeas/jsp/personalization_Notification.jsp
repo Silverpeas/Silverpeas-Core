@@ -43,7 +43,7 @@
 <fmt:message key="MesNotifications" var="myNotifications"/>
 <fmt:message key="ParametrerNotification" var="parametrize"/>
 <fmt:message key="operationPane_addadress" var="addAddress"/>
-<fmt:message key="operationPane_paramnotif" var="parametrizeNotif"/>
+<fmt:message key="operationPane_paramnotif" var="op_parametrizeNotif"/>
 <fmt:message key="LireNotification" var="viewNotif"/>
 <fmt:message key="SendedUserNotifications" var="sendedNotif"/>
 <fmt:message key="ParametrerNotification" var="parametrizeNotif"/>
@@ -53,12 +53,13 @@
 <fmt:message key="arrayPane_Operations" var="operationsColumn"/>
 <fmt:message key="GML.validate" var="buttonValidationLabel"/>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
-  <view:looknfeel/>
-  <script type="text/javascript" src="${animationJS}"></script>
-  <script>
+<view:looknfeel/>
+<script type="text/javascript" src="${animationJS}"></script>
+<script type="text/javascript">
 function editNotif(id){
 	SP_openWindow("editNotification.jsp?id=" + id,"addNotif","600","250","scrollbars=yes");
 }
@@ -66,12 +67,12 @@ function paramNotif(){
 	SP_openWindow("paramNotif.jsp","paramNotif","750","400","scrollbars=yes");
 }
 function deleteCanal(id){
-	if (window.confirm("<fmt:message key='MessageSuppressionCanal'/>")) {
+  if (window.confirm("<fmt:message key='MessageSuppressionCanal'/>")) {
     document.channelForm.action = "ParametrizeNotification";
     document.channelForm.Action.value = "Delete";
     document.channelForm.id.value = id;
     document.channelForm.submit();
-	}
+  }
 }
 
 function setDefault(id) {
@@ -89,17 +90,15 @@ function testNotification(id) {
 }
 
 function sendChoiceChannel() {
-    document.channelForm.SelectedChannels.value = getChannels();
-    document.channelForm.SelectedFrequency.value = getFrequency();
-    document.channelForm.action = "SaveChannels";
-    document.channelForm.submit();
+  document.channelForm.SelectedChannels.value = getChannels();
+  document.channelForm.SelectedFrequency.value = getFrequency();
+  document.channelForm.action = "SaveChannels";
+  document.channelForm.submit();
 }
 
-function getChannels()
-{
+function getChannels() {
   var  items = "";
-  try
-  {
+  try {
     var boxItems = document.channelForm.SelectChannel;
     if (boxItems != null){
       // au moins une checkbox exist
@@ -114,36 +113,30 @@ function getChannels()
         }
       }
     }
-  }
-  catch (e)
-  {
+  } catch (e) {
     //Checkboxes are not displayed 
   }
   return items;
 }
 
-function getFrequency()
-{
+function getFrequency() {
   return $("#SelectFrequency").val();
 }
 
-function onChangeFrequency()
-{
+function onChangeFrequency() {
   document.channelForm.action = "ParametrizeNotification";
   document.channelForm.Action.value = "SetFrequency";
   document.channelForm.id.value = getFrequency();
   document.channelForm.submit();
 }
-
-  </script>
+</script>
 </head>
-<body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
-
+<body>
 <view:browseBar componentId="${myNotifications}" path="${parametrize}"/>
 <view:operationPane>
   <view:operation icon="${addProtocol}" altText="${addAddress}" action="javascript:editNotif(-1);"/>
   <view:operationSeparator/>
-  <view:operation icon="${param.notif}" altText="parametrizeNotif" action="javascript:paramNotif();"/>
+  <view:operation icon="${param.notif}" altText="${op_parametrizeNotif}" action="javascript:paramNotif();"/>
 </view:operationPane>
 <view:window>
   <view:tabs>
@@ -151,27 +144,24 @@ function onChangeFrequency()
     <view:tab label="${sendedNotif}" action="${sendedNotificationsURL}" selected="false"/>
     <view:tab label="${parametrizeNotif}" action="ParametrizeNotification" selected="true"/>
   </view:tabs>
+  
+  <view:frame>
 
   <c:if test="${not empty validationMessage}">
     <div class="inlineMessage-ok">
       <c:out value="${validationMessage}" />
     </div>
   </c:if>
-
-  <view:frame>
-
-<!-- AFFICHAGE HEADER -->
+  <c:if test="${not empty testExplanation}">
+    <div class="inlineMessage">${testExplanation}</div>
+  </c:if>
+    
   <p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
   <form name="channelForm">
     <input type="hidden" name="Action"/>
     <input type="hidden" name="id"/>
     <input type="hidden" name="SelectedChannels"/>
     <input type="hidden" name="SelectedFrequency"/>
-
-    <c:if test="${not empty testExplanation}">
-      <span style="color:red;"><b>${testExplanation}</b></span>
-      <br/><br/>
-    </c:if>
     
     <view:arrayPane var="personalization" routingAddress="ParametrizeNotification">
       <view:arrayColumn title="${defaultColumn}" sortable="false"/>
@@ -206,10 +196,10 @@ function onChangeFrequency()
                 // print the choice cases for a multiple selection
                 String usedCheck = "";
                 if (props.getProperty("isDefault").equalsIgnoreCase("true")) {
-                  usedCheck = "checked";
+                  usedCheck = "checked=\"checked\"";
                 }
                 pageContext.setAttribute("cellText",
-                    "<input type='checkbox' name='SelectChannel' value='" + id + "' " + usedCheck + ">");
+                    "<input type='checkbox' name='SelectChannel' value='" + id + "' " + usedCheck + "/>");
               %>
               <view:arrayCellText text="${cellText}"/>
             </c:otherwise>
