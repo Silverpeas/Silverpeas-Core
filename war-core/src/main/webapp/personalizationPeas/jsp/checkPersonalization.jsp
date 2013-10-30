@@ -63,9 +63,9 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
+<%@ page import="org.owasp.encoder.Encode"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -85,6 +85,9 @@
 	String paramNotif         = m_context + "/util/icons/notification_param.gif";
 	String addGuideline       = m_context + "/util/icons/notification_to_guidlines.gif";
 	String addProtocol        = m_context + "/util/icons/notification_to_add.gif";
+
+  pageContext.setAttribute("addProtocol", addProtocol );
+  pageContext.setAttribute("paramNotif", paramNotif );
 
 	// Icones diverses
 	String delete             = m_context + "/util/icons/delete.gif";
