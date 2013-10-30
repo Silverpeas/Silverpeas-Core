@@ -47,16 +47,16 @@
   
   if (action.equals("save")) 
   {
-        notifName = Encode.htmlStringToJavaString(request.getParameter("txtNotifName")) ;
+        notifName = EncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName")) ;
         channelId = request.getParameter("channelId") ;
-        address = Encode.htmlStringToJavaString(request.getParameter("txtAddress")) ;
+        address = EncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
         personalizationScc.saveNotifAddress(id, notifName, channelId, address, null) ;
         %>
         <HTML>
           <HEAD>
           <script language="Javascript">
             function closeAndReplace() {
-              window.opener.location.href = "personalization_Notification.jsp";
+              window.opener.location.href = "ParametrizeNotification";
               window.close();
             }
           </script>
@@ -138,7 +138,7 @@
             <%=resource.getString("GML.name")%> :&nbsp;
           </td>
           <td align=left valign="baseline">
-            <input type="text" name="txtNotifName" size="50" maxlength="20" VALUE="<%=Encode.javaStringToHtmlString(notifName)%>"> <img border="0" src="<%=mandatoryField%>" width="5" height="5">
+            <input type="text" name="txtNotifName" size="50" maxlength="20" VALUE="<%=Encode.forHtml(notifName)%>"> <img border="0" src="<%=mandatoryField%>" width="5" height="5">
           </td>
         </tr>
                 
@@ -158,7 +158,7 @@
             <%=resource.getString("adresse")%> :&nbsp;
           </td>
           <td align=left valign="baseline">
-            <input type="text" name="txtAddress" size="50" maxlength="250" VALUE="<%=Encode.javaStringToHtmlString(address)%>"> <img border="0" src="<%=mandatoryField%>" width="5" height="5">
+            <input type="text" name="txtAddress" size="50" maxlength="250" VALUE="<%=Encode.forHtml(address)%>"> <img border="0" src="<%=mandatoryField%>" width="5" height="5">
           </td>
         </tr>
         
