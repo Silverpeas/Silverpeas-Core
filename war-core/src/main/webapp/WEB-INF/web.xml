@@ -469,13 +469,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.attachment.web.AjaxServlet</servlet-class>
   </servlet>
   <!--
-<servlet>
-<servlet-name>AjaxFileUploadServlet</servlet-name>
-  <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
-  <init-param>
-  <param-name>UPLOAD_DIRECTORY</param-name>
-  <param-value>C:/tmp/ajax</param-value>
-  </init-param>
+  <servlet>
+    <servlet-name>AjaxFileUploadServlet</servlet-name>
+    <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
+    <init-param>
+      <param-name>UPLOAD_DIRECTORY</param-name>
+      <param-value>C:/tmp/ajax</param-value>
+    </init-param>
+    <init-param>
+      <param-name>WHITE_LIST</param-name>
+      <param-value>html htm odt doc pdf</param-value>
+    </init-param>
   </servlet>
   -->
   <servlet>
@@ -881,8 +885,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet-mapping>
   <!--
   <servlet-mapping>
-  <servlet-name>AjaxFileUploadServlet</servlet-name>
-  <url-pattern>/ajaxupload/*</url-pattern>
+    <servlet-name>AjaxFileUploadServlet</servlet-name>
+    <url-pattern>/ajaxupload/*</url-pattern>
   </servlet-mapping>
   -->
   <servlet-mapping>
