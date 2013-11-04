@@ -39,6 +39,7 @@ public abstract class TextField implements Field {
   static public final String CONTENT_TYPE = "contentType";
   static public final String CONTENT_TYPE_INT = "int";
   static public final String CONTENT_TYPE_FLOAT = "float";
+  static public final String PARAM_MAXLENGTH = "maxLength";
 
   /**
    * Returns the type name.
