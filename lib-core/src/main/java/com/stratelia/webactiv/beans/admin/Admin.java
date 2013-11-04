@@ -6970,18 +6970,23 @@ public final class Admin {
         (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).clone();
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
+    String lang = I18NHelper.defaultLanguage;
     // Creation
     newCompo.setId("-1");
     newCompo.setDomainFatherId(destinationSpace.getId());
     newCompo.setOrderNum(destinationSpace.getNumComponentInst());
     newCompo.setCreateDate(new Date());
     newCompo.setCreatorUserId(pasteDetail.getUserId());
-    newCompo.setLanguage(I18NHelper.defaultLanguage);
+    newCompo.setLanguage(lang);
 
     // Rename if componentName already exists in the destination space
-    String label = renameComponentName(newCompo.getLabel(I18NHelper.defaultLanguage),
-        destinationSpace.getAllComponentsInst());
+    String label =
+        renameComponentName(newCompo.getLabel(lang), destinationSpace.getAllComponentsInst());
     newCompo.setLabel(label);
+    ComponentI18N translation = (ComponentI18N) newCompo.getTranslation(lang);
+    if (translation != null) {
+      translation.setName(label);
+    }
 
     // Delete inherited profiles only
     // It will be processed by admin
