@@ -663,16 +663,18 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   
   public static void removeContents(ForeignPK pk) {
     String fromPath = getPath(pk.getInstanceId());
-    Collection<File> files =
-        FileUtils.listFiles(new File(fromPath), new PrefixFileFilter(pk.getId() + "_"), null);
-    for (File file : files) {
-      FileUtils.deleteQuietly(file);
+    File directory = new File(fromPath);
+    if (directory.exists()) {
+      Collection<File> files =
+          FileUtils.listFiles(directory, new PrefixFileFilter(pk.getId() + "_"), null);
+      for (File file : files) {
+        FileUtils.deleteQuietly(file);
+      }
     }
   }
   
   private static String getPath(String componentId) {
-    String[] dirs = new String[1];
-    dirs[0] = dir;
+    String[] dirs = {dir};
     return FileRepositoryManager.getAbsolutePath(componentId, dirs);
   }
 }
