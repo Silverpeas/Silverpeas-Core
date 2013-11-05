@@ -22,12 +22,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.silverpeas.sharing.services;
+package com.silverpeas.sharing.model;
 
 import com.silverpeas.sharing.mock.NodeSharingTicketService;
+import com.silverpeas.sharing.model.NodeAccessControl;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
