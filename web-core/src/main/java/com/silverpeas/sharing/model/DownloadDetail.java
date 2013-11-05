@@ -41,7 +41,7 @@ public class DownloadDetail implements Serializable {
   @GeneratedValue(strategy = GenerationType.TABLE,generator="UNIQUE_ID_GEN")
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
     valueColumnName = "maxId", pkColumnValue = "sb_filesharing_history", allocationSize = 1)
-  private long id;
+  private Long id;
   @ManyToOne
   @JoinColumn(name = "keyFile", columnDefinition="varchar(255)",  nullable=false)
   private Ticket ticket;
@@ -59,8 +59,12 @@ public class DownloadDetail implements Serializable {
     this.userIP = userIP;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
+  }
+
+  public void setId(final Long id) {
+    this.id = id;
   }
 
   public String getKeyFile() {

@@ -22,45 +22,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.sharing.services;
+package com.silverpeas.sharing.model;
 
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.Charsets;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -70,9 +33,46 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import com.silverpeas.sharing.services.JpaSharingTicketService;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.springframework.context.ApplicationContext;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -81,23 +81,26 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-public class VersionFileAccessControlTest {
+public class SimpleFileAccessControlTest {
 
-  public VersionFileAccessControlTest() {
-  }
   private static ReplacementDataSet dataSet;
   private static final String instanceId = "kmelia2";
-  private static final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+  private static final ClassPathXmlApplicationContext context =
+      new ClassPathXmlApplicationContext(
       "/spring-sharing-datasource.xml", "/spring-sharing-service.xml", "/spring-pure-memory-jcr.xml");
   private static final DataSource dataSource = context.getBean("jpaDataSource", DataSource.class);
   private boolean registred = false;
   private static Repository repository = context.getBean(Repository.class);
 
+  public SimpleFileAccessControlTest() {
+  }
+
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     SimpleMemoryContextFactory.setUpAsInitialContext();
-    InputStream in = JpaSharingTicketService.class.getClassLoader().
-        getResourceAsStream("com/silverpeas/sharing/services/sharing_security_dataset.xml");
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    InputStream in = JpaSharingTicketService.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/sharing/services/sharing_security_dataset.xml");
     try {
       dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
       dataSet.addReplacementObject("[NULL]", null);
@@ -170,7 +173,7 @@ public class VersionFileAccessControlTest {
     ((JackrabbitRepository) repository).shutdown();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
-    context.close();    
+    context.close();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
@@ -193,7 +196,7 @@ public class VersionFileAccessControlTest {
     createFrenchSimpleAttachment();
     SimpleDocumentPK pk = new SimpleDocumentPK(null, instanceId);
     pk.setOldSilverpeasId(10);
-    SimpleDocument attachment = new HistorisedDocument();
+    SimpleDocument attachment = new SimpleDocument();
     attachment.setPK(pk);
     attachment.setForeignId("15");
     ShareableAttachment resource = new ShareableAttachment(
@@ -216,7 +219,7 @@ public class VersionFileAccessControlTest {
         creatorId, creationDate, null);
     SimpleDocumentPK pk = new SimpleDocumentPK(null, instanceId);
     pk.setOldSilverpeasId(5);
-    SimpleDocument attachment = new HistorisedDocument();
+    SimpleDocument attachment = new SimpleDocument();
     attachment.setPK(pk);
     attachment.setFile(file);
     attachment.setForeignId("12");

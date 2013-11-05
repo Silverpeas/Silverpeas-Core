@@ -18,12 +18,9 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.sharing.services;
+package com.silverpeas.sharing.model;
 
-import com.silverpeas.sharing.model.NodeTicket;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAccessControl;
-import com.silverpeas.sharing.security.ShareableResource;
+import com.silverpeas.sharing.security.AbstractShareableAccessControl;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -33,6 +30,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.Alias;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -46,43 +44,38 @@ import java.util.Collection;
 /**
  * Access control to shared nodes and their content.
  */
-public class NodeAccessControl implements ShareableAccessControl {
+public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
 
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
 
+  NodeAccessControl() {
+    super();
+  }
+
   @Override
-  public boolean isReadable(ShareableResource resource) {
-    Ticket ticket =
-        SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
-    try {
-      if (ticket != null && ticket instanceof NodeTicket) {
-        NodePK nodePk =
-            new NodePK(String.valueOf(ticket.getSharedObjectId()), ticket.getComponentId());
-        Collection<NodePK> autorizedNodes = getNodeDescendants(nodePk);
-        autorizedNodes.add(nodePk);
-        if (resource.getAccessedObject() instanceof AttachmentDetail) {
-          AttachmentDetail attachment = (AttachmentDetail) resource.getAccessedObject();
-          return isPublicationReadable(attachment.getForeignKey(), nodePk.getInstanceId(),
-              autorizedNodes);
-        }
-        if (resource.getAccessedObject() instanceof SimpleDocument) {
-          SimpleDocument attachment = (SimpleDocument) resource.getAccessedObject();
-          return isPublicationReadable(new ForeignPK(attachment.
-              getForeignId(), attachment.getInstanceId()), nodePk.getInstanceId(), autorizedNodes);
-        }
-        if (resource.getAccessedObject() instanceof Document) {
-          Document document = (Document) resource.getAccessedObject();
-          return isPublicationReadable(document.getForeignKey(), nodePk.getInstanceId(),
-              autorizedNodes);
-        }
-        if (resource.getAccessedObject() instanceof NodeDetail) {
-          NodeDetail node = (NodeDetail) resource.getAccessedObject();
-          return autorizedNodes.contains(node.getNodePK());
-        }
-      }
-    } catch (Exception ex) {
-      return false;
+  protected boolean isReadable(NodeTicket ticket, R accessedObject) throws Exception {
+    NodePK nodePk = new NodePK(String.valueOf(ticket.getSharedObjectId()), ticket.getComponentId());
+    Collection<NodePK> autorizedNodes = getNodeDescendants(nodePk);
+    autorizedNodes.add(nodePk);
+    if (accessedObject instanceof AttachmentDetail) {
+      AttachmentDetail attachment = (AttachmentDetail) accessedObject;
+      return isPublicationReadable(attachment.getForeignKey(), nodePk.getInstanceId(),
+          autorizedNodes);
+    }
+    if (accessedObject instanceof SimpleDocument) {
+      SimpleDocument attachment = (SimpleDocument) accessedObject;
+      return isPublicationReadable(new ForeignPK(attachment.
+          getForeignId(), attachment.getInstanceId()), nodePk.getInstanceId(), autorizedNodes);
+    }
+    if (accessedObject instanceof Document) {
+      Document document = (Document) accessedObject;
+      return isPublicationReadable(document.getForeignKey(), nodePk.getInstanceId(),
+          autorizedNodes);
+    }
+    if (accessedObject instanceof NodeDetail) {
+      NodeDetail node = (NodeDetail) accessedObject;
+      return autorizedNodes.contains(node.getNodePK());
     }
     return false;
   }
@@ -123,8 +116,8 @@ public class NodeAccessControl implements ShareableAccessControl {
 
   private PublicationBm findPublicationBm() {
     if (publicationBm == null) {
-      publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBm.class);
+      publicationBm =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
     }
     return publicationBm;
   }

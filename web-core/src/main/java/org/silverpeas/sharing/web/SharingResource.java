@@ -23,31 +23,31 @@
  */
 package org.silverpeas.sharing.web;
 
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.web.RESTWebService;
+import org.silverpeas.publication.web.PublicationResource;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.silverpeas.publication.web.PublicationResource;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-
 @Service
 @RequestScoped
 @Path("sharing/{token}")
 public class SharingResource extends RESTWebService {
-  
+
   @PathParam("token")
   private String token;
 
@@ -55,21 +55,25 @@ public class SharingResource extends RESTWebService {
   public String getComponentId() {
     return null;
   }
-  
+
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public SharingEntity getSharing() {
     String baseUri = getUriInfo().getBaseUri().toString();
     Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
-    URI webApplicationRootUri = getWebApplicationRootUri(baseUri, ticket.getComponentId(), String.valueOf(ticket.getSharedObjectId()));
+    if (ticket == null || !ticket.isValid()) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    URI webApplicationRootUri = getWebApplicationRootUri(baseUri, ticket.getComponentId(),
+        String.valueOf(ticket.getSharedObjectId()));
     Date expiration = ticket.getEndDate();
     return new SharingEntity(getUriInfo().getRequestUri(), webApplicationRootUri, expiration);
   }
-  
+
   private URI getWebApplicationRootUri(String baseUri, String componentId, String nodeId) {
     URI uri;
     try {
-      uri = new URI(baseUri+"nodes/"+componentId+"/"+token+"/"+nodeId);
+      uri = new URI(baseUri + "nodes/" + componentId + "/" + token + "/" + nodeId);
     } catch (URISyntaxException e) {
       Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);

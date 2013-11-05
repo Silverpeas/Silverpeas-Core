@@ -23,10 +23,17 @@
 */
 package com.silverpeas.sharing.security;
 
+import com.silverpeas.sharing.model.Ticket;
+
 /**
 * Control the access to a ShareableResource.
 */
-public interface ShareableAccessControl<T> {
+public interface ShareableAccessControl<T extends Ticket, R> {
 
-  public boolean isReadable(ShareableResource<T> resource) ;
+  /**
+   * Indicates if the shareable resource is a readable one
+   * @param resource
+   * @return
+   */
+  public boolean isReadable(ShareableResource<R> resource);
 }
