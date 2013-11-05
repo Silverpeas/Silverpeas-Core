@@ -104,12 +104,15 @@ public class FileUtil implements MimeTypes {
   public static String getMimeType(final String fileName) {
     String mimeType = null;
     final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
-    try {
-      Tika tika = new Tika();
-      mimeType = tika.detect(fileName);
-    } catch (Exception ex) {
-      SilverTrace.warn("attachment", "FileUtil",
-          "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", ex.getMessage(), ex);
+    File file = new File(fileName);
+    if (file.exists()) {
+      try {
+        Tika tika = new Tika();
+        mimeType = tika.detect(file);
+      } catch (Exception ex) {
+        SilverTrace.warn("attachment", "FileUtil",
+            "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", ex.getMessage(), ex);
+      }
     }
     if (!StringUtil.isDefined(mimeType)) {
       try {
@@ -124,8 +127,17 @@ public class FileUtil implements MimeTypes {
     if (!StringUtil.isDefined(mimeType)) {
       mimeType = MIME_TYPES.getContentType(fileName);
     }
-    if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
-        mimeType)) {
+    // if the mime type is application/xhml+xml or text/html whereas the file is a JSP or PHP script
+    if (XHTML_MIME_TYPE.equalsIgnoreCase(mimeType) || HTML_MIME_TYPE.equalsIgnoreCase(mimeType)) {
+      if (fileExtension.contains(JSP_EXTENSION)) {
+        mimeType = JSP_MIME_TYPE;
+      } else if (fileExtension.contains(PHP_EXTENSION)) {
+        mimeType = PHP_MIME_TYPE;
+      }
+      // if the mime type refers a ZIP archive, checks if it is an archive of the java platform
+    } else if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.
+        equalsIgnoreCase(
+            mimeType)) {
       if (JAR_EXTENSION.equalsIgnoreCase(fileExtension) || WAR_EXTENSION.equalsIgnoreCase(
           fileExtension) || EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
         mimeType = JAVA_ARCHIVE_MIME_TYPE;
