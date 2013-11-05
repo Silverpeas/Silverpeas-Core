@@ -21,22 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.sharing.services;
+package com.silverpeas.sharing.model;
 
+import com.silverpeas.sharing.security.AbstractShareableAccessControl;
 import org.silverpeas.attachment.model.HistorisedDocument;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.model.VersionFileTicket;
-import com.silverpeas.sharing.security.ShareableAccessControl;
-import com.silverpeas.sharing.security.ShareableResource;
 
 /**
  * Access control to shared version documents.
  */
-public class VersionFileAccessControl implements ShareableAccessControl<HistorisedDocument> {
+public class VersionFileAccessControl
+    extends AbstractShareableAccessControl<VersionFileTicket, HistorisedDocument> {
+
+  VersionFileAccessControl() {
+    super();
+  }
+
   @Override
-    public boolean isReadable(ShareableResource<HistorisedDocument> resource) {
-      Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
-      return (ticket != null && ticket instanceof VersionFileTicket &&
-          ((VersionFileTicket) ticket).getDocument().equals(resource.getAccessedObject()));
-    }
+  protected boolean isReadable(VersionFileTicket ticket, HistorisedDocument document)
+      throws Exception {
+    return ticket.getDocument().equals(document);
+  }
 }
