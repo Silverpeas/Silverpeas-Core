@@ -213,9 +213,11 @@ public class SimpleDocumentService implements AttachmentService {
    * @return the stored document.
    * @throws AttachmentException
    */
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, InputStream content) throws
-      AttachmentException {
+  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+      InputStream content) throws AttachmentException {
     return createAttachment(document, content, true);
   }
 
@@ -228,9 +230,11 @@ public class SimpleDocumentService implements AttachmentService {
    * otherwhise.
    * @return the stored document.
    */
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, InputStream content,
-      boolean indexIt) {
+  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+      InputStream content, boolean indexIt) {
     return createAttachment(document, content, indexIt, true);
   }
 
@@ -377,8 +381,11 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.UPDATE)
   @Override
-  public void updateAttachment(SimpleDocument document, boolean indexIt, boolean invokeCallback) {
+  public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, boolean indexIt,
+      boolean invokeCallback) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -532,8 +539,11 @@ public class SimpleDocumentService implements AttachmentService {
    * @param targetPk
    * @return
    */
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.COPY)
   @Override
-  public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
+  public SimpleDocumentPK copyDocument(@TargetObject SimpleDocument original,
+      @TargetPK ForeignPK targetPk) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -670,9 +680,11 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.UPDATE)
   @Override
-  public void updateAttachment(SimpleDocument document, File content, boolean indexIt,
-      boolean invokeCallback) {
+  public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, File content,
+      boolean indexIt, boolean invokeCallback) {
     InputStream in = null;
     try {
       in = new BufferedInputStream(new FileInputStream(content));
@@ -697,20 +709,27 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, File content) throws
-      AttachmentException {
+  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+      File content) throws AttachmentException {
     return createAttachment(document, content, true);
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt) {
+  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+      File content, boolean indexIt) {
     return createAttachment(document, content, indexIt, true);
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
-      boolean invokeCallback) {
+  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+      File content, boolean indexIt, boolean invokeCallback) {
     InputStream in = null;
     try {
       in = new BufferedInputStream(new FileInputStream(content));
@@ -908,8 +927,11 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.MOVE)
   @Override
-  public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
+  public SimpleDocumentPK moveDocument(@TargetObject SimpleDocument document,
+      @TargetPK ForeignPK destination) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();

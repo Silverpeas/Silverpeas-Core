@@ -24,6 +24,7 @@
 package org.silverpeas.process.io.file;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -488,7 +489,7 @@ public class AbstractFileHandlerTest {
 
     @Override
     public String getName() {
-      return "dummyName";
+      return "dummyName_" + UUID.randomUUID().toString();
     }
 
     @Override

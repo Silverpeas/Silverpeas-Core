@@ -26,13 +26,11 @@ package org.silverpeas.admin.space.quota;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.service.AbstractQuotaService;
-import org.silverpeas.util.UnitUtil;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
@@ -42,48 +40,12 @@ import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
     extends AbstractQuotaService<T> implements SpaceQuotaService<T> {
 
-  protected static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
-
-  static {
-    final ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings",
-            "");
-    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
-        settings.getLong("quota.personalspace.datastorage.default.maxCount", 0);
-    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
-      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
-    }
-    dataStorageInPersonalSpaceQuotaDefaultMaxCount = UnitUtil
-        .convertTo(dataStorageInPersonalSpaceQuotaDefaultMaxCount, UnitUtil.memUnit.MB,
-            UnitUtil.memUnit.B);
-  }
-
   /**
    * Creates a quota key
    * @param space
    * @return
    */
   abstract protected T createKeyFrom(SpaceInst space);
-
-  @Override
-  public Quota get(final T key) throws QuotaException {
-    if (key.getSpace().isPersonalSpace()) {
-      Quota quota = new Quota();
-      // Setting a dummy id
-      quota.setId(-1L);
-      // The type
-      quota.setType(key.getQuotaType());
-      // The resource id
-      quota.setResourceId(key.getResourceId());
-      // Setting the max count
-      quota.setMaxCount(dataStorageInPersonalSpaceQuotaDefaultMaxCount);
-      // Current count
-      quota.setCount(getCurrentCount(key));
-      // Returning the dummy quota of the personal space
-      return quota;
-    }
-    return super.get(key);
-  }
 
   /*
      * (non-Javadoc)
@@ -132,6 +94,9 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
   @Override
   public Quota verify(T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     Quota quota = super.verify(key, countingOffset);
     while (key.isValid() && !key.getSpace().isRoot()) {
       key = createKeyFrom(OrganisationControllerFactory.getOrganisationController()

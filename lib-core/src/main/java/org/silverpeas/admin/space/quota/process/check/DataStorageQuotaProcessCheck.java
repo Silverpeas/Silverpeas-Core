@@ -24,10 +24,10 @@
 package org.silverpeas.admin.space.quota.process.check;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
@@ -38,7 +38,6 @@ import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,6 +52,15 @@ import java.util.Set;
  */
 @Named
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
+  protected static boolean dataStorageInSpaceQuotaActivated;
+
+  static {
+    final ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings",
+            "");
+    dataStorageInSpaceQuotaActivated =
+        settings.getBoolean("quota.space.datastorage.activated", false);
+  }
 
   @Inject
   private OrganisationController organizationController;
@@ -67,15 +75,20 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   public void checkFiles(final ProcessExecutionContext processExecutionProcess,
       final FileHandler fileHandler) throws Exception {
 
+    // If not activated, noting is done
+    if (!dataStorageInSpaceQuotaActivated) {
+      return;
+    }
+
     // Treatment on write only
     if (IOAccess.READ_WRITE.equals(fileHandler.getIoAccess())) {
 
       // Checking data storage quota on each space detected
       for (final SpaceInst space : indentifyHandledSpaces(processExecutionProcess, fileHandler)) {
         try {
-          SpaceServiceFactory.getDataStorageSpaceQuotaService().verify(
-              DataStorageSpaceQuotaKey.from(space),
-              SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
+          SpaceServiceFactory.getDataStorageSpaceQuotaService()
+              .verify(DataStorageSpaceQuotaKey.from(space),
+                  SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
         } catch (final QuotaException quotaException) {
 
           // Loading the component from which a user action has generated a quota exception

@@ -151,6 +151,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    */
   @Override
   public Quota verify(final T key) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     return verify(key, SimpleQuotaCountingOffset.from(0));
   }
 
@@ -161,6 +164,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   @Override
   public Quota verify(final T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     // Returning the quota used by this verify process
     return verify(key, getByQuotaKey(key, true), countingOffset);
   }
@@ -170,6 +176,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    */
   protected Quota verify(final T key, final Quota quota,
       final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
 
     SilverTrace
         .debug("quota", "AbstractQuotaService.verify()", "quota.BEFORE_VERIFY", quota.toString());
@@ -205,4 +214,10 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
       quotaRepository.delete(quota);
     }
   }
+
+  /**
+   * Indicates if the type of quota is activated
+   * @return
+   */
+  abstract protected boolean isActivated();
 }

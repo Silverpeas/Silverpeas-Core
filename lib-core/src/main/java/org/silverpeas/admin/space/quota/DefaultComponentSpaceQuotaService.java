@@ -23,18 +23,22 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.quota.exception.QuotaException;
-
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.quota.exception.QuotaException;
 
 /**
  * @author Yohann Chastagnier
  */
 @Service
-public class DefaultComponentSpaceQuotaService extends
-    AbstractSpaceQuotaService<ComponentSpaceQuotaKey> implements ComponentSpaceQuotaService {
+public class DefaultComponentSpaceQuotaService
+    extends AbstractSpaceQuotaService<ComponentSpaceQuotaKey>
+    implements ComponentSpaceQuotaService {
+
+  private static final ResourceLocator settings =
+      new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
 
   /*
    * (non-Javadoc)
@@ -59,12 +63,16 @@ public class DefaultComponentSpaceQuotaService extends
 
     // space could be null if user space is performed
     if (key.getSpace() != null) {
-      currentCount =
-          OrganisationControllerFactory.getOrganisationController()
-              .getAllComponentIdsRecur(key.getResourceId()).length;
+      currentCount = OrganisationControllerFactory.getOrganisationController()
+          .getAllComponentIdsRecur(key.getResourceId()).length;
     }
 
     // Result
     return currentCount;
+  }
+
+  @Override
+  protected boolean isActivated() {
+    return settings.getBoolean("quota.space.components.activated", false);
   }
 }

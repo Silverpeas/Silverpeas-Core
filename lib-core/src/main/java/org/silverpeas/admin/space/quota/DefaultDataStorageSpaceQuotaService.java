@@ -25,10 +25,12 @@ package org.silverpeas.admin.space.quota;
 
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
+import org.silverpeas.util.UnitUtil;
 
 import java.io.File;
 
@@ -42,6 +44,42 @@ import static org.apache.commons.io.FileUtils.sizeOfDirectory;
 public class DefaultDataStorageSpaceQuotaService
     extends AbstractSpaceQuotaService<DataStorageSpaceQuotaKey>
     implements DataStorageSpaceQuotaService {
+
+  private static final ResourceLocator settings =
+      new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+
+  private static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
+
+  static {
+    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
+        settings.getLong("quota.personalspace.datastorage.default.maxCount", 0);
+    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
+    }
+    dataStorageInPersonalSpaceQuotaDefaultMaxCount = UnitUtil
+        .convertTo(dataStorageInPersonalSpaceQuotaDefaultMaxCount, UnitUtil.memUnit.MB,
+            UnitUtil.memUnit.B);
+  }
+
+  @Override
+  public Quota get(final DataStorageSpaceQuotaKey key) throws QuotaException {
+    if (key.getSpace().isPersonalSpace()) {
+      Quota quota = new Quota();
+      // Setting a dummy id
+      quota.setId(-1L);
+      // The type
+      quota.setType(key.getQuotaType());
+      // The resource id
+      quota.setResourceId(key.getResourceId());
+      // Setting the max count
+      quota.setMaxCount(dataStorageInPersonalSpaceQuotaDefaultMaxCount);
+      // Current count
+      quota.setCount(getCurrentCount(key));
+      // Returning the dummy quota of the personal space
+      return quota;
+    }
+    return super.get(key);
+  }
 
   /*
    * (non-Javadoc)
@@ -90,7 +128,7 @@ public class DefaultDataStorageSpaceQuotaService
   public Quota verify(final DataStorageSpaceQuotaKey key,
       final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
     Quota quota = new Quota();
-    if (key.isValid()) {
+    if (isActivated() && key.isValid()) {
       if (key.getSpace().isPersonalSpace()) {
         // Setting a dummy id
         quota.setId(-1L);
@@ -108,5 +146,10 @@ public class DefaultDataStorageSpaceQuotaService
       }
     }
     return quota;
+  }
+
+  @Override
+  protected boolean isActivated() {
+    return settings.getBoolean("quota.space.datastorage.activated", false);
   }
 }

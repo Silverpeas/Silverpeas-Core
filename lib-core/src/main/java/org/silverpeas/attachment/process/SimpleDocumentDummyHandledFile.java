@@ -28,11 +28,15 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.process.io.file.AbstractDummyHandledFile;
 
+import java.util.EnumSet;
+
 /**
  * User: Yohann Chastagnier
  * Date: 17/10/13
  */
 public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
+  private final static EnumSet<DocumentType> technicalDocumentTypes =
+      EnumSet.of(DocumentType.form, DocumentType.node, DocumentType.wysiwyg);
 
   private final SimpleDocument document;
   private boolean deleted = false;
@@ -92,7 +96,7 @@ public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
 
   @Override
   public String getMimeType() {
-    if (!DocumentType.attachment.equals(document.getDocumentType())) {
+    if (technicalDocumentTypes.contains(document.getDocumentType())) {
       return document.getDocumentType().getName();
     }
     return document.getFile().getContentType();
