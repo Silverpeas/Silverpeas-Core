@@ -23,7 +23,6 @@ package com.silverpeas.sharing.model;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.silverpeas.sharing.services.SimpleFileAccessControl;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Date;
 import javax.persistence.DiscriminatorValue;
@@ -39,8 +38,8 @@ import org.silverpeas.util.UuidPk;
 @Entity
 @DiscriminatorValue("Attachment")
 public class SimpleFileTicket extends Ticket {
+  private static final long serialVersionUID = -475026338727454787L;
 
-  private static final long serialVersionUID = 1L;
   private static final SimpleFileAccessControl accessControl = new SimpleFileAccessControl();
 
   protected SimpleFileTicket() {

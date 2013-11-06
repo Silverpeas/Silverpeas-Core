@@ -463,8 +463,8 @@
             alert(error.message);
           });
         }, function(pdc, error) {
-          $this.data('pdc', pdc);
-          alert(error.message);
+        	$this.hide();
+        	window.console && window.console.log('Silverpeas \'Taxonomy\' Plugin ERROR : ' + error.message);
         });
       });
     },
