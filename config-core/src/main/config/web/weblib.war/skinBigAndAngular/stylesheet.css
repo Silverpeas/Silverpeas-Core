@@ -8,7 +8,7 @@
 }
 
 #backHome {
-	background:url("") 8px 6px no-repeat ;/**  Logo pour retour à l'accueil **/
+	background:url("imgDesign/logo.png") 7px 0 no-repeat ;/**  Logo pour retour à l'accueil **/
 	height: 115px;
     left: 0;
     top: 0;
@@ -16,7 +16,7 @@
 }
 #backHome img{
 	height: 115px !important;
-    width: 189px !important;
+    width: 214px !important;
 }
 
 #recherche {
@@ -44,22 +44,21 @@ a:hover {
 }
 
 #administration a {
-	background:#1C94D4 url(imgDesign/bg-btn-admin.png) top right no-repeat;
+	background:transparent url(imgDesign/bg-btn-admin.png) right  7px no-repeat;
 	color:#FFF;
-	line-height:50px;
-	height:50px;
+	line-height:60px;
+	height:60px;
 	display:block;
 	font-size:14px;
 	font-weight:100;
-	padding:0 55px 0 15px;
+	padding:0 45px 0 15px;
 	font-family:texgyreadventor ,Arial,sans-serif;
 	width:116px;
-	margin-top:-15px;
 	}
 
 #administration a:hover, #administration a:focus{
 	background-color:#EC9C01;
-	margin-top:0px;
+
 }
 
 #pdcFrame {
@@ -77,6 +76,10 @@ a:hover {
 }
 
 /* NAV GAUCHE */
+.spaceLevel1On .contentSpace {
+	padding-bottom:10px;
+	border-bottom:1px solid #EEEEEE;
+}
 .spaceLevel1On .contentSpace, #contentSpacespacePerso {
 	background-color: transparent;
 	}
@@ -87,7 +90,7 @@ a:hover {
 #domainsBar  .spaceLevel1 a.spaceURL,
 #domainsBar  .spaceLevel1On a.spaceURL{
 	background:transparent url("imgDesign/bg_menu_level1.png") 0 0 no-repeat;
-	padding:13px 10px 10px 45px;
+	padding:13px 10px 4px 45px;
 	font-size: 19px;
 	line-height:19px;
 	min-height:26px;

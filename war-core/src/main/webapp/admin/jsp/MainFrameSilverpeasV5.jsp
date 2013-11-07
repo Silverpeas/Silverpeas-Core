@@ -109,21 +109,22 @@ if (m_MainSessionCtrl == null) {
       topLocation = "/admin/jsp/" + topLocation;
     }
 		%>
-    <c:set var="topLocation"><%=topLocation%></c:set>
+   			<c:set var="topLocation"><%=topLocation%></c:set>
 			<script type="text/javascript">
 				top.location="<c:url value="${topLocation}" />";
 			</script>
 		<%
 	}
 
-	String framesetRows = "115,100%,*,*,*";
+	String bannerHeight = helper.getSettings("bannerHeight", "115");
+	String footerHeight = helper.getSettings("footerHeight", "26");
+	String framesetRows = bannerHeight+",100%,*,*,*";
 	if (helper.displayPDCFrame()) {
-      framesetRows = "115,100%,26,*,*,*";
+      framesetRows = bannerHeight+",100%,"+footerHeight+",*,*,*";
 	}
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
@@ -164,11 +165,11 @@ function init(){
 }
 
 function showPdcFrame() {
-	setframevalue(columntype, "115,100%,26,*,*,*");
+	setframevalue(columntype, "<%=bannerHeight%>,100%,<%=footerHeight%>,*,*,*");
 }
 
 function hidePdcFrame() {
-	setframevalue(columntype, "115,100%,*,*,*,*");
+	setframevalue(columntype, "<%=bannerHeight%>,100%,*,*,*,*");
 }
 
 setTimeout("init()",100);

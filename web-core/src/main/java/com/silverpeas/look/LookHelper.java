@@ -92,6 +92,8 @@ public interface LookHelper {
   public abstract boolean getSettings(String key, boolean defaultValue);
 
   public abstract String getSettings(String key, String defaultValue);
+  
+  public abstract int getSettings(String key, int defaultValue);
 
   public abstract String getString(String key);
 
