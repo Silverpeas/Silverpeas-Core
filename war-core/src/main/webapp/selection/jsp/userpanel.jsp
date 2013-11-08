@@ -24,6 +24,10 @@
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
 <c:set var="hotSetting"        value="${selection.hotSetting}"/>
 
+<c:url var="userProfileUrl"      value="/util/javaScript/angularjs/services/silverpeas-profile.js"/>
+<c:url var="silverpeasSearchUrl" value="/util/javaScript/angularjs/directives/silverpeas-searchbox.js"/>
+<c:url var="selectionUrl"        value="/selection/jsp/javaScript/selection.js"/>
+
 <c:set var="selectionScope"   value=""/>
 <c:if test="${selection.elementSelectable}">
   <c:set var="selectionScope" value="user"/>
@@ -69,9 +73,9 @@
     <view:looknfeel />
     <view:includePlugin name="breadcrumb"/>
     <view:includePlugin name="pagination"/>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/services/silverpeas-profile.js"></script>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/angularjs/directives/silverpeas-searchbox.js"></script>
-    <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/selection.js"></script>
+    <script type="text/javascript" src="${userProfileUrl}"></script>
+    <script type="text/javascript" src="${silverpeasSearchUrl}"></script>
+    <script type="text/javascript" src="${selectionUrl}"></script>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
       html, body {height:100%; overflow:hidden; margin:0px; padding:0px}
@@ -103,7 +107,7 @@
       <div id="results_userPanel">
         <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
           <div class="groups_results_userPanel">
-            <silverpeas-search text="${defaultGroupSearchText}" query="groupNameFilter" on-search="searchGroups(query)"></silverpeas-search>
+            <silverpeas-search label="${defaultGroupSearchText}" query="groupNameFilter"></silverpeas-search>
             <div class="listing_groups">
               <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
               <a href="#" ng-show="selectedGroups.multipleSelection" ng-click="selectAllGroups()" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all"><fmt:message key="selection.AddAllGroups"/></a>
@@ -121,7 +125,7 @@
         </c:if>
         <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
           <div class="users_results_userPanel">
-            <silverpeas-search text="${defaultUserSearchText}" query="userNameFilter" on-search="searchUsers(query)"></silverpeas-search>
+            <silverpeas-search label="${defaultUserSearchText}" query="userNameFilter"></silverpeas-search>
             <div class="listing_users">
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
               <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
@@ -347,6 +351,18 @@
               $scope.userNameFilter = '';
             }
 
+            /* search the users matching the specified name */
+            function searchUsers(name) {
+              listingFilters.userName = (name === '*' ? null:name);
+              fetchUsers({name: name, page: {number: 1, size: $scope.userPageSize}}).then(updateUsersListing);
+            };
+
+            /* search the groups matching the specified name */
+            function searchGroups(name) {
+              listingFilters.groupName = (name === '*' ? null:name);
+              $scope.currentGroup.subgroups({name: name, page: {number: 1, size: $scope.groupPageSize}}).then(updateGroupsListing);
+            };
+
             /* initialize the userSelection app by filling it with some values */
             function init() {
               if (context.selectionScope === 'group') {
@@ -383,6 +399,12 @@
               }
               resetSearchQueries();
             }
+
+
+           /* Watchers */
+
+           $scope.$watch('groupNameFilter', searchGroups);
+           $scope.$watch('userNameFilter', searchUsers);
 
            /* Functions provided by the scope in order to be used in GUI */
 
@@ -482,18 +504,6 @@
             /* renders the subgroups of the specified group or all the groups if it is the root of the tree */
             $scope.goToGroup = function(group) {
               $('#breadcrumb').breadcrumb('set', group);
-            };
-
-            /* search the users matching the specified name */
-            $scope.searchUsers = function(name) {
-              listingFilters.userName = (name === '*' ? null:name);
-              fetchUsers({name: name, page: {number: 1, size: $scope.userPageSize}}).then(updateUsersListing);
-            };
-
-            /* search the groups matching the specified name */
-            $scope.searchGroups = function(name) {
-              listingFilters.groupName = (name === '*' ? null:name);
-              $scope.currentGroup.subgroups({name: name, page: {number: 1, size: $scope.groupPageSize}}).then(updateGroupsListing);
             };
 
              /* validate the selection of users and/or of user groups */

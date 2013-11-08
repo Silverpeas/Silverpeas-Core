@@ -25,68 +25,68 @@
 (function() {
 
   /**
-   * <code>silverpeas-search</code> is an HTML element to render a search box by using the AngularJS
-   * framework.
+   * silverpeas-search is an HTML element to render a search box by using the AngularJS framework.
    *
-   * It defines three attributes:
-   * <ul>
-   * <li><code>text</code>: to display a default text in the input box; it will affect only the
-   * input box value and not the below query variable.</li>
-   * <li><code>query</code>: a bi-directional variable with which the invoker can both be informed
-   * about the current query passed by the user and can set a specific query (for example to reset
-   * it explicitly),</li>
-   * <li><code>on-search</code>: a function to which the search process is itself delegated. The
-   * query text will be passed under the argument name <code>query</code>.
+   * It defines two attributes:
+   * @property {string} label - an optional label to display in the input box; it will affect only
+   * the input box value and not the query variable.
+   * @property {expression} query - a scope data to which the search query will be set.
    *
-   * The following example illustrates the use of the directive:
-   * <pre>
-   * <silverpeas-search text='search something' query='searchText' on-search='search(query)'></silverpeas-search>
-   * </pre>
+   * The following example illustrates two possible use of the directive:
+   * @example <silverpeas-search label='search something' query='searchText'></silverpeas-search>
+   * @example <silverpeas-search label='search something' query='searchText'></div>
+   * (you can replace div by any other HTML element)
    */
   angular.module('silverpeas.directives').directive('silverpeasSearch', function() {
     return {
       templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-searchbox.html',
       transclude: true,
       scope: {
-        text: '@', // the default text using the data-binding from the parent scope
-        query: '=', // the current query in the input search box usin the bi-directionnal binding with the parent scope
-        onSearch: '&' // create a delegate onSearch function
+        label: '@', // the label to display by default in the text input
+        query: '=', // the current query using the bi-directionnal binding with the user scope
       },
-      restrict: 'E',
+      restrict: 'AE',
       replace: true,
       link: function postLink(scope, element, attrs) {
+
         function search(text, minChars) {
-          if (text !== undefined && text !== null && text !== scope.text && text.length >= minChars) {
-            if (scope.onSearch)
-              scope.onSearch({query: text + '*'});
+          if (text !== undefined && text !== null && text !== scope.label && text.length >= minChars) {
+            scope.query = text + '*';
           }
         }
 
         var inInit = true;
         var box = angular.element(element.children()[0]);
         box.on('focus', function() {
-          if (box.val() === scope.text) {
+          if (box.val() === scope.label) {
             box.val("");
           }
         }).on('blur', function() {
-          if (scope.query.length === 0) {
-            box.val(scope.text);
+          if (!scope.queryText) {
+            box.val(scope.label);
           }
         }).on('keypress', function(event) {
           if (event.which === 13) {
-            search(scope.query, 0);
+            search(scope.queryText, 0);
+            scope.$apply();
           }
         });
 
-        /* watch for changement in the scope.query property */
-        scope.$watch('query', function(newValue, oldValue) {
+        /* watch for changement in the scope.queryText property */
+        scope.$watch('queryText', function(newValue, oldValue) {
           if (inInit) {
-            box.val(scope.text);
+            box.val(scope.label);
             inInit = false;
           } else if (newValue !== oldValue) {
-            if (!newValue)
-              box.val(scope.text);
-            search(scope.query, 3);
+            search(newValue, 3);
+          }
+        });
+        scope.$watch('query', function(value) {
+          if (value !== scope.queryText + '*') {
+            if (!value)
+              box.val(scope.label);
+            else
+              scope.queryText = value;
           }
         });
       }

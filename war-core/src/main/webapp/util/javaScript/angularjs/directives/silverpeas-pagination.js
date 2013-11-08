@@ -26,11 +26,22 @@
 
   /**
    * Directives to generate an HTML paginator. It depends on the JQuery plugin smartpaginator.
+   *
+   * It accepts 4 attributes:
+   * @property {string} items - the identifier of the HTML element that contains the items to paginate
+   * @property {expression} pageSize - the count of items to render per page
+   * @property {expression} itemsSize - the total size of the items to paginate
+   * @property {function} onPage - the callback to invoke at each page change
+   *
+   * The following example illustrates two possible use of the directive:
+   * @example<silverpeas-search label='search something' query='searchText'></silverpeas-search>
+   * @example <silverpeas-search label='search something' query='searchText'></div>
+   * (you can replace div by any other HTML element)
    */
   angular.module('silverpeas.directives').directive('silverpeasPagination', function() {
     return {
       template: '<div class="pageNav_silverpeas"></div>',
-      restrict: 'E',
+      restrict: 'AE',
       scope: {
         items: '@',
         pageSize: '=',
