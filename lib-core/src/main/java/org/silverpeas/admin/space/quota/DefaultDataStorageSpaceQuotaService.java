@@ -31,6 +31,7 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 import java.io.File;
 
@@ -57,8 +58,8 @@ public class DefaultDataStorageSpaceQuotaService
       dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
     }
     dataStorageInPersonalSpaceQuotaDefaultMaxCount = UnitUtil
-        .convertTo(dataStorageInPersonalSpaceQuotaDefaultMaxCount, UnitUtil.memUnit.MB,
-            UnitUtil.memUnit.B);
+        .convertTo(dataStorageInPersonalSpaceQuotaDefaultMaxCount, MemoryUnit.MB,
+            MemoryUnit.B);
   }
 
   @Override

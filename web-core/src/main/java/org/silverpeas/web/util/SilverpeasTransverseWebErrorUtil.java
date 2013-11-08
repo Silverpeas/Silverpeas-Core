@@ -41,24 +41,6 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
   private static final String SERVLET_JSP_EXCEPTION_ATTRIBUTE = "javax.servlet.jsp.jspException";
 
   /**
-   * Verifies if the error is a transverse one and notify the user (UI only) with the notifier
-   * plugin mechanism.
-   * @param runtimeException the error
-   * @param request the http servlet request
-   * @param language the language of current user
-   * @throws DataStorageQuotaException, ComponentFileFilterException
-   */
-  public static void notifyToRequest(RuntimeException runtimeException,
-      final ServletRequest request, final String language) {
-    String transverseMessage =
-        SilverpeasTransverseWebErrorUtil.performExceptionMessage(runtimeException, language);
-    if (StringUtil.isNotDefined(transverseMessage)) {
-      throw runtimeException;
-    }
-    NotifierUtil.addError(request, transverseMessage);
-  }
-
-  /**
    * Checks if a DataStorageQuotaException is registred in the servlet request
    * @param request the http servlet request
    * @param language the language of current user
@@ -68,18 +50,18 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
       throws DataStorageQuotaException, ComponentFileFilterException {
     final Object servletJspExceptionAttribute =
         request.getAttribute(SERVLET_JSP_EXCEPTION_ATTRIBUTE);
-    if (servletJspExceptionAttribute instanceof Throwable) {
-      throwTransverseErrorIfAny((Throwable) servletJspExceptionAttribute, language);
+    if (servletJspExceptionAttribute instanceof Exception) {
+      throwTransverseErrorIfAny((Exception) servletJspExceptionAttribute, language);
     }
   }
 
   /**
    * Retrieves a unformatted exception message if any handled from a given throwable
-   * @param throwable
+   * @param exception
    * @return
    */
-  public static String performAppletAlertExceptionMessage(Throwable throwable, String language) {
-    return EncodeHelper.htmlStringToJavaString(performExceptionMessage(throwable, language))
+  public static String performAppletAlertExceptionMessage(Exception exception, String language) {
+    return EncodeHelper.htmlStringToJavaString(performExceptionMessage(exception, language))
         .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9 ]*/?>", "").replaceAll("\\n", "\\\\n");
   }
 }

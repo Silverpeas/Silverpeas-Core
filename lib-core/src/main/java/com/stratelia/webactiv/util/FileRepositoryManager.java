@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 import java.io.File;
 import java.io.IOException;
@@ -318,7 +319,7 @@ public class FileRepositoryManager {
    */
   public static long getUploadMaximumFileSize() {
     return uploadSettings.getLong("MaximumFileSize",
-        UnitUtil.convertTo(10, UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
+        UnitUtil.convertTo(10, MemoryUnit.MB, MemoryUnit.B));
   }
 
   /**

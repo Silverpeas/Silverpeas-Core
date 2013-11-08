@@ -23,12 +23,15 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.notification.message.MessageManager;
+
+import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -46,7 +49,6 @@ public class JavascriptPluginInclusion {
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
-  private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
@@ -214,6 +216,13 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_THEME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_NOTIFIER));
+    StringBuilder script = new StringBuilder();
+    script.append("notySetupAjaxMessages();");
+    String registredKeyOfMessages = MessageManager.getRegistredKey();
+    if (StringUtil.isDefined(registredKeyOfMessages)) {
+      script.append("notyRegistredMessages('").append(registredKeyOfMessages).append("');");
+    }
+    xhtml.addElement(scriptContent(script.toString()));
     return xhtml;
   }
 

@@ -42,16 +42,40 @@ import java.rmi.RemoteException;
 public class SilverpeasTransverseErrorUtil {
 
   /**
-   * Checks from a throwable if an runtime transverse exception has to be thrown
-   * @param throwable the http servlet request
-   * @param language the language of current user
+   * Stops a runtime transverse exception exists
+   * @param exception
    */
-  public static void throwTransverseErrorIfAny(Throwable throwable, final String language)
-      throws DataStorageQuotaException, ComponentFileFilterException {
+  @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+  public static <E extends Exception> void stopTransverseErrorIfAny(E exception) throws E {
 
     // Data storage quota exception
     final DataStorageQuotaException dataStorageQuotaException =
-        retrieveDataStorageQuotaException(throwable);
+        retrieveDataStorageQuotaException(exception);
+    if (dataStorageQuotaException != null) {
+      return;
+    }
+
+    // Component file filter exception
+    final ComponentFileFilterException componentFileFilterException =
+        retrieveComponentFileFilterException(exception);
+    if (componentFileFilterException != null) {
+      return;
+    }
+
+    throw exception;
+  }
+
+  /**
+   * Checks from a exception if a runtime transverse exception has to be thrown
+   * @param exception the http servlet request
+   * @param language the language of current user
+   */
+  public static <E extends Exception> void throwTransverseErrorIfAny(E exception,
+      final String language) throws DataStorageQuotaException, ComponentFileFilterException {
+
+    // Data storage quota exception
+    final DataStorageQuotaException dataStorageQuotaException =
+        retrieveDataStorageQuotaException(exception);
     if (dataStorageQuotaException != null) {
       dataStorageQuotaException.setLanguage(language);
       throw dataStorageQuotaException;
@@ -59,7 +83,7 @@ public class SilverpeasTransverseErrorUtil {
 
     // Component file filter exception
     final ComponentFileFilterException componentFileFilterException =
-        retrieveComponentFileFilterException(throwable);
+        retrieveComponentFileFilterException(exception);
     if (componentFileFilterException != null) {
       componentFileFilterException.setLanguage(language);
       throw componentFileFilterException;
@@ -67,18 +91,19 @@ public class SilverpeasTransverseErrorUtil {
   }
 
   /**
-   * Retrieves a formatted exception message if any handled from a given throwable
-   * @param throwable
+   * Retrieves a formatted exception message if any handled from a given exception
+   * @param exception
    * @return
    */
-  @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-  public static String performExceptionMessage(Throwable throwable, String language) {
+  @SuppressWarnings({"exceptionResultOfMethodCallIgnored", "ThrowableResultOfMethodCallIgnored"})
+  public static <E extends Exception> String performExceptionMessage(E exception, String language) {
     String message = "";
     final SilverpeasTemplate template;
 
     // Data storage quota exception
-    final DataStorageQuotaException dsqe = retrieveDataStorageQuotaException(throwable);
+    final DataStorageQuotaException dsqe = retrieveDataStorageQuotaException(exception);
     if (dsqe != null) {
+      dsqe.setLanguage(language);
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
       template
           .setAttribute("maxCountFormated", UnitUtil.formatMemSize(dsqe.getQuota().getMaxCount()));
@@ -90,8 +115,9 @@ public class SilverpeasTransverseErrorUtil {
     }
 
     // Component file filter exception
-    final ComponentFileFilterException cffe = retrieveComponentFileFilterException(throwable);
+    final ComponentFileFilterException cffe = retrieveComponentFileFilterException(exception);
     if (cffe != null) {
+      cffe.setLanguage(language);
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/component/error");
       template.setAttribute("fileFilters", cffe.getComponentFileFilterParameter().getFileFilters());
       template.setAttribute("isGloballySet",
@@ -109,37 +135,40 @@ public class SilverpeasTransverseErrorUtil {
   }
 
   /**
-   * Retrieves a DataStorageQuotaException if any from a given throwable
-   * @param throwable
+   * Retrieves a DataStorageQuotaException if any from a given exception
+   * @param exception
    * @return
    */
-  private static DataStorageQuotaException retrieveDataStorageQuotaException(Throwable throwable) {
-    return retrieveException(throwable, DataStorageQuotaException.class);
+  private static <E extends Exception> DataStorageQuotaException retrieveDataStorageQuotaException(
+      E exception) {
+    return retrieveException(exception, DataStorageQuotaException.class);
   }
 
   /**
-   * Retrieves a ComponentFileFilterException if any from a given throwable
-   * @param throwable
+   * Retrieves a ComponentFileFilterException if any from a given exception
+   * @param exception
    * @return
    */
-  private static ComponentFileFilterException retrieveComponentFileFilterException(
-      Throwable throwable) {
-    return retrieveException(throwable, ComponentFileFilterException.class);
+  private static <E extends Exception> ComponentFileFilterException
+  retrieveComponentFileFilterException(
+      E exception) {
+    return retrieveException(exception, ComponentFileFilterException.class);
   }
 
   /**
-   * Retrieves an exception if any from a given throwable
-   * @param throwable
+   * Retrieves an exception if any from a given exception
+   * @param exception
    * @param exceptionClass
    * @return
    */
   @SuppressWarnings("unchecked")
-  private static <T extends Exception> T retrieveException(Throwable throwable,
-      final Class<T> exceptionClass) {
+  private static <E extends Exception, T extends Exception> E retrieveException(T exception,
+      final Class<E> exceptionClass) {
+    Throwable throwable = exception;
     if (throwable != null) {
       while (throwable != null) {
         if (exceptionClass.isInstance(throwable)) {
-          return (T) throwable;
+          return (E) throwable;
         }
 
         if (throwable instanceof WithNested) {

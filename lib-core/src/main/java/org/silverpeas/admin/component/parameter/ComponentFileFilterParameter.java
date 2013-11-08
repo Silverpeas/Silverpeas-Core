@@ -28,6 +28,9 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import java.io.File;
 import java.util.Collection;
@@ -200,7 +203,11 @@ public class ComponentFileFilterParameter {
    */
   public void verifyFileAuthorized(final File file) {
     if (!isFileAuthorized(file)) {
-      throw new ComponentFileFilterException(this, (file != null ? file.getName() : ""));
+      ComponentFileFilterException exception =
+          new ComponentFileFilterException(this, (file != null ? file.getName() : ""));
+      NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+          .performExceptionMessage(exception, MessageManager.getLanguage()));
+      throw exception;
     }
   }
 

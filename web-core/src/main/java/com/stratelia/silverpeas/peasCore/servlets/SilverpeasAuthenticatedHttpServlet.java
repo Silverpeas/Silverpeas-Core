@@ -62,7 +62,6 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
         mainSessionCtrl = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
       }
 
-
       // Verify the user is authenticated
       if (mainSessionCtrl == null) {
         throwUserSessionExpiration();

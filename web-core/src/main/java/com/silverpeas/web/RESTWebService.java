@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -94,6 +95,9 @@ public abstract class RESTWebService {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
     }
     this.userDetail = session.getUserDetail();
+    if (this.userDetail != null) {
+      MessageManager.setLanguage(this.userDetail.getUserPreferences().getLanguage());
+    }
   }
 
   /**

@@ -36,7 +36,7 @@ import java.util.EnumSet;
  */
 public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
   private final static EnumSet<DocumentType> technicalDocumentTypes =
-      EnumSet.of(DocumentType.form, DocumentType.node, DocumentType.wysiwyg);
+      EnumSet.of(DocumentType.wysiwyg);
 
   private final SimpleDocument document;
   private boolean deleted = false;

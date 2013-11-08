@@ -49,7 +49,6 @@
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
-<view:includePlugin name="notifier"/>
 <c:choose>
   <c:when test="${isVersionActive}">
     <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
@@ -783,12 +782,7 @@
     });
 
       var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
-        var errorMsg = jqXHR.responseText;
-        if (!$.trim(errorMsg)) {
-          errorMsg = errorThrown;
-        }
         $.closeProgressMessage();
-        notyError(errorMsg);
       };
 
       $("#dialog-attachment-add").dialog({

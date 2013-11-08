@@ -32,12 +32,15 @@ import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -99,7 +102,11 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
           }
 
           // Throwing the data storage exception
-          throw new DataStorageQuotaException(quotaException.getQuota(), space, fromComponent);
+          DataStorageQuotaException exception =
+              new DataStorageQuotaException(quotaException.getQuota(), space, fromComponent);
+          NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+              .performExceptionMessage(exception, MessageManager.getLanguage()));
+          throw exception;
         }
       }
     }

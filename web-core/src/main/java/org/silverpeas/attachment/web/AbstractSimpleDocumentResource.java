@@ -27,6 +27,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
@@ -61,10 +62,12 @@ public class AbstractSimpleDocumentResource extends RESTWebService {
       long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
       long fileSize = fileToCheck.length();
       if (fileSize > maximumFileSize) {
+        String errorMessage = getBundle().getString("attachment.dialog.errorFileSize") + " " +
+            getBundle().getString("attachment.dialog.maximumFileSize") + " (" +
+            UnitUtil.formatMemSize(maximumFileSize) + ")";
+        NotifierUtil.addError(errorMessage);
         throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
-            .entity(getBundle().getString("attachment.dialog.errorFileSize") + " " +
-                getBundle().getString("attachment.dialog.maximumFileSize") + " (" +
-                UnitUtil.formatMemSize(maximumFileSize) + ")").build());
+            .entity(errorMessage).build());
       }
 
     } catch (RuntimeException re) {

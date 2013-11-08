@@ -30,11 +30,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
+import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.process.io.IOAccess;
-import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.DummyHandledFile;
+import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -95,8 +98,11 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
             .getDummyHandledFiles(componentInstanceId)) {
           if (!dummyHandledFile.isDeleted() &&
               !componentFileFilter.isMimeTypeAuthorized(dummyHandledFile.getMimeType())) {
-            throw new ComponentFileFilterException(componentFileFilter,
-                dummyHandledFile.getName());
+            ComponentFileFilterException exception =
+                new ComponentFileFilterException(componentFileFilter, dummyHandledFile.getName());
+            NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+                .performExceptionMessage(exception, MessageManager.getLanguage()));
+            throw exception;
           }
         }
       }

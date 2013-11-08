@@ -99,7 +99,6 @@
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
-<view:includePlugin name="notifier"/>
 <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
 <c:choose>
   <c:when test="${view:booleanValue(isComponentVersioned)}">
@@ -275,12 +274,7 @@
       });
 
     var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
-      var errorMsg = jqXHR.responseText;
-      if (!$.trim(errorMsg)) {
-        errorMsg = errorThrown;
-      }
       $.closeProgressMessage();
-      notyError(errorMsg);
     };
 
     $("#dialog-attachment-add").dialog({
