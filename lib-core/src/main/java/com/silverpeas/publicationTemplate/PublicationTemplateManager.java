@@ -76,7 +76,6 @@ public class PublicationTemplateManager {
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
   private final Map<String, PublicationTemplateImpl> templates =
       new HashMap<String, PublicationTemplateImpl>();
-  public static String mappingRecordTemplateFilePath = null;
   public static String templateDir = null;
   public static String defaultTemplateDir = null;
   private static JAXBContext JAXB_CONTEXT = null;
@@ -84,16 +83,9 @@ public class PublicationTemplateManager {
   static {
     ResourceLocator templateSettings =
         new ResourceLocator("org.silverpeas.publicationTemplate.settings.template", "");
-    ResourceLocator mappingSettings =
-        new ResourceLocator("org.silverpeas.publicationTemplate.settings.mapping", "");
 
     templateDir = templateSettings.getString("templateDir");
     defaultTemplateDir = System.getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
-
-    String mappingDir = mappingSettings.getString("mappingDir");
-    String mappingRecordTemplateFileName = mappingSettings.getString("templateMapping");
-
-    mappingRecordTemplateFilePath = makePath(mappingDir, mappingRecordTemplateFileName);
     
     try {
       JAXB_CONTEXT = JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);

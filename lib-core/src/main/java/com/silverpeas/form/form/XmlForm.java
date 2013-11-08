@@ -236,9 +236,9 @@ public class XmlForm extends AbstractForm {
       if (mandatory) {
         out.println("<tr align=\"left\">");
         out.println("<td colspan=\"2\">");
-        out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField")
+        out.println("<img border=\"0\" src=\"" + Util.getIcon("mandatoryField")
             + "\" width=\"5\" height=\"5\" alt=\"" + Util.getString("GML.requiredField", language)
-            + "\"/>&nbsp;:&nbsp;" + Util.getString("GML.requiredField", language) + ")");
+            + "\"/>&nbsp;:&nbsp;" + Util.getString("GML.requiredField", language));
         out.println("</td>");
         out.println("</tr>");
       }

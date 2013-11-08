@@ -39,27 +39,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A generic FieldTemplate implementation.
  */
+@XmlRootElement(name = "fieldTemplate")
+@XmlAccessorType(XmlAccessType.NONE)
 public class GenericFieldTemplate implements FieldTemplate, Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
+  @XmlElement(required = true)
   private String fieldName = null;
   private Class fieldImpl = null;
   private String typeName = null;
+  @XmlElement(required = true)
   private String displayerName = "";
+  @XmlElement(name = "isMandatory", required = true, defaultValue = "false")
   private boolean mandatory = false;
+  @XmlElement(name = "isReadOnly", required = true, defaultValue = "false")
   private boolean readOnly = false;
+  @XmlElement(name = "isDisabled", required = true, defaultValue = "false")
   private boolean disabled = false;
+  @XmlElement(name = "isHidden", required = true, defaultValue = "false")
   private boolean hidden = false;
+  
   private String defaultLabel = null;
   private Map<String, String> labels = new HashMap<String, String>();
   private Map<String, String> parameters = new HashMap<String, String>();
+  
+  @XmlElement(name = "label")
   private List<Label> labelsObj = new ArrayList<Label>();
+  @XmlElement(name = "parameter")
   private List<Parameter> parametersObj = new ArrayList<Parameter>();
   private boolean searchable = false;
   private String templateName = null;
+  
+  @XmlElement(name = "isFacet", required = true, defaultValue = "false")
   private boolean usedAsFacet = false;
 
   /**
@@ -126,6 +145,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Returns the type name of the described field.
    */
   @Override
+  @XmlElement(required = true)
   public String getTypeName() {
     return typeName;
   }

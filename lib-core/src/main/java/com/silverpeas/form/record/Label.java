@@ -24,8 +24,18 @@
 
 package com.silverpeas.form.record;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "label")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Label {
+  
+  @XmlElement(name = "labelName")
   private String label = "";
+  @XmlElement
   private String language = "";
 
   public Label() {
