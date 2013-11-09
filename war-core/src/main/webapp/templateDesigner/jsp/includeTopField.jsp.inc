@@ -34,6 +34,9 @@
 <td class="txtlibform"><%=resource.getString("GML.requiredField")%> :</td><td><input type="checkbox" name="Mandatory" value="true" <%=mandatoryChecked%>/></td>
 </tr>
 <tr>
+<td class="txtlibform">Répétable :</td><td><input type="text" name="RepeatMax" value="<%=repeatMax%>" /> dont <input type="text" name="RepeatMandatory" value="<%=repeatMandatory%>"/> obligatoire(s)</td>
+</tr>
+<tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>
 <% if (showFacetParam) { %>

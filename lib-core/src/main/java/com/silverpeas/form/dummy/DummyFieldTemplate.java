@@ -28,6 +28,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.form.record.Parameter;
+import com.silverpeas.form.record.Repeatable;
 import com.silverpeas.util.ArrayUtil;
 
 import java.util.ArrayList;
@@ -164,5 +165,10 @@ public class DummyFieldTemplate implements FieldTemplate {
   
   public boolean isUsedAsFacet() {
     return false;
+  }
+
+  @Override
+  public Repeatable getRepeatable() {
+    return new Repeatable();
   }
 }

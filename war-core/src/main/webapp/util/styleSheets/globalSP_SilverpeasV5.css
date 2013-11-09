@@ -5965,3 +5965,7 @@ ul.tagit li.tagit-choice a.tagit-close {
     min-width: auto;
   }
 }
+
+.field-occurrence-hidden {
+	display: none;
+}

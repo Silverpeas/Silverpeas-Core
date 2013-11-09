@@ -80,6 +80,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   
   @XmlElement(name = "isFacet", required = true, defaultValue = "false")
   private boolean usedAsFacet = false;
+  
+  @XmlElement
+  private Repeatable repeatable;
 
   /**
    * Builds a GenericFieldTemplate
@@ -498,10 +501,19 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       clone.setTemplateName(this.getTemplateName());
       clone.setTypeName(this.getTypeName());
       clone.setUsedAsFacet(isUsedAsFacet());
+      clone.setRepeatable(getRepeatable());
     } catch (FormException e) {
       throw new RuntimeException(e);
     }
     return clone;
+  }
+
+  public void setRepeatable(Repeatable repeatable) {
+    this.repeatable = repeatable;
+  }
+
+  public Repeatable getRepeatable() {
+    return repeatable;
   }
 
 }
