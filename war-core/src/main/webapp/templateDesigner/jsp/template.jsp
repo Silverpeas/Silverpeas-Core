@@ -26,6 +26,8 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ include file="check.jsp" %>
 
 <%
@@ -33,12 +35,17 @@ Form 				 formUpdate = (Form) request.getAttribute("Form");
 DataRecord 			data 		= (DataRecord) request.getAttribute("Data");
 PagesContext		context	= (PagesContext) request.getAttribute("context"); 
 %>
-<HTML>
-<HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
 <% formUpdate.displayScripts(out, context); %>
-</HEAD>
-<BODY class="yui-skin-sam">
+<script type="text/javascript">
+
+</script>
+</head>
+<body class="yui-skin-sam">
 <%
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");
@@ -49,21 +56,20 @@ tabbedPane.addTab(resource.getString("templateDesigner.preview"), "#", true);
 tabbedPane.addTab(resource.getString("templateDesigner.template"), "EditTemplate", false);
 tabbedPane.addTab(resource.getString("templateDesigner.fields"), "ViewFields", false);
 
-	out.println(window.printBefore());
-	
-	out.println(tabbedPane.print());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
+out.println(window.printBefore());	
+out.println(tabbedPane.print());
 %>
-<FORM NAME="myForm" METHOD="POST" ACTION="UpdateXMLForm" ENCTYPE="multipart/form-data">
+<view:frame>
+<view:board>
+<form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data">
 	<% 
 		formUpdate.display(out, context, data); 
 	%>
-</FORM>
+</form>
+</view:board>
+</view:frame>
 <%
-	out.println(board.printAfter());
-    out.println(frame.printAfter());
     out.println(window.printAfter()); 
 %>
-</BODY>
-</HTML>
+</body>
+</html>

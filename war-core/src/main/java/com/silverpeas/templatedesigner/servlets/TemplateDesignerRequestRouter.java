@@ -33,6 +33,7 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Label;
 import com.silverpeas.form.record.Parameter;
 import com.silverpeas.form.record.ParameterValue;
+import com.silverpeas.form.record.Repeatable;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
@@ -408,6 +409,17 @@ public class TemplateDesignerRequestRouter extends
     field.setTypeName(fieldType);
     field.setSearchable(searchable);
     field.setUsedAsFacet(usedAsFacet);
+    
+    String repeatMax = request.getParameter("RepeatMax");
+    if (StringUtil.isInteger(repeatMax)) {
+      String repeatMandatory = request.getParameter("RepeatMandatory");
+      int nbMandatory = -1;
+      if (StringUtil.isInteger(repeatMandatory)) {
+        nbMandatory = Integer.parseInt(repeatMandatory);
+      }
+      Repeatable repeatable = new Repeatable(Integer.parseInt(repeatMax), nbMandatory);
+      field.setRepeatable(repeatable);
+    }
 
     Enumeration<String> paramNames = request.getParameterNames();
     while (paramNames.hasMoreElements()) {

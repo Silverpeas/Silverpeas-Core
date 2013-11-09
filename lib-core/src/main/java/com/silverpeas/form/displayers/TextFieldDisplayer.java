@@ -215,33 +215,33 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       image.setHeight(5);
       image.setBorder(0);
     }
-
-    if (suggestions != null && suggestions.size() > 0) {
-      TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
-      out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
-
-      out.println(textInput.toString());
-
-      out.println("<div id=\"container" + fieldName + "\"/>\n");
-      out.println("</div>\n");
-
-      if (image != null) {
-        image.setStyle("position:absolute;left:16em;top:5px");
-        out.println(image.toString());
-      }
-
-      TextFieldImpl.printSuggestionsScripts(pageContext, fieldName, suggestions, out);
-    } else {
-      if (image != null) {
-        ElementContainer container = new ElementContainer();
-        container.addElement(textInput);
-        container.addElement("&nbsp;");
-        container.addElement(image);
-        out.println(container.toString());
-      } else {
+    
+      if (suggestions != null && suggestions.size() > 0) {
+        TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
+        out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
+  
         out.println(textInput.toString());
+  
+        out.println("<div id=\"container" + fieldName + "\"/>\n");
+        out.println("</div>\n");
+  
+        if (image != null) {
+          image.setStyle("position:absolute;left:16em;top:5px");
+          out.println(image.toString());
+        }
+  
+        TextFieldImpl.printSuggestionsScripts(pageContext, fieldName, suggestions, out);
+      } else {
+        if (image != null) {
+          ElementContainer container = new ElementContainer();
+          container.addElement(textInput);
+          container.addElement("&nbsp;");
+          container.addElement(image);
+          out.println(container.toString());
+        } else {
+          out.println(textInput.toString());
+        }
       }
-    }
   }
 
   @Override

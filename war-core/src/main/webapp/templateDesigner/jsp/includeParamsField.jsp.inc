@@ -7,6 +7,8 @@ Iterator<FieldTemplate> existingFields = (Iterator<FieldTemplate>) request.getAt
 
 String name = "";
 String mandatoryChecked = "";
+int repeatMax = 0;
+int repeatMandatory = 0;
 String searchable = "";
 String usedAsFacet = "";
 boolean nameDisabled = false;
@@ -16,6 +18,10 @@ boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer
 
 if (field != null) {
 	name 			= field.getFieldName();
+	if (field.getRepeatable() != null) {
+		repeatMax = field.getRepeatable().getMax();
+		repeatMandatory = field.getRepeatable().getMandatory();
+	}
 	actionForm 		= "UpdateField";
 	
 	String actionFormFromPdcUtilization = (String)request.getAttribute("actionForm");

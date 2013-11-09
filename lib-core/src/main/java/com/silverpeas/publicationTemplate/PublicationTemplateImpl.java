@@ -123,7 +123,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           JAXBContext.newInstance(com.silverpeas.form.record.GenericRecordTemplate.class,
               com.silverpeas.form.record.GenericFieldTemplate.class,
               com.silverpeas.form.record.Label.class, com.silverpeas.form.record.Parameter.class,
-              com.silverpeas.form.record.ParameterValue.class);
+              com.silverpeas.form.record.ParameterValue.class,
+              com.silverpeas.form.record.Repeatable.class);
     } catch (JAXBException e) {
       System.out.println("JAXB : "+e.getMessage());
       SilverTrace.fatal("form", "PublicationTemplateManager.init", "CANT_GET_JAXB_CONTEXT", e);

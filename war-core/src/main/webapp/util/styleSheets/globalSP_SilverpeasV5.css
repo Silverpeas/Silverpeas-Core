@@ -5999,3 +5999,7 @@ blockquote {
     min-width: auto;
   }
 }
+
+.field-occurrence-hidden {
+	display: none;
+}

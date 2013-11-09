@@ -35,6 +35,8 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcRefField;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.form.record.Repeatable;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -274,7 +276,7 @@ public class XmlForm extends AbstractForm {
         out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
       }
 
-      if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
+      if (pagesContext.getPrintTitle() && StringUtil.isDefined(getTitle())) {
         out
             .println(
             "<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
@@ -408,8 +410,9 @@ public class XmlForm extends AbstractForm {
             if (fieldDisplayer != null) {
               sw = new StringWriter();
               out = new PrintWriter(sw, true);
-              out.println("<tr align=\"center\">");
-              out.println("<td class=\"intfdcolor4\" valign=\"top\" align=\"left\">");
+              
+              out.println("<tr id=\"form-row-"+fieldName+"\">");
+              out.println("<td>");
               if (StringUtil.isDefined(fieldLabel)) {
                 if (StringUtil.isDefined(fieldClass)) {
                   out.println("<span class=\"" + fieldClass + "\">" + fieldLabel + " :</span>");
@@ -420,7 +423,7 @@ public class XmlForm extends AbstractForm {
                 out.println("<span class=\"txtlibform\">&nbsp;</span>");
               }
               out.println("</td>");
-              out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=\"left\">");
+              out.println("<td class=\"fieldInput\">");
               if (field == null) {
                 try {
                   field = fieldTemplate.getEmptyField();
@@ -428,15 +431,42 @@ public class XmlForm extends AbstractForm {
                   SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
                 }
               }
-              try {
-                fieldDisplayer.display(out, field, fieldTemplate, pc);
-              } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
+              
+              int nbFieldsToDisplay = 1;
+              Repeatable repeatable = fieldTemplate.getRepeatable();
+              if (repeatable != null && repeatable.isRepeatable()) {
+                nbFieldsToDisplay = repeatable.getMax();
               }
-              if (isMandatory && !isDisabled && !isHidden
-                  && fieldDisplayer.isDisplayedMandatory()
-                  && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
-                mandatory = true;
+              
+              for (int i=0; i<nbFieldsToDisplay; i++) {
+                String currentFieldName = fieldName;
+                String currentVisibility = AbstractForm.REPEATED_FIELD_CSS_SHOW;
+                if (i > 0) {
+                  currentFieldName = fieldName+"_$SP$_"+i;
+                  ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
+                  ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
+                  if (field.isNull()) {
+                    currentVisibility = AbstractForm.REPEATED_FIELD_CSS_HIDE;
+                  }
+                }
+                
+                out.println("<div id=\"field_"+currentFieldName+"\" class=\"field_"+fieldName+" "+currentVisibility+"\">");
+                try {
+                  fieldDisplayer.display(out, field, fieldTemplate, pc);
+                } catch (FormException fe) {
+                  SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
+                }
+                if (isMandatory && !isDisabled && !isHidden
+                    && fieldDisplayer.isDisplayedMandatory()
+                    && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
+                  mandatory = true;
+                }
+                out.println("</div>");
+              }
+              if (repeatable != null && repeatable.isRepeatable()) {
+                out.println("<a href=\"#\" id=\"moreField-"+fieldName+"\" onclick=\"showOneMoreField('"+fieldName+"');\">");
+                out.println("Ajouter un champ...");
+                out.println("</a>");
               }
               out.println("</td>");
               out.println("</tr>");
@@ -451,9 +481,9 @@ public class XmlForm extends AbstractForm {
         if (mandatory) {
           out.println("<tr align=\"left\">");
           out.println("<td colspan=\"2\">");
-          out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField")
+          out.println("<img border=\"0\" src=\"" + Util.getIcon("mandatoryField")
               + "\" width=\"5\" height=\"5\" alt=\"\"/>&nbsp;:&nbsp;"
-              + Util.getString("GML.requiredField", language) + ")");
+              + Util.getString("GML.requiredField", language));
           out.println("</td>");
           out.println("</tr>");
         }

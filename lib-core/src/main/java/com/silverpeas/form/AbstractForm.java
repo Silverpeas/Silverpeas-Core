@@ -24,6 +24,8 @@
 
 package com.silverpeas.form;
 
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.form.record.Repeatable;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -49,6 +51,9 @@ public abstract class AbstractForm implements Form {
   private String name = "";
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
+  
+  protected static final String REPEATED_FIELD_CSS_SHOW = "field-occurrence-shown";
+  protected static final String REPEATED_FIELD_CSS_HIDE = "field-occurrence-hidden";
 
   /**
    * Creates a new form from the specified template of records.
@@ -153,6 +158,8 @@ public abstract class AbstractForm implements Form {
         if (fieldTemplate != null) {
           String fieldDisplayerName = fieldTemplate.getDisplayerName();
           String fieldType = fieldTemplate.getTypeName();
+          String fieldName = fieldTemplate.getFieldName();
+          boolean mandatory = fieldTemplate.isMandatory();
           FieldDisplayer fieldDisplayer = null;
           try {
             if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
@@ -161,18 +168,35 @@ public abstract class AbstractForm implements Form {
             fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
 
             if (fieldDisplayer != null) {
-              out.append("	field = document.getElementById(\"")
-                  .append(fieldTemplate.getFieldName()).append("\");\n");
-              out.append("	if (field == null) {\n");
-              // try to find field by name
-              out.append("  field = $(\"input[name=").append(fieldTemplate.getFieldName()).append(
-                  "]\");\n");
-              out.println("}");
-              out.append(" if (field != null) {\n");
-              fieldDisplayer.displayScripts(out, fieldTemplate, pc);
-              out.println("}");
-              pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
-                  pc));
+              
+              int nbFieldsToDisplay = 1;
+              Repeatable repeatable = fieldTemplate.getRepeatable();
+              if (repeatable != null && repeatable.isRepeatable()) {
+                nbFieldsToDisplay = repeatable.getMax();
+              }
+              
+              for (int i=0; i<nbFieldsToDisplay; i++) {
+                String currentFieldName = fieldName;
+                if (i > 0) {
+                  currentFieldName = fieldName+"_$SP$_"+i;
+                  ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
+                  ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
+                }
+                out.append("	field = document.getElementById(\"").append(currentFieldName)
+                    .append("\");\n");
+                out.append("	if (field == null) {\n");
+                // try to find field by name
+                out.append("  field = $(\"input[name=").append(currentFieldName).append("]\");\n");
+                out.println("}");
+                out.append(" if (field != null) {\n");
+                fieldDisplayer.displayScripts(out, fieldTemplate, pc);
+                out.println("}");
+                pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+              }
+              
+              // set original data
+              ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
+              ((GenericFieldTemplate) fieldTemplate).setMandatory(mandatory);
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "AbstractForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
@@ -207,8 +231,16 @@ public abstract class AbstractForm implements Form {
           .append("	}\n")
           .append("	return result;\n")
           .append("}\n")
-          .append("	\n\n")
-          .append("</script>\n");
+          .append("	\n\n");
+      
+      out.append("function showOneMoreField(fieldName) {\n");
+          out.append("$('.field_'+fieldName+'."+REPEATED_FIELD_CSS_HIDE+":first').removeClass('"+REPEATED_FIELD_CSS_HIDE+"').addClass('"+REPEATED_FIELD_CSS_SHOW+"');\n");
+          out.append("if ($('.field_'+fieldName+'.field-occurrence-hidden').length == 0) {\n");
+              out.append(" $('#form-row-'+fieldName+' #moreField-'+fieldName).hide();\n");
+          out.append("}\n");
+      out.append("}\n");
+      
+      out.append("</script>\n");
       out.flush();
       jw.write(sw.toString());
     } catch (java.io.IOException fe) {
