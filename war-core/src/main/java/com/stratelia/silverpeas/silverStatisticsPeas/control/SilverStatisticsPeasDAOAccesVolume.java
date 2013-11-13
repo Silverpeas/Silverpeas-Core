@@ -35,14 +35,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -93,6 +99,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
   private static final String SELECT_ACCESS_FOR_USER = "SELECT componentId, SUM(countAccess) AS "
       + "accesses  FROM sb_stat_accesscumul WHERE dateStat= ? AND userId = ? GROUP BY dateStat, "
       + "componentId ORDER BY dateStat ASC, accesses DESC";
+  private static final String SELECT_ACCESS_COMPONENTS_USER = "(SELECT componentId, countAccess, datestat "
+      + "FROM sb_stat_access "
+      + "WHERE userId = ? ) "
+      + "UNION "
+      + "(SELECT componentId, countAccess, datestat "
+      + "FROM sb_stat_accesscumul "
+      + "WHERE userId = ? ) "
+      + "ORDER BY dateStat DESC, countAccess DESC";
 
   public static Collection<String> getVolumeYears() throws SQLException, UtilException {
     SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getVolumeYears",
@@ -609,6 +623,48 @@ public class SilverStatisticsPeasDAOAccesVolume {
         values[0] = hashTout.get(cmpId);
         resultat.put(cmpId, values);
       }
+    }
+  }
+  
+  /**
+   * Returns the last accessed components of a user.
+   * @param currentUserId
+   * @param nbObjects to return
+   * @return the list of the last accessed components of a user.
+   * @throws SQLException
+   */
+  public static Collection<ComponentInstLight> getLastAccessedComponentsUser(String currentUserId, int nbObjects)
+      throws SQLException {
+    SilverTrace.info("silverStatisticsPeas",
+        "SilverStatisticsPeasDAOAccessVolume.getLastAccessedComponentsUser",
+        "root.MSG_GEN_ENTER_METHOD");
+    
+    Connection myCon = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Collection<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
+    OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_ACCESS_COMPONENTS_USER);
+      //Setting a cursor to avoid performance problems
+      stmt.setFetchSize(50);
+      stmt.setInt(1, Integer.parseInt(currentUserId));
+      stmt.setInt(2, Integer.parseInt(currentUserId));
+      rs = stmt.executeQuery();
+      Set<String> performedIds = new HashSet<String>(nbObjects * 2);
+      while (rs.next() && performedIds.size() < nbObjects) {
+        String componentId = rs.getString("componentId");
+        //If id is already performed, then it is skiped
+        if (performedIds.add(componentId)) {
+          ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId); //componentId = kmelia12 for example
+          result.add(compoDetail);
+        }
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
     }
   }
 }

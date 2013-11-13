@@ -76,6 +76,34 @@
       </Collection>
     </Properties>
   </PortletApp>  
+  <PortletApp name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My last accessed applications portlet"/>
+      <String name="shortTitle" value="My last accessed applications"/>
+      <String name="description" value="Last accessed applications"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Dernières applications consultées"/>
+        <String name="en" value="Last accessed applications"/>
+        <String name="de" value="zuletzt zugegriffen Anwendungen"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Les dernières applications que j'ai consultées"/>
+        <String name="en" value="The last applications I consulted"/>
+        <String name="de" value="Die letzte Anwendung, die ich konsultiert"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>    
   <PortletApp name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet">
     <Properties>
       <String name="archiveType" value="war"/>

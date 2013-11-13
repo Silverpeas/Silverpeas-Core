@@ -152,4 +152,13 @@
                <String name="row" value="6"/>
           </Properties>
      </PortletWindow>
+     <PortletWindow lang="" name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet" remote="false">
+          <Properties>
+               <String name="title" value="portlet.MyLastAccessedAppliPortlet.title"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="silverpeas|MyLastAccessedAppliPortlet"/>
+               <String name="row" value="7"/>
+          </Properties>
+     </PortletWindow>
 </PortletWindowRegistry>
