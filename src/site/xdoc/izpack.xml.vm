@@ -45,7 +45,7 @@
       </p>
       <ol>
         <li>Download the 
-          <a href="http://www.silverpeas.org/files/Silverpeas-${installer_stable_version}-installer.jar">installer</a> (~ 213 Mo)
+          <a href="http://www.silverpeas.org/files/Silverpeas-${installer_stable_version}-installer.jar">installer</a> (~ 253 Mo)
         </li>
         <li>Run the following command (or double click on the jar file) 
           <code>java -jar Silverpeas-${installer_izpack_version}-installer.jar</code>
