@@ -104,14 +104,11 @@ $(document).ready(function() {
 		</tr>
 	</table>
 </form>
-
 </view:board>
-<%
-Button cancelButton		= gef.getFormButton("Annuler", "javascript:window.close();", false);
-Button validateButton 	= gef.getFormButton(message.getString("portlets.createPortletWindow"), "javascript:document.createForm.submit();", false);
-
-ButtonPane buttonPane = gef.getButtonPane();
-buttonPane.addButton(validateButton);
-buttonPane.addButton(cancelButton);
-%>
-<br/><%=buttonPane.print()%>
+<br/>
+<view:buttonPane>
+  <fmt:message var="createLabel" key="portlets.createPortletWindow"/>
+  <view:button label="${createLabel}" action="javascript:document.createForm.submit();"/>
+  <fmt:message var="cancelLabel" key="GML.cancel"/>
+  <view:button label="${cancelLabel}" action="javascript:window.close();"/>
+</view:buttonPane>
