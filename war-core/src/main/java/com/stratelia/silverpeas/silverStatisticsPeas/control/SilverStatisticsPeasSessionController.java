@@ -127,8 +127,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public SilverStatisticsPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.silverStatisticsPeas.multilang.silverStatisticsBundle",
-        "com.stratelia.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
+        "org.silverpeas.silverStatisticsPeas.multilang.silverStatisticsBundle",
+        "org.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
     setComponentRootName(URLManager.CMP_SILVERSTATISTICSPEAS);
     initYears();
   }
