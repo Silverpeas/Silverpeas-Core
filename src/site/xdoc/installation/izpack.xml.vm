@@ -86,7 +86,7 @@
         <a href="http://www.silverpeas.org/repo/index.html">our Debian and RPM packages repositories</a>
       </p>
       <p>These packages are ready for both a try or a production use, but we don't guarantee the upgrade will work fine between major versions of Silverpeas.</p>
-      <p>If you want to help us to provide a better packaging or propose new formats, feel free to look at the <a href="http://github.com/ehsavoie/silverpeas-native-packages">Github project</a> or to fund our efforts.</p>
+      <p>If you want to help us to provide a better packaging or propose new formats, feel free to look at the <a href="https://github.com/Silverpeas/silverpeas-native-packages">Github project</a> or to fund our efforts.</p>
     </section>
     <section name="Problems">
       <p>If you encounter a problem during installation or if you have any question, you can post them on the <a href="http://groups.google.com/group/silverpeas-users" >users mailing-list</a></p>
