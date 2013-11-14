@@ -414,6 +414,11 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public String getSettings(String key, String defaultValue) {
     return resources.getString(key, defaultValue);
   }
+  
+  @Override
+  public int getSettings(String key, int defaultValue) {
+    return resources.getInteger(key, defaultValue);
+  }
 
   /*
    * (non-Javadoc)
