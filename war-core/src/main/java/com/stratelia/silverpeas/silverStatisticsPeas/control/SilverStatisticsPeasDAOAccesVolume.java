@@ -644,6 +644,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Collection<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
     OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
+    AdminController adminController = new AdminController(currentUserId);
     try {
       myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
       stmt = myCon.prepareStatement(SELECT_ACCESS_COMPONENTS_USER);
@@ -658,6 +659,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
         //If id is already performed, then it is skiped
         if (performedIds.add(componentId)) {
           ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId); //componentId = kmelia12 for example
+          compoDetail.setPath(adminController.getPathToComponent(componentId));
           result.add(compoDetail);
         }
       }

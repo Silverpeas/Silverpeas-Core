@@ -37,45 +37,59 @@
 
 <%
     RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-	Collection<ComponentInstLight> applications = (Collection<ComponentInstLight>) pReq.getAttribute("Applications");
+	Map<String, Collection> mapSpaceApplis = (Map<String, Collection>) pReq.getAttribute("MapApplications");
+	Iterator<Map.Entry<String, Collection>> iter = mapSpaceApplis.entrySet().iterator();
 %>
-
-<script type="text/javascript">
-function goTo(cUrl, componentId)
-{
-	jumpToComponent(componentId);
-	location.href=cUrl;
-}
-
-function jumpToComponent(componentId) {
-	//Reload DomainsBar
-	parent.SpacesBar.document.privateDomainsForm.component_id.value=componentId;
-	parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
-	parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
-	parent.SpacesBar.document.privateDomainsForm.submit();
-
-	//Reload Topbar
-	parent.SpacesBar.reloadTopBar(true);
-}
-</script>
 <%
 
-if (applications.isEmpty()) { %>
+if (! iter.hasNext()) { %>
 	<%=portletsBundle.getString("portlets.portlet.myLastAccessedAppli.none") %>
 <% } else {
 	boolean first = true;
-	for (ComponentInstLight appli : applications) {
-		String url = m_sContext + URLManager.getURL(appli.getName(), "useless", appli.getId()) + "Main";
-		if (!first) {
+  	while (iter.hasNext()) {
+    	Map.Entry<String, Collection> entry = iter.next();
+    	String spaceId = entry.getKey();
+    	Collection<ComponentInstLight> applications = entry.getValue();
+  
+		for (ComponentInstLight appli : applications) {
+	  
+			String pathIconAppli = m_sContext + "/util/icons/component/";
+			if(appli.isWorkflow()) {
+			  pathIconAppli += "processManager";
+			} else {
+			  pathIconAppli += appli.getName();
+			}
+			pathIconAppli += "Small.gif";
+			
+			String url = "";
+			String target = "";
+			if (URLManager.displayUniversalLinks()) {
+		      url = URLManager.getSimpleURL(URLManager.URL_COMPONENT, appli.getId());
+		      target ="_top";
+		    } else {
+		      url = m_sContext + URLManager.getURL(appli.getName(), "useless", appli.getId()) + "Main";
+		      target ="MyMain";
+		    }
+			
+			if (!first) {
 %>			
 <br/><br/>
 <% 
-		} else {
-			first = false;
-		}
+			} else {
+				first = false;
+			}
 %>
-	<a href="javaScript:goTo('<%=url%>', '<%=appli.getId() %>')"><b><%=EncodeHelper.convertHTMLEntities(appli.getLabel(language))%></b></a>
-<%  } 
+	<!-- Display component icon -->
+	&nbsp;<img src="<%=pathIconAppli%>" border="0" width="15" align="top" alt=""/>&nbsp;
+	
+	<!-- Display component link -->
+	<a href="<%=url%>" target="<%=target%>"><b><%=EncodeHelper.convertHTMLEntities(appli.getLabel(language))%></b></a>
+	
+	<!-- Display space path -->
+	chemin id <%=appli.getDomainFatherId() %> : <%=appli.getPath(" > ") %>
+<%  
+		} 
+  	}
   }
 %>
 <br/>
