@@ -90,7 +90,7 @@
       <item name="Install Silverpeas" href="installation/index.html" collapse="true">
         <item name="Try Silverpeas" href="installation/izpack.html" collapse="false"/>
         <item name="Installation" href="installation/installation.html" collapse="false"/>
-        <item name="GNU/Linux Native Packages" href="https://www.silverpeas.org/repo/index.html" collapse="false" />
+        <item name="GNU/Linux Native Packages" href="http://www.silverpeas.org/repo/index.html" collapse="false" />
         <item name="Silverpeas in the Cloud" href="installation/cloud.html" collapse="false" />
       </item>
       <item name="Our versions" href="#" collapse="true">
