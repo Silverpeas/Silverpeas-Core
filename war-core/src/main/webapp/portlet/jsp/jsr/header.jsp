@@ -52,15 +52,15 @@
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
 {
-  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
 
 GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator 		message 			= new ResourceLocator("com.silverpeas.portlets.multilang.portletsBundle", language);
-String 					m_context 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+ResourceLocator 		message 			= new ResourceLocator("org.silverpeas.portlets.multilang.portletsBundle", language);
+String 					m_context 			= GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
 <fmt:setLocale value="<%= language %>"/>
