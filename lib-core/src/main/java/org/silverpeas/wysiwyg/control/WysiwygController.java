@@ -516,6 +516,7 @@ public class WysiwygController {
       document.setLanguage(I18NHelper.checkLanguage(language));
       document.setSize(textHtml.getBytes(Charsets.UTF_8).length);
       document.setDocumentType(context);
+      document.setUpdatedBy(userId);
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
           new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, true);
     } else {
@@ -816,6 +817,21 @@ public class WysiwygController {
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)), true, true);
     }
     return fileIds;
+  }
+  
+  public static void move(String fromComponentId, String fromObjectId, String componentId,
+      String objectId) {
+    ForeignPK fromForeignPK = new ForeignPK(fromObjectId, fromComponentId);
+    List<SimpleDocument> documents =
+          AttachmentServiceFactory.getAttachmentService().listAllDocumentsByForeignKey(
+              fromForeignPK, null);
+    ForeignPK toForeignPK = new ForeignPK(objectId, componentId);
+    for (SimpleDocument document : documents) {
+      AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
+    }
+
+    // change images path in wysiwyg
+    wysiwygPlaceHaveChanged(fromComponentId, fromObjectId, componentId, objectId);
   }
 
   static String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,

@@ -83,7 +83,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     String destination = computeDestination(request);
     SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE", "response = " + response);
     if (!StringUtil.isDefined(destination)) {
-      throwUserSessionExpiration();
+      throwHttpNotFoundError();
     }
     redirectService(request, response, destination);
   }

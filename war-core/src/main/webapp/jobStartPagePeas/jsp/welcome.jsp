@@ -54,7 +54,7 @@
 <!--
 function clipboardPaste() {
 	$.progressMessage();
-	location.href="paste";
+	location.href="Paste";
 }
 
 function recoverRights() {

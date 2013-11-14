@@ -18,23 +18,23 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.sharing.services;
+package com.silverpeas.sharing.model;
 
-import com.silverpeas.sharing.model.SimpleFileTicket;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAccessControl;
-import com.silverpeas.sharing.security.ShareableResource;
+import com.silverpeas.sharing.security.AbstractShareableAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * Access control to shared attachments
  */
-public class SimpleFileAccessControl implements ShareableAccessControl<SimpleDocument> {
+public class SimpleFileAccessControl
+    extends AbstractShareableAccessControl<SimpleFileTicket, SimpleDocument> {
+
+  SimpleFileAccessControl() {
+    super();
+  }
 
   @Override
-  public boolean isReadable(ShareableResource<SimpleDocument> resource) {
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
-    return (ticket != null && ticket instanceof SimpleFileTicket && ((SimpleFileTicket) ticket).
-            getResource().getAccessedObject().equals(resource.getAccessedObject()));
+  protected boolean isReadable(SimpleFileTicket ticket, SimpleDocument document) throws Exception {
+    return ticket.getResource().getAccessedObject().equals(document);
   }
 }

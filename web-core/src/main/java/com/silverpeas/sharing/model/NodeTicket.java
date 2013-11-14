@@ -31,7 +31,6 @@ import javax.persistence.Entity;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.silverpeas.sharing.services.NodeAccessControl;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -47,8 +46,9 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 @Entity
 @DiscriminatorValue("Node")
 public class NodeTicket extends Ticket {
+  private static final long serialVersionUID = 8560572170859334369L;
 
-  private static final NodeAccessControl accessControl = new NodeAccessControl();
+  private static final NodeAccessControl<Object> accessControl = new NodeAccessControl<Object>();
 
   public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
       Date endDate, int nbAccessMax) {
@@ -67,7 +67,7 @@ public class NodeTicket extends Ticket {
   }
 
   @Override
-  public ShareableAccessControl getAccessControl() {
+  public ShareableAccessControl<NodeTicket, Object> getAccessControl() {
     return accessControl;
   }
 
