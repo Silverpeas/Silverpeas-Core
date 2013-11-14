@@ -34,6 +34,7 @@ import com.silverpeas.admin.notification.ComponentJsonPatch;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
 
 public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
     Comparable<ComponentInst> {
@@ -315,6 +316,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public String getLabel(String language) {
+    if (!I18NHelper.isI18N) {
+      return getLabel();
+    }
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
     if (s != null) {
       return s.getName();
@@ -324,6 +328,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public String getDescription(String language) {
+    if (!I18NHelper.isI18N) {
+      return getDescription();
+    }
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
     if (s != null) {
       return s.getDescription();
