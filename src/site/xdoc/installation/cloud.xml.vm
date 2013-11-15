@@ -51,11 +51,11 @@
         </p>
         <img src="../images/snapshot-marketplace.png" alt="The Marketplace" style="text-align:center;float:center;margin-bottom:1em;"/>
         <p>
-          First, you have to sign in the marketplace in order to access our appliance template. If you don't have an account,
+          First, you have to sign in to the marketplace in order to access our appliance template. If you don't have an account,
           you can sign up for (it is free). Then, once logged, select our appliance template, click on the <code>Generate</code>
           button, below our logo. At this point, several type of virtual images are proposed to you, one for each virtual environment
           (Amanzon, CloudStack, Eucalyptus, ...). In order to generate a usable image of Silverpeas, we recommend you to start with an enough disk
-          space matching your first use of Silverpeas and to set at least 4Go as memory size. (According to the virtual image format like
+          space matching your first use of Silverpeas and to set at least 4GB as memory size. (According to the virtual image format like
           <a href="http://en.wikipedia.org/wiki/Open_Virtualization_Format">OVA</a>, the memory size can you not to be asked.)
           Once an image generated, you can download it onto your machine and then deploy it to your Cloud.
         </p>
