@@ -160,7 +160,7 @@
                   <a ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
                 </li>
               </ul>
-              <silverpeas-pagination id="selected_group_list_pagination" items="selected_group_list" page-size="groupSelectionPageSize" items-size="selectedGroups.length" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination id="selected_group_list_pagination" items="selected_group_list" page-size="groupSelectionPageSize" items-size="selectedGroups.length()" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
             </div>
           </div>
           </c:if>
@@ -178,7 +178,7 @@
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                 </li>
               </ul>
-              <silverpeas-pagination id="selected_user_list_pagination" items="selected_user_list" page-size="userSelectionPageSize" items-size="selectedUsers.length" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination id="selected_user_list_pagination" items="selected_user_list" page-size="userSelectionPageSize" items-size="selectedUsers.length()" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
             </div>
           </div>
           </c:if>
@@ -318,13 +318,15 @@
             /* updates the groups listing with the specified ones */
             function updateGroupsListing(groups) {
               $scope.groups = groups;
-              $scope.totalGroupsSize = $scope.groups.maxlength;
+              if ($scope.totalGroupsSize !== $scope.groups.maxlength)
+                $scope.totalGroupsSize = $scope.groups.maxlength;
             }
 
             /* updates the users listing with the specified ones */
             function updateUsersListing(users) {
               $scope.users = users;
-              $scope.totalUsersSize = $scope.users.maxlength;
+              if ($scope.totalUsersSize !== $scope.users.maxlength)
+                $scope.totalUsersSize = $scope.users.maxlength;
             }
 
             /* maximize the the listing of groups over the listing of users */
@@ -413,19 +415,21 @@
               var params = {page: {number: pageNumber, size: $scope.groupPageSize}};
               if (listingFilters.groupName)
                 params.name = listingFilters.groupName;
-              $scope.groups = $scope.currentGroup.subgroups(params);
+              $scope.currentGroup.subgroups(params).then(updateGroupsListing);
             };
             $scope.changeUserListingPage = function(pageNumber) {
               var params = {page: {number: pageNumber, size: $scope.userPageSize}};
               if (listingFilters.userName)
                 params.name = listingFilters.userName;
-              $scope.users = fetchUsers(params);
+              fetchUsers(params).then(updateUsersListing);
             };
             $scope.changeUserSelectionPage = function(pageNumber) {
               $scope.selectedUsers.page(pageNumber);
+              $scope.$apply();
             };
             $scope.changeGroupSelectionPage = function(pageNumber) {
               $scope.selectedGroups.page(pageNumber);
+              $scope.$apply();
             };
 
             /* displays the nexts given number of groups in the filter of groups */
