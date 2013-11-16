@@ -41,9 +41,10 @@
     return {
       templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-searchbox.html',
       transclude: true,
+      require: '^ngModel',
       scope: {
         label: '@', // the label to display by default in the text input
-        query: '=', // the current query using the bi-directionnal binding with the user scope
+        ngModel: '=', // the current query using the bi-directionnal binding with the user scope
       },
       restrict: 'AE',
       replace: true,
@@ -51,29 +52,29 @@
 
         function search(text, minChars) {
           if (text !== undefined && text !== null && text !== scope.label && text.length >= minChars) {
-            scope.query = text + '*';
+            scope.ngModel = text + '*';
           }
         }
 
         var inInit = true;
-        var box = angular.element(element.children()[0]);
+        var box = angular.element(element.children()[1]);
         box.on('focus', function() {
           if (box.val() === scope.label) {
             box.val("");
           }
         }).on('blur', function() {
-          if (!scope.queryText) {
+          if (!scope.query) {
             box.val(scope.label);
           }
         }).on('keypress', function(event) {
           if (event.which === 13) {
-            search(scope.queryText, 0);
+            search(scope.query, 0);
             scope.$apply();
           }
         });
 
         /* watch for changement in the scope.queryText property */
-        scope.$watch('queryText', function(newValue, oldValue) {
+        scope.$watch('query', function(newValue, oldValue) {
           if (inInit) {
             box.val(scope.label);
             inInit = false;
@@ -81,12 +82,12 @@
             search(newValue, 3);
           }
         });
-        scope.$watch('query', function(value) {
-          if (value !== scope.queryText + '*') {
+        scope.$watch('ngModel', function(value) {
+          if (value !== scope.query + '*') {
             if (!value)
               box.val(scope.label);
             else
-              scope.queryText = value;
+              scope.query = value;
           }
         });
       }

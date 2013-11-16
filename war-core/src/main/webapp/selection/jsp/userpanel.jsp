@@ -107,7 +107,7 @@
       <div id="results_userPanel">
         <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
           <div class="groups_results_userPanel">
-            <silverpeas-search label="${defaultGroupSearchText}" query="groupNameFilter"></silverpeas-search>
+            <silverpeas-search label="${defaultGroupSearchText}" ng-model="groupNameFilter"></silverpeas-search>
             <div class="listing_groups">
               <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
               <a href="#" ng-show="selectedGroups.multipleSelection" ng-click="selectAllGroups()" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all"><fmt:message key="selection.AddAllGroups"/></a>
@@ -125,7 +125,7 @@
         </c:if>
         <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
           <div class="users_results_userPanel">
-            <silverpeas-search label="${defaultUserSearchText}" query="userNameFilter"></silverpeas-search>
+            <silverpeas-search label="${defaultUserSearchText}" ng-model="userNameFilter"></silverpeas-search>
             <div class="listing_users">
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
               <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
