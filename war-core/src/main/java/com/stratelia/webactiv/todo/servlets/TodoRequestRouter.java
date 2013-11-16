@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -93,6 +93,12 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
         Collection<Attendee> attendees = scc.getUserSelected();
         scc.setCurrentAttendees(attendees);
         destination = "/todo/jsp/todoEdit.jsp?Action=DiffusionListOK";
+      } else if (function.equals("DeleteTodo")) {
+        String[] tabTodoId = request.getParameterValues("todoCheck");
+        if (tabTodoId != null && tabTodoId.length>0) {
+          scc.removeTabToDo(tabTodoId);
+        }
+        destination = "/todo/jsp/todo.jsp";
       } else {
         destination = "/todo/jsp/" + function;
       }

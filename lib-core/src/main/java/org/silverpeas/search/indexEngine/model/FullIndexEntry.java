@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,7 @@ import org.silverpeas.search.indexEngine.DateFormatter;
  * (mainly all the data contents which must be indexed but which is useless at retrieve time). This
  * extra-content is indexed but not stored in the index.
  */
-public class FullIndexEntry extends IndexEntry implements Serializable {
+public class FullIndexEntry extends IndexEntry implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -4955524385769457730L;
 
@@ -52,6 +52,10 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
 
   public FullIndexEntry(String component, String objectType, String objectId) {
     super(component, objectType, objectId);
+  }
+  
+  public FullIndexEntry(IndexEntryPK pk) {
+    super(pk);
   }
 
   /**
@@ -199,6 +203,11 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
     if (fields == null)
       fields = new ArrayList<FieldDescription>();
     return fields;
+  }
+  
+  @Override
+  public FullIndexEntry clone() {
+    return (FullIndexEntry) super.clone();
   }
 
   /**

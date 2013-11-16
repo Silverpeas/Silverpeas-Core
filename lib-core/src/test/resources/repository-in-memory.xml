@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -40,22 +40,11 @@
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
       <param name="persistent" value="false" />
     </PersistenceManager>
-    <!--
     <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
       <param name="path" value="${wsp.home}/index" />
-      <param name="textFilterClasses"
-        value="org.apache.jackrabbit.extractor.MsWordTextExtractor,
-               org.apache.jackrabbit.extractor.MsExcelTextExtractor,
-               org.apache.jackrabbit.extractor.MsPowerPointTextExtractor,
-               org.apache.jackrabbit.extractor.PdfTextExtractor,
-               org.apache.jackrabbit.extractor.OpenOfficeTextExtractor,
-               org.apache.jackrabbit.extractor.RTFTextExtractor,
-               org.apache.jackrabbit.extractor.HTMLTextExtractor
-               ,org.apache.jackrabbit.extractor.XMLTextExtractor" />
       <param name="extractorPoolSize" value="2" />
       <param name="supportHighlighting" value="true" />
     </SearchIndex>
-    -->
   </Workspace>
   <Versioning rootPath="${rep.home}/version">
     <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem" />
@@ -63,20 +52,9 @@
       <param name="persistent" value="false" />
     </PersistenceManager>
   </Versioning>
-  <!--
   <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
     <param name="path" value="${rep.home}/repository/index" />
-    <param name="textFilterClasses"
-      value="org.apache.jackrabbit.extractor.MsWordTextExtractor,
-             org.apache.jackrabbit.extractor.MsExcelTextExtractor,
-             org.apache.jackrabbit.extractor.MsPowerPointTextExtractor,
-             org.apache.jackrabbit.extractor.PdfTextExtractor,
-             org.apache.jackrabbit.extractor.OpenOfficeTextExtractor,
-             org.apache.jackrabbit.extractor.RTFTextExtractor,
-             org.apache.jackrabbit.extractor.HTMLTextExtractor,
-             org.apache.jackrabbit.extractor.XMLTextExtractor" />
     <param name="extractorPoolSize " value="2" />
     <param name="supportHighlighting" value="true" />
   </SearchIndex>
-  -->
 </Repository>

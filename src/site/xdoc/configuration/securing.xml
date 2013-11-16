@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -77,15 +77,44 @@ To create a new keystore from scratch, containing a single
       </p>
       </subsection>
       <subsection name="Configuring JBoss">
-      <p>The final step is to configure the Connector in the <i>$JBOSS_HOME/server/default/deploy/jbossweb.sar/server.xml</i> 
-      file. An example &lt;Connector&gt; element for an SSL connector is included in the default server.xml file installed with Silverpeas. 
-      It should look something like this:</p>
+      <p>The next step is to configure the Connector for SSL connections in the configuration file of the web server embedded in JBoss:</p>
+      <ul>
+        <li>on Unix: <i>$JBOSS_HOME/server/default/deploy/jbossweb.sar/server.xml</i></li>
+        <li>on Windows: <i>%JBOSS_HOME%\server\default\deploy\jbossweb.war\server.xml</i></li>
+      </ul>
+      as below: 
       <fieldset>
         <legend>SSL Connector</legend>
-        <pre><![CDATA[<Connector URIEncoding="UTF-8" acceptCount="100" address="${jboss.bind.address}" clientAuth="false" 
-        disableUploadTimeout="true" enableLookups="false" keyAlias="tomcat" 
-        keystoreFile="/home/ehugonnet/programs/silverpeas/bin/truststore.jks" keystorePass="changeit" 
-        port="8443" scheme="https" secure="true" sslProtocol="TLS"/>]]></pre>
+        <pre><![CDATA[<Connector SSLEnabled="true" URIEncoding="UTF-8" acceptCount="100" address="${jboss.bind.address}" clientAuth="false" 
+    disableUploadTimeout="true" enableLookups="false" keyAlias="tomcat" 
+    keystoreFile="/path/to/my/keystore" keystorePass="THE_PASSWORD_PROTECTING_YOUR_KEYSTORE" 
+    port="8443" scheme="https" secure="true" sslProtocol="TLS"/>]]></pre>
+      </fieldset>
+      </subsection>
+      <subsection name="Configuring Silverpeas">
+        <p>The final step is to configure Silverpeas to run behind only SSL accesses. For doing, add the following XML block into your <i>CustomerSettings.xml</i></p>
+      <fieldset>
+        <legend>CustomerSettings.xml</legend>
+<pre><![CDATA[<silverpeas-settings>
+  ...
+  <fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/">
+    <configfile name="general.properties">
+      <parameter key="server.ssl">false</parameter> <!-- we want to stay in SSL mode after authentication -->
+       <parameter key="server.http.port">8443</parameter> <!-- the web SSL port used in JBoss -->
+    </configfile>
+  </fileset>
+  <fileset root="${SILVERPEAS_HOME}/jar/silverpeas.ear/war-ic.war/WEB-INF/">
+    <xmlfile name="web.xml">
+      <parameter key="//security-constraint/user-data-constraint/transport-guarantee" mode="update">
+	      <value>CONFIDENTIAL</value>
+      </parameter>
+      <parameter key="//session-config/cookie-config/secure" mode="update">
+        <value>true</value>
+      </parameter>
+    </xmlfile>
+  </fileset>
+  ...
+</silverpeas-settings>]]></pre>
       </fieldset>
       </subsection>
     </section>
@@ -96,16 +125,19 @@ To create a new keystore from scratch, containing a single
         <legend>CustomerSettings.xml</legend>
         <pre><![CDATA[<silverpeas-settings>
   ...
-  <fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/">
+  <fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/">
     <configfile name="general.properties">
-      <parameter key="server.ssl">false</parameter><!-- we don't want to stay in SSL mode -->
-       <parameter key="server.http.port">8000</parameter>
-  </configfile>
+      <parameter key="server.ssl">true</parameter> <!-- we don't want to stay in SSL mode -->
+      <parameter key="server.http.port">8000</parameter> <!-- the web port as defined in JBoss -->
+    </configfile>
   </fileset>
   <fileset root="${SILVERPEAS_HOME}/jar/silverpeas.ear/war-ic.war/WEB-INF/">
     <xmlfile name="web.xml">
       <parameter key="//security-constraint/user-data-constraint/transport-guarantee" mode="update">
 	<value>CONFIDENTIAL</value>
+      </parameter>
+      <parameter key="//session-config/cookie-config/secure" mode="update">
+        <value>true</value>
       </parameter>
     </xmlfile>
   </fileset>

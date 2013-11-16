@@ -17,7 +17,7 @@
 <CENTER>
 <TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH="98%"><TR><TD NOWRAP>
 	<span  class="txttitrecol"><%=resource.getString("default")%> :</span>
-     &#149;&nbsp;<%=Encode.javaStringToHtmlString(personalizationScc.getDefaultAddress().getProperty("name"))%>&nbsp;&#149;
+     &#149;&nbsp;<%=Encode.forHtml(personalizationScc.getDefaultAddress().getProperty("name"))%>&nbsp;&#149;
 </TD></TR></TABLE>
 <%
 	// Arraypane notif
@@ -40,8 +40,8 @@
 	
 	  p = (Properties) notifPreferences.get(i) ;
 	  arrayLine = notif.addArrayLine();
-	  arrayLine.addArrayCellText(Encode.javaStringToHtmlString(p.getProperty("component")));
-	  arrayLine.addArrayCellText(Encode.javaStringToHtmlString(p.getProperty("notifAddress")));
+	  arrayLine.addArrayCellText(Encode.forHtml(p.getProperty("component")));
+	  arrayLine.addArrayCellText(Encode.forHtml(p.getProperty("notifAddress")));
 
       // Ajout des icones de modification et de suppression
       actions = gef.getIconPane();

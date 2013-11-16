@@ -4,27 +4,31 @@
  */
 package com.silverpeas.notification.delayed.delegate;
 
+import java.util.*;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+
+import org.silverpeas.util.Charsets;
+
 import com.silverpeas.notification.delayed.DelayedNotificationFactory;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
+
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.*;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
+
 import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,6 +36,9 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-delayed-notification.xml",
@@ -304,9 +311,7 @@ public class DelayedNotificationDelegateTest {
           is(IOUtils.toString(
           DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
           "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + "-" + language
-          + ".txt"),
-          "UTF-8")
-          .replaceAll("[\r\n\t]", "")));
+          + ".txt"), Charsets.UTF_8).replaceAll("[\r\n\t]", "")));
     }
     return mock;
   }

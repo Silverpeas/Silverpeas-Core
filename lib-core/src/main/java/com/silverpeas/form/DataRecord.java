@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@
 package com.silverpeas.form;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * A DataRecord is the interface used by all the form components to exchange, display and save a set
@@ -71,5 +72,7 @@ public interface DataRecord extends Serializable {
   public String getLanguage();
 
   public void setLanguage(String language);
+  
+  public Map<String, String> getValues(String language);
 
 }

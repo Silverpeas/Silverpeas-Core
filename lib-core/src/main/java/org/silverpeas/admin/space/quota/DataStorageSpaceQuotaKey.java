@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,10 +23,10 @@
  */
 package org.silverpeas.admin.space.quota;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.contant.QuotaType;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -50,11 +50,11 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   public static DataStorageSpaceQuotaKey from(final String componentInstanceId) {
     final SpaceInst space =
-        OrganizationControllerFactory
+        OrganisationControllerFactory
             .getFactory()
-            .getOrganizationController()
+            .getOrganisationController()
             .getSpaceInstById(
-                OrganizationControllerFactory.getFactory().getOrganizationController()
+                OrganisationControllerFactory.getFactory().getOrganisationController()
                     .getComponentInst(componentInstanceId).getDomainFatherId());
     return from(space);
   }

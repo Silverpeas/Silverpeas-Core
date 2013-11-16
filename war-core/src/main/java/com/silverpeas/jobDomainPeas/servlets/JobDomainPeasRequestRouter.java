@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,6 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -50,6 +49,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              UserAccessLevel.from(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request.getParameter("GroupId"), request, sendEmail);
@@ -201,15 +202,20 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              UserAccessLevel.from(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request, sendEmail);
+        } else if (function.startsWith("userBlock")) {
+          jobDomainSC.blockUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userUnblock")) {
+          jobDomainSC.unblockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
           String userId = request.getParameter("Iduser");
-          String accessLevel = request.getParameter("userAccessLevel");
+          UserAccessLevel accessLevel =
+              UserAccessLevel.from(request.getParameter("userAccessLevel"));
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
@@ -221,8 +227,8 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.modifyUserFull(userId, accessLevel, properties);
           }
         } else if (function.startsWith("userSearchToImport")) {
-          Hashtable<String, String> query = null;
-          List<UserDetail> users = null;
+          Hashtable<String, String> query;
+          List<UserDetail> users;
           jobDomainSC.clearListSelectedUsers();
           jobDomainSC.setIndexOfFirstItemToDisplay("0");
 
@@ -233,8 +239,8 @@ public class JobDomainPeasRequestRouter extends
           } else {
             query = new Hashtable<String, String>();
             Enumeration<String> parameters = request.getParameterNames();
-            String paramName = null;
-            String paramValue = null;
+            String paramName;
+            String paramValue;
             while (parameters.hasMoreElements()) {
               paramName = parameters.nextElement();
               if (!paramName.startsWith("Pagination")) {
@@ -294,7 +300,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.equals("userOpen")) {
           String userId = request.getParameter("userId");
 
-          OrganizationController orgaController = jobDomainSC.getOrganizationController();
+          OrganisationController orgaController = jobDomainSC.getOrganisationController();
           UserDetail user = orgaController.getUserDetail(userId);
           String domainId = user.getDomainId();
           if (domainId == null) {
@@ -314,14 +320,14 @@ public class JobDomainPeasRequestRouter extends
           AdminController adminController = new AdminController(jobDomainSC.getUserId());
           String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
           if (groupIds != null && groupIds.length > 0) {
-            for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-              Group group = orgaController.getGroup(groupIds[iGrp]);
+            for (final String groupId : groupIds) {
+              Group group = orgaController.getGroup(groupId);
 
               String groupDomainId = group.getDomainId();
               if (groupDomainId == null) {
                 groupDomainId = "-1";
               }
-              if (groupDomainId != "-1") {
+              if (!groupDomainId.equals("-1")) {
                 jobDomainSC.goIntoGroup(group.getId());
                 break;
               }
@@ -347,7 +353,7 @@ public class JobDomainPeasRequestRouter extends
         // Browse functions
         // ----------------
         if (function.startsWith("groupContent")) {
-          String groupId = (String) request.getParameter("Idgroup");
+          String groupId = request.getParameter("Idgroup");
           if (StringUtil.isDefined(groupId)) {
             jobDomainSC.goIntoGroup(groupId);
           }
@@ -419,7 +425,7 @@ public class JobDomainPeasRequestRouter extends
           String groupId = request.getParameter("groupId");
 
           if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
-            OrganizationController orgaController = jobDomainSC.getOrganizationController();
+            OrganisationController orgaController = jobDomainSC.getOrganisationController();
             Group group = orgaController.getGroup(groupId);
             String domainId = group.getDomainId();
             if (domainId == null) {
@@ -605,10 +611,7 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"),
               jobDomainSC.getString("JDP.userAdd") + "..."));
-          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC
-              .isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
@@ -624,17 +627,13 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayUserModify")) {
           long domainRight = jobDomainSC.getDomainActions();
 
-          request.setAttribute("isUserRW", Boolean.valueOf(
-              (domainRight & DomainDriver.ACTION_UPDATE_USER) != 0));
+          request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_UPDATE_USER) != 0);
 
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userModify");
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
               "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
-          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.
-              isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserMS")) {
@@ -642,17 +641,14 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("action", "userMS");
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
               "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
-          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.
-              isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
 
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserImport")) {
           request.setAttribute("SelectedIds", jobDomainSC.getListSelectedUsers());
-          request.setAttribute("FirstUserIndex", Integer.valueOf(jobDomainSC.
-              getIndexOfFirstItemToDisplay()));
+          request.setAttribute("FirstUserIndex", jobDomainSC.
+              getIndexOfFirstItemToDisplay());
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
               "myComponentURL"), jobDomainSC.getString("JDP.userImport") + "..."));
           request.setAttribute("properties", jobDomainSC.getPropertiesToImport());
@@ -731,6 +727,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
       }
       if (destination.equals("domainContent.jsp")) {
+        jobDomainSC.refresh();
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));

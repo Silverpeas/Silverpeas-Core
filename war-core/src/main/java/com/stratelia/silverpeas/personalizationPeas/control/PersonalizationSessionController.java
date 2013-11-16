@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -321,8 +321,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   /**
    * Supprime les doublons
    */
-  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds)
-      throws PeasCoreException {
+  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds) {
     ArrayList<String> instancesIds = new ArrayList<String>();
     String instanceId = null;
     ArrayList<String> intermed = new ArrayList<String>();
@@ -489,7 +488,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     UserFull valret = null;
     String IdUserCur = getUserId();
     if (StringUtil.isDefined(IdUserCur)) {
-      valret = getOrganizationController().getUserFull(IdUserCur);
+      valret = getOrganisationController().getUserFull(IdUserCur);
     }
     return valret;
   }
@@ -510,11 +509,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "aNotifAddressId=" + notifAddressId, e);
     }
   }
-  
+
   /*
-   * Delayed Notifications 
+   * Delayed Notifications
    */
-  
+
   public DelayedNotificationBean getDelayedNotificationBean() {
     return new DelayedNotificationBean(getUserId());
   }

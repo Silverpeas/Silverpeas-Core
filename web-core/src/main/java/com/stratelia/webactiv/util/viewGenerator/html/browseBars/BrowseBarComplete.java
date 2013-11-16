@@ -1,23 +1,23 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify it under the terms of the
-* GNU Affero General Public License as published by the Free Software Foundation, either version 3
-* of the License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
-* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
-* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
-* text describing the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
-* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-* Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License along with this program.
-* If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2013 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.util.EncodeHelper;
@@ -26,36 +26,36 @@ import com.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.apache.xerces.xni.XNIException;
-
 import java.io.IOException;
 import java.util.List;
+import org.apache.xerces.xni.XNIException;
+import org.owasp.encoder.Encode;
 
 /**
-* The default implementation of ArrayPane interface
-*
-* @author squere
-* @version 1.0
-*/
+ * The default implementation of ArrayPane interface
+ *
+ * @author squere
+ * @version 1.0
+ */
 public class BrowseBarComplete extends AbstractBrowseBar {
 
   private static String CONNECTOR = "<span class=\"connector\">&nbsp;>&nbsp;</span>";
 
   /**
-* Constructor declaration
-*
-* @see
-*/
+   * Constructor declaration
+   *
+   * @see
+   */
   public BrowseBarComplete() {
     super();
   }
 
   /**
-* Method declaration
-*
-* @return
-* @see
-*/
+   * Method declaration
+   *
+   * @return
+   * @see
+   */
   @Override
   public String print() {
     StringBuilder result = new StringBuilder();
@@ -81,19 +81,21 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       setSpaceJavascriptCallback("goSpace");
     }
     result.append("<div id=\"breadCrumb\">");
+    
+    boolean emptyBreadCrumb = true;
 
     // Display spaces path from root to component
     String language = (getMainSessionController() == null) ? "" : getMainSessionController()
-      .getFavoriteLanguage();
+        .getFavoriteLanguage();
     if (StringUtil.isDefined(getComponentId()) || StringUtil.isDefined(getSpaceId())) {
       List<SpaceInst> spaces;
 
       if (StringUtil.isDefined(getComponentId())) {
         spaces =
-          getMainSessionController().getOrganizationController().getSpacePathToComponent(
-          getComponentId());
+            getMainSessionController().getOrganisationController().getSpacePathToComponent(
+            getComponentId());
       } else {
-        spaces = getMainSessionController().getOrganizationController().getSpacePath(getSpaceId());
+        spaces = getMainSessionController().getOrganisationController().getSpacePath(getSpaceId());
       }
       boolean firstSpace = true;
       for (SpaceInst spaceInst : spaces) {
@@ -113,17 +115,18 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append(" class=\"space\"");
         result.append(" id=\"space").append(spaceId).append("\"");
         result.append(">");
-        result.append(spaceInst.getName(language));
+        result.append(Encode.forHtml(spaceInst.getName(language)));
         result.append("</a>");
 
         firstSpace = false;
+        emptyBreadCrumb = false;
       }
 
       if (StringUtil.isDefined(getComponentId())) {
         // Display component's label
         ComponentInstLight componentInstLight =
-          getMainSessionController().getOrganizationController().getComponentInstLight(
-          getComponentId());
+            getMainSessionController().getOrganisationController().getComponentInstLight(
+            getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);
           result.append("<a href=\"");
@@ -131,10 +134,10 @@ public class BrowseBarComplete extends AbstractBrowseBar {
             result.append("#");
           } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
             result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
-              .append(getComponentId()).append("')");
+                .append(getComponentId()).append("')");
           } else {
             result.append(URLManager.getApplicationURL()).append(URLManager.getURL(getSpaceId(),
-              getComponentId()));
+                getComponentId()));
             if (ignoreComponentLink()) {
               result.append("Main");
             } else {
@@ -145,13 +148,15 @@ public class BrowseBarComplete extends AbstractBrowseBar {
           result.append(" class=\"component\"");
           result.append(" id=\"bc_").append(componentInstLight.getId()).append("\"");
           result.append(">");
-          result.append(componentInstLight.getLabel(language));
+          result.append(Encode.forHtml(componentInstLight.getLabel(language)));
           result.append("</a>");
+          emptyBreadCrumb = false;
         }
       }
     } else {
       if (getDomainName() != null) {
         result.append(getDomainName());
+        emptyBreadCrumb = false;
       }
       if (getComponentName() != null) {
         if (getDomainName() != null) {
@@ -159,10 +164,11 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         }
         if (getComponentLink() != null) {
           result.append("<a href=\"").append(getComponentLink()).append("\">").append(
-            getComponentName()).append("</a>");
+              getComponentName()).append("</a>");
         } else {
           result.append(getComponentName());
         }
+        emptyBreadCrumb = false;
       }
     }
 
@@ -170,7 +176,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     List<BrowseBarElement> elements = getElements();
     if (!elements.isEmpty()) {
       for (BrowseBarElement element : elements) {
-        result.append(CONNECTOR);
+        if (!emptyBreadCrumb) {
+          result.append(CONNECTOR);
+        }
         result.append("<a href=\"").append(element.getLink()).append("\"");
         result.append(" class=\"element\"");
         if (StringUtil.isDefined(element.getId())) {
@@ -179,9 +187,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append(">");
         result.append(EncodeHelper.javaStringToHtmlString(element.getLabel()));
         result.append("</a>");
+        emptyBreadCrumb = false;
       }
     } else if (StringUtil.isDefined(path)) {
-      result.append(CONNECTOR);
+      if (!emptyBreadCrumb) {
+        result.append(CONNECTOR);
+      }
       result.append("<span class=\"path\">");
       result.append(path);
       result.append("</span>");
@@ -189,7 +200,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
     // Display extra information
     if (StringUtil.isDefined(information)) {
-      result.append(CONNECTOR);
+      if (!emptyBreadCrumb) {
+        result.append(CONNECTOR);
+      }
       result.append("<span class=\"information\">");
       result.append(information);
       result.append("</span>");
@@ -206,7 +219,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     script.append("<script type=\"text/javascript\">");
     script.append("function goSpace(spaceId) {");
     String mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
-    if(look != null && StringUtil.isDefined(look.getMainFrame())) {
+    if (look != null && StringUtil.isDefined(look.getMainFrame())) {
       mainFrame = look.getMainFrame();
       if (!mainFrame.startsWith("/")) {
         mainFrame = "/admin/jsp/" + mainFrame;

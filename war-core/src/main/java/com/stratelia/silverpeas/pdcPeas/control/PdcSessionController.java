@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -49,7 +49,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -103,7 +102,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public boolean isPDCAdmin() {
     return getUserDetail().isAccessAdmin()
-        || getUserDetail().isAccessKMManager();
+        || getUserDetail().isAccessPdcManager();
   }
 
   public void setCurrentLanguage(String language) {
@@ -346,8 +345,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
         Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
   }
 
-  private void refreshCurrentValueAndCurrentAxis(Value value, Axis axis)
-      throws PdcException {
+  private void refreshCurrentValueAndCurrentAxis(Value value, Axis axis) {
     // Supprime la valeur courante dans la session
     setCurrentValue(value);
     // Recharge le détail de l'axe courant
@@ -355,7 +353,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
     setCurrentAxis(axis);
   }
 
-  private void refreshCurrentAxis(Axis axis) throws PdcException {
+  private void refreshCurrentAxis(Axis axis) {
     // Recharge le détail de l'axe courant
     // afin de prendre en compte la suppression
     setCurrentAxis(axis);
@@ -631,7 +629,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public boolean isManager(String axisId, String valueId) throws PdcException,
       SQLException {
-    if (getUserDetail().isAccessKMManager() || getUserDetail().isAccessAdmin()) {
+    if (getUserDetail().isAccessPdcManager() || getUserDetail().isAccessAdmin()) {
       return true;
     }
 

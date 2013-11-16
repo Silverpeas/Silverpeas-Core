@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -79,9 +79,9 @@
     <property name="authenticator" ref="authenticator" />
   </bean>
 
-  <bean id="authenticator" class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
+  <bean id="authenticator" class="org.silverpeas.authentication.AuthenticationService" />
 
-  <bean id="organizationController" name="organizationController" class="com.stratelia.webactiv.beans.admin.OrganizationController" />
+  <bean id="organizationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory" factory-method="getFactory" />
 
   <bean id="adminController" name="adminController" class="com.stratelia.webactiv.beans.admin.Admin" />
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />

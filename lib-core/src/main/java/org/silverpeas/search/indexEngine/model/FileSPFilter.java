@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,8 +35,9 @@ public class FileSPFilter implements FileFilter {
   }
 
   public synchronized static FileSPFilter getInstance() {
-    if (INSTANCE == null)
+    if (INSTANCE == null) {
       INSTANCE = new FileSPFilter();
+    }
     return INSTANCE;
   }
 

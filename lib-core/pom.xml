@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.12-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
@@ -123,6 +123,10 @@
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-exec</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sourceforge</groupId>
@@ -191,6 +195,10 @@
       <artifactId>jersey-server</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
     </dependency>
@@ -220,7 +228,7 @@
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
+      <artifactId>ehcache-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
@@ -255,7 +263,7 @@
       <artifactId>hamcrest-all</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.fortuna.ical4j</groupId>
+      <groupId>org.mnode.ical4j</groupId>
       <artifactId>ical4j</artifactId>
     </dependency>
     <dependency>
@@ -269,10 +277,6 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>stringtemplate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
@@ -293,6 +297,10 @@
           <groupId>javax.xml.stream</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -328,7 +336,6 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
-      <classifier>silverpeas</classifier>
     </dependency>
     <dependency>
       <groupId>com.drewnoakes</groupId>
@@ -365,53 +372,75 @@
       <groupId>org.im4java</groupId>
       <artifactId>im4java</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-filesystems</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+      <version>1.1</version>
+    </dependency>
   </dependencies>
 
   <build>
     <testResources>
       <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-        <excludes>
-          <exclude>**/*.odp</exclude>
-          <exclude>**/index/**/*</exclude>
-          <exclude>**/*.odt</exclude>
-          <exclude>**/*.doc</exclude>
-          <exclude>**/*.docx</exclude>
-          <exclude>**/*.zip</exclude>
-          <exclude>**/*.tif</exclude>
-          <exclude>**/*.tar.gz</exclude>
-          <exclude>**/*.tar.bz2</exclude>
-          <exclude>**/*.sql</exclude>
-          <exclude>opendj/**</exclude>
-        </excludes>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
+        <directory>${basedir}/src/test/resources</directory>
         <filtering>false</filtering>
         <includes>
           <include>**/index/**/*</include>
+          <include>index/kmelia*/**/*.*</include>
+          <include>org/silverpeas/util/*.*</include>
           <include>**/*.odp</include>
           <include>**/*.odt</include>
           <include>**/*.doc</include>
-          <include>**/*.tif</include>
           <include>**/*.docx</include>
           <include>**/*.zip</include>
           <include>**/*.tar.gz</include>
           <include>**/*.tar.bz2</include>
           <include>**/*.sql</include>
           <include>opendj/**</include>
+          <include>**/*.tif</include>
+          <include>**/*.msg</include>
+          <include>**/*.eml</include>
         </includes>
+      </testResource>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>index/kmelia*/**/*.*</exclude>
+          <exclude>**/index/**/*</exclude>
+          <exclude>org/silverpeas/util/*.*</exclude>
+          <exclude>**/*.odp</exclude>
+          <exclude>**/*.odt</exclude>
+          <exclude>**/*.doc</exclude>
+          <exclude>**/*.docx</exclude>
+          <exclude>**/*.zip</exclude>
+          <exclude>**/*.tar.gz</exclude>
+          <exclude>**/*.tar.bz2</exclude>
+          <exclude>**/*.sql</exclude>
+          <exclude>opendj/**</exclude>
+          <exclude>**/*.tif</exclude>
+          <exclude>**/*.msg</exclude>
+          <exclude>**/*.eml</exclude>
+        </excludes>
       </testResource>
     </testResources>
     <filters>
-      <filter>src/test/filters/filters.properties</filter>
+      <filter>${basedir}/src/test/filters/filters.properties</filter>
     </filters>
     <plugins>
       <plugin>
         <groupId>de.jflex</groupId>
         <artifactId>maven-jflex-plugin</artifactId>
-        <version>1.5.0-20120831.084748-4</version> 
+        <version>1.5.0-20120831.084748-4</version>
         <executions>
           <execution>
             <goals>
@@ -430,7 +459,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>false</skipTests>
-		  <argLine>-XX:MaxPermSize=512m</argLine>
+          <argLine>-XX:MaxPermSize=512m</argLine>
           <systemProperties>
             <property>
               <name>java.awt.headless</name>

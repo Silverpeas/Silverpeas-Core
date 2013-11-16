@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -87,7 +87,7 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
   addParam(objectDND, "postURL", targetURL);
   addParam(objectDND, "message", message);
   addParam(objectDND, "uploadPolicy", "SilverpeasUploadPolicy");
-  addParam(objectDND, "stringUploadSuccess", "^(SUCCESS|pubid=(.*))$")
+  addParam(objectDND, "stringUploadSuccess", "^(SUCCESS|newFolder=(.*)|pubid=(.*))$")
   addParam(objectDND, "showLogWindow", "false");
   addParam(objectDND, "showStatusBar", "true");
   addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%body%')");

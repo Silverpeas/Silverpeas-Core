@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,16 +23,17 @@
  */
 package org.silverpeas.image;
 
-import static java.util.Collections.singleton;
-
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.silverpeas.image.option.AbstractImageToolOption;
+
+import com.silverpeas.util.CollectionUtil;
+
+import static java.util.Collections.singleton;
 
 /**
  * @author Yohann Chastagnier
@@ -41,16 +42,15 @@ public abstract class AbstractImageTool implements ImageTool {
 
   /**
    * Convert an image with dimensions and options directives
+   *
    * @param source mandatory (if it not exists, no exception is generated and the process stops)
    * @param destination if destination is not specified, the destination file is the same as the
    * source
-   * @param options permits specifying multiple additional working options :
-   * - DIMENSION : resizing the image
-   * - BACKGROUND : setting a background color
-   * @param directives it is possible to specify some additional directives :
-   * - PREVIEW_WORK : the conversion concerns an preview result
-   * - GEOMETRY_SHRINK : shrinks images with dimension(s) larger than the corresponding width and/or
-   * height dimension(s).
+   * @param options permits specifying multiple additional working options : - DIMENSION : resizing
+   * the image - BACKGROUND : setting a background color
+   * @param directives it is possible to specify some additional directives : - PREVIEW_WORK : the
+   * conversion concerns an preview result - GEOMETRY_SHRINK : shrinks images with dimension(s)
+   * larger than the corresponding width and/or height dimension(s).
    */
   protected abstract void convert(File source, File destination,
       Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
@@ -91,6 +91,7 @@ public abstract class AbstractImageTool implements ImageTool {
 
   /**
    * Centralizes convert calling
+   *
    * @param source
    * @param destination
    * @param options
@@ -112,6 +113,7 @@ public abstract class AbstractImageTool implements ImageTool {
 
   /**
    * Option getter tool
+   *
    * @param options
    * @param key
    * @return
@@ -123,6 +125,7 @@ public abstract class AbstractImageTool implements ImageTool {
 
   /**
    * Internal tool
+   *
    * @param options
    * @return
    */
@@ -142,6 +145,7 @@ public abstract class AbstractImageTool implements ImageTool {
 
   /**
    * Internal tool
+   *
    * @param items
    * @return
    */
@@ -149,6 +153,6 @@ public abstract class AbstractImageTool implements ImageTool {
     if (items == null) {
       return new HashSet<T>(0);
     }
-    return new HashSet<T>(Arrays.asList(items));
+    return CollectionUtil.asSet(items);
   }
 }

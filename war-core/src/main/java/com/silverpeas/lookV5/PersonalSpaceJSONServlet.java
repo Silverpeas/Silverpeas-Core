@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -24,8 +24,8 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.sharing.services.SharingTicketService;
 import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingTicketService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
@@ -34,23 +34,22 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
 
@@ -71,7 +70,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-    OrganizationController orgaController = m_MainSessionCtrl.getOrganizationController();
+    OrganisationController orgaController = m_MainSessionCtrl.getOrganisationController();
     String userId = m_MainSessionCtrl.getUserId();
 
     res.setContentType("application/json");
@@ -96,7 +95,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     } else if ("AddComponent".equals(action)) {
       String componentName = req.getParameter("ComponentName");
       try {
-        String componentId = psc.addComponent(helper.getUserId(), componentName, 
+        String componentId = psc.addComponent(helper.getUserId(), componentName,
             getComponentLabel(componentName, helper));
         writer.write(getResult(componentName, componentId, null, helper).toString());
       } catch (Exception e) {
@@ -190,7 +189,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       jsonObject.put("url", URLManager.getURL(componentName, "useless", componentId) + "Main");
     }
     if (e != null) {
-      jsonObject.put("exception", e.toString());
+      jsonObject.put("exception", e.getMessage());
     }
     return jsonObject;
   }
@@ -221,12 +220,12 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     JSONArray jsonArray = new JSONArray();
     if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
       addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"), URLManager
-          . getURL(URLManager.CMP_AGENDA, null, null) + "Main");
+          .getURL(URLManager.CMP_AGENDA, null, null) + "Main");
       addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"), URLManager
           .getURL(URLManager.CMP_TODO, null, null) + "todo.jsp");
       addNotificationsAsTool(jsonArray, helper, message);
       addTool(jsonArray, helper, "interestVisible", "subscriptions", message.getString(
-          "MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null) 
+          "MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null)
           + "subscriptionList.jsp");
       addTool(jsonArray, helper, "favRequestVisible", "requests", message.getString("FavRequests"),
           URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS, null, null) + "iCenterList.jsp");

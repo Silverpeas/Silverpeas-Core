@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,9 @@
  */
 package com.silverpeas.profile.web;
 
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -84,11 +86,23 @@ public class UserProfilesSearchCriteriaBuilder {
     }
     return this;
   }
+
+  public UserProfilesSearchCriteriaBuilder withAccessLevels(UserAccessLevel[] accessLevels) {
+    if (accessLevels != null && accessLevels.length > 0) {
+      searchCriteria.onAccessLevels(accessLevels);
+    }
+    return this;
+  }
   
   public UserProfilesSearchCriteriaBuilder withUserIds(String[] userIds) {
     if (userIds != null && userIds.length > 0) {
       searchCriteria.onUserIds(userIds);
     }
+    return this;
+  }
+
+  public UserProfilesSearchCriteriaBuilder withPaginationPage(final PaginationPage page) {
+    searchCriteria.onPagination(page);
     return this;
   }
   

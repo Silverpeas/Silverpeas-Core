@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -43,6 +43,18 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
  * @version 1.0
  */
 public interface OperationPane extends SimpleGraphicElement {
+
+  /**
+   * Default type is {@link OperationPaneType#component}.
+   * It is possible to change the type through this method.
+   * @param type
+   */
+  void setType(OperationPaneType type);
+
+  /**
+   * Gets the type : {@link OperationPaneType}.
+   */
+  OperationPaneType getType();
   
   /**
    * Method declaration
@@ -54,13 +66,25 @@ public interface OperationPane extends SimpleGraphicElement {
   /**
    * Method declaration
    * @param iconPath
-   * @param altText
+   * @param label
    * @param action
    * @see
    */
   public void addOperation(String iconPath, String label, String action);
-  
+
+  /**
+   * Method declaration
+   * @param iconPath
+   * @param label
+   * @param action
+   * @param classes
+   * @see
+   */
+  public abstract void addOperation(String iconPath, String label, String action, String classes);
+
   public void addOperationOfCreation(String iconPath, String label, String action);
+
+  public void addOperationOfCreation(String iconPath, String label, String action, String classes);
 
   /**
    * Method declaration
@@ -68,12 +92,5 @@ public interface OperationPane extends SimpleGraphicElement {
    */
   public void addLine();
 
-  /**
-   * Print the browseBar in an html format.
-   * @return The html based line code
-   */
-  public String print();
-
   public void setMultilang(ResourceLocator multilang);
-
 }

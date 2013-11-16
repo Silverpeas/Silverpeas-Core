@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -28,6 +28,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ include file="importFrameSet.jsp" %>
 
 <%
@@ -39,46 +40,35 @@ String login		= request.getParameter("Login");
 
 LookSilverpeasV5Helper 	helper = (LookSilverpeasV5Helper) session.getAttribute(LookSilverpeasV5Helper.SESSION_ATT);
 
-ResourceLocator rsc = gef.getFavoriteLookSettings();
-int framesetWidth = Integer.parseInt(rsc.getString("domainsBarFramesetWidth"));
+int framesetWidth = helper.getSettings("domainsBarFramesetWidth", 255);
 
 String paramsForDomainsBar = "";
 if ("1".equals(request.getParameter("FromTopBar"))) {
 	paramsForDomainsBar = (spaceId == null) ? "" : "?privateDomain="+spaceId+"&privateSubDomain="+subSpaceId+"&FromTopBar=1";
-} 
-else if (componentId != null) 
-{
+}  else if (componentId != null)  {
 	paramsForDomainsBar = "?privateDomain=&component_id="+componentId;
-} 
-else
-{
+} else {
 	paramsForDomainsBar = "?privateDomain="+spaceId;
 }
 
 //Allow to force a page only on login and when user clicks on logo
 boolean displayLoginHomepage = false;
-String loginHomepage = rsc.getString("loginHomepage");
+String loginHomepage = helper.getSettings("loginHomepage", "");
 if (StringUtil.isDefined(loginHomepage) && StringUtil.isDefined(login) && 
     (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(subSpaceId) && !StringUtil.isDefined(componentId) && !StringUtil.isDefined(strGoToNew))) {
 	displayLoginHomepage = true;
 }
 
 String frameURL = "";
-if (displayLoginHomepage)
-{
+if (displayLoginHomepage) {
 	frameURL = loginHomepage;
-}
-else if (strGoToNew==null)
-{
-	if (StringUtil.isDefined(componentId))
-	{
+} else if (strGoToNew == null) {
+	if (StringUtil.isDefined(componentId)) {
 		frameURL = URLManager.getApplicationURL()+URLManager.getURL(null, componentId)+"Main";
-	}
-	else
-	{
-		String homePage = rsc.getString("defaultHomepage", "/dt");
+	} else {
+		String homePage = helper.getSettings("defaultHomepage", "/dt");
 		String param = "";
-		if (StringUtil.isDefined(spaceId)){
+		if (StringUtil.isDefined(spaceId)) {
 		    param = "?SpaceId=" + spaceId;
 		}
 		frameURL = URLManager.getApplicationURL()+homePage+param;
@@ -96,10 +86,7 @@ session.removeAttribute("RedirectToComponentId");
 session.removeAttribute("RedirectToSpaceId");
 %>
 
-
-<%@page import="com.silverpeas.util.StringUtil"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
@@ -126,9 +113,10 @@ function resizeFrame(contractsetting){
 		setframevalue(columntype, contractsetting)
 }
 
-function init(){
-	if (!document.all && !document.getElementById) return
-	if (document.body!=null){
+function init() {
+	if (!document.all && !document.getElementById) 
+    return
+	if (document.body != null){
 		columntype=(document.body.cols)? "cols" : "rows"
 		defaultsetting=(document.body.cols)? document.body.cols : document.body.rows
 	} 
@@ -138,16 +126,6 @@ function init(){
 
 setTimeout("init()",100);
 
-</script>
-<script type="text/javascript">
-<!--
-function MM_reloadPage(init) {  //reloads the window if Nav4 resized
-  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
-    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
-  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
-}
-MM_reloadPage(true);
-//-->
 </script>
 </head>
 	<frameset cols="<%=framesetWidth%>,*">

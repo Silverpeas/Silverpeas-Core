@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
 import static com.stratelia.silverpeas.silverstatistics.util.StatType.*;
@@ -56,6 +58,8 @@ import static com.stratelia.silverpeas.silverstatistics.util.StatType.*;
 /**
  * SilverStatisticsManager is the tool used in silverpeas to compute statistics for connexions,
  * files size and components access. This is a singleton class.
+ * yet, the single instance is managed by the IoC container that will invoke the
+ * <code>initSilverStatisticsManager()</code> method for initializing it.
  * @author Marc Guillemin
  */
 public class SilverStatisticsManager implements SchedulerEventListener {
@@ -69,7 +73,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   // Object variables
   // List of directory to compute size
   private List<String> directoryToScan = null;
-  private SilverStatistics silverStatistics = null;
   private StatisticsConfig statsConfig = null;
 
   /**
@@ -79,9 +82,10 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   }
 
   /**
-   * Init attributes
+   * Init attributes.
+   * This method is invoked by the IoC container. Don't invoke it!
    */
-  private void initSilverStatisticsManager() {
+  public void initSilverStatisticsManager() {
     directoryToScan = new ArrayList<String>();
     try {
       statsConfig = new StatisticsConfig();
@@ -119,7 +123,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   public static synchronized SilverStatisticsManager getInstance() {
     if (myInstance == null) {
       myInstance = new SilverStatisticsManager();
-      myInstance.initSilverStatisticsManager();
     }
     return myInstance;
   }
@@ -168,9 +171,10 @@ public class SilverStatisticsManager implements SchedulerEventListener {
    * @param currentDate
    * @see
    */
-  public void doGetStatSize(Date currentDate) {
+  public void doGetStatSize(Date currentDate) throws ExecutionException, InterruptedException {
     for (String aDirectoryToScan : directoryToScan) {
-      addStatSize(currentDate, aDirectoryToScan, directorySize(aDirectoryToScan));
+      DirectoryVolumeService service = new DirectoryVolumeService(new File(aDirectoryToScan));
+      addStatSize(currentDate, aDirectoryToScan, service.getTotalSize(null));
     }
 
   }
@@ -233,7 +237,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
    * @param componentId
    * @see
    */
-  public void addStatVolume(String userId, int volume, Date dateAccess, String peasType,
+  public void addStatVolume(String userId, long volume, Date dateAccess, String peasType,
       String spaceId, String componentId) {
     if (statsConfig.isRun(Volume)) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatVolume",
@@ -403,23 +407,21 @@ public class SilverStatisticsManager implements SchedulerEventListener {
     return -1;
   }
 
-  /**
-   * Method declaration
-   * @param file
-   * @return
-   * @see
-   */
   private long returnSize(File file) {
     if (file.isFile()) {
       return file.length();
     }
     File fDirContent[] = file.listFiles();
     long fileslength = 0L;
-    for (File aFDirContent : fDirContent) {
-      if (aFDirContent.isFile()) {
-        fileslength = fileslength + aFDirContent.length();
-      } else {
-        fileslength = fileslength + returnSize(aFDirContent);
+    if (fDirContent != null) {
+      for (File aFDirContent : fDirContent) {
+        if (aFDirContent != null) {
+          if (aFDirContent.isFile()) {
+            fileslength = fileslength + aFDirContent.length();
+          } else {
+            fileslength = fileslength + returnSize(aFDirContent);
+          }
+        }
       }
     }
     return fileslength;
@@ -470,7 +472,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("silverstatistics", "SilverStatisticsManager.handleSchedulerEvent",
-        "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull",
+        anEvent.getJobThrowable());
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import com.stratelia.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -35,12 +35,16 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 
 public class SQLSettings extends DriverSettings {
+
+  // Definitions of max lengths due to limitations on Oracle databases
+  public static final int DATABASE_TABLE_NAME_MAX_LENGTH = 30;
+  public static final int DATABASE_COLUMN_NAME_MAX_LENGTH = 30;
+
   // For DB Access
   protected String SQLClassName = "";
   protected String SQLJDBCUrl = "";
   protected String SQLAccessLogin = "";
   protected String SQLAccessPasswd = "";
-  protected String SQLPasswordEncryption = Authentication.ENC_TYPE_CLEAR;
 
   // For Table Names
   protected String SQLUserTableName = "DomainSQL_User";
@@ -78,8 +82,6 @@ public class SQLSettings extends DriverSettings {
     SQLJDBCUrl = rs.getString("database.SQLJDBCUrl", SQLJDBCUrl);
     SQLAccessLogin = rs.getString("database.SQLAccessLogin", SQLAccessLogin);
     SQLAccessPasswd = rs.getString("database.SQLAccessPasswd", SQLAccessPasswd);
-    SQLPasswordEncryption = rs.getString("database.SQLPasswordEncryption",
-        SQLPasswordEncryption);
 
     // For Table Names
     SQLUserTableName = rs.getString("database.SQLUserTableName",
@@ -140,15 +142,6 @@ public class SQLSettings extends DriverSettings {
 
   public String getAccessPasswd() {
     return SQLAccessPasswd;
-  }
-
-  public String getPasswordEncryption() {
-    return SQLPasswordEncryption;
-  }
-
-  public boolean isPasswordEncrypted() {
-    return (!Authentication.ENC_TYPE_CLEAR
-        .equalsIgnoreCase(SQLPasswordEncryption));
   }
 
   // For Table Names

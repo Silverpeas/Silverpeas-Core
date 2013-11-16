@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.token.TokenStringKey;
 import org.silverpeas.token.constant.TokenType;
 import org.silverpeas.token.model.Token;
@@ -42,7 +46,6 @@ import org.silverpeas.util.Charsets;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
@@ -58,13 +61,15 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 public class UserPriviledgeValidation {
 
   @Inject
-  @Named("sessionManager")
   private SessionManagement sessionManagement;
   @Inject
   @Named("componentAccessController")
   private AccessController<String> componentAccessController;
   @Inject
-  private OrganizationController organizationController;
+  @Named("simpleDocumentAccessController")
+  private AccessController<SimpleDocument> documentAccessController;
+  @Inject
+  private OrganisationController organisationController;
   @Inject
   private TokenService tokenService;
   /**
@@ -88,7 +93,7 @@ public class UserPriviledgeValidation {
    * Validates the authentication of the user at the origin of a web request.
    *
    * The validation checks first the user is already authenticated and in that case its
-   * authenticated session is always valid. Otherwise it attempt to authenticate the user by using
+   * authenticated session is always valid. Otherwise it attempt to openSession the user by using
    * its credentials passed through the request (as an HTTP header). Once the authentication
    * succeed, the identification of the user is done and detail about it can then be got. A runtime
    * exception is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The
@@ -101,7 +106,7 @@ public class UserPriviledgeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   public SessionInfo validateUserAuthentication(final HttpServletRequest request) throws
-          WebApplicationException {
+      WebApplicationException {
     SessionInfo userSession;
     String sessionKey = getUserSessionKey(request);
     if (isDefined(sessionKey)) {
@@ -109,35 +114,77 @@ public class UserPriviledgeValidation {
     } else {
       userSession = authenticateUser(request);
     }
+
+    // Verify that the user can login
+    verifyUserCanLogin(userSession);
+
+    // Returning the user session
     return userSession;
+  }
+
+  /**
+   * Verify that the user can login
+   * @param userSession
+   */
+  private void verifyUserCanLogin(SessionInfo userSession) {
+    if (userSession != null && userSession.getUserDetail() != null) {
+      try {
+        AuthenticationUserVerifierFactory.getUserCanLoginVerifier(userSession.getUserDetail())
+            .verify();
+      } catch (AuthenticationException e) {
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+    }
   }
 
   /**
    * Validates the authorization of the specified user to access the component instance with the
    * specified unique identifier.
+   *
    * @param user the user for whom the authorization has to be validated.
    * @param instanceId the unique identifier of the accessed component instance.
    * @throws WebApplicationException exception if the validation failed.
    */
   public void validateUserAuthorizationOnComponentInstance(final UserDetail user, String instanceId)
-          throws WebApplicationException {
+      throws WebApplicationException {
     if (!componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
 
   /**
+   * Validates the authorization of the specified user to access the specified attachment.
+   *
+   * @param user the user for whom the authorization has to be validated.
+   * @param doc the document accessed.
+   * @throws WebApplicationException exception if the validation failed.
+   */
+  public void validateUserAuthorizationOnAttachment(final UserDetail user, SimpleDocument doc)
+      throws WebApplicationException {
+    if (!documentAccessController.isUserAuthorized(user.getId(), doc)) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header parameter X-Silverpeas-Session. If no such parameter is set, it
-   * is then retrieved from the current HTTP session if any. If the incoming request isn't sent
-   * within an active HTTP session, then an empty string is returned as no HTTP session was defined
-   * for the current request.
+   * retrieved from the HTTP header or URL parameter X-Silverpeas-Session. If no such parameter is
+   * set, it is then retrieved from the current HTTP session if any. If the incoming request isn't
+   * sent within an active HTTP session, then an empty string is returned as no HTTP session was
+   * defined for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
    */
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
+
+    // Search among http request parameters one called HTTP_SESSIONKEY
+    if (!isDefined(sessionKey)) {
+      sessionKey = request.getParameter(HTTP_SESSIONKEY);
+    }
+
+    // Try with JSession id
     if (!isDefined(sessionKey)) {
       HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {
@@ -156,15 +203,14 @@ public class UserPriviledgeValidation {
    * encoded.
    *
    * In Silverpeas, the authentication process with web services asks for the unique identifier of
-   * the user as login instead of its true login text that can be not unique (it is unique only within
-   * a given Silverpeas domain).
+   * the user as login instead of its true login text that can be not unique (it is unique only
+   * within a given Silverpeas domain).
    *
-   * Once the user well authenticated,
-   * return details about him. If the authentication fails, then a WebApplicationException exception
-   * is thrown with an HTTP status code UNAUTHORIZED (401). The implementation of this method is for
-   * taking into account the Silverpeas security doesn't satisfy the JAAS way. Once JAAS supported
-   * in Silverpeas, the web services should use the SecurityContext instead of the credentials token
-   * passed in the header of HTTP requests.
+   * Once the user well authenticated, return details about him. If the authentication fails, then a
+   * WebApplicationException exception is thrown with an HTTP status code UNAUTHORIZED (401). The
+   * implementation of this method is for taking into account the Silverpeas security doesn't
+   * satisfy the JAAS way. Once JAAS supported in Silverpeas, the web services should use the
+   * SecurityContext instead of the credentials token passed in the header of HTTP requests.
    *
    * @return the detail about the authenticated user requested this web service.
    */
@@ -176,7 +222,7 @@ public class UserPriviledgeValidation {
       int loginPasswordSeparatorIndex = decoded.indexOf(':');
       String userId = decoded.substring(0, loginPasswordSeparatorIndex);
       String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-      UserFull user = organizationController.getUserFull(userId);
+      UserFull user = organisationController.getUserFull(userId);
       if (user == null || !user.getPassword().equals(password)) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
@@ -189,7 +235,7 @@ public class UserPriviledgeValidation {
   /**
    * Validates the current user session with the specified session key. If the incoming request is
    * within an opened HTTP session (not so stateless, should be avoided in RESTful REST web services
-   * for both scalability and REST policy reasons), then take checks this session is valide before
+   * for both scalability and REST policy reasons), then take checks this session is valid before
    * processing the request. If the session is valid, then detail about the user is returned,
    * otherwise a WebApplicationException exception is thrown. As the anonymous user has no opened
    * session, when a request is recieved by this web service and that request does neither belong to
@@ -200,7 +246,7 @@ public class UserPriviledgeValidation {
    * @return the detail about the user requesting this web service.
    */
   private SessionInfo validateUserSession(String sessionKey) {
-    SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+    SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);
     if (sessionInfo == null) {
 
       // Verify user token

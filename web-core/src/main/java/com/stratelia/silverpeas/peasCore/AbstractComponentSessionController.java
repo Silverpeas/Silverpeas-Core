@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,24 +24,30 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.List;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.subscription.SubscriptionContext;
+
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.List;
+
 
 /**
  * Base class for all component session controller.
@@ -252,8 +258,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @see
    */
   @Override
-  public OrganizationController getOrganizationController() {
-    return controller.getOrganizationController();
+  public OrganisationController getOrganisationController() {
+    return controller.getOrganisationController();
   }
 
   /**
@@ -304,7 +310,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   /**
@@ -471,7 +477,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return controller.getPersonalization();
   }
 
-  public String getUserAccessLevel() {
+  public UserAccessLevel getUserAccessLevel() {
     return controller.getUserAccessLevel();
   }
 
@@ -485,6 +491,10 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   public Selection getSelection() {
     return controller.getSelection();
+  }
+
+  public SubscriptionContext getSubscriptionContext() {
+    return controller.getSubscriptionContext();
   }
 
   public AlertUser getAlertUser() {
@@ -537,7 +547,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     builder.append("?userId=").append(getUserId()).append("&login=");
     builder.append(getUrlEncodedParameter(getUserDetail().getLogin()));
     builder.append("&password=");
-    builder.append(getUrlEncodedParameter(controller.getOrganizationController().getUserFull(
+    builder.append(getUrlEncodedParameter(controller.getOrganisationController().getUserFull(
         getUserId()).getPassword()));
     return builder.toString();
   }
@@ -556,62 +566,62 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   @Override
-  public Collection<ClipboardSelection> getClipboardSelectedObjects() throws RemoteException {
+  public Collection<ClipboardSelection> getClipboardSelectedObjects() throws ClipboardException {
     return controller.getSelectedObjects();
   }
 
   @Override
-  public String getClipboardErrorMessage() throws RemoteException {
+  public String getClipboardErrorMessage() throws ClipboardException {
     return controller.getMessageError();
   }
 
   @Override
-  public Exception getClipboardExceptionError() throws RemoteException {
+  public Exception getClipboardExceptionError() throws ClipboardException {
     return controller.getExceptionError();
   }
 
   @Override
-  public Collection<ClipboardSelection> getClipboardObjects() throws RemoteException {
+  public Collection<ClipboardSelection> getClipboardObjects() throws ClipboardException {
     return controller.getObjects();
   }
 
   @Override
-  public void addClipboardSelection(ClipboardSelection selection) throws RemoteException {
+  public void addClipboardSelection(ClipboardSelection selection) throws ClipboardException {
     controller.add(selection);
   }
 
   @Override
-  public String getClipboardName() throws RemoteException {
+  public String getClipboardName() {
     return controller.getName();
   }
 
   @Override
-  public Integer getClipboardCount() throws RemoteException {
+  public Integer getClipboardCount() throws ClipboardException {
     return controller.getCount();
   }
 
   @Override
-  public void clipboardPasteDone() throws RemoteException {
+  public void clipboardPasteDone() throws ClipboardException {
     controller.PasteDone();
   }
 
   @Override
-  public void setClipboardSelectedElement(int index, boolean selected) throws RemoteException {
+  public void setClipboardSelectedElement(int index, boolean selected) throws ClipboardException {
     controller.setSelected(index, selected);
   }
 
   @Override
-  public int getClipboardSize() throws RemoteException {
+  public int getClipboardSize() throws ClipboardException {
     return controller.size();
   }
 
   @Override
-  public void removeClipboardElement(int index) throws RemoteException {
+  public void removeClipboardElement(int index) throws ClipboardException {
     controller.removeObject(index);
   }
 
   @Override
-  public void setClipboardError(String messageId, Exception ex) throws RemoteException {
+  public void setClipboardError(String messageId, Exception ex) throws ClipboardException {
     controller.setMessageError(messageId, ex);
   }
 }

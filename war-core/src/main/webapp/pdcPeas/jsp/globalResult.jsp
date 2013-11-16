@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -62,8 +62,8 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 
 void displayFacet(Facet facet, ResourcesWrapper resource, JspWriter out) throws IOException {
 	if (facet != null && !facet.isEmpty()) {
-	  	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));
-		int nbDefaultFacetEntries = Integer.parseInt(resource.getSetting("searchengine.facet.default.nbEntries", "5"));
+	  	int facetResultLength = resource.getSetting("searchengine.facet.max.length", 30);
+		int nbDefaultFacetEntries = resource.getSetting("searchengine.facet.default.nbEntries", 5);
 		String facetId = facet.getId().replace("$$", "__"); // $$ is not supported by jQuery
     	out.println("<div class=\"facet\" id=\"facet-"+facetId+"\">");
         out.println("<div id=\"searchGroupTitle\"><span class=\""+facetId+"\">"+facet.getName()+"</span></div>");
@@ -76,7 +76,7 @@ void displayFacet(Facet facet, ResourcesWrapper resource, JspWriter out) throws 
 			FacetEntryVO entry = facet.getEntries().get(cpt);
 		    String entryName = entry.getName();
 		    String entryId = entry.getId();
-		    String displayComp = (entryName != null && entryName.length() > facetResultLength)? entryName.substring(0,facetResultLength) + "...":entryName;
+		    String displayComp = StringUtil.abbreviate(entryName, facetResultLength);
 		    displayComp += "&nbsp;(" + entry.getNbElt() + ")";
 		    String lastClass = "";
 		    if (cpt == facet.getEntries().size() - 1) {
@@ -135,7 +135,7 @@ List<GoogleTab>	webTabs			= (List<GoogleTab>) request.getAttribute("WebTabs");
 List<String> spellingWords = (List<String>) request.getAttribute("spellingWords");
 
 // List of Group result filter (new function added by EBO)
-ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
+ResultGroupFilter facets = (ResultGroupFilter) request.getAttribute("ResultGroup");
 
 // recuperation du choix de l'utilisateur
 String keywords = (String) request.getAttribute("Keywords");
@@ -198,14 +198,12 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 		}
 	</style>
 <% } %>
-<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <!--[if IE 6]>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
@@ -448,14 +446,10 @@ function markAsRead(id) {
 	$(document).ready(function(){
 		//used for keywords autocompletion
 	    <%  if(autoCompletion){ %>
-			        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
-			                    minChars: <%=autocompletionMinChars%>,
-			                    max: 50,
-			                    autoFill: false,
-			                    mustMatch: false,
-			                    matchContains: false,
-			                    scrollHeight: 220
-			            });
+			        $("#query").autocomplete({
+                source: "<%=m_context%>/AutocompleteServlet",
+                minLength: <%=autocompletionMinChars%>
+      });
 	    <%}%>
 	  });
 
@@ -617,11 +611,10 @@ function viewFile(target, attachmentId, versioned, componentId) {
 	if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){
 %>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
-			<tr >
+			<tr>
 				<td>
 					<span class="spellText" >
 						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%>
-
 					</span>
 					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords.get(0)%></span></b></a>
 					<p>&nbsp;</p>
@@ -632,11 +625,11 @@ function viewFile(target, attachmentId, versioned, componentId) {
 
 %>
   <c:if test="${not empty results}">
-    <table border="0" id="globalResultListDetails" cellspacing="0" cellpadding="0">
+    <ul id="globalResultListDetails">
       <c:forEach var="result" items="${results}">
-        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}"></view:displayResult>
+        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}" settings="<%=resource %>"></view:displayResult>
       </c:forEach>
-    </table>
+    </ul>
   </c:if>
 <%
 		out.println("</td></tr>");
@@ -670,67 +663,51 @@ function viewFile(target, attachmentId, versioned, componentId) {
     </div>
     <div id="globalResultHelp" class="inlineMessage">
 		<table width="100%" border="0"><tr><td valign="top" width="30%">
-        <fmt:message key="pdcPeas.helpCol1Header" /><br><br>
-        <fmt:message key="pdcPeas.helpCol1Content1" /><br>
-        <fmt:message key="pdcPeas.helpCol1Content2" /><br>
-        <fmt:message key="pdcPeas.helpCol1Content3" /><br>
+        <fmt:message key="pdcPeas.helpCol1Header" /><br/><br/>
+        <fmt:message key="pdcPeas.helpCol1Content1" /><br/>
+        <fmt:message key="pdcPeas.helpCol1Content2" /><br/>
+        <fmt:message key="pdcPeas.helpCol1Content3" /><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-        <fmt:message key="pdcPeas.helpCol2Header" /><br><br>
+        <fmt:message key="pdcPeas.helpCol2Header" /><br/><br/>
         <%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
 		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
-        <fmt:message key="pdcPeas.helpCol2Content3" /><br>
-        <fmt:message key="pdcPeas.helpCol2Content4" /><br>
-        <fmt:message key="pdcPeas.helpCol2Content5" /><br>
+        <fmt:message key="pdcPeas.helpCol2Content3" /><br/>
+        <fmt:message key="pdcPeas.helpCol2Content4" /><br/>
+        <fmt:message key="pdcPeas.helpCol2Content5" /><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-        <fmt:message key="pdcPeas.helpCol3Header" /><br><br>
-        <fmt:message key="pdcPeas.helpCol3Content1" /><br>
-        <fmt:message key="pdcPeas.helpCol3Content2" /><br>
-        <fmt:message key="pdcPeas.helpCol3Content3" /><br>
-        <fmt:message key="pdcPeas.helpCol3Content4" /><br>
+        <fmt:message key="pdcPeas.helpCol3Header" /><br/><br/>
+        <fmt:message key="pdcPeas.helpCol3Content1" /><br/>
+        <fmt:message key="pdcPeas.helpCol3Content2" /><br/>
+        <fmt:message key="pdcPeas.helpCol3Content3" /><br/>
+        <fmt:message key="pdcPeas.helpCol3Content4" /><br/>
 		</td>
 		</tr></table>
   </div>
   </view:frame>
 </div>
-	<%
-
-	// Adding facet search group
-  	if (resultGroup != null) {
-    	%>
+	<% if (facets != null) { %>
 	  <input type="hidden" name="changeFilter" id="changeFilterId" value="" />
       <div id="globalResultGroupDivId">
       	<div id="facetSearchDivId">
       	<%
-      	Facet authorFacet = resultGroup.getAuthorFacet();
-      	Facet componentFacet = resultGroup.getComponentFacet();
-      	Facet datatypeFacet = resultGroup.getDatatypeFacet();
-      	List<Facet> fieldFacets = resultGroup.getFormFieldFacets();
+      	displayFacet(facets.getAuthorFacet(), resource, out);
       	
-      	displayFacet(authorFacet, resource, out);
+      	List<Facet> fieldFacets = facets.getFormFieldFacets();
       	for (Facet facet : fieldFacets) {
       	  	displayFacet(facet, resource, out);
-	  	        }
-      	displayFacet(datatypeFacet, resource, out);
-      	displayFacet(componentFacet, resource, out);
-	  	        %>
-      	<%--
-      	  <div id="searchGroupTitle"><span class="file">Type de fichier</span></div>
-   		  <div id="searchGroupValues">
-   			<ul>
-  	  				<li><a href="#">pdf</a></li>
-  	  				<li><a href="#">xls</a></li>
-      		</ul>
-      	  </div>
-        --%>
+	  	}
+      	
+      	displayFacet(facets.getDatatypeFacet(), resource, out);
+      	displayFacet(facets.getFiletypeFacet(), resource, out);
+      	displayFacet(facets.getComponentFacet(), resource, out);
+	  	%>
         </div>
       </div>
-    	<%
-    }
-%>
+    <% } %>
 </view:window>
 
 	<input type="hidden" name="selectedIds"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,37 +20,13 @@
  */
 package com.silverpeas.portlets.portal;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.PortletType;
@@ -62,10 +38,35 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
-import java.util.HashSet;
+import org.silverpeas.core.admin.OrganisationController;
 
-import static com.silverpeas.util.MimeTypes.*;
-import static com.silverpeas.util.StringUtil.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class SPDesktopServlet extends HttpServlet {
 
@@ -123,18 +124,19 @@ public class SPDesktopServlet extends HttpServlet {
       response.sendRedirect(spaceHomePage);
     } else {
       spaceId = getSpaceId(request);
-      String userId = getMainSessionController(request).getUserId();
+      MainSessionController mainSessionController = getMainSessionController(request);
+      String userId = mainSessionController.getUserId();
       String spContext = userId;
       if (isDefined(spaceId)) {
         spContext = spaceId;
       }
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
-      DesktopMessages.init(request);
-      SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+      DesktopMessages.init(mainSessionController.getFavoriteLanguage());
+      SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "DesktopMessages initialized !");
       DriverUtil.init(request);
-      SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "DriverUtil initialized !");
       response.setContentType(SERVLET_HTML_CONTENT_TYPE);
 
@@ -143,7 +145,7 @@ public class SPDesktopServlet extends HttpServlet {
         ServletContextThreadLocalizer.set(context);
         PortletRegistryContext portletRegistryContext =
             DriverUtil.getPortletRegistryContext(spContext);
-        SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
             "portletRegistryContext retrieved !");
         String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
         PortletContent portletContent =
@@ -184,6 +186,11 @@ public class SPDesktopServlet extends HttpServlet {
               getPortletWindowContents(request, portletContents, portletRegistryContext,
               spContext);
           setPortletWindowData(request, portletWindowContents);
+          
+          //set all existing portlets in session
+          List<String> portletsName = portletRegistryContext.getAvailablePortlets(); 
+          setPortletNames(request, mainSessionController.getFavoriteLanguage(), portletsName);
+          
           InvokerUtil.setResponseProperties(request, response,
               portletContent.getResponseProperties());
           RequestDispatcher rd = context.getRequestDispatcher(getPresentationURI(request));
@@ -191,7 +198,7 @@ public class SPDesktopServlet extends HttpServlet {
           InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
         }
       } catch (Exception e) {
-        SilverTrace.error("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.error("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
             "Portlets exception !", e);
       } finally {
         ServletContextThreadLocalizer.set(null);
@@ -282,7 +289,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the initialized portlet content.
    */
   private PortletContent initPortletContent(final PortletContent portletContent,
-      final HttpServletRequest request) throws InvokerException {
+      final HttpServletRequest request) {
     String portletWindowName = portletContent.getPortletWindowName();
     portletContent.setPortletWindowMode(getPortletWindowMode(request, portletWindowName));
     portletContent.setPortletWindowState(getPortletWindowState(request, portletWindowName));
@@ -293,7 +300,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Returns a Map of portlet data and title for the portlet windows specified in the portletList
    *
    * @param request the HttpServletRequest Object
-   * @param portletContent the PortletContent Cobject
+   * @param response the HttpServletResponse object
    * @param portletList the List of portlet windows
    * @return a Map of portlet data and title for the portlet windows specified in the portletList
    */
@@ -328,6 +335,7 @@ public class SPDesktopServlet extends HttpServlet {
       try {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContent, portletRegistryContext, spContext);
+
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
         } else if (portletWindowData.isThick()) {
@@ -481,6 +489,7 @@ public class SPDesktopServlet extends HttpServlet {
       String spContext) throws PortletRegistryException {
     PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
     portletWindowData.init(request, portletRegistryContext, portletContent.getPortletWindowName());
+
     if (!portletContent.isInMinimizedWindowState()) {
       portletWindowData.setContent(portletContent.getContent());
     }
@@ -570,7 +579,7 @@ public class SPDesktopServlet extends HttpServlet {
         }
         MainSessionController m_MainSessionCtrl = getMainSessionController(request);
         SpaceInst spaceStruct =
-            m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
+            m_MainSessionCtrl.getOrganisationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           return null;
@@ -590,8 +599,8 @@ public class SPDesktopServlet extends HttpServlet {
     return m_MainSessionCtrl;
   }
 
-  private OrganizationController getOrganizationController(final HttpServletRequest request) {
-    return getMainSessionController(request).getOrganizationController();
+  private OrganisationController getOrganizationController(final HttpServletRequest request) {
+    return getMainSessionController(request).getOrganisationController();
   }
 
   private boolean isSpaceBackOffice(final HttpServletRequest request) {
@@ -607,7 +616,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   private String getSpaceHomepage(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
-    OrganizationController organizationCtrl = getOrganizationController(request);
+    OrganisationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = null;
     if (!SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
       spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
@@ -618,8 +627,9 @@ public class SPDesktopServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
 
       // Maintenance Mode
-      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) && "U".equals(m_MainSessionCtrl.
-          getUserAccessLevel())) {
+      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
+          (m_MainSessionCtrl.getCurrentUserDetail().isAccessUser() ||
+              m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest())) {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
 
@@ -698,5 +708,29 @@ public class SPDesktopServlet extends HttpServlet {
       sDestination = sParsed;
     }
     return sDestination;
+  }
+  
+  
+  /**
+   * Set the existing portletNames in session
+   * @param request
+   * @param language
+   * @param portletNames
+   */
+  private void setPortletNames(final HttpServletRequest request, final String language, 
+      final List<String> portletNames) {
+    HttpSession session = request.getSession(true);
+    ResourceLocator resource = new ResourceLocator("org.silverpeas.portlet.multilang.portletBundle", language);
+    Collection<Map> listPortlet = new ArrayList<Map>();//list of HashMap key=portletName, value=title of the portlet
+    for(String portletName : portletNames) {
+      String shortName = portletName.substring(11); //portletName = silverpeas.LastPublicationsPortlet
+      String defaultTitle = resource.getString("portlet."+shortName+".title", ""); //shortName = LastPublicationsPortlet, key = portlet.LastPublicationsPortlet.title
+      Map<String, String> hashPortlet = new HashMap<String, String>();//key=portletName, value=title of the portlet
+      hashPortlet.put(portletName, defaultTitle);
+      listPortlet.add(hashPortlet);
+    }
+    
+    session.removeAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS);
+    session.setAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS, listPortlet);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,7 @@
         $.preview.initialized = true;
       }
     }
-  }
+  };
 
   /**
    * The different preview methods handled by the plugin.
@@ -117,19 +117,15 @@
       // Getting preview
       var url = $.preview.webServiceContext;
       url += "/preview/" + options.componentInstanceId;
-      if (options.versioned) {
-    	  url += "/version/" + options.attachmentId;
-      } else {
-    	  url += "/attachment/" + options.attachmentId;
-      }
+      url += "/attachment/" + options.attachmentId;
       $.ajax({
         url : url,
         type : 'GET',
         dataType : 'json',
         cache : false,
         success : function(data, status, jqXHR) {
-          __openDialogPreview($_this, data);
           $.popup.hideWaiting();
+          __openDialogPreview($_this, data);
         },
         error : function(jqXHR, textStatus, errorThrown) {
           $.popup.hideWaiting();
@@ -139,10 +135,17 @@
     })
   }
 
+  /** Technical attribute to avoid having several same functions triggered on keydown */
+  var __previousOrNextPreview;
+
   /**
    * Private function that centralizes the dialog preview construction
    */
   function __openDialogPreview($this, preview) {
+
+    if (__previousOrNextPreview) {
+      $(document).unbind('keydown', __previousOrNextPreview);
+    }
 
     // Initializing the resulting html container
     var $baseContainer = $("#documentPreview");
@@ -156,8 +159,6 @@
                         .css('text-align', 'center')
                         .css('background-color', 'white');
       $baseContainer.insertAfter($this);
-    } else {
-      $baseContainer.dialog("destroy");
     }
 
     // Getting previous and next
@@ -175,34 +176,39 @@
       }
     }
 
-    // Settings
-    var settings = {
-        title : preview.originalFileName,
-        width : preview.width,
-        height : preview.height,
-        keydown : function (e) {
-          var keyCode = eval(e.keyCode);
-          if (previousIndex >= 0 && 37 <= keyCode && keyCode <= 40) {
-            e.preventDefault();
-            var previousOrNextPreviewTarget = null;
-            if (38 == keyCode) {
-              // Up
-              previousOrNextPreviewTarget = allDocumentPreviews[previousIndex];
-            } else if (40 == keyCode) {
-              // Down
-              previousOrNextPreviewTarget = allDocumentPreviews[nextIndex];
-            }
-            $(previousOrNextPreviewTarget).click();
-          }
+    // Function to navigate between images
+    __previousOrNextPreview = function(e) {
+      var keyCode = eval(e.keyCode);
+      if (previousIndex >= 0 && 37 <= keyCode && keyCode <= 40) {
+        e.preventDefault();
+        var previousOrNextPreviewTarget = null;
+        if (38 == keyCode) {
+          // Up
+          previousOrNextPreviewTarget = allDocumentPreviews[previousIndex];
+        } else if (40 == keyCode) {
+          // Down
+          previousOrNextPreviewTarget = allDocumentPreviews[nextIndex];
         }
+        $(previousOrNextPreviewTarget).click();
+        return false;
+      }
+      return true;
+    };
+    $(document).bind('keydown', __previousOrNextPreview);
+
+    // Popup settings
+    var settings = {
+      title : preview.originalFileName,
+      width : preview.width,
+      height : preview.height,
+      callbackOnClose : function() {
+        $(document).unbind('keydown', __previousOrNextPreview);
+      }
     };
 
     // Preview content
-    $previewContent = $('<div>')
-                      .css('display', 'block')
-                      .css('margin', '0px')
-                      .css('padding', '0px')
-                      .css('text-align', 'center');
+    var $previewContent = $('<div>').css('display', 'block').css('margin', '0px').css('padding',
+        '0px').css('text-align', 'center');
     $previewContent.append($('<img>').attr('src', preview.url)
                             .attr('width', preview.width)
                             .attr('height', preview.height));
@@ -239,7 +245,7 @@
 
     // Initializing
     var $buttonContainer = $('<div>')
-                            .addClass('preview-button')
+                            .addClass('dialog-popup-button')
                             .css('display', 'none')
                             .css('position', 'absolute')
                             .css('top', '0px')
@@ -297,7 +303,7 @@
 
     // Initializing the image if necessary
     if (!$button) {
-      $button = $('<img>').addClass('preview-button-image');
+      $button = $('<img>').addClass('dialog-popup-button-image');
     }
 
     // Setting the image source attribute

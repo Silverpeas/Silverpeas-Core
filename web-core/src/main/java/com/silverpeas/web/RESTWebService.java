@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,8 +23,13 @@
  */
 package com.silverpeas.web;
 
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.session.SessionInfo;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -32,12 +37,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.util.Collection;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.session.SessionInfo;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
@@ -46,7 +49,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 public abstract class RESTWebService {
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
   @Context
   private UriInfo uriInfo;
   @Context
@@ -54,6 +57,7 @@ public abstract class RESTWebService {
   @Context
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
+  private Collection<SilverpeasRole> userRoles = null;
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
@@ -79,6 +83,8 @@ public abstract class RESTWebService {
           WebApplicationException {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
+    // If user authentication is done by API Token catched from HTTP URL request, HTTP_SESSIONKEY
+    // is not returned into HTTP response header
     if (request.getHeader(HTTP_SESSIONKEY) != null || (request.getHeader(HTTP_AUTHORIZATION) != null
             && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
@@ -158,11 +164,23 @@ public abstract class RESTWebService {
   }
 
   /**
+   * Gets roles of the authenticated user.
+   * @return
+   */
+  protected Collection<SilverpeasRole> getUserRoles() {
+    if (userRoles == null) {
+      userRoles = SilverpeasRole
+          .from(organizationController.getUserProfiles(getUserDetail().getId(), getComponentId()));
+    }
+    return userRoles;
+  }
+
+  /**
    * Gets the organization controller.
    *
    * @return an OrganizationController instance.
    */
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return organizationController;
   }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -166,7 +166,7 @@
     <p align="left">
       <img width="328" height="202" alt="Logo SP" src="../images/logo_SP.jpg"/>
       The absence of a trademark, service mark, trade name or logo from this 
-      list  does not constitute a waiver of Alfresco Software Ltd.'s trademark
+      list  does not constitute a waiver of Silverpeas's trademark
       or other  intellectual property rights. 
     </p>
     <h4>B. Proper Trademark Use.</h4>
@@ -227,7 +227,7 @@
       explained below), in permitted materials, it is not ordinarily necessary
       to  mark subsequent appearances of the trademark in the same text. 
     </p>
-    <h3>D. Link to Alfresco Software Ltd. Website.</h3>
+    <h3>D. Link to Silverpeas Website.</h3>
     <p>All uses of a Silverpeas Logo,  such as the "Content managed by 
       Silverpeas" Logo, in a user interface  should be linked from the logo to
       <a href="http://www.silverpeas.com/">www.silverpeas.com</a>. 
@@ -262,8 +262,8 @@
       SilverpeasMark in any form or media.  Thus, although a Silverpeas Public
       License licensee may redistribute the  underlying software, a 
       Silverpeas Public License licensee may not use any Silverpeas Mark in 
-      doing so without the express prior written permission of Alfresco  
-      Software Ltd. Otherwise, users could be misled into thinking that 
+      doing so without the express prior written permission of Silverpeas.
+      Otherwise, users could be misled into thinking that 
       revisions  made by a Silverpeas Public License licensee were created or 
       endorsed by Silverpeas, or that those revisions met the quality control 
       standards of Silverpeas. 

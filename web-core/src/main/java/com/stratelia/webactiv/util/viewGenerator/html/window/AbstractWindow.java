@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,12 +33,13 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author neysseri
@@ -64,6 +65,7 @@ public abstract class AbstractWindow implements Window {
    * @param gef
    * @see
    */
+  @Override
   public void init(GraphicElementFactory gef) {
     this.gef = gef;
   }
@@ -82,6 +84,7 @@ public abstract class AbstractWindow implements Window {
    * @param body
    * @see
    */
+  @Override
   public void addBody(String body) {
     this.body = body;
   }
@@ -145,7 +148,7 @@ public abstract class AbstractWindow implements Window {
 
   private void addOperationToSetupComponent() {
     MainSessionController msc = getGEF().getMainSessionController();
-    if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
+    if (msc.getOrganisationController().isComponentManageable(getGEF().getComponentId(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
       String label = GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
           .getString("GML.operations.setupComponent");
@@ -172,7 +175,7 @@ public abstract class AbstractWindow implements Window {
   public String getContextualDiv() {
     String spaceIds = "";
     String componentId = gef.getComponentId();
-    OrganizationController oc = gef.getMainSessionController().getOrganizationController();
+    OrganisationController oc = gef.getMainSessionController().getOrganisationController();
     if (StringUtil.isDefined(componentId)) {
       List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
 
@@ -272,7 +275,7 @@ public abstract class AbstractWindow implements Window {
       if (StringUtil.isDefined(componentId)) {
         StringBuilder sb = new StringBuilder(300);
         ComponentInstLight component =
-            getGEF().getMainSessionController().getOrganizationController()
+            getGEF().getMainSessionController().getOrganisationController()
             .getComponentInstLight(componentId);
         String language = getGEF().getMainSessionController().getFavoriteLanguage();
         if (component != null) {

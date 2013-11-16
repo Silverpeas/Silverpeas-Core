@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -44,6 +44,9 @@ public class DocumentFormatConverterFactory {
   @Inject
   private ToPDFConverter toPDFConverter;
 
+  @Inject
+  private ToHTMLConverter toHTMLConverter;
+
   /**
    * Gets an instance of this factory.
    * @return a DocumentFormatConverterFactory instance.
@@ -74,6 +77,14 @@ public class DocumentFormatConverterFactory {
    */
   public ToPDFConverter getToPDFConverter() {
     return toPDFConverter;
+  }
+
+  /**
+   * Gets an instance of the ToHTMLConverter interface.
+   * @return a ToHTMLConverter instance.
+   */
+  public ToHTMLConverter getToHTMLConverter() {
+    return toHTMLConverter;
   }
 
   private DocumentFormatConverterFactory() {

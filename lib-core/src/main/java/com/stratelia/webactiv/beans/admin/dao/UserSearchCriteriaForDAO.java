@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,11 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,8 +40,12 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 public class UserSearchCriteriaForDAO implements SearchCriteria {
 
-  private StringBuilder query = new StringBuilder();
+  private static final String QUERY = "select {0} from {1} where state <> ''DELETED'' {2} {3}";
+  private static final String ORDER_BY_LASTNAME = "order by lastName";
+
+  private StringBuilder filter = new StringBuilder();
   private Set<String> tables = new HashSet<String>();
+  private PaginationPage page = null;
 
   public static UserSearchCriteriaForDAO newCriteria() {
     return new UserSearchCriteriaForDAO();
@@ -45,16 +53,16 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO and() {
-    if (query.length() > 0) {
-      query.append(" and ");
+    if (filter.length() > 0) {
+      filter.append(" and ");
     }
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO or() {
-    if (query.length() > 0) {
-      query.append(" or ");
+    if (filter.length() > 0) {
+      filter.append(" or ");
     }
     return this;
   }
@@ -92,6 +100,25 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
+  public UserSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
+    if (accessLevels != null && accessLevels.length > 0) {
+      tables.add("st_user");
+      StringBuilder accessLevelsAsCodes = new StringBuilder();
+      for (UserAccessLevel accessLevel : accessLevels) {
+        if (accessLevelsAsCodes.length() > 0) {
+          accessLevelsAsCodes.append(",");
+        }
+        accessLevelsAsCodes.append("'");
+        accessLevelsAsCodes.append(accessLevel.getCode());
+        accessLevelsAsCodes.append("'");
+      }
+      getFixedQuery().append("(st_user.accessLevel in (").append(accessLevelsAsCodes.toString())
+          .append("))");
+    }
+    return this;
+  }
+
+  @Override
   public UserSearchCriteriaForDAO onDomainId(String domainId) {
     // all users that are part of the specified domain or that have administration priviledges
     // (the administrators should be visible by anyone in order to be contacted)
@@ -117,17 +144,25 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
+  public String toSQLQuery(String fields) {
+    String ordering = ORDER_BY_LASTNAME;
+    if (fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
+      ordering = "";
+    }
+    return MessageFormat.format(QUERY, fields, impliedTables(), queryFilter(), ordering);
+  }
+
   @Override
   public String toString() {
-    return query.toString();
+    return toSQLQuery("*");
   }
 
   @Override
   public boolean isEmpty() {
-    return query.length() == 0;
+    return filter.length() == 0;
   }
 
-  public String impliedTables() {
+  private String impliedTables() {
     StringBuilder tablesUsedInCriteria = new StringBuilder();
     for (String aTable : tables) {
       tablesUsedInCriteria.append(aTable).append(", ");
@@ -135,7 +170,16 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     return tablesUsedInCriteria.substring(0, tablesUsedInCriteria.length() - 2);
   }
 
+  private String queryFilter() {
+    String sqlFilter = "";
+    if (filter.length() > 0) {
+      sqlFilter += " and " + filter;
+    }
+    return sqlFilter;
+  }
+
   private UserSearchCriteriaForDAO() {
+    tables.add("st_user");
   }
 
   /**
@@ -147,11 +191,11 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
    * a disjonction operator.
    */
   private StringBuilder getFixedQuery() {
-    if (query.length() > 0 && !query.toString().endsWith(" and ")
-            && !query.toString().endsWith(" or ")) {
-      query.append(" and ");
+    if (filter.length() > 0 && !filter.toString().endsWith(" and ")
+            && !filter.toString().endsWith(" or ")) {
+      filter.append(" and ");
     }
-    return query;
+    return filter;
   }
 
   // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
@@ -190,5 +234,32 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public SearchCriteria onResourceId(String resourceId) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public SearchCriteria onPagination(PaginationPage page) {
+    if (filter.toString().endsWith(" and ")) {
+      filter.delete(filter.toString().lastIndexOf(" and "), filter.length());
+    } else if  (filter.toString().endsWith(" or ")) {
+      filter.delete(filter.toString().lastIndexOf(" or "), filter.length());
+    }
+    this.page = page;
+    return this;
+  }
+
+  /**
+   * Gets the criterion on the pagination page to fetch.
+   * @return a pagination page.
+   */
+  public PaginationPage getPagination() {
+    return page;
+  }
+
+  /**
+   * Is the pagination criterion set?
+   * @return true if a criterion on the pagination about user profiles is set, false otherwise.
+   */
+  public boolean isPaginationSet() {
+    return page != null;
   }
 }

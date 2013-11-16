@@ -1,33 +1,27 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.templatedesigner.control;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
@@ -37,12 +31,28 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.templatedesigner.model.TemplateDesignerException;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.security.ContentEncryptionService;
+import com.silverpeas.util.security.ContentEncryptionServiceFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.util.crypto.CryptoException;
 
 public class TemplateDesignerSessionController extends AbstractComponentSessionController {
 
@@ -54,9 +64,11 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private final static int SCOPE_SEARCH = 3;
   private final static int SCOPE_SEARCHRESULT = 4;
   private List<String> languages = null;
+  private final AdminController adminController;
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -64,8 +76,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   public TemplateDesignerSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.templatedesigner.multilang.templateDesignerBundle",
-        "com.silverpeas.templatedesigner.settings.templateDesignerIcons");
+        "org.silverpeas.templatedesigner.multilang.templateDesignerBundle",
+        "org.silverpeas.templatedesigner.settings.templateDesignerIcons");
+    adminController = new AdminController(getUserId());
   }
 
   public List<String> getLanguages() {
@@ -89,8 +102,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public PublicationTemplate reloadCurrentTemplate()
-      throws TemplateDesignerException {
+  public PublicationTemplate reloadCurrentTemplate() throws TemplateDesignerException {
     return setTemplate(template.getFileName());
   }
 
@@ -123,15 +135,38 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void createTemplate(PublicationTemplate template)
-      throws TemplateDesignerException {
+      throws TemplateDesignerException, CryptoException {
     this.template = (PublicationTemplateImpl) template;
-
     String fileName = string2fileName(template.getName());
+
+    String templateDirPath = PublicationTemplateManager.makePath(
+        PublicationTemplateManager.templateDir, fileName);
+    File templateDir = new File(templateDirPath);
+    if (!templateDir.exists()) {
+      try {
+        FileFolderManager.createFolder(templateDir);
+      } catch (UtilException e) {
+        throw new TemplateDesignerException(
+            getClass().getSimpleName() + ".createTemplate",
+            SilverpeasException.ERROR, "root.EX_NO_MESSAGE", e);
+      }
+    }
 
     this.template.setFileName(fileName + ".xml");
     this.template.setDataFileName(fileName + File.separator + "data.xml");
-    this.template.setViewFileName(fileName + File.separator + "view.xml");
-    this.template.setUpdateFileName(fileName + File.separator + "update.xml");
+
+    String viewFileName = "view.xml";
+    if (this.template.isViewLayerDefined()) {
+      viewFileName = "view.html";
+    }
+    this.template.setViewFileName(fileName + File.separator + viewFileName);
+
+    String updateFileName = "update.xml";
+    if (this.template.isUpdateLayerDefined()) {
+      updateFileName = "update.html";
+    }
+    this.template.setUpdateFileName(fileName + File.separator + updateFileName);
+
     this.template.setSearchResultFileName(fileName + File.separator + "searchresult.xml");
     if (template.isSearchable()) {
       this.template.setSearchFileName(fileName + File.separator + "search.xml");
@@ -175,18 +210,40 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void updateTemplate(PublicationTemplateImpl updatedTemplate)
-      throws TemplateDesignerException {
+      throws TemplateDesignerException, CryptoException {
     this.template.setName(updatedTemplate.getName());
     this.template.setDescription(updatedTemplate.getDescription());
     this.template.setThumbnail(updatedTemplate.getThumbnail());
     this.template.setVisible(updatedTemplate.isVisible());
+    this.template.setDataEncrypted(updatedTemplate.isDataEncrypted());
+    this.template.setViewLayerFileName(updatedTemplate.getViewLayerFileName());
+    this.template.setViewLayerAction(updatedTemplate.getViewLayerAction());
+    this.template.setUpdateLayerFileName(updatedTemplate.getUpdateLayerFileName());
+    this.template.setUpdateLayerAction(updatedTemplate.getUpdateLayerAction());
+
+    String subdir = getSubdir(this.template.getFileName());
+
+    if (this.template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+      this.template.setViewFileName(subdir + File.separator + "view.html");
+    } else if (updatedTemplate.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+      this.template.setViewFileName(subdir + File.separator + "view.xml");
+    }
+
+    if (this.template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+      this.template.setUpdateFileName(subdir + File.separator + "update.html");
+    } else if (updatedTemplate.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+      this.template.setUpdateFileName(subdir + File.separator + "update.xml");
+    }
 
     if (updatedTemplate.isSearchable()) {
-      this.template.setSearchFileName(getSubdir(template.getFileName())
-          + File.separator + "search.xml");
+      this.template.setSearchFileName(subdir + File.separator + "search.xml");
     } else {
       this.template.setSearchFileName(null);
     }
+
+    this.template.setSpaces(updatedTemplate.getSpaces());
+    this.template.setApplications(updatedTemplate.getApplications());
+    this.template.setInstances(updatedTemplate.getInstances());
 
     updateInProgress = true;
 
@@ -194,7 +251,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   private String getSubdir(String fileName) {
-    return fileName.substring(0, fileName.indexOf("."));
+    return FilenameUtils.getBaseName(fileName);
   }
 
   public void addField(FieldTemplate field) throws TemplateDesignerException {
@@ -307,7 +364,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     return recordTemplate;
   }
 
-  public void saveTemplate() throws TemplateDesignerException {
+  public void saveTemplate() throws TemplateDesignerException, CryptoException {
     saveTemplateHeader();
     saveTemplateFields(true);
   }
@@ -363,10 +420,34 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
   }
 
-  private void saveTemplateHeader() throws TemplateDesignerException {
+  private void saveTemplateHeader() throws TemplateDesignerException, CryptoException {
     try {
       // Save main xml File
-      getPublicationTemplateManager().savePublicationTemplate(template);
+      try {
+        getPublicationTemplateManager().savePublicationTemplate(template);
+      } catch (CryptoException e) {
+        // reload current template as it was before saving
+        reloadCurrentTemplate();
+        throw e;
+      }
+
+      String dir =
+          PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir,
+          getSubdir(template.getFileName()));
+
+      if (template.isViewLayerDefined() && template.getViewLayerAction()
+          == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+        saveLayer(template.getViewLayerFileName(), dir);
+      } else if (template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+        removeLayer(new File(dir, "view.html"));
+      }
+
+      if (template.isUpdateLayerDefined() && template.getUpdateLayerAction()
+          == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+        saveLayer(template.getUpdateLayerFileName(), dir);
+      } else if (template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+        removeLayer(new File(dir, "update.html"));
+      }
 
       // reset caches partially
       getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
@@ -375,6 +456,32 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           "TemplateDesignerSessionController.saveTemplate",
           SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
           "template = " + template.getName(), e);
+    }
+  }
+
+  private void saveLayer(String filePath, String dir) throws PublicationTemplateException {
+    try {
+      File file = new File(dir, FilenameUtils.getName(filePath));
+      if (file != null && file.exists()) {
+        file.delete();
+      }
+      FileUtils.moveFileToDirectory(new File(filePath), new File(dir), false);
+    } catch (IOException ioe) {
+      throw new PublicationTemplateException(
+          "PublicationTemplateImpl.saveLayer()",
+          "form.EX_ERR_CANT_SAVE_LAYER",
+          "Publication Template FileName : " + filePath, ioe);
+    }
+  }
+
+  private void removeLayer(File file) throws PublicationTemplateException {
+    try {
+      FileUtils.forceDelete(file);
+    } catch (IOException ioe) {
+      throw new PublicationTemplateException(
+          "PublicationTemplateImpl.removeLayer()",
+          "form.EX_ERR_CANT_REMOVE_LAYER",
+          "Publication Template FileName : " + file.getAbsolutePath(), ioe);
     }
   }
 
@@ -388,6 +495,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   /**
    * Gets a PublicationTemplateManager instance.
+   *
    * @return a PublicationTemplateManager instance.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
@@ -396,11 +504,38 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   /**
    * Is the specified field should be a read only one in view?
+   *
    * @param fieldName the name of the field.
    * @return true if the field shlould be read only when it is only printed as such and no in a form
    * for change.
    */
   private boolean isAReadOnlyField(final String fieldName) {
     return Arrays.asList("wysiwyg", "url", "image", "file", "video").contains(fieldName);
+  }
+
+  public List<LocalizedComponent> getComponentsUsingForms() {
+    Map<String, WAComponent> components = adminController.getAllComponents();
+    String[] names = {"kmelia", "kmax", "classifieds", "gallery", "formsOnline",
+      "resourcesManager", "webPages", "yellowpages"};
+    List<LocalizedComponent> result = new ArrayList<LocalizedComponent>();
+    for (String name : names) {
+      WAComponent component = components.get(name);
+      result.add(new LocalizedComponent(component, getLanguage()));
+    }
+    Collections.sort(result, new Comparator<LocalizedComponent>() {
+      @Override
+      public int compare(LocalizedComponent o1, LocalizedComponent o2) {
+        String valcomp1 = o1.getSuite() + o1.getLabel();
+        String valcomp2 = o2.getSuite() + o2.getLabel();
+        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
+      }
+    });
+    return result;
+  }
+
+  public boolean isEncryptionAvailable() {
+    ContentEncryptionService encryptionService =
+        ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
+    return encryptionService.isCipherKeyDefined();
   }
 }

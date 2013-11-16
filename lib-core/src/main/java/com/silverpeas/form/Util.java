@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,9 +36,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class Util {
 
   private static final ResourceLocator formIcons = new ResourceLocator(
-      "com.silverpeas.form.settings.formIcons", "");
+      "org.silverpeas.form.settings.formIcons", "");
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.form.settings.form", "");
+      "org.silverpeas.form.settings.form", "");
   private static final String path = URLManager.getApplicationURL();
   private static ResourceLocator generalMessage;
   private static ResourceLocator message;

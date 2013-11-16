@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationUser.servlets;
 
 import com.silverpeas.util.ArrayUtil;
@@ -32,23 +28,22 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
  * <p/>
  * @author
  */
-public class NotificationUserRequestRouter extends
-    ComponentRequestRouter<NotificationUserSessionController> {
+public class NotificationUserRequestRouter extends ComponentRequestRouter<NotificationUserSessionController> {
 
   private static final long serialVersionUID = -5858231857279380747L;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -73,6 +68,7 @@ public class NotificationUserRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param nuSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -89,7 +85,7 @@ public class NotificationUserRequestRouter extends
     // les id des ses de jsp en jsp en soumettant un formulaire.
     // En effet, la notification peut être utilisée "en même temps" que le
     // client utilises userPanelPeas. Cela mélange les objets selectionnée.
-    String destination = "";
+    String destination;
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);
 
@@ -130,7 +126,7 @@ public class NotificationUserRequestRouter extends
         nuSC.setTxtMessage(txtMessage);
         nuSC.setNotificationId(notificationId);
         nuSC.setPriorityId(priorityId);
-        StringBuffer paramValue = new StringBuffer("?popupMode=").append(popupMode);
+        StringBuilder paramValue = new StringBuilder("?popupMode=").append(popupMode);
         // initialisation des paramètres d'initialisations de UserPanel/UserPanelPeas
         destination = nuSC.initSelectionPeas(idUsers, idGroups, paramValue.toString());
       } else if (function.startsWith("GetTarget")) {
@@ -145,7 +141,7 @@ public class NotificationUserRequestRouter extends
         request.setAttribute("notificationId", nuSC.getNotificationId());
         request.setAttribute("priorityId", nuSC.getPriorityId());
 
-        StringBuffer paramValue = new StringBuffer("?popupMode=").append(popupMode);
+        StringBuilder paramValue = new StringBuilder("?popupMode=").append(popupMode);
         request.setAttribute("SelectedIdUsers", selectedIdUsers);
         request.setAttribute("SelectedIdGroups", selectedIdGroups);
         destination = "/notificationUser/jsp/notificationSender.jsp" + paramValue.toString();

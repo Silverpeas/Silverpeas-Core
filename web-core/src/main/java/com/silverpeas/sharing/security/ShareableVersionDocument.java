@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
+* Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -23,20 +23,20 @@
 */
 package com.silverpeas.sharing.security;
 
+import org.silverpeas.attachment.model.HistorisedDocument;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.versioning.model.Document;
 
 /**
 * Versioned document being accessed through some shared object.
 */
-public class ShareableVersionDocument extends ShareableResource<Document> {
-  public ShareableVersionDocument(String token, Document accessedObject) {
+public class ShareableVersionDocument extends ShareableResource<HistorisedDocument> {
+  public ShareableVersionDocument(String token, HistorisedDocument accessedObject) {
     super(token, accessedObject);
   }
 
   @Override
   public String getName() {
-    return accessedObject.getName();
+    return accessedObject.getFilename();
   }
 
   @Override

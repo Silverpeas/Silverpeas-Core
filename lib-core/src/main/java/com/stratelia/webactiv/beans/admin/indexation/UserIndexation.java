@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -66,7 +66,7 @@ public class UserIndexation {
         indexEntry.addField("FirstName", user.getFirstName());
         indexEntry.addField("LastName", user.getLastName());
         indexEntry.addField("DomainId", user.getDomainId());
-        indexEntry.addField("AccessLevel", user.getAccessLevel());
+        indexEntry.addField("AccessLevel", user.getAccessLevel().code());
 
         // index extra informations
         String[] propertyNames = user.getPropertiesNames();

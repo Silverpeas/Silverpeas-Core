@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,17 +24,18 @@
 
 package com.silverpeas.accesscontrol;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Check the access to a node for a user.
@@ -44,7 +45,7 @@ import javax.inject.Named;
 public class NodeAccessController implements AccessController<NodePK> {
 
   @Inject
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public NodeAccessController() {
   }
@@ -53,7 +54,7 @@ public class NodeAccessController implements AccessController<NodePK> {
    * For tests only.
    * @param controller
    */
-  NodeAccessController(OrganizationController controller) {
+  NodeAccessController(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -71,25 +72,23 @@ public class NodeAccessController implements AccessController<NodePK> {
       if (!node.haveRights()) {
         return true;
       }
-      return getOrganizationController().isObjectAvailable(node.getRightsDependsOn(),
+      return getOrganisationController().isObjectAvailable(node.getRightsDependsOn(),
           ObjectType.NODE, nodePK.getInstanceId(), userId);
     }
     return false;
   }
 
   public NodeBm getNodeBm() throws Exception {
-    NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-        NodeBmHome.class);
-    return nodeBmHome.create();
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 
   /**
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (controller == null) {
-      controller = new OrganizationController();
+      controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
   }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -149,6 +149,22 @@
             <short-title>MyBookmarksPortlet shortTitle</short-title>
         </portlet-info>
  </portlet>
+
+  <portlet>
+    <description>Responsables de l'espace</description>
+    <portlet-name>SpaceResponsiblesPortlet</portlet-name>
+    <display-name>SpaceResponsiblesPortlet</display-name>
+    <portlet-class>com.silverpeas.portlets.SpaceResponsiblesPortlet</portlet-class>
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>SpaceResponsiblesPortlet title</title>
+      <short-title>SpaceResponsiblesPortlet shortTitle</short-title>
+    </portlet-info>
+  </portlet>
  
  <portlet>
         <description>Mes taches</description>
@@ -167,7 +183,7 @@
  </portlet>
  
  <portlet>
-        <description>Actualit�s</description>
+        <description>Actualites</description>
         <portlet-name>QuickInfosPortlet</portlet-name>
         <display-name>QuickInfosPortlet</display-name>
         <portlet-class>com.silverpeas.portlets.QuickInfosPortlet</portlet-class>
@@ -183,7 +199,7 @@
  </portlet>
  
  <portlet>
-        <description>Mes fichiers r�serv�s</description>
+        <description>Mes fichiers reserves</description>
         <portlet-name>MyCheckOutFiles</portlet-name>
         <display-name>MyCheckOutFiles</display-name>
         <portlet-class>com.silverpeas.portlets.MyCheckOutFiles</portlet-class>
@@ -234,6 +250,39 @@
                 <value>http://www.silverpeas.com</value>
             </preference>
         </portlet-preferences>
+ </portlet>
+ 
+ <portlet>
+        <description>Mes brouillons</description>
+        <portlet-name>MyDraftsPortlet</portlet-name>
+        <display-name>MyDraftsPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyDrafts</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Drafts of connected user</title>
+            <short-title>My drafts</short-title>
+        </portlet-info>
+ </portlet>
+ 
+  <portlet>
+        <description>Dernieres publications consultees</description>
+        <portlet-name>MyLastPubliReadPortlet</portlet-name>
+        <display-name>MyLastPubliReadPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyLastPubliReadPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyLastPubliReadPortlet title</title>
+            <short-title>MyLastPubliReadPortlet shortTitle</short-title>
+        </portlet-info>
  </portlet>
   
 </portlet-app>

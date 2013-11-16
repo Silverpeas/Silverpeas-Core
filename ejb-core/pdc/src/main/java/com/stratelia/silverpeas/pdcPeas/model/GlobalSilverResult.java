@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -48,6 +48,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private boolean viewable = false;
   private boolean previewable = false;
   private String attachmentId = null;
+  private String attachmentFilename = null;
   private boolean versioned = false;
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
@@ -60,7 +61,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
    * List of all linked attachment in wysiwyg content
    */
   private List<String> embeddedFileIds;
-  
+
   private Map<String, String> formFieldsForFacets;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
@@ -83,6 +84,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setScore(mie.getScore());
     this.embeddedFileIds = mie.getEmbeddedFileIds();
     this.formFieldsForFacets = mie.getXMLFormFieldsForFacets();
+    this.attachmentFilename = mie.getFilename();
 
     if (mie.getThumbnail() != null) {
       File image;
@@ -106,7 +108,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
         image = new File(filePath);
       } else {
         // case of an uploaded image
-        super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
+        super.setThumbnailURL(FileServerUtils.getUrl(mie.getComponent(),
             mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
 
         String[] directory = new String[1];
@@ -228,7 +230,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public Map<String, String> getFormFieldsForFacets() {
     return formFieldsForFacets;
   }
-  
+
   public void setViewable(boolean viewable) {
     this.viewable = viewable;
   }
@@ -244,13 +246,17 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public boolean isPreviewable() {
     return previewable;
   }
-  
+
   public void setAttachmentId(String attachmentId) {
     this.attachmentId = attachmentId;
   }
 
   public String getAttachmentId() {
     return attachmentId;
+  }
+  
+  public String getAttachmentFilename() {
+    return attachmentFilename;
   }
 
   public void setVersioned(boolean versioned) {
@@ -260,7 +266,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public boolean isVersioned() {
     return versioned;
   }
-  
+
   public boolean isAttachment() {
     return StringUtil.isDefined(getAttachmentId());
   }

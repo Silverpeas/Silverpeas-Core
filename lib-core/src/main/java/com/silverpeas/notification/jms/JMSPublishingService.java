@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,20 +24,23 @@
 
 package com.silverpeas.notification.jms;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+import javax.jms.TopicPublisher;
+
 import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.notification.jms.access.JMSAccessObject;
 import com.silverpeas.util.ExecutionAttempts;
+
 import static com.silverpeas.util.ExecutionAttempts.retry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.TopicPublisher;
 
 /**
  * Service for publishing an event by using a JMS system. This service is managed by the IoC

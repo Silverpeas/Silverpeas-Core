@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
+* Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
 * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -172,7 +172,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
     String type = request.getParameter("type");
     if (!StringUtil.isDefined(request.getParameter("continuous"))) {
       String date = request.getParameter("endDate");
-      Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
+      Date endDate = DateUtil.getEndOfDay(DateUtil.stringToDate(date, fileSharingSC.getLanguage()));
       int maxAccessNb = Integer.parseInt(request.getParameter("nbAccessMax"));
       ticket = TicketFactory.aTicket(fileId, componentId, creator.getId(), new Date(), endDate,
               maxAccessNb, type);
@@ -188,7 +188,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
     Ticket ticket = fileSharingSC.getTicket(token);
     if (!StringUtil.isDefined(request.getParameter("continuous"))) {
       String date = request.getParameter("endDate");
-      Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
+      Date endDate = DateUtil.getEndOfDay(DateUtil.stringToDate(date, fileSharingSC.getLanguage()));
       int maxAccessNb = Integer.parseInt(request.getParameter("nbAccessMax"));
       ticket.setEndDate(endDate);
       ticket.setNbAccessMax(maxAccessNb);

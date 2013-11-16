@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,20 +24,22 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import java.util.Set;
-
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.util.Set;
 
 abstract public class BrowsePanelProvider extends PanelProvider {
 
   protected CacheManager cacheManager = null;
   protected ResourceLocator resource = null;
-  protected OrganizationController organizationCOntroller = new OrganizationController();
+  protected OrganisationController organizationCOntroller = OrganisationControllerFactory
+      .getOrganisationController();
   protected String parentGroupId = "";
   protected String parentGroupName = "";
   protected CacheType m_what;

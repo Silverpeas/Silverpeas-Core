@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@ package com.silverpeas.profile.web;
 
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -89,13 +90,19 @@ public final class ProfileResourceBaseURIs {
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
-  
-  public static URI computeUsersUriOfGroupById(String groupId) {
+
+  public static URI computeUsersUriOfGroupById(final URI groupUri, String groupId) {
     try {
-      return new URI(USERS_BASE_URI + "?group=" + groupId);
+      return new URI(getUsersBaseUriFromGroupUri(groupUri) + "?group=" + groupId);
     } catch (URISyntaxException ex) {
       Logger.getLogger(ProfileResourceBaseURIs.class.getName()).log(Level.SEVERE, null, ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
+  }
+
+  private static String getUsersBaseUriFromGroupUri(URI groupUri) {
+    String groupUriAsString = groupUri.toString();
+    return groupUriAsString.substring(0, groupUriAsString.indexOf(GROUPS_BASE_URI)) +
+        USERS_BASE_URI;
   }
 }

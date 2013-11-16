@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,7 @@ import com.silverpeas.notification.delayed.model.DelayedNotificationData;
  * @author Yohann Chastagnier
  */
 public interface DelayedNotificationRepository extends
-    JpaRepository<DelayedNotificationData, Integer>, DelayedNotificationRepositoryCustom {
+    JpaRepository<DelayedNotificationData, Long>, DelayedNotificationRepositoryCustom {
 
   @Query("select distinct userId from DelayedNotificationData where channel in (:channels)")
   List<Integer> findAllUsersToBeNotified(@Param("channels") Collection<Integer> aimedChannels);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,10 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.comparator.NameFileComparator;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,20 +81,13 @@ public class FileFolderManager {
    */
   public static Collection<File> getAllFile(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
-
     File directory = new File(chemin);
     if (directory.isDirectory()) {
-      File[] list = directory.listFiles();
-      for (File file : list) {
-        if (file.isFile()) {
-          resultat.add(file);
-        }
-      }
+       resultat = new ArrayList<File>(FileUtils.listFiles(directory, null, false));
+       Collections.sort(resultat, new NameFileComparator(IOCase.INSENSITIVE));
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllFile",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllFile",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
+      SilverTrace.error("util", "FileFolderManager.getAllFile", "util.EX_NO_CHEMIN_REPOS", chemin);
+      throw new UtilException("FileFolderManager.getAllFile", "util.EX_NO_CHEMIN_REPOS", chemin);
     }
     return resultat;
   }

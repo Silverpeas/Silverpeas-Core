@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -44,16 +44,13 @@ public enum NotifMessageType {
   }
 
   public static NotifMessageType decode(final Integer id) {
-    NotifMessageType result = null;
     if (id != null) {
-      if (id.intValue() == NORMAL.id) {
-        result = NORMAL;
-      } else if (id.intValue() == URGENT.id) {
-        result = URGENT;
-      } else if (id.intValue() == ERROR.id) {
-        result = ERROR;
+      for (NotifMessageType notifMessageType : NotifMessageType.values()) {
+        if (id == notifMessageType.id) {
+          return notifMessageType;
+        }
       }
     }
-    return result;
+    return null;
   }
 }

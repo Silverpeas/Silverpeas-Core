@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -35,6 +35,7 @@ public class SessionInfo {
   private long openingTimestamp;
   private long lastAccessTimestamp;
   private Map<String, Object> attributes = new HashMap<String, Object>();
+  private long idleTimestamp;
 
   /**
    * Constructs a new instance about a given opened user session.
@@ -46,6 +47,7 @@ public class SessionInfo {
     this.sessionId = sessionId;
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
+    this.idleTimestamp = 0;
   }
 
   /**
@@ -85,6 +87,22 @@ public class SessionInfo {
   }
 
   /**
+   * Gets the last duration of its idle time.
+   * @return the session alive timestamp.
+   */
+  public long getLastIdleDuration() {
+    return System.currentTimeMillis() - idleTimestamp;
+  }
+
+  /**
+   * Sets this session as currently idle. A session is idle if it is not used since a given time
+   * but it is still in alive.
+   */
+  public void setAsIdle() {
+    idleTimestamp = System.currentTimeMillis();
+  }
+
+  /**
    * Gets the unique identifier of the session.
    *
    * @return the session identifier.
@@ -107,6 +125,7 @@ public class SessionInfo {
    */
   public void updateLastAccess() {
     this.lastAccessTimestamp = System.currentTimeMillis();
+    this.idleTimestamp = 0;
   }
 
   /**

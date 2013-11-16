@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,12 +24,15 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
-import static com.silverpeas.util.StringUtil.*;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.jsp.JspException;
+
+import static com.silverpeas.util.StringUtil.getBooleanValue;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A tag for displaying an edition form for creating a new comment.
@@ -75,8 +78,8 @@ public class CommentEditionTag extends CommentWidget {
    * @return the rendering instructions.
    */
   protected String getCommentEditionScript() {
-    OrganizationController controller = new OrganizationController();
-    UserDetail user = controller.getUserDetail(getUserId());
+    UserDetail user = OrganisationControllerFactory
+        .getOrganisationController().getUserDetail(getUserId());
     String edition = "";
     if (!user.isAccessGuest() && !user.isAnonymous()) {
       edition =

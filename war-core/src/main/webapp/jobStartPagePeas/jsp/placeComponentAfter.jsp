@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -76,7 +76,7 @@ function B_VALIDER_ONCLICK() {
                             <%
                                 for (int i = 0; i < brothers.length; i++)
                                 {
-                                	out.println("<OPTION value=\"" + brothers[i].getId() + "\">" +  brothers[i].getLabel() + "</OPTION>");
+					out.println("<OPTION value=\"" + brothers[i].getId() + "\">" +  EncodeHelper.javaStringToHtmlString(brothers[i].getLabel()) + "</OPTION>");
                                 }
                             %>
                             <OPTION value="-1" selected><%=resource.getString("JSPP.PlaceLast")%></OPTION>

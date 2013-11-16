@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,6 +42,7 @@ import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,13 +61,7 @@ public class XmlSearchForm extends AbstractForm {
   public XmlSearchForm(RecordTemplate template) throws FormException {
     super(template);
     if (template != null) {
-      FieldTemplate fields[] = template.getFieldTemplates();
-      int size = fields.length;
-      FieldTemplate fieldTemplate;
-      for (int i = 0; i < size; i++) {
-        fieldTemplate = fields[i];
-        this.fieldTemplates.add(fieldTemplate);
-      }
+      Collections.addAll(this.fieldTemplates, template.getFieldTemplates());
     }
   }
 

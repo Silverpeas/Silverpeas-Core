@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -45,7 +45,7 @@ browseBar.setComponentName(resource.getString("templateDesigner.templateList"), 
 browseBar.setPath(resource.getString("templateDesigner.template"));
 
 TabbedPane tabbedPane = gef.getTabbedPane();
-tabbedPane.addTab(resource.getString("GML.preview"), "#", true);
+tabbedPane.addTab(resource.getString("templateDesigner.preview"), "#", true);
 tabbedPane.addTab(resource.getString("templateDesigner.template"), "EditTemplate", false);
 tabbedPane.addTab(resource.getString("templateDesigner.fields"), "ViewFields", false);
 

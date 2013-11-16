@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -65,7 +65,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   /**
    * Builds a GenericFieldTemplate
    */
-  public GenericFieldTemplate() throws FormException {
+  public GenericFieldTemplate() {
   }
 
   /**
@@ -451,11 +451,11 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   public void setTemplateName(String templateName) {
     this.templateName = templateName;
   }
-  
+
   public boolean isUsedAsFacet() {
     return usedAsFacet;
   }
-  
+
   public void setUsedAsFacet(boolean usedAsFacet) {
     this.usedAsFacet = usedAsFacet;
   }

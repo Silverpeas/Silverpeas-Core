@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,43 +25,50 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-
-<%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.agenda.model.CalendarImportSettings"%>
 
 <%@ include file="checkAgenda.jsp.inc" %>
 
 <%
-	CalendarImportSettings importSettings = (CalendarImportSettings) request.getAttribute("ImportSettings");
-	boolean doSynchro = ( (importSettings!=null) && (importSettings.getHostName().equals( request.getRemoteHost() ) ) );
-	boolean doSynchroNotes = ( doSynchro && (importSettings.getSynchroType() == CalendarImportSettings.TYPE_NOTES_IMPORT) );
-	boolean doSynchroOutlook = ( doSynchro && (importSettings.getSynchroType() == CalendarImportSettings.TYPE_OUTLOOK_IMPORT) );
+  CalendarImportSettings importSettings = (CalendarImportSettings) request.getAttribute(
+        "ImportSettings");
+    boolean doSynchro = (importSettings != null && importSettings.isOutlookSynchro(request
+        .getRemoteHost()));
+    pageContext.setAttribute("doSynchro", doSynchro);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<% if ( doSynchro ) {%>
-	<meta http-equiv="refresh" content="<%=importSettings.getSynchroDelay() * 60%>; URL=<%=m_context + "/Ragenda/jsp/importCalendar"%>"/>
-<% } %>
-<title></title>
-</head>
+  <head>
+    <c:if test="${pageScope.doSynchro}">
+      <meta http-equiv="refresh" content="<%=importSettings.getSynchroDelay() * 60%>; URL=<c:url value="/Ragenda/jsp/importCalendar" />"/>
+    </c:if>
+      <title>Synchro <c:choose><c:when test="${pageScope.doSynchro}">active</c:when><c:otherwise>inactive</c:otherwise></c:choose></title>
+      <script type="text/javascript" src='<c:url value="/util/javaScript/outlook_applet.js" />' ></script>
+  </head>
 
-<body id="agenda">
-<%
-	if ( doSynchroOutlook ) {%>
-
-    	<applet code="com.silverpeas.importCalendar.importOutlook.AppletImportEvents.class" archive="<%=request.getScheme()%>://<%=request.getServerName()%>:<%=request.getServerPort()%>/weblib/applets/importOutlook.jar" width="1" height="1">
-    		<param name="SESSIONID" value="<%=session.getId()%>"/>
-    		<param name="SERVLETURL" value="<%=request.getScheme()%>://<%=request.getServerName()%>:<%=request.getServerPort()+m_context%>/ImportCalendar/"/>
-			Votre navigateur ne supporte pas les applets.
-        </applet>
-<% } %>
-</body>
+  <body id="agenda">
+    <c:if test="${pageScope.doSynchro}">
+      <c:set var="baseURL" value="${fn:replace(pageContext.request.requestURL, pageContext.request.requestURI, pageContext.request.contextPath)}" />
+      <div id="outlook"> </div>
+      <script language="JavaScript" type="text/javascript">
+        try {
+          loadApplet('outlook', '<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${pageContext.session.id}"/>', '${baseURL}/ImportCalendar/', 'Can\'t display applet');
+        } catch (e) {
+          alert(e);
+        } 
+      </script>
+    </c:if>
+  </body>
 </html>

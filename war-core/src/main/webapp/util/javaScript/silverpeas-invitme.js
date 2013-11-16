@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -141,16 +141,21 @@
   }
 })( jQuery );
 
-$(function() {
-  $('.invitation').each(function(i, element) {
-    var userParams = $(element).attr('rel');
+/**
+ * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+ * javascript plugin.
+ */
+jQuery(document).ready(function() {
+  jQuery('.invitation').each(function(i, element) {
+    var userParams = jQuery(element).attr('rel');
     if (userParams != null && userParams.length > 1) {
       userParams = userParams.split(',');
-      if ($(element).data('invitMe') == null)
-        $(element).invitMe({
-          id: userParams[0],
-          fullName: userParams[1]
+      if (jQuery(element).data('invitMe') == null) {
+        jQuery(element).invitMe({
+          id : userParams[0],
+          fullName : userParams[1]
         });
+      }
     }
-  });
+  })
 });

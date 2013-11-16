@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,9 +42,11 @@ import com.silverpeas.portlets.portal.DesktopMessages;
 import com.silverpeas.portlets.portal.PortletWindowDataImpl;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import static com.silverpeas.util.StringUtil.*;
 
@@ -72,10 +74,10 @@ public class AdminServlet extends HttpServlet {
     String userId = getUserId(request);
     String language = getLanguage(request);
 
-    DesktopMessages.init(request);
+    DesktopMessages.init(language);
     response.setContentType("text/html;charset=UTF-8");
     HttpSession session = AdminUtils.getClearedSession(request);
-    PortletAdminData portletAdminData = null;
+    PortletAdminData portletAdminData;
     String portletsRenderer = "/portlet/jsp/jsr/admin.jsp";
     try {
       portletAdminData = PortletAdminDataFactory.getPortletAdminData(elementId);
@@ -86,6 +88,11 @@ public class AdminServlet extends HttpServlet {
 
     if (isParameterPresent(request, AdminConstants.CREATE_PORTLET_WINDOW_SUBMIT)) {
       createPortletWindow(request, portletAdminData, session);
+      if (isDefined(spaceId)) {
+        portletsRenderer = "/dt?"+WindowInvokerConstants.DRIVER_SPACEID+"="+spaceId+"&"+WindowInvokerConstants.DRIVER_ROLE+"=Admin";
+      } else {
+        portletsRenderer = "/dt";
+      }
     } else if (isParameterPresent(request, AdminConstants.MODIFY_PORTLET_WINDOW_SUBMIT)) {
       updatePortletWindow(request, portletAdminData, session);
     } else if (isParameterPresent(request, AdminConstants.MOVE_PORTLET_WINDOW)) {
@@ -112,7 +119,7 @@ public class AdminServlet extends HttpServlet {
   private boolean isParameterPresent(HttpServletRequest request,
       String parameter) {
     String name = request.getParameter(parameter);
-    return (name == null ? false : true);
+    return (name != null);
   }
 
   private void setSelectedPortletWindow(HttpSession session,
@@ -133,8 +140,7 @@ public class AdminServlet extends HttpServlet {
     }
   }
 
-  private String getUserIdOrSpaceId(HttpServletRequest request,
-      boolean getSpaceIdOnly) {
+  private String getUserIdOrSpaceId(HttpServletRequest request, boolean getSpaceIdOnly) {
     String spaceId = getSpaceId(request);
 
     if (getSpaceIdOnly) {
@@ -179,6 +185,14 @@ public class AdminServlet extends HttpServlet {
       if (!spaceId.startsWith("space")) {
         spaceId = "space" + spaceId;
       }
+
+      // If the home page of the space is the standard one, then spaceId is unset
+      SpaceInst spaceStruct =
+          OrganisationControllerFactory.getOrganisationController()
+              .getSpaceInstById(spaceId.replace("space", ""));
+      if (spaceStruct == null || spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
+        spaceId = null;
+      }
     }
     return spaceId;
   }
@@ -190,10 +204,7 @@ public class AdminServlet extends HttpServlet {
 
   private void createPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
       HttpSession session) {
-    // String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_NAME);
-    Date timestamp = new Date();
-    String portletWindowName = String.valueOf(timestamp.getTime());
-    timestamp = null;
+    String portletWindowName = String.valueOf(new Date().getTime());
 
     String portletName = request.getParameter(AdminConstants.PORTLET_LIST);
     String title = request.getParameter(AdminConstants.PORTLET_WINDOW_TITLE);
@@ -262,12 +273,7 @@ public class AdminServlet extends HttpServlet {
     setSelectedPortletWindow(session, portletWindowName);
     String width = request.getParameter(AdminConstants.WIDTH_LIST);
     String visibleValue = request.getParameter(AdminConstants.VISIBLE_LIST);
-    boolean visible;
-    if (PortletRegistryConstants.VISIBLE_TRUE.equals(visibleValue)) {
-      visible = true;
-    } else {
-      visible = false;
-    }
+    boolean visible = PortletRegistryConstants.VISIBLE_TRUE.equals(visibleValue);
     if (portletWindowName == null) {
       String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
       session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);

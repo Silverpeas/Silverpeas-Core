@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,11 +38,19 @@ function resizeFrame() {
     document.body.scroll = "no";
     document.getElementById('space2Expand').height = '0';
     document.images['expandReduce'].src = "icons/silverpeasV5/reductTopBar.gif";
+    
+    var bannerHeight = "115";
+    var footerHeight = "26";
+    try {
+    	bannerHeight = getBannerHeight();
+    	footerHeight = getFooterHeight();
+    } catch (e) {
+    }
 
     if (displayPDCFrame()) {
-      parent.setframevalue("rows", "115,100%,26,*,*,*");
+      parent.setframevalue("rows", bannerHeight+",100%,"+footerHeight+",*,*,*");
     } else {
-      parent.setframevalue("rows", "115,100%,26,*,*");
+      parent.setframevalue("rows", bannerHeight+",100%,"+footerHeight+",*,*");
     }
   }
   document.images['expandReduce'].blur();

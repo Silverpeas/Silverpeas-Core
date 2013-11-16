@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,18 +24,21 @@
 
 package com.stratelia.webactiv.util.node.control;
 
-import com.silverpeas.node.notification.NodeNotificationService;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import com.stratelia.webactiv.util.node.ejb.NodeDAO;
-import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import com.silverpeas.node.notification.NodeNotificationService;
+
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
+import com.stratelia.webactiv.util.node.control.dao.NodeI18NDAO;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 /**
  * Process of deleting a node. As the deletion of a given node is performed by different parts of

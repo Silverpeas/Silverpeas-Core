@@ -1,36 +1,33 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.attachment.notification;
-
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
 
 import javax.inject.Inject;
 
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.notification.NotificationPublisher;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
 
 /**
  * A service to notify about the events which occurs on attachment. It provides an easy access to
@@ -38,10 +35,11 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  */
 public class AttachmentNotificationService {
 
-  private static AttachmentNotificationService instance = new AttachmentNotificationService();
+  private static final AttachmentNotificationService instance = new AttachmentNotificationService();
 
   /**
    * Gets an instance of the service.
+   *
    * @return an AttachmentNotificationService instance.
    */
   public static AttachmentNotificationService getService() {
@@ -53,11 +51,12 @@ public class AttachmentNotificationService {
 
   /**
    * Notifies the registered beans a given node (with and its children) comes to be deleted.
-   * @param nodes the nodes that are deleted.
+   *
+   * @param attachment the document that is deleted.
    */
-  public void notifyOnDeletionOf(final AttachmentDetail attachment) {
+  public void notifyOnDeletionOf(final SimpleDocument attachment) {
     AttachmentDeletionNotification deletion = new AttachmentDeletionNotification(attachment);
-    publisher.publish(deletion, onTopic(ATTACHMENT_TOPIC.getTopicName()));
+    publisher.publish(deletion, onTopic(ATTACHMENT_TOPIC));
   }
 
   private AttachmentNotificationService() {

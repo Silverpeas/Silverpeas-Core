@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,7 @@
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 
 <!--[if lt IE 8]>
-<style>
+<style type="text/css">
 input{
 	background-color:#FAFAFA;
 	border:1px solid #DAD9D9;
@@ -51,9 +51,8 @@ input{
     margin-left:-10px;
     height:26px;
     line-height:24px;
-    padding:0px 60px;
     display:block;
-    padding:0px;
+    padding:0;
 }
 </style>
 <![endif]-->
@@ -65,10 +64,7 @@ input{
 }
 </style>
 
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.7.1.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.json-2.2.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-include.js"/>"></script>
+<view:includePlugin name="jquery"/>
 
 <script type="text/javascript">
 

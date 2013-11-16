@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,8 +37,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ListSlice;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -76,47 +79,24 @@ public class UserProfileTestResources extends TestResources {
     return users;
   }
 
-  @Deprecated
-  public void whenSearchGroupsThenReturn(final Group[] groups) {
-    OrganizationController mock = getOrganizationControllerMock();
-    String[] groupIds = getGroupIds(groups);
-    when(mock.searchGroupsIds(anyBoolean(), anyString(), any(String[].class), any(Group.class))).
-            thenReturn(groupIds);
-    doAnswer(new Answer<Group[]>() {
-
-      @Override
-      public Group[] answer(InvocationOnMock invocation) throws Throwable {
-        Group[] emptyGroup = new Group[0];
-        String[] passedGroupIds = (String[]) invocation.getArguments()[0];
-        String[] groupIds = getGroupIds(groups);
-        if (passedGroupIds.length == groupIds.length) {
-          if (Arrays.asList(passedGroupIds).containsAll(Arrays.asList(groupIds))) {
-            return groups;
-          }
-        }
-        return emptyGroup;
-      }
-    }).when(mock).getGroups(any(String[].class));
-  }
-
   public void whenSearchGroupsByCriteriaThenReturn(final Group[] groups) {
-    OrganizationController mock = getOrganizationControllerMock();
-    doAnswer(new Answer<Group[]>() {
+    OrganisationController mock = getOrganizationControllerMock();
+    doAnswer(new Answer<ListSlice<Group>>() {
       @Override
-      public Group[] answer(InvocationOnMock invocation) throws Throwable {
-        return groups;
+      public ListSlice<Group> answer(InvocationOnMock invocation) throws Throwable {
+        return new ListSlice<Group>(Arrays.asList(groups));
       }
     }).when(mock).searchGroups(any(GroupsSearchCriteria.class));
   }
 
   public void whenSearchUsersByCriteriaThenReturn(final UserDetailsSearchCriteria criteria,
           final UserDetail[] users) {
-    OrganizationController mock = getOrganizationControllerMock();
-    doAnswer(new Answer<UserDetail[]>() {
+    OrganisationController mock = getOrganizationControllerMock();
+    doAnswer(new Answer<ListSlice<UserDetail>>() {
 
       @Override
-      public UserDetail[] answer(InvocationOnMock invocation) throws Throwable {
-        UserDetail[] emptyUsers = new UserDetail[0];
+      public ListSlice<UserDetail> answer(InvocationOnMock invocation) throws Throwable {
+        ListSlice<UserDetail> emptyUsers = new ListSlice<UserDetail>(0, 0, 0);
         UserDetailsSearchCriteria passedCriteria = (UserDetailsSearchCriteria) invocation.getArguments()[0];
         if (criteria.isCriterionOnComponentInstanceIdSet() && passedCriteria.
                 isCriterionOnComponentInstanceIdSet()) {
@@ -146,6 +126,18 @@ public class UserProfileTestResources extends TestResources {
         } else if ((!criteria.isCriterionOnGroupIdsSet()
                 && passedCriteria.isCriterionOnGroupIdsSet()) || (criteria.isCriterionOnGroupIdsSet()
                 && !passedCriteria.isCriterionOnGroupIdsSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnAccessLevelsSet() &&
+            passedCriteria.isCriterionOnAccessLevelsSet()) {
+          if (!Arrays.equals(criteria.getCriterionOnAccessLevels(),
+              passedCriteria.getCriterionOnAccessLevels())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnAccessLevelsSet() &&
+            passedCriteria.isCriterionOnAccessLevelsSet()) ||
+            (criteria.isCriterionOnAccessLevelsSet() &&
+                !passedCriteria.isCriterionOnAccessLevelsSet())) {
           return emptyUsers;
         }
         if (criteria.isCriterionOnNameSet() && passedCriteria.isCriterionOnNameSet()) {
@@ -180,7 +172,7 @@ public class UserProfileTestResources extends TestResources {
           return emptyUsers;
         }
 
-        return users;
+        return new ListSlice<UserDetail>(Arrays.asList(users));
       }
     }).when(mock).searchUsers(any(UserDetailsSearchCriteria.class));
   }
@@ -316,7 +308,7 @@ public class UserProfileTestResources extends TestResources {
     UserDetail[] existingUsers = getAllExistingUsers();
     UserDetail[] actualUsers = Arrays.copyOf(existingUsers, existingUsers.length + 1);
     actualUsers[actualUsers.length - 1] = user;
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.getAllUsers()).thenReturn(actualUsers);
     return super.registerUser(user);
   }
@@ -336,6 +328,7 @@ public class UserProfileTestResources extends TestResources {
     user.setLastName(lastName);
     user.setId(id);
     user.setDomainId(domainId);
+    user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     return user;
   }
 
@@ -352,7 +345,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void putUsersInGroups() {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     Group[] groups = mock.getAllGroups();
     for (Group group : groups) {
       when(mock.getAllUsersOfGroup(group.getId())).thenReturn(new UserDetail[0]);
@@ -378,7 +371,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void registerSomeGroups(final Group... someGroups) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     List<Group> rootGroups = new ArrayList<Group>();
     for (int i = 0; i < someGroups.length; i++) {
       when(mock.getGroup(someGroups[i].getId())).thenReturn(someGroups[i]);

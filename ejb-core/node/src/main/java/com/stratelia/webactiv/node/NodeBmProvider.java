@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,40 +23,39 @@
  */
 package com.stratelia.webactiv.node;
 
+import javax.inject.Named;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import javax.inject.Named;
 
 /**
  * The NodeBm provider encapsulates the way the NodeBm service is accessed. It's managed by the IoC
  * container.
- * 
+ *
  * It provides a way to access the EJB 2 for bean managed by an IoC container both in a production
- * and in a test runtime environment. For the test runtime environment it provides a setter to 
- * set explicitly the NodeBm instance to use in the tests.
+ * and in a test runtime environment. For the test runtime environment it provides a setter to set
+ * explicitly the NodeBm instance to use in the tests.
  */
 @Named
 public class NodeBmProvider {
-  
+
   private NodeBm nodeBm;
-  
+
   public NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-                JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-        nodeBm = home.create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception ex) {
         throw new RuntimeException(ex.getMessage(), ex);
       }
     }
     return nodeBm;
   }
-  
+
   /**
    * This method is dedicated for tests.
+   *
    * @param nodeBm the NodeBm instance to use.
    */
   public void setNodeBm(final NodeBm nodeBm) {

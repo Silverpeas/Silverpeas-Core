@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,8 @@
 package com.silverpeas.comment.web.mock;
 
 import com.silverpeas.comment.service.DefaultCommentService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -36,10 +37,10 @@ import javax.inject.Named;
 public class DefaultCommentServiceMock extends DefaultCommentService {
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   @Override
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return organizationController;
   }
 }

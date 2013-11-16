@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,6 +31,10 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Class declaration
@@ -83,12 +87,10 @@ public class PersoPeasRequestRouter extends
 
     try {
       if (function.startsWith("SaveChannels")) {
-        final String selectedChannels = request.getParameter("SelectedChannels");
-        final String selectedFrequency = request.getParameter("SelectedFrequency");
-        personalizationScc.saveChannels(selectedChannels);
-        personalizationScc.saveDelayedUserNotificationFrequency(selectedFrequency);
-        request.setAttribute("validationMessage",
-            personalizationScc.getMultilang().getString("GML.validation.update"));
+        saveChannels(personalizationScc, request);
+        destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
+      } else if (function.startsWith("ParametrizeNotification")){
+        parametrizeNotification(personalizationScc, request);
         destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
       } else {
         destination = "/personalizationPeas/jsp/" + function;
@@ -103,6 +105,60 @@ public class PersoPeasRequestRouter extends
         "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "destination = " + destination);
     return destination;
+  }
+
+  private void saveChannels(final PersonalizationSessionController personalizationScc,
+      final HttpServletRequest request) throws Exception {
+    final String selectedChannels = request.getParameter("SelectedChannels");
+    final String selectedFrequency = request.getParameter("SelectedFrequency");
+    personalizationScc.saveChannels(selectedChannels);
+    personalizationScc.saveDelayedUserNotificationFrequency(selectedFrequency);
+    request.setAttribute("validationMessage",
+        personalizationScc.getMultilang().getString("GML.validation.update"));
+    setCommonRequestAttributes(personalizationScc, request);
+  }
+
+  private void parametrizeNotification(final PersonalizationSessionController personalizationScc,
+      final HttpServletRequest request) throws Exception {
+    String action = (String) request.getParameter("Action");
+    String id = (String) request.getParameter("id");
+    NotificationParametrizationAction parametrizationAction =
+        NotificationParametrizationAction.from(action);
+    ResourceLocator messages = personalizationScc.getMultilang();
+    switch (parametrizationAction) {
+      case Test:
+        String testExplanation;
+        personalizationScc.testNotifAddress(id);
+        if (id.equals("-10")) {
+          testExplanation = messages.getString("TestPopUpExplanation");
+        } else if (id.equals("-12")) {
+          testExplanation = messages.getString("TestSilverMailExplanation");
+        } else {
+          testExplanation = messages.getString("TestSMTPExplanation");
+        }
+        request.setAttribute("testExplanation", testExplanation);
+        break;
+      case SetDefault:
+        personalizationScc.setDefaultAddress(id);
+        request.setAttribute("validationMessage", messages.getString("GML.validation.update"));
+        break;
+      case SetFrequency:
+        personalizationScc.saveDelayedUserNotificationFrequency(id);
+        request.setAttribute("validationMessage", messages.getString("GML.validation.update"));
+        break;
+      case Delete:
+        personalizationScc.deleteNotifAddress(id);
+        request.setAttribute("validationMessage", messages.getString("GML.validation.delete"));
+        break;
+    }
+    setCommonRequestAttributes(personalizationScc, request);
+  }
+
+  private void setCommonRequestAttributes(final PersonalizationSessionController personalizationScc,
+      final HttpServletRequest request) throws Exception {
+    ArrayList<Properties> notifAddresses = personalizationScc.getNotificationAddresses();
+    request.setAttribute("notificationAddresses", notifAddresses);
+    request.setAttribute("multichannel", personalizationScc.isMultiChannelNotification());
   }
 
   /**

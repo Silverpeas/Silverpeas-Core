@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -43,7 +43,7 @@
   <title>ZIP export</title>
   <view:looknfeel/>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <fmt:message var="browseBarExport" key="importExportPeas.Export"/>
@@ -62,22 +62,18 @@
         </c:when>
         <c:otherwise>
           <table>
-            <tr>
-              <td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration"/> :</td>
-              <td><%=DateUtil.formatDuration(report.getDuration())%>
-              </td>
+          	<tr>
+              <td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td>
+              <td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> 
+              <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="<%=report.getZipFileName()%>"/></a></td>
             </tr>
             <tr>
               <td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td>
-              <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%>
-              </td>
+              <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td>
             </tr>
             <tr>
-              <td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td>
-              <td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%>
-              </a> <a href="<%=report.getZipFilePath()%>"><img
-                  src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle"
-                  alt="<%=report.getZipFileName()%>"/></a></td>
+              <td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration"/> :</td>
+              <td><%=DateUtil.formatDuration(report.getDuration())%></td>
             </tr>
           </table>
         </c:otherwise>

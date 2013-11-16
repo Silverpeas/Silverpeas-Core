@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -205,9 +205,9 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @return the corresponding space appearance entity.
    */
   protected SpaceAppearanceEntity asWebEntity(final SpaceInstLight space, final String look,
-      final String wallpaper) {
+      final String wallpaper, final String css) {
     checkNotFoundStatus(space);
-    return SpaceAppearanceEntity.createFrom(space, look, wallpaper).withURI(
+    return SpaceAppearanceEntity.createFrom(space, look, wallpaper, css).withURI(
         buildURIOfSpaceAppearance(space, getUriInfo()));
   }
 

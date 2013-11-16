@@ -1,36 +1,24 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
-
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -41,12 +29,20 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcField;
 import com.silverpeas.util.EncodeHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A JdbcFieldDisplayer is an object which can display a listbox in HTML the content of a listbox to
  * a end user and can retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -54,7 +50,7 @@ import com.stratelia.webactiv.util.DBUtil;
  */
 public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
-  private final static String[] MANAGED_TYPES = new String[] { JdbcField.TYPE };
+  private final static String[] MANAGED_TYPES = new String[]{JdbcField.TYPE};
   private final static String mandatoryImg = Util.getIcon("mandatoryField");
 
   /**
@@ -66,6 +62,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   /**
    * Returns the name of the managed types.
+   *
    * @return
    */
   public String[] getManagedTypes() {
@@ -81,6 +78,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param template
    * @param pagesContext
@@ -107,6 +105,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param field
    * @param template
@@ -143,90 +142,16 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     }
     StringBuilder html = new StringBuilder(10000);
     if (listRes != null && !listRes.isEmpty()) {
-      int zindex =
-          (pagesContext.getLastFieldIndex() - Integer.parseInt(pagesContext.getCurrentFieldIndex())) * 9000;
-      html.append("<style type=\"text/css\">\n").append("	#listAutocomplete").append(fieldName).
-          append(" {\n");
-      html.append("		width:15em;\n");
-      html.append("		padding-bottom:2em;\n");
-      html.append("	}\n");
-      html.append("	#listAutocomplete").append(fieldName).append(" {\n");
-      html.append("		z-index:").append(zindex).append(
-          "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
-      html.append("	}\n");
-      html.append("	#").append(fieldName).append(" {\n");
-      html.append("		_position:absolute; /* abs pos needed for ie quirks */\n");
-      html.append("	}\n");
-      html.append("</style>\n");
-
-      html.append("<div id=\"listAutocomplete").append(fieldName).append("\">\n");
-      html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName).append(
-          "\" type=\"text\"");
-      if (value != null) {
-        html.append(" value=\"").append(value).append("\"");
+      String displayer = parameters.get("displayer");
+      if (!StringUtil.isDefined(displayer)) {
+        displayer = "autocomplete";
       }
-      if (template.isDisabled() || template.isReadOnly()) {
-        html.append(" disabled");
+      if ("autocomplete".equals(displayer)) {
+        getAutocompleteFragment(template, value, valueFieldType, listRes, pagesContext, html);
+      } else {
+        getListboxFragment(template, value, valueFieldType, listRes, pagesContext, html);
       }
-      html.append("/>\n");
-      html.append("<div id=\"container").append(fieldName).append("\"/>\n");
-      html.append("</div>\n");
-
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-          && !template.isHidden() && pagesContext.useMandatory()) {
-        html
-            .append("<img src=\"")
-            .append(mandatoryImg)
-            .append(
-                "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
-      }
-
-      html.append("<script type=\"text/javascript\">\n");
-      html.append("listArray").append(fieldName).append(" = [\n");
-
-      Iterator<String> itRes = listRes.iterator();
-      while (itRes.hasNext()) {
-        html.append("\"").
-            append(EncodeHelper.javaStringToJsString(itRes.next())).append("\"");
-        if (itRes.hasNext()) {
-          html.append(",\n");
-        }
-      }
-
-      html.append("];\n");
-      html.append("</script>\n");
-
-      html.append("<script type=\"text/javascript\">\n");
-      html.append(" this.oACDS").append(fieldName).
-          append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
-      html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('")
-          .
-          append(fieldName).append("','container").append(fieldName).append("', this.oACDS").
-          append(fieldName).append(");\n");
-      html.append("	this.oAutoComp").append(fieldName).append(
-          ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
-      html.append("	this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");
-      html.append("	this.oAutoComp").append(fieldName).append(".useShadow = true;\n");
-      html.append("	this.oAutoComp").append(fieldName).append(".minQueryLength = 0;\n");
-
-      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint a la liste ou 2 =
-        // saisie libre, par defaut 1
-        html.append("	this.oAutoComp").append(fieldName).append(".forceSelection = true;\n");
-      }
-
-      html.append("	this.oAutoComp").append(fieldName).append(
-          ".textboxFocusEvent.subscribe(function(){\n");
-      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
-          "').value;\n");
-      html.append("		if(sInputValue.length == 0) {\n");
-      html.append("			var oSelf = this;\n");
-      html.append("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
-      html.append("		}\n");
-      html.append("	});\n");
-      html.append("</script>\n");
-
     } else {
-
       if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint a la liste ou 2 =
         // saisie libre, par defaut 1
 
@@ -257,9 +182,122 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   }
 
+  private void getAutocompleteFragment(FieldTemplate template, String fieldValue,
+      String valueFieldType, Collection<String> entries, PagesContext pageContext,
+      StringBuilder html) {
+    String fieldName = template.getFieldName();
+    int zindex =
+        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex()))
+        * 9000;
+    html.append("<style type=\"text/css\">\n").append(" #listAutocomplete").append(fieldName).
+        append(" {\n");
+    html.append("  width:15em;\n");
+    html.append("  padding-bottom:2em;\n");
+    html.append(" }\n");
+    html.append(" #listAutocomplete").append(fieldName).append(" {\n");
+    html.append("  z-index:").append(zindex).append(
+        "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
+    html.append(" }\n");
+    html.append(" #").append(fieldName).append(" {\n");
+    html.append("  _position:absolute; /* abs pos needed for ie quirks */\n");
+    html.append(" }\n");
+    html.append("</style>\n");
+
+    html.append("<div id=\"listAutocomplete").append(fieldName).append("\">\n");
+    html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName).append(
+        "\" type=\"text\"");
+    if (fieldValue != null) {
+      html.append(" value=\"").append(fieldValue).append("\"");
+    }
+    if (template.isDisabled() || template.isReadOnly()) {
+      html.append(" disabled");
+    }
+    html.append("/>\n");
+    html.append("<div id=\"container").append(fieldName).append("\"/>\n");
+    html.append("</div>\n");
+
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+        && !template.isHidden() && pageContext.useMandatory()) {
+      html
+          .append("<img src=\"")
+          .append(mandatoryImg)
+          .append(
+          "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
+    }
+
+    html.append("<script type=\"text/javascript\">\n");
+    html.append("listArray").append(fieldName).append(" = [\n");
+
+    Iterator<String> itRes = entries.iterator();
+    while (itRes.hasNext()) {
+      html.append("\"").
+          append(EncodeHelper.javaStringToJsString(itRes.next())).append("\"");
+      if (itRes.hasNext()) {
+        html.append(",\n");
+      }
+    }
+
+    html.append("];\n");
+    html.append("</script>\n");
+
+    html.append("<script type=\"text/javascript\">\n");
+    html.append(" this.oACDS").append(fieldName).
+        append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
+    html.append(" this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('")
+        .
+        append(fieldName).append("','container").append(fieldName).append("', this.oACDS").
+        append(fieldName).append(");\n");
+    html.append(" this.oAutoComp").append(fieldName).append(
+        ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
+    html.append(" this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");
+    html.append(" this.oAutoComp").append(fieldName).append(".useShadow = true;\n");
+    html.append(" this.oAutoComp").append(fieldName).append(".minQueryLength = 0;\n");
+
+    if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint a la liste ou 2 =
+      // saisie libre, par defaut 1
+      html.append(" this.oAutoComp").append(fieldName).append(".forceSelection = true;\n");
+    }
+
+    html.append(" this.oAutoComp").append(fieldName).append(
+        ".textboxFocusEvent.subscribe(function(){\n");
+    html.append("  var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
+        "').value;\n");
+    html.append("  if(sInputValue.length == 0) {\n");
+    html.append("   var oSelf = this;\n");
+    html.append("   setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
+    html.append("  }\n");
+    html.append(" });\n");
+    html.append("</script>\n");
+  }
+
+  private void getListboxFragment(FieldTemplate template, String fieldValue, String valueFieldType,
+      Collection<String> entries, PagesContext pageContext, StringBuilder html) {
+    html.append("<select name=\"").append(template.getFieldName()).append("\"");
+
+    if (template.isDisabled() || template.isReadOnly()) {
+      html.append(" disabled=\"disabled\"");
+    }
+    html.append(" >\n");
+    html.append("<option></option>");
+    for (String entry : entries) {
+      html.append("<option");
+      if (entry.equals(fieldValue)) {
+        html.append(" selected=\"selected\"");
+      }
+      html.append(" value=\"").append(entry).append("\">").append(entry).append("</option>\n");
+    }
+    html.append("</select>\n");
+
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+        && !template.isHidden() && pageContext.useMandatory()) {
+      html.append(Util.getMandatorySnippet());
+    }
+  }
+
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   *
    * @param newValue
    * @param field
    * @param template
@@ -268,6 +306,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * @throws FormException if the field type is not a managed type or if the field doesn't accept
    * the new value.
    */
+  @Override
   public List<String> update(String newValue, JdbcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!JdbcField.TYPE.equals(field.getTypeName())) {

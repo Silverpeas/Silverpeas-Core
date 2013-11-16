@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -43,13 +43,9 @@
 		String componentId 	= request.getParameter("componentId");
 	    String userId 		= request.getParameter("userId");
 	    String userName		= request.getParameter("userName");
-	    String objectType	= request.getParameter("objectType");
-		
-	    StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-	    StatisticBm statisticBm =  statisticHome.create();
-	    
-	    ForeignPK foreignPK = new ForeignPK(objectId, componentId);
-	    
+	    String objectType	= request.getParameter("objectType");		
+	    StatisticBm statisticBm =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);	    
+	    ForeignPK foreignPK = new ForeignPK(objectId, componentId);	    
 	    Collection readingState = statisticBm.getHistoryByObjectAndUser(foreignPK, 1, objectType, userId);
 	   
 	    // affichage du nom de l'utilisateur
@@ -62,7 +58,7 @@
 		    <tr>
 		    	<td>
 		    	<%
-			    // affichage des contr�les de lecture pour l'utilisateur
+			    // affichage des controles de lecture pour l'utilisateur
 			    ArrayPane arrayPane = gef.getArrayPane("detailByUser.jsp", "detailByUser.jsp?id="+objectId+"&componentId="+componentId+"&objectType="+objectType+"&userId="+userId+"&userName="+userName, request, session);
 			
 			    arrayPane.addArrayColumn(messages.getString("statistic.detail"));
@@ -92,8 +88,8 @@
 	<br>
 	<center>
 	<%
-	    ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.close"), "javascript:window.close()", false));
+	  ButtonPane buttonPane = gef.getButtonPane();
+		buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.close"), "javascript:window.close()", false));
 		out.println(buttonPane.print());
 	%>
 	</center>

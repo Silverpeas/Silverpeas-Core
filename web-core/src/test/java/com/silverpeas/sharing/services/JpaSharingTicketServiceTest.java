@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,15 +26,9 @@ package com.silverpeas.sharing.services;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -47,9 +41,19 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -57,7 +61,6 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-sharing-datasource.xml", "/spring-sharing-service.xml"})
-@Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class JpaSharingTicketServiceTest {
   
@@ -138,18 +141,9 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testGetTicket() {
-    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
-    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-        new Date(1330988399000L), -1);
-    expResult.setNbAccess(1);
-    Ticket result = service.getTicket(key);
-    assertThat(result, is(expResult));
-    assertThat(result.getDownloads(), hasSize(1));
-    DownloadDetail download = result.getDownloads().get(0);
-    assertThat(download, is(notNullValue()));
-    assertThat(download.getKeyFile(), is(key));
-    assertThat(download.getUserIP(), is("127.0.0.1"));
-    assertThat(download.getDownloadDate(), is(new Date(1330972518889L)));
+    Ticket expResult = createExpectedTicketWithOneDownload();
+    Ticket result = service.getTicket(expResult.getToken());
+    assertEquals(result, expResult);
   }
 
   /**
@@ -163,7 +157,7 @@ public class JpaSharingTicketServiceTest {
     assertThat(key, is(notNullValue()));
     ticket.setToken(key);
     Ticket result = service.getTicket(key);
-    assertThat(result, is(ticket));
+    assertEquals(result, ticket);
   }
 
   /**
@@ -171,20 +165,16 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testAddDownload() {
-    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
-    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-        new Date(1330988399000L), -1);
-    expResult.setNbAccess(1);
-    Ticket result = service.getTicket(key);
-    assertThat(result, is(expResult));
-    assertThat(result.getDownloads(), hasSize(1));
+    Ticket expResult = createExpectedTicketWithOneDownload();
+    Ticket result = service.getTicket(expResult.getToken());
+    assertEquals(result, expResult);
     Date now = new Date();
     DownloadDetail download = new DownloadDetail(result, now, "192.168.0.1");
     service.addDownload(download);
-    result = service.getTicket(key);
-    assertThat(result, is(expResult));
-    assertThat(result.getDownloads(), hasSize(2));
-    assertThat(result.getNbAccess(), is(2));
+    expResult.setDownloads(CollectionUtil.asList(expResult.getDownloads().get(0), download));
+    expResult.addDownload();
+    result = service.getTicket(expResult.getToken());
+    assertEquals(result, expResult);
   }
 
   /**
@@ -205,7 +195,7 @@ public class JpaSharingTicketServiceTest {
     result.setNbAccessMax(10);
     service.updateTicket(result);
     expResult = service.getTicket(key);
-    assertThat(result, is(expResult));
+    assertEquals(result, expResult);
   }
 
   /**
@@ -222,5 +212,50 @@ public class JpaSharingTicketServiceTest {
     service.deleteTicket(key);
     result = service.getTicket(key);
     assertThat(result, is(nullValue()));
+  }
+
+  private Ticket createExpectedTicketWithOneDownload() {
+    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    Ticket existingTicket =
+        new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330971989028L), null, -1);
+    existingTicket.setNbAccess(1);
+    DownloadDetail downloadDetail =
+        new DownloadDetail(existingTicket, new Date(1330972518889L), "127.0.0.1");
+    existingTicket.setDownloads(Collections.singletonList(downloadDetail));
+    downloadDetail.setId(1L);
+    return existingTicket;
+  }
+
+  private void assertEquals(Ticket ticket, Ticket expected) {
+    try {
+      assertThat(ticket, not(sameInstance(expected)));
+      assertThat(ticket, is(expected));
+
+      if (expected.getSharedObjectType() != null) {
+        assertThat(ticket.getSharedObjectType(), is(expected.getSharedObjectType()));
+      }
+      assertThat(ticket.getSharedObjectId(), is(expected.getSharedObjectId()));
+      assertThat(ticket.getComponentId(), is(expected.getComponentId()));
+      assertThat(ticket.getCreatorId(), is(expected.getCreatorId()));
+      assertThat(ticket.getCreationDate(), is(expected.getCreationDate()));
+      assertThat(ticket.getLastModifier(), is(expected.getLastModifier()));
+      assertThat(ticket.getUpdateDate(), is(expected.getUpdateDate()));
+      assertThat(ticket.getEndDate(), is(expected.getEndDate()));
+      assertThat(ticket.getNbAccessMax(), is(expected.getNbAccessMax()));
+      assertThat(ticket.getNbAccess(), is(expected.getNbAccess()));
+      assertThat(ticket.getToken(), is(expected.getToken()));
+      assertThat(ticket.getDownloads().size(), is(expected.getDownloads().size()));
+      Iterator<DownloadDetail> expectedIt = expected.getDownloads().iterator();
+      for (DownloadDetail downloadDetail : ticket.getDownloads()) {
+        DownloadDetail expectedDownloadDetail = expectedIt.next();
+        assertThat(downloadDetail.getId(), is(expectedDownloadDetail.getId()));
+        assertThat(downloadDetail.getDownloadDate(), is(expectedDownloadDetail.getDownloadDate()));
+        assertThat(downloadDetail.getKeyFile(), is(expectedDownloadDetail.getKeyFile()));
+        assertThat(downloadDetail.getUserIP(), is(expectedDownloadDetail.getUserIP()));
+      }
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

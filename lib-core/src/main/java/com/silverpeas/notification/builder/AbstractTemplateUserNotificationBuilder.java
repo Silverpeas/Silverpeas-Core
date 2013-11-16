@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,13 +26,13 @@ package com.silverpeas.notification.builder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 /**
  * @author Yohann Chastagnier
@@ -47,8 +47,6 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   /**
    * Default constructor
    * @param resource
-   * @param title
-   * @param fileName
    */
   public AbstractTemplateUserNotificationBuilder(final T resource) {
     super(resource, null, null);
@@ -131,9 +129,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
-    if (OrganizationControllerFactory.getFactory().getOrganizationController()
+    if (OrganisationControllerFactory.getOrganisationController()
         .isComponentExist(getComponentInstanceId()) ||
-        OrganizationControllerFactory.getFactory().getOrganizationController()
+        OrganisationControllerFactory.getOrganisationController()
             .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {

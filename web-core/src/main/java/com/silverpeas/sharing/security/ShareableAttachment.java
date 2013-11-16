@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,23 +24,23 @@
 package com.silverpeas.sharing.security;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * Attachement being accessed through some shared object.
  */
-public class ShareableAttachment extends ShareableResource<AttachmentDetail> {
-  public ShareableAttachment(String token, AttachmentDetail accessedObject) {
+public class ShareableAttachment extends ShareableResource<SimpleDocument> {
+  public ShareableAttachment(String token, SimpleDocument accessedObject) {
     super(token, accessedObject);
   }
 
   @Override
   public String getName() {
-    return accessedObject.getLogicalName();
+    return accessedObject.getFilename();
   }
 
   @Override
   public String getURL() {
-    return URLManager.getSimpleURL(URLManager.URL_FILE, accessedObject.getPK().getId());
+    return URLManager.getSimpleURL(URLManager.URL_FILE, accessedObject.getId());
   }
 }

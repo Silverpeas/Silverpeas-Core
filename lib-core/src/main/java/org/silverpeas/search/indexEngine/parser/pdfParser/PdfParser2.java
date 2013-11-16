@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
@@ -54,12 +55,13 @@ public class PdfParser2 implements Parser {
       reader = new StringReader(text);
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "PdfParser2", "indexEngine.MSG_IO_ERROR_WHILE_READING",
-          path,
-          e);
+          path, e);
     } finally {
       try {
-        document.close();
-        file.close();
+        if (document != null) {
+          document.close();
+        }
+        IOUtils.closeQuietly(file);
       } catch (IOException ioe) {
         SilverTrace.error("indexEngine", "PdfParser2.getReader()",
             "indexEngine.MSG_IO_ERROR_WHILE_CLOSING", path, ioe);

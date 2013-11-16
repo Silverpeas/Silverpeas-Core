@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,4 +31,5 @@ public interface DesktopConstants {
   public static String PORTLET_CONTENT = "content";
   public static String PORTLET_TITLE = "title";
   public static String PORTLET_WINDOWS = "com.sun.portal.portletcontainer.driver.portletWindows";
+  public static String AVAILABLE_PORTLET_WINDOWS = "existingPortlets";
 }

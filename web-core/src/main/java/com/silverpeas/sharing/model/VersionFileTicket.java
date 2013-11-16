@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -23,16 +23,15 @@ package com.silverpeas.sharing.model;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
-import com.silverpeas.sharing.services.VersionFileAccessControl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import java.rmi.RemoteException;
 import java.util.Date;
 
 /**
@@ -41,18 +40,18 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue("Versionned")
 public class VersionFileTicket extends Ticket {
+  private static final long serialVersionUID = 7046398587440076818L;
 
-  private static final long serialVersionUID = 1L;
   private static final VersionFileAccessControl accessControl = new VersionFileAccessControl();
 
   public VersionFileTicket(int sharedObjectId, String componentId, String creatorId,
-          Date creationDate, Date endDate, int nbAccessMax) {
+      Date creationDate, Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = VERSION_TYPE;
   }
 
   public VersionFileTicket(int sharedObjectId, String componentId, UserDetail creator,
-          Date creationDate, Date endDate, int nbAccessMax) {
+      Date creationDate, Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = VERSION_TYPE;
   }
@@ -61,30 +60,37 @@ public class VersionFileTicket extends Ticket {
     this.sharedObjectType = VERSION_TYPE;
   }
 
-  public Document getDocument() {
+  public HistorisedDocument getDocument() {
     try {
-      return new VersioningUtil().getDocument(new DocumentPK((int) getSharedObjectId(),
-              getComponentId()));
-    } catch (RemoteException e) {
+      SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
+      pk.setOldSilverpeasId(getSharedObjectId());
+      return (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
+          searchDocumentById(pk, null);
+    } catch (AttachmentException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
     }
     return null;
   }
-  
+
   @Override
-  public ShareableResource<Document> getResource() {
-    Document doc = null;
+  public ShareableResource<HistorisedDocument> getResource() {
     try {
-      doc = new VersioningUtil().getDocument(new DocumentPK((int) getSharedObjectId(),
-              getComponentId()));
-    } catch (RemoteException e) {
+      SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
+      pk.setOldSilverpeasId(getSharedObjectId());
+      HistorisedDocument doc = (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
+          searchDocumentById(pk, null);
+      if(doc != null) {
+        return new ShareableVersionDocument(getToken(), doc);
+      }
+    } catch (AttachmentException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
     }
-    return new ShareableVersionDocument(getToken(), doc);
+    return null;
+
   }
 
   @Override
-  public ShareableAccessControl<Document> getAccessControl() {
+  public ShareableAccessControl<VersionFileTicket, HistorisedDocument> getAccessControl() {
     return accessControl;
   }
 }

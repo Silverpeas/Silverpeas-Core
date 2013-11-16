@@ -1,52 +1,53 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import java.util.Arrays;
 import java.util.Calendar;
-import com.mockrunner.jdbc.StatementResultSetHandler;
-import com.mockrunner.mock.jdbc.MockResultSet;
-import com.mockrunner.mock.jdbc.MockConnection;
-import com.google.common.collect.Lists;
-import com.mockrunner.mock.jdbc.MockPreparedStatement;
 import java.util.List;
 import java.util.Map;
-import com.mockrunner.jdbc.JDBCTestModule;
-import com.mockrunner.mock.jdbc.JDBCMockObjectFactory;
-import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import org.junit.Before;
-import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
-import static org.hamcrest.Matchers.*;
+import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
+
+import com.mockrunner.jdbc.JDBCTestModule;
+import com.mockrunner.jdbc.StatementResultSetHandler;
+import com.mockrunner.mock.jdbc.JDBCMockObjectFactory;
+import com.mockrunner.mock.jdbc.MockConnection;
+import com.mockrunner.mock.jdbc.MockPreparedStatement;
+import com.mockrunner.mock.jdbc.MockResultSet;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
-public class SizeSilverStatisticsManagerDAOTest{
+public class SizeSilverStatisticsManagerDAOTest {
 
   private StatisticsConfig config;
   private JDBCMockObjectFactory factory;
@@ -68,7 +69,7 @@ public class SizeSilverStatisticsManagerDAOTest{
   @Test
   public void testInsertDataCumul() throws Exception {
     MockConnection connexion = factory.getMockConnection();
-    List<String> data = Lists.newArrayList("2011-04-17", "/var/data/silverpeas/kmelia72", "262");
+    List<String> data = Arrays.asList("2011-04-17", "/var/data/silverpeas/kmelia72", "262");
     SilverStatisticsManagerDAO.insertDataStatsCumul(connexion, typeofStat, data, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getPreparedStatements();
@@ -131,7 +132,8 @@ public class SizeSilverStatisticsManagerDAOTest{
     cumulResult.addColumn("fileDir", new Object[]{"/var/data/silverpeas/kmelia56"});
     cumulResult.addColumn("sizeDir", new Object[]{100L});
     statementHandler.prepareResultSets("SELECT dateStat,fileDir,sizeDir FROM SB_Stat_SizeDirCumul "
-        + "WHERE dateStat='2011-04-01' AND fileDir='/var/data/silverpeas/kmelia56'", new MockResultSet[]{
+        + "WHERE dateStat='2011-04-01' AND fileDir='/var/data/silverpeas/kmelia56'",
+        new MockResultSet[]{
           cumulResult});
     SilverStatisticsManagerDAO.makeStatCumul(connexion, typeofStat, config);
     module.verifyAllStatementsClosed();

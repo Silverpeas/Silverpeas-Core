@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -36,7 +32,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.IOException;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +40,16 @@ import java.util.Map;
 /**
  * A TextAreaFieldDisplayer is an object which can display a TextFiel in HTML the content of a
  * TextFiel to a end user and can retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
  * @see FieldDisplayer
  */
 public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
+  
+  static public final String PARAM_ROWS = "rows";
+  static public final String PARAM_COLS = "cols";
 
   /**
    * Constructeur
@@ -77,16 +76,17 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  @Override
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
       throws IOException {
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
 
     if (!TextField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "TextAreaFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
 
-    if (template.isMandatory() && PagesContext.useMandatory()) {
+    if (template.isMandatory() && pageContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n \";");
@@ -94,14 +94,26 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       out.println("	}");
     }
 
-    out.println("	if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
+    String maxLength = getMaxLength(template, pageContext);
+    out.println("	if (! isValidText(field, " + maxLength + ")) {");
     out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-        + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
+        + Util.getString("ContainsTooLargeText", language) + maxLength + " "
         + Util.getString("Characters", language) + "\\n \";");
     out.println("		errorNb++;");
     out.println("	}");
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+  }
+  
+  private String getMaxLength(FieldTemplate fieldTemplate, PagesContext pageContext) {
+    Map<String, String> parameters = fieldTemplate.getParameters(pageContext.getLanguage());
+    if (parameters.containsKey(TextField.PARAM_MAXLENGTH)) {
+      String value = parameters.get(TextField.PARAM_MAXLENGTH);
+      if (StringUtil.isInteger(value)) {
+        return value;
+      }
+    }
+    return Util.getSetting("nbMaxCar");
   }
 
   /**
@@ -112,11 +124,12 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String value = "";
-    String rows = "6";
-    String cols = "48";
+    String rows = "8";
+    String cols = "100";
     String html = "";
     String cssClass = null;
 
@@ -145,13 +158,13 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
-    if (parameters.containsKey("rows")) {
-      rows = parameters.get("rows");
+    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
+      rows = parameters.get(TextAreaFieldDisplayer.PARAM_ROWS);
     }
     html += " rows=\"" + rows + "\"";
 
-    if (parameters.containsKey("cols")) {
-      cols = parameters.get("cols");
+    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
+      cols = parameters.get(TextAreaFieldDisplayer.PARAM_COLS);
     }
     html += " cols=\"" + cols + "\"";
 
@@ -175,6 +188,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     out.println(html);
   }
 
+  @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {

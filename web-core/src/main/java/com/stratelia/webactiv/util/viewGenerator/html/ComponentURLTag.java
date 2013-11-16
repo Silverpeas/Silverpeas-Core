@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
@@ -42,7 +41,7 @@ public class ComponentURLTag extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
-    String url = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String url = URLManager.getApplicationURL();
     if (isDefined(componentName)) {
       url += URLManager.getURL(componentName, null, componentId);
     } else {

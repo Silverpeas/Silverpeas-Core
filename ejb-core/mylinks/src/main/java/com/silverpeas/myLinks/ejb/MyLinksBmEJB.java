@@ -1,39 +1,36 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.myLinks.ejb;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.dao.LinkDAO;
 import com.silverpeas.myLinks.model.LinkDetail;
+
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -43,54 +40,56 @@ import com.stratelia.webactiv.util.exception.UtilException;
 /**
  * @author
  */
-public class MyLinksBmEJB implements SessionBean {
+@Stateless(name = "MyLinks", description =
+    "Stateless session bean to manage personal links to content")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class MyLinksBmEJB implements MyLinksBm {
 
+  @Override
   public Collection<LinkDetail> getAllLinks(String userId) {
     return getAllLinksByUser(userId);
   }
 
+  @Override
   public Collection<LinkDetail> getAllLinksByUser(String userId) {
     Connection con = initCon();
     try {
-      Collection<LinkDetail> links = LinkDAO.getAllLinksByUser(con, userId);
-      return links;
+      return LinkDAO.getAllLinksByUser(con, userId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByUser()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
+  @Override
   public Collection<LinkDetail> getAllLinksByInstance(String instanceId) {
     Connection con = initCon();
     try {
-      Collection<LinkDetail> links = LinkDAO.getAllLinksByInstance(con, instanceId);
-      return links;
+      return LinkDAO.getAllLinksByInstance(con, instanceId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByInstance()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
+  @Override
   public Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId) {
     Connection con = initCon();
     try {
-      Collection<LinkDetail> links = LinkDAO.getAllLinksByObject(con, instanceId, objectId);
-      return links;
+      return LinkDAO.getAllLinksByObject(con, instanceId, objectId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByObject()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
+  @Override
   public void createLink(LinkDetail link) {
     Connection con = initCon();
     try {
@@ -100,26 +99,26 @@ public class MyLinksBmEJB implements SessionBean {
       throw new MyLinksRuntimeException("MyLinksBmEJB.createLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_CREATE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
+  @Override
   public void deleteLinks(String[] links) {
     Connection con = initCon();
     try {
-      for (int i = 0; i < links.length; i++) {
-        LinkDAO.deleteLink(con, links[i]);
+      for (String linkId : links) {
+        LinkDAO.deleteLink(con, linkId);
       }
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.deleteLinks()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_DELETE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
+  @Override
   public void updateLink(LinkDetail link) {
     Connection con = initCon();
     try {
@@ -128,66 +127,31 @@ public class MyLinksBmEJB implements SessionBean {
       throw new MyLinksRuntimeException("MyLinksBmEJB.updateLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_UPDATE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
+  @Override
   public LinkDetail getLink(String linkId) {
     Connection con = initCon();
     try {
-      LinkDetail link = LinkDAO.getLink(con, linkId);
-      return link;
+      return LinkDAO.getLink(con, linkId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
   private Connection initCon() {
     Connection con;
-    // initialisation de la connexion
     try {
       con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
     } catch (UtilException e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException("MyLinksBmEJB.initCon()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
   }
-
-  private void fermerCon(Connection con) {
-    try {
-      con.close();
-    } catch (SQLException e) {
-      // traitement des exceptions
-      throw new MyLinksRuntimeException("MyLinksBmEJB.fermerCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
-    }
-  }
-
-  public void ejbCreate() {
-    // not implemented
-  }
-
-  public void setSessionContext(SessionContext context) {
-    // not implemented
-  }
-
-  public void ejbRemove() {
-    // not implemented
-  }
-
-  public void ejbActivate() {
-    // not implemented
-  }
-
-  public void ejbPassivate() {
-    // not implemented
-  }
-
 }

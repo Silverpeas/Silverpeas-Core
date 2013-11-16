@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,16 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.genericPanel;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Hashtable;
 
@@ -43,7 +44,7 @@ public class AllUserPanel extends PanelProvider {
   protected static final int COL_FIRSTNAME = 1;
   protected static final int COL_EMAIL = 2;
 
-  protected OrganizationController m_oc = new OrganizationController();
+  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganisationController();
 
   protected Hashtable<String, UserDetail> m_AllUserDetail = new Hashtable<String, UserDetail>();
 

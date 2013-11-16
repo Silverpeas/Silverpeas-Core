@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -32,9 +32,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.webactiv.searchEngine.model.WAIndexSearcher"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
@@ -46,8 +44,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");

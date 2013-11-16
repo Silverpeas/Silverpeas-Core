@@ -1,202 +1,190 @@
-html, body {	
-	height:100%;
+html, body {
+     height: 100%;
 }
+
 body {
-	font-family: "Arial", sans-serif;
-	font-size: 12px;
-	margin:0;
-	padding:0;
+     font-family: "Arial",sans-serif;
+     font-size: 12px;
+     margin: 0px;
+     padding: 0px;
 }
 
 #header {
-    background-image: url("http://localhost:8000/silverpeas/admin/jsp/icons/silverpeas_light/bandeauTop.jpg");
-	position:fixed;
-	height:115px;
-	width:100%;
-	top:0;
-	left:0;
-	z-index:100;
+     background-image: url("/silverpeas/admin/jsp/icons/silverpeas_light/bandeauTop.jpg");
+     height: 115px;
+     left: 0px;
+     position: fixed;
+     top: 0px;
+     width: 100%;
+     z-index: 100;
 }
 
 #header h1 {
-	display:none;
+     display: none;
 }
 
 ul, li, p, h1, h2 {
-	margin: 0;
-	padding:0;
+     margin: 0px;
+     padding: 0px;
 }
 
 #breadcrumb {
-	position:fixed;
-	width:100%;
-	top:115px; /*hauteur du bandeau */
-	left:0;
-	z-index:100;
-	line-height:32px;
-	padding:0 12px;
-	color:#fff;
-	background-color:#2D2D2D;
+     background-color: #2D2D2D;
+     color: #FFFFFF;
+     left: 0px;
+     line-height: 32px;
+     padding: 0px 12px;
+     position: fixed;
+     top: 115px;
+     width: 100%;
+     z-index: 100;
 }
 
-#breadcrumb .validityInfo {    
-	background-color: #333333;
-    border-left: 1px solid #666666;
-    border-right: 1px solid #666666;
-    color: #FFFFFF;
-	position:absolute;
-	top:0;
-    right: 133px;
-    padding: 0 12px;
+#breadcrumb .validityInfo {
+     background-color: #333333;
+     border-left: 1px solid #666666;
+     border-right: 1px solid #666666;
+     color: #FFFFFF;
+     padding: 0px 12px;
+     position: absolute;
+     right: 133px;
+     top: 0px;
 }
 
-#breadcrumb .silverpeasLink {    
-	top:0;
-    right:10px;
-	position:absolute
+#breadcrumb .silverpeasLink {
+     position: absolute;
+     right: 10px;
+     top: 0px;
 }
 
 #breadcrumb .silverpeasLink img {
-	border:0
+     border: 0px none;
 }
 
 #explorer {
-	position:fixed;
-	top:0;
-	left:0;
-	z-index:1;
-	width:35%;
-	height:100% !important;
-	background-color: #F5F5F5;
-	overflow:auto;
+     background-color: #F5F5F5;
+     height: 100% ! important;
+     left: 0px;
+     overflow: auto;
+     position: fixed;
+     top: 0px;
+     width: 35%;
+     z-index: 1;
 }
 
-#explorer > ul{
-	margin:40px 10px 10px 10px !important;
-	margin-top:155px !important; /*hauteur du bandeau + 40*/
-	
+#explorer > ul {
+     margin: 155px 10px 10px ! important;
 }
-
-
 
 #publications {
-	float: right;
-	width:65%;
-	height:100%;
-	font-size:11px;
+     float: right;
+     font-size: 11px;
+     height: 100%;
+     width: 65%;
 }
-#publications .container{
-	height:100%;
-	border-left:1px solid #E5E5E5;
+
+#publications .container {
+     border-left: 1px solid #E5E5E5;
+     height: 100%;
 }
 
 #publicationsList {
-	padding-top:147px;  /*hauteur du bandeau +32*/
-	padding-bottom:32px;
+     padding-bottom: 32px;
+     padding-top: 147px;
 }
+
 #publications ul {
-	list-style-type:none;
+     list-style-type: none;
 }
 
-
-#download-link  { 
-	color: #FFFFFF;
-    font-size: 10px;
-    height: 30px;
-    padding: 104px 8px 0 0;
-    position: fixed;
-    right: -87px;
-    text-align: right;
-    top: 215px;
-    width: 79px;
-	text-decoration:none;
-	background:transparent url(generic-elts/btnTelecharger.png) top right no-repeat;
+#download-link {
+     background: url("generic-elts/btnTelecharger.png") no-repeat scroll right top transparent;
+     color: #FFFFFF;
+     font-size: 10px;
+     height: 30px;
+     padding: 104px 8px 0px 0px;
+     position: fixed;
+     right: -87px;
+     text-align: right;
+     text-decoration: none;
+     top: 215px;
+     width: 79px;
 }
+
 #download-link:hover {
-	background-image:url(generic-elts/btnTelechargerHover.png);
+     background-image: url("generic-elts/btnTelechargerHover.png");
 }
 
 #pagination {
-	width:80% !important;
-	position:fixed;
-	padding:0 !important;
-	height:40px;
-	bottom:0;
-	right:0;
-	line-height:20px;
+     bottom: 0px;
+     height: 40px;
+     line-height: 20px;
+     padding: 0px ! important;
+     position: fixed;
+     right: 0px;
+     width: 65% ! important;
 }
 
 #pagination > * {
-	margin-top:10px;
-	margin-left:10px;
-	
+     margin-left: 10px;
+     margin-top: 10px;
 }
 
 .pager DIV.short {
-	width:100px;
-}	
+     width: 100px;
+}
 
 #publications .publication {
-	padding:12px 12px 6px 12px;
-	border-bottom:1px solid #E5E5E5;
-	background-color:#FFF;
-		background-image: url(generic-elts/gradientSVG.jsp?from=FFFFFF&to=F7F7F7&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-	
-	-pie-background: linear-gradient(#FFFFFF, #F7F7F7);
-	behavior: url("generic-elts/PIE.htc");
-
+     background-color: #FFFFFF;
+     background-image: url("generic-elts/gradientSVG.jsp?from=FFFFFF&to=F7F7F7&vertical=0&horizontal=100");
+     border-bottom: 1px solid #E5E5E5;
+     padding: 12px 12px 6px;
 }
 
 #publications .publication .name {
-	font-weight: bold;
+     font-weight: bold;
 }
 
-#publications .attachment{
-	padding:4px 0 0 56px;
-	position:relative;
-	
+#publications .attachment {
+     padding: 4px 0px 0px 56px;
+     position: relative;
 }
+
 #publications .description {
-	margin-bottom:4px;
+     margin-bottom: 4px;
 }
-#publications .attachment a img{
-	position:absolute;
-	top:4px;
-	left:32px;
-	border:0;
+
+#publications .attachment a img {
+     border: 0px none;
+     left: 32px;
+     position: absolute;
+     top: 4px;
 }
 
 #publications .attachment a {
+    
 }
 
-#publications .attachment .size,
-#publications .attachment .description {
-	color:#333;
-	display:list-item;
+#publications .attachment .size, #publications .attachment .description {
+     color: #333333;
+     display: list-item;
 }
 
-#publications .attachment input[type=checkbox] {
-	position:absolute;
-	top:3px;
-	left:0;
+#publications .attachment input[type="checkbox"] {
+     left: 0px;
+     position: absolute;
+     top: 3px;
 }
 
 #empty-folder {
-	display: block;
-	font-size: 24px;
-	color: #CCC;
-	text-align: center;
+     color: #CCCCCC;
+     display: block;
+     font-size: 24px;
+     text-align: center;
 }
 
 #downloadZip-dialog p {
-	margin-top: 22px;
-	text-align: center;
-	font-size: 14px
+     font-size: 14px;
+     margin-top: 22px;
+     text-align: center;
 }
-
-
-
-
-
-

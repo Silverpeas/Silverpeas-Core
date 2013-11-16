@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,22 +23,21 @@
  */
 package com.silverpeas.sharing.model;
 
+import java.util.Date;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.silverpeas.sharing.services.NodeAccessControl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import java.util.Date;
 
 /**
  *
@@ -47,17 +46,18 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue("Node")
 public class NodeTicket extends Ticket {
+  private static final long serialVersionUID = 8560572170859334369L;
 
-  private static final NodeAccessControl accessControl = new NodeAccessControl();
+  private static final NodeAccessControl<Object> accessControl = new NodeAccessControl<Object>();
 
   public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-          Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
 
   public NodeTicket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-          Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
@@ -67,20 +67,18 @@ public class NodeTicket extends Ticket {
   }
 
   @Override
-  public ShareableAccessControl getAccessControl() {
+  public ShareableAccessControl<NodeTicket, Object> getAccessControl() {
     return accessControl;
   }
 
   @Override
   public ShareableResource<NodeDetail> getResource() {
-    NodeDetail node = null;
-    try {
-      NodeBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      NodeBm nodeBm = home.create();
-      node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()), getComponentId()));
-    } catch (Exception e) {
-      SilverTrace.error("fileSharing", "Ticket.getResource", "root.MSG_GEN_PARAM_VALUE", e);
+    NodeBm nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+    NodeDetail node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
+        getComponentId()));
+    if (node != null) {
+      return new ShareableNode(getToken(), node);
     }
-    return new ShareableNode(getToken(), node);
+    return null;
   }
 }

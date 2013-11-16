@@ -1,45 +1,45 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.comment.model;
 
-import com.google.common.base.Objects;
 import java.io.Serializable;
+
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * This object contains the info about PrimaryKey of document
+ *
  * @author Georgy Shakirin
  * @version 1.0
  */
-
 public class CommentPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = 3246647638847423692L;
 
   /**
    * Constructor declaration
+   *
    * @param id
    * @see
    */
@@ -50,6 +50,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
   /**
    * Constructs a new comment primary key from the specified identifier and Silverpeas component
    * identifier.
+   *
    * @param id the identifier of the comment.
    * @param componentId the identifier of the component to which the comment belongs.
    */
@@ -59,6 +60,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
+   *
    * @param id
    * @param spaceId
    * @param componentId
@@ -70,6 +72,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
+   *
    * @param id
    * @param pk
    * @see
@@ -81,7 +84,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
   /**
    * **********
    */
-
   @Override
   public String getRootTableName() {
     return "comment";
@@ -89,6 +91,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -99,6 +102,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
+   *
    * @param other
    * @return
    * @see
@@ -109,23 +113,25 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
       return false;
     }
     CommentPK otherPk = (CommentPK) other;
-    return Objects.equal(id, otherPk.getId()) && Objects.equal(space, otherPk.getSpace())
-        && Objects.equal(componentName, otherPk.getComponentName());
+    return ObjectUtils.equals(id, otherPk.getId()) && ObjectUtils.equals(space, otherPk.getSpace())
+        && ObjectUtils.equals(componentName, otherPk.getComponentName());
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   @Override
   public String toString() {
-    return "(id = " + getId() + ", space = " + getSpace()
-        + ", componentName = " + getComponentName() + ")";
+    return "(id = " + getId() + ", space = " + getSpace() + ", componentName = "
+        + getComponentName() + ")";
   }
 
   /**
    * Returns a hash code for the key
+   *
    * @return A hash code for this object
    */
   @Override

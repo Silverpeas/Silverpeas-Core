@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,9 +25,13 @@
 package com.silverpeas.importExport.control;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class ComponentImportExport {
 
+   final ResourceLocator resources = new ResourceLocator(
+      "org.silverpeas.importExport.settings.importSettings", "");
+    
   private UserDetail curentUserDetail = null;
   private String currentComponentId = null;
 

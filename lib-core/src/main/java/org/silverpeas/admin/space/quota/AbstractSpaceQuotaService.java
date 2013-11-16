@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@ package org.silverpeas.admin.space.quota;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
@@ -32,7 +33,6 @@ import org.silverpeas.quota.service.AbstractQuotaService;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
@@ -98,7 +98,7 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
     Quota quota = super.verify(key, countingOffset);
     while (key.isValid() && !key.getSpace().isRoot()) {
       key =
-          createKeyFrom(OrganizationControllerFactory.getFactory().getOrganizationController()
+          createKeyFrom(OrganisationControllerFactory.getFactory().getOrganisationController()
               .getSpaceInstById(key.getSpace().getDomainFatherId()));
       quota = super.verify(key, countingOffset);
     }

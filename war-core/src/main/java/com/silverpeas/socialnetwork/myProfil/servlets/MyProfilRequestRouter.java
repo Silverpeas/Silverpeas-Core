@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialnetwork.myProfil.servlets;
 
 import com.silverpeas.directory.servlets.ImageProfil;
@@ -35,19 +31,16 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -57,6 +50,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.util.crypto.CryptMD5;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
 
@@ -98,10 +96,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
 
-        boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() ||
-            (snUserFull.getUserFull().isPasswordValid() &&
-            snUserFull.getUserFull().isPasswordAvailable()) ||
-            myProfilSC.updatablePropertyExists());
+        boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() || (snUserFull.
+            getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable())
+            || myProfilSC.updatablePropertyExists());
 
         if (updateIsAllowed) {
           request.setAttribute("Action", "userModify");
@@ -112,8 +109,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
         request.setAttribute("isAdmin", myProfilSC.isAdmin());
         request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
-        request.setAttribute("minLengthPwd", myProfilSC.getMinLengthPwd());
-        request.setAttribute("blanksAllowedInPwd", myProfilSC.isBlanksAllowedInPwd());
         request.setAttribute("View", "MyInfos");
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdatePhoto) {
@@ -151,7 +146,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         socialNetworkHelper.publishStatus(myProfilSC, request);
         request.setAttribute("View", MyNetworks.name());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      }  else if (route == MyInvitations) {
+      } else if (route == MyInvitations) {
         MyInvitationsHelper helper = new MyInvitationsHelper();
         helper.getAllInvitationsReceived(myProfilSC, request);
         request.setAttribute("View", function);
@@ -201,24 +196,48 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   /**
    * method to change profile Photo
+   *
    * @param request
    * @param nameAvatar
    * @return String
-   * @throws IOException
    * @throws UtilException
    */
   protected String saveAvatar(HttpServletRequest request, String nameAvatar)
-      throws IOException, UtilException {
+      throws UtilException {
     List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+    String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     ImageProfil img = new ImageProfil(nameAvatar);
-    img.saveImage(file.getInputStream());
+    if (file != null && StringUtil.isDefined(file.getName())) {// Create or Update
+      // extension
+      String extension = FileRepositoryManager.getFileExtension(file.getName());
+      if (extension != null && extension.equalsIgnoreCase("jpeg")) {
+        extension = "jpg";
+      }
+
+      if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
+          equalsIgnoreCase(extension)) {
+        throw new UtilException("MyProfilRequestRouter.saveAvatar()",
+            SilverpeasRuntimeException.ERROR,
+            "", "Bad extension, .gif or .jpg or .png expected.");
+      }
+      try {
+        img.saveImage(file.getInputStream());
+      } catch (IOException e) {
+        throw new UtilException("MyProfilRequestRouter.saveAvatar()",
+            SilverpeasRuntimeException.ERROR,
+            "", "Problem while saving image.");
+      }
+    } else if ("yes".equals(removeImageFile)) {// Remove
+      img.removeImage();
+    }
     return nameAvatar;
   }
 
   /**
    * method to choose (x) contacts for display it in the page profil x is the number of contacts the
    * methode use Random rule
+   *
    * @param contactIds
    * @return List<SNContactUser>
    */
@@ -245,7 +264,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+    ResourceLocator authenticationSettings =
+        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
@@ -269,16 +290,25 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
           ? EncodeHelper.htmlStringToJavaString(userLoginQuestion)
           : currentUser.getLoginQuestion());
       String userLoginAnswer = request.getParameter("userLoginAnswer");
-      userLoginAnswer = (userLoginAnswer != null
-          ? EncodeHelper.htmlStringToJavaString(userLoginAnswer)
-          : currentUser.getLoginAnswer());
+
+      // user has filled a new login answer
+      if (StringUtil.isDefined(userLoginAnswer)) {
+        userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
+        // encrypt the answser if needed
+        boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
+        if (answerCrypted) {
+          userLoginAnswer = CryptMD5.encrypt(userLoginAnswer);
+        }
+      } else {
+        userLoginAnswer = currentUser.getLoginAnswer();
+      }
 
       // process extra properties
       Map<String, String> properties = new HashMap<String, String>();
       @SuppressWarnings("unchecked")
       Enumeration<String> parameters = request.getParameterNames();
-      String parameterName = null;
-      String property = null;
+      String parameterName;
+      String property;
       while (parameters.hasMoreElements()) {
         parameterName = parameters.nextElement();
         if (parameterName.startsWith("prop_")) {
@@ -306,8 +336,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc)
-      throws PeasCoreException {
+  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc) {
     request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
     request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
@@ -324,8 +353,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)
-      throws PeasCoreException {
+  private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc) {
     UserPreferences preferences = sc.getPreferences();
     preferences.setLanguage(request.getParameter("SelectedLanguage"));
     preferences.setLook(request.getParameter("SelectedLook"));
