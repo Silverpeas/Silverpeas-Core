@@ -33,9 +33,11 @@
 <tr>
 <td class="txtlibform"><%=resource.getString("GML.requiredField")%> :</td><td><input type="checkbox" name="Mandatory" value="true" <%=mandatoryChecked%>/></td>
 </tr>
+<% if (showMultiValuesParam) { %>
 <tr>
-<td class="txtlibform">Répétable :</td><td><input type="text" name="RepeatMax" value="<%=repeatMax%>" /> dont <input type="text" name="RepeatMandatory" value="<%=repeatMandatory%>"/> obligatoire(s)</td>
+<td class="txtlibform"><%=resource.getString("templateDesigner.field.multivalued")%> :</td><td><input type="checkbox" id="multivaluableChk" <%=multivaluableChecked%>/> <span id="multivaluableNb"><input type="text" name="NbMaxValues" value="<%=nbMaxValues%>" size="3"/> <%=resource.getString("templateDesigner.field.multivalued.max")%></span></td>
 </tr>
+<% } %>
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>

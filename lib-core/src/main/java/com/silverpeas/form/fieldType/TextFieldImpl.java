@@ -41,7 +41,7 @@ import java.util.List;
 public class TextFieldImpl extends TextField {
 
   private static final long serialVersionUID = 1L;
-  private String value = "";
+  private List<String> values = new ArrayList<String>();
   private static final String suggestionsQuery = "select distinct(f.fieldValue)"
       + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
       + " where t.templateId = r.templateId"
@@ -57,16 +57,16 @@ public class TextFieldImpl extends TextField {
    * Returns the string value of this field.
    */
   @Override
-  public String getStringValue() {
-    return value;
+  public List<String> getStringValues() {
+    return values;
   }
 
   /**
    * Set the string value of this field.
    */
   @Override
-  public void setStringValue(String value) {
-    this.value = value;
+  public void setStringValues(List<String> values) {
+    this.values = values;
   }
 
   /**

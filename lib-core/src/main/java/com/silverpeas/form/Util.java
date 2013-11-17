@@ -25,9 +25,11 @@
 package com.silverpeas.form;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -157,5 +159,9 @@ public class Util {
   public static boolean getBooleanValue(Map<String, String> parameters, String parameter) {
     String paramValue = parameters.containsKey(parameter) ? parameters.get(parameter) : "false";
     return Boolean.parseBoolean(paramValue);
+  }
+  
+  public static String list2String(List<String> list) {
+    return StringUtil.join(list, MultiValuableField.JOIN_SEPARATOR);
   }
 }

@@ -24,21 +24,22 @@
 
 package com.silverpeas.form;
 
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.Repeatable;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.jsp.JspWriter;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 /**
  * This abstract class implements the form interface and provides for all concretes classes a
@@ -52,8 +53,10 @@ public abstract class AbstractForm implements Form {
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
   
-  protected static final String REPEATED_FIELD_CSS_SHOW = "field-occurrence-shown";
-  protected static final String REPEATED_FIELD_CSS_HIDE = "field-occurrence-hidden";
+  public static final String REPEATED_FIELD_CSS_SHOW = "field-occurrence-shown";
+  public static final String REPEATED_FIELD_CSS_HIDE = "field-occurrence-hidden";
+  public static final String REPEATED_FIELD_SEPARATOR = "_|SP|_";
+  
 
   /**
    * Creates a new form from the specified template of records.
@@ -169,16 +172,11 @@ public abstract class AbstractForm implements Form {
 
             if (fieldDisplayer != null) {
               
-              int nbFieldsToDisplay = 1;
-              Repeatable repeatable = fieldTemplate.getRepeatable();
-              if (repeatable != null && repeatable.isRepeatable()) {
-                nbFieldsToDisplay = repeatable.getMax();
-              }
-              
+              int nbFieldsToDisplay = fieldTemplate.getMaximumNumberOfValues();              
               for (int i=0; i<nbFieldsToDisplay; i++) {
                 String currentFieldName = fieldName;
                 if (i > 0) {
-                  currentFieldName = fieldName+"_$SP$_"+i;
+                  currentFieldName = fieldName+REPEATED_FIELD_SEPARATOR+i;
                   ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
                   ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
                 }

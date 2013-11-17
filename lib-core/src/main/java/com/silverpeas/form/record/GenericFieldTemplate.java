@@ -82,7 +82,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   private boolean usedAsFacet = false;
   
   @XmlElement
-  private Repeatable repeatable;
+  private int maximumNumberOfValues = 1;
 
   /**
    * Builds a GenericFieldTemplate
@@ -501,19 +501,25 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       clone.setTemplateName(this.getTemplateName());
       clone.setTypeName(this.getTypeName());
       clone.setUsedAsFacet(isUsedAsFacet());
-      clone.setRepeatable(getRepeatable());
+      clone.setMaximumNumberOfValues(getMaximumNumberOfValues());
     } catch (FormException e) {
       throw new RuntimeException(e);
     }
     return clone;
   }
 
-  public void setRepeatable(Repeatable repeatable) {
-    this.repeatable = repeatable;
+  @Override
+  public int getMaximumNumberOfValues() {
+    return maximumNumberOfValues;
   }
-
-  public Repeatable getRepeatable() {
-    return repeatable;
+  
+  public void setMaximumNumberOfValues(int nb) {
+    maximumNumberOfValues = nb;
+  }
+  
+  @Override
+  public boolean isMultivaluable() {
+    return maximumNumberOfValues > 1;
   }
 
 }

@@ -20,11 +20,18 @@
  */
 package com.silverpeas.form.fieldType;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.form.AbstractMultiValuableField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.Util;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
@@ -33,7 +40,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
-public class UserField implements Field {
+public class UserField extends AbstractMultiValuableField {
 
   private static final long serialVersionUID = -861888647155176647L;
   /**
@@ -58,17 +65,17 @@ public class UserField implements Field {
   /**
    * Returns the user id referenced by this field.
    */
-  public String getUserId() {
-    return userId;
+  public List<String> getUserIds() {
+    return userIds;
   }
 
   /**
    * Set the userd id referenced by this field.
    */
-  public void setUserId(String userId) {
+  public void setUserIds(List<String> userIds) {
     SilverTrace.info("form", "UserField.setUserId",
-        "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
-    this.userId = userId;
+        "root.MSG_GEN_ENTER_METHOD", "userIds = " + userIds);
+    this.userIds = userIds;
   }
 
   /**
@@ -82,21 +89,25 @@ public class UserField implements Field {
    * Returns the string value of this field : aka the user name.
    */
   @Override
-  public String getValue() {
-    String theUserId = getUserId();
+  public List<String> getValues() {
+    String theUserIds = StringUtil.join(getUserIds(), ", ");
     SilverTrace.info("form", "UserField.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "userId = " + theUserId);
-    if (!StringUtil.isDefined(theUserId)) {
-      return theUserId;
+        "userIds = " + theUserIds);
+    if (!StringUtil.isDefined(theUserIds)) {
+      return getUserIds();
     }
 
-    UserDetail user = OrganisationControllerFactory.getOrganisationController().getUserDetail(
-        getUserId());
-    if (user == null) {
-      return "user(" + getUserId() + ")";
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    List<String> userNames = new ArrayList<String>();
+    for (String userId : getUserIds()) {
+      UserDetail user = oc.getUserDetail(userId);
+      if (user == null) {
+        userNames.add("user(" + userId + ")");
+      } else {
+        userNames.add(user.getDisplayedName());
+      }
     }
-
-    return user.getDisplayedName();
+    return userNames;
   }
 
   /**
@@ -104,29 +115,29 @@ public class UserField implements Field {
    * language parameter is unused.
    */
   @Override
-  public String getValue(String language) {
-    return getValue();
+  public List<String> getValues(String language) {
+    return getValues();
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
   @Override
-  public void setValue(String value) throws FormException {
+  public void setValues(List<String> values) throws FormException {
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
   @Override
-  public void setValue(String value, String language) throws FormException {
+  public void setValues(List<String> values, String language) throws FormException {
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
   @Override
-  public boolean acceptValue(String value) {
+  public boolean acceptValues(List<String> values) {
     return false;
   }
 
@@ -134,7 +145,7 @@ public class UserField implements Field {
    * Always returns false since a user reference can't be computed from a user name.
    */
   @Override
-  public boolean acceptValue(String value, String language) {
+  public boolean acceptValues(List<String> values, String language) {
     return false;
   }
 
@@ -142,63 +153,76 @@ public class UserField implements Field {
    * Returns the User referenced by this field.
    */
   @Override
-  public Object getObjectValue() {
-    if (getUserId() == null) {
+  public List<Object> getObjectValues() {
+    if (getUserIds() == null) {
       return null;
     }
-    return OrganisationControllerFactory.getOrganisationController().getUserDetail(getUserId());
+    List<Object> users = new ArrayList<Object>();
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    for (String userId : getUserIds()) {
+      if (StringUtil.isDefined(userId)) {
+        users.add(oc.getUserDetail(userId));
+      }
+    }
+    return users;
   }
 
   /**
    * Set user referenced by this field.
    */
   @Override
-  public void setObjectValue(Object value) throws FormException {
-    if (value instanceof UserDetail) {
-      setUserId(((UserDetail) value).getId());
-    } else if (value == null) {
-      setUserId("");
-    } else {
-      throw new FormException("UserField.setObjectValue",
-          "form.EXP_NOT_AN_USER");
+  public void setObjectValues(List<Object> values) throws FormException {
+    List<String> userIds = new ArrayList<String>();
+    for (Object value : values) {
+      if (value instanceof UserDetail) {
+        userIds.add(((UserDetail) value).getId());
+      } else if (value == null) {
+        userIds.add("");
+      } else {
+        throw new FormException("UserField.setObjectValue", "form.EXP_NOT_AN_USER");
+      }
     }
+    setUserIds(userIds);
   }
 
   /**
    * Returns true if the value is a String and this field isn't read only.
    */
   @Override
-  public boolean acceptObjectValue(Object value) {
-    if (value instanceof UserDetail) {
-      return !isReadOnly();
-    } else {
-      return false;
+  public boolean acceptObjectValues(List<Object> values) {
+    for (Object value : values) {
+      if (value instanceof UserDetail) {
+        // do nothing
+      } else {
+        return false;
+      }
     }
+    return !isReadOnly();
   }
 
   /**
    * Returns this field value as a normalized String : a user id
    */
   @Override
-  public String getStringValue() {
-    return getUserId();
+  public List<String> getStringValues() {
+    return getUserIds();
   }
 
   /**
    * Set this field value from a normalized String : a user id
    */
   @Override
-  public void setStringValue(String value) {
+  public void setStringValues(List<String> values) {
     SilverTrace.info("form", "UserField.setStringValue",
-        "root.MSG_GEN_ENTER_METHOD", "value = " + value);
-    setUserId(value);
+        "root.MSG_GEN_ENTER_METHOD", "values = " + StringUtil.join(values, ","));
+    setUserIds(values);
   }
 
   /**
    * Returns true if this field isn't read only.
    */
   @Override
-  public boolean acceptStringValue(String value) {
+  public boolean acceptStringValues(List<String> values) {
     return !isReadOnly();
   }
 
@@ -207,7 +231,7 @@ public class UserField implements Field {
    */
   @Override
   public boolean isNull() {
-    return (getUserId() == null);
+    return (getUserIds() == null);
   }
 
   /**
@@ -218,7 +242,7 @@ public class UserField implements Field {
    */
   @Override
   public void setNull() throws FormException {
-    setUserId(null);
+    setUserIds(null);
   }
 
   /**
@@ -226,12 +250,12 @@ public class UserField implements Field {
    */
   @Override
   public boolean equals(Object o) {
-    String s = getUserId();
+    String s = Util.list2String(getUserIds());
     if (s == null) {
       s = "";
     }
     if (o instanceof UserField) {
-      String t = ((UserField) o).getUserId();
+      String t = Util.list2String(((UserField) o).getUserIds());
       if (t == null) {
         t = "";
       }
@@ -246,22 +270,22 @@ public class UserField implements Field {
    */
   @Override
   public int compareTo(Object o) {
-    String s = getValue();
+    String s = Util.list2String(getValues());
     if (s == null) {
       s = "";
     }
     if (o instanceof UserField) {
-      String t = ((UserField) o).getValue();
+      String t = Util.list2String(((UserField) o).getValues());
       if (t == null) {
         t = "";
       }
 
       if (s.equals(t)) {
-        s = getUserId();
+        s = Util.list2String(getUserIds());
         if (s == null) {
           s = "";
         }
-        t = ((UserField) o).getUserId();
+        t = Util.list2String(((UserField) o).getUserIds());
         if (t == null) {
           t = "";
         }
@@ -274,11 +298,11 @@ public class UserField implements Field {
 
   @Override
   public int hashCode() {
-    String s = getUserId();
+    String s = Util.list2String(getUserIds());
     return ("" + s).hashCode();
   }
   /**
    * The referenced userId.
    */
-  private String userId = null;
+  private List<String> userIds = null;
 }

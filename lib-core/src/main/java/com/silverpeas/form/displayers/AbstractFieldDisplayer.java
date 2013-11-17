@@ -54,6 +54,12 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
     }
     return update(value, field, template, pageContext);
   }
+  
+  @Override
+  public List<String> updateValues(List<String> values, T field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
+    return update(values.get(0), field, template, pagesContext);
+  }
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, T field,

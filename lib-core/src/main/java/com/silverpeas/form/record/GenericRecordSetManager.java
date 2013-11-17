@@ -24,11 +24,13 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.AbstractMultiValuableField;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.FormRuntimeException;
+import com.silverpeas.form.MultiValuableField;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
@@ -55,6 +57,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -64,6 +67,7 @@ import org.silverpeas.util.crypto.CryptoException;
 public class GenericRecordSetManager {
 
   private static final GenericRecordSetManager instance = new GenericRecordSetManager();
+  private static final String SEPARATOR = "|"; 
 
   private final Map<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
 
@@ -906,23 +910,19 @@ public class GenericRecordSetManager {
     try {
       insert = con.prepareStatement(INSERT_FIELD);
       int recordId = record.getInternalId();
-      String[] fieldNames = record.getFieldNames();
-      Map<String, String> rows = new HashMap<String, String>();
-      for (String fieldName : fieldNames) {
-        Field field = record.getField(fieldName);
-        String fieldValue = field.getStringValue();
-        rows.put(fieldName, fieldValue);
-      }
+      
+      Map<String, String> rows = getRowsToStore(record, template.isEncrypted());
 
-      if (template.isEncrypted()) {
-        rows = getEncryptionService().encryptContent(rows);
-      }
-
-      for (String fieldName : rows.keySet()) {
+      for (String fieldNameIndexed : rows.keySet()) {
+        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
+        String fieldName = fieldNameAndIndex[0];
+        int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
+        
         String fieldValue = rows.get(fieldName);
         insert.setInt(1, recordId);
         insert.setString(2, fieldName);
         insert.setString(3, fieldValue);
+        insert.setInt(4, fieldValueIndex);
         insert.execute();
       }
     } finally {
@@ -993,25 +993,36 @@ public class GenericRecordSetManager {
       select = con.prepareStatement(SELECT_FIELDS);
       select.setInt(1, record.getInternalId());
       rs = select.executeQuery();
-      Map<String, String> rows = new HashMap<String, String>();
+      Map<String, String> rows = new TreeMap<String, String>();
       while (rs.next()) {
         String fieldName = rs.getString("fieldName");
         String fieldValue = rs.getString("fieldValue");
+        int fieldValueIndex = rs.getInt("fieldvalueindex");
 
-        rows.put(fieldName, fieldValue);
+        rows.put(fieldName+SEPARATOR+fieldValueIndex, fieldValue);
       }
 
       if (template.isEncrypted()) {
         rows = getEncryptionService().decryptContent(rows);
       }
 
-      for(String fieldName : rows.keySet()) {
+      for(String fieldNameIndexed : rows.keySet()) {
+        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
+        String fieldName = fieldNameAndIndex[0];
+        int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
         Field field = record.getField(fieldName);
-        String fieldValue = rows.get(fieldName);
+        String fieldValue = rows.get(fieldNameIndexed);
         if (field != null) {// We have found a field corresponding to the fieldName
-          SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
-              "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
-          field.setStringValue(fieldValue);
+          if (field instanceof MultiValuableField) {
+            SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
+                "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + "fieldValueIndex = " +
+                    fieldValueIndex + ", fieldValue=" + fieldValue);
+            ((MultiValuableField) field).addValue(fieldValue);
+          } else {
+            SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
+                "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
+            field.setStringValue(fieldValue);
+          }
         }
       }
     } finally {
@@ -1056,29 +1067,17 @@ public class GenericRecordSetManager {
     try {
       update = con.prepareStatement(UPDATE_FIELD);
       int recordId = record.getInternalId();
-      String[] fieldNames = record.getFieldNames();
-      Map<String, String> rows = new HashMap<String, String>();
-      for (String fieldName : fieldNames) {
-        Field field = record.getField(fieldName);
-        String fieldValue = field.getStringValue();
+      Map<String, String> rows = getRowsToStore(record, template.isEncrypted());
 
-        SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
-            "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-            + ", fieldValue = " + fieldValue
-            + ", recordId = " + recordId);
-
-        rows.put(fieldName, fieldValue);
-      }
-
-      if (template.isEncrypted()) {
-        rows = getEncryptionService().encryptContent(rows);
-      }
-
-      for (String fieldName : rows.keySet()) {
-        String fieldValue = rows.get(fieldName);
+      for (String fieldNameIndexed : rows.keySet()) {
+        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
+        String fieldName = fieldNameAndIndex[0];
+        int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
+        String fieldValue = rows.get(fieldNameIndexed);
         update.setString(1, fieldValue);
         update.setInt(2, recordId);
         update.setString(3, fieldName);
+        update.setInt(4, fieldValueIndex);
 
         int nbRowsCount = update.executeUpdate();
         if (nbRowsCount == 0) {
@@ -1089,7 +1088,7 @@ public class GenericRecordSetManager {
           insert.setInt(1, recordId);
           insert.setString(2, fieldName);
           insert.setString(3, fieldValue);
-
+          insert.setInt(4, fieldValueIndex);
           insert.execute();
         }
       }
@@ -1097,6 +1096,35 @@ public class GenericRecordSetManager {
       DBUtil.close(update);
       DBUtil.close(insert);
     }
+  }
+  
+  private Map<String, String> getRowsToStore(GenericDataRecord record, boolean crypt)
+      throws FormException, CryptoException {
+    Map<String, String> rows = new HashMap<String, String>();
+    for (String fieldName : record.getFieldNames()) {
+      Field field = record.getField(fieldName);
+      String fieldNameIndexed = fieldName+SEPARATOR+"0";
+      if (field instanceof AbstractMultiValuableField) {
+        List<String> values = ((AbstractMultiValuableField) field).getStringValues();
+        if (values != null && !values.isEmpty()) {
+          for (int i=0; i<values.size(); i++) {
+            fieldNameIndexed = fieldName+SEPARATOR+i;
+            rows.put(fieldNameIndexed, values.get(i));
+          }
+        }
+      } else {
+        rows.put(fieldNameIndexed, field.getStringValue());
+      }
+      
+      SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
+          "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
+          + ", fieldValue = " + field.getStringValue()
+          + ", recordId = " + record.getInternalId());
+    }
+    if (crypt) {
+      rows = getEncryptionService().encryptContent(rows);
+    }
+    return rows;
   }
 
   /**
@@ -1213,16 +1241,16 @@ public class GenericRecordSetManager {
 
   static final private String FIELDS_TABLE = "SB_FormTemplate_TextField";
 
-  static final private String FIELDS_COLUMNS = "recordId,fieldName,fieldValue";
+  static final private String FIELDS_COLUMNS = "recordId,fieldName,fieldValue,fieldValueIndex";
 
-  static final private String SELECT_FIELDS = "SELECT recordId, fieldName, fieldValue FROM " +
-      "sb_formtemplate_textfield WHERE recordId=?";
+  static final private String SELECT_FIELDS = "SELECT recordId, fieldName, fieldValue, fieldValueIndex FROM " +
+      "sb_formtemplate_textfield WHERE recordId=? order by fieldName, fieldValueIndex";
 
   static final private String INSERT_FIELD = "insert into " + FIELDS_TABLE
-      + "(" + FIELDS_COLUMNS + ")" + " values (?,?,?)";
+      + "(" + FIELDS_COLUMNS + ")" + " values (?,?,?,?)";
 
   static final private String UPDATE_FIELD = "update " + FIELDS_TABLE
-      + " set fieldValue=? where recordId=? and fieldName=?";
+      + " set fieldValue=? where recordId=? and fieldName=? and fieldValueIndex=?";
 
   static final private String DELETE_TEMPLATE_RECORDS_FIELDS = "delete from "
       + FIELDS_TABLE + " where recordId in"

@@ -77,9 +77,6 @@ public class XmlFormTest {
     context.bind(JNDINames.FORMTEMPLATE_DATASOURCE, ds);
     PublicationTemplateManager.templateDir = TARGET_DIR + SEPARATOR + "test-classes"
             + SEPARATOR + "templateRepository";
-    PublicationTemplateManager.mappingRecordTemplateFilePath = TARGET_DIR + SEPARATOR
-            + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping"
-            + SEPARATOR + "templateMapping.xml";
     template = PublicationTemplateManager.getInstance().loadPublicationTemplate("MyForm.xml");
     DBUtil.clearTestInstance();
   }

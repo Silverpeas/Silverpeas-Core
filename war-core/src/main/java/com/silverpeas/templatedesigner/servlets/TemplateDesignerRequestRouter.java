@@ -24,6 +24,17 @@
 
 package com.silverpeas.templatedesigner.servlets;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.crypto.CryptoException;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
@@ -33,29 +44,18 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Label;
 import com.silverpeas.form.record.Parameter;
 import com.silverpeas.form.record.ParameterValue;
-import com.silverpeas.form.record.Repeatable;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
 import com.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.crypto.CryptoException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
 
 public class TemplateDesignerRequestRouter extends
     ComponentRequestRouter<TemplateDesignerSessionController> {
@@ -410,15 +410,9 @@ public class TemplateDesignerRequestRouter extends
     field.setSearchable(searchable);
     field.setUsedAsFacet(usedAsFacet);
     
-    String repeatMax = request.getParameter("RepeatMax");
-    if (StringUtil.isInteger(repeatMax)) {
-      String repeatMandatory = request.getParameter("RepeatMandatory");
-      int nbMandatory = -1;
-      if (StringUtil.isInteger(repeatMandatory)) {
-        nbMandatory = Integer.parseInt(repeatMandatory);
-      }
-      Repeatable repeatable = new Repeatable(Integer.parseInt(repeatMax), nbMandatory);
-      field.setRepeatable(repeatable);
+    String nbMaxValues = request.getParameter("NbMaxValues");
+    if (StringUtil.isInteger(nbMaxValues)) {
+      field.setMaximumNumberOfValues(Integer.parseInt(nbMaxValues));
     }
 
     Enumeration<String> paramNames = request.getParameterNames();

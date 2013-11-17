@@ -99,6 +99,20 @@ public interface FieldDisplayer<T extends Field> {
 */
   public List<String> update(String value, T field, FieldTemplate template,
           PagesContext pagesContext) throws FormException;
+  
+  /**
+   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
+   * the request. @throw FormException if the field type is not a managed type. @throw FormException
+   * if the field doesn't accept the new value.
+   * @param value
+   * @param field
+   * @param template
+   * @param pagesContext
+   * @return
+   * @throws FormException
+   */
+  public List<String> updateValues(List<String> values, T field, FieldTemplate template,
+            PagesContext pagesContext) throws FormException;
 
   /*
 * Indique si le champ affiche autorise l'affichage de la notion d'obligation de saisie du champs
