@@ -48,7 +48,7 @@ public class SequenceField extends TextField {
       + " and f.fieldName = ?"
       + " and t.externalId like ?";
   private static final int NUMBER_ERROR = -1;
-  private String value = "";
+  private List<String> values = new ArrayList<String>();
 
   public SequenceField() {
     super();
@@ -60,28 +60,18 @@ public class SequenceField extends TextField {
   }
 
   @Override
-  public void setStringValue(String value) {
-    this.value = value;
+  public void setStringValues(List<String> values) {
+    this.values = values;
   }
 
   @Override
-  public String getStringValue() {
-    return value;
+  public List<String> getStringValues() {
+    return values;
   }
 
   @Override
   public boolean isReadOnly() {
     return false;
-  }
-
-  @Override
-  public boolean acceptValue(String value, String language) {
-    return !isReadOnly();
-  }
-
-  @Override
-  public boolean acceptValue(String value) {
-    return !isReadOnly();
   }
 
   /**

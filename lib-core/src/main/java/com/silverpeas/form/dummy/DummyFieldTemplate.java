@@ -168,7 +168,13 @@ public class DummyFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  public Repeatable getRepeatable() {
-    return new Repeatable();
+  public int getMaximumNumberOfValues() {
+    return 1;
   }
+  
+  @Override
+  public boolean isMultivaluable() {
+    return false;
+  }
+  
 }

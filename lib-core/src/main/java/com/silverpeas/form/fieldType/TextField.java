@@ -20,8 +20,15 @@
  */
 package com.silverpeas.form.fieldType;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.form.AbstractMultiValuableField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.MultiValuableField;
+import com.silverpeas.form.Util;
+import com.silverpeas.util.StringUtil;
 
 /**
  * A TextField stores a text value.
@@ -29,7 +36,7 @@ import com.silverpeas.form.FormException;
  * @see Field
  * @see FieldDisplayer
  */
-public abstract class TextField implements Field {
+public abstract class TextField extends AbstractMultiValuableField {
 
   private static final long serialVersionUID = 983277921021971664L;
   /**
@@ -58,8 +65,8 @@ public abstract class TextField implements Field {
    * Returns the string value of this field.
    */
   @Override
-  public String getValue() {
-    return getStringValue();
+  public List<String> getValues() {
+    return getStringValues();
   }
 
   /**
@@ -67,8 +74,8 @@ public abstract class TextField implements Field {
    * language parameter is unused.
    */
   @Override
-  public String getValue(String language) {
-    return getStringValue();
+  public List<String> getValues(String language) {
+    return getStringValues();
   }
 
   /**
@@ -78,8 +85,8 @@ public abstract class TextField implements Field {
    * @throw FormException when the string value is ill formed.
    */
   @Override
-  public void setValue(String value) throws FormException {
-    setStringValue(value);
+  public void setValues(List<String> values) throws FormException {
+    setStringValues(values);
   }
 
   /**
@@ -90,8 +97,8 @@ public abstract class TextField implements Field {
    * @throw FormException when the string value is ill formed.
    */
   @Override
-  public void setValue(String value, String language) throws FormException {
-    setStringValue(value);
+  public void setValues(List<String> values, String language) throws FormException {
+    setStringValues(values);
   }
 
   /**
@@ -99,7 +106,7 @@ public abstract class TextField implements Field {
    * value is accepted unless the field is read only.
    */
   @Override
-  public boolean acceptValue(String value) {
+  public boolean acceptValues(List<String> values) {
     return !isReadOnly();
   }
 
@@ -108,7 +115,7 @@ public abstract class TextField implements Field {
    * value is accepted unless the field is read only.
    */
   @Override
-  public boolean acceptStringValue(String value) {
+  public boolean acceptStringValues(List<String> values) {
     return !isReadOnly();
   }
 
@@ -117,7 +124,7 @@ public abstract class TextField implements Field {
    * value is accepted unless the field is read only.
    */
   @Override
-  public boolean acceptValue(String value, String language) {
+  public boolean acceptValues(List<String> values, String language) {
     return !isReadOnly();
   }
 
@@ -125,8 +132,8 @@ public abstract class TextField implements Field {
    * Returns the value of this field.
    */
   @Override
-  public Object getObjectValue() {
-    return getStringValue();
+  public List getObjectValues() {
+    return getStringValues();
   }
 
   /**
@@ -136,16 +143,17 @@ public abstract class TextField implements Field {
    * @throw FormException when the value is not a String.
    */
   @Override
-  public void setObjectValue(Object value) throws FormException {
-    if (value instanceof String) {
-      setStringValue((String) value);
-    } else {
-      if (value != null) {
-        throw new FormException("TextField.setObjectValue",
-            "form.EXP_NOT_A_STRING");
-      } else {
-        setNull();
+  public void setObjectValues(List<Object> values) throws FormException {
+    List<String> strings = new ArrayList<String>();
+    for (Object object : values) {
+      if (object instanceof String) {
+        strings.add((String) object);
+      } else if (object != null) {
+        throw new FormException("TextField.setObjectValue", "form.EXP_NOT_A_STRING");
       }
+    }
+    if (strings.isEmpty()) {
+      setNull();
     }
   }
 
@@ -153,12 +161,16 @@ public abstract class TextField implements Field {
    * Returns true if the value is a String and this field isn't read only.
    */
   @Override
-  public boolean acceptObjectValue(Object value) {
-    if (value instanceof String) {
-      return !isReadOnly();
-    } else {
-      return false;
+  public boolean acceptObjectValues(List<Object> values) {
+    List<String> strings = new ArrayList<String>();
+    for (Object object : values) {
+      if (object instanceof String) {
+        strings.add((String) object);
+      } else {
+        return false;
+      }
     }
+    return !isReadOnly();
   }
 
   /**
@@ -166,7 +178,7 @@ public abstract class TextField implements Field {
    */
   @Override
   public boolean isNull() {
-    return (getStringValue() == null || getStringValue().trim().equals(""));
+    return (getStringValues() == null || !StringUtil.isDefined(StringUtil.join(getStringValues(), null)));
   }
 
   /**
@@ -177,7 +189,7 @@ public abstract class TextField implements Field {
    */
   @Override
   public void setNull() throws FormException {
-    setStringValue(null);
+    setStringValues(null);
   }
 
   /**
@@ -185,19 +197,19 @@ public abstract class TextField implements Field {
    */
   @Override
   public boolean equals(Object o) {
-    String s = getStringValue();
+    String s = Util.list2String(getStringValues());
     if (s == null) {
       s = "";
     }
 
     if (o instanceof TextField) {
-      String t = ((TextField) o).getStringValue();
+      String t = Util.list2String(((TextField) o).getStringValues());
       if (t == null) {
         t = "";
       }
       return s.equalsIgnoreCase(t);
-    } else if (o instanceof Field) {
-      String t = ((Field) o).getValue("");
+    } else if (o instanceof MultiValuableField) {
+      String t = Util.list2String(((MultiValuableField) o).getValues());
       if (t == null) {
         t = "";
       }
@@ -212,18 +224,18 @@ public abstract class TextField implements Field {
    */
   @Override
   public int compareTo(Object o) {
-    String s = getStringValue();
+    String s = Util.list2String(getStringValues());
     if (s == null) {
       s = "";
     }
     if (o instanceof TextField) {
-      String t = ((TextField) o).getStringValue();
+      String t = Util.list2String(((TextField) o).getStringValues());
       if (t == null) {
         t = "";
       }
       return s.compareTo(t);
-    } else if (o instanceof Field) {
-      String t = ((Field) o).getValue("");
+    } else if (o instanceof MultiValuableField) {
+      String t = Util.list2String(((MultiValuableField) o).getValues());
       if (t == null) {
         t = "";
       }
@@ -235,7 +247,7 @@ public abstract class TextField implements Field {
 
   @Override
   public int hashCode() {
-    String s = getStringValue();
+    String s = Util.list2String(getStringValues());
     return ("" + s).toLowerCase().hashCode();
   }
 }

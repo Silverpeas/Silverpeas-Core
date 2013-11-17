@@ -126,4 +126,14 @@ public class MyFieldTemplate implements FieldTemplate {
     return false;
   }
 
+  @Override
+  public int getMaximumNumberOfValues() {
+    return 1;
+  }
+  
+  @Override
+  public boolean isMultivaluable() {
+    return false;
+  }
+
 }

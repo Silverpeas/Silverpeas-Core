@@ -7,20 +7,22 @@ Iterator<FieldTemplate> existingFields = (Iterator<FieldTemplate>) request.getAt
 
 String name = "";
 String mandatoryChecked = "";
-int repeatMax = 0;
-int repeatMandatory = 0;
+int nbMaxValues = 1;
+String multivaluableChecked = "";
 String searchable = "";
 String usedAsFacet = "";
 boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
 boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
+boolean showMultiValuesParam = "text".equals(displayer);
+String checked = "checked=\"checked\"";
 
 if (field != null) {
 	name 			= field.getFieldName();
-	if (field.getRepeatable() != null) {
-		repeatMax = field.getRepeatable().getMax();
-		repeatMandatory = field.getRepeatable().getMandatory();
+	if (field.isMultivaluable()) {
+		nbMaxValues = field.getMaximumNumberOfValues();
+		multivaluableChecked = checked;
 	}
 	actionForm 		= "UpdateField";
 	
@@ -36,15 +38,15 @@ if (field != null) {
 	parameters = field.getParameters("fr");
 		
 	if (field.isMandatory()) {
-		mandatoryChecked = "checked=\"checked\"";
+		mandatoryChecked = checked;
 	}
 		
 	if (field.isSearchable()) {
-		searchable = "checked=\"checked\"";
+		searchable = checked;
 	}
 	
 	if (field.isUsedAsFacet()) {
-		usedAsFacet = "checked=\"checked\"";
+		usedAsFacet = checked;
 	}
 }
 %>
@@ -132,4 +134,23 @@ if (field != null) {
      	}
      	return result;
 	}
+	
+	function checkMultivaluedVisibility() {
+	  if ($("#multivaluableChk").is(":checked")) {
+		$("#multivaluableNb").show();
+	  } else {
+		$("#multivaluableNb").hide();
+		$("#multivaluableNb input").val('1');
+	  }
+	}
+	
+	$(document).ready(
+		function () {
+			$( "#multivaluableChk" ).change(function() {
+			  checkMultivaluedVisibility();
+			});
+			
+			checkMultivaluedVisibility();
+		}
+	);
 </script>

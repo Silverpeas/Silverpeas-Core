@@ -55,7 +55,7 @@ import org.silverpeas.servlet.FileUploadUtil;
  * @see Form
  * @see FieldDisplayer
  */
-public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
+public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<UserField> {
 
   /**
    * Returns the name of the managed types.
@@ -134,10 +134,11 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     String fieldName = template.getFieldName();
 
     if (!field.getTypeName().equals(UserField.TYPE)) {
-      SilverTrace.info("form", "UserFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
+      SilverTrace.info("form", "UserFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          UserField.TYPE);
     } else {
-      userId = field.getUserId();
+      //userId = field.getUserId();
+      //TODO
     }
     if (!field.isNull()) {
       userName = field.getValue();
@@ -203,14 +204,14 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
   }
 
   @Override
-  public List<String> update(String newId, UserField field, FieldTemplate template,
+  public List<String> updateValues(List<String> values, UserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
 
     if (UserField.TYPE.equals(field.getTypeName())) {
-      if (!StringUtil.isDefined(newId)) {
+      if (values == null || values.isEmpty()) {
         field.setNull();
       } else {
-        field.setUserId(newId);
+        field.setUserIds(values);
       }
     } else {
       throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",

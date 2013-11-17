@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import com.silverpeas.form.displayers.AbstractFieldDisplayer;
 import com.silverpeas.util.CollectionUtil;
 
 import org.apache.commons.fileupload.FileItem;
@@ -34,7 +35,7 @@ import org.apache.commons.fileupload.FileItem;
 /**
  * A displayer of a MyField object dedicated to tests.
  */
-public class MyFieldDisplayer implements FieldDisplayer<Field> {
+public class MyFieldDisplayer extends AbstractFieldDisplayer<Field> {
 
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)

@@ -106,6 +106,8 @@ public interface FieldTemplate {
   
   public boolean isUsedAsFacet();
   
-  public Repeatable getRepeatable();
+  public int getMaximumNumberOfValues();
+  
+  public boolean isMultivaluable();
 
 }

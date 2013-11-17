@@ -432,25 +432,6 @@ public class XmlForm extends AbstractForm {
                 }
               }
               
-              int nbFieldsToDisplay = 1;
-              Repeatable repeatable = fieldTemplate.getRepeatable();
-              if (repeatable != null && repeatable.isRepeatable()) {
-                nbFieldsToDisplay = repeatable.getMax();
-              }
-              
-              for (int i=0; i<nbFieldsToDisplay; i++) {
-                String currentFieldName = fieldName;
-                String currentVisibility = AbstractForm.REPEATED_FIELD_CSS_SHOW;
-                if (i > 0) {
-                  currentFieldName = fieldName+"_$SP$_"+i;
-                  ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
-                  ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
-                  if (field.isNull()) {
-                    currentVisibility = AbstractForm.REPEATED_FIELD_CSS_HIDE;
-                  }
-                }
-                
-                out.println("<div id=\"field_"+currentFieldName+"\" class=\"field_"+fieldName+" "+currentVisibility+"\">");
                 try {
                   fieldDisplayer.display(out, field, fieldTemplate, pc);
                 } catch (FormException fe) {
@@ -461,13 +442,6 @@ public class XmlForm extends AbstractForm {
                     && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
                   mandatory = true;
                 }
-                out.println("</div>");
-              }
-              if (repeatable != null && repeatable.isRepeatable()) {
-                out.println("<a href=\"#\" id=\"moreField-"+fieldName+"\" onclick=\"showOneMoreField('"+fieldName+"');\">");
-                out.println("Ajouter un champ...");
-                out.println("</a>");
-              }
               out.println("</td>");
               out.println("</tr>");
               out.flush();

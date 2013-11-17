@@ -33,7 +33,6 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.record.Parameter;
-import com.silverpeas.form.record.Repeatable;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 
 /**
@@ -152,8 +151,13 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   }
   
   @Override
-  public Repeatable getRepeatable() {
-    return new Repeatable();
+  public int getMaximumNumberOfValues() {
+    return 1;
+  }
+    
+  @Override
+  public boolean isMultivaluable() {
+    return false;
   }
 
   /**
