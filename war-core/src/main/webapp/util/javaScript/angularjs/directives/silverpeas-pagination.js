@@ -27,15 +27,14 @@
   /**
    * Directives to generate an HTML paginator. It depends on the JQuery plugin smartpaginator.
    *
-   * It accepts 4 attributes:
-   * @property {string} items - the identifier of the HTML element that contains the items to paginate
+   * It accepts 3 attributes:
    * @property {expression} pageSize - the count of items to render per page
    * @property {expression} itemsSize - the total size of the items to paginate
    * @property {function} onPage - the callback to invoke at each page change
    *
    * The following example illustrates two possible use of the directive:
-   * @example<silverpeas-search label='search something' query='searchText'></silverpeas-search>
-   * @example <silverpeas-search label='search something' query='searchText'></div>
+   * @example <silverpeas-pagination page-size="pageSize" items-size="items.maxlength" on-page="changePage(page)"></silverpeas-pagination>
+   * @example <div silverpeas-pagination page-size="pageSize" items-size="items.maxlength" on-page="changePage(page)"></div>
    * (you can replace div by any other HTML element)
    */
   angular.module('silverpeas.directives').directive('silverpeasPagination', function() {
@@ -43,7 +42,6 @@
       template: '<div class="pageNav_silverpeas"></div>',
       restrict: 'AE',
       scope: {
-        items: '@',
         pageSize: '=',
         itemsSize: '=',
         onPage: '&'
@@ -61,8 +59,6 @@
               totalrecords: scope.itemsSize,
               recordsperpage: scope.pageSize,
               length: 6,
-              datacontainer: scope.items,
-              dataelement: 'li',
               next: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowRight.gif'}),
               prev: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowLeft.gif'}),
               first: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleLeft.gif'}),

@@ -30,11 +30,11 @@
    * It defines two attributes:
    * @property {string} label - an optional label to display in the input box; it will affect only
    * the input box value and not the query variable.
-   * @property {expression} query - a scope data to which the search query will be set.
+   * @property {ngModel} ng-model - the ngModel directive bound to the query passed by the user.
    *
    * The following example illustrates two possible use of the directive:
-   * @example <silverpeas-search label='search something' query='searchText'></silverpeas-search>
-   * @example <silverpeas-search label='search something' query='searchText'></div>
+   * @example <silverpeas-search label='search something' ng-model='searchText'></silverpeas-search>
+   * @example <div silverpeas-search label='search something' ng-model='searchText'></div>
    * (you can replace div by any other HTML element)
    */
   angular.module('silverpeas.directives').directive('silverpeasSearch', function() {

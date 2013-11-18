@@ -119,7 +119,7 @@
                   <a href="#" ng-show="selectedGroups.indexOf(group) < 0" ng-click="selectGroup(group)" id="{{ 'add_group_' + group.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add group"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
-              <silverpeas-pagination id="group_list_pagination" items="group_list" page-size="groupPageSize" items-size="totalGroupsSize" on-page="changeGroupListingPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination page-size="groupPageSize" items-size="totalGroupsSize" on-page="changeGroupListingPage(page)"></silverpeas-pagination>
             </div>
           </div>
         </c:if>
@@ -137,7 +137,7 @@
                   <a href="#" ng-show="selectedUsers.indexOf(user) < 0" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
-              <silverpeas-pagination id="user_list_pagination" items="user_list" page-size="userPageSize" items-size="totalUsersSize" on-page="changeUserListingPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination page-size="userPageSize" items-size="totalUsersSize" on-page="changeUserListingPage(page)"></silverpeas-pagination>
             </div>
           </div>
         </c:if>
@@ -160,7 +160,7 @@
                   <a ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
                 </li>
               </ul>
-              <silverpeas-pagination id="selected_group_list_pagination" items="selected_group_list" page-size="groupSelectionPageSize" items-size="selectedGroups.length()" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination page-size="groupSelectionPageSize" items-size="selectedGroups.length()" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
             </div>
           </div>
           </c:if>
@@ -178,7 +178,7 @@
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                 </li>
               </ul>
-              <silverpeas-pagination id="selected_user_list_pagination" items="selected_user_list" page-size="userSelectionPageSize" items-size="selectedUsers.length()" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
+              <silverpeas-pagination page-size="userSelectionPageSize" items-size="selectedUsers.length()" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
             </div>
           </div>
           </c:if>
