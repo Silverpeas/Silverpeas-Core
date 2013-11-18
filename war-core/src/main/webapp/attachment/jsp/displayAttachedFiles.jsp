@@ -41,7 +41,7 @@
 
 <%@ include file="checkAttachment.jsp"%>
 
-<fmt:setLocale value="${requestScope.Language}" />
+<fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
 <fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
