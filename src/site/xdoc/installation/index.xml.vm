@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Silverpeas Installation Ways</title>
+    <author>Miguel Moquillon</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <p>
+      There is different ways to install Silverpeas according to your aims.
+    </p>
+    <section name="Try Silverpeas">
+      <p>
+        <img src="../images/logos/logo_izPack.png" alt="izpack" style="padding-right:10px;float:left;position:relative;"/>
+        <br/>We provide an easy way to try Silverpeas using 
+        <a href="http://izpack.org/">Izpack</a> with a pre-configured JBoss Server and an H2 Database.</p>
+      <p>
+        You can find how to get in <a href="izpack.html">our dedicated page</a> how to get and use our installer.
+      </p>
+    </section>
+    <section name="Use one of our GNU/Linux Native Packages">
+      <p>
+        <img src="../images/logos/tux.gif" alt="izpack" style="padding-right:10px;float:left;position:relative;"/>
+        <br/>We are also providing GNU/Linux native packaging of Silverpeas. So if you want to give it a try go to
+        <a href="http://www.silverpeas.org/repo/index.html">our Debian and RPM packages repositories</a>
+      </p>
+      <p>These packages are ready for both a try or a production use, but we don't guarantee the upgrade will work fine between major versions of Silverpeas.</p>
+      <p>If you want to help us to provide a better packaging or propose new formats, feel free to look at the <a href="http://github.com/ehsavoie/silverpeas-native-packages">Github project</a> or to fund our efforts.</p>
+    </section>
+    <section name="Install in production">
+      <p>
+        You whish to keep control on the installation process or to you whish to install Silverpeas in one of your production-ready servers running either with
+        a Unix system or with MS-Windows, then please consult the instructions on <a href="installation.html">how to install Silverpeas</a>.
+      </p>
+    </section>
+    <section name="Ready for the Cloud">
+      <p>
+        <img src="../images/logos/logo_usharesoft.png" alt="usharesoft" style="padding-right:10px;float:left;position:relative;"/>
+        <br/>Silverpeas is also ready to be deployed in your cloud, thanks to our partner <a href="http://www.usharesoft.com">UShareSoft</a>. So if you want to give it a try go to
+        <a href="cloud.html">our page</a> explaining how to get a cloud-ready image of Silverpeas.
+      </p>
+    </section>
+    <section name="Problems">
+      <p>If you encounter a problem during installation or if you have any question, you can post them on the <a href="http://groups.google.com/group/silverpeas-users" >users mailing-list</a></p>
+    </section>
+  </body>
+</document>

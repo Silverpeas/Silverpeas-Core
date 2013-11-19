@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Deploy Silverpeas in the Cloud</title>
+    <author>Miguel Moquillon</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Deploy Silverpeas in the Cloud">
+      <p>
+        <img src="../images/logos/logo_usharesoft.png" alt="UShareSoft" style="padding-right:10px;float:left;position:relative;"/>
+        <br/>Thanks to our partner
+        <a href="http://www.usharesoft.com">UShareSoft</a>, Silverpeas is ready to be deployed into the Cloud. For doing, we provide
+        an appliance template with the latest stable version of Silverpeas from which you can generate an image for your virtualized
+        environment.
+      </p>
+
+      <section name="Generate your cloud-ready image of Silverpeas">
+        <p>
+          Our appliance template is available in the <a href="https://www.usharesoft.com/marketplace/">UShareSoft marketplace</a>.
+        </p>
+        <img src="../images/snapshot-marketplace.png" alt="The Marketplace" style="text-align:center;float:center;margin-bottom:1em;"/>
+        <p>
+          First, you have to sign in to the marketplace in order to access our appliance template. If you don't have an account,
+          you can sign up for (it is free). Then, once logged, select our appliance template, click on the <code>Generate</code>
+          button, below our logo. At this point, several type of virtual images are proposed to you, one for each virtual environment
+          (Amanzon, CloudStack, Eucalyptus, ...). In order to generate a usable image of Silverpeas, we recommend you to start with an enough disk
+          space matching your first use of Silverpeas and to set at least 4GB as memory size. (According to the virtual image format like
+          <a href="http://en.wikipedia.org/wiki/Open_Virtualization_Format">OVA</a>, the memory size can you not to be asked.)
+          Once an image generated, you can download it onto your machine and then deploy it to your Cloud.
+        </p>
+        <p>
+          You can then subscribe to one of our support service. For doing, please visit our <a href="http://www.silverpeas.org/docs/core/support.html">support page</a>.
+        </p>
+      </section>
+
+      <section name="About UShareSoft">
+        <p>
+          <a href="http://www.usharesoft.com">UShareSoft</a> is a French company that simplifies the delivery and the management of software
+          for virtualized environments by providing to enterprises, ISV, and cloud providers a cloud software marketplace.
+        </p>
+        <p>
+          UShareSoft's UForge platform lets customers build and maintain custom cloud server templates; deliver applications on-demand
+          with a cloud software marketplace; and migrate physical or virtual server workloads to the cloud, or from one cloud to another.
+          UShareSoft has headquarters in Europe, an R&amp;D center in Argentina, and offices in the United States and Japan.
+        </p>
+      </section>
+    </section>
+  </body>
+</document>
