@@ -27,51 +27,7 @@ package org.silverpeas.cache.service;
  * User: Yohann Chastagnier
  * Date: 11/09/13
  */
-public interface CacheService {
-
-  /**
-   * Gets an element from the cache.
-   * @param key
-   * @return
-   */
-  Object get(Object key);
-
-  /**
-   * Gets a typed element from the cache.
-   * Null is returned if an element exists for the given key but the object type doesn't
-   * correspond.
-   * @param key
-   * @param classType
-   * @param <T>
-   * @return
-   */
-  <T> T get(Object key, Class<T> classType);
-
-  /**
-   * Removes an element from the cache and return it.
-   * @param key
-   * @return
-   */
-  Object remove(Object key);
-
-  /**
-   * Removes a typed element from the cache and return it.
-   * Null is returned if an element exists for the given key but the object type doesn't
-   * correspond.
-   * @param key
-   * @param classType
-   * @param <T>
-   * @return
-   */
-  <T> T remove(Object key, Class<T> classType);
-
-  /**
-   * Adds a value and generate a unique key to retrieve later the value.
-   * After 12 hours without be used the value is trashed.
-   * @param value
-   * @return
-   */
-  String add(Object value);
+public interface CacheService extends SimpleCacheService {
 
   /**
    * Adds a value and generate a unique key to retrieve later the value.
@@ -92,14 +48,6 @@ public interface CacheService {
    * @return
    */
   String add(Object value, int timeToLive, int timeToIdle);
-
-  /**
-   * Puts a value for a given key.
-   * After 12 hours without be used the value is trashed.
-   * @param key
-   * @param value
-   */
-  void put(Object key, Object value);
 
   /**
    * Puts a value for a given key.

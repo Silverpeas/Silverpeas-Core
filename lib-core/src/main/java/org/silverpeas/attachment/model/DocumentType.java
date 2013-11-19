@@ -63,4 +63,15 @@ public enum DocumentType {
   public String getName() {
     return this.name();
   }
+
+  public static DocumentType decode(final String name) {
+    if (name != null) {
+      for (DocumentType documentType : DocumentType.values()) {
+        if (documentType.name().equals(name)) {
+          return documentType;
+        }
+      }
+    }
+    return null;
+  }
 }

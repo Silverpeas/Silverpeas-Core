@@ -1620,7 +1620,7 @@ public class PublicationBmEJB implements PublicationBm {
       try {
         ThumbnailDetail thumbnail = pubDetail.getThumbnail();
         if (thumbnail != null) {
-          String[] imageProps = ThumbnailController.getImageAndMimeType(thumbnail, -1, -1);
+          String[] imageProps = ThumbnailController.getImageAndMimeType(thumbnail);
           indexEntry.setThumbnail(imageProps[0]);
           indexEntry.setThumbnailMimeType(imageProps[1]);
         }

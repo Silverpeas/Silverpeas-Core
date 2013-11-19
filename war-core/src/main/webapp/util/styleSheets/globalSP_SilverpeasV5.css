@@ -4762,7 +4762,8 @@ li.application  .applicationName {
   display:block;
 }
 
-#domainContent #description-domainContent {
+#domainContent #description-domainContent,
+.descriptionType {
   border-left: 6px solid #E4E4E4;
   color: #666666;
   font-weight: bold;
@@ -4772,6 +4773,19 @@ li.application  .applicationName {
 #domainContent #number-user-group-domainContent {
   color:#666;
   font-size:12px;
+}
+
+#gauges-content-adminSpace {
+  float: right;
+  margin-bottom: 1em;
+}
+
+.gauge-container {
+  float: left;
+}
+
+#principal-content-adminSpace .tableBoard .txtlibform {
+  white-space: nowrap;
 }
 
 /*************************************/

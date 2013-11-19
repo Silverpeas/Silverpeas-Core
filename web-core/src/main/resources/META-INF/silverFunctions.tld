@@ -26,6 +26,14 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that replace regex text parts by a replacement text</description>
+    <name>regexReplace</name>
+    <function-class>com.silverpeas.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String regexReplace(java.lang.String,java.lang.String,java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that returns capitalized string</description>
     <name>capitalize</name>
     <function-class>org.apache.commons.lang3.StringUtils</function-class>
@@ -105,11 +113,27 @@
       boolean isViewable( java.lang.String ) </function-signature>
   </function>
   <function>
-    <description>Function that formats as memory size the given value.</description>
+    <description>Function that formats as memory size the given byte value.</description>
     <name>formatMemSize</name>
     <function-class>org.silverpeas.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a memory data the given byte value.</description>
+    <name>getMemData</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      org.silverpeas.util.memory.MemoryData getMemData(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a desired memory size the given byte value.</description>
+    <name>getMemorySizeConvertedTo</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.math.BigDecimal convertAndRoundTo(org.silverpeas.util.memory.MemoryData,org.silverpeas.util.memory.MemoryUnit)
     </function-signature>
   </function>
   <function>

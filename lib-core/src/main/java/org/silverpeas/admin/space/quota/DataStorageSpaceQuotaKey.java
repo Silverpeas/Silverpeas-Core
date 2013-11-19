@@ -24,7 +24,7 @@
 package org.silverpeas.admin.space.quota;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
@@ -51,10 +51,9 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
   public static DataStorageSpaceQuotaKey from(final String componentInstanceId) {
     final SpaceInst space =
         OrganisationControllerFactory
-            .getFactory()
             .getOrganisationController()
             .getSpaceInstById(
-                OrganisationControllerFactory.getFactory().getOrganisationController()
+                OrganisationControllerFactory.getOrganisationController()
                     .getComponentInst(componentInstanceId).getDomainFatherId());
     return from(space);
   }

@@ -78,8 +78,8 @@
 			});
 
 			this.$bar.bind({
-				//mouseenter: function() { $(this).find('.noty_close').fadeIn(); },
-				//mouseleave: function() { $(this).find('.noty_close').fadeOut(); }
+//        mouseenter: function() { $(this).find('.noty_close').stop().fadeTo('normal',1); },
+//        mouseleave: function() { $(this).find('.noty_close').stop().fadeTo('normal',0); }
 			});
 
 			switch (this.options.layout.name) {
@@ -137,6 +137,9 @@
 					this.$bar.css({backgroundColor: '#F79992', borderColor: '#CE6F6F', color: '#000'});
 					//this.$message.css({fontWeight: 'bold'});
 					this.$buttons.css({borderTop: '1px solid darkred'}); break;
+        case 'severe':
+          this.$bar.css({backgroundColor: '#F79992', borderColor: '#CE6F6F', color: '#000'});
+          this.$buttons.css({borderTop: '1px solid darkred'}); break;
 				case 'information':
 					this.$bar.css({backgroundColor: '#FBF7AA', borderColor: '#F9E98E', color: '#000'});
 					this.$buttons.css({borderTop: '1px solid #0B90C4'}); break;

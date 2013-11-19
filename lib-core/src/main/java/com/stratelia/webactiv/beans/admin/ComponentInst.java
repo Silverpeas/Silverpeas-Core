@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.notification.jsondiff.Operation;
 
 import com.silverpeas.admin.notification.ComponentJsonPatch;
@@ -313,6 +314,15 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
       return param.getValue();
     }
     return "";
+  }
+
+  /**
+   * Gets a component instance parameter from a centralized parameter name.
+   * @param parameterName
+   * @return
+   */
+  public String getParameterValue(ComponentInstanceParameterName parameterName) {
+    return getParameterValue(parameterName.name());
   }
 
   public String getLabel(String language) {
