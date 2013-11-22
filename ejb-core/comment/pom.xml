@@ -6,7 +6,7 @@
     <artifactId>ejb-core</artifactId>
     <version>5.14-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>comment</artifactId>
   <packaging>jar</packaging>
@@ -19,7 +19,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <testResources>
       <testResource>
@@ -29,6 +29,6 @@
     </testResources>
     <filters>
       <filter>src/test/filters/filters.properties</filter>
-    </filters>  
+    </filters>
   </build>
 </project>

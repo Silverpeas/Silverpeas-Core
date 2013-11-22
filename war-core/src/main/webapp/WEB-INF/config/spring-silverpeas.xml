@@ -196,5 +196,9 @@
         It wraps and provides an access to different service instances relative to cache handling -->
   <bean id="thumbnailServiceFactory" class="com.silverpeas.thumbnail.service.ThumbnailServiceFactory"
         factory-method="getInstance"/>
+
+  <!-- the provider of the differnt access controllers available in Silverpeas -->
+  <bean id="accessControllerProvider" class="com.silverpeas.accesscontrol.AccessControllerProvider"
+        factory-method="getInstance"/>
         
 </beans>
