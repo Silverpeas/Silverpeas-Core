@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.service;
 
 import com.silverpeas.comment.dao.CommentDAO;
@@ -30,18 +26,16 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.List;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
@@ -55,9 +49,8 @@ import java.util.List;
 @Named("commentService")
 public class DefaultCommentService extends CommentActionNotifier implements CommentService {
 
-  private static final String SETTINGS_PATH = "com.stratelia.webactiv.util.comment.Comment";
-  private static final String MESSAGES_PATH =
-      "com.stratelia.webactiv.util.comment.multilang.comment";
+  private static final String SETTINGS_PATH = "org.silverpeas.util.comment.Comment";
+  private static final String MESSAGES_PATH = "org.silverpeas.util.comment.multilang.comment";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
 
   @Inject
@@ -71,6 +64,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
 
   /**
    * Gets the comment DAO with wich operations with the underlying data source can be performed.
+   *
    * @return the DAO on the comments.
    */
   protected CommentDAO getCommentDAO() {
@@ -83,6 +77,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * interested by the adding of a comment will be invoked through the CallBackManager. The callback
    * will recieve as invocation parameters respectively the identifier of the commented publication,
    * the component instance name, and the new comment.
+   *
    * @param cmt the comment to save.
    */
   @Override
@@ -99,6 +94,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * interested by the adding of a comment will be invoked through the CallBackManager. The callback
    * will recieve as invocation parameters respectively the identifier of the commented publication,
    * the component instance name, and the new comment.
+   *
    * @param cmt the comment to save.
    */
   @Override
@@ -113,6 +109,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * The callback will recieve as invocation parameters respectively the identifier of the commented
    * publication, the component instance name, and the deleted comment. If no such comment exists
    * with the specified identifier, then a CommentRuntimeException is thrown.
+   *
    * @param pk the unique identifier of the comment to remove from the business layer (the primary
    * key).
    */
@@ -129,13 +126,14 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * parameters respectively the identifier of the commented publication, the component instance
    * name, and the deleted comment. If no such publication exists with the specified identifier,
    * then a CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication the comments are on.
    */
   @Override
   public void deleteAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> comments =
-        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
+    List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(
+        pk));
     for (Comment comment : comments) {
       deleteComment(comment);
     }
@@ -147,6 +145,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * CallBackManager. The callback will recieve as invocation parameters respectively the identifier
    * of the commented publication, the component instance name, and the deleted comment. If no such
    * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication the comments are on.
    */
@@ -161,6 +160,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * the deletion of a comment will be invoked through the CallBackManager. The callback will
    * recieve as invocation parameters respectively the identifier of the commented publication, the
    * component instance name, and the deleted comment.
+   *
    * @param comment the comment to remove.
    */
   @Override
@@ -175,6 +175,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * resulting operation is that the comments will be on the another publication and all the
    * previous indexes on them are removed. If at least one of the publications doesn't exist with
    * the specified identifier, then a CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
@@ -192,6 +193,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * they are reindexed (or simply indexed if not already) accordingly to the new publication. If at
    * least one of the publications doesn't exist with the specified identifier, then a
    * CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
@@ -206,6 +208,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   /**
    * Updates the specified comment in the business layer. The comment to update is identified by its
    * unique identifier and the update information are carried by the given Comment instance.
+   *
    * @param cmt the updated comment.
    */
   @Override
@@ -217,6 +220,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * Updates and indexes the specified comment in the business layer. The comment to update in the
    * business layer is identified by its unique identifier and the update information are carried by
    * the given Comment instance.
+   *
    * @param cmt the comment to update and to index.
    */
   @Override
@@ -228,6 +232,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   /**
    * Gets the comment that identified by the specified identifier. If no such comment exists with
    * the specified identifier, then a CommentRuntimeException is thrown.
+   *
    * @param pk the identifier of the comment in the business layer.
    * @return the comment.
    */
@@ -243,6 +248,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * Gets all of the comments on the publication identified by the resource type and the specified
    * identifier. If no such publication exists with the specified identifier, then a
    * CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    * @return a list of the comments on the given publication. The list is empty if the publication
@@ -250,8 +256,8 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    */
   @Override
   public List<Comment> getAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> vComments =
-        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
+    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
+        new ForeignPK(pk));
     for (Comment comment : vComments) {
       setOwnerDetail(comment);
     }
@@ -261,6 +267,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   /**
    * Gets information about the commented publications among the specified ones. The publication
    * information are returned ordered down to the lesser comment publication.
+   *
    * @param resourceType the type of the commented publication.
    * @param pks a collection of primary keys refering the publications to get information and to
    * order by comments count.
@@ -276,6 +283,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   /**
    * Gets information about all the commented publications in Silverpeas. The publication
    * information are returned ordered down to the lesser comment publication.
+   *
    * @return an ordered list of information about the most commented publication. The list is sorted
    * by their comments count in a descendent order.
    */
@@ -287,6 +295,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   /**
    * Gets the count of comments on the publication identified by the resource type and the specified
    * identifier.
+   *
    * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    * @return the number of comments on the publication.
@@ -300,13 +309,14 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * Indexes all the comments on the publication identified by the resource type and the specified
    * identifier. If no such publication exists with the specified identifier, then a
    * CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    */
   @Override
   public void indexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> vComments =
-        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
+    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
+        new ForeignPK(pk));
     for (Comment comment : vComments) {
       createIndex(comment);
     }
@@ -316,13 +326,14 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * Removes the indexes on all the comments of the publication identified by the resource type and
    * the specified identifier. If no such publication exists with the specified identifier, then a
    * CommentRuntimeException is thrown.
+   *
    * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    */
   @Override
   public void unindexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> vComments =
-        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
+    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
+        new ForeignPK(pk));
     for (Comment comment : vComments) {
       deleteIndex(comment);
     }
@@ -380,10 +391,11 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
 
   /**
    * Gets an organization controller.
+   *
    * @return an OrganizationController instance.
    */
   protected OrganisationController getOrganisationController() {
-    return  OrganisationControllerFactory.getOrganisationController();
+    return OrganisationControllerFactory.getOrganisationController();
   }
 
   @Override
