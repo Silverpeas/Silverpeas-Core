@@ -73,7 +73,7 @@ public class MemoryDataTest {
     MemoryData memoryData = createDefaultMemoryData();
     Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString());
-    expected.put(MemoryUnit.KB, "2073775844302");
+    expected.put(MemoryUnit.KB, "2073775844301");
     expected.put(MemoryUnit.MB, "2025171722.95");
     expected.put(MemoryUnit.GB, "1977706.76");
     expected.put(MemoryUnit.TB, "1931.35");
@@ -127,13 +127,13 @@ public class MemoryDataTest {
     expected.put(1023L, "1023");
     expected.put(1024L, "1");
     expected.put(2048L, "2");
-    expected.put(1048575L, "1024");
+    expected.put(1048575L, "1023");
     expected.put(1048576L, "1.00");
-    expected.put(1073741823L, "1024.00");
+    expected.put(1073741823L, "1023.99");
     expected.put(1073741824L, "1.00");
-    expected.put(1099511627775L, "1024.00");
+    expected.put(1099511627775L, "1023.99");
     expected.put(1099511627776L, "1.00");
-    expected.put(1125899906842623L, "1024.00");
+    expected.put(1125899906842623L, "1023.99");
     expected.put(1125899906842624L, "1024.00");
     for (Map.Entry<Long, String> entry : expected.entrySet()) {
       assertThat(entry.getKey().toString(), new MemoryData(entry.getKey()).getBestValue(),
@@ -148,13 +148,13 @@ public class MemoryDataTest {
     expected.put(1023L, "1023");
     expected.put(1024L, "1");
     expected.put(2048L, "2");
-    expected.put(1048575L, "1024");
+    expected.put(1048575L, "1023");
     expected.put(1048576L, "1");
-    expected.put(1073741823L, "1024");
+    expected.put(1073741823L, "1023.99");
     expected.put(1073741824L, "1");
-    expected.put(1099511627775L, "1024");
+    expected.put(1099511627775L, "1023.99");
     expected.put(1099511627776L, "1");
-    expected.put(1125899906842623L, "1024");
+    expected.put(1125899906842623L, "1023.99");
     expected.put(1125899906842624L, "1024");
     for (Map.Entry<Long, String> entry : expected.entrySet()) {
       assertFormatValue(new MemoryData(entry.getKey()).getBestDisplayValueOnly(), entry.getValue());
@@ -168,13 +168,13 @@ public class MemoryDataTest {
     expected.put(1023L, "1023 Octets");
     expected.put(1024L, "1 Ko");
     expected.put(2048L, "2 Ko");
-    expected.put(1048575L, "1024 Ko");
+    expected.put(1048575L, "1023 Ko");
     expected.put(1048576L, "1 Mo");
-    expected.put(1073741823L, "1024 Mo");
+    expected.put(1073741823L, "1023.99 Mo");
     expected.put(1073741824L, "1 Gb");
-    expected.put(1099511627775L, "1024 Gb");
+    expected.put(1099511627775L, "1023.99 Gb");
     expected.put(1099511627776L, "1 Tb");
-    expected.put(1125899906842623L, "1024 Tb");
+    expected.put(1125899906842623L, "1023.99 Tb");
     expected.put(1125899906842624L, "1024 Tb");
     for (Map.Entry<Long, String> entry : expected.entrySet()) {
       assertFormatValue(new MemoryData(entry.getKey()).getBestDisplayValue(), entry.getValue());
@@ -187,7 +187,7 @@ public class MemoryDataTest {
     MemoryData memoryData = createDefaultMemoryData();
     Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString());
-    expected.put(MemoryUnit.KB, "2073775844302");
+    expected.put(MemoryUnit.KB, "2073775844301");
     expected.put(MemoryUnit.MB, "2025171722.95");
     expected.put(MemoryUnit.GB, "1977706.76");
     expected.put(MemoryUnit.TB, "1931.35");
@@ -201,7 +201,7 @@ public class MemoryDataTest {
     MemoryData memoryData = createDefaultMemoryData();
     Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString() + " Octets");
-    expected.put(MemoryUnit.KB, "2073775844302 Ko");
+    expected.put(MemoryUnit.KB, "2073775844301 Ko");
     expected.put(MemoryUnit.MB, "2025171722.95 Mo");
     expected.put(MemoryUnit.GB, "1977706.76 Gb");
     expected.put(MemoryUnit.TB, "1931.35 Tb");

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+
+  <!-- Persons -->
+  <test_persons id="person_1" firstName="Yohann" lastName="Chastagnier"
+                createDate="2013-11-21 09:57:30.3" createdBy="1"
+                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+
+  <test_persons id="person_2" firstName="Nicolas" lastName="Eysseric"
+                createDate="2013-11-21 09:57:30.3" createdBy="1"
+                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+
+  <test_persons id="person_3" firstName="Miguel" lastName="Moquillon"
+                createDate="2013-11-21 09:57:30.3" createdBy="2"
+                lastUpdateDate="2013-11-22 22:00:50.6" lastUpdatedBy="10" version="3"/>
+
+
+  <!-- Animals -->
+  <test_animals id="1" type="cat" name="Blacky" personId="person_1"
+                createDate="2013-11-21 09:57:30.3" createdBy="1"
+                lastUpdateDate="2013-11-22 22:00:50.6" lastUpdatedBy="2" version="2"/>
+  <test_animals id="2" type="dog" name="Bagels" personId="person_2"
+                createDate="2013-11-21 09:57:30.3" createdBy="10"
+                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+  <test_animals id="3" type="bird" name="Titi" personId="person_2"
+                createDate="2013-11-21 09:57:30.3" createdBy="10"
+                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+
+  <!-- Equipments -->
+  <test_equipments id="equipment_1" name="necklace" animalId="2"
+                   createDate="2013-11-21 09:57:30.3" createdBy="1"
+                   lastUpdateDate="2013-11-22 22:00:50.6" lastUpdatedBy="2" version="10"/>
+
+  <!-- Ids -->
+  <uniqueId maxId="9" tablename="test_animals"/>
+</dataset>

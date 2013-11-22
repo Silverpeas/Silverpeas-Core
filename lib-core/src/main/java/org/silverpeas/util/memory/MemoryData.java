@@ -65,7 +65,8 @@ public class MemoryData {
     if (offsetPower > 0) {
       return value.multiply(MemoryUnit.byteMultiplier.pow(Math.abs(offsetPower)));
     } else if (offsetPower < 0) {
-      return value.divide(MemoryUnit.byteMultiplier.pow(Math.abs(offsetPower)));
+      return value
+          .divide(MemoryUnit.byteMultiplier.pow(Math.abs(offsetPower)), 25, BigDecimal.ROUND_DOWN);
     }
     return value;
   }
@@ -89,7 +90,7 @@ public class MemoryData {
     if (EnumSet.of(MemoryUnit.B, MemoryUnit.KB).contains(to)) {
       nbMaximumFractionDigits = 0;
     }
-    return convertedSize.setScale(nbMaximumFractionDigits, BigDecimal.ROUND_HALF_UP);
+    return convertedSize.setScale(nbMaximumFractionDigits, BigDecimal.ROUND_DOWN);
   }
 
   /**

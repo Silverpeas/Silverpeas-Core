@@ -30,6 +30,8 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.time.TimeUnit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,6 +50,8 @@ import static java.util.Calendar.*;
  * @author squere
  */
 public class DateUtil {
+  public static final Date MINIMUM_DATE = java.sql.Date.valueOf("1900-01-01");
+  public static final Date MAXIMUM_DATE = java.sql.Date.valueOf("2999-12-31");
 
   private static final long millisPerHour = 60l * 60l * 1000l;
   private static final long millisPerMinute = 60l * 1000l;
@@ -959,8 +963,8 @@ public class DateUtil {
    * @return int
    */
   public static int getDayNumberBetween(Date date1, Date date2) {
-    long out = date2.getTime() - date1.getTime();
-    return (int) (out / 86400000); //86400000 = 1000 * 36000 * 24
+    return UnitUtil.getTimeData(date2.getTime() - date1.getTime()).getTimeConverted(TimeUnit.DAY)
+        .intValue();
   }
 
   /**

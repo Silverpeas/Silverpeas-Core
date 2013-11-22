@@ -49,4 +49,24 @@ public enum PeriodType {
     }
     return unknown;
   }
+
+  public boolean isUnknown() {
+    return this == unknown;
+  }
+
+  public boolean isYear() {
+    return this == year;
+  }
+
+  public boolean isMonth() {
+    return this == month;
+  }
+
+  public boolean isWeek() {
+    return this == week;
+  }
+
+  public boolean isDay() {
+    return this == day;
+  }
 }
