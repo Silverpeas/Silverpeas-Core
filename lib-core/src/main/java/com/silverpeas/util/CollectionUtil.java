@@ -43,8 +43,18 @@ import java.util.Set;
 public class CollectionUtil {
 
   /**
+   * Reverse the given list and returns it.
+   * @param list
+   * @param <T>
+   * @return
+   */
+  public static <T> List<T> reverse(List<T> list) {
+    Collections.reverse(list);
+    return list;
+  }
+
+  /**
    * Checks if the given collection is not instancied or empty
-   *
    * @param <T>
    * @param collection
    * @return
@@ -55,7 +65,6 @@ public class CollectionUtil {
 
   /**
    * Checks if the given collection is instancied and not empty
-   *
    * @param <T>
    * @param collection
    * @return
@@ -67,7 +76,6 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
-   *
    * @param collection
    * @return
    */
@@ -78,7 +86,6 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
-   *
    * @param collection
    * @param collectionSizeMax
    * @return
@@ -132,7 +139,6 @@ public class CollectionUtil {
 
   /**
    * Transforming a collection into a map
-   *
    * @param <T> collection type elements
    * @param <K> map type key
    * @param <V> map type value
@@ -153,8 +159,7 @@ public class CollectionUtil {
         ((ExtractionComplexList<T, K, V>) extractor).setMap(result);
       }
       for (final T toPerform : collection) {
-        result.put(extractor.getKey(toPerform), extractor
-            .getValue(toPerform));
+        result.put(extractor.getKey(toPerform), extractor.getValue(toPerform));
       }
     }
     return result;
@@ -162,20 +167,18 @@ public class CollectionUtil {
 
   /**
    * Extracting a property.
-   *
    * @param aClass property class to extract
    * @param collection collection from that to extract
    * @param propertyName name of the property
    * @return a collection with requested elements
    */
-  public static <T> Collection<T> extractFrom(final Class<T> aClass,
-      final Collection<?> collection, final String propertyName) {
+  public static <T> Collection<T> extractFrom(final Class<T> aClass, final Collection<?> collection,
+      final String propertyName) {
     return extractFrom(collection, propertyName, false, 0);
   }
 
   /**
    * Extracting a property.
-   *
    * @param collection collection from that to extract
    * @param propertyName name of the property
    * @return a collection with requested elements
@@ -187,7 +190,6 @@ public class CollectionUtil {
 
   /**
    * Extracting a property.
-   *
    * @param collection collection from that to extract
    * @param propertyName name of the property
    * @param isListOfArray indicates if the list is an array list
@@ -196,15 +198,13 @@ public class CollectionUtil {
    */
   @SuppressWarnings({"unchecked"})
   public static <T> Collection<T> extractFrom(final Collection<?> collection,
-      final String propertyName, final boolean isListOfArray,
-      final int numberColumn) {
+      final String propertyName, final boolean isListOfArray, final int numberColumn) {
     Set<T> result = null;
     if (collection != null) {
       result = new HashSet<T>(collection.size());
       if (!isListOfArray) {
         for (final Object object : collection) {
-          result.add((T) getPropertyAsObject(object,
-              propertyName));
+          result.add((T) getPropertyAsObject(object, propertyName));
         }
       } else {
         for (final Object[] myObject : (Collection<Object[]>) collection) {
@@ -217,7 +217,6 @@ public class CollectionUtil {
 
   /**
    * Extracting a property from elements that each has an other property with a given value
-   *
    * @param class property class to extract
    * @param collection element collection
    * @param propertyNameToExtract name property to extract
@@ -227,23 +226,19 @@ public class CollectionUtil {
    * @return a bean property collection
    */
   @SuppressWarnings({"unchecked"})
-  public static <T> Collection<T> extractFrom(final Class<T> aClass,
-      final Collection<?> collection, final String propertyNameToExtract,
-      final String propertyNameToCompare, final Object givenValueToCompare,
-      final boolean nullValueExtracted) {
+  public static <T> Collection<T> extractFrom(final Class<T> aClass, final Collection<?> collection,
+      final String propertyNameToExtract, final String propertyNameToCompare,
+      final Object givenValueToCompare, final boolean nullValueExtracted) {
     Set<T> result = null;
     if (collection != null) {
       result = new HashSet<T>(collection.size());
       Object valueToExtract;
       Object valueToCompare;
       for (final Object element : collection) {
-        valueToCompare = getPropertyAsObject(element,
-            propertyNameToCompare);
-        if ((givenValueToCompare == null && valueToCompare == null)
-            || (givenValueToCompare != null && givenValueToCompare
-            .equals(valueToCompare))) {
-          valueToExtract = getPropertyAsObject(element,
-              propertyNameToExtract);
+        valueToCompare = getPropertyAsObject(element, propertyNameToCompare);
+        if ((givenValueToCompare == null && valueToCompare == null) ||
+            (givenValueToCompare != null && givenValueToCompare.equals(valueToCompare))) {
+          valueToExtract = getPropertyAsObject(element, propertyNameToExtract);
           if (valueToExtract != null || nullValueExtracted) {
             result.add((T) valueToExtract);
           }
@@ -255,7 +250,6 @@ public class CollectionUtil {
 
   /**
    * Value converted from a bean property.
-   *
    * @param bean bean
    * @param propertyName
    */

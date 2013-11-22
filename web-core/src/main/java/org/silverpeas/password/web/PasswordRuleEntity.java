@@ -45,12 +45,12 @@ public class PasswordRuleEntity {
 
   /**
    * Creates a new rule entity from the specified rule.
-   * @param photo
+   * @param rule
    * @param language
    * @return the entity representing the specified rule.
    */
-  public static PasswordRuleEntity createFrom(final PasswordRule photo, final String language) {
-    return new PasswordRuleEntity(photo, language);
+  public static PasswordRuleEntity createFrom(final PasswordRule rule, final String language) {
+    return new PasswordRuleEntity(rule, language);
   }
 
   /**

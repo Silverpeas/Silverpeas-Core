@@ -43,9 +43,8 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Michael Nikolaenko

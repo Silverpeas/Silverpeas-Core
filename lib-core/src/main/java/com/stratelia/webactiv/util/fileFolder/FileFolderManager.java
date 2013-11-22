@@ -33,7 +33,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.comparator.NameFileComparator;
@@ -42,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class FileFolderManager {
