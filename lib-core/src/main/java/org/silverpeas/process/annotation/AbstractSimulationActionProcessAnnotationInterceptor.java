@@ -24,6 +24,7 @@
 package org.silverpeas.process.annotation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ActionType;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.annotation.Action;
 import com.stratelia.webactiv.util.annotation.AnnotationUtil;
@@ -98,24 +99,28 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
           Map<Class<SimulationElement>, List<SimulationElement>> elements =
               new HashMap<Class<SimulationElement>, List<SimulationElement>>();
 
-          // Element lister
-          SimulationElementLister elementLister =
-              simulationActionProcess.elementLister().newInstance();
-          elementLister.setActionType(actionType.value());
-          elementLister.setElements(elements);
-
-          // Browsing sourcePKs
-          for (WAPrimaryKey sourcePK : sourcePKs) {
-            elementLister.listElements(sourcePK, language);
-          }
-
-          // Browsing sourceObjects
-          for (Object targetObject : targetObjects) {
-            elementLister.listElements(targetObject, language);
-          }
-
           // Processing for each target
           for (WAPrimaryKey targetPK : targetPKs) {
+
+            // Element lister
+            SimulationElementLister elementLister =
+                simulationActionProcess.elementLister().newInstance();
+            elementLister.setActionType(actionType.value());
+            elementLister.setElements(elements);
+
+            // Browsing sourcePKs
+            for (WAPrimaryKey sourcePK : sourcePKs) {
+              if (ActionType.MOVE != actionType.value()
+                  || !sourcePK.getInstanceId().equals(targetPK.getInstanceId())) {
+                elementLister.listElements(sourcePK, language);
+              }
+            }
+
+            // Browsing sourceObjects
+            for (Object targetObject : targetObjects) {
+              elementLister.listElements(targetObject, language, targetPK);
+            }
+            
             ProcessFactory.getProcessManagement().execute(
                 new SimulationElementConversionProcess(elements, targetPK, actionType.value()),
                 new ProcessExecutionContext(targetPK.getInstanceId()));

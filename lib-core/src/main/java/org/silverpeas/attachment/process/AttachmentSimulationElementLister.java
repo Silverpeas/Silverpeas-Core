@@ -52,9 +52,13 @@ public class AttachmentSimulationElementLister extends SimulationElementLister {
   }
 
   @Override
-  public void listElements(final Object source, final String language) {
+  public void listElements(final Object source, final String language, final WAPrimaryKey targetPK) {
     if (source instanceof SimpleDocument) {
       final SimpleDocument document = (SimpleDocument) source;
+      if (getActionType().isMove()
+          && document.getInstanceId().equals(targetPK.getInstanceId())) {
+        return;
+      }
       if (getActionType().isUpdate()) {
         SimpleDocument oldDocument = AttachmentServiceFactory.getAttachmentService()
             .searchDocumentById(document.getPk(), language);
