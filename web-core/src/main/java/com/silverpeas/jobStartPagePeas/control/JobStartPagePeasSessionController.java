@@ -86,6 +86,7 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 /**
  * Class declaration
@@ -490,7 +491,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         isDefined(m_dataStorageQuotaMaxCount)) {
       try {
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
-            Long.valueOf(m_dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
+            Long.valueOf(m_dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
             qe);

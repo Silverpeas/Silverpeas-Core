@@ -1,15 +1,15 @@
 package com.stratelia.webactiv.util.viewGenerator.html.template;
 
-import java.io.IOException;
-import java.util.Locale;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import java.io.IOException;
+import java.util.Locale;
 
 public class StringTemplateTag extends TagSupport {
   private static final long serialVersionUID = -4748892203365639129L;
@@ -89,7 +89,9 @@ public class StringTemplateTag extends TagSupport {
     if (locale != null) {
       language = locale.getLanguage();
     }
-    language = I18NHelper.checkLanguage(language);
+    if (StringUtil.isNotDefined(language)) {
+      language = I18NHelper.defaultLanguage;
+    }
 
     // Template file
     try {

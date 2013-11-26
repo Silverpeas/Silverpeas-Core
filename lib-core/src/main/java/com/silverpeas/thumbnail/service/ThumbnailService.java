@@ -27,6 +27,9 @@ package com.silverpeas.thumbnail.service;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 
+import javax.ejb.Local;
+
+@Local
 public interface ThumbnailService {
   public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
 
@@ -38,7 +41,7 @@ public interface ThumbnailService {
       throws ThumbnailException;
 
   public void deleteAllThumbnail(String componentId) throws ThumbnailException;
-  
-  public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId) throws ThumbnailException;
 
+  public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId)
+      throws ThumbnailException;
 }

@@ -24,6 +24,7 @@
 package org.silverpeas.process;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.silverpeas.process.check.ProcessCheckType;
@@ -45,9 +46,7 @@ public enum ProcessType {
   private final List<ProcessCheckType> checkTypesToProcess = new ArrayList<ProcessCheckType>();
 
   private ProcessType(final ProcessCheckType... checkTypes) {
-    for (final ProcessCheckType checkType : checkTypes) {
-      checkTypesToProcess.add(checkType);
-    }
+    Collections.addAll(checkTypesToProcess, checkTypes);
   }
 
   public List<ProcessCheckType> getCheckTypesToProcess() {

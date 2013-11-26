@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,12 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota.contant;
+package org.silverpeas.notification.web;
+
 
 /**
+ * Base URIs from which the REST-based ressources representing message container entities are
+ * defined.
  * @author Yohann Chastagnier
  */
-public enum QuotaLoad {
+public final class MessageResourceURIs {
 
-  UNLIMITED, EMPTY, NOT_FULL, FULL, NOT_ENOUGH, OUT_OF_BOUNDS
+  public static final String MESSAGE_BASE_URI = "messages";
 }

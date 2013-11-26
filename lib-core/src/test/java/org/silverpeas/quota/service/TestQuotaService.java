@@ -58,4 +58,9 @@ public class TestQuotaService extends AbstractQuotaService<TestQuotaKey> impleme
   public void setCount(final int count) {
     this.count = count;
   }
+
+  @Override
+  protected boolean isActivated() {
+    return true;
+  }
 }
