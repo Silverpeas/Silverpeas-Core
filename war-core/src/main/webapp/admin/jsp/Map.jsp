@@ -66,7 +66,7 @@
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script type="text/javascript">
     function notifyAdministrators(context, compoId, users, groups) {
-      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=',
+      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators',
           'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
     }
 
