@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -64,20 +62,7 @@ public class MyLastAccessedAppliPortlet extends GenericPortlet implements FormNa
       SilverTrace.error("portlet", "MyLastAccessedAppliPortlet", "portlet.ERROR", e);
     }
     
-    Map<String, Collection> mapSpaceApplis = new HashMap<String, Collection>();
-    Collection<ComponentInstLight> valueListApplis = new ArrayList<ComponentInstLight>();
-    for(ComponentInstLight appli : listApplis) {
-      String keySpaceId = appli.getDomainFatherId();
-      if(! mapSpaceApplis.containsKey(keySpaceId)) {
-        valueListApplis = new ArrayList<ComponentInstLight>();
-      } else {
-        valueListApplis = mapSpaceApplis.get(keySpaceId);
-      }
-      valueListApplis.add(appli);
-      mapSpaceApplis.put(keySpaceId, valueListApplis);
-    }
-    
-    request.setAttribute("MapApplications", mapSpaceApplis);
+    request.setAttribute("Applications", listApplis);
 
     include(request, response, "portlet.jsp");
   }

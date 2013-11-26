@@ -37,59 +37,52 @@
 
 <%
     RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-	Map<String, Collection> mapSpaceApplis = (Map<String, Collection>) pReq.getAttribute("MapApplications");
-	Iterator<Map.Entry<String, Collection>> iter = mapSpaceApplis.entrySet().iterator();
+	Collection<ComponentInstLight> applications = (Collection<ComponentInstLight>) pReq.getAttribute("Applications");
 %>
 <%
 
-if (! iter.hasNext()) { %>
+if (applications.isEmpty()) { %>
 	<%=portletsBundle.getString("portlets.portlet.myLastAccessedAppli.none") %>
-<% } else {
-	boolean first = true;
-  	while (iter.hasNext()) {
-    	Map.Entry<String, Collection> entry = iter.next();
-    	String spaceId = entry.getKey();
-    	Collection<ComponentInstLight> applications = entry.getValue();
-  
-		for (ComponentInstLight appli : applications) {
-	  
-			String pathIconAppli = m_sContext + "/util/icons/component/";
-			if(appli.isWorkflow()) {
-			  pathIconAppli += "processManager";
-			} else {
-			  pathIconAppli += appli.getName();
-			}
-			pathIconAppli += "Small.gif";
-			
-			String url = "";
-			String target = "";
-			if (URLManager.displayUniversalLinks()) {
-		      url = URLManager.getSimpleURL(URLManager.URL_COMPONENT, appli.getId());
-		      target ="_top";
-		    } else {
-		      url = m_sContext + URLManager.getURL(appli.getName(), "useless", appli.getId()) + "Main";
-		      target ="MyMain";
-		    }
-			
-			if (!first) {
-%>			
-<br/><br/>
-<% 
-			} else {
-				first = false;
-			}
+<%
+} else {
 %>
-	<!-- Display component icon -->
-	&nbsp;<img src="<%=pathIconAppli%>" border="0" width="15" align="top" alt=""/>&nbsp;
+	<ul class="listing-portlet-lastApplication">
+<% 
+	for (ComponentInstLight appli : applications) {
 	
-	<!-- Display component link -->
-	<a href="<%=url%>" target="<%=target%>"><b><%=EncodeHelper.convertHTMLEntities(appli.getLabel(language))%></b></a>
-	
-	<!-- Display space path -->
-	chemin id <%=appli.getDomainFatherId() %> : <%=appli.getPath(" > ") %>
+		String pathIconAppli = m_sContext + "/util/icons/component/";
+		if(appli.isWorkflow()) {
+		  pathIconAppli += "processManager";
+		} else {
+		  pathIconAppli += appli.getName();
+		}
+		pathIconAppli += "Small.gif";
+		
+		String url = "";
+		String target = "";
+		if (URLManager.displayUniversalLinks()) {
+	      url = URLManager.getSimpleURL(URLManager.URL_COMPONENT, appli.getId());
+	      target ="_top";
+	    } else {
+	      url = m_sContext + URLManager.getURL(appli.getName(), "useless", appli.getId()) + "Main";
+	      target ="MyMain";
+	    }
+%>
+		<li class="lineResult">
+			<div class="content">
+				<div class="applicationTitle">
+					<img src="<%=pathIconAppli%>" class="iconComponent" />
+					<a class="" href="<%=url%>" target="<%=target%>">
+						<span class="" id="readSpanId_0"><%=EncodeHelper.convertHTMLEntities(appli.getLabel(language))%></span>
+					</a>
+				</div>
+				<div class="location"><%=appli.getPath(" > ")%></div>
+			</div>
+		</li>
 <%  
-		} 
   	}
+%>
+	</ul>
+<%
   }
 %>
-<br/>
