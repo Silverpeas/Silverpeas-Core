@@ -29,6 +29,7 @@ import java.util.Locale;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.memory.MemoryUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -52,101 +53,101 @@ public class UnitUtilTest {
   @Test
   public void testConvertToFromBigDecimal() {
 
-    assertThat(convertTo(new BigDecimal("1"), UnitUtil.memUnit.B, UnitUtil.memUnit.B), is(
+    assertThat(convertTo(new BigDecimal("1"), MemoryUnit.B, MemoryUnit.B), is(
         new BigDecimal("1")));
 
-    assertThat(convertTo(new BigDecimal("1"), UnitUtil.memUnit.KB, UnitUtil.memUnit.B), is(
+    assertThat(convertTo(new BigDecimal("1"), MemoryUnit.KB, MemoryUnit.B), is(
         new BigDecimal("1024")));
 
     assertThat(
-        convertTo(new BigDecimal("2"), UnitUtil.memUnit.KB, UnitUtil.memUnit.B),
+        convertTo(new BigDecimal("2"), MemoryUnit.KB, MemoryUnit.B),
         is(new BigDecimal("2048")));
 
-    assertThat(convertTo(new BigDecimal("2.4"), UnitUtil.memUnit.KB, UnitUtil.memUnit.B),
+    assertThat(convertTo(new BigDecimal("2.4"), MemoryUnit.KB, MemoryUnit.B),
         is(new BigDecimal("2457.6")));
 
-    assertThat(convertTo(new BigDecimal("1"), UnitUtil.memUnit.MB, UnitUtil.memUnit.B), is(
+    assertThat(convertTo(new BigDecimal("1"), MemoryUnit.MB, MemoryUnit.B), is(
         new BigDecimal("1048576")));
 
-    assertThat(convertTo(new BigDecimal("10"), UnitUtil.memUnit.MB, UnitUtil.memUnit.B), is(
+    assertThat(convertTo(new BigDecimal("10"), MemoryUnit.MB, MemoryUnit.B), is(
         new BigDecimal("10485760")));
 
-    assertThat(convertTo(new BigDecimal("1024"), UnitUtil.memUnit.B, UnitUtil.memUnit.KB), is(
+    assertThat(convertTo(new BigDecimal("1024"), MemoryUnit.B, MemoryUnit.KB), is(
         new BigDecimal("1")));
 
-    assertThat(convertTo(new BigDecimal("1048576"), UnitUtil.memUnit.B, UnitUtil.memUnit.MB), is(
+    assertThat(convertTo(new BigDecimal("1048576"), MemoryUnit.B, MemoryUnit.MB), is(
         new BigDecimal("1")));
 
-    assertThat(convertTo(new BigDecimal("1073741824"), UnitUtil.memUnit.B, UnitUtil.memUnit.GB), is(
+    assertThat(convertTo(new BigDecimal("1073741824"), MemoryUnit.B, MemoryUnit.GB), is(
         new BigDecimal("1")));
   }
 
   @Test
   public void testConvertToFromLong() {
-    assertThat(convertTo(1L, UnitUtil.memUnit.KB, UnitUtil.memUnit.B), is(1024L));
-    assertThat(convertTo(1L, UnitUtil.memUnit.B, UnitUtil.memUnit.KB), is(0L));
-    assertThat(convertTo(512L, UnitUtil.memUnit.B, UnitUtil.memUnit.KB), is(1L));
-    assertThat(convertTo(513L, UnitUtil.memUnit.B, UnitUtil.memUnit.KB), is(1L));
+    assertThat(convertTo(1L, MemoryUnit.KB, MemoryUnit.B), is(1024L));
+    assertThat(convertTo(1L, MemoryUnit.B, MemoryUnit.KB), is(0L));
+    assertThat(convertTo(512L, MemoryUnit.B, MemoryUnit.KB), is(1L));
+    assertThat(convertTo(513L, MemoryUnit.B, MemoryUnit.KB), is(1L));
   }
 
   @Test
   public void testFormatValueFromBigDecimal() {
-    assertFormatValue(formatValue(new BigDecimal("1"), UnitUtil.memUnit.B, UnitUtil.memUnit.B),
+    assertFormatValue(formatValue(new BigDecimal("1"), MemoryUnit.B, MemoryUnit.B),
         "1 Octets");
-    assertFormatValue(formatValue(new BigDecimal("1"), UnitUtil.memUnit.KB, UnitUtil.memUnit.B),
+    assertFormatValue(formatValue(new BigDecimal("1"), MemoryUnit.KB, MemoryUnit.B),
         "1024 Octets");
-    assertFormatValue(formatValue(new BigDecimal("2"), UnitUtil.memUnit.KB, UnitUtil.memUnit.B),
+    assertFormatValue(formatValue(new BigDecimal("2"), MemoryUnit.KB, MemoryUnit.B),
         "2048 Octets");
-    assertFormatValue(formatValue(new BigDecimal("2.4"), UnitUtil.memUnit.KB, UnitUtil.memUnit.B),
+    assertFormatValue(formatValue(new BigDecimal("2.4"), MemoryUnit.KB, MemoryUnit.B),
         "2458 Octets");
-    assertFormatValue(formatValue(new BigDecimal("2.4"), UnitUtil.memUnit.GB, UnitUtil.memUnit.MB),
+    assertFormatValue(formatValue(new BigDecimal("2.4"), MemoryUnit.GB, MemoryUnit.MB),
         "2457.6 Mo");
-    assertFormatValue(formatValue(new BigDecimal("1"), UnitUtil.memUnit.MB, UnitUtil.memUnit.B),
+    assertFormatValue(formatValue(new BigDecimal("1"), MemoryUnit.MB, MemoryUnit.B),
         "1048576 Octets");
-    assertFormatValue(formatValue(new BigDecimal("10"), UnitUtil.memUnit.MB, UnitUtil.memUnit.B),
+    assertFormatValue(formatValue(new BigDecimal("10"), MemoryUnit.MB, MemoryUnit.B),
         "10485760 Octets");
-    assertFormatValue(formatValue(new BigDecimal("1024"), UnitUtil.memUnit.B, UnitUtil.memUnit.KB),
+    assertFormatValue(formatValue(new BigDecimal("1024"), MemoryUnit.B, MemoryUnit.KB),
         "1 Ko");
     assertFormatValue(
-        formatValue(new BigDecimal("1048576"), UnitUtil.memUnit.B, UnitUtil.memUnit.MB), "1 Mo");
-    assertFormatValue(formatValue(new BigDecimal("1073741824"), UnitUtil.memUnit.B,
-        UnitUtil.memUnit.GB), "1 Gb");
+        formatValue(new BigDecimal("1048576"), MemoryUnit.B, MemoryUnit.MB), "1 Mo");
+    assertFormatValue(formatValue(new BigDecimal("1073741824"), MemoryUnit.B,
+        MemoryUnit.GB), "1 Gb");
   }
 
   @Test
   public void testFormatValueFromLong() {
-    assertFormatValue(formatValue(1L, UnitUtil.memUnit.KB, UnitUtil.memUnit.B), "1024 Octets");
-    assertFormatValue(formatValue(1L, UnitUtil.memUnit.B, UnitUtil.memUnit.KB), "0 Ko");
-    assertFormatValue(formatValue(512L, UnitUtil.memUnit.B, UnitUtil.memUnit.KB), "1 Ko");
-    assertFormatValue(formatValue(513L, UnitUtil.memUnit.B, UnitUtil.memUnit.KB), "1 Ko");
+    assertFormatValue(formatValue(1L, MemoryUnit.KB, MemoryUnit.B), "1024 Octets");
+    assertFormatValue(formatValue(1L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
+    assertFormatValue(formatValue(512L, MemoryUnit.B, MemoryUnit.KB), "1 Ko");
+    assertFormatValue(formatValue(513L, MemoryUnit.B, MemoryUnit.KB), "1 Ko");
   }
 
   @Test
   public void testFormatValueFromBigDecimalAroundLimits() {
-    assertFormatValue(formatValue(new BigDecimal("1024"), UnitUtil.memUnit.KB), "1 Ko");
-    assertFormatValue(formatValue(new BigDecimal("1048576"), UnitUtil.memUnit.MB), "1 Mo");
-    assertFormatValue(formatValue(new BigDecimal("1073741824"), UnitUtil.memUnit.GB), "1 Gb");
+    assertFormatValue(formatValue(new BigDecimal("1024"), MemoryUnit.KB), "1 Ko");
+    assertFormatValue(formatValue(new BigDecimal("1048576"), MemoryUnit.MB), "1 Mo");
+    assertFormatValue(formatValue(new BigDecimal("1073741824"), MemoryUnit.GB), "1 Gb");
   }
 
   @Test
   public void testFormatValueFromLongAroundLimits() {
-    assertFormatValue(formatValue(513L, UnitUtil.memUnit.KB), "1 Ko");
+    assertFormatValue(formatValue(513L, MemoryUnit.KB), "1 Ko");
   }
 
   @Test
   public void testFormatMemSize() {
-    assertFormatValue(formatMemSize(new BigDecimal("1"), UnitUtil.memUnit.B), "1 Octets");
-    assertFormatValue(formatMemSize(new BigDecimal("1"), UnitUtil.memUnit.KB), "1 Ko");
-    assertFormatValue(formatMemSize(new BigDecimal("2"), UnitUtil.memUnit.KB), "2 Ko");
-    assertFormatValue(formatMemSize(new BigDecimal("2.4"), UnitUtil.memUnit.KB), "2 Ko");
-    assertFormatValue(formatMemSize(new BigDecimal("2.4"), UnitUtil.memUnit.GB), "2.4 Gb");
-    assertFormatValue(formatMemSize(new BigDecimal("1"), UnitUtil.memUnit.MB), "1 Mo");
-    assertFormatValue(formatMemSize(new BigDecimal("10"), UnitUtil.memUnit.MB), "10 Mo");
-    assertFormatValue(formatMemSize(new BigDecimal("1024"), UnitUtil.memUnit.B), "1 Ko");
-    assertFormatValue(formatMemSize(new BigDecimal("1048576"), UnitUtil.memUnit.B), "1 Mo");
-    assertFormatValue(formatMemSize(new BigDecimal("1073741824"), UnitUtil.memUnit.B), "1 Gb");
-    assertFormatValue(formatMemSize(new BigDecimal("1024"), UnitUtil.memUnit.GB), "1 Tb");
-    assertFormatValue(formatMemSize(new BigDecimal("1023"), UnitUtil.memUnit.GB), "1023 Gb");
+    assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.B), "1 Octets");
+    assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.KB), "1 Ko");
+    assertFormatValue(formatMemSize(new BigDecimal("2"), MemoryUnit.KB), "2 Ko");
+    assertFormatValue(formatMemSize(new BigDecimal("2.4"), MemoryUnit.KB), "2 Ko");
+    assertFormatValue(formatMemSize(new BigDecimal("2.4"), MemoryUnit.GB), "2.4 Gb");
+    assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.MB), "1 Mo");
+    assertFormatValue(formatMemSize(new BigDecimal("10"), MemoryUnit.MB), "10 Mo");
+    assertFormatValue(formatMemSize(new BigDecimal("1024"), MemoryUnit.B), "1 Ko");
+    assertFormatValue(formatMemSize(new BigDecimal("1048576"), MemoryUnit.B), "1 Mo");
+    assertFormatValue(formatMemSize(new BigDecimal("1073741824"), MemoryUnit.B), "1 Gb");
+    assertFormatValue(formatMemSize(new BigDecimal("1024"), MemoryUnit.GB), "1 Tb");
+    assertFormatValue(formatMemSize(new BigDecimal("1023"), MemoryUnit.GB), "1023 Gb");
   }
 
   /**

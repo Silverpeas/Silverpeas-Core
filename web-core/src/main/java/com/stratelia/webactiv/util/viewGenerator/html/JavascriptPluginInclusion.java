@@ -23,12 +23,15 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.notification.message.MessageManager;
+
+import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -46,7 +49,6 @@ public class JavascriptPluginInclusion {
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
-  private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
@@ -71,7 +73,8 @@ public class JavascriptPluginInclusion {
   private static final String jqueryNotifierPath = jqueryPath + "noty/";
   private static final String JQUERY_NOTIFIER_BASE = "jquery.noty.js";
   private static final String JQUERY_NOTIFIER_TOP = "layouts/top.js";
-  private static final String JQUERY_NOTIFIER_CENTER = "layouts/topCenter.js";
+  private static final String JQUERY_NOTIFIER_TOPCENTER = "layouts/topCenter.js";
+  private static final String JQUERY_NOTIFIER_CENTER = "layouts/center.js";
   private static final String JQUERY_NOTIFIER_THEME = "themes/silverpeas.js";
   private static final String SILVERPEAS_NOTIFIER = "silverpeas-notifier.js";
   private static final String JQUERY_TAGS = "tagit/tagit.js";
@@ -84,6 +87,9 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
   private static final String JQUERY_MIGRATION = "jquery-migrate-1.2.1.min.js";
+  private static final String JQUERY_SVG = "raphael.min.js";
+  private static final String JQUERY_GAUGE = "justgage.min.js";
+  private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
 
   /**
    * Centralization of script instantiation.
@@ -211,9 +217,17 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeNotifier(final ElementContainer xhtml) {
     xhtml.addElement(script(jqueryPath + JQUERY_NOTIFIER_BASE));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOP));
+    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOPCENTER));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_THEME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_NOTIFIER));
+    StringBuilder script = new StringBuilder();
+    script.append("notySetupAjaxMessages();");
+    String registredKeyOfMessages = MessageManager.getRegistredKey();
+    if (StringUtil.isDefined(registredKeyOfMessages)) {
+      script.append("notyRegistredMessages('").append(registredKeyOfMessages).append("');");
+    }
+    xhtml.addElement(scriptContent(script.toString()));
     return xhtml;
   }
 
@@ -227,6 +241,13 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(link(jqueryCssPath + STYLESHEET_CALENDAR));
     xhtml.addElement(script(jqueryPath + JQUERY_CALENDAR));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_CALENDAR));
+    return xhtml;
+  }
+
+  public static ElementContainer includeGauge(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + JQUERY_SVG));
+    xhtml.addElement(script(jqueryPath + JQUERY_GAUGE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_GAUGE));
     return xhtml;
   }
 

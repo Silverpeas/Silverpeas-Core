@@ -87,30 +87,22 @@
     </breadcrumbs>
     <menu name="Overview" inherit="none">
       <item name="Introduction" href="index.html" collapse="false"/>
-      <item name="Try Silverpeas" href="izpack.html" collapse="false"/>
-      <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1" collapse="false"/>
-      <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
-      <item name="Release Notes" href="releasenotes.html" collapse="false"/>
-      <item name="Installation" href="installation.html" collapse="false"/>
-      <item name="Native Packages" href="https://www.silverpeas.org/repo/index.html" collapse="false" />
+      <item name="Install Silverpeas" href="installation/index.html" collapse="true">
+        <item name="Try Silverpeas" href="installation/izpack.html" collapse="false"/>
+        <item name="Installation" href="installation/installation.html" collapse="false"/>
+        <item name="GNU/Linux Native Packages" href="http://www.silverpeas.org/repo/index.html" collapse="false" />
+        <item name="Silverpeas in the Cloud" href="installation/cloud.html" collapse="false" />
+      </item>
+      <item name="Our versions" href="#" collapse="true">
+        <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1" collapse="false"/>
+        <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
+        <item name="Release Notes" href="releasenotes.html" collapse="false"/>
+      </item>
       <item name="Screenshots" href="screenshots.html" collapse="true"/>
       <item name="FAQ" href="faq.html" collapse="true"/>
       <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
-    <menu name="Configuration" inherit="none">
-      <item name="Securing Jboss" href="configuration/securing_jboss.html" collapse="false"/>
-      <item name="Security" href="configuration/securing.html" collapse="false"/>
-      <item name="Migration" href="configuration/migration.html"  collapse="false"/>
-      <item name="LDAP Synchronization" href="configuration/ldap.html" collapse="false"/>
-      <item name="Configuring a reverse-proxy" href="configuration/proxy.html"  collapse="true"/>
-      <item name="CAS" href="cas/SSO-CAS.html" collapse="true">
-        <item name="Introduction" href="cas/SSO-CAS.html" collapse="true"/>
-        <item name="Certificates Configuration" href="cas/certificates.html" collapse="true" />
-        <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="true" />
-        <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html" collapse="true" />
-      </item>
-    </menu>
-    <menu name="Product" inherit="none">
+    <menu name="Silverpeas" inherit="none">
       <item name="Key Features" href="product/features.html" collapse="true"/>
       <item name="Screenshots" href="screenshots.html" collapse="true"/>
       <item name="Collaboration" href="product/collaboration.html" collapse="true"/>
@@ -118,13 +110,26 @@
         <item name="Social Network" href="product/social_network.html" collapse="true"/>
         <item name="Electronic Documentation Management" href="product/documentation_management.html" collapse="true"/>
         <item name="Content Management" href="product/content_management.html" collapse="true"/>
-        <item name="Data Collection" href="product/data_collection.html" collapse="true"/>       
-        <item name="Pictures Management" href="product/gallery.html" collapse="true"/> 
-        <item name="Knowledge Management" href="product/knowledge_management.html" collapse="true"/>     
-        <item name="Project Documentation" href="product/project_documentation.html" collapse="true"/>     
+        <item name="Data Collection" href="product/data_collection.html" collapse="true"/>
+        <item name="Pictures Management" href="product/gallery.html" collapse="true"/>
+        <item name="Knowledge Management" href="product/knowledge_management.html" collapse="true"/>
+        <item name="Project Documentation" href="product/project_documentation.html" collapse="true"/>
+      </item>
+      <item name="Configuration" href="#" collapse="true">
+        <item name="Securing Jboss" href="configuration/securing_jboss.html" collapse="false"/>
+        <item name="Security" href="configuration/securing.html" collapse="false"/>
+        <item name="Migration" href="configuration/migration.html"  collapse="false"/>
+        <item name="LDAP Synchronization" href="configuration/ldap.html" collapse="false"/>
+        <item name="Configuring a reverse-proxy" href="configuration/proxy.html"  collapse="true"/>
+        <item name="CAS" href="cas/SSO-CAS.html" collapse="true">
+          <item name="Introduction" href="cas/SSO-CAS.html" collapse="true"/>
+          <item name="Certificates Configuration" href="cas/certificates.html" collapse="true" />
+          <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="true" />
+          <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html" collapse="true" />
+        </item>
       </item>
     </menu>
-    <menu ref="reports"/>   
+    <menu ref="reports"/>
     <menu name="How to contribute" inherit="center">
       <item name="Contribution" href="dev/collaboration.html" collapse="true"/>
       <item name="Code Quality" href="dev/quality.html" collapse="true"/>
@@ -135,6 +140,6 @@
       <item name="Licensing FAQ" href="legal/licensing_faq.html" collapse="true"/>
       <item name="FLOSS Exception" href="legal/floss_exception.html" collapse="true"/>
       <item name="Silverpeas Trade Mark" href="legal/trademark.html" collapse="true"/>
-    </menu> 
+    </menu>
   </body>
 </project>

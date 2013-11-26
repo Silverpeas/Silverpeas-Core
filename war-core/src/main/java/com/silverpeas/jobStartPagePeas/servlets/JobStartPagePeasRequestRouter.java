@@ -64,6 +64,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
@@ -1013,7 +1014,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         && StringUtil.isDefined(dataStorageQuotaMaxCount)) {
       try {
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
-            Long.valueOf(dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
+            Long.valueOf(dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
             qe);

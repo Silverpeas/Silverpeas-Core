@@ -101,6 +101,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case password:
           includePassword(xhtml);
           break;
+        case gauge:
+          includeGauge(xhtml);
+          break;
         case jquery:
           includeJQuery(xhtml);
           break;

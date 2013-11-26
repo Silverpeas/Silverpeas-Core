@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 

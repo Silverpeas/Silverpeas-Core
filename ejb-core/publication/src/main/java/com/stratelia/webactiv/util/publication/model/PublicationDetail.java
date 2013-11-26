@@ -621,7 +621,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getImage() {
     ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
       return imageProps[0];
     }
     return null;
@@ -631,7 +631,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getImageMimeType() {
     ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
       return imageProps[1];
     }
     return null;

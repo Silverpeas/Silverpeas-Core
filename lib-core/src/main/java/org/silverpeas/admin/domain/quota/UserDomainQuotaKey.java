@@ -24,7 +24,7 @@
 package org.silverpeas.admin.domain.quota;
 
 import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.model.Quota;
 
 import com.silverpeas.util.StringUtil;

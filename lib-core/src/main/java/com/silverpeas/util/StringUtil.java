@@ -227,6 +227,22 @@ public class StringUtil extends StringUtils {
   }
 
   /**
+   * Replace parts of a text by an one replacement string. The text to replace is specified by a
+   * regex.
+   * @param source the original text
+   * @param regex the regex that permits to identify parts of text to replace
+   * @param replacement the replacement text
+   * @return The source text modified
+   */
+  public static String regexReplace(String source, String regex, String replacement) {
+    if (StringUtil.isNotDefined(source) || StringUtil.isNotDefined(regex)) {
+      return source;
+    }
+    String replacementText = StringUtil.isDefined(replacement) ? replacement : "";
+    return source.replaceAll(regex, replacement);
+  }
+
+  /**
    *
    * Validate the form of an email address. <P> Return <tt>true</tt> only if <ul> <li>
    * <tt>aEmailAddress</tt> can successfully construct an

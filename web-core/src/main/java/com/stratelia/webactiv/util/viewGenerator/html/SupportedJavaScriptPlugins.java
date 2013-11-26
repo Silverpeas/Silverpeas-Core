@@ -91,7 +91,7 @@ public enum SupportedJavaScriptPlugins {
   /**
    * JQuery plugin that implements an `<iframe>` transport so that `$.ajax()` calls support the
    * uploading of files using standard HTML file input fields.
-   * @see http://api.jquery.com/extending-ajax/#Transports
+   * {@see http://api.jquery.com/extending-ajax/#Transports}
    */
   iframeajaxtransport,
   /**
@@ -111,10 +111,14 @@ public enum SupportedJavaScriptPlugins {
    */
   password,
   /**
+   * Silverpeas plugin to manage gauge.
+   */
+  gauge,
+  /**
    * Silverpeas plugin to render a widget with the PdC'axis from which the user can select a set of
    * values (one value per axis). Warning, this plugin doesn't render the axis to classify a content
    * on the PdC as it doesn't take care of the context to which the classification belongs (the
    * component instance, the type of the content, ...).
    */
-  pdc;
+  pdc
 }

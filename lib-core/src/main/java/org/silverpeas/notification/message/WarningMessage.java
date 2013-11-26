@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,15 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota.contant;
+package org.silverpeas.notification.message;
 
 /**
- * @author Yohann Chastagnier
+ * User: Yohann Chastagnier
+ * Date: 07/11/13
  */
-public enum QuotaType {
+public class WarningMessage extends AbstractMessage {
 
-  USERS_IN_DOMAIN,
-  COMPONENTS_IN_SPACE,
-  DATA_STORAGE_IN_SPACE,
-  DATA_STORAGE_IN_USER_SPACE
+  /**
+   * Default constructor.
+   */
+  protected WarningMessage(final String message) {
+    super(message);
+  }
+
+  @Override
+  public MessageType getType() {
+    return MessageType.warning;
+  }
 }
