@@ -41,10 +41,10 @@
 
 <%@ include file="checkAttachment.jsp"%>
 
+<fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <view:setBundle basename="org.silverpeas.util.uploads.uploadSettings" var="uploadSettingsBundle" />
 <fmt:message var="maximumFileSize" key="MaximumFileSize" bundle="${uploadSettingsBundle}" />
-<fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
 <view:includePlugin name="qtip"/>
@@ -192,6 +192,7 @@
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
 %>
+
 <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
