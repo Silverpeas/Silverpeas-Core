@@ -2272,6 +2272,32 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /*- [ portlet END ] --------------------------- */
 
+/*- [ portlet LastApplication BEGIN] --------------------------- */
+
+.listing-portlet-lastApplication {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+
+.listing-portlet-lastApplication li {
+	padding:0;
+	margin:0;
+}
+
+.listing-portlet-lastApplication li img.iconComponent{
+	float:left;
+	margin-right:4px;
+	margin-top: -2px;
+}
+
+.listing-portlet-lastApplication .lineResult .location {
+		margin:0 0 0 20px;
+		display:block;
+}
+
+/*- [ portlet LastApplication END] --------------------------- */
+
 #browseBar {
   float:left;
   width: 100%;
