@@ -175,7 +175,9 @@ public class SilverpeasSessionOpener {
     Enumeration<String> names = session.getAttributeNames();
     while (names.hasMoreElements()) {
       String attributeName = names.nextElement();
-      if (!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName)) {
+      if (!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName) &&
+          !Authentication.PASSWORD_CHANGE_ALLOWED.equals(attributeName) &&
+          !Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE.equals(attributeName)) {
         session.removeAttribute(attributeName);
       }
     }
