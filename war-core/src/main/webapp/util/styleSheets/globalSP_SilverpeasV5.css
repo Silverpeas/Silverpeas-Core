@@ -2288,6 +2288,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 .listing-portlet-lastApplication li img.iconComponent{
 	float:left;
 	margin-right:4px;
+	margin-top: -2px;
 }
 
 .listing-portlet-lastApplication .lineResult .location {
