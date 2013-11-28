@@ -454,14 +454,14 @@
 
             /* select the specified user */
             $scope.selectUser = function(user) {
-              if (!context.multipleSelection)
+              if (!context.multiSelection)
                 $scope.selectedGroups.clear();
               $scope.selectedUsers.add(user);
             };
 
             /* select the specified group */
             $scope.selectGroup = function(group) {
-              if (!context.multipleSelection)
+              if (!context.multiSelection)
                 $scope.selectedUsers.clear();
               $scope.selectedGroups.add(group);
             };
