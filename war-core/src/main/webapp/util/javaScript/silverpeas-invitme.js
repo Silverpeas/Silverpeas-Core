@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,25 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function( $ ){
-  
+(function($) {
+
   $.invitMe = {
     userId: null,
     currentElement: null,
     initialized: false
   };
-  
+
   /**
    * The user invitation Silverpeas plugin built atop of JQuery.
    * It binds to the elements the click event for which it opens a popup window through which a user
    * can propose another one to make a social relationship.
    */
-  $.fn.invitMe = function( user ) {
-    
-    if (! this.length)
+  $.fn.invitMe = function(user) {
+
+    if (!this.length)
       return this;
-    
-    if (! $.invitMe.initialized) {
+
+    if (!$.invitMe.initialized) {
       $.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/com/silverpeas/social/multilang/',
@@ -50,22 +50,18 @@
       prepareInvitationPopup();
       $.invitMe.initialized = true;
     }
-      
+
     return this.each(function() {
       var $this = $(this), profile = user;
-      if (!(profile instanceof UserProfile)) {
-        profile = new UserProfile(user);
-      }
-      if (profile.id == null || profile.fullName == null)
-        profile.load(function(user) {
-          render($this, user);
+      if (!user.fullName)
+        User.get(user.id).then(function(theUser) {
+          profile = theUser;
         });
-      else
-        render($this, profile);
-    })
+      render($this, profile);
+    });
   };
-  
-  function render( target, user ) {
+
+  function render(target, user) {
     target.data('invitMe', true);
     target.click(function() {
       $.invitMe.userId = user.id;
@@ -74,25 +70,25 @@
       $("#invitationDialog").dialog("open");
     });
   }
-  
+
   function closeInvitationPopup() {
     $("#invitationDialog").dialog("close");
     $("#invitation-message").val("");
   }
-  
+
   function prepareInvitationPopup() {
-    if ($("#invitationDialog").length == 0) {
+    if ($("#invitationDialog").length === 0) {
       $('<div>', {
         'id': 'invitationDialog'
       }).append($('<form>').append($('<table>').append($('<tr>').
-        append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
-        append($('<td>').append($('<textarea>', {
-          'name': 'textMessage',
-          'id': 'invitation-message',
-          'cols': '60',
-          'rows': '8'
-        })))))).appendTo($(document.body));
-      
+              append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
+              append($('<td>').append($('<textarea>', {
+                'name': 'textMessage',
+                'id': 'invitation-message',
+                'cols': '60',
+                'rows': '8'
+              })))))).appendTo($(document.body));
+
       $("#invitationDialog").dialog({
         autoOpen: false,
         resizable: false,
@@ -100,46 +96,46 @@
         height: "auto",
         width: 550,
         buttons: [
-        {
-          text: $.i18n.prop('GML.ok'),
-          click: function() {
-            var message = $("#invitation-message").val();
-            $.ajax({
-              url: webContext + '/InvitationJSON',
-              type: 'GET',
-              data: {
-                Action: 'SendInvitation',
-                Message: message,
-                TargetUserId: $.invitMe.userId
-              },
-              dataType: 'json',
-              cache: false,
-              success: function(data, status, jqXHR) {
-                closeInvitationPopup();
-                try {
-                  $.invitMe.currentElement.hide('slow');
-                } catch (e) {
-                //do nothing
-                //As fragment is externalized, class invitation can be missing
+          {
+            text: $.i18n.prop('GML.ok'),
+            click: function() {
+              var message = $("#invitation-message").val();
+              $.ajax({
+                url: webContext + '/InvitationJSON',
+                type: 'GET',
+                data: {
+                  Action: 'SendInvitation',
+                  Message: message,
+                  TargetUserId: $.invitMe.userId
+                },
+                dataType: 'json',
+                cache: false,
+                success: function(data, status, jqXHR) {
+                  closeInvitationPopup();
+                  try {
+                    $.invitMe.currentElement.hide('slow');
+                  } catch (e) {
+                    //do nothing
+                    //As fragment is externalized, class invitation can be missing
+                  }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                  alert(errorThrown);
                 }
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
-              }
-            });
+              });
+            }
+          },
+          {
+            text: $.i18n.prop('GML.cancel'),
+            click: function() {
+              closeInvitationPopup();
+            }
           }
-        },
-        {
-          text: $.i18n.prop('GML.cancel'),
-          click: function() {
-            closeInvitationPopup();
-          }
-        }
         ]
       });
     }
   }
-})( jQuery );
+})(jQuery);
 
 /**
  * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
@@ -148,14 +144,14 @@
 jQuery(document).ready(function() {
   jQuery('.invitation').each(function(i, element) {
     var userParams = jQuery(element).attr('rel');
-    if (userParams != null && userParams.length > 1) {
+    if (userParams && userParams.length > 1) {
       userParams = userParams.split(',');
-      if (jQuery(element).data('invitMe') == null) {
+      if (!jQuery(element).data('invitMe')) {
         jQuery(element).invitMe({
-          id : userParams[0],
-          fullName : userParams[1]
+          id: userParams[0],
+          fullName: userParams[1]
         });
       }
     }
-  })
+  });
 });

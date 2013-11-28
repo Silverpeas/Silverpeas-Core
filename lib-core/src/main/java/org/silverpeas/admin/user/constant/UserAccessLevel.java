@@ -27,10 +27,10 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
 /**
- * User: Yohann Chastagnier
- * Date: 18/01/13
+ * User: Yohann Chastagnier Date: 18/01/13
  */
 public enum UserAccessLevel {
+
   UNKNOWN(""),
   ADMINISTRATOR("A"),
   DOMAIN_ADMINISTRATOR("D"),
@@ -39,7 +39,7 @@ public enum UserAccessLevel {
   GUEST("G"),
   PDC_MANAGER("K");
 
-  private String code;
+  private final String code;
 
   private UserAccessLevel(String code) {
     this.code = code;
