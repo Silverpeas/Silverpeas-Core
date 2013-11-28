@@ -23,9 +23,7 @@
  */
 package org.silverpeas.util;
 
-import com.silverpeas.util.StringUtil;
-
-import javax.servlet.ServletRequest;
+import org.silverpeas.notification.message.MessageManager;
 
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
@@ -37,54 +35,42 @@ import javax.servlet.ServletRequest;
 public class NotifierUtil {
 
   /**
-   * Add an error message to the request. If a message already exists, HTML newline is added
-   * between the existent message and the given one
-   * @param request
+   * Add an severe message.
    * @param message
-   * @return the complete message
    */
-  public static String addError(ServletRequest request, String message) {
-    return addMessage(request, "notyErrorMessage", message);
+  public static void addSevere(String message) {
+    MessageManager.addSevere(message);
   }
 
   /**
-   * Add a success message to the request. If a message already exists, HTML newline is added
-   * between the existent message and the given one
-   * @param request
+   * Add an error message.
    * @param message
-   * @return the complete message
    */
-  public static String addSuccess(ServletRequest request, String message) {
-    return addMessage(request, "notySuccessMessage", message);
+  public static void addError(String message) {
+    MessageManager.addError(message);
   }
 
   /**
-   * Add an info message to the request. If a message already exists, HTML newline is added
-   * between the existent message and the given one
-   * @param request
+   * Add an warning message.
    * @param message
-   * @return the complete message
    */
-  public static String addInfo(ServletRequest request, String message) {
-    return addMessage(request, "notyInfoMessage", message);
+  public static void addWarning(String message) {
+    MessageManager.addWarning(message);
   }
 
   /**
-   * Centralization
-   * @param request
-   * @param messageType
+   * Add a success message.
    * @param message
-   * @return the complete message
    */
-  private static String addMessage(ServletRequest request, String messageType, String message) {
-    String existingMessage = (String) request.getAttribute(messageType);
-    if (StringUtil.isNotDefined(existingMessage)) {
-      existingMessage = "";
-    }
-    if (StringUtil.isDefined(message)) {
-      existingMessage += (existingMessage.isEmpty() ? "" : "<br/>") + message;
-      request.setAttribute(messageType, existingMessage);
-    }
-    return existingMessage;
+  public static void addSuccess(String message) {
+    MessageManager.addSuccess(message);
+  }
+
+  /**
+   * Add a success message.
+   * @param message
+   */
+  public static void addInfo(String message) {
+    MessageManager.addInfo(message);
   }
 }

@@ -46,6 +46,32 @@ public class MapUtil {
    * @param <V>
    * @param map
    * @param key
+   * @param values
+   * @return
+   */
+  public static <K, V> Collection<V> putAddAll(final Class<? extends Collection> collectionClass,
+      Map<K, Collection<V>> map, final K key, final Collection<V> values) {
+    Collection<V> result = null;
+
+    if (values != null && !values.isEmpty()) {
+      for (V value : values) {
+        result = putAdd(collectionClass, map, key, value);
+      }
+    } else {
+      result = putAdd(collectionClass, map, key, null);
+    }
+
+    // map result (never null)
+    return result;
+  }
+
+  /**
+   * Centralizes the map adding that containing collections
+   *
+   * @param <K>
+   * @param <V>
+   * @param map
+   * @param key
    * @param value
    * @return
    */
@@ -82,11 +108,94 @@ public class MapUtil {
    * @param <V>
    * @param map
    * @param key
+   * @param values
+   * @return
+   */
+  public static <K, V> List<V> putAddAllList(Map<K, List<V>> map, final K key,
+      final Collection<V> values) {
+    return putAddAllList(ArrayList.class, map, key, values);
+  }
+
+  /**
+   * Centralizes the map adding that containing list collections
+   * @param <K>
+   * @param <V>
+   * @param map
+   * @param key
    * @param value
    * @return
    */
-  public static <K, V> List<V> putAddList(Map<K, List<V>> map, final K key,
-      final V value) {
+  public static <K, V> List<V> putAddList(Map<K, List<V>> map, final K key, final V value) {
+    return putAddList(ArrayList.class, map, key, value);
+  }
+
+  /**
+   * Centralizes the map adding that containing list collections
+   * @param <K>
+   * @param <V>
+   * @param map
+   * @param key
+   * @param values
+   * @return
+   */
+  public static <K, V> Set<V> putAddAllSet(Map<K, Set<V>> map, final K key,
+      final Collection<V> values) {
+    return putAddAllSet(HashSet.class, map, key, values);
+  }
+
+  /**
+   * Centralizes the map adding that containing set collections
+   * @param <K>
+   * @param <V>
+   * @param map
+   * @param key
+   * @param value
+   * @return
+   */
+  public static <K, V> Set<V> putAddSet(Map<K, Set<V>> map, final K key, final V value) {
+    return putAddSet(HashSet.class, map, key, value);
+  }
+
+  /**
+   * Centralizes the map adding that containing list collections
+   * @param <K>
+   * @param <V>
+   * @param listClass
+   * @param map
+   * @param key
+   * @param values
+   * @return
+   */
+  public static <K, V> List<V> putAddAllList(final Class<? extends List> listClass,
+      Map<K, List<V>> map, final K key, final Collection<V> values) {
+    List<V> result = null;
+
+    if (values != null && !values.isEmpty()) {
+      for (V value : values) {
+        result = putAddList(listClass, map, key, value);
+      }
+    } else {
+      result = putAddList(listClass, map, key, null);
+    }
+
+    // map result (never null)
+    return result;
+  }
+
+  /**
+   * Centralizes the map adding that containing list collections
+   *
+   * @param <K>
+   * @param <V>
+   *   @param listClass
+   * @param map
+   * @param key
+   * @param value
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> List<V> putAddList(final Class<? extends List> listClass,
+      Map<K, List<V>> map, final K key, final V value) {
 
     if (map == null) {
       map = new LinkedHashMap<K, List<V>>();
@@ -95,7 +204,11 @@ public class MapUtil {
     // Old value
     List<V> result = map.get(key);
     if (result == null) {
-      result = new ArrayList<V>();
+      try {
+        result = listClass.newInstance();
+      } catch (final Exception myException) {
+        throw new IllegalArgumentException(myException);
+      }
       map.put(key, result);
     }
 
@@ -107,17 +220,45 @@ public class MapUtil {
   }
 
   /**
+   * Centralizes the map adding that containing list collections
+   * @param <K>
+   * @param <V>
+   * @param setClass
+   * @param map
+   * @param key
+   * @param values
+   * @return
+   */
+  public static <K, V> Set<V> putAddAllSet(final Class<? extends Set> setClass, Map<K, Set<V>> map,
+      final K key, final Collection<V> values) {
+    Set<V> result = null;
+
+    if (values != null && !values.isEmpty()) {
+      for (V value : values) {
+        result = putAddSet(setClass, map, key, value);
+      }
+    } else {
+      result = putAddSet(setClass, map, key, null);
+    }
+
+    // map result (never null)
+    return result;
+  }
+
+  /**
    * Centralizes the map adding that containing set collections
    *
    * @param <K>
    * @param <V>
+   * @param setClass
    * @param map
    * @param key
    * @param value
    * @return
    */
-  public static <K, V> Set<V> putAddSet(Map<K, Set<V>> map, final K key,
-      final V value) {
+  @SuppressWarnings("unchecked")
+  public static <K, V> Set<V> putAddSet(final Class<? extends Set> setClass, Map<K, Set<V>> map,
+      final K key, final V value) {
 
     if (map == null) {
       map = new LinkedHashMap<K, Set<V>>();
@@ -126,7 +267,11 @@ public class MapUtil {
     // Old value
     Set<V> result = map.get(key);
     if (result == null) {
-      result = new HashSet<V>();
+      try {
+        result = setClass.newInstance();
+      } catch (final Exception myException) {
+        throw new IllegalArgumentException(myException);
+      }
       map.put(key, result);
     }
 

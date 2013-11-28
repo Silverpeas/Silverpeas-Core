@@ -37,11 +37,12 @@ import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -766,12 +767,12 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       final String stringTemplateFile) {
     if (!QuotaType.COMPONENTS_IN_SPACE.equals(quotaReached.getType())) {
       quotaReached = quotaReached.clone();
-      quotaReached.setMinCount(UnitUtil.convertTo(quotaReached.getMinCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
-      quotaReached.setMaxCount(UnitUtil.convertTo(quotaReached.getMaxCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
-      quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
+      quotaReached.setMinCount(UnitUtil.convertTo(quotaReached.getMinCount(), MemoryUnit.B,
+          MemoryUnit.MB));
+      quotaReached.setMaxCount(UnitUtil.convertTo(quotaReached.getMaxCount(), MemoryUnit.B,
+          MemoryUnit.MB));
+      quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), MemoryUnit.B,
+          MemoryUnit.MB));
     }
     SpaceInstLight space = OrganisationControllerFactory.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());

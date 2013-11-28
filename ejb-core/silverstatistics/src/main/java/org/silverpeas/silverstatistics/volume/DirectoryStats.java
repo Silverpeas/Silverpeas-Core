@@ -24,7 +24,7 @@
 package org.silverpeas.silverstatistics.volume;
 
 import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.UnitUtil.memUnit;
+import org.silverpeas.util.memory.MemoryUnit;
 
 /**
  * Statistics of a directory.
@@ -49,7 +49,7 @@ public class DirectoryStats {
   }
 
   public String getFormattedDirectorySize() {
-    return UnitUtil.formatValue(directorySize, memUnit.B, memUnit.MB);
+    return UnitUtil.formatValue(directorySize, MemoryUnit.B, MemoryUnit.MB);
   }
 
   public Long getNumberOfFiles() {

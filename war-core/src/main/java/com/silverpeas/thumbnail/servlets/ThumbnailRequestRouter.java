@@ -69,11 +69,10 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         action = FileUploadUtil.getParameter(parameters, "Action");
       }
       String result = null;
-      String backUrl = request.getParameter("BackUrl");
-      destination = backUrl;
+      destination = request.getParameter("BackUrl");
 
       if ("Delete".equals(action)) {
-        result = deleteThumbnail(request, thumbnailSC);
+        result = deleteThumbnail(request);
       } else if ("Add".equals(action)) {
         // Open the Add form
         request.setAttribute("action", "add");
@@ -91,12 +90,12 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         if (destination == null) {
           destination = FileUploadUtil.getParameter(parameters, "BackUrl");
         }
-        result = createThumbnail(request, parameters, thumbnailSC);
+        result = createThumbnail(parameters);
       } else if ("SaveUpdateFile".equals(action)) {
         if (destination == null) {
           destination = FileUploadUtil.getParameter(parameters, "BackUrl");
         }
-        result = updateFile(request, parameters, thumbnailSC);
+        result = updateFile(parameters);
       } else if ("Update".equals(action)) {
         ThumbnailDetail thumbnailToUpdate = getThumbnail(request);
         request.setAttribute("thumbnaildetail", thumbnailToUpdate);
@@ -105,9 +104,9 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         }
         destination = "/thumbnail/jsp/thumbnailManager.jsp";
       } else if ("SaveUpdate".equals(action)) {
-        result = updateThumbnail(request, thumbnailSC);
+        result = updateThumbnail(request);
       } else if ("Crop".equals(action)) {
-        result = cropThumbnail(request, thumbnailSC);
+        result = cropThumbnail(request);
       }
       if (destination != null && result != null) {
         if (destination.indexOf('?') != -1) {
@@ -121,8 +120,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   }
 
-  private String updateFile(HttpServletRequest req, List<FileItem> parameters,
-      ThumbnailSessionController thumbnailSC) {
+  private String updateFile(List<FileItem> parameters) {
     FileItem item = FileUploadUtil.getFile(parameters, "OriginalFile");
     if (!item.isFormField()) {
       String fileName = FileUtil.getFilename(item.getName());
@@ -144,7 +142,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     } catch (Exception e) {
       return "failed";
     }
-    return createThumbnail(req, parameters, thumbnailSC);
+    return createThumbnail(parameters);
   }
 
   private String getAction(HttpServletRequest req) {
@@ -170,8 +168,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     return result;
   }
 
-  private String updateThumbnail(HttpServletRequest req,
-      ThumbnailSessionController thumbnailSC) {
+  private String updateThumbnail(HttpServletRequest req) {
     String objectId = req.getParameter("ObjectId");
     String componentId = req.getParameter("ComponentId");
     String objectType = req.getParameter("ObjectType");
@@ -187,13 +184,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     String yLength = req.getParameter("YLength");
     thumbToUpdate.setYLength(Integer.parseInt(yLength));
 
-    String thumbnailHeight = req.getParameter("ThumbnailHeight");
-    String thumbnailWidth = req.getParameter("ThumbnailWidth");
-
     try {
-      ThumbnailController.updateThumbnail(thumbToUpdate, Integer
-          .parseInt(thumbnailWidth), Integer
-          .parseInt(thumbnailHeight));
+      ThumbnailController.updateThumbnail(thumbToUpdate);
       return null;
     } catch (ThumbnailRuntimeException e) {
       SilverTrace.error("thumbnail",
@@ -204,7 +196,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   }
 
-  private String cropThumbnail(HttpServletRequest req, ThumbnailSessionController thumbnailSC) {
+  private String cropThumbnail(HttpServletRequest req) {
     String objectId = req.getParameter("ObjectId");
     String componentId = req.getParameter("ComponentId");
     String objectType = req.getParameter("ObjectType");
@@ -237,12 +229,11 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   }
 
-  private String createThumbnail(HttpServletRequest req,
-      List<FileItem> parameters, ThumbnailSessionController thumbnailSC) {
+  private String createThumbnail(List<FileItem> parameters) {
     // save file on disk
     ThumbnailDetail thumb;
     try {
-      thumb = saveFile(req, parameters, thumbnailSC);
+      thumb = saveFile(parameters);
     } catch (ThumbnailRuntimeException e) {
       // only one case -> no .type for the file
       SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail",
@@ -286,8 +277,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     }
   }
 
-  private ThumbnailDetail saveFile(HttpServletRequest req, List<FileItem> parameters,
-      ThumbnailSessionController thumbnailSC) throws Exception {
+  private ThumbnailDetail saveFile(List<FileItem> parameters) throws Exception {
     SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_ENTER_METHOD");
 
@@ -321,6 +311,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
             "fullFileName on Unix = " + fullFileName);
       }
 
+      assert fullFileName != null;
       String fileName = fullFileName
           .substring(
           fullFileName.lastIndexOf(File.separator) + 1,
@@ -371,8 +362,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     return null;
   }
 
-  private String deleteThumbnail(HttpServletRequest req,
-      ThumbnailSessionController thumbnailSC) {
+  private String deleteThumbnail(HttpServletRequest req) {
     String objectId = req.getParameter("ObjectId");
     String componentId = req.getParameter("ComponentId");
     String objectType = req.getParameter("ObjectType");

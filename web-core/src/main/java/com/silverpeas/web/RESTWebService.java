@@ -28,6 +28,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Collection;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
 
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
@@ -61,6 +63,8 @@ public abstract class RESTWebService {
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
   private Collection<SilverpeasRole> userRoles = null;
+
+  private ResourceLocator bundle = null;
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
@@ -93,6 +97,9 @@ public abstract class RESTWebService {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
     }
     this.userDetail = session.getUserDetail();
+    if (this.userDetail != null) {
+      MessageManager.setLanguage(this.userDetail.getUserPreferences().getLanguage());
+    }
   }
 
   /**
@@ -186,5 +193,26 @@ public abstract class RESTWebService {
    */
   protected OrganisationController getOrganisationController() {
     return organizationController;
+  }
+
+  /**
+   * Gets the location of the bundle to use.
+   *
+   * @return
+   */
+  protected String getBundleLocation() {
+    return null;
+  }
+
+  /**
+   * Gets the bundle to use.
+   *
+   * @return
+   */
+  protected ResourceLocator getBundle() {
+    if (bundle == null) {
+      bundle = new ResourceLocator(getBundleLocation(), getUserPreferences().getLanguage());
+    }
+    return bundle;
   }
 }

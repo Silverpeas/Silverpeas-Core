@@ -79,7 +79,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
-  <view:includePlugin name="notifier"/>
   <view:includePlugin name="pagination"/>
   <view:includePlugin name="datepicker"/>
   <view:includePlugin name="popup"/>

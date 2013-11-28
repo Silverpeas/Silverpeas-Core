@@ -374,6 +374,8 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
             "\"></script>\n");
+    code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
+        .append("\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");

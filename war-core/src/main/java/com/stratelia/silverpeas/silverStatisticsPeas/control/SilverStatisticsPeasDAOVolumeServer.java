@@ -35,6 +35,8 @@ import org.silverpeas.util.UnitUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.memory.MemoryUnit;
+
 /**
  * Class declaration Get stat size directory data from database
  * <p/>
@@ -89,8 +91,8 @@ public class SilverStatisticsPeasDAOVolumeServer {
       String[] stat = new String[3];
       stat[INDICE_DATE] = rs.getString(1);
       stat[INDICE_LIB] = rs.getString(2);
-      stat[INDICE_SIZE] = String.valueOf(UnitUtil.convertTo(rs.getLong(3), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.KB));
+      stat[INDICE_SIZE] = String.valueOf(UnitUtil.convertTo(rs.getLong(3), MemoryUnit.B,
+          MemoryUnit.KB));
       myList.add(stat);
     }
     return myList;

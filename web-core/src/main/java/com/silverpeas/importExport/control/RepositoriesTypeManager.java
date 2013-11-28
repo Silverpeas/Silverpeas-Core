@@ -32,22 +32,15 @@ import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
@@ -62,10 +55,20 @@ import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailAttachment;
 import org.silverpeas.util.mail.MailExtractor;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -81,7 +84,6 @@ public class RepositoriesTypeManager {
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
    *
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param repositoriesType - objet mappé par castor contenant toutes les informations de création
    * des publications du path défini
    * @return un objet ComponentReport contenant les informations de création des publications
@@ -174,8 +176,7 @@ public class RepositoriesTypeManager {
       massiveReport.addUnitReport(unitReport);
       
       // Check the file size
-      ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-      long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+      long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
       long fileSize = file.length();
       if (fileSize <= 0L) {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
@@ -245,6 +246,7 @@ public class RepositoriesTypeManager {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverTrace
           .error("importExport", "RepositoriesTypeManager.importFile", "root.EX_NO_MESSAGE", ex);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.defaultLanguage);
     }
     return pubDetailToCreate;
   }

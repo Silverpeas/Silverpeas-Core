@@ -80,7 +80,13 @@ public class SilverpeasHttpServlet extends HttpServlet {
   protected void throwHttpForbiddenError() {
     throw new HttpError(HttpServletResponse.SC_FORBIDDEN);
   }
-  
+
+  /**
+   * The server has not found anything matching the requested address (URI) ( not found ).
+   * This means the URL you have typed or cliked on is wrong or obsolete and does not match any
+   * document existing on the server (you may try to gradualy remove the URL components from the
+   * right to the left to eventualy retrieve an existing path).
+   */
   protected void throwHttpNotFoundError() {
     throw new HttpError(HttpServletResponse.SC_NOT_FOUND);
   }
