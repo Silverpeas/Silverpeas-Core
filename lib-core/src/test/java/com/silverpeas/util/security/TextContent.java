@@ -127,6 +127,11 @@ public class TextContent implements SilverpeasContent {
     return "Text";
   }
 
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    return true;
+  }
+
   public void setTitle(final String title) {
     this.title = title;
   }
