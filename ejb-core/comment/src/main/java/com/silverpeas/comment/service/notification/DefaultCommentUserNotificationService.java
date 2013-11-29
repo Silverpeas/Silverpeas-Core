@@ -23,7 +23,20 @@
  */
 package com.silverpeas.comment.service.notification;
 
+import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentActionListener;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentUserNotification;
 import com.silverpeas.comment.service.CommentUserNotificationService;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,24 +44,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import com.silverpeas.SilverpeasComponentService;
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.service.CommentActionListener;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentUserNotification;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -56,8 +53,8 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * The default implementation of the user notification about events on the comments.
  */
 @Named("commentUserNotificationService")
-public class DefaultCommentUserNotificationService extends CommentActionListener implements
-    CommentUserNotificationService {
+public class DefaultCommentUserNotificationService extends CommentActionListener
+    implements CommentUserNotificationService {
 
   /**
    * If no property with the subject of the notification message is defined in a Silverpeas
@@ -79,21 +76,24 @@ public class DefaultCommentUserNotificationService extends CommentActionListener
       = CommentUserNotification.NOTIFICATION_CONTENT_ATTRIBUTE;
   @Inject
   private CommentService commentService;
-  private Map<String, SilverpeasComponentService<? extends SilverpeasContent>> register
+  private final Map<String, SilverpeasComponentService<? extends SilverpeasContent>> register
       = new ConcurrentHashMap<String, SilverpeasComponentService<? extends SilverpeasContent>>();
 
   /**
-   * Registers the specified Silverpeas component so that the comments created or removed in an
-   * instance of the component will be treated by this service. The registration is done by
-   * specifying the unique name of the Silverpeas component and a ResourceInfoGetter object from
-   * which information about the commented resource can be get. A ResourceInfoGetter object,
-   * specific to the Silverpeas component, must be passed so that for each received event about a
-   * comment handled in an instance of the component, information about the commented resource can
-   * be get in order to send a well-formed notification to the users interested by the event about
-   * the comment.
+   * Registers a Silverpeas component as a source of notifications about the add, the update or the
+   * deletion of a comment. The Silverpeas component will be represented by a service that can be
+   * invoked at notification receipt.
+   * <p/>
+   * The registration is done by specifying the unique name of the Silverpeas component and a
+   * <code>SilverpeasComponentService</code> object from which information about the commented
+   * resource can be get. A Silverpeas component service must be passed so that for each received
+   * event sent by an instance of the component, information about the commented resource can be get
+   * in order to both check right accesses and send a well-formed notification to the users
+   * interested by the event.
    *
    * @param component the name of the Silverpeas component (it must be unique).
-   * @param getter the ResourceInfoGetter object specific to the registered Silverpeas Component
+   * @param service the Silverpeas component service from which information can be get for an
+   * instance of the Silverpeas component.
    */
   @Override
   public void register(String component,
@@ -132,17 +132,15 @@ public class DefaultCommentUserNotificationService extends CommentActionListener
       if (register.containsKey(component)) {
         SilverpeasComponentService<? extends SilverpeasContent> service = register.get(component);
         try {
-          SilverpeasContent commentedContent = service.getContentById(newComment.getForeignKey()
-              .getId());
+          SilverpeasContent commentedContent = service.getContentById(newComment.getForeignKey().
+              getId());
           final Set<String> recipients = getInterestedUsers(newComment.getCreator(),
               commentedContent);
           if (!recipients.isEmpty()) {
             final NotificationMetaData notification = UserNotificationHelper.build(
-                new CommentUserNotification(getCommentService(),
-                newComment,
-                commentedContent, component + "." + SUBJECT_COMMENT_ADDING, service.
-                getComponentMessages(""),
-                recipients));
+                new CommentUserNotification(getCommentService(), newComment, commentedContent,
+                    component + "." + SUBJECT_COMMENT_ADDING, service.
+                    getComponentMessages(""), recipients));
             notifyUsers(notification);
           }
         } catch (Exception ex) {
@@ -173,29 +171,31 @@ public class DefaultCommentUserNotificationService extends CommentActionListener
   }
 
   /**
-   * Gets the users that are interested by the adding or the removing of the specified comment. The
-   * interested users are the authors of the others comments on the content and the creator of this
-   * content. The author of the added or removed comment isn't considered as interested by the
+   * Gets the users that are interested by the adding or the removing of the specified comment and
+   * that have enough privileges to access the commented content.
+   * <p/>
+   * The interested users are the authors of the others comments on the content and the creator of
+   * this content. The author of the added or removed comment isn't considered as interested by the
    * comment.
    *
-   * @param theComment the comment that is added or removed.
-   * @param getter an object with which the service can ask for information about the commented
-   * resource.
+   * @param commentAuthor the author of the comment that is concerned by the notification.
+   * @param content the content that was commented by the specified comment.
    * @return a list with the identifier of the interested users.
    */
-  private Set<String> getInterestedUsers(final UserDetail commentAuthor, SilverpeasContent content) {
+  private Set<String> getInterestedUsers(final UserDetail commentAuthor,
+      SilverpeasContent content) {
     Set<String> interestedUsers = new LinkedHashSet<String>();
     WAPrimaryKey pk = new ForeignPK(content.getId(), content.getComponentInstanceId());
-    List<Comment> comments = getCommentService().getAllCommentsOnPublication(content
-        .getContributionType(), pk);
+    List<Comment> comments = getCommentService().getAllCommentsOnPublication(content.
+        getContributionType(), pk);
     for (Comment aComment : comments) {
       UserDetail author = aComment.getCreator();
-      if (!author.getId().equals(commentAuthor.getId())) {
+      if (!author.getId().equals(commentAuthor.getId()) && canBeSent(content, author)) {
         interestedUsers.add(author.getId());
       }
     }
     UserDetail contentCreator = content.getCreator();
-    if (!commentAuthor.getId().equals(contentCreator.getId())) {
+    if (!commentAuthor.getId().equals(contentCreator.getId()) && canBeSent(content, contentCreator)) {
       interestedUsers.add(contentCreator.getId());
     }
     return interestedUsers;
@@ -205,7 +205,6 @@ public class DefaultCommentUserNotificationService extends CommentActionListener
    * Notifies the specified users, identified by their identifier, with the specified notification
    * information.
    *
-   * @param recipients the recipients of the notification.
    * @param notification the notification information.
    * @throws NotificationManagerException if the notification of the recipients fail.
    */
@@ -220,5 +219,9 @@ public class DefaultCommentUserNotificationService extends CommentActionListener
 
   protected CommentService getCommentService() {
     return commentService;
+  }
+
+  private boolean canBeSent(SilverpeasContent content, UserDetail recipient) {
+    return content.canBeAccessedBy(recipient);
   }
 }
