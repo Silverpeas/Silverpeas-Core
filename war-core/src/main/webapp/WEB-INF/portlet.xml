@@ -284,5 +284,22 @@
             <short-title>MyLastPubliReadPortlet shortTitle</short-title>
         </portlet-info>
  </portlet>
+ 
+ <portlet>
+        <description>Dernieres applications consultees</description>
+        <portlet-name>MyLastAccessedAppliPortlet</portlet-name>
+        <display-name>MyLastAccessedAppliPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyLastAccessedAppliPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyLastAccessedAppliPortlet title</title>
+            <short-title>MyLastAccessedAppliPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
   
 </portlet-app>

@@ -76,13 +76,13 @@
     return this.each(function() {
       var $this = $(this);
       $this.data(CALENDAR_KEY, calendar);
-      if (calendar.view == 'weekly')
+      if (calendar.view === 'weekly')
         renderWeeklyView($this);
-      else if (calendar.view == 'yearly')
+      else if (calendar.view === 'yearly')
         renderYearlyView($this);
       else
         renderMonthlyView($this);
-    })
+    });
   };
 
   function renderMonthlyView(target) {
@@ -151,7 +151,7 @@
     };
 
     if (calendar.allDaySlot !== 'undefined') {
-      options.allDaySlot = calendar.allDaySlot
+      options.allDaySlot = calendar.allDaySlot;
     }
 
     if (calendar.eventrender) {
@@ -167,11 +167,11 @@
   }
 
   function getFullCalendarView(view) {
-    if (view == 'monthly')
+    if (view === 'monthly')
       return 'month';
-    else if (view == 'yearly')
-      return 'year'
-    else if (view == 'weekly')
+    else if (view === 'yearly')
+      return 'year';
+    else if (view === 'weekly')
       return 'agendaWeek';
     return undefined;
   }

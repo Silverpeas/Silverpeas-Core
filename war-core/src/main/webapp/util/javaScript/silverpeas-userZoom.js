@@ -41,7 +41,7 @@
     target: null,
     initialized: false,
     clear: function() {
-      if (this.currentTooltip != null) {
+      if (this.currentTooltip) {
         this.currentTooltip.hide();
         this.currentTooltip.remove();
       }
@@ -54,45 +54,49 @@
       this.target = target;
     },
     initialize: function() {
-      this.currentUser = new UserProfile({
-        id: 'me'
-      }).load();
-      this.currentUser.isInMyContacts = function(user) {
-        var contacts = user.relationships();
-        for (var i in contacts) {
-          if (this.id == contacts[i].id) {
-            return true;
-          }
-        }
-        return false;
-      };
+      var self = this;
+      User.get('me').then(function(me) {
+        self.currentUser = me;
+        self.currentUser.isInMyContacts = function(aUser) {
+          var isOk = false;
+          aUser.relationships().then(function(contacts) {
+            for (var i in contacts) {
+              if (this.id === contacts[i].id) {
+                isOk = true;
+                ;
+              }
+            }
+          });
+          return isOk;
+        };
 
-      this.currentUser.isInMyInvitations = function(user) {
-        var invitations = this.sentInvitations;
-        for (var i in invitations) {
-          if (invitations[i].receiverId == user.id) {
-            return true;
+        self.currentUser.isInMyInvitations = function(aUser) {
+          var invitations = this.sentInvitations;
+          for (var i in invitations) {
+            if (invitations[i].receiverId === aUser.id) {
+              return true;
+            }
           }
-        }
-        return false;
-      }
+          return false;
+        };
 
-      this.currentUser.onMySentInvitations = function(callback) {
-        $.ajax({
-          url: webContext + '/services/invitations/outbox',
-          type: 'GET',
-          dataType: 'json',
-          cache: false,
-          success: function(invitations, status, jqXHR) {
-            this.sentInvitations = invitations;
-            if (callback)
-              callback(invitations);
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            alert(errorThrown);
-          }
-        });
-      }
+        self.currentUser.onMySentInvitations = function(callback) {
+          $.ajax({
+            url: webContext + '/services/invitations/outbox',
+            type: 'GET',
+            dataType: 'json',
+            cache: false,
+            success: function(invitations, status, jqXHR) {
+              this.sentInvitations = invitations;
+              if (callback)
+                callback(invitations);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              alert(errorThrown);
+            }
+          });
+        };
+      });
 
       this.initialized = true;
     }
@@ -149,14 +153,14 @@
       href: user.webPage
     }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append($.i18n.prop('myProfile.tab.profile')))).
             append($('<a>', {
-      href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append($.i18n.prop('ToContact'))).messageMe(user)).
+              href: '#'
+            }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append($.i18n.prop('ToContact'))).messageMe(user)).
             append($('<a>', {
-      href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append($.i18n.prop('tchat'))).click(function() {
-      if (user.connected)
-        tchatWith(user);
-    })).
+              href: '#'
+            }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append($.i18n.prop('tchat'))).click(function() {
+              if (user.connected)
+                tchatWith(user);
+            })).
             append($('<div>').addClass('userzoom-tooltip-arrow'));
 
     return interactionBox;
@@ -195,17 +199,14 @@
     return this.each(function() {
       var profile = user, $this = $(this);
       $this.data('userZoom', new Date());
-      if (!(profile instanceof UserProfile)) {
-        profile = new UserProfile(user);
-      }
-      if (!(profile.id && profile.fullName && profile.lastName && profile.avatar != null && profile.status != null &&
-              profile.connected != null))
-        profile.load(function(user) {
-          render($this, user);
+      if (!(profile.fullName && profile.lastName && profile.avatar && profile.status !== null &&
+              profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
+        User.get(user.id).then(function(theUser) {
+          profile = theUser;
+          render($this, profile);
         });
-      else
-        render($this, profile);
-    })
+      }
+    });
   };
 
   /**
@@ -218,9 +219,9 @@
     var status = connectionStatus(user);
     target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).hover(function() {
       setTimeout(function() {
-        if (currentTarget != target[0] || ($.userZoom.target != null && $.userZoom.target == target))
+        if (currentTarget !== target[0] || ($.userZoom.target && $.userZoom.target === target))
           return;
-        user.loadRelationships({name: $.userZoom.currentUser.lastName, reload: true}, function() {
+        user.relationships({name: $.userZoom.currentUser.lastName}).then(function(contacts) {
           $.userZoom.currentUser.onMySentInvitations(function() {
             var element = tooltip(target, user);
             $.userZoom.set(target, element);
@@ -229,9 +230,9 @@
       }, 1500);
     });
     $(document).mousedown(function(event) {
-      if ($.userZoom.currentTooltip != null) {
+      if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
         var target = $(event.target);
-        if (!target.hasClass('userzoom-tooltip') && target.parents('.userzoom-tooltip').length == 0) {
+        if (!target.hasClass('userzoom-tooltip') && target.parents('.userzoom-tooltip').length === 0) {
           $.userZoom.clear();
         }
       }
@@ -248,27 +249,27 @@
   function tooltip(target, user) {
     var userinfo = $('<div>').addClass('userzoom-tooltip').
             append($('<div>').addClass('userzoom-tooltip-profilPhoto profilPhoto').
-            append($('<a>', {
-      href: user.webPage
-    }).append($('<img>', {
-      src: user.avatar,
-      alt: 'viewUser'
-    }).addClass('avatar')))).
+                    append($('<a>', {
+                      href: user.webPage
+                    }).append($('<img>', {
+                      src: user.avatar,
+                      alt: 'viewUser'
+                    }).addClass('avatar')))).
             append($('<div>').addClass('userzoom-tooltip-info').
-            append($('<div>').addClass('userzoom-tooltip-info-userName').append($('<a>', {
-      href: user.webPage
-    }).append(user.fullName))).
-            append($('<div>').addClass('userzoom-tooltip-info-infoConnection').append(connectionStatus(user))).
-            append($('<div>').addClass('userzoom-tooltip-info-status').append(user.status))).
+                    append($('<div>').addClass('userzoom-tooltip-info-userName').append($('<a>', {
+                      href: user.webPage
+                    }).append(user.fullName))).
+                    append($('<div>').addClass('userzoom-tooltip-info-infoConnection').append(connectionStatus(user))).
+                    append($('<div>').addClass('userzoom-tooltip-info-status').append(user.status))).
             append(interactionWith(user)).
             appendTo($(document.body)).
             position({
-      of: target,
-      at: 'right bottom',
-      my: 'left top',
-      offset: '-50 7',
-      collision: 'flip'
-    });
+              of: target,
+              at: 'right bottom',
+              my: 'left top',
+              offset: '-50 7',
+              collision: 'flip'
+            });
     userinfo.addClass(positionBetween(userinfo, target));
     return userinfo;
   }
@@ -283,10 +284,10 @@
 jQuery(document).ready(function() {
   jQuery('.userToZoom').each(function() {
     var $this = jQuery(this);
-    if ($this.data('userZoom') == null) {
+    if (!$this.data('userZoom')) {
       $this.userZoom({
         id: $this.attr('rel')
       });
     }
-  })
+  });
 });

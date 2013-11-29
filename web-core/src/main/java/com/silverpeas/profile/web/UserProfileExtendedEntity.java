@@ -23,25 +23,19 @@
  */
 package com.silverpeas.profile.web;
 
+import com.stratelia.webactiv.beans.admin.UserFull;
 import java.net.URI;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.stratelia.webactiv.beans.admin.UserFull;
-
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-
 /**
- * The complete profile of a user that is exposable in the WEB. It is a web entity representing the profile
- * of a user that can be serialized into a given media type (JSON, XML). It is a
- * decorator that decorates a UserFull object with additional properties concerning its exposition
- * in the WEB.
+ * The complete profile of a user that is exposable in the WEB. It is a web entity representing the
+ * profile of a user that can be serialized into a given media type (JSON, XML). It is a decorator
+ * that decorates a UserFull object with additional properties concerning its exposition in the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -51,13 +45,13 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
 
   /**
    * Decorates the specified user full details with the required WEB exposition features.
+   *
    * @param user the user full details to decorate.
    * @return a web entity representing the profile of a user.
    */
   public static UserProfileExtendedEntity fromUser(final UserFull user) {
     return new UserProfileExtendedEntity(user);
   }
-
   private UserFull user = null;
 
   private UserProfileExtendedEntity(final UserFull user) {

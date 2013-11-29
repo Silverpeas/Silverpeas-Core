@@ -28,20 +28,20 @@
 (function($) {
 
   $.password = {
-    webServiceContext : webContext + '/services',
-    rules : null,
-    nbMatchingCombinedRules : null,
-    combinedRules : null,
-    extraRuleMessage : null,
-    initialized : false,
-    doInitialize : function() {
+    webServiceContext: webContext + '/services',
+    rules: null,
+    nbMatchingCombinedRules: null,
+    combinedRules: null,
+    extraRuleMessage: null,
+    initialized: false,
+    doInitialize: function() {
       if (!$.password.initialized) {
         $.password.initialized = true;
         var policy = __getJSonData($.password.webServiceContext + '/password/policy');
         $.password.rules = policy.rules;
         $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
         $.password.combinedRules = policy.combinedRules;
-        $.password.extraRuleMessage =  $.trim(policy.extraRuleMessage);
+        $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
       }
     }
   };
@@ -50,20 +50,18 @@
    * The different password methods handled by the plugin.
    */
   var methods = {
-
     /**
      * Prepare UI and behavior
      */
-    init : function() {
+    init: function() {
       return __init($(this));
     },
-
     /**
      * Verifies the entered password :
      * - displaying rules
      * - showing to user the validated and unvalidated rules
      */
-    verify : function(options) {
+    verify: function(options) {
       return __verify($(this), options)
     }
   };
@@ -107,7 +105,7 @@
 
       // Clean if necessary
       var $box = $('#' + infoBoxId);
-      if ($box.length == 0) {
+      if ($box.length === 0) {
         $box = __prepareUI($this);
       }
 
@@ -127,7 +125,7 @@
 
     // Checking
     var passwordCheck = __postJSonData($.password.webServiceContext + '/password/policy/checking',
-        {value : $target.val()});
+            {value: $target.val()});
 
     // All rules are verified by default
     $box.find('li').each(function() {
@@ -218,7 +216,7 @@
 
     // Common body
     $box = $('<div>').css('display', 'none').css('z-index', '100000').attr('id',
-        infoBoxId).addClass('password-box-info');
+            infoBoxId).addClass('password-box-info');
     $box.append($('<span>').append(__getFromBundleKey('password.rule.requirements')));
     var $rules = $('<ul>');
     $box.append($rules);
@@ -238,7 +236,7 @@
       $combinedRule.append($combinedRuleDetails);
       $.each($.password.combinedRules, function(name, rule) {
         $combinedRuleDetails.append($('<li>').attr('id',
-            name).addClass('combined').append(rule.description));
+                name).addClass('combined').append(rule.description));
       });
       $rules.append($combinedRule);
     }
@@ -251,20 +249,20 @@
     // Events
     $target.keyup(function(event) {
       // Toggle info box display on 'Escape'
-      if (event.keyCode == 27) {
+      if (event.keyCode === 27) {
         $box.toggle();
       }
       // Checking password if box displayed
       // and no 'shift' (16) key and no 'tab' key (9) and no 'Escape' and no 'Print Screen'
-      if ((event.keyCode != 44 && event.keyCode != 27 && event.keyCode != 9 &&
-          event.keyCode != 16) && $box.css('display') != 'none') {
+      if ((event.keyCode !== 44 && event.keyCode !== 27 && event.keyCode !== 9 &&
+              event.keyCode !== 16) && $box.css('display') !== 'none') {
         __checking($target, $box, {});
       }
 
       // Position
-      if ($box.css('display') != 'none') {
+      if ($box.css('display') !== 'none') {
         // Checking when displaying the box from 'Escape' key event
-        if (event.keyCode == 27 && $target.val()) {
+        if (event.keyCode === 27 && $target.val()) {
           __checking($target, $box, {});
         }
         __setBoxInfoPosition($target, $box);
@@ -273,7 +271,7 @@
 
     $(window).resize(function() {
       // Position
-      if ($box.css('display') != 'none') {
+      if ($box.css('display') !== 'none') {
         __setBoxInfoPosition($target, $box);
       }
     });
@@ -306,7 +304,7 @@
    * @private
    */
   function __getCombinedRuleId() {
-    return 'COMBINED_RULES'
+    return 'COMBINED_RULES';
   }
 
   /**
@@ -318,7 +316,7 @@
   function __setBoxInfoPosition($target, $box) {
     var top = $target.offset().top + $target.outerHeight(true) + 8;
     var left = $target.offset().left - ($box.outerWidth(true) / 2) + ($target.outerWidth(true) / 2);
-    $box.offset({top : top, left : left});
+    $box.offset({top: top, left: left});
   }
 
   /**
@@ -351,7 +349,7 @@
    * @private
    */
   function __getJSonData(url) {
-    return __performAjaxRequest({url : url, type : 'GET', dataType : 'json'});
+    return __performAjaxRequest({url: url, type: 'GET', dataType: 'json'});
   }
 
   /**
@@ -362,11 +360,11 @@
    */
   function __postJSonData(url, data) {
     return __performAjaxRequest({
-      url : url,
-      type : 'POST',
-      dataType : 'json',
-      data : $.toJSON(data),
-      contentType : "application/json"
+      url: url,
+      type: 'POST',
+      dataType: 'json',
+      data: $.toJSON(data),
+      contentType: "application/json"
     });
   }
 
@@ -381,12 +379,12 @@
     // Default options.
     // url, type, dataType are missing.
     var options = {
-      cache : false,
-      async : false,
-      success : function(data) {
+      cache: false,
+      async: false,
+      success: function(data) {
         result = data;
       },
-      error : function(jqXHR, textStatus, errorThrown) {
+      error: function(jqXHR, textStatus, errorThrown) {
         alert(errorThrown);
       }
     };
@@ -413,10 +411,10 @@
     if (webContext) {
       if (!__i18nInitialized) {
         $.i18n.properties({
-          name : 'passwordBundle',
-          path : webContext + '/services/bundles/com/silverpeas/password/multilang/',
-          language : '$$', /* by default the language of the user in the current session */
-          mode : 'map'
+          name: 'passwordBundle',
+          path: webContext + '/services/bundles/com/silverpeas/password/multilang/',
+          language: '$$', /* by default the language of the user in the current session */
+          mode: 'map'
         });
         __i18nInitialized = true;
       }
