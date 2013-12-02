@@ -59,16 +59,15 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -113,6 +112,7 @@ public class GraphicElementFactory {
   protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
+  private static final String SECURITY_JS = "silvertokengen.js";
 
   /**
    * Constructor declaration
@@ -358,6 +358,8 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
         "';").append("</script>\n");
 
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/").append(SECURITY_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/").append(SILVERPEAS_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
