@@ -47,7 +47,7 @@ public class ValidationQuestionHandler extends FunctionHandler {
     boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
 
     try {
-      String userId = getAdmin().authenticate(key, session.getId(), false, false);
+      String userId = getAdmin().identify(key, session.getId(), false, false);
       UserDetail userDetail = getAdmin().getUserDetail(userId);
       String question = request.getParameter("question");
       String answer = request.getParameter("answer");

@@ -1388,7 +1388,7 @@ public class AdminController implements java.io.Serializable {
   public String authenticate(String sKey, String sSessionId,
       boolean isAppInMaintenance) {
     try {
-      return getAdminService().authenticate(sKey, sSessionId, isAppInMaintenance);
+      return getAdminService().identify(sKey, sSessionId, isAppInMaintenance);
     } catch (Exception e) {
       return "-1";
     }

@@ -4014,15 +4014,15 @@ public final class Admin {
   /**
    * Get the user id for the given login password
    */
-  public String authenticate(String sKey, String sSessionId,
+  public String identify(String sKey, String sSessionId,
       boolean isAppInMaintenance) throws AdminException {
-    return authenticate(sKey, sSessionId, isAppInMaintenance, true);
+    return identify(sKey, sSessionId, isAppInMaintenance, true);
   }
 
   /**
    * Get the user id for the given login password
    */
-  public String authenticate(String sKey, String sSessionId, boolean isAppInMaintenance,
+  public String identify(String sKey, String sSessionId, boolean isAppInMaintenance,
       boolean removeKey) throws AdminException {
     String sUserId;
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory

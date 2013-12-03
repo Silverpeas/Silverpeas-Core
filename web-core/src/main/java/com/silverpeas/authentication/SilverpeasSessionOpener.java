@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
@@ -65,7 +64,7 @@ public class SilverpeasSessionOpener {
    * @return true if the user sending the request is an anonymous one, false otherwise.
    */
   public boolean isAnonymousUser(HttpServletRequest request) {
-    HttpSession session = request.getSession();
+    HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (controller != null) {
@@ -98,53 +97,57 @@ public class SilverpeasSessionOpener {
    * occurred during the session opening (for example, the user wasn't authenticated).
    */
   public String openSession(HttpServletRequest request, String authKey) {
-    // Before opening a Silverpeas session, clearing all old session potential residues
-    closeSession(request);
-    // Opening a new session (new JSESSIONID)
-    HttpSession session = request.getSession();
+    HttpSession session = request.getSession(false);
+    // a session should exists: it could be either an authentication session opened for the
+    // authentication process or an already opened user specific session.
     try {
-      // Get the user profile from the admin
       SilverTrace.info("peasCore", "SilverpeasSessionOpenener.openSession()",
-          "root.MSG_GEN_PARAM_VALUE", "session id=" + session.getId());
-      MainSessionController controller = new MainSessionController(authKey, session.getId());
-      // Get and store password change capabilities
+          "peasCore.MSG_START_OF_HTTPSESSION");
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
+      // is the current session is valid? If it is valid, then the information about the session
+      // is updated with, for example, the timestamp of the last access (this one), and then it
+      // is returned.
+      SessionInfo sessionInfo = sessionManagement.validateSession(session.getId());
       String allowPasswordChange = (String) session.getAttribute(
           Authentication.PASSWORD_CHANGE_ALLOWED);
-      controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
+      MainSessionController controller;
+      if (sessionInfo == null) {
+        // the session is a new one, then open it in Silverpeas
+        controller = new MainSessionController(authKey, session.getId());
+        session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
+        // Get and store password change capabilities
+        controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
+        if (!controller.getCurrentUserDetail().isDeletedState()) {
+          if (!UserDetail.isAnonymousUser(controller.getUserId())) {
+            sessionManagement.openSession(controller.getCurrentUserDetail(), request);
+            registerSuccessfulConnexion(controller);
+          }
+        }
+      } else {
+        // the session already exists, reuse it
+        controller = (MainSessionController) session.getAttribute(
+            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      }
+
       // Notify user about password expiration if needed
       Boolean alertUserAboutPwdExpiration = (Boolean) session.getAttribute(
           Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
       String redirectURL = null;
       if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
-        redirectURL = alertUserAboutPwdExpiration(controller.getUserId(), controller.
-            getOrganisationController().
-            getAdministratorUserIds(controller.getUserId())[0], controller.getFavoriteLanguage(),
+        redirectURL = alertUserAboutPwdExpiration(controller.getUserId(),
+            controller.getOrganisationController().getAdministratorUserIds(controller.getUserId())[0],
+            controller.getFavoriteLanguage(),
             StringUtil.getBooleanValue(allowPasswordChange));
       }
-      if (!controller.getCurrentUserDetail().isDeletedState()) {
-        // Open a new session if not already opened
-        if (!UserDetail.isAnonymousUser(controller.getUserId())) {
-          SessionManagementFactory factory = SessionManagementFactory.getFactory();
-          SessionManagement sessionManagement = factory.getSessionManagement();
-          // is the current session is valid? If it is valid, then the information about the session
-          // is updated with, for example, the timestamp of the last access (this one), and then it
-          // is returned.
-          SessionInfo sessionInfo = sessionManagement.validateSession(session.getId());
-          if (sessionInfo == null) {
-            sessionManagement.openSession(controller.getCurrentUserDetail(), request);
-            registerSuccessfulConnexion(controller);
-          }
-        }
-        // Put the main session controller in the session
-        session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
-        return getHomePageUrl(request, redirectURL);
-      }
-
+      // Put the main session controller in the session
+      return getHomePageUrl(request, redirectURL);
     } catch (Exception e) {
       SilverTrace.error("peasCore", "SilverpeasSessionOpenener.openSession()",
           "peasCore.EX_LOGIN_SERVLET_CANT_CREATE_MAIN_SESSION_CTRL",
           "session id=" + session.getId(), e);
     }
+
     return getErrorPageUrl(request, authKey);
   }
 
@@ -163,27 +166,18 @@ public class SilverpeasSessionOpener {
   }
 
   /**
-   * Closes the session in Silverpeas for the user behind the specified HTTP request. All the
-   * resources allocated for the maintain the user session in Silverpeas are then freed.
+   * Closes the specified session.
    *
-   * @param request the HTTP request.
+   * All the resources allocated for the maintain the user session in Silverpeas are then freed.
+   *
+   * @param session the HTTP session to close.
    */
-  public void closeSession(HttpServletRequest request) {
-    HttpSession session = request.getSession();
-    session.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    session.removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    Enumeration<String> names = session.getAttributeNames();
-    while (names.hasMoreElements()) {
-      String attributeName = names.nextElement();
-      if (!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName)
-          && !Authentication.PASSWORD_CHANGE_ALLOWED.equals(attributeName)
-          && !Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE.equals(attributeName)) {
-        session.removeAttribute(attributeName);
-      }
+  public void closeSession(HttpSession session) {
+    if (session != null) {
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
+      sessionManagement.closeSession(session.getId());
     }
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
-    sessionManagement.closeSession(session.getId());
   }
 
   /**

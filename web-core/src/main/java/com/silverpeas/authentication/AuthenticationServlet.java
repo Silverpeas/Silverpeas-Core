@@ -25,6 +25,17 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
@@ -39,18 +50,6 @@ import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
  *
@@ -61,10 +60,10 @@ import java.util.Map;
  */
 public class AuthenticationServlet extends HttpServlet {
 
-  private static AuthenticationService authService = new AuthenticationService();
+  private static final AuthenticationService authService = new AuthenticationService();
   private static final long serialVersionUID = -8695946617361150513L;
-  private static final SilverpeasSessionOpener silverpeasSessionOpener =
-      new SilverpeasSessionOpener();
+  private static final SilverpeasSessionOpener silverpeasSessionOpener
+      = new SilverpeasSessionOpener();
   private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
@@ -75,16 +74,19 @@ public class AuthenticationServlet extends HttpServlet {
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws IOException when an error occurs while processing the request or sending the response.
+   * @throws javax.servlet.ServletException
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
+    // get an existing session or creates a new one.
     HttpSession session = request.getSession();
+
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding(CharEncoding.UTF_8);
     }
     if (silverpeasSessionOpener.isAnonymousUser(request)) {
-      silverpeasSessionOpener.closeSession(request);
+      silverpeasSessionOpener.closeSession(session);
     }
 
     // Get the authentication settings
@@ -93,10 +95,9 @@ public class AuthenticationServlet extends HttpServlet {
     boolean securedAccess = silverpeasSessionOpener.isNavigationSecure(request);
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
-    session.setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
     String domainId = getDomain(request, authenticationParameters, authenticationSettings);
-    AuthenticationCredential credential =
-        AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin())
+    AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
+        authenticationParameters.getLogin())
         .withAsPassword(authenticationParameters.getPassword())
         .withAsDomainId(domainId);
 
@@ -104,8 +105,8 @@ public class AuthenticationServlet extends HttpServlet {
     String url;
 
     // Verify if the user can try again to login.
-    UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier =
-        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential);
+    UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier
+        = AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential);
     userCanTryAgainToLoginVerifier.clearSession(request);
 
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
@@ -123,12 +124,11 @@ public class AuthenticationServlet extends HttpServlet {
           authenticationParameters.getClearPassword(), securedAccess);
 
       if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
-        UserMustAcceptTermsOfServiceVerifier verifier =
-            AuthenticationUserVerifierFactory.getUserMustAcceptTermsOfServiceVerifier(credential);
+        UserMustAcceptTermsOfServiceVerifier verifier = AuthenticationUserVerifierFactory.
+            getUserMustAcceptTermsOfServiceVerifier(credential);
         try {
           verifier.verify();
-        } catch (AuthenticationUserMustAcceptTermsOfService
-            authenticationUserMustAcceptTermsOfService) {
+        } catch (AuthenticationUserMustAcceptTermsOfService authenticationUserMustAcceptTermsOfService) {
           forward(request, response, verifier.getDestination(request));
           return;
         }
@@ -141,10 +141,11 @@ public class AuthenticationServlet extends HttpServlet {
       }
 
       String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
-      // The session must again be recovered from the HTTP request because of opening a session
-      // that could to induce the creation of a new HttpSession instance that is setted to the
-      // request
-      writeSessionCookie(response, request.getSession(), securedAccess);
+      // fetch the new opened session
+      session = request.getSession(false);
+      session.
+          setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
+      writeSessionCookie(response, session, securedAccess);
       response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
       return;
     }
@@ -225,6 +226,7 @@ public class AuthenticationServlet extends HttpServlet {
 
   /**
    * Centralization.
+   *
    * @param request
    * @param response
    * @param destination
@@ -243,19 +245,19 @@ public class AuthenticationServlet extends HttpServlet {
       if (newEncryptMode) {
         writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().
             encode(
-            clearPassword), -1, secured);
+                clearPassword), -1, secured);
         writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().
             encode(
-            clearPassword), 31536000, secured);
+                clearPassword), 31536000, secured);
       } else {
         writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().
             getEncryption()
             .encode(
-            clearPassword), -1, secured);
+                clearPassword), -1, secured);
         writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().
             getEncryption()
             .encode(
-            clearPassword), 31536000, secured);
+                clearPassword), 31536000, secured);
       }
     }
   }
@@ -302,10 +304,10 @@ public class AuthenticationServlet extends HttpServlet {
       AuthenticationParameters authenticationParameters, String sDomainId) {
     String key = request.getParameter("TestKey");
     if (!StringUtil.isDefined(key)) {
-      AuthenticationCredential credential =
-          AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin());
-      if (authenticationParameters.isUserByInternalAuthTokenMode() ||
-          authenticationParameters.isSsoMode() || authenticationParameters.isCasMode()) {
+      AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
+          authenticationParameters.getLogin());
+      if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
+          isSsoMode() || authenticationParameters.isCasMode()) {
         key = authService.authenticate(credential.withAsDomainId(sDomainId));
       } else if (authenticationParameters.isSocialNetworkMode()) {
         key = authService.authenticate(credential.withAsDomainId(authenticationParameters.

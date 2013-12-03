@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.http.HttpSession;
+import org.silverpeas.authentication.Authentication;
 
 /**
  * Information on the HTTP session opened by a Silverpeas user to access the Silverpeas Web pages.
@@ -39,8 +40,7 @@ import javax.servlet.http.HttpSession;
  */
 public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
 
-  private HttpSession httpSession;
-
+  private final HttpSession httpSession;
 
   /**
    * Prevent the class from being instantiate (private)
@@ -72,21 +72,26 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   private void cleanSession(final HttpSession httpSession) {
     try {
       Enumeration<String> attributeNames = httpSession.getAttributeNames();
-      List<String> names = new ArrayList<String>();
+      List<Object> controllers = new ArrayList<Object>();
       while (attributeNames.hasMoreElements()) {
         String spName = attributeNames.nextElement();
         if ((spName != null) && ((spName.startsWith("Silverpeas_")) || (spName.
             startsWith("WYSIWYG_")))) {
-          names.add(spName);
+          controllers.add(httpSession.getAttribute(spName));
+        }
+        if (!spName.startsWith("Redirect") && !"gotoNew".equals(spName)
+            && !Authentication.PASSWORD_CHANGE_ALLOWED.equals(spName)
+            && !Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE.equals(spName)) {
+          httpSession.removeAttribute(spName);
         }
       }
-      for (String attributeName : names) {
+      for (Object element : controllers) {
+        String elementName = element.getClass().getSimpleName();
         try {
-          Object element = httpSession.getAttribute(attributeName);
-          SilverTrace.debug("peasCore", "SessionInfo.cleanSession()", "Remove=" + attributeName);
+          SilverTrace.debug("peasCore", "SessionInfo.cleanSession()", "Cleaning " + elementName);
           if (element instanceof AbstractComponentSessionController) {
-            AbstractComponentSessionController controller =
-                (AbstractComponentSessionController) element;
+            AbstractComponentSessionController controller
+                = (AbstractComponentSessionController) element;
             controller.close();
             SilverTrace.debug("peasCore", "SessionManager.cleanSession()", controller.getClass().
                 getName());
@@ -95,22 +100,11 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
             controller.remove();
             SilverTrace.debug("peasCore", "SessionManager.cleanSession()", "MainSessionController");
           }
-          httpSession.removeAttribute(attributeName);
         } catch (Exception ex) {
           SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
-              "root.MSG_GEN_PARAM_VALUE", "ERROR for parameter : " + attributeName, ex);
+              "root.MSG_GEN_PARAM_VALUE", "ERROR while cleaning " + elementName, ex);
         }
       }
-      httpSession.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      httpSession.removeAttribute("SessionGraphicElementFactory");
-      httpSession.removeAttribute("spaceModel"); // For Portlets
-      httpSession.removeAttribute("quizzUnderConstruction"); // For Quizz
-      httpSession.removeAttribute("questionsVector"); // For Quizz
-      httpSession.removeAttribute("currentQuizzId"); // For Quizz
-      httpSession.removeAttribute("questionsResponses"); // For Quizz
-      httpSession.removeAttribute("currentParticipationId"); // For Quizz
-
-      httpSession.removeAttribute("DomainsBarUtil");
     } catch (Exception e) {
       SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
           "root.MSG_GEN_PARAM_VALUE", "ERROR !!!", e);

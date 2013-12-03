@@ -27,36 +27,34 @@ import com.silverpeas.authentication.SilverpeasSessionOpener;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
- * Servlet that verifies especially the user is authenticated.
- * User: Yohann Chastagnier
- * Date: 20/09/13
+ * Servlet that verifies especially the user is authenticated. User: Yohann Chastagnier Date:
+ * 20/09/13
  */
 public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = 3879578969267125005L;
 
-  private static final SilverpeasSessionOpener silverpeasSessionOpener =
-      new SilverpeasSessionOpener();
+  private static final SilverpeasSessionOpener silverpeasSessionOpener
+      = new SilverpeasSessionOpener();
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
+    // Gets the main session controller
+    HttpSession session = request.getSession(false);
     try {
-
       // Gets the main session controller
-      HttpSession session = request.getSession(false);
       MainSessionController mainSessionCtrl = null;
       if (session != null) {
         mainSessionCtrl = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
@@ -81,16 +79,17 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
     } catch (UserSessionExpirationException uste) {
 
       /*
-      The session doesn't contains an authenticated user :
-      - delay is passed
-      - session expired manually
+       The session doesn't contains an authenticated user :
+       - delay is passed
+       - session expired manually
        */
-
       // Logging
-      SilverTrace.warn("peasCore", "SilverpeasAuthenticatedHttpServlet.service",
-          "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + request.getSession(true).getId());
-      // Thoroughly clean the session
-      silverpeasSessionOpener.closeSession(request);
+      if (session != null) {
+        SilverTrace.warn("peasCore", "SilverpeasAuthenticatedHttpServlet.service",
+            "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
+        // Thoroughly clean the session
+        silverpeasSessionOpener.closeSession(session);
+      }
       // Redirecting the user
       redirectOrForwardService(request, response,
           GeneralPropertiesManager.getString("sessionTimeout"));
@@ -109,12 +108,14 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
    * Used to handle the expiration of the user session.
    */
   private class UserSessionExpirationException extends RuntimeException {
+
     private static final long serialVersionUID = -7476590253287182372L;
     // Empty
   }
 
   /**
    * Retrieves the Main session controller.
+   *
    * @param request
    * @return
    */
