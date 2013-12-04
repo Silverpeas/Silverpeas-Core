@@ -60,7 +60,7 @@
               for (var prop in obj) {
                 if (prop === 'page' && obj.page.number && obj.page.size)
                   criteria.page = obj.page.number + ';' + obj.page.size;
-                else if (obj[prop] !== null && obj[prop] !== undefined)
+                else if (prop !== 'page' && obj[prop] !== null && obj[prop] !== undefined)
                   criteria[prop] = obj[prop];
               }
             }

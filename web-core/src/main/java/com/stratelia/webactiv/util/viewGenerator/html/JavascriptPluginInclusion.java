@@ -23,16 +23,14 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.text.MessageFormat;
-
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.notification.message.MessageManager;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -95,6 +93,8 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_SVG = "raphael.min.js";
   private static final String JQUERY_GAUGE = "justgage.min.js";
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
+  private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
+  private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
 
   /**
    * Centralization of script instantiation.
@@ -257,6 +257,12 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryPath + JQUERY_SVG));
     xhtml.addElement(script(jqueryPath + JQUERY_GAUGE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_GAUGE));
+    return xhtml;
+  }
+
+  public static ElementContainer includeComment(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + JQUERY_AUTORESIZE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_COMMENT));
     return xhtml;
   }
 
