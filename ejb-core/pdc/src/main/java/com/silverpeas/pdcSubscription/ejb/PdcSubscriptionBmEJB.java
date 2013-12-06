@@ -25,7 +25,22 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import com.silverpeas.SilverpeasServiceProvider;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.pdcSubscription.PdcSubscriptionDeletionNotifier;
+import com.silverpeas.pdcSubscription.PdcSubscriptionNotifier;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
@@ -35,39 +50,15 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 @Stateless(name = "PdcSubscription", description = "Stateless bean to manage pdc subscription.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
 
   private static final long serialVersionUID = 5087897193810397409L;
-  public final static String DATE_FORMAT = "yyyy/MM/dd";
-  public final static String MESSAGE_TITLE = "notification.title";
-  public final static String MESSAGE_DELETE_TITLE = "notification.delete.title";
-  public final static String SOURCE_CLASSIFICATION = "pdcClassification";
 
   /**
    * Remote interface method
@@ -215,21 +206,14 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
         return;
       }
       int[] pdcIds = new int[subscriptions.size()];
-      OrganisationController ocontroller = OrganisationControllerFactory.getOrganisationController();
-      int adminId;
-
       for (int i = 0; i < subscriptions.size(); i++) {
         PDCSubscription subscription = subscriptions.get(i);
         pdcIds[i] = subscription.getId();
-        adminId = getFirstAdministrator(ocontroller, subscription.getOwnerId());
-        sendDeleteNotif(subscription, axisName, false, adminId, null);
+        UserNotificationHelper.buildAndSend(new PdcSubscriptionDeletionNotifier(subscription, axisName, false));
       }
       // remove all found subscriptions
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, pdcIds);
     } catch (SQLException e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkAxisOnDelete",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
-    } catch (NotificationManagerException e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkAxisOnDelete",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
     } finally {
@@ -251,25 +235,20 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
       List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo) {
     Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    List<PDCSubscription> subscriptions;
     try {
-      subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
-          axisId);
+      List<PDCSubscription> subscriptions =
+          PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn, axisId);
       if (subscriptions == null || subscriptions.isEmpty()) {
         return;
       }
 
       int[] removeIds = new int[subscriptions.size()];
       int removeLength = 0;
-      OrganisationController ocontroller = OrganisationControllerFactory.getOrganisationController();
-      int adminId;
-
       for (PDCSubscription subscription : subscriptions) {
         // for each subscription containing axis affected by value deletion
         // check if any criteria value has been deleted
         if (checkSubscriptionRemove(subscription, axisId, oldPath, newPath)) {
-          adminId = getFirstAdministrator(ocontroller, subscription.getOwnerId());
-          sendDeleteNotif(subscription, axisName, true, adminId, pathInfo);
+          UserNotificationHelper.buildAndSend(new PdcSubscriptionDeletionNotifier(subscription, axisName, true));
           removeIds[removeLength] = subscription.getId();
           removeLength++;
         }
@@ -278,9 +257,6 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
       System.arraycopy(removeIds, 0, ids, 0, removeLength);
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
     } catch (SQLException e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkValueOnDelete",
-          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
-    } catch (NotificationManagerException e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkValueOnDelete",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
     } finally {
@@ -305,18 +281,13 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
 
     Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
     SilverContentInterface silverContent = null;
-    List<String> spaceAndInstanceNames = null;
-    int firstAdminId = -1;
     OrganisationController organizationController = OrganisationControllerFactory
         .getOrganisationController();
-    ContentManager contentManager = null;
-    boolean contentObjectIsVisible = false;
 
     try {
-
-      contentManager = new ContentManager();
+      ContentManager contentManager = new ContentManager();
       SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
-      contentObjectIsVisible = (scv.isVisible() == 1 ? true : false);
+      boolean contentObjectIsVisible = (scv.isVisible() == 1 ? true : false);
       
       if(contentObjectIsVisible) {
         // load all PDCSubscritions into the memory to perform future check of them
@@ -328,9 +299,6 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
           if (isCorrespondingSubscription(subscription, classifyValues)) {
             if (silverContent == null) {
               silverContent = getSilverContent(componentId, silverObjectid);
-              spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
-              firstAdminId = getFirstAdministrator(organizationController,
-                  subscription.getOwnerId());
             }
             // The current subscription matches the new classification.
             // Now, we have to test if subscription's owner is allowed to access
@@ -340,8 +308,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
             if (roles.length > 0) {
               // if user have got at least one role, sends a notification to the
               // user specified in pdcSubscription
-              sendSubscriptionNotif(subscription, spaceAndInstanceNames,
-                  componentId, silverContent, firstAdminId);
+              UserNotificationHelper.buildAndSend(new PdcSubscriptionNotifier(subscription, silverContent));
             }
           }
         }
@@ -388,40 +355,6 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     }
 
     return silverContent;
-  }
-
-  /**
-   * get the names of space and instance where the object have been classified
-   *
-   * @param componentId - the component where is classified the silverContent
-   * @param organizationController - the OrganizationController
-   * @return ArrayList 1 - spaceName 2 - instanceName 3 - spaceId
-   */
-  private List<String> getSpaceAndInstanceNames(String componentId,
-      OrganisationController organizationController) {
-    ComponentInst componentInstance = organizationController.getComponentInst(componentId);
-    String instanceName = componentInstance.getLabel();
-    String workSpaceId = componentInstance.getDomainFatherId();
-    SpaceInst spaceInst = organizationController.getSpaceInstById(workSpaceId);
-    String spaceName = spaceInst.getName();
-
-    List<String> spaceAndInstanceNames = new ArrayList<String>();
-    spaceAndInstanceNames.add(spaceName);
-    spaceAndInstanceNames.add(instanceName);
-    spaceAndInstanceNames.add(workSpaceId);
-    return spaceAndInstanceNames;
-  }
-
-  /**
-   * @return first administrator id
-   */
-  private int getFirstAdministrator(OrganisationController organizationController, int userId) {
-    int fromUserID = -1;
-    String[] admins = organizationController.getAdministratorUserIds(Integer.toString(userId));
-    if (admins != null && admins.length > 0) {
-      fromUserID = Integer.parseInt(admins[0]);
-    }
-    return fromUserID;
   }
 
   /**
@@ -540,164 +473,5 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
       return false;
     }
     return searchValue.getValue().startsWith(criteria.getValue(), 0);
-  }
-
-  /**
-   * Sends delete notifications
-   *
-   * @param subscription
-   * @param axisName
-   * @param isValueDeleted
-   * @param path
-   * @param fromUser
-   * @throws NotificationManagerException
-   */
-  protected void sendDeleteNotif(PDCSubscription subscription, String axisName,
-      boolean isValueDeleted, int fromUser, List<com.stratelia.silverpeas.pdc.model.Value> path)
-      throws NotificationManagerException {
-    SilverTrace.info("PdcSubscription",
-        "PdcSubscriptionBmEJB.sendDeleteNotif()", "root.MSG_GEN_ENTER_METHOD");
-
-    final String language = getDefaultUserLanguage(subscription.getOwnerId());
-    final ResourceLocator resources = new ResourceLocator(
-        "org.silverpeas.pdcSubscription.multilang.pdcsubscription", language);
-    final StringBuilder message = new StringBuilder(150);
-
-    if (isValueDeleted) {
-      message.append(resources.getString("deleteOnValueMessage"));
-    } else {
-      message.append(resources.getString("deleteOnAxisMessage"));
-    }
-    message.append("\n");
-
-    message.append(resources.getString("Subscription"));
-    message.append(subscription.getName());
-    message.append("\n");
-
-    message.append(resources.getString("Axis"));
-    message.append(axisName);
-    message.append("\n");
-
-    if (path != null) {
-      message.append(resources.getString("Path"));
-      // message.append(formatPath(path));
-      message.append("\n");
-    }
-
-    NotificationSender notifSender = new NotificationSender("");
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, resources.getString(MESSAGE_DELETE_TITLE), message.
-        toString());
-    notifMetaData.setSender(String.valueOf(fromUser));
-    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(subscription.getOwnerId())));
-    notifMetaData.setSource(resources.getString(SOURCE_CLASSIFICATION));
-    notifSender.notifyUser(notifMetaData);
-  }
-
-  /**
-   * Sends a notification when subscription criterias math a new content classified
-   *
-   * @param subscription
-   * @param spaceAndInstanceNames
-   * @param componentId
-   * @param silverContent
-   * @param fromUserId
-   * @throws NotificationManagerException
-   */
-  protected void sendSubscriptionNotif(PDCSubscription subscription,
-      List<String> spaceAndInstanceNames, String componentId, SilverContentInterface silverContent,
-      int fromUserId) throws NotificationManagerException {
-    final int userID = subscription.getOwnerId();
-    final String subscriptionName = subscription.getName();
-    final java.util.Date classifiedDate = new java.util.Date();
-
-    String documentName = "";
-    String documentUrl = "";
-    if (silverContent != null) {
-      String contentUrl = silverContent.getURL();
-      String contentName = silverContent.getName();
-      if (contentUrl != null) {
-        StringBuilder documentUrlBuffer = new StringBuilder().append(
-            "/RpdcSearch/jsp/GlobalContentForward?contentURL=");
-        try {
-          documentUrlBuffer.append(URLEncoder.encode(contentUrl, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          documentUrlBuffer.append(contentUrl);
-        }
-        documentUrlBuffer.append("&componentId=").append(componentId);
-        documentUrl = documentUrlBuffer.toString();
-      }
-      documentName = (contentName != null) ? contentName : "";
-    }
-
-    String spaceName = spaceAndInstanceNames.get(0);
-    String instanceName = spaceAndInstanceNames.get(1);
-
-    sendNotification(userID, fromUserId, subscriptionName, instanceName,
-        componentId, spaceName, classifiedDate, "standartMessage", documentUrl,
-        documentName);
-  }
-
-  protected void sendNotification(int userID, int fromUserID,
-      String subscription, String component, String componentID,
-      String workSpace, java.util.Date classifiedDate,
-      String notificationMessageKey, String documentUrl, String documentName)
-      throws NotificationManagerException {
-    SilverTrace.info("PdcSubscription",
-        "PdcSubscriptionBmEJB.sendNotification()", "root.MSG_GEN_ENTER_METHOD",
-        "userID = " + userID + ", fromUserID = " + fromUserID
-        + ", subscription = " + subscription + ", componentId = "
-        + component + ", workSpaceId = " + workSpace
-        + ", notificationMessageKey = " + notificationMessageKey
-        + ", documentUrl = " + documentUrl);
-
-    final String language = getDefaultUserLanguage(userID);
-    final ResourceLocator resources = new ResourceLocator(
-        "com.silverpeas.pdcSubscription.multilang.pdcsubscription", language);
-    final StringBuilder message = new StringBuilder(150);
-
-    message.append(resources.getString("Subscription"));
-    message.append(subscription);
-    message.append("\n");
-
-    message.append(resources.getString("DocumentName"));
-    message.append(documentName);
-    message.append("\n");
-
-    NotificationSender notifSender = new NotificationSender(componentID);
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        resources.getString(notificationMessageKey), message.toString());
-    notifMetaData.setSender(String.valueOf(fromUserID));
-    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(userID)));
-    notifMetaData.setSource(workSpace + " - " + component);
-    notifMetaData.setLink(documentUrl);
-    notifSender.notifyUser(notifMetaData);
-  }
-
-  /**
-   * @param userID
-   * @return user preferred language by userid provided
-   */
-  protected String getDefaultUserLanguage(int userID) {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
-        String.valueOf(userID)).getLanguage();
-  }
-
-  /**
-   * Formats a path (of values) to be showed to users
-   *
-   * @param pathInfos
-   * @return
-   */
-  protected String formatPath(List<com.stratelia.silverpeas.pdc.model.Value> pathInfos) {
-    final StringBuilder res = new StringBuilder();
-    for (int i = 0; i < pathInfos.size(); i++) {
-      if (i != 0) {
-        res.append('/');
-      }
-      String value = pathInfos.get(i).getName();
-      res.append(value);
-    }
-    return res.toString();
   }
 }
