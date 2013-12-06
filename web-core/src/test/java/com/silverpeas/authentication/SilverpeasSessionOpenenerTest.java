@@ -78,6 +78,7 @@ public class SilverpeasSessionOpenenerTest {
 
     session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);
+    when(request.getSession(false)).thenReturn(session);
     when(session.getId()).thenReturn(UUID.randomUUID().toString());
     when(session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED)).thenReturn("true");
     when(session.getAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE)).thenReturn(true);
@@ -150,7 +151,7 @@ public class SilverpeasSessionOpenenerTest {
         "test1", "test2")));
     sessionManagement.openSession(new UserDetail(), request);
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
-    instance.closeSession(request);
+    instance.closeSession(session);
     verify(session, times(1)).removeAttribute("test1");
     verify(session, times(1)).removeAttribute("test2");
 

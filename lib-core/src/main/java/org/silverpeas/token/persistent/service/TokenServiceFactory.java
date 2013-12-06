@@ -21,41 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.service;
+package org.silverpeas.token.persistent.service;
 
-import org.silverpeas.token.TokenKey;
-import org.silverpeas.token.constant.TokenType;
+import javax.inject.Inject;
 
 /**
+ * A factory of a {@link PersistentResourceTokenService} objects.
+ *
  * @author Yohann Chastagnier
  */
-public class TestTokenKey implements TokenKey {
+public class TokenServiceFactory {
 
-  final String resourceId;
+  private static final TokenServiceFactory instance = new TokenServiceFactory();
 
-  public TestTokenKey(final String resourceId) {
-    this.resourceId = resourceId;
-  }
+  @Inject
+  private PersistentResourceTokenService tokenService;
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.TokenKey#isValid()
+  /**
+   * @return an instance of {@link PersistentResourceTokenService}.
    */
-  @Override
-  public boolean isValid() {
-    return true;
+  public static PersistentResourceTokenService getTokenService() {
+    return getInstance().tokenService;
   }
 
   /**
-   * @return the resourceId
+   * @return a TokenServiceFactory instance.
    */
-  @Override
-  public String getResourceId() {
-    return resourceId;
-  }
-
-  @Override
-  public TokenType getTokenType() {
-    return TokenType.USER;
+  private static TokenServiceFactory getInstance() {
+    return instance;
   }
 }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.exception;
 
-import org.silverpeas.token.model.Token;
+import org.silverpeas.token.Token;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -52,7 +52,7 @@ public class TokenException extends SilverpeasException {
    */
   public TokenException(final Token token, final String messageSuffix, final Exception exception) {
     super("AbstractTokenService", SilverpeasException.ERROR, "token." + messageSuffix,
-        "tokenType=" + token.getType() + ", resourceId=" + token.getResourceId(), exception);
+        token.toString(), exception);
     this.token = token;
   }
 

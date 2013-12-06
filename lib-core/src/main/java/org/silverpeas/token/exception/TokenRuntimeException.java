@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.exception;
 
-import org.silverpeas.token.model.Token;
+import org.silverpeas.token.Token;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -38,8 +38,7 @@ public class TokenRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Default constructor
-   * @param tokenException
-   * @param messageSuffix
+   * @param tokenException the exception that has caused this exception.
    */
   public TokenRuntimeException(final TokenException tokenException) {
     this(tokenException.getToken(), tokenException.getMessage(), tokenException);
@@ -47,8 +46,8 @@ public class TokenRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Default constructor
-   * @param token
-   * @param messageSuffix
+   * @param token the token from which this exception is thrown.
+   * @param messageSuffix a key of a message about the cause of the exception.
    */
   public TokenRuntimeException(final Token token, final String messageSuffix) {
     this(token, messageSuffix, null);
@@ -56,14 +55,14 @@ public class TokenRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Default constructor
-   * @param token
-   * @param messageSuffix
-   * @param exception
+   * @param token the token from which this exception is thrown.
+   * @param messageSuffix a key of a message about the cause of the exception.
+   * @param exception the cause of this exception.
    */
   public TokenRuntimeException(final Token token, final String messageSuffix,
       final Exception exception) {
     super("AbstractTokenService", SilverpeasException.ERROR, "token." + messageSuffix,
-        "tokenType=" + token.getType() + ", resourceId=" + token.getResourceId(), exception);
+        token.toString(), exception);
     this.token = token;
   }
 

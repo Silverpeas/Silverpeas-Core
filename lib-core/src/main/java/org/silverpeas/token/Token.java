@@ -23,60 +23,24 @@
  */
 package org.silverpeas.token;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import org.silverpeas.token.constant.TokenType;
+import java.io.Serializable;
 
 /**
- * Token Key computed from a token string.
- * @author Yohann Chastagnier
+ * A token in Silverpeas is an atom or a symbol, encoded in a String, that is either used to
+ * identify uniquely a resource or to stamp a resource for security reason.
+ *
+ * There is several ways of using a token in an application, but those uses are usually all related
+ * to the security. For example, the tokens can be used to authenticate and identify in a single
+ * pass a user or, as another example, to stamp a user session or a web page.
+ *
+ * @author mmoquillon
  */
-public class TokenStringKey implements TokenKey {
-
-  /** The resource id here is the token itself */
-  private final String token;
+public interface Token extends Serializable {
 
   /**
-   * Gets {@link TokenKey} instance from a computed string token
-   * @param token
-   * @return
+   * Gets the String representation of this token.
+   *
+   * @return the value of the token (id est its String representation).
    */
-  public static TokenStringKey from(final String token) {
-    return new TokenStringKey(token);
-  }
-
-  /**
-   * Hidden default constructor
-   * @param token
-   */
-  private TokenStringKey(final String token) {
-    this.token = token;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.TokenKey#isValid()
-   */
-  @Override
-  public boolean isValid() {
-    return isDefined(token);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.TokenKey#getTokenType()
-   */
-  @Override
-  public TokenType getTokenType() {
-    return TokenType.TOKEN;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.TokenKey#getResourceId()
-   */
-  @Override
-  public String getResourceId() {
-    return token;
-  }
+  String getValue();
 }

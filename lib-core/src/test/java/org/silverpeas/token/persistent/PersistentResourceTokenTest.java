@@ -21,25 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.model;
+package org.silverpeas.token.persistent;
+
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.junit.Test;
+import org.silverpeas.token.exception.TokenException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.Test;
-import org.silverpeas.token.constant.TokenType;
-import org.silverpeas.token.exception.TokenException;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 /**
  * @author Yohann Chastagnier
  */
-public class TokenTest {
+public class PersistentResourceTokenTest {
 
   @Test
   public void testValidate() {
-    Token token = initializeToken();
+    PersistentResourceToken token = initializeToken();
     assertValidate(token, true);
 
     token = initializeToken();
@@ -59,31 +57,19 @@ public class TokenTest {
     assertValidate(token, true);
 
     token = initializeToken();
-    token.setType(null);
-    assertValidate(token, false);
-
-    token = initializeToken();
-    token.setType(TokenType.UNKNOWN);
-    assertValidate(token, false);
-
-    token = initializeToken();
-    token.setType(TokenType.TOKEN);
+    token.setResource(new MyEntityReference("42"));
     assertValidate(token, true);
 
     token = initializeToken();
-    token.setResourceId(null);
+    token.setResource(new MyEntityReference(null));
     assertValidate(token, false);
 
     token = initializeToken();
-    token.setResourceId("");
-    assertValidate(token, false);
-
-    token = initializeToken();
-    token.setResourceId(" ");
-    assertValidate(token, false);
+    token.setResource(null);
+    assertValidate(token, true);
   }
 
-  private <T extends SilverpeasException> void assertValidate(final Token token,
+  private <T extends SilverpeasException> void assertValidate(final PersistentResourceToken token,
       final boolean isValid) {
     boolean isException = false;
     try {
@@ -94,11 +80,10 @@ public class TokenTest {
     assertThat(isException, is(!isValid));
   }
 
-  private Token initializeToken() {
-    final Token token = new Token();
+  private PersistentResourceToken initializeToken() {
+    final PersistentResourceToken token = new PersistentResourceToken();
     token.setId(26L);
-    token.setType(TokenType.USER);
-    token.setResourceId("26");
+    token.setResource(new MyEntityReference("26"));
     token.setValue("token");
     token.setSaveCount(2);
     token.setSaveDate(java.sql.Date.valueOf("2012-01-01"));

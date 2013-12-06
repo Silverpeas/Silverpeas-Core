@@ -31,11 +31,11 @@
             token="unknownToken" saveCount="1"
             saveDate="2012-07-19 00:00:00.0" />
 
-  <st_token id="24" tokenType="USER" resourceId="38"
+  <st_token id="24" tokenType="STRING" resourceId="38"
             token="token24" saveCount="3"
             saveDate="2012-07-19 00:00:00.0" />
 
-  <st_token id="6" tokenType="USER" resourceId="7"
+  <st_token id="6" tokenType="STRING" resourceId="7"
             token="existingToken" saveCount="9"
             saveDate="2012-07-19 00:00:00.0" />
 

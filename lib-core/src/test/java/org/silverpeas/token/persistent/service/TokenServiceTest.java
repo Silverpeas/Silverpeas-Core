@@ -21,21 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.service;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+package org.silverpeas.token.persistent.service;
 
 import java.util.Date;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
-
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -45,20 +36,23 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.token.TokenStringKey;
-import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.EntityReference;
 import org.silverpeas.token.exception.TokenException;
-import org.silverpeas.token.model.Token;
+import org.silverpeas.token.persistent.MyEntityReference;
+import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 /**
  * @author Yohann Chastagnier
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-token.xml", "/spring-token-embedded-datasource.xml" })
+@ContextConfiguration(locations = {"/spring-token.xml", "/spring-token-embedded-datasource.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class TokenServiceTest {
 
@@ -67,21 +61,20 @@ public class TokenServiceTest {
   private final static String EXISTING_TOKEN = "existingToken";
   private final static String UNEXISTING_TOKEN = "unexistingToken";
 
-  private final TestTokenKey dummyKey = new TestTokenKey("dummy");
-  private final TestTokenKey existingKey = new TestTokenKey("38");
-  private final TestTokenKey newKey = new TestTokenKey("26");
+  private final EntityReference dummyRef = new MyEntityReference("dummy");
+  private final EntityReference existingRef = new MyEntityReference("38");
+  private final EntityReference newRef = new MyEntityReference("26");
 
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet =
-        new ReplacementDataSet(builder.build(TokenServiceTest.class
-            .getResourceAsStream("token-dataset.xml")));
+    dataSet = new ReplacementDataSet(builder.build(TokenServiceTest.class
+        .getResourceAsStream("token-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
   }
 
   @Inject
-  private TokenService tokenService;
+  private PersistentResourceTokenService tokenService;
 
   @Inject
   @Named("jpaDataSource")
@@ -97,64 +90,66 @@ public class TokenServiceTest {
   public void testGet() throws TokenException {
 
     // Testing from a dummy key (doesn't exist in database)
-    Token token = tokenService.get(dummyKey);
+    PersistentResourceToken token = tokenService.get(dummyRef);
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
-    assertThat(token.getType(), is(TokenType.UNKNOWN));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
 
     // Testing from an existing key
-    token = tokenService.get(existingKey);
+    token = tokenService.get(existingRef);
     assertThat(token, notNullValue());
+    assertThat(token.exists(), is(true));
+    assertThat(token.notExists(), is(false));
     assertThat(token.getId(), is(24L));
-    assertThat(token.getResourceId(), is("38"));
+    assertThat(token.getResource(MyEntityReference.class), is(existingRef));
+    assertThat(token.getResource(MyUnknownEntityReference.class), nullValue());
     assertThat(token.getSaveCount(), is(3));
     assertThat(token.getValue(), is("token24"));
 
     // Testing from an existing token string key
-    token = tokenService.get(TokenStringKey.from(EXISTING_TOKEN));
+    token = tokenService.get(EXISTING_TOKEN);
+    EntityReference expectedResource = new MyEntityReference("7");
     assertThat(token, notNullValue());
+    assertThat(token.exists(), is(true));
+    assertThat(token.notExists(), is(false));
     assertThat(token.getId(), is(6L));
-    assertThat(token.getResourceId(), is("7"));
+    assertThat(token.getResource(MyEntityReference.class), is(expectedResource));
+    assertThat(token.getResource(MyUnknownEntityReference.class), nullValue());
     assertThat(token.getSaveCount(), is(9));
     assertThat(token.getValue(), is(EXISTING_TOKEN));
 
     // Testing from an unexisting token string key
-    token = tokenService.get(TokenStringKey.from(UNEXISTING_TOKEN));
+    token = tokenService.get(UNEXISTING_TOKEN);
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
-    assertThat(token.getType(), is(TokenType.UNKNOWN));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
 
     // Testing from an not valid token key
-    token = tokenService.get(new TestTokenKeyNotValid());
+    token = tokenService.get(new MyEntityReference((null)));
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
-    assertThat(token.getType(), is(TokenType.UNKNOWN));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
 
     // Testing from an unknown token key
-    token = tokenService.get(new TestTokenKeyUnknown());
+    token = tokenService.get(new MyUnknownEntityReference(EXISTING_TOKEN));
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
-    assertThat(token.getType(), is(TokenType.UNKNOWN));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyUnknownEntityReference.class), nullValue());
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
   }
 
   @Test(expected = TokenException.class)
   public void testInitializeFromNotValidKey() throws Exception {
-    tokenService.initialize(new TestTokenKeyNotValid());
+    tokenService.initialize(new MyEntityReference(null));
   }
 
-  @Test(expected = TokenException.class)
-  public void testInitializeFromUnknownTokenType() throws Exception {
-    tokenService.initialize(new TestTokenKeyUnknown());
-  }
-
-  @Test(expected = TokenException.class)
-  public void testInitializeFromExistingToken() throws Exception {
-    tokenService.initialize(TokenStringKey.from(EXISTING_TOKEN));
-  }
-
-  @Test(expected = TokenException.class)
-  public void testInitializeFromUnexistingToken() throws Exception {
-    tokenService.initialize(TokenStringKey.from(UNEXISTING_TOKEN));
+  @Test(expected = NullPointerException.class)
+  public void testInitializeFromNull() throws Exception {
+    tokenService.initialize(null);
   }
 
   @Test
@@ -162,23 +157,21 @@ public class TokenServiceTest {
   public void initializeFromExistingKeyIntoTransaction() throws Exception {
 
     // Verifying token before initializing
-    final Token token = tokenService.get(existingKey);
+    final PersistentResourceToken token = tokenService.get(existingRef);
     assertThat(token, notNullValue());
     assertThat(token.getId(), is(24L));
-    assertThat(token.getResourceId(), is("38"));
+    assertThat(token.getResource(MyEntityReference.class), is(existingRef));
     assertThat(token.getSaveCount(), is(3));
     assertThat(token.getValue(), is("token24"));
 
     // Initializing
-    final String toString = ((Object) token).toString();
     final Date date = token.getSaveDate();
-    tokenService.initialize(existingKey);
+    tokenService.initialize(existingRef);
 
     // Verifying token after initializing
     assertThat(token, notNullValue());
-    assertThat(toString, is(((Object) token).toString()));
     assertThat(token.getId(), is(24L));
-    assertThat(token.getResourceId(), is("38"));
+    assertThat(token.getResource(MyEntityReference.class), is(existingRef));
     assertThat(token.getSaveCount(), is(3));
     assertThat(token.getValue(), not(is("token24")));
     assertThat(token.getValue().length(), greaterThanOrEqualTo(10));
@@ -189,23 +182,21 @@ public class TokenServiceTest {
   public void initializeFromExistingKey() throws Exception {
 
     // Verifying token before initializing
-    Token token = tokenService.get(existingKey);
+    PersistentResourceToken token = tokenService.get(existingRef);
     assertThat(token, notNullValue());
     assertThat(token.getId(), is(24L));
-    assertThat(token.getResourceId(), is("38"));
+    assertThat(token.getResource(MyEntityReference.class), is(existingRef));
     assertThat(token.getSaveCount(), is(3));
     assertThat(token.getValue(), is("token24"));
 
     // Initializing
-    final String toString = ((Object) token).toString();
     final Date date = token.getSaveDate();
-    token = tokenService.initialize(existingKey);
+    token = tokenService.initialize(existingRef);
 
     // Verifying token after initializing
     assertThat(token, notNullValue());
-    assertThat(toString, not(is(((Object) token).toString())));
     assertThat(token.getId(), is(24L));
-    assertThat(token.getResourceId(), is("38"));
+    assertThat(token.getResource(MyEntityReference.class), is(existingRef));
     assertThat(token.getSaveCount(), is(4));
     assertThat(token.getValue(), not(is("token24")));
     assertThat(token.getValue().length(), greaterThanOrEqualTo(10));
@@ -229,81 +220,86 @@ public class TokenServiceTest {
   private void newToken() throws Exception {
 
     // Verifying token before initializing
-    Token token = tokenService.get(newKey);
+    PersistentResourceToken token = tokenService.get(newRef);
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
-    assertThat(token.getType(), is(TokenType.UNKNOWN));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
 
     // Initializing
-    final String toString = ((Object) token).toString();
     final Date date = new Date();
-    token = tokenService.initialize(newKey);
+    token = tokenService.initialize(newRef);
 
     // Verifying token after initializing
     assertThat(token, notNullValue());
-    assertThat(toString, not(is(((Object) token).toString())));
     assertThat(token.getId(), is(25L));
-    assertThat(token.getResourceId(), is("26"));
+    assertThat(token.getResource(MyEntityReference.class), is(newRef));
     assertThat(token.getSaveCount(), is(1));
     assertThat(token.getValue().length(), greaterThanOrEqualTo(10));
     assertThat(token.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
   }
 
-  @Test(expected = TokenException.class)
-  public void testGetInitializedFromNotValidKey() throws Exception {
-    tokenService.getInitialized(new TestTokenKeyNotValid());
-  }
-
-  @Test(expected = TokenException.class)
-  public void testGetInitializedFromUnknownTokenType() throws Exception {
-    tokenService.getInitialized(new TestTokenKeyUnknown());
-  }
-
-  @Test(expected = TokenException.class)
-  public void testGetInitializedFromUnexistingToken() throws Exception {
-    tokenService.getInitialized(TokenStringKey.from(UNEXISTING_TOKEN));
+  @Test
+  public void testGetTokenFromUnknownTokenValue() throws Exception {
+    PersistentResourceToken token = tokenService.get(UNEXISTING_TOKEN);
+    assertThat(token, notNullValue());
+    assertThat(token.exists(), is(false));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
   }
 
   @Test
-  public void testGetInitializedFromExistingToken() throws Exception {
-    final Date date = new Date();
-    final Token token = tokenService.getInitialized(TokenStringKey.from(EXISTING_TOKEN));
-
-    // No initialization
+  public void testGetTokenFromKnownTokenValue() throws Exception {
+    final Date expectedDate = new Date();
+    PersistentResourceToken token = tokenService.get(EXISTING_TOKEN);
+    EntityReference expectedResource = new MyEntityReference("7");
     assertThat(token, notNullValue());
+    assertThat(token.exists(), is(true));
+    assertThat(token.notExists(), is(false));
     assertThat(token.getId(), is(6L));
-    assertThat(token.getResourceId(), is("7"));
+    assertThat(token.getResource(MyEntityReference.class), is(expectedResource));
     assertThat(token.getSaveCount(), is(9));
     assertThat(token.getValue(), is(EXISTING_TOKEN));
-    assertThat(token.getSaveDate().getTime(), lessThan(date.getTime()));
+    assertThat(token.getSaveDate().getTime(), lessThan(expectedDate.getTime()));
   }
 
   @Test
-  public void testGetInitializedFromExistingKey() throws Exception {
+  public void testGetTokenFromExistingResourceRef() throws Exception {
     final Date date = new Date();
-    final Token token = tokenService.getInitialized(existingKey);
-
-    // No initialization
+    final PersistentResourceToken token = tokenService.get(existingRef);
     assertThat(token, notNullValue());
     assertThat(token.getId(), is(24L));
-    assertThat(token.getResourceId(), is("38"));
+    assertThat(token.getResource(MyEntityReference.class), is(existingRef));
     assertThat(token.getSaveCount(), is(3));
     assertThat(token.getValue(), is("token24"));
     assertThat(token.getSaveDate().getTime(), lessThan(date.getTime()));
   }
 
   @Test
-  public void testGetInitializedFromNewKey() throws Exception {
+  public void testGetTokenFromNewResourceRef() throws Exception {
     final Date date = new Date();
-    final Token token = tokenService.getInitialized(newKey);
-
-    // Initialization
+    PersistentResourceToken token = tokenService.get(newRef);
     assertThat(token, notNullValue());
+    assertThat(token.notExists(), is(true));
+
+    token = tokenService.initialize(newRef);
+    assertThat(token, notNullValue());
+    assertThat(token.exists(), is(true));
     assertThat(token.getId(), is(25L));
-    assertThat(token.getResourceId(), is("26"));
+    assertThat(token.getResource(MyEntityReference.class), is(newRef));
     assertThat(token.getSaveCount(), is(1));
     assertThat(token.getValue().length(), greaterThanOrEqualTo(10));
     assertThat(token.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
+  }
+
+  @Test
+  public void testGetTokenFromUnexistingResourceRef() throws Exception {
+    final PersistentResourceToken token = tokenService.get(dummyRef);
+
+    assertThat(token, notNullValue());
+    assertThat(token.exists(), is(false));
+    assertThat(token.notExists(), is(true));
+    assertThat(token.getResource(MyEntityReference.class), nullValue());
   }
 
   @Test
@@ -323,19 +319,21 @@ public class TokenServiceTest {
   private void removeToken() {
 
     // Removing from an existing key
-    Token token = tokenService.get(existingKey);
+    PersistentResourceToken token = tokenService.get(existingRef);
     assertThat(token, notNullValue());
-    tokenService.remove(existingKey);
-    token = tokenService.get(existingKey);
+    tokenService.remove(existingRef);
+    token = tokenService.get(existingRef);
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
+    assertThat(token.notExists(), is(true));
 
     // Removing from an existing token string key
-    token = tokenService.get(TokenStringKey.from(EXISTING_TOKEN));
+    token = tokenService.get(EXISTING_TOKEN);
     assertThat(token, notNullValue());
-    tokenService.remove(TokenStringKey.from(EXISTING_TOKEN));
-    token = tokenService.get(TokenStringKey.from(EXISTING_TOKEN));
+    tokenService.remove(token.getResource(MyEntityReference.class));
+    token = tokenService.get(EXISTING_TOKEN);
     assertThat(token, notNullValue());
     assertThat(token.exists(), is(false));
+    assertThat(token.notExists(), is(true));
   }
 }

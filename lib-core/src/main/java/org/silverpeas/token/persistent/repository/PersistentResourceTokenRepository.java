@@ -21,38 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.service;
+package org.silverpeas.token.persistent.repository;
 
-import org.silverpeas.token.TokenKey;
-import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.token.persistent.PersistentResourceToken;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * @author Yohann Chastagnier
  */
-public class TestTokenKeyUnknown implements TokenKey {
+public interface PersistentResourceTokenRepository extends
+    JpaRepository<PersistentResourceToken, Long> {
 
-  public TestTokenKeyUnknown() {
-  }
+  @Query("from PersistentResourceToken where resourceType = :type and resourceId = :resourceId")
+  PersistentResourceToken getByTypeAndResourceId(@Param("type") String type,
+      @Param("resourceId") String resourceId);
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.TokenKey#isValid()
-   */
-  @Override
-  public boolean isValid() {
-    return true;
-  }
-
-  /**
-   * @return the resourceId
-   */
-  @Override
-  public String getResourceId() {
-    return "notEmpty";
-  }
-
-  @Override
-  public TokenType getTokenType() {
-    return TokenType.UNKNOWN;
-  }
+  @Query("from PersistentResourceToken where token = :token")
+  PersistentResourceToken getByToken(@Param("token") String token);
 }

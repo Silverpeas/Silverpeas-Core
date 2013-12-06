@@ -21,21 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.repository;
-
-import org.silverpeas.token.model.Token;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+package org.silverpeas.token.persistent.constant;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface TokenRepository extends JpaRepository<Token, Long> {
+public enum ResourceType {
 
-  @Query("from Token where type = :type and resourceId = :resourceId")
-  Token getByTypeAndResourceId(@Param("type") String type, @Param("resourceId") String resourceId);
-
-  @Query("from Token where token = :token")
-  Token getByToken(@Param("token") String token);
+  UNKNOWN, USER
 }

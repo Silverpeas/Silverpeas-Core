@@ -1,41 +1,34 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.silverpeas.util.ArrayUtil;
-import org.silverpeas.profile.token.UserTokenKey;
+import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
+import org.silverpeas.token.persistent.PersistentResourceToken;
 
 public class UserFull extends UserDetail {
 
@@ -48,6 +41,7 @@ public class UserFull extends UserDetail {
 
   /**
    * Gets the full profile of the user with the specified identifier.
+   *
    * @param userId the unique identifier of the user in Silverpeas.
    * @return the full profile of the user.
    */
@@ -55,7 +49,9 @@ public class UserFull extends UserDetail {
     return getOrganisationController().getUserFull(userId);
   }
 
-  /** Creates new UserFull */
+  /**
+   * Creates new UserFull
+   */
   public UserFull() {
     super();
     m_hInfos = new HashMap<String, String>();
@@ -96,7 +92,8 @@ public class UserFull extends UserDetail {
 
   public String getToken() {
     try {
-      return getTokenService().getInitialized(UserTokenKey.from(this)).getValue();
+      UserReference ref = UserReference.fromUser(this);
+      return PersistentResourceToken.createToken(ref).getValue();
     } catch (TokenException e) {
       throw new TokenRuntimeException(e);
     }

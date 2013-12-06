@@ -23,31 +23,28 @@
  */
 package com.silverpeas.web;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.codec.binary.Base64;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.token.TokenStringKey;
-import org.silverpeas.token.constant.TokenType;
-import org.silverpeas.token.model.Token;
-import org.silverpeas.token.service.TokenService;
+import org.silverpeas.profile.UserReference;
+import org.silverpeas.token.persistent.PersistentResourceToken;
+import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -71,7 +68,7 @@ public class UserPriviledgeValidation {
   @Inject
   private OrganisationController organisationController;
   @Inject
-  private TokenService tokenService;
+  private PersistentResourceTokenService tokenService;
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. By the user
    * session key could be passed a user token to perform a HTTP request without opening a session.
@@ -124,6 +121,7 @@ public class UserPriviledgeValidation {
 
   /**
    * Verify that the user can login
+   *
    * @param userSession
    */
   private void verifyUserCanLogin(SessionInfo userSession) {
@@ -248,20 +246,23 @@ public class UserPriviledgeValidation {
   private SessionInfo validateUserSession(String sessionKey) {
     SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);
     if (sessionInfo == null) {
-
-      // Verify user token
-      final Token userToken = tokenService.get(TokenStringKey.from(sessionKey));
-      if (TokenType.USER.equals(userToken.getType())) {
-        final UserDetail user = UserDetail.getById(userToken.getResourceId());
-        if (user != null) {
-          return new SessionInfo(sessionKey, user);
+      // the key isn't a session identifier; is it then a user token?
+      final PersistentResourceToken userToken = PersistentResourceToken.getToken(sessionKey);
+      UserReference userRef = userToken.getResource(UserReference.class);
+      UserDetail user = null;
+      if (userRef != null) {
+        user = userRef.getEntity();
+      }
+      if (user != null) {
+        // the session key is a token and this token is bound to an existing user
+        sessionInfo = new SessionInfo(sessionKey, user);
+      } else {
+        // the session key isn't a token or it isn't bound to an existing user
+        if (!UserDetail.isAnonymousUserExist()) {
+          throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
+        sessionInfo = new SessionInfo(null, UserDetail.getAnonymousUser());
       }
-
-      if (!UserDetail.isAnonymousUserExist()) {
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
-      return new SessionInfo(null, UserDetail.getAnonymousUser());
     }
     return sessionInfo;
   }
