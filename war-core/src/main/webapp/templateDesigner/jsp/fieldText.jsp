@@ -24,43 +24,38 @@
 
 --%>
 
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.form.fieldType.TextField"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
 
 <script language="javascript">
-	function isCorrectForm() 
-	{
+	function isCorrectForm() {
      	checkFieldName();
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%
 	String size = "";
 	String maxLength = "";
 	String suggestionsChecked = "";
 	
-	if (field != null)
-	{
+	if (field != null) {
 		if (parameters.containsKey(TextField.PARAM_MAXLENGTH)) {
 			maxLength = parameters.get(TextField.PARAM_MAXLENGTH);
 		}
 		
 		if (parameters.containsKey("size")) {
-			size = (String) parameters.get("size");
+			size = parameters.get("size");
 		}
 		
 		if (parameters.containsKey("suggestions")) {
-		  	String suggestions = (String) parameters.get("suggestions");
-		  	if ("true".equalsIgnoreCase(suggestions))
-		  	{
+		  	String suggestions = parameters.get("suggestions");
+		  	if (StringUtil.getBooleanValue(suggestions)) {
 		  		suggestionsChecked = "checked";
 		  	}
 		}
-		
 	}
 %>
 <%@ include file="includeTopField.jsp.inc" %>

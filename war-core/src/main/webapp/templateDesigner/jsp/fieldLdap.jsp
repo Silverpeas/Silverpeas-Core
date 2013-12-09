@@ -28,14 +28,11 @@
 
 <%@ include file="includeParamsField.jsp.inc" %>
 <script language="javascript">
-	function isCorrectForm() 
-	{
+	function isCorrectForm() {
      	checkFieldName();
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%
 	String host = "";
 	String port = "";
@@ -53,51 +50,51 @@
 	if (field != null)
 	{
 		if (parameters.containsKey("host")) {
-			host = (String) parameters.get("host");
+			host = parameters.get("host");
 		}
 		
 		if (parameters.containsKey("port")) {
-			port = (String) parameters.get("port");
+			port = parameters.get("port");
 		}
 
 		if (parameters.containsKey("version")) {
-			version = (String) parameters.get("version");
+			version = parameters.get("version");
 		}
 
 		if (parameters.containsKey("baseDN")) {
-			baseDN = (String) parameters.get("baseDN");
+			baseDN = parameters.get("baseDN");
 		}
 
 		if (parameters.containsKey("password")) {
-			password = (String) parameters.get("password");
+			password = parameters.get("password");
 		}
 
 		if (parameters.containsKey("searchBase")) {
-			searchBase = (String) parameters.get("searchBase");
+			searchBase = parameters.get("searchBase");
 		}
 
 		if (parameters.containsKey("searchScope")) {
-			searchScope = (String) parameters.get("searchScope");
+			searchScope = parameters.get("searchScope");
 		}
 
 		if (parameters.containsKey("searchFilter")) {
-			searchFilter = (String) parameters.get("searchFilter");
+			searchFilter = parameters.get("searchFilter");
 		}
 
 		if (parameters.containsKey("searchAttribute")) {
-			searchAttribute = (String) parameters.get("searchAttribute");
+			searchAttribute = parameters.get("searchAttribute");
 		}
 
 		if (parameters.containsKey("searchTypeOnly")) {
-			searchTypeOnly = (String) parameters.get("searchTypeOnly");
+			searchTypeOnly = parameters.get("searchTypeOnly");
 		}
 
 		if (parameters.containsKey("maxResultDisplayed")) {
-			maxResultDisplayed = (String) parameters.get("maxResultDisplayed");
+			maxResultDisplayed = parameters.get("maxResultDisplayed");
 		}
 
 		if (parameters.containsKey("valueFieldType")) {
-			valueFieldType = (String) parameters.get("valueFieldType");
+			valueFieldType = parameters.get("valueFieldType");
 		}
 	}
 %>

@@ -35,8 +35,6 @@
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%
 	String rows = "";
 	String cols = "";

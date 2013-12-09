@@ -40,6 +40,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.fieldType.PdcField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Label;
 import com.silverpeas.form.record.Parameter;
@@ -182,8 +183,12 @@ public class TemplateDesignerRequestRouter extends
 
         templateDesignerSC.addField(field);
 
-        request.setAttribute("UrlToReload", "ViewFields");
-        destination = root + "closeWindow.jsp";
+        if (PdcField.TYPE.equals(field.getTypeName())) {
+          request.setAttribute("UrlToReload", "ViewFields");
+          destination = root + "closeWindow.jsp";
+        } else {
+          destination = getDestination("ViewFields", templateDesignerSC, request);
+        }
       } else if (function.equals("EditField")) {
         String fieldName = request.getParameter("FieldName");
 
@@ -197,9 +202,13 @@ public class TemplateDesignerRequestRouter extends
         GenericFieldTemplate field = request2Field(request);
 
         templateDesignerSC.updateField(field);
-
-        request.setAttribute("UrlToReload", "ViewFields");
-        destination = root + "closeWindow.jsp";
+        
+        if (PdcField.TYPE.equals(field.getTypeName())) {
+          request.setAttribute("UrlToReload", "ViewFields");
+          destination = root + "closeWindow.jsp";
+        } else {
+          destination = getDestination("ViewFields", templateDesignerSC, request);
+        }
       } else if (function.equals("DeleteField")) {
         String fieldName = request.getParameter("FieldName");
 
@@ -390,7 +399,7 @@ public class TemplateDesignerRequestRouter extends
     } else if (displayer.equals("jdbc")) {
       fieldType = "jdbc";
     } else if (displayer.equals("pdc")) {
-      fieldType = "pdc";
+      fieldType = PdcField.TYPE;
     } else if (displayer.equals("group")) {
       fieldType = "group";
     } else if (displayer.equals("sequence")) {

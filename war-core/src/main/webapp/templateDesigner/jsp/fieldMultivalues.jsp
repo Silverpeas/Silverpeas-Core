@@ -36,25 +36,24 @@ String defaultValue = "";
 if (field != null)
 {
 	if (parameters.containsKey("keys")) {
-		keys = (String) parameters.get("keys");
+		keys = parameters.get("keys");
 	}
 	
 	if (parameters.containsKey("values")) {
-		values = (String) parameters.get("values");
+		values = parameters.get("values");
 	}
 	
 	if (parameters.containsKey("cols")) {
-		cols = (String) parameters.get("cols");
+		cols = parameters.get("cols");
 	}
 	
 	if (parameters.containsKey("default")) {
-		defaultValue = (String) parameters.get("default");
+		defaultValue = parameters.get("default");
 	}
 }
 %>
 <script language="javascript">
-	function isCorrectForm() 
-	{
+	function isCorrectForm() {
      	checkFieldName();
      	
      	var keys = "";
@@ -253,8 +252,6 @@ if (field != null)
 		<% } %>
 	}
 </script>
-</head>
-<body>
 <%@ include file="includeTopField.jsp.inc" %>
 <% if (!displayer.equals("listbox")) { %>
 <tr>
