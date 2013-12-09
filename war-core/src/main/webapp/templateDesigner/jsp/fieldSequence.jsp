@@ -54,9 +54,6 @@
 			}
 		}
 	</script>
-</head>
-
-<body>
 <%
 	String minLength = "1";
 	String startValue = "1";
@@ -64,15 +61,15 @@
 	boolean global = false;
 	if (field != null) {
 		if (parameters.containsKey("minLength")) {
-		  	minLength = (String) parameters.get("minLength");
+		  	minLength = parameters.get("minLength");
 		}
 		if (parameters.containsKey("startValue")) {
-		  	startValue = (String) parameters.get("startValue");
+		  	startValue = parameters.get("startValue");
 		}
 		if (parameters.containsKey("reuseAvailableValues")) {
-		  	reuseAvailableValues = "true".equals((String) parameters.get("reuseAvailableValues"));
+		  	reuseAvailableValues = "true".equals(parameters.get("reuseAvailableValues"));
 		}
-		global = StringUtil.getBooleanValue( (String) parameters.get("global") );
+		global = StringUtil.getBooleanValue(parameters.get("global"));
 	}
 %>
 <%@ include file="includeTopField.jsp.inc" %>

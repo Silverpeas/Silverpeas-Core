@@ -29,29 +29,26 @@
 
 <%@ include file="includeParamsField.jsp.inc" %>
 <script type="text/javascript">
-  function isCorrectForm() 
-  {
+  function isCorrectForm() {
     checkFieldName();
     return checkErrors();
   }
 </script>
-</head>
-<body>
   <%
       String width = VideoFieldDisplayer.DEFAULT_WIDTH;
       String height = VideoFieldDisplayer.DEFAULT_HEIGHT;
       boolean autoplay = VideoFieldDisplayer.DEFAULT_AUTOPLAY;
       if (field != null) {
         if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_WIDTH)) {
-          width = (String) parameters.get(VideoFieldDisplayer.PARAMETER_WIDTH);
+          width = parameters.get(VideoFieldDisplayer.PARAMETER_WIDTH);
         }
 
         if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_HEIGHT)) {
-          height = (String) parameters.get(VideoFieldDisplayer.PARAMETER_HEIGHT);
+          height = parameters.get(VideoFieldDisplayer.PARAMETER_HEIGHT);
         }
         
         if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_AUTOPLAY)) {
-          autoplay = (Boolean.valueOf((String) parameters.get(VideoFieldDisplayer.PARAMETER_AUTOPLAY))).booleanValue();
+          autoplay = (Boolean.valueOf(parameters.get(VideoFieldDisplayer.PARAMETER_AUTOPLAY))).booleanValue();
         } else {
           autoplay = false;
         }

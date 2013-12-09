@@ -16,6 +16,7 @@ String actionForm = "AddField";
 Map<String, String> parameters = null;
 boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
 boolean showMultiValuesParam = "text".equals(displayer);
+boolean shownInNewWindow = "pdc".equals(displayer);
 String checked = "checked=\"checked\"";
 
 if (field != null) {
@@ -50,6 +51,8 @@ if (field != null) {
 	}
 }
 %>
+
+<% if (shownInNewWindow) { %>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -57,6 +60,8 @@ if (field != null) {
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<% } %>
+
 <script type="text/javascript">
 	
 	var errorMsg = "";
@@ -73,6 +78,7 @@ if (field != null) {
 		} else {
 			errorMsg = "";
     		errorNb = 0;
+    		return false;
 		}
 	}
 	

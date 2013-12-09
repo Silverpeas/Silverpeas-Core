@@ -28,34 +28,28 @@
 
 <%@ include file="includeParamsField.jsp.inc" %>
 <script language="javascript">
-function isCorrectForm() 
-{
+function isCorrectForm() {
  	checkFieldName();
  	return checkErrors();
 }
 </script>
-</head>
-<body>
 <%
 	String size = "";
 	String maxLength = "";
 	String suggestionsChecked = "";
 	
-	if (field != null)
-	{
+	if (field != null) {
 		if (parameters.containsKey("maxLength")) {
-			maxLength = (String) parameters.get("maxLength");
+			maxLength = parameters.get("maxLength");
 		}
 		
 		if (parameters.containsKey("size")) {
-			size = (String) parameters.get("size");
+			size = parameters.get("size");
 		}
 		
-		if (parameters.containsKey("suggestions")) 
-		{
-		  	String suggestions = (String) parameters.get("suggestions");
-		  	if ("true".equalsIgnoreCase(suggestions))
-		  	{
+		if (parameters.containsKey("suggestions")) {
+		  	String suggestions = parameters.get("suggestions");
+		  	if ("true".equalsIgnoreCase(suggestions)) {
 		  		suggestionsChecked = "checked";
 		  	}
 		}

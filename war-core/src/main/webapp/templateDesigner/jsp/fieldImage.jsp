@@ -28,14 +28,11 @@
 
 <%@ include file="includeParamsField.jsp.inc" %>
 <script language="javascript">
-	function isCorrectForm() 
-	{
+	function isCorrectForm() {
      	checkFieldName();
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%
 	String maxWidth = "";
 	String maxHeight = "";

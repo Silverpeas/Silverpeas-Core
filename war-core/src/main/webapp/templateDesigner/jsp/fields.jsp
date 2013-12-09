@@ -26,6 +26,8 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="check.jsp" %>
 <%
 Iterator fields = (Iterator) request.getAttribute("Fields");
@@ -33,9 +35,8 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 %>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -60,7 +61,27 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 			height = "450";
 			width = "700";
 		}
-		SP_openWindow(url, "fieldWindow", width, height, "directories=0, menubar=0, toolbar=0, scrollbars=yes, alwaysRaised");
+		
+		if (displayer === 'pdc') {
+			SP_openWindow(url, "fieldWindow", width, height, "directories=0, menubar=0, toolbar=0, scrollbars=yes, alwaysRaised");
+		} else {
+			$.ajax({
+				url: url,
+				async: false,
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$('#fieldArea').html(data);
+				}
+			});
+			
+			$('#fieldDialog').popup('validation', {
+				title : "<%=resource.getString("templateDesigner.field")%>",
+			    callback : function() {
+			      return sendData();
+			    }
+			});
+		}
 	}
 	
 	function move(direction, fieldName) {
@@ -163,5 +184,8 @@ while (fields.hasNext())
 out.println(frame.printAfter());
 out.println(window.printAfter()); 
 %>
+<div id="fieldDialog" style="display:none">
+<div id="fieldArea"></div>
+</div>
 </body>
 </html>
