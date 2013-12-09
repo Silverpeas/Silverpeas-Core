@@ -175,9 +175,9 @@ public class SilverpeasSessionOpener {
     Enumeration<String> names = session.getAttributeNames();
     while (names.hasMoreElements()) {
       String attributeName = names.nextElement();
-      if (!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName) &&
-          !Authentication.PASSWORD_CHANGE_ALLOWED.equals(attributeName) &&
-          !Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE.equals(attributeName)) {
+      if (!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName)
+          && !Authentication.PASSWORD_CHANGE_ALLOWED.equals(attributeName)
+          && !Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE.equals(attributeName)) {
         session.removeAttribute(attributeName);
       }
     }
@@ -294,7 +294,8 @@ public class SilverpeasSessionOpener {
    * @return true the Web navigation with Silverpeas is secured.
    */
   public boolean isNavigationSecure(HttpServletRequest request) {
-    return (request.isSecure() || GeneralPropertiesManager.getBoolean("server.ssl", false));
+    return !GeneralPropertiesManager.getBoolean("server.mixed", false) && (request.isSecure()
+        || GeneralPropertiesManager.getBoolean("server.ssl", false));
   }
 
   private int getServerPort(HttpServletRequest request) {
@@ -304,11 +305,11 @@ public class SilverpeasSessionOpener {
   private String alertUserAboutPwdExpiration(String userId, String fromUserId,
       String language, boolean allowPasswordChange) {
     try {
-      ResourceLocator settings =
-          new ResourceLocator("org.silverpeas.authentication.settings.passwordExpiration", "");
+      ResourceLocator settings = new ResourceLocator(
+          "org.silverpeas.authentication.settings.passwordExpiration", "");
       String notificationType = settings.getString("notificationType", "POPUP");
-      String passwordChangeURL =
-          settings.getString("passwordChangeURL", "defaultPasswordAboutToExpire.jsp");
+      String passwordChangeURL = settings.getString("passwordChangeURL",
+          "defaultPasswordAboutToExpire.jsp");
 
       if ("POPUP".equalsIgnoreCase(notificationType) || !allowPasswordChange) {
         sendPopupNotificationAboutPwdExpiration(userId, fromUserId, language);
@@ -327,8 +328,7 @@ public class SilverpeasSessionOpener {
     ResourceLocator messages = new ResourceLocator(
         "org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     NotificationSender sender = new NotificationSender(null);
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
         messages.getString("passwordExpirationAlert"), messages
         .getString("passwordExpirationMessage"));
     notifMetaData.setSender(fromUserId);
