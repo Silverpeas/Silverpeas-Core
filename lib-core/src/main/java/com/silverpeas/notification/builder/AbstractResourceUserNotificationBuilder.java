@@ -154,12 +154,6 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   /**
    * Fills notificationResourceData with silverpeasContent container.
-   * In case of that a contribution is multilanguages,
-   * {@link NotificationResourceData#setResourceName(String)} and {@link
-   * NotificationResourceData#setResourceDescription(String)} have to be setted by class
-   * extensions in order to take in account the different languages of the contribution.
-   * This language management around the resource have to be done in {@link
-   * #performNotificationResource} of class extensions.
    * @param notificationResourceData
    * @param silverpeasContent
    */
@@ -167,7 +161,5 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       final SilverpeasContent silverpeasContent) {
     notificationResourceData.setResourceId(silverpeasContent.getId());
     notificationResourceData.setResourceType(silverpeasContent.getContributionType());
-    notificationResourceData.setResourceName(silverpeasContent.getTitle());
-    notificationResourceData.setResourceDescription(silverpeasContent.getDescription());
   }
 }
