@@ -31,10 +31,14 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -47,9 +51,11 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import static com.silverpeas.comment.service.notification.NotificationMatchers.isSetIn;
@@ -70,6 +76,10 @@ public class CommentUserNotificationServiceTest {
    */
   private static final String COMMENT_AUTHORID = "3";
   /**
+   * Id of the user that don't have enough rights to access the commented resource.
+   */
+  private static final String UNAUTHORIZED_USERID = "20";
+  /**
    * Type of the commented resource concerned by the tests.
    */
   private static final String COMMENT_RESOURCETYPE = aClassified().getContributionType();
@@ -88,7 +98,7 @@ public class CommentUserNotificationServiceTest {
   /**
    * The classified service to use in tests.
    */
-  private ClassifiedService classifiedService = new ClassifiedService();
+  private final ClassifiedService classifiedService = new ClassifiedService();
   /**
    * The comment to use in the test when invoking the callback.
    */
@@ -96,7 +106,7 @@ public class CommentUserNotificationServiceTest {
   /**
    * All of the comments on the classified used in the tests.
    */
-  private List<Comment> classifiedComments = new ArrayList<Comment>();
+  private final List<Comment> classifiedComments = new ArrayList<Comment>();
   /**
    * The notification sender to mock and that will be used by the callback.
    */
@@ -104,7 +114,7 @@ public class CommentUserNotificationServiceTest {
   /**
    * The captor of notification information passed to a mocked notification sender.
    */
-  private ArgumentCaptor<NotificationMetaData> notifInfoCaptor =
+  private final ArgumentCaptor<NotificationMetaData> notifInfoCaptor =
       ArgumentCaptor.forClass(NotificationMetaData.class);
   @Inject
   private OrganizationControllerMocking organizationController;
@@ -127,8 +137,9 @@ public class CommentUserNotificationServiceTest {
     notificationService = spy(new DefaultCommentUserNotificationService());
     notificationService.register(ClassifiedService.COMPONENT_NAME, classifiedService);
     doReturn(mockCommentService()).when(notificationService).getCommentService();
-    doReturn(mockNotificationSender()).when(notificationService).getNotificationSender(
-        CLASSIFIED_INSTANCEID);
+    doReturn(mockNotificationSender()).when(notificationService)
+        .getNotificationSender(CLASSIFIED_INSTANCEID);
+    mockGetUserDetailReturnedValue();
   }
 
   @After
@@ -139,14 +150,14 @@ public class CommentUserNotificationServiceTest {
   /**
    * The commentAdded() method should notify both the author of the commented ad and the authors of
    * all of the ad's comments.
+   * @throws java.lang.Exception if an error occurs during the test.
    */
   @Test
   public void commentAddedShouldNotifyClassifiedAndCommentAuthors() throws Exception {
-    mockGetUserDetailReturnedValue();
     notificationService.commentAdded(concernedComment);
     verify(notificationService).getNotificationSender(CLASSIFIED_INSTANCEID);
     verify(notificationSender).notifyUser(notifInfoCaptor.capture());
-    NotificationMetaData notif = getCapturedInfoInNotificiation();
+    NotificationMetaData notif = getCapturedInfoInNotification();
     assertNotNull(notif);
     assertThat("The comment should be in the notification", concernedComment, isSetIn(notif));
     assertEquals(
@@ -156,12 +167,35 @@ public class CommentUserNotificationServiceTest {
       UserRecipient authorId = new UserRecipient(String.valueOf(aComment.getOwnerId()));
       if (!authorId.getUserId().equals(String.valueOf(concernedComment.getOwnerId()))) {
         assertThat("The author '" + authorId + "' should be in the notification recipients",
-            notif.getUserRecipients(), hasItem(authorId));
+            authorId, isIn(notif.getUserRecipients()));
       } else {
-        assertFalse("The author '" + authorId + "' shouldn't be in the notification recipients",
-            notif.getUserRecipients().contains(authorId));
+        assertThat("The author '" + authorId + "' shouldn't be in the notification recipients",
+            authorId, not(isIn(notif.getUserRecipients())));
       }
     }
+  }
+
+  /**
+   * Tests the notification about a comment isn't sent to the users that don't have enough rights
+   * to
+   * access the commented resource. To access a commented resource, a user first must have right to
+   * access the component instance and then to the commented resource.
+   * @throws java.lang.Exception if an error occurs during the test.
+   */
+  @Test
+  public void notificationsAreNotSentToUsersWithoutEnoughAccessRights() throws Exception {
+    addAUserWithoutEnoughAccessRights();
+    notificationService.commentAdded(concernedComment);
+    verify(notificationSender).notifyUser(notifInfoCaptor.capture());
+    NotificationMetaData notification = getCapturedInfoInNotification();
+    UserRecipient unauthorizedUser = new UserRecipient(UNAUTHORIZED_USERID);
+    UserRecipient author = new UserRecipient(concernedComment.getOwner());
+    assertThat("The unauthorized user shouldn't be notified", unauthorizedUser,
+        not(isIn(notification.getUserRecipients())));
+    assertThat("The author of the comment shouldn't be notified", author,
+        not(isIn(notification.getUserRecipients())));
+    assertThat("Others users should be notified", notification.getUserRecipients().size(),
+        is(classifiedComments.size() - 2));
   }
 
   /**
@@ -175,26 +209,34 @@ public class CommentUserNotificationServiceTest {
       UserDetail commentAuthor = new UserDetail();
       commentAuthor.setId(String.valueOf(i));
       Comment aComment =
-          new Comment(new CommentPK(String.valueOf(i), CLASSIFIED_INSTANCEID),
-          COMMENT_RESOURCETYPE,
-          classifiedPk, i, "Toto" + i, "comment " + i, date, date);
+          new Comment(new CommentPK(String.valueOf(i), CLASSIFIED_INSTANCEID), COMMENT_RESOURCETYPE,
+              classifiedPk, i, "Toto" + i, "comment " + i, date, date);
       aComment.setOwnerDetail(commentAuthor);
       classifiedComments.add(aComment);
     }
     Date date = new Date();
     UserDetail commentAuthor = new UserDetail();
     commentAuthor.setId(String.valueOf(COMMENT_AUTHORID));
-    concernedComment = new Comment(
-        new CommentPK("10", CLASSIFIED_INSTANCEID),
-        COMMENT_RESOURCETYPE,
-        classifiedPk,
-        Integer.parseInt(COMMENT_AUTHORID),
-        "Toto" + COMMENT_AUTHORID,
-        "concerned comment",
-        date,
-        date);
+    concernedComment =
+        new Comment(new CommentPK("10", CLASSIFIED_INSTANCEID), COMMENT_RESOURCETYPE, classifiedPk,
+            Integer.parseInt(COMMENT_AUTHORID), "Toto" + COMMENT_AUTHORID, "concerned comment",
+            date, date);
     concernedComment.setOwnerDetail(commentAuthor);
     classifiedComments.add(concernedComment);
+  }
+
+  protected void addAUserWithoutEnoughAccessRights() {
+    int rank = classifiedComments.size() + 1;
+    Date date = new Date();
+    UserDetail author = new UserDetail();
+    author.setId(UNAUTHORIZED_USERID);
+    Comment aComment = new Comment(new CommentPK(String.valueOf(rank), CLASSIFIED_INSTANCEID),
+        COMMENT_RESOURCETYPE, new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID),
+        rank, "Toto" + rank, "comment " + rank, date, date);
+    aComment.setOwnerDetail(author);
+    classifiedComments.add(aComment);
+    Classified classified = classifiedService.getContentById(CLASSIFIED_ID);
+    classified.unauthorize(author);
   }
 
   protected void setUpClassifieds() {
@@ -215,7 +257,6 @@ public class CommentUserNotificationServiceTest {
    * Mocks the DefaultCommentService to use by the callback. It is expected all of other comments
    * are asked by the callback to get their authors. So that it can notify them about the new
    * comment.
-   *
    * @return the mocked comment controller.
    * @throws Exception - it is just for satisfying the contract of some called methods of
    * DefaultCommentService.
@@ -223,8 +264,8 @@ public class CommentUserNotificationServiceTest {
   protected CommentService mockCommentService() throws Exception {
     CommentService commentService = mock(DefaultCommentService.class);
     when(commentService.getAllCommentsOnPublication(COMMENT_RESOURCETYPE,
-        new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID))).thenReturn(
-        classifiedComments);
+        new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID)))
+        .thenReturn(classifiedComments);
     when(commentService.getComponentSettings()).thenReturn(new ResourceLocator(SETTINGS_PATH, ""));
     return commentService;
   }
@@ -233,7 +274,6 @@ public class CommentUserNotificationServiceTest {
    * Mocks the NotificationSender instance to use by the callback. It is expected it is used by the
    * callback for sending notification to users. The notification information passed to the sender
    * is captured.
-   *
    * @return the mocked notification sender.
    * @throws Exception - it is just for satisfying the contract of some called methods of
    * NotifySender.
@@ -245,6 +285,7 @@ public class CommentUserNotificationServiceTest {
 
   protected void mockGetUserDetailReturnedValue() {
     doAnswer(new Answer<UserDetail>() {
+      @Override
       public UserDetail answer(InvocationOnMock invocation) {
         Object[] args = invocation.getArguments();
         UserDetail userDetail = new UserDetail();
@@ -257,10 +298,9 @@ public class CommentUserNotificationServiceTest {
   /**
    * Gets the captured information from the notification sender at notifiyUser() call by the
    * callback.
-   *
    * @return the notification information passed by the callback to the notification sender.
    */
-  protected NotificationMetaData getCapturedInfoInNotificiation() {
+  protected NotificationMetaData getCapturedInfoInNotification() {
     return notifInfoCaptor.getValue();
   }
 }

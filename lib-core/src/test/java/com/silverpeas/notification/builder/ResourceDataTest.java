@@ -108,4 +108,9 @@ public class ResourceDataTest implements SilverpeasContent {
   public String getContributionType() {
     return "aContributionTypeFromResource";
   }
+
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    return true;
+  }
 }
