@@ -25,22 +25,9 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.pdcSubscription.PdcSubscriptionDeletionNotifier;
-import com.silverpeas.pdcSubscription.PdcSubscriptionNotifier;
+import com.silverpeas.pdcSubscription.PdcResourceClassificationUserNotification;
+import com.silverpeas.pdcSubscription.PdcSubscriptionDeletionUserNotification;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
@@ -53,12 +40,21 @@ import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Stateless(name = "PdcSubscription", description = "Stateless bean to manage pdc subscription.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
-
-  private static final long serialVersionUID = 5087897193810397409L;
 
   /**
    * Remote interface method
@@ -209,7 +205,8 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
       for (int i = 0; i < subscriptions.size(); i++) {
         PDCSubscription subscription = subscriptions.get(i);
         pdcIds[i] = subscription.getId();
-        UserNotificationHelper.buildAndSend(new PdcSubscriptionDeletionNotifier(subscription, axisName, false));
+        UserNotificationHelper.buildAndSend(
+            new PdcSubscriptionDeletionUserNotification(subscription, axisName, false));
       }
       // remove all found subscriptions
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, pdcIds);
@@ -248,7 +245,8 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
         // for each subscription containing axis affected by value deletion
         // check if any criteria value has been deleted
         if (checkSubscriptionRemove(subscription, axisId, oldPath, newPath)) {
-          UserNotificationHelper.buildAndSend(new PdcSubscriptionDeletionNotifier(subscription, axisName, true));
+          UserNotificationHelper.buildAndSend(
+              new PdcSubscriptionDeletionUserNotification(subscription, axisName, true));
           removeIds[removeLength] = subscription.getId();
           removeLength++;
         }
@@ -287,8 +285,8 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     try {
       ContentManager contentManager = new ContentManager();
       SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
-      boolean contentObjectIsVisible = (scv.isVisible() == 1 ? true : false);
-      
+      boolean contentObjectIsVisible = (scv.isVisible() == 1);
+
       if(contentObjectIsVisible) {
         // load all PDCSubscritions into the memory to perform future check of them
         List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
@@ -308,7 +306,9 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
             if (roles.length > 0) {
               // if user have got at least one role, sends a notification to the
               // user specified in pdcSubscription
-              UserNotificationHelper.buildAndSend(new PdcSubscriptionNotifier(subscription, silverContent));
+              UserNotificationHelper.buildAndSend(
+                  new PdcResourceClassificationUserNotification(subscription,
+                      silverContent));
             }
           }
         }
@@ -334,7 +334,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     ArrayList<Integer> silverobjectIds = new ArrayList<Integer>();
     silverobjectIds.add(silverObjectId);
 
-    List<SilverContentInterface> silverContents = null;
+    List<SilverContentInterface> silverContents;
     SilverContentInterface silverContent = null;
     try {
       ContentManager contentManager = new ContentManager();
@@ -469,9 +469,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    * @return true if criteria provided match the searchValue provided
    */
   protected boolean checkValues(Criteria criteria, Value searchValue) {
-    if (searchValue.getAxisId() != criteria.getAxisId()) {
-      return false;
-    }
-    return searchValue.getValue().startsWith(criteria.getValue(), 0);
+    return searchValue.getAxisId() == criteria.getAxisId() &&
+        searchValue.getValue().startsWith(criteria.getValue(), 0);
   }
 }

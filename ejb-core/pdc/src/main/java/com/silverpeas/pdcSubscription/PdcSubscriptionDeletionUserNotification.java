@@ -23,23 +23,32 @@
  */
 package com.silverpeas.pdcSubscription;
 
+import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class PdcSubscriptionDeletionNotifier extends AbstractPdcSubscriptionNotifier {
-  
+public class PdcSubscriptionDeletionUserNotification
+    extends AbstractPdcSubscriptionUserNotification<PDCSubscription> {
+
   private final static String MESSAGE_DELETE_TITLE = "notification.delete.title";
   private final static String SOURCE_CLASSIFICATION = "pdcClassification";
-  
+
   boolean valueDeleted = false;
   String axisName = null;
-  
-  public PdcSubscriptionDeletionNotifier(PDCSubscription subscription, String axisName, boolean valueDeleted) {
-    super(subscription);
+
+  public PdcSubscriptionDeletionUserNotification(PDCSubscription pdcSubscription, String axisName,
+      boolean valueDeleted) {
+    super(pdcSubscription, pdcSubscription);
     this.valueDeleted = valueDeleted;
     this.axisName = axisName;
   }
-  
+
+  @Override
+  protected NotifAction getAction() {
+    return NotifAction.DELETE;
+  }
+
   @Override
   protected boolean isSendImmediatly() {
     return true;
@@ -47,19 +56,22 @@ public class PdcSubscriptionDeletionNotifier extends AbstractPdcSubscriptionNoti
 
   @Override
   protected String getComponentInstanceId() {
+    // This notification doesn't concerned a component.
     return null;
   }
 
   @Override
   protected String getSender() {
+    // Empty is here returned, because the notification is from the platform and not from an
+    // other user.
     return "";
   }
 
   @Override
-  protected void performBuild() {
+  protected void performBuild(final PDCSubscription subscription) {
     String lang = getUserLanguage(subscription.getOwnerId());
     ResourceLocator resources = getBundle(lang);
-    
+
     final StringBuilder message = new StringBuilder(150);
 
     if (valueDeleted) {
@@ -76,10 +88,16 @@ public class PdcSubscriptionDeletionNotifier extends AbstractPdcSubscriptionNoti
     message.append(resources.getString("Axis"));
     message.append(axisName);
     message.append("\n");
-    
+
     getNotificationMetaData().setTitle(resources.getString(MESSAGE_DELETE_TITLE));
     getNotificationMetaData().setContent(message.toString());
     getNotificationMetaData().setSource(resources.getString(SOURCE_CLASSIFICATION));
   }
 
+  @Override
+  protected void performNotificationResource(final PDCSubscription resource,
+      final NotificationResourceData notificationResourceData) {
+    // Nothing is done here because of delayed notification that is not handled for this kind of
+    // PDC user notification.
+  }
 }

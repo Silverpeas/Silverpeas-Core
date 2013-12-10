@@ -23,53 +23,52 @@
  */
 package com.silverpeas.pdcSubscription;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.notification.builder.AbstractUserNotificationBuilder;
+import com.silverpeas.notification.builder.AbstractResourceUserNotificationBuilder;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.silverpeas.util.StringUtil;
 
-public abstract class AbstractPdcSubscriptionNotifier extends AbstractUserNotificationBuilder {
-  
-  PDCSubscription subscription = null;
-  
-  public AbstractPdcSubscriptionNotifier(PDCSubscription subscription) {
-    this.subscription = subscription;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class AbstractPdcSubscriptionUserNotification<T>
+    extends AbstractResourceUserNotificationBuilder<T> {
+
+  private final PDCSubscription pdcSubscription;
+  private final Map<Integer, String> userLanguages = new HashMap<Integer, String>();
+
+  public AbstractPdcSubscriptionUserNotification(PDCSubscription pdcSubscription, T resource) {
+    super(resource);
+    this.pdcSubscription = pdcSubscription;
   }
 
   @Override
-  protected NotifAction getAction() {
-    return NotifAction.REPORT;
-  }
-  
   protected String getMultilangPropertyFile() {
     return "org.silverpeas.pdcSubscription.multilang.pdcsubscription";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    String[] userIdsToNotify = {Integer.toString(subscription.getOwnerId())};
-    return Arrays.asList(userIdsToNotify);
+    return Collections.singletonList(String.valueOf(pdcSubscription.getOwnerId()));
   }
-  
+
   /**
    * @param userID
    * @return user preferred language by userid provided
    */
   protected String getUserLanguage(int userID) {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
-        String.valueOf(userID)).getLanguage();
+    String userLanguage = userLanguages.get(userID);
+    if (StringUtil.isNotDefined(userLanguage)) {
+      userLanguage = SilverpeasServiceProvider.getPersonalizationService()
+          .getUserSettings(String.valueOf(userID)).getLanguage();
+      userLanguages.put(userID, userLanguage);
+    }
+    return userLanguage;
   }
 
-  @Override
-  protected abstract String getComponentInstanceId();
-
-  @Override
-  protected abstract String getSender();
-
-  @Override
-  protected abstract void performBuild();
-
+  public PDCSubscription getPdcSubscription() {
+    return pdcSubscription;
+  }
 }
