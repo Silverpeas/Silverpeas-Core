@@ -55,9 +55,7 @@ public class LaunchWebdavEdition extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Processes requests for both HTTP
-   * <code>GET</code> and
-   * <code>POST</code> methods.
+   * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    *
    * @param request servlet request
    * @param response servlet response
@@ -144,10 +142,11 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.7+\" />");
     out.println("\t\t<jar href=\"OpenOfficeLauncher.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xercesImpl-2.10.0.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"commons-logging-99.0-does-not-exist.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-codec-1.7.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-httpclient-3.1.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.5.1.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-webdav-2.5.1.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.6.5.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-webdav-2.6.5.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"jcl-over-slf4j-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-log4j12-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-api-1.5.6.jar\" download=\"eager\"/>");
@@ -178,8 +177,7 @@ public class LaunchWebdavEdition extends HttpServlet {
   }
 
   /**
-   * Handles the HTTP
-   * <code>GET</code> method.
+   * Handles the HTTP <code>GET</code> method.
    *
    * @param request servlet request
    * @param response servlet response
@@ -193,8 +191,7 @@ public class LaunchWebdavEdition extends HttpServlet {
   }
 
   /**
-   * Handles the HTTP
-   * <code>POST</code> method.
+   * Handles the HTTP <code>POST</code> method.
    *
    * @param request servlet request
    * @param response servlet response
