@@ -81,10 +81,9 @@ public class PersistentResourceTokenTest {
   }
 
   private PersistentResourceToken initializeToken() {
-    final PersistentResourceToken token = new PersistentResourceToken();
+    final PersistentResourceToken token = new PersistentResourceToken(new MyEntityReference("26"),
+        "token");
     token.setId(26L);
-    token.setResource(new MyEntityReference("26"));
-    token.setValue("token");
     token.setSaveCount(2);
     token.setSaveDate(java.sql.Date.valueOf("2012-01-01"));
     return token;

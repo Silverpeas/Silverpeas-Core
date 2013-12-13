@@ -43,4 +43,15 @@ public interface Token extends Serializable {
    * @return the value of the token (id est its String representation).
    */
   String getValue();
+
+  /**
+   * Is this token defined? A token is defined if it was generated and represents correctly a
+   * well-valued token. If it is empty (a none token), then it is considered as undefined.
+   *
+   * It is expected a token can be never null and a none-token concept is used instead. This method
+   * is to check the token is not a none-token, that is to say it is well initialized.
+   *
+   * @return true if this token is well-initialized, false otherwise.
+   */
+  boolean isDefined();
 }

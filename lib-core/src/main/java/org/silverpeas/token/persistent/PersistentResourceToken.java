@@ -45,8 +45,6 @@ import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.token.persistent.service.TokenServiceFactory;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
 /**
  * A persistent token used to identify uniquely a resource.
  *
@@ -89,6 +87,22 @@ public class PersistentResourceToken implements Token {
   @Column(name = "saveDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date saveDate;
+
+  protected PersistentResourceToken() {
+
+  }
+
+  /**
+   * Constructs a new persistent token for the specified resource and with the specified value.
+   *
+   * @param resource a reference to the resource for which this token is constructed.
+   * @param value the token value.
+   */
+  protected PersistentResourceToken(final EntityReference resource, String value) {
+    this.value = value;
+    this.resourceId = resource.getId();
+    this.resourceType = resource.getType();
+  }
 
   /**
    * Creates a token for the specified resource.
@@ -150,7 +164,7 @@ public class PersistentResourceToken implements Token {
    */
   public void validate() throws TokenException {
     if (this.resourceType == null || EntityReference.UNKNOWN_TYPE.equals(resourceType)
-        || !isDefined(resourceId)) {
+        || !StringUtil.isDefined(resourceId)) {
       throw new TokenException(this, "EX_DATA_ARE_MISSING");
     }
   }
@@ -254,5 +268,10 @@ public class PersistentResourceToken implements Token {
   public String toString() {
     return "PersistentResourceToken{" + "resourceType='" + resourceType + '\'' + ", resourceId='"
         + resourceId + '\'' + ", value='" + value + '\'' + '}';
+  }
+
+  @Override
+  public boolean isDefined() {
+    return this.exists() && this != NoneToken;
   }
 }

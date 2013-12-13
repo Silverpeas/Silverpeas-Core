@@ -42,6 +42,7 @@ import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
+import org.silverpeas.token.persistent.PersistentResourceTokenBuilder;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -261,19 +262,16 @@ public abstract class TestResources implements ApplicationContextAware {
         final Object argument = invocation.getArguments()[0];
         if (argument != null) {
           if (argument instanceof UserReference) {
-            token = new PersistentResourceToken();
+            token = PersistentResourceTokenBuilder.createToken((UserReference) argument, userToken);
             token.setId(0L);
-            token.setResource((UserReference) argument);
-            token.setValue(userToken);
           } else if (argument instanceof String) {
             String value = (String) argument;
             if (value.equals(userToken)) {
-              token = new PersistentResourceToken();
+              token = PersistentResourceTokenBuilder.createToken(new UserReference(user.getId()),
+                  userToken);
               token.setId(0L);
-              token.setResource(new UserReference(user.getId()));
-              token.setValue(userToken);
             }
-          };
+          }
         }
         return token;
       }

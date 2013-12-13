@@ -63,10 +63,7 @@ public class PersistentResourceTokenGenerator implements TokenGenerator {
     }
 
     String value = UUID.randomUUID().toString().replaceAll("[^0-9a-zA-Z]", "");
-    PersistentResourceToken token = new PersistentResourceToken();
-    token.setResource(ref);
-    token.setValue(value);
-    return token;
+    return new PersistentResourceToken(ref, value);
   }
 
   @Override
