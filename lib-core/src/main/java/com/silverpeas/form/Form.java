@@ -103,4 +103,6 @@ public interface Form {
   public String toString(PagesContext pagesContext, DataRecord record);
 
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);
+  
+  public void setFormName(String name);
 }

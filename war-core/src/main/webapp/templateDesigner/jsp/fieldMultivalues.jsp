@@ -232,8 +232,7 @@ if (field != null)
 	var oListText ;
 	var oListValue ;
 
-	window.onload = function()
-	{
+	$(document).ready(function(){
 		oListText	= document.getElementById( 'cmbText' ) ;
 		oListValue	= document.getElementById( 'cmbValue' ) ;
 		
@@ -250,7 +249,7 @@ if (field != null)
 				AddComboOption( oListValue, tKeys[i], tKeys[i]);
 			}
 		<% } %>
-	}
+	});
 </script>
 <%@ include file="includeTopField.jsp.inc" %>
 <% if (!displayer.equals("listbox")) { %>

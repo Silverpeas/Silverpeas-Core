@@ -125,6 +125,7 @@ public class TemplateDesignerRequestRouter extends
         PagesContext context = new PagesContext("myForm", "2", templateDesignerSC.getLanguage(),
             false, "useless", templateDesignerSC.getUserId());
         context.setBorderPrinted(false);
+        context.setDesignMode(true);
         request.setAttribute("context", context);
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
@@ -147,7 +148,7 @@ public class TemplateDesignerRequestRouter extends
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
         templateDesignerSC.createTemplate(template);
-        destination = getDestination("ViewFields", templateDesignerSC, request);
+        destination = getDestination("ViewTemplate", templateDesignerSC, request);
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
         try {
@@ -157,11 +158,6 @@ public class TemplateDesignerRequestRouter extends
           request.setAttribute("CryptoException", e);
           destination = getDestination("EditTemplate", templateDesignerSC, request);
         }
-      } else if ("ViewFields".equals(function)) {
-        request.setAttribute("Fields", templateDesignerSC.getFields());
-        request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
-
-        destination = root + "fields.jsp";
       } else if (function.equals("NewField")) {
         String displayer = request.getParameter("Displayer");
 
@@ -184,10 +180,10 @@ public class TemplateDesignerRequestRouter extends
         templateDesignerSC.addField(field);
 
         if (PdcField.TYPE.equals(field.getTypeName())) {
-          request.setAttribute("UrlToReload", "ViewFields");
+          request.setAttribute("UrlToReload", "ViewTemplate");
           destination = root + "closeWindow.jsp";
         } else {
-          destination = getDestination("ViewFields", templateDesignerSC, request);
+          destination = getDestination("ViewTemplate", templateDesignerSC, request);
         }
       } else if (function.equals("EditField")) {
         String fieldName = request.getParameter("FieldName");
@@ -204,24 +200,17 @@ public class TemplateDesignerRequestRouter extends
         templateDesignerSC.updateField(field);
         
         if (PdcField.TYPE.equals(field.getTypeName())) {
-          request.setAttribute("UrlToReload", "ViewFields");
+          request.setAttribute("UrlToReload", "ViewTemplate");
           destination = root + "closeWindow.jsp";
         } else {
-          destination = getDestination("ViewFields", templateDesignerSC, request);
+          destination = getDestination("ViewTemplate", templateDesignerSC, request);
         }
       } else if (function.equals("DeleteField")) {
         String fieldName = request.getParameter("FieldName");
 
         templateDesignerSC.removeField(fieldName);
 
-        destination = getDestination("ViewFields", templateDesignerSC, request);
-      } else if (function.equals("MoveField")) {
-        String fieldName = request.getParameter("FieldName");
-        int direction = Integer.parseInt(request.getParameter("Direction"));
-
-        templateDesignerSC.moveField(fieldName, direction);
-
-        destination = getDestination("ViewFields", templateDesignerSC, request);
+        destination = getDestination("ViewTemplate", templateDesignerSC, request);
       } else if (function.equals("SaveTemplate")) {
         templateDesignerSC.saveTemplate();
 
