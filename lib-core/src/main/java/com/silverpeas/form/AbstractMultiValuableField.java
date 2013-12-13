@@ -8,11 +8,20 @@ import com.silverpeas.util.StringUtil;
 public class AbstractMultiValuableField implements MultiValuableField {
 
   private static final long serialVersionUID = -4102757054473695655L;
+  
+  /**
+   * Returns true if the value is read only.
+   */
+  public boolean isReadOnly() {
+    return false;
+  }
 
   @Override
   public String getValue() {
-    // TODO Auto-generated method stub
-    return null;
+    if (getValues() != null) {
+      return getValues().get(0);
+    }
+    return "";
   }
 
   @Override
@@ -23,14 +32,15 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptValue(String value) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
   public String getValue(String lang) {
-    // TODO Auto-generated method stub
-    return null;
+    if (getValues(lang) != null) {
+      return getValues(lang).get(0);
+    }
+    return "";
   }
 
   @Override
@@ -41,8 +51,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptValue(String value, String lang) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
@@ -58,8 +67,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptStringValue(String value) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
@@ -76,8 +84,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptObjectValue(Object value) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
@@ -106,8 +113,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptValues(List<String> values) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
@@ -124,8 +130,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptValues(List<String> values, String lang) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
@@ -142,8 +147,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptStringValues(List<String> values) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
@@ -160,8 +164,7 @@ public class AbstractMultiValuableField implements MultiValuableField {
 
   @Override
   public boolean acceptObjectValues(List<Object> values) {
-    // TODO Auto-generated method stub
-    return false;
+    return !isReadOnly();
   }
 
   @Override
