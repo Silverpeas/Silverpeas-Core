@@ -57,11 +57,6 @@ public abstract class TextField extends AbstractMultiValuableField {
   }
 
   /**
-   * Returns true if the value is read only.
-   */
-  public abstract boolean isReadOnly();
-
-  /**
    * Returns the string value of this field.
    */
   @Override
@@ -99,6 +94,13 @@ public abstract class TextField extends AbstractMultiValuableField {
   @Override
   public void setValues(List<String> values, String language) throws FormException {
     setStringValues(values);
+  }
+  
+  @Override
+  public void setValue(String value, String lang) throws FormException {
+    List<String> values = new ArrayList<String>();
+    values.add(value);
+    setValues(values, lang);
   }
 
   /**

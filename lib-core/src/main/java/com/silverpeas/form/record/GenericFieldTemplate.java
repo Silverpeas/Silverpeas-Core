@@ -81,7 +81,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @XmlElement(name = "isFacet", required = true, defaultValue = "false")
   private boolean usedAsFacet = false;
   
-  @XmlElement
+  @XmlElement(defaultValue = "1")
   private int maximumNumberOfValues = 1;
 
   /**

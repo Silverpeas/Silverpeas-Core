@@ -146,8 +146,7 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext pageContext)
-      throws FormException {
+      PagesContext pageContext) throws FormException {
     if (field == null) {
       return;
     }
@@ -188,12 +187,9 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
     int nbInputsToDisplay = template.getMaximumNumberOfValues();
     
     List<String> values = field.getValues(pageContext.getLanguage());
-    int nbValues = 1;
-    if (values != null) {
-      nbValues = values.size();
-    }
     
     boolean mandatory = template.isMandatory();
+    boolean showMoreFields = false;
     for (int i=0; i<nbInputsToDisplay; i++) {
       String value = "";
       String currentFieldId = fieldName;
@@ -211,6 +207,7 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
         }
         if (!StringUtil.isDefined(value)) {
           currentVisibility = AbstractForm.REPEATED_FIELD_CSS_HIDE;
+          showMoreFields = true;
         }
       }
       if (pageContext.isBlankFieldsUse()) {
@@ -249,7 +246,7 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
         image.setBorder(0);
       }
       
-      if (suggestions != null && suggestions.size() > 0) {
+      if (suggestions != null && !suggestions.isEmpty()) {
         TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
         out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
   
@@ -278,10 +275,8 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
       
       out.println("</div>");
     }
-    if (nbInputsToDisplay != nbValues) {
-      out.println("<a href=\"#\" id=\"moreField-"+fieldName+"\" onclick=\"showOneMoreField('"+fieldName+"');\">");
-      out.println(Util.getString("field.multivaluable.add", pageContext.getLanguage()));
-      out.println("</a>");
+    if (showMoreFields) {
+      Util.printOneMoreInputSnippet(fieldName, pageContext, out);
     }
   }
 

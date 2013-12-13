@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 import com.silverpeas.form.AbstractForm;
@@ -56,8 +55,18 @@ public abstract class AbstractMultiValuableFieldDisplayer<T extends Field> imple
     List<String> values = new ArrayList<String>();
     values.add(value);
     if (template.isMultivaluable()) {
-      values.addAll(FileUploadUtil.getParameterValues(items, template.getFieldName() +
-          AbstractForm.REPEATED_FIELD_SEPARATOR, pageContext.getEncoding()));
+      List<String> paramValues =
+          FileUploadUtil.getParameterValues(items, template.getFieldName() +
+              AbstractForm.REPEATED_FIELD_SEPARATOR, pageContext.getEncoding());
+      for (String paramValue : paramValues) {
+        if (StringUtil.isDefined(paramValue)) {
+          values.add(paramValue);
+        }
+      }
+      // complete list with empty values
+      for (int i=values.size(); i<template.getMaximumNumberOfValues(); i++) {
+        values.add("");
+      }
     }
     return updateValues(values, field, template, pageContext);
   }
