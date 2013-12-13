@@ -164,4 +164,13 @@ public class Util {
   public static String list2String(List<String> list) {
     return StringUtil.join(list, MultiValuableField.JOIN_SEPARATOR);
   }
+  
+  public static void printOneMoreInputSnippet(String fieldName, PagesContext pageContext,
+      PrintWriter out) {
+    out.println("<a href=\"#\" id=\"moreField-" + fieldName + "\" onclick=\"showOneMoreField('" +
+        fieldName + "');return false;\">");
+    out.println("<img src=\"" + Util.getIcon("add") + "\" width=\"14px\"> ");
+    out.println(Util.getString("field.multivaluable.add", pageContext.getLanguage()));
+    out.println("</a>");
+  }
 }

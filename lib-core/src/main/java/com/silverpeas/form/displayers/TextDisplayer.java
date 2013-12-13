@@ -112,9 +112,11 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
       if (field instanceof MultiValuableField) {
         List<String> values = ((MultiValuableField) field).getValues();
         if (values != null && !values.isEmpty()) {
-          value += "<ul>\n";
+          value += "<ul class=\"multivalues\">\n";
           for (String aValue : values) {
-            value += "<li>"+aValue+"</li>\n";
+            if (StringUtil.isDefined(aValue)) {
+              value += "<li>"+aValue+"</li>\n";
+            }
           }
           value += "</ul>\n";
         }

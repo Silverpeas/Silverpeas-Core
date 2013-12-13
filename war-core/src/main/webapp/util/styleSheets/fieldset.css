@@ -164,3 +164,13 @@ input.inputHour{
 	margin-left:0;
 	border:0;
 }
+
+/* Default forms look n feel */
+.forms .skinFieldset {
+	margin:1% 0 ;
+	padding:10px 10px 15px;
+}
+
+.forms .skinFieldset legend {
+    padding-left: 10px;
+}

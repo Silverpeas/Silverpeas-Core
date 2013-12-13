@@ -50,6 +50,7 @@ public abstract class AbstractForm implements Form {
   private List<FieldTemplate> fieldTemplates;
   private String title = "";
   private String name = "";
+  private String formName = "";
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
   
@@ -69,6 +70,15 @@ public abstract class AbstractForm implements Form {
     } else {
       fieldTemplates = new ArrayList<FieldTemplate>();
     }
+  }
+  
+  @Override
+  public void setFormName(String name) {
+    formName = name;
+  }
+  
+  public String getFormName() {
+    return formName;
   }
 
   /**

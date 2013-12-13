@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -291,6 +293,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
             "form.EX_CANT_GET_FORM", null, e);
       }
     }
+    form.setFormName(FilenameUtils.getBaseName(this.fileName));
     return form;
   }
 

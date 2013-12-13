@@ -279,18 +279,21 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     updateInProgress = true;
     saveTemplateFields(true);
   }
-
-  public void moveField(String fieldName, int direction)
-      throws TemplateDesignerException {
-    FieldTemplate field = getField(fieldName);
+  
+  public void sortFields(String[] fieldNames) throws TemplateDesignerException {
+    List<FieldTemplate> sortedFieldTemplates = new ArrayList<FieldTemplate>();
     List<FieldTemplate> fieldTemplates = getRecordTemplate(SCOPE_DATA).getFieldList();
-
-    int index = getRecordTemplate(SCOPE_DATA).getFieldList().indexOf(field);
-    field = fieldTemplates.remove(index);
-
-    addField(field, index + direction);
-
+    for (String fieldName : fieldNames) {
+      FieldTemplate field = getField(fieldName, fieldTemplates);
+      if (field != null) {
+        sortedFieldTemplates.add(field);
+      }
+    }
+    getRecordTemplate(SCOPE_DATA).getFieldList().clear();
+    getRecordTemplate(SCOPE_DATA).getFieldList().addAll(sortedFieldTemplates);
+    
     updateInProgress = true;
+    saveTemplateFields(true);
   }
 
   public void updateField(FieldTemplate field) throws TemplateDesignerException {
@@ -314,6 +317,15 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     Iterator<FieldTemplate> fields = getFields();
     while (fields != null && fields.hasNext()) {
       FieldTemplate field = fields.next();
+      if (field.getFieldName().equalsIgnoreCase(fieldName)) {
+        return field;
+      }
+    }
+    return null;
+  }
+  
+  private FieldTemplate getField(String fieldName, List<FieldTemplate> fields) {
+    for (FieldTemplate field : fields) {
       if (field.getFieldName().equalsIgnoreCase(fieldName)) {
         return field;
       }
