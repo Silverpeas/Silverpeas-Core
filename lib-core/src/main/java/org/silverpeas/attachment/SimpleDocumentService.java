@@ -110,29 +110,31 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
-    String language = I18NHelper.checkLanguage(document.getLanguage());
-    String objectType = "Attachment" + document.getId() + "_" + language;
-    FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
-        getForeignId());
-    indexEntry.setLang(language);
-    indexEntry.setCreationDate(document.getCreated());
-    indexEntry.setCreationUser(document.getCreatedBy());
-    if (startOfVisibility != null) {
-      indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibility));
+    if(resources.getBoolean("attachment.index.separately", true)) {
+      String language = I18NHelper.checkLanguage(document.getLanguage());
+      String objectType = "Attachment" + document.getId() + "_" + language;
+      FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
+          getForeignId());
+      indexEntry.setLang(language);
+      indexEntry.setCreationDate(document.getCreated());
+      indexEntry.setCreationUser(document.getCreatedBy());
+      if (startOfVisibility != null) {
+        indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibility));
+      }
+      if (endOfVisibility != null) {
+        indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibility));
+      }
+  
+      indexEntry.setTitle(document.getTitle(), language);
+      indexEntry.setPreview(document.getDescription(), language);
+      indexEntry.setFilename(document.getFilename());
+      indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
+          getContentType(), language);
+      if (StringUtil.isDefined(document.getXmlFormId())) {
+        updateIndexEntryWithXMLFormContent(document.getPk(), document.getXmlFormId(), indexEntry);
+      }
+      IndexEngineProxy.addIndexEntry(indexEntry);
     }
-    if (endOfVisibility != null) {
-      indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibility));
-    }
-
-    indexEntry.setTitle(document.getTitle(), language);
-    indexEntry.setPreview(document.getDescription(), language);
-    indexEntry.setFilename(document.getFilename());
-    indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
-        getContentType(), language);
-    if (StringUtil.isDefined(document.getXmlFormId())) {
-      updateIndexEntryWithXMLFormContent(document.getPk(), document.getXmlFormId(), indexEntry);
-    }
-    IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
   private void updateIndexEntryWithXMLFormContent(SimpleDocumentPK pk, String xmlFormName,
