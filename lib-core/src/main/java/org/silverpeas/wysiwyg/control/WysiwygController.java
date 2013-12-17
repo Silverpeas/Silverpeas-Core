@@ -423,10 +423,6 @@ public class WysiwygController {
     if (!StringUtil.isDefined(textHtml)) {
       return;
     }
-    int iUserId = -1;
-    if (userId != null) {
-      iUserId = Integer.parseInt(userId);
-    }
     String language = I18NHelper.checkLanguage(contentLanguage);
     SimpleDocumentPK docPk = new SimpleDocumentPK(null, foreignKey.getInstanceId());
     SimpleDocument document = new SimpleDocument(docPk, foreignKey.getId(), 0, false, userId,
@@ -436,12 +432,20 @@ public class WysiwygController {
     AttachmentServiceFactory.getAttachmentService().createAttachment(document,
         new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, invokeCallback);
     if (invokeCallback) {
-      CallBackManager callBackManager = CallBackManager.get();
-      callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, foreignKey.getInstanceId(),
-          foreignKey.getId());
+      invokeCallback(userId, foreignKey);
     }
     AttachmentServiceFactory.getAttachmentService()
         .unlock(new UnlockContext(document.getId(), userId, document.getLanguage()));
+  }
+  
+  private static void invokeCallback(String userId, WAPrimaryKey objectPK) {
+    int iUserId = -1;
+    if (userId != null) {
+      iUserId = Integer.parseInt(userId);
+    }
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, objectPK.getInstanceId(),
+        objectPK.getId());
   }
 
   /**
@@ -518,7 +522,8 @@ public class WysiwygController {
       document.setDocumentType(context);
       document.setUpdatedBy(userId);
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
-          new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, true);
+          new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, false);
+      invokeCallback(userId, foreignKey);
     } else {
       createFileAndAttachment(textHtml, foreignKey, context, userId, language, indexIt, true);
     }
