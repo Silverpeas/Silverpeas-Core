@@ -23,52 +23,39 @@
  */
 package org.silverpeas.token.exception;
 
-import org.silverpeas.token.Token;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 /**
+ * The exception for all normal errors occuring with the Token API and for which the client requires
+ * to perform a dedicated action.
+ *
  * @author Yohann Chastagnier
  */
-public class TokenException extends SilverpeasException {
-  private static final long serialVersionUID = -5871493620888022826L;
+public class TokenException extends Exception {
 
-  private final Token token;
+  private static final long serialVersionUID = 815728200596150161L;
 
   /**
-   * Default constructor
-   * @param token
-   * @param messageSuffix
+   * Creates a new instance of <code>TokenException</code> without detail message.
    */
-  public TokenException(final Token token, final String messageSuffix) {
-    this(token, messageSuffix, null);
+  public TokenException() {
   }
 
   /**
-   * Default constructor
-   * @param token
-   * @param messageSuffix
-   * @param exception
+   * Constructs an instance of <code>TokenException</code> with the specified detail message.
+   *
+   * @param msg the detail message.
    */
-  public TokenException(final Token token, final String messageSuffix, final Exception exception) {
-    super("AbstractTokenService", SilverpeasException.ERROR, "token." + messageSuffix,
-        token.toString(), exception);
-    this.token = token;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.webactiv.util.exception.SilverpeasException#getModule()
-   */
-  @Override
-  public String getModule() {
-    return "token";
+  public TokenException(String msg) {
+    super(msg);
   }
 
   /**
-   * @return the token
+   * Constructs an instance of <code>TokenException</code> with the specified detail message and
+   * with the specified cause.
+   *
+   * @param message the detail message.
+   * @param cause the cause of this exception.
    */
-  public Token getToken() {
-    return token;
+  public TokenException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

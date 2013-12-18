@@ -35,7 +35,8 @@ public class MainRequestRouter extends HttpServlet {
   private static final long serialVersionUID = 5131039058584808582L;
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
+      ServletException {
     // Get the session
     HttpSession session = request.getSession(false);
     // Get the context

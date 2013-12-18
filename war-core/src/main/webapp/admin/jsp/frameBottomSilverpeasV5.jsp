@@ -29,6 +29,7 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 
 <%
@@ -90,6 +91,7 @@ session.removeAttribute("RedirectToSpaceId");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
+<view:includePlugin name="tkn"/>
 <script type="text/javascript">
 var columntype=""
 var defaultsetting=""

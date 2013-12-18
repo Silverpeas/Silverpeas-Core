@@ -90,12 +90,13 @@ public enum SupportedJavaScriptPlugins {
   popup,
   /**
    * JQuery plugin that implements an `<iframe>` transport so that `$.ajax()` calls support the
-   * uploading of files using standard HTML file input fields.
-   * {@see http://api.jquery.com/extending-ajax/#Transports}
+   * uploading of files using standard HTML file input fields. {
+   *
+   * @see http://api.jquery.com/extending-ajax/#Transports}
    */
   iframeajaxtransport,
   /**
-    * Silverpeas plugin to open document preview dialog.
+   * Silverpeas plugin to open document preview dialog.
    */
   preview,
   /**
@@ -120,5 +121,10 @@ public enum SupportedJavaScriptPlugins {
    * on the PdC as it doesn't take care of the context to which the classification belongs (the
    * component instance, the type of the content, ...).
    */
-  pdc
+  pdc,
+  /**
+   * Javascript to update a web page by setting the security tokens for each link (anchor, form,
+   * ...) and Ajax requests.
+   */
+  tkn
 }

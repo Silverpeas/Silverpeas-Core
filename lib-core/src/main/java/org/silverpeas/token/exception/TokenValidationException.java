@@ -24,38 +24,38 @@
 package org.silverpeas.token.exception;
 
 /**
- * An exception thrown when an error is encountered during the generation of a token.
+ * An exception that is thrown when a token validation fails.
  *
  * @author mmoquillon
  */
-public class TokenGenerationException extends TokenRuntimeException {
+public class TokenValidationException extends TokenException {
 
-  private static final long serialVersionUID = 413251840536708352L;
+  private static final long serialVersionUID = -6824029730156116372L;
 
   /**
-   * Creates a new instance of <code>TokenGenerationException</code> without detail message.
+   * Creates a new instance of <code>TokenValidationException</code> without detail message.
    */
-  public TokenGenerationException() {
+  public TokenValidationException() {
   }
 
   /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
+   * Constructs an instance of <code>TokenValidationException</code> with the specified detail
    * message.
    *
    * @param msg the detail message.
    */
-  public TokenGenerationException(String msg) {
+  public TokenValidationException(String msg) {
     super(msg);
   }
 
   /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
+   * Constructs an instance of <code>TokenValidationException</code> with the specified detail
    * message and with the specified cause.
    *
    * @param message the detail message.
    * @param cause the cause of this exception.
    */
-  public TokenGenerationException(String message, Throwable cause) {
+  public TokenValidationException(String message, Throwable cause) {
     super(message, cause);
   }
 

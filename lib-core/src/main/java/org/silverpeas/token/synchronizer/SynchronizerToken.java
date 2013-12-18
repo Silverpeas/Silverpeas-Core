@@ -76,9 +76,7 @@ public class SynchronizerToken implements Token {
    */
   protected SynchronizerToken(String value, List<String> parameters) {
     this.value = value;
-    if (parameters != null) {
-      this.parameters = parameters;
-    }
+    this.parameters = (parameters == null ? new ArrayList<String>() : parameters);
   }
 
   /**

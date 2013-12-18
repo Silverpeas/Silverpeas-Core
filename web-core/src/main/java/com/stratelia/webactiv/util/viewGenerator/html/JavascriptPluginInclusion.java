@@ -95,6 +95,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
   private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
   private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
+  private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
 
   /**
    * Centralization of script instantiation.
@@ -278,6 +279,12 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeTags(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + STYLESHEET_TAGS));
     xhtml.addElement(script(jqueryPath + JQUERY_TAGS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
     return xhtml;
   }
 }

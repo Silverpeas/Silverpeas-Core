@@ -21,42 +21,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.exception;
+package org.silverpeas.token.synchronizer;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * An exception thrown when an error is encountered during the generation of a token.
+ * A builder of synchronizer tokens for testing purpose.
  *
  * @author mmoquillon
  */
-public class TokenGenerationException extends TokenRuntimeException {
+public class SynchronizerTokenBuilder {
 
-  private static final long serialVersionUID = 413251840536708352L;
+  private String value;
+  private List<String> parameters;
 
-  /**
-   * Creates a new instance of <code>TokenGenerationException</code> without detail message.
-   */
-  public TokenGenerationException() {
+  private SynchronizerTokenBuilder() {
+
   }
 
-  /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
-   * message.
-   *
-   * @param msg the detail message.
-   */
-  public TokenGenerationException(String msg) {
-    super(msg);
+  private void setValue(String value) {
+    this.value = value;
   }
 
-  /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
-   * message and with the specified cause.
-   *
-   * @param message the detail message.
-   * @param cause the cause of this exception.
-   */
-  public TokenGenerationException(String message, Throwable cause) {
-    super(message, cause);
+  private void setParameters(List<String> parameters) {
+    this.parameters = parameters;
   }
 
+  public static SynchronizerTokenBuilder newTokenWithValue(String value) {
+    SynchronizerTokenBuilder builder = new SynchronizerTokenBuilder();
+    builder.setValue(value);
+    return builder;
+  }
+
+  public SynchronizerTokenBuilder withParameters(String... parameters) {
+    setParameters(Arrays.asList(parameters));
+    return this;
+  }
+
+  public SynchronizerToken build() {
+    return new SynchronizerToken(value, parameters);
+  }
 }

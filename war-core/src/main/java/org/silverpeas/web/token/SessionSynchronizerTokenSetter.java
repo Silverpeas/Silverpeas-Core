@@ -21,42 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.exception;
+package org.silverpeas.web.token;
+
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 /**
- * An exception thrown when an error is encountered during the generation of a token.
+ * A setter of a session token to the new spawned user session.
+ *
+ * The aim of the session token is to protect the current user session from attempt of intrusively
+ * use of it by anyone other that the use himself.
  *
  * @author mmoquillon
  */
-public class TokenGenerationException extends TokenRuntimeException {
+public class SessionSynchronizerTokenSetter implements HttpSessionListener {
 
-  private static final long serialVersionUID = 413251840536708352L;
-
-  /**
-   * Creates a new instance of <code>TokenGenerationException</code> without detail message.
-   */
-  public TokenGenerationException() {
+  @Override
+  public void sessionCreated(HttpSessionEvent se) {
+    HttpSession session = se.getSession();
+    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+    service.setSessionTokens(session);
   }
 
-  /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
-   * message.
-   *
-   * @param msg the detail message.
-   */
-  public TokenGenerationException(String msg) {
-    super(msg);
-  }
+  @Override
+  public void sessionDestroyed(HttpSessionEvent se) {
 
-  /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
-   * message and with the specified cause.
-   *
-   * @param message the detail message.
-   * @param cause the cause of this exception.
-   */
-  public TokenGenerationException(String message, Throwable cause) {
-    super(message, cause);
   }
-
 }

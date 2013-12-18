@@ -35,7 +35,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 
-<%@ page import="com.stratelia.silverpeas.authentication.*"%>
 <%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 
@@ -104,7 +103,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/navigation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/personalSpace.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
-
 
 <script type="text/javascript">
 
@@ -224,7 +222,7 @@ out.println(gef.getLookStyleSheet());
 
     function getFooterPage()
     {
-    	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
+	return "<view:url value='/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp' protected='true'/>&";
     }
 
     /**

@@ -95,7 +95,7 @@ public class UserFull extends UserDetail {
       UserReference ref = UserReference.fromUser(this);
       return PersistentResourceToken.createToken(ref).getValue();
     } catch (TokenException e) {
-      throw new TokenRuntimeException(e);
+      throw new TokenRuntimeException(e.getMessage(), e);
     }
   }
 

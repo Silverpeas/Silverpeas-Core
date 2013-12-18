@@ -23,62 +23,39 @@
  */
 package org.silverpeas.token.exception;
 
-import org.silverpeas.token.Token;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
 /**
+ * The exception for all abnormal errors occuring with the Token API and for which the client
+ * doesn't need to perform a dedicated action.
+ *
  * @author Yohann Chastagnier
  */
-public class TokenRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = -891071960816693727L;
+public class TokenRuntimeException extends RuntimeException {
 
-  private final Token token;
+  private static final long serialVersionUID = -2707813079770996304L;
 
   /**
-   * Default constructor
-   * @param tokenException the exception that has caused this exception.
+   * Creates a new instance of <code>TokenRuntimeException</code> without detail message.
    */
-  public TokenRuntimeException(final TokenException tokenException) {
-    this(tokenException.getToken(), tokenException.getMessage(), tokenException);
+  public TokenRuntimeException() {
   }
 
   /**
-   * Default constructor
-   * @param token the token from which this exception is thrown.
-   * @param messageSuffix a key of a message about the cause of the exception.
+   * Constructs an instance of <code>TokenRuntimeException</code> with the specified detail message.
+   *
+   * @param msg the detail message.
    */
-  public TokenRuntimeException(final Token token, final String messageSuffix) {
-    this(token, messageSuffix, null);
+  public TokenRuntimeException(String msg) {
+    super(msg);
   }
 
   /**
-   * Default constructor
-   * @param token the token from which this exception is thrown.
-   * @param messageSuffix a key of a message about the cause of the exception.
-   * @param exception the cause of this exception.
+   * Constructs an instance of <code>TokenRuntimeException</code> with the specified detail message
+   * and with the specified cause.
+   *
+   * @param message the detail message.
+   * @param cause the cause of this exception.
    */
-  public TokenRuntimeException(final Token token, final String messageSuffix,
-      final Exception exception) {
-    super("AbstractTokenService", SilverpeasException.ERROR, "token." + messageSuffix,
-        token.toString(), exception);
-    this.token = token;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.webactiv.util.exception.SilverpeasException#getModule()
-   */
-  @Override
-  public String getModule() {
-    return "token";
-  }
-
-  /**
-   * @return the token
-   */
-  public Token getToken() {
-    return token;
+  public TokenRuntimeException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

@@ -21,42 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.token.exception;
+package org.silverpeas.web.token;
 
 /**
- * An exception thrown when an error is encountered during the generation of a token.
+ * A factory of {@link SynchronizerTokenService} instances.
  *
  * @author mmoquillon
  */
-public class TokenGenerationException extends TokenRuntimeException {
+public class SynchronizerTokenServiceFactory {
 
-  private static final long serialVersionUID = 413251840536708352L;
+  private static final SynchronizerTokenServiceFactory instance
+      = new SynchronizerTokenServiceFactory();
 
-  /**
-   * Creates a new instance of <code>TokenGenerationException</code> without detail message.
-   */
-  public TokenGenerationException() {
+  private final SynchronizerTokenService service = new SynchronizerTokenService();
+
+  public static final SynchronizerTokenServiceFactory getFactory() {
+    return instance;
   }
 
-  /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
-   * message.
-   *
-   * @param msg the detail message.
-   */
-  public TokenGenerationException(String msg) {
-    super(msg);
+  public SynchronizerTokenService aSynchronizerTokenService() {
+    return service;
   }
 
-  /**
-   * Constructs an instance of <code>TokenGenerationException</code> with the specified detail
-   * message and with the specified cause.
-   *
-   * @param message the detail message.
-   * @param cause the cause of this exception.
-   */
-  public TokenGenerationException(String message, Throwable cause) {
-    super(message, cause);
+  public static SynchronizerTokenService getSynchronizerTokenService() {
+    return getFactory().aSynchronizerTokenService();
   }
 
 }

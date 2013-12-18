@@ -49,8 +49,7 @@ public class DefaultTokenService implements PersistentResourceTokenService {
   private PersistentResourceTokenRepository tokenRepository;
 
   /**
-   * @throws org.silverpeas.token.exception.TokenException if an error occurs while initializing a
-   * token.
+   * @throws TokenException if an error occurs while initializing a token.
    * @see PersistentResourceTokenService#initialize(org.silverpeas.EntityReference)
    */
   @Override

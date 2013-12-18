@@ -42,6 +42,7 @@ import org.silverpeas.EntityReference;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.annotation.TokenGenerator;
 import org.silverpeas.token.exception.TokenException;
+import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.token.persistent.service.TokenServiceFactory;
 
@@ -114,8 +115,8 @@ public class PersistentResourceToken implements Token {
    * @return a token for the specified resource.
    * @throws TokenException
    */
-  public static PersistentResourceToken createToken(final EntityReference resource)
-      throws TokenException {
+  public static PersistentResourceToken createToken(final EntityReference resource) throws
+      TokenException {
     PersistentResourceTokenService service = TokenServiceFactory.getTokenService();
     return service.initialize(resource);
   }
@@ -160,12 +161,12 @@ public class PersistentResourceToken implements Token {
   /**
    * Validates data
    *
-   * @throws TokenException
+   * @throws TokenValidationException
    */
-  public void validate() throws TokenException {
+  public void validate() throws TokenValidationException {
     if (this.resourceType == null || EntityReference.UNKNOWN_TYPE.equals(resourceType)
         || !StringUtil.isDefined(resourceId)) {
-      throw new TokenException(this, "EX_DATA_ARE_MISSING");
+      throw new TokenValidationException("The token isn't valid! Missing resource reference");
     }
   }
 
