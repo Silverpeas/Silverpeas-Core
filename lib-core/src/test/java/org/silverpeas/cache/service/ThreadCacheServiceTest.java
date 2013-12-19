@@ -45,6 +45,24 @@ public class ThreadCacheServiceTest {
   }
 
   @Test
+  public void testClear() throws InterruptedException {
+    final TestPerformer testPerformer = new TestPerformer() {
+      @Override
+      public void perform() {
+        log("testClear - start");
+        assertThat(service.getCache().size(), is(0));
+        service.add(Object1);
+        service.add(Object2);
+        assertThat(service.getCache().size(), is(2));
+        service.clear();
+        assertThat(service.getCache().size(), is(0));
+        log("testClear - end");
+      }
+    };
+    assertTest(testPerformer);
+  }
+
+  @Test
   public void testGet() throws InterruptedException {
     final TestPerformer testPerformer = new TestPerformer() {
       @Override
@@ -139,7 +157,7 @@ public class ThreadCacheServiceTest {
   }
 
   private void assertTest(TestPerformer test) throws InterruptedException {
-    log("BEGIN SAME TREATMENT WITH TWO THREADS");
+    log("BEGIN SAME TREATMENT WITH TWO THREADS DIFFERED");
     try {
       RunnableTest runnableTest1 = new RunnableTest(test);
       RunnableTest runnableTest2 = new RunnableTest(test);
@@ -150,7 +168,19 @@ public class ThreadCacheServiceTest {
       assertThat(runnableTest1.isTestPassed(), is(true));
       assertThat(runnableTest2.isTestPassed(), is(true));
     } finally {
-      log("END SAME TREATMENT WITH TWO THREADS");
+      log("END SAME TREATMENT WITH TWO THREADS DIFFERED");
+    }
+    log("BEGIN SAME TREATMENT WITH TWO THREADS NOT DIFFERED");
+    try {
+      RunnableTest runnableTest1 = new RunnableTest(test);
+      RunnableTest runnableTest2 = new RunnableTest(test);
+      new Thread(runnableTest1).start();
+      new Thread(runnableTest2).start();
+      Thread.sleep(200);
+      assertThat(runnableTest1.isTestPassed(), is(true));
+      assertThat(runnableTest2.isTestPassed(), is(true));
+    } finally {
+      log("END SAME TREATMENT WITH TWO THREADS NOT DIFFERED");
     }
   }
 

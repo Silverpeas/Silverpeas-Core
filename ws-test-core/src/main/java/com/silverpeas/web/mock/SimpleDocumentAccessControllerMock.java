@@ -23,12 +23,14 @@
  */
 package com.silverpeas.web.mock;
 
-import javax.inject.Named;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.util.Default;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
@@ -36,7 +38,11 @@ import com.silverpeas.util.Default;
  */
 @Named("simpleDocumentAccessController")
 @Default
-public class SimpleDocumentAccessControllerMock implements AccessController<SimpleDocument> {
+public class SimpleDocumentAccessControllerMock extends AbstractAccessController<SimpleDocument> {
+
+  @Named("componentAccessController")
+  @Inject
+  private AccessController<String> componentAccessController;
 
   private boolean authorization = true;
 
@@ -45,7 +51,8 @@ public class SimpleDocumentAccessControllerMock implements AccessController<Simp
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, SimpleDocument object) {
-    return authorization;
+  public boolean isUserAuthorized(final String userId, final SimpleDocument object,
+      final AccessControlContext context) {
+    return componentAccessController.isUserAuthorized(userId, null) && authorization;
   }
 }

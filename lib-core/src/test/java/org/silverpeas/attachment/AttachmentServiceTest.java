@@ -23,6 +23,45 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
+import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import javax.jcr.LoginException;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,48 +76,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.jcr.LoginException;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
-import org.silverpeas.search.indexEngine.IndexFileManager;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -741,6 +738,61 @@ public class AttachmentServiceTest {
     assertThat(result, is(notNullValue()));
     assertThat(result.getAlert(), is(DateUtil.getBeginOfDay(alertDate)));
     assertThat(result.getContentType(), is(MimeTypes.BZ2_ARCHIVE_MIME_TYPE));
+  }
+
+  /**
+   * Test of updateAttachment method, of class AttachmentService.
+   */
+  @Test
+  public void testUpdateAttachmentForbidRoles() {
+    SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
+
+    // Adding roles that adds technically the downloadable mixin to the SimpleDocument node
+    documentUpdated
+        .addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader, SilverpeasRole.writer);
+    instance.updateAttachment(documentUpdated, false, false);
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, not(sameInstance(documentUpdated)));
+    assertThat(result.getForbiddenDownloadForRoles(),
+        contains(SilverpeasRole.writer, SilverpeasRole.reader));
+
+    // Allowing writers here updates the list of forbidden roles
+    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer);
+    instance.updateAttachment(documentUpdated, false, false);
+    result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+
+    // Allowing readers here cleans up the list of forbidden roles and technically removes the
+    // downloadable mixin from the SimpleDocument node
+    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.reader);
+    instance.updateAttachment(documentUpdated, false, false);
+    result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result.getForbiddenDownloadForRoles(), nullValue());
+  }
+
+  /**
+   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
+   */
+  @Test
+  public void testSwitchAllowingDownloadForReaders() {
+    SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
+
+    // Forbid download for readers
+    instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), false);
+
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, not(sameInstance(documentUpdated)));
+    assertThat(result.getForbiddenDownloadForRoles(),
+        contains(SilverpeasRole.user, SilverpeasRole.reader));
+
+    // Allow download for readers
+    instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), true);
+    result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result.getForbiddenDownloadForRoles(), nullValue());
   }
 
   /**

@@ -55,6 +55,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -101,6 +105,9 @@ public abstract class TestResources implements ApplicationContextAware {
   private final AuthenticationService authenticationService;
 
   private int maxUserId = Integer.valueOf(USER_ID_IN_TEST);
+
+  private Map<String, UserDetailWithProfiles> mapOfusersWithProfiles =
+      new HashMap<String, UserDetailWithProfiles>();
 
   /**
    * Constructs the resouces for testing. It set ups a mock of the authentication service so that
@@ -281,10 +288,21 @@ public abstract class TestResources implements ApplicationContextAware {
     domain.setName("Domaine " + user.getDomainId());
     if (user instanceof UserDetailWithProfiles) {
       UserDetailWithProfiles userWithProfiles = (UserDetailWithProfiles) user;
-      for (String componentId : userWithProfiles.getAccessibleComponentIds()) {
-        String[] profiles = userWithProfiles.getUserProfiles(componentId);
-        when(mock.getUserProfiles(user.getId(), componentId)).thenReturn(profiles);
+      if (mapOfusersWithProfiles.isEmpty()) {
+        when(mock.getUserProfiles(anyString(), anyString())).thenAnswer(new Answer<String[]>() {
+          @Override
+          public String[] answer(final InvocationOnMock invocation) throws Throwable {
+            String userId = (String) invocation.getArguments()[0];
+          String componentId = (String) invocation.getArguments()[1];
+            UserDetailWithProfiles userWithProfiles = mapOfusersWithProfiles.get(userId);
+            if (userWithProfiles != null) {
+              return userWithProfiles.getUserProfiles(componentId);
+            }
+          return null;
+        }
+      });
       }
+      mapOfusersWithProfiles.put(userWithProfiles.getId(), userWithProfiles);
     }
     when(mock.getUserDetail(user.getId())).thenReturn(user);
     when(mock.getDomain(user.getDomainId())).thenReturn(domain);

@@ -93,7 +93,7 @@ public class RepositoriesTypeManager {
       ImportReportManager reportManager) {
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(settings.getUser());
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
     PdcImportExport pdcIE = new PdcImportExport();
 
@@ -340,7 +340,8 @@ public class RepositoriesTypeManager {
               pubDetail.isIndexable());
         } else {
           // classic mode
-          AttachmentImportExport attachmentIE = new AttachmentImportExport();
+          AttachmentImportExport attachmentIE =
+              new AttachmentImportExport(gedIE.getCurentUserDetail());
           attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId, documents,
               userDetail.getId(), pubDetail.isIndexable());
         }

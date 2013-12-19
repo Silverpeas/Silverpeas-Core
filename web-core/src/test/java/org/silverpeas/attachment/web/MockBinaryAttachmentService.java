@@ -275,4 +275,9 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public void switchComponentBehaviour(String componentId, boolean toVersionning) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
+
+  @Override
+  public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk, final boolean allowing) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

@@ -23,31 +23,14 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.util.Date;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.util.Charsets;
-
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.silverpeas.web.ResourceGettingTest;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -57,13 +40,30 @@ import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.util.Charsets;
 
-import static com.silverpeas.web.WebResourceTesting.HTTP_SESSIONKEY;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.util.Collections;
+import java.util.Date;
+
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
 
@@ -73,7 +73,7 @@ import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
  */
 public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocumentTestResource> {
 
-  private UserDetail user;
+  private UserDetailWithProfiles user;
   private String sessionKey;
   private final Date creationDate = RandomGenerator.getOutdatedCalendar().getTime();
 
@@ -87,8 +87,8 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         getBean("repository", JackrabbitRepository.class);
     repository.shutdown();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
-    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
-        + "temp_jackrabbit"));
+    FileUtils.deleteQuietly(
+        new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar + "temp_jackrabbit"));
   }
 
   @Before
@@ -263,8 +263,9 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/unlock").header(
         HTTP_SESSIONKEY, getSessionKey()).post(String.class, form);
     assertThat(result, is(notNullValue()));
-    assertThat(result, is(
-        "{\"status\":true, \"id\":-1, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
+    assertThat(result,
+        is("{\"status\":true, \"id\":-1, " +
+            "\"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
   }
 
   @Test
@@ -290,6 +291,53 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     assertThat(result, is(
         "{\"status\":true, \"id\":56, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
     verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), null);
+  }
+
+  @Test
+  public void testSwitchDownloadAllowedForReaders() {
+    user.addProfile(INSTANCE_ID, SilverpeasRole.writer);
+    user.addProfile(INSTANCE_ID, SilverpeasRole.reader);
+    SimpleDocumentPK pk = new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID);
+    SimpleDocument document = new SimpleDocument();
+    pk.setOldSilverpeasId(56);
+    document.setPK(pk);
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+        thenReturn(document);
+    when(service.searchDocumentById(eq(pk), anyString())).thenReturn(document);
+    getTestResources().setAttachmentService(service);
+
+    // Allowing readers
+    assertSwitchDownloadAllowedForReaders(service, true, 1);
+
+    // Forbidding readers
+    assertSwitchDownloadAllowedForReaders(service, false, 1);
+
+    // Allowing readers
+    assertSwitchDownloadAllowedForReaders(service, true, 2);
+
+    // Forbidding readers
+    assertSwitchDownloadAllowedForReaders(service, false, 2);
+  }
+
+  /**
+   * Centralizations.
+   * @param serviceMock
+   * @param allowing
+   */
+  private void assertSwitchDownloadAllowedForReaders(AttachmentService serviceMock,
+      boolean allowing, int nbPersistenceCall) {
+    Form form = new Form();
+    form.put("allowed", Collections.singletonList(Boolean.valueOf(allowing).toString()));
+    WebResource webResource = resource();
+    String result =
+        webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/switchDownloadAllowedForReaders")
+            .header(HTTP_SESSIONKEY, getSessionKey()).post(String.class, form);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is("{\"allowedDownloadForReaders\":" + allowing + ", \"id\":56, " +
+        "\"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
+    verify(serviceMock, times(nbPersistenceCall))
+        .switchAllowingDownloadForReaders(Matchers.any(SimpleDocumentPK.class), eq(allowing));
   }
 
   @Override

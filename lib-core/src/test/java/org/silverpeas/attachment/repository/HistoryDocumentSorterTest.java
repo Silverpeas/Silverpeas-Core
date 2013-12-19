@@ -23,14 +23,14 @@
  */
 package org.silverpeas.attachment.repository;
 
+import org.junit.Test;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.repository.HistoryDocumentSorter;
-
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -39,27 +39,32 @@ import static org.junit.Assert.assertThat;
  */
 public class HistoryDocumentSorterTest {
 
-  public HistoryDocumentSorterTest() {
-  }
-
  /**
    * Test of compare method, of class VersionSimpleDocumentComparator.
    */
   @Test
   public void testSortHistory() {
-    SimpleDocument doc1 = new SimpleDocument();
-    doc1.setNodeName("doc1");
+    SimpleDocument doc1v1 = new SimpleDocument();
+    doc1v1.setNodeName("doc1v1");
+    doc1v1.setVersionIndex(1);
+    SimpleDocument doc1v2 = new SimpleDocument();
+    doc1v2.setNodeName("doc1v2");
+    doc1v2.setVersionIndex(2);
     SimpleDocument doc2 = new SimpleDocument();
     doc2.setNodeName("doc2");
     SimpleDocument doc3 = new SimpleDocument();
     doc3.setNodeName("doc3");
-    doc2.setMajorVersion(doc1.getMajorVersion() + 1);
-    doc2.setMinorVersion(doc1.getMinorVersion());
-    doc3.setMajorVersion(doc1.getMajorVersion());
-    doc3.setMinorVersion(doc1.getMinorVersion());
-    doc1.setMinorVersion(doc1.getMinorVersion() + 1);
-    List<SimpleDocument> docs = Arrays.asList(doc1, doc2, doc3);
+    doc2.setMajorVersion(1);
+    doc2.setMinorVersion(0);
+    doc3.setMajorVersion(0);
+    doc3.setMinorVersion(0);
+    doc1v1.setMinorVersion(1);
+    doc1v2.setMinorVersion(1);
+    List<SimpleDocument> docs = Arrays.asList(doc1v1, doc2, doc3, doc1v2);
     HistoryDocumentSorter.sortHistory(docs);
-    assertThat(docs, contains(doc2, doc1, doc3));
+    assertThat(docs, contains(doc2, doc1v2, doc1v1, doc3));
+    doc1v1.setVersionIndex(3);
+    HistoryDocumentSorter.sortHistory(docs);
+    assertThat(docs, not(contains(doc2, doc1v2, doc1v1, doc3)));
   }
 }

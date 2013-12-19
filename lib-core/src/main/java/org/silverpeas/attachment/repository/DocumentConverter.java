@@ -23,8 +23,10 @@
  */
 package org.silverpeas.attachment.repository;
 
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.SilverpeasRole;
 import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -60,16 +62,20 @@ class DocumentConverter extends AbstractJcrConverter {
   /**
    * Convert the document history in a list of SimpleDocument.
    *
+   *
+   * @param historisedDocument
+   * @param rootVersionNode
    * @param lang
    * @return
    * @throws RepositoryException
    */
-  List<SimpleDocument> convertDocumentHistory(Node node, String lang) throws
-      RepositoryException {
+  void setDocumentHistory(final HistorisedDocument historisedDocument, Node rootVersionNode,
+      String lang) throws RepositoryException {
     try {
-      VersionManager versionManager = node.getSession().getWorkspace().getVersionManager();
+      VersionManager versionManager =
+          rootVersionNode.getSession().getWorkspace().getVersionManager();
 
-      String path = node.getPath();
+      String path = rootVersionNode.getPath();
       VersionHistory history = versionManager.getVersionHistory(path);
       Version root = history.getRootVersion();
       String rootId = "";
@@ -85,19 +91,36 @@ class DocumentConverter extends AbstractJcrConverter {
       List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
           getSize());
 
+      SimpleDocument masterVersion = fillDocument(rootVersionNode, lang);
+      int versionIndex = 0;
+      boolean historisedVersionIndexPerformed = false;
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
         if (!version.getIdentifier().equals(rootId) && !version.getIdentifier().equals(baseId)) {
           SimpleDocument versionDocument = fillDocument(version.getFrozenNode(), lang);
-          versionDocument.setNodeName(node.getName());
+          versionDocument.setNodeName(rootVersionNode.getName());
+          versionDocument.setVersionMaster(masterVersion);
+          versionDocument.setVersionIndex(versionIndex++);
+          if (versionDocument.getId().equals(historisedDocument.getId())) {
+            historisedDocument.setVersionIndex(versionDocument.getVersionIndex());
+            historisedVersionIndexPerformed = true;
+          }
           documentHistory.add(versionDocument);
         }
       }
+
       HistoryDocumentSorter.sortHistory(documentHistory);
-      return documentHistory;
+      historisedDocument.setHistory(documentHistory);
+
+      if (!historisedVersionIndexPerformed) {
+        historisedDocument.setVersionIndex(versionIndex);
+      }
+      historisedDocument.setVersionMaster(masterVersion);
+      masterVersion.setVersionIndex(versionIndex);
     } catch (RepositoryException ex) {
       if (ex.getCause() instanceof NoSuchItemStateException) {
-        return new ArrayList<SimpleDocument>(0);
+        historisedDocument.setHistory(new ArrayList<SimpleDocument>(0));
+        return;
       }
       throw ex;
     }
@@ -106,15 +129,15 @@ class DocumentConverter extends AbstractJcrConverter {
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
     if (isVersioned(node)) {
       HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
-      List<SimpleDocument> history = convertDocumentHistory(node, lang);
-      document.setHistory(history);
+      setDocumentHistory(document, node, lang);
       return document;
     }
-    if (node.getParent() != null && node.getParent() instanceof Version) {
+    Node parentNode = node.getParent();
+    if (parentNode instanceof Version) {
       //We are accessing a version directly throught its id
       HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
-      Node fullNode = getCurrentNodeForVersion((Version)node.getParent());
-      document.setHistory(convertDocumentHistory(fullNode, lang));
+      Node fullNode = getCurrentNodeForVersion((Version) parentNode);
+      setDocumentHistory(document, fullNode, lang);
       return document;
     }
     return fillDocument(node, lang);
@@ -164,6 +187,7 @@ class DocumentConverter extends AbstractJcrConverter {
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
         getStringProperty(node, SLV_PROPERTY_COMMENT), file);
+    doc.setRepositoryPath(node.getPath());
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
@@ -179,6 +203,12 @@ class DocumentConverter extends AbstractJcrConverter {
     }
     doc.setNodeName(nodeName);
     doc.setPublicDocument(!doc.isVersioned() || doc.getMinorVersion() == 0);
+    // Forbidden download for roles
+    String forbiddenDownloadForRoles =
+        getStringProperty(node, SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES);
+    if (StringUtil.isDefined(forbiddenDownloadForRoles)) {
+      doc.addRolesForWhichDownloadIsForbidden(SilverpeasRole.listFrom(forbiddenDownloadForRoles));
+    }
     return doc;
   }
 
@@ -210,6 +240,30 @@ class DocumentConverter extends AbstractJcrConverter {
     addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, document.getExpiry());
     addDateProperty(documentNode, SLV_PROPERTY_RESERVATION_DATE, document.getReservation());
     addStringProperty(documentNode, SLV_PROPERTY_CLONE, document.getCloneId());
+    // Optional downloadable mixin
+    setForbiddenDownloadForRolesOptionalNodeProperty(document, documentNode);
+  }
+
+  /**
+   * Adding or removing the [slv:forbiddenDownloadForRoles] optional property.
+   * @param document
+   * @param documentNode
+   * @throws RepositoryException
+   */
+  protected void setForbiddenDownloadForRolesOptionalNodeProperty(SimpleDocument document,
+      Node documentNode) throws RepositoryException {
+
+    if (CollectionUtil.isNotEmpty(document.getForbiddenDownloadForRoles())) {
+      // Adding the mixin (no impact when it is already existing)
+      documentNode.addMixin(SLV_DOWNLOADABLE_MIXIN);
+      addStringProperty(documentNode, SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES,
+          SilverpeasRole.asString(document.getForbiddenDownloadForRoles()));
+    } else {
+      // Removing the mixin
+      if (documentNode.hasProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES)) {
+        documentNode.removeMixin(SLV_DOWNLOADABLE_MIXIN);
+      }
+    }
   }
 
   private Node getAttachmentNode(String attachmentNodeName, Node documentNode) throws

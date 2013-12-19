@@ -26,6 +26,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -53,10 +54,12 @@ import java.util.List;
  */
 public class AttachmentImportExport {
 
+  private UserDetail user;
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
 
-  public AttachmentImportExport() {
+  public AttachmentImportExport(final UserDetail user) {
+    this.user = user;
   }
 
   /* TODO : à reprendre pour feature_82
@@ -225,6 +228,12 @@ public class AttachmentImportExport {
           // au wysiwyg si le context
           // est different de images et ce quelque soit le type du fichier
           continue;// on ne copie pas le fichier
+        }
+
+        if (!attachment.isDownloadAllowedForRolesFrom(user)) {
+          // The user is not allowed to download this document. No error is thrown but the
+          // document is not exported.
+          continue;
         }
 
         if (extensionFilter == null || FileRepositoryManager.getFileExtension(attachment.

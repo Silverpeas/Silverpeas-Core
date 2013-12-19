@@ -78,8 +78,7 @@
 
   <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
   <view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
-  <view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT" />
-  <c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}" />
+  <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
   <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
   <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
@@ -198,7 +197,7 @@
   <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
     <ul id="attachmentList">
-        <c:forEach items="${pageScope.attachments}" var="varAttachment" >
+      <c:forEach items="${pageScope.attachments}" var="varAttachment" >
         <c:choose>
           <c:when test="${varAttachment.versioned && !(varAttachment.public) && ('user' eq userProfile)}">
             <c:set var="currentAttachment" value="${varAttachment.lastPublicVersion}" />
@@ -208,6 +207,19 @@
           </c:otherwise>
         </c:choose>
         <c:if test="${currentAttachment ne null}">
+
+          <%-- Download variable handling --%>
+          <c:set var="canUserDownloadFile" value="${true}"/>
+          <c:set var="forbiddenDownloadClass" value=""/>
+          <fmt:message key="GML.download.forbidden.readers" var="forbiddenDownloadHelp"/>
+          <c:if test="${!currentAttachment.downloadAllowedForReaders}">
+            <c:set var="canUserDownloadFile" value="${currentAttachment.isDownloadAllowedForRolesFrom(mainSessionController.currentUserDetail)}"/>
+            <c:if test="${!canUserDownloadFile}">
+              <c:set var="forbiddenDownloadClass" value="forbidden-download"/>
+              <fmt:message key="GML.download.forbidden" var="forbiddenDownloadHelp"/>
+            </c:if>
+          </c:if>
+
           <c:if test="${isAttachmentPositionRight}">
             <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
@@ -216,21 +228,13 @@
                                  showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
                                  useFileSharing="${useFileSharing}" useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           </c:if>
-          <span class="lineMain">
+          <span class="lineMain ${forbiddenDownloadClass}">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
                 <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
               </c:if>
               <c:if test="${showIcon}">
                 <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
               </c:if>
-              <c:choose>
-                <c:when test="${fromAlias}">
-                  <c:set var="attachmentUrl" value="${currentAttachment.aliasURL}" />
-                </c:when>
-                <c:otherwise>
-                  <c:url var="attachmentUrl" value="${currentAttachment.attachmentURL}" />
-                </c:otherwise>
-              </c:choose>
               <c:choose>
                 <c:when test="${! silfn:isDefined(currentAttachment.title) || ! showTitle}">
                   <c:set var="title" value="${currentAttachment.filename}" />
@@ -239,24 +243,42 @@
                   <c:set var="title" value="${currentAttachment.title}" />
                 </c:otherwise>
               </c:choose>
-              <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href="${attachmentUrl}" target="_blank"><c:out value="${title}" /></a>
+              <c:choose>
+                <c:when test="${canUserDownloadFile}">
+                  <c:choose>
+                    <c:when test="${fromAlias}">
+                      <c:set var="attachmentUrl" value="${currentAttachment.aliasURL}"/>
+                    </c:when>
+                    <c:otherwise>
+                      <c:url var="attachmentUrl" value="${currentAttachment.attachmentURL}"/>
+                    </c:otherwise>
+                  </c:choose>
+                  <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href="${attachmentUrl}" target="_blank"><c:out value="${title}"/></a>
+                </c:when>
+                <c:otherwise>
+                  <c:out value="${title}"/>
+                </c:otherwise>
+              </c:choose>
               <c:if test="${currentAttachment.versioned}">
                 &nbsp;<span class="version-number" id="version_<c:out value="${currentAttachment.oldSilverpeasId}"/>">v<c:out value="${currentAttachment.majorVersion}"/>.<c:out value="${currentAttachment.minorVersion}"/></span>
               </c:if>
             </span>
             <span class="lineSize">
-              <c:if test="${displayUniversalLinks}">
-                <a href='<c:out value="${currentAttachment.universalURL}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>" /></a>
-                </c:if>
+              <c:if test="${displayUniversalLinks and canUserDownloadFile}">
+                <a href='<c:out value="${currentAttachment.universalURL}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>"/></a>
+              </c:if>
                 <c:if test="${showFileSize}">
-                  <c:out value="${view:humanReadableSize(currentAttachment.size)}" />
+                  <c:out value="${view:humanReadableSize(currentAttachment.size)}"/>
                 </c:if>
-                 - <view:formatDateTime value="${currentAttachment.updated}" />
+                 - <view:formatDateTime value="${currentAttachment.updated}"/>
               <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
                 <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
               </c:if>
               <c:if test="${silfn:isViewable(currentAttachment.attachmentPath)}">
                 <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
+              </c:if>
+              <c:if test="${!currentAttachment.downloadAllowedForReaders}">
+                <img class="forbidden-download-file" src='<c:url value="/util/icons/forbidden-download.png"/>' alt="${forbiddenDownloadHelp}" title="${forbiddenDownloadHelp}"/>
               </c:if>
             </span>
               <c:if test="${silfn:isDefined(currentAttachment.title) && showTitle}">
@@ -277,7 +299,7 @@
             </c:if>
             <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
             <c:set var="shouldHideAllVersionsLink" scope="page" value="${silfn:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
-            <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.history))}" />
+            <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.functionalHistory))}" />
             <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
                 <span class="linkAllVersions">
                   <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')"><fmt:message key="allVersions" /></a>
@@ -630,6 +652,22 @@
       $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
     }
 
+    function switchDownloadAllowedForReaders(attachmentId, allowed) {
+      $.progressMessage();
+      $.ajax({
+        url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+            attachmentId + '/switchDownloadAllowedForReaders',
+        type : "POST",
+        cache : false,
+        contentType : "application/json",
+        dataType : "json",
+        data : {"allowed" : (allowed) ? allowed : false},
+        success : function(data) {
+          reloadIncludingPage();
+        }
+      });
+    }
+
     <c:if test="${useXMLForm}">
       function EditXmlForm(id, lang) {
         var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage=' + lang + '&ObjectId=' + id;
@@ -782,9 +820,9 @@
       }
     });
 
-      var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
+      jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
         $.closeProgressMessage();
-      };
+      });
 
       $("#dialog-attachment-add").dialog({
         autoOpen : false,
@@ -811,8 +849,7 @@
                 data : formData,
                 success : function(data) {
                   reloadIncludingPage();
-                },
-                error : performDialogAddOrUpdateError
+                }
               });
             } else {
               $('#add-attachment-form').attr('action', submitUrl);
@@ -853,8 +890,7 @@
                 data : formData,
                 success : function(data) {
                   reloadIncludingPage();
-                },
-                error : performDialogAddOrUpdateError
+                }
               });
             } else {
               $('#update-attachment-form').attr('action', submitUrl);

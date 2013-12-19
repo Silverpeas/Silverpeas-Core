@@ -23,6 +23,36 @@
  */
 package org.silverpeas.attachment.repository;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -32,39 +62,6 @@ import java.io.Reader;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -225,6 +222,38 @@ public class DocumentRepositoryTest {
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(0L)));
       assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getForbiddenDownloadForRoles(), nullValue());
+      checkEnglishSimpleDocument(doc);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of findDocumentById method, of class DocumentRepository.
+   */
+  @Test
+  public void testFindDocumentWithForbiddentDownloadForRolesById() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      Date creationDate = attachment.getCreated();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader, SilverpeasRole.user);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      SimpleDocument doc = documentRepository.findDocumentById(session, expResult, "en");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), is(not(0L)));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getForbiddenDownloadForRoles(),
+          contains(SilverpeasRole.user, SilverpeasRole.reader));
       checkEnglishSimpleDocument(doc);
     } finally {
       BasicDaoFactory.logout(session);
@@ -293,6 +322,72 @@ public class DocumentRepositoryTest {
       assertThat(doc.getOrder(), is(15));
       assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(doc.getSize(), is(28L));
+
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of updateDocument method, of class DocumentRepository.
+   */
+  @Test
+  public void testUpdateDocumentForbidDownloadToReaderRole() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
+      documentRepository.updateDocument(session, document);
+      session.save();
+      SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of saveForbiddenDownloadForRoles method, of class DocumentRepository.
+   */
+  @Test
+  public void testSaveForbiddenDownloadForRoles() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
+      documentRepository.saveForbiddenDownloadForRoles(session, document);
+      session.save();
+      SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
 
     } finally {
       BasicDaoFactory.logout(session);

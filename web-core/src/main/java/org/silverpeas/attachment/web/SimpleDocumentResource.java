@@ -281,8 +281,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Override
   public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
       WebApplicationException {
-    super.validateUserAuthorization(validation);
-    validation.validateUserAuthorizationOnAttachment(getUserDetail(), getSimpleDocument(null));
+    validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUserDetail(),
+        getSimpleDocument(null));
   }
 
   /**
@@ -449,6 +449,26 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
+  }
+
+  /**
+   * Forbid or allow the download of the document for readers.
+   * @return JSON download state for readers. allowedDownloadForReaders = true or false.
+   */
+  @POST
+  @Path("switchDownloadAllowedForReaders")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String switchDownloadAllowedForReaders(@FormParam("allowed") final boolean allowed) {
+
+    // Performing the request
+    SimpleDocument document = getSimpleDocument(null);
+    AttachmentServiceFactory.getAttachmentService()
+        .switchAllowingDownloadForReaders(document.getPk(), allowed);
+
+    // JSON Response.
+    return MessageFormat.format(
+        "'{'\"allowedDownloadForReaders\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
+        allowed, document.getOldSilverpeasId(), document.getId());
   }
 
   SimpleDocument getSimpleDocument(String lang) {

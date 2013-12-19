@@ -36,6 +36,8 @@
         http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
         http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
+  <import resource="spring-mock-organizationController.xml" />
+
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.importExport.attachment.model"/>
   <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
@@ -63,7 +65,6 @@
 
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
-  <bean id="organizationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory" factory-method="getFactory" />
 
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="jcrAccessManager" scope="prototype" class="com.silverpeas.jcrutil.security.impl.SimpleAccessManager" />

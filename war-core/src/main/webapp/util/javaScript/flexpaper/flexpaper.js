@@ -139,6 +139,67 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
         }
         return (url!=null && url.indexOf('{format}') > 0 ? url.replace("{format}", format):null);
     };
+
+    FLEXPAPER.animateDenyEffect = function(obj,margin,time,cycles,dir) {
+        window.setTimeout(function(){
+            var speed = time / ((2*cycles)+1);
+            var margRat = 1 + (60/(cycles*cycles)); $(obj).stop(true,true);
+            for (var i=0; i<=cycles; i++) {
+                for (var j=-1; j<=1; j+=2)
+                    $(obj).animate({marginLeft: (i!=cycles)*j*margin},{duration:speed, queue:true});
+
+                margin/=margRat;
+            }
+        },500);
+    };
+
+    FLEXPAPER.initLoginForm = function initLoginForm(IMGFiles,animate){
+        jQuery(document.body).css('background-color','#dedede');
+
+        var img = new Image();
+        jQuery(img).bind('load',function(){
+            jQuery(document.body).append(
+                "<div id='loginForm'>"+
+                    "<form class='flexpaper_htmldialog' method='POST' style='display:none;top:100px;margin:"+((jQuery(window).height()>500)?"50px auto":"0px auto")+"'>"+
+                    "<div class='flexpaper_publications flexpaper_publication_csstransforms3d' style='overflow-y:hidden;overflow-x:hidden;text-align:center;background: #f7f7f7;margin: -25px -25px 0px;padding: 15px 25px 0px 25px;'>"+
+                    "<div class='flexpaper_publication flexpaper_publication_csstransforms3d' id='flexpaper_publication1'>"+
+                    "<img src='"+(IMGFiles.replace("{page}",1))+"' />"+
+                    "</div>"+
+
+                    "<h1 class='flexpaper_htmldialog-title'>password protected publication</h1>"+
+                    "<input type='password' id='txt_flexpaper_password' name='txt_flexpaper_password' class='flexpaper_htmldialog-input' placeholder='Enter password'>"+
+                    "<input type='submit' value='Submit' class='flexpaper_htmldialog-button'>"+
+                    "</div>"+
+                    "</form>"+
+                    "</div>"
+            );
+
+            var anim_duration = animate?1000:0;
+            var anim_height_dur = animate?anim_duration/3:0;
+            var theight = 400;
+
+            jQuery('.flexpaper_htmldialog').css({height : '0px', display : 'block'});
+            jQuery('.flexpaper_htmldialog').animate({'height': theight+'px','top':'0px'},{duration: anim_height_dur, complete: function(){
+                jQuery('.flexpaper_htmldialog').css({'height' : ''}); // remove height attribute to fit publication
+
+                jQuery('.flexpaper_publication').animate({opacity:1},{
+                    step : function(now,fx){
+                        var target = -7;var opacityfrom = -40;var diff = opacityfrom - target;var rotate = (diff * now);
+
+                        jQuery('.flexpaper_publication').css({
+                            '-webkit-transform' : 'perspective(300) rotateY('+(opacityfrom - rotate)+'deg)',
+                            '-moz-transform' : 'rotateY('+(opacityfrom - rotate)+'deg)',
+                            'box-shadow' : '5px 5px 20px rgba(51, 51, 51, '+now+')'
+                        });
+                    },
+                    duration:anim_duration
+                });
+
+            }});
+
+        });
+        img.src = (IMGFiles.replace("{page}",1));
+    };
 })();
 
 

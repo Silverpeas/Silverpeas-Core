@@ -24,16 +24,20 @@
 
 package com.silverpeas.accesscontrol;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be
@@ -42,7 +46,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  * @author ehugonnet
  */
 @Named
-public class ComponentAccessController implements AccessController<String> {
+public class ComponentAccessController extends AbstractAccessController<String> {
 
   @Inject
   private OrganisationController controller;
@@ -60,13 +64,22 @@ public class ComponentAccessController implements AccessController<String> {
 
   /**
    * Indicates that the rights are set on node as well as the component.
-   * @param userId
    * @param componentId
    * @return
    */
-  public boolean isRightOnTopicsEnabled(String userId, String componentId) {
+  public boolean isRightOnTopicsEnabled(String componentId) {
     return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
         getComponentParameterValue(componentId, "rightsOnTopics"));
+  }
+
+  /**
+   * Indicates that the rights are set on node as well as the component.
+   * @param componentId
+   * @return
+   */
+  public boolean isCoWritingEnabled(String componentId) {
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
+        getComponentParameterValue(componentId, "coWriting"));
   }
 
   private boolean isThemeTracker(String componentId) {
@@ -74,19 +87,65 @@ public class ComponentAccessController implements AccessController<String> {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, String componentId) {
+  public boolean isUserAuthorized(String userId, String componentId,
+      final AccessControlContext context) {
+    return isUserAuthorized(getUserRoles(context, userId, componentId));
+  }
+
+  public boolean isUserAuthorized(Set<SilverpeasRole> componentUserRoles) {
+    return CollectionUtil.isNotEmpty(componentUserRoles);
+  }
+
+
+  /**
+   * Computes a set of user roles according to the given user and component identifiers.
+   * @param context
+   * @param userId
+   * @param componentId
+   * @return
+   */
+  public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId,
+      String componentId) {
+    EnumSet<SilverpeasRole> userRoles = EnumSet.noneOf(SilverpeasRole.class);
     // Personal space or user tool
     if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
-      return true;
+      userRoles.add(SilverpeasRole.admin);
+      return userRoles;
     }
     if (Admin.ADMIN_COMPONENT_ID.equals(componentId)) {
-      return UserDetail.getById(userId).isAccessAdmin();
+      if (getOrganisationController().getUserDetail(userId).isAccessAdmin()) {
+        userRoles.add(SilverpeasRole.admin);
+      }
+      return userRoles;
     }
-    if (StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
-        componentId, "publicFiles"))) {
-      return true;
+
+    ComponentInst componentInst = getOrganisationController().getComponentInst(componentId);
+    if (componentInst == null) {
+      return EnumSet.noneOf(SilverpeasRole.class);
     }
-    return getOrganisationController().isComponentAvailable(componentId, userId);
+
+    if (componentInst.isPublic() || StringUtil.getBooleanValue(
+        getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
+      userRoles.add(SilverpeasRole.user);
+      if (CollectionUtils
+          .intersection(AccessControlOperation.PERSIST_ACTIONS, context.getOperations())
+          .isEmpty() && !context.getOperations().contains(AccessControlOperation.download)) {
+        // In that case, it is not necessary to check deeper the user rights
+        return userRoles;
+      }
+    }
+
+    if (getOrganisationController().isComponentAvailable(componentId, userId)) {
+      Set<SilverpeasRole> roles =
+          SilverpeasRole.from(getOrganisationController().getUserProfiles(userId, componentId));
+      // If component is available, but user has no rights -> public component
+      if (roles.isEmpty()) {
+        userRoles.add(SilverpeasRole.user);
+      } else {
+        userRoles.addAll(roles);
+      }
+    }
+    return userRoles;
   }
 
   /**

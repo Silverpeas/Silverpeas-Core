@@ -38,4 +38,13 @@ public interface AccessController<T> {
    * @return true if access is granted - false otherwise.
    */
   public boolean isUserAuthorized(String userId, T object);
+
+  /**
+   * Checks if the specified user may access the specified object.
+   * @param userId the unique identifier of the user.
+   * @param object the object to be accessed.
+   * @param context the context in which the object is accessed.
+   * @return true if access is granted - false otherwise.
+   */
+  public boolean isUserAuthorized(String userId, T object, AccessControlContext context);
 }

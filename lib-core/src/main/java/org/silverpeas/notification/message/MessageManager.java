@@ -67,7 +67,7 @@ public class MessageManager {
   public static String initialize() {
     String registredKey =
         CacheServiceFactory.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceFactory.getThreadCacheService().put(MessageManager.class, registredKey);
+    CacheServiceFactory.getRequestCacheService().put(MessageManager.class, registredKey);
     return registredKey;
   }
 
@@ -75,7 +75,7 @@ public class MessageManager {
    * Clear out the thread cache the registred key referenced.
    */
   public static void destroy() {
-    CacheServiceFactory.getThreadCacheService().remove(MessageManager.class);
+    CacheServiceFactory.getRequestCacheService().remove(MessageManager.class);
   }
 
   /**
@@ -147,7 +147,7 @@ public class MessageManager {
    * Get the key that permits to get the MessageContainer registred for the thread.
    */
   public static String getRegistredKey() {
-    return CacheServiceFactory.getThreadCacheService().get(MessageManager.class, String.class);
+    return CacheServiceFactory.getRequestCacheService().get(MessageManager.class, String.class);
   }
 
   /**

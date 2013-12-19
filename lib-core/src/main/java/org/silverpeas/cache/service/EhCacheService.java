@@ -62,6 +62,14 @@ public final class EhCacheService extends AbstractCacheService {
   }
 
   @Override
+  public void clear() {
+    Cache cache = getCache();
+    for (Object key : cache.getKeys()) {
+      cache.remove(key);
+    }
+  }
+
+  @Override
   public Object get(final Object key) {
     Element element = getCache().get(key);
     if (element == null) {

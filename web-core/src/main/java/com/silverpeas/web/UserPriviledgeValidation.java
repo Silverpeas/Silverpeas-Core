@@ -23,17 +23,13 @@
  */
 package com.silverpeas.web;
 
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.AuthenticationCredential;
@@ -45,6 +41,14 @@ import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.silverpeas.util.Charsets;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -153,13 +157,22 @@ public class UserPriviledgeValidation {
   /**
    * Validates the authorization of the specified user to access the specified attachment.
    *
+   * @param request the HTTP request from which the authentication of the caller can be done.
    * @param user the user for whom the authorization has to be validated.
    * @param doc the document accessed.
    * @throws WebApplicationException exception if the validation failed.
    */
-  public void validateUserAuthorizationOnAttachment(final UserDetail user, SimpleDocument doc)
-      throws WebApplicationException {
-    if (user == null || !documentAccessController.isUserAuthorized(user.getId(), doc)) {
+  public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
+      final UserDetail user, SimpleDocument doc) throws WebApplicationException {
+    AccessControlContext context = AccessControlContext.init();
+    if (HttpMethod.PUT.equals(request.getMethod())) {
+      context.onOperationsOf(AccessControlOperation.creation);
+    } else if (HttpMethod.POST.equals(request.getMethod())) {
+      context.onOperationsOf(AccessControlOperation.modification);
+    } else if (HttpMethod.DELETE.equals(request.getMethod())) {
+      context.onOperationsOf(AccessControlOperation.deletion);
+    }
+    if (!documentAccessController.isUserAuthorized(user.getId(), doc, context)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

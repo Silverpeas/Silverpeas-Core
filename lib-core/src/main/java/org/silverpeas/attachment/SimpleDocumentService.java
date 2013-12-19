@@ -35,6 +35,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.ActionType;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -1060,6 +1061,32 @@ public class SimpleDocumentService implements AttachmentService {
     } finally {
       BasicDaoFactory.logout(session);
     }
+  }
 
+  @Override
+  public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk, final boolean allowing) {
+    SimpleDocument document = searchDocumentById(pk, null);
+    final Boolean documentUpdateRequired;
+    if (allowing) {
+      documentUpdateRequired =
+          document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.READER_ROLES);
+    } else {
+      documentUpdateRequired =
+          document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER_ROLES);
+    }
+
+    // Updating JCR if required
+    if (documentUpdateRequired) {
+      Session session = null;
+      try {
+        session = BasicDaoFactory.getSystemSession();
+        repository.saveForbiddenDownloadForRoles(session, document);
+        session.save();
+      } catch (RepositoryException ex) {
+        throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      } finally {
+        BasicDaoFactory.logout(session);
+      }
+    }
   }
 }
