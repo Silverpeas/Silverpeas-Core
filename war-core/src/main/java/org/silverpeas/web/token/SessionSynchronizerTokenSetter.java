@@ -23,29 +23,57 @@
  */
 package org.silverpeas.web.token;
 
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionBindingEvent;
 
 /**
- * A setter of a session token to the new spawned user session.
- *
+ * A setter of a session token to the new spawned user session. A user session is really created in
+ * Silverpeas when a MainSessionController is instanciated and set to the current HTTP session.
+ * <p/>
  * The aim of the session token is to protect the current user session from attempt of intrusively
- * use of it by anyone other that the use himself.
+ * use of it by anyone other that the user himself.
+ * <p/>
+ * Because the web pages in Silverpeas has a deep use of HTML frames and of page relocation/reload,
+ * in order the requests sent by these elements can be correctly taken in charge in the token
+ * validation process, a cookie is created and valued with the session token.
  *
  * @author mmoquillon
  */
-public class SessionSynchronizerTokenSetter implements HttpSessionListener {
+public class SessionSynchronizerTokenSetter implements HttpSessionAttributeListener {
 
+//  @Override
+//  public void sessionCreated(HttpSessionEvent se) {
+//    HttpSession session = se.getSession();
+//    SynchronizerTokenService service =
+//        SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+//    service.setSessionTokens(session);
+//  }
+//
+//  @Override
+//  public void sessionDestroyed(HttpSessionEvent se) {
+//
+//  }
   @Override
-  public void sessionCreated(HttpSessionEvent se) {
-    HttpSession session = se.getSession();
+  public void attributeAdded(final HttpSessionBindingEvent event) {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    service.setSessionTokens(session);
+    if (service.isWebSecurityByTokensEnabled()) {
+      if (MainSessionController.MAIN_SESSION_CONTROLLER_ATT.equals(event.getName())) {
+        // in this case, th
+        HttpSession session = event.getSession();
+        service.setSessionTokens(session);
+      }
+    }
   }
 
   @Override
-  public void sessionDestroyed(HttpSessionEvent se) {
+  public void attributeRemoved(final HttpSessionBindingEvent httpSessionBindingEvent) {
+
+  }
+
+  @Override
+  public void attributeReplaced(final HttpSessionBindingEvent httpSessionBindingEvent) {
 
   }
 }

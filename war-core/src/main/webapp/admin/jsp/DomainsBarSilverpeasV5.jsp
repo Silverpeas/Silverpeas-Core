@@ -222,7 +222,7 @@ out.println(gef.getLookStyleSheet());
 
     function getFooterPage()
     {
-	return "<view:url value='/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp' protected='true'/>&";
+	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     }
 
     /**
@@ -417,7 +417,7 @@ out.println(gef.getLookStyleSheet());
 <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
 </form>
 <!-- Form below is used only to refresh this page according to external link (ie search engine, homepage,...) -->
-<form name="privateDomainsForm" action="DomainsBarSilverpeasV5.jsp" method="post">
+<form name="privateDomainsForm" action="DomainsBarSilverpeasV5.jsp" method="get">
 <input type="hidden" name ="component_id"/>
 <input type="hidden" name ="privateDomain"/>
 <input type="hidden" name ="privateSubDomain"/>

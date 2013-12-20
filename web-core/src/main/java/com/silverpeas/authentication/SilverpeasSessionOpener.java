@@ -35,12 +35,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
@@ -55,22 +54,6 @@ public class SilverpeasSessionOpener {
   private static final int HTTP_DEFAULT_PORT = 80;
 
   public SilverpeasSessionOpener() {
-  }
-
-  /**
-   * Is the user behind the specified incoming request an anonymous one?
-   *
-   * @param request the incoming HTTP request.
-   * @return true if the user sending the request is an anonymous one, false otherwise.
-   */
-  public boolean isAnonymousUser(HttpServletRequest request) {
-    HttpSession session = request.getSession(false);
-    MainSessionController controller = (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if (controller != null) {
-      return controller.getCurrentUserDetail().isAnonymous();
-    }
-    return false;
   }
 
   /**
@@ -96,7 +79,7 @@ public class SilverpeasSessionOpener {
    * @return the URL of the user home page in Silverpeas or the URL of an error page if a problem
    * occurred during the session opening (for example, the user wasn't authenticated).
    */
-  public String openSession(HttpServletRequest request, String authKey) {
+  public String openSession(HttpRequest request, String authKey) {
     HttpSession session = request.getSession(false);
     // a session should exists: it could be either an authentication session opened for the
     // authentication process or an already opened user specific session.
@@ -188,7 +171,7 @@ public class SilverpeasSessionOpener {
    * unique to the user.
    * @return the URL of an error page.
    */
-  protected String getErrorPageUrl(HttpServletRequest request, String authKey) {
+  protected String getErrorPageUrl(HttpRequest request, String authKey) {
     SilverTrace.error("peasCore", "SilverpeasSessionOpenener.openSession()",
         "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + authKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
@@ -207,14 +190,14 @@ public class SilverpeasSessionOpener {
    * @param redirectURL a redirection URL.
    * @return the URL of the user home page in Silverpeas.
    */
-  protected String getHomePageUrl(HttpServletRequest request, String redirectURL) {
+  protected String getHomePageUrl(HttpRequest request, String redirectURL) {
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
     HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     // Init server name and server port
     String serverName = request.getServerName();
-    int serverPort = getServerPort(request);
+    int serverPort = request.getServerPort();
     String port = "";
     if (serverPort != HTTP_DEFAULT_PORT) {
       port = String.valueOf(serverPort);
@@ -261,39 +244,17 @@ public class SilverpeasSessionOpener {
    * @param request the HTTP request asking for a session opening.
    * @return an absolute URL from which the user home page will be computed.
    */
-  protected String getAbsoluteUrl(HttpServletRequest request) {
+  protected String getAbsoluteUrl(HttpRequest request) {
     StringBuilder absoluteUrl = new StringBuilder(256);
-    if (isNavigationSecure(request)) {
+    if (request.isSecure()) {
       absoluteUrl.append("https://");
     } else {
       absoluteUrl.append("http://");
     }
     absoluteUrl.append(request.getServerName()).append(':');
-    absoluteUrl.append(getServerPort(request));
+    absoluteUrl.append(request.getServerPort());
     absoluteUrl.append(URLManager.getApplicationURL());
     return absoluteUrl.toString();
-  }
-
-  /**
-   * The navigation is secure when silverpeas is either directly accessed through a secure chanel
-   * like HTTPS or after a reverse-proxy handling secure connections for Silverpeas.
-   *
-   * From the specified request, we can detect if Silverpeas is accessed directly through a secure
-   * channel like HTTPS, therefore the channel is then considered as secure. then if the navigation
-   * is secure. Whether Silverpeas is after a reverse-proxy that handles HTTPS connections, it is
-   * then required to inform Silverpeas about it by setting the parameter server.ssl to true in
-   * <code>org/silverpeas/general.properties</code>.
-   *
-   * @param request the HTTP/HTTPS request
-   * @return true the Web navigation with Silverpeas is secured.
-   */
-  public boolean isNavigationSecure(HttpServletRequest request) {
-    return !GeneralPropertiesManager.getBoolean("server.mixed", false) && (request.isSecure()
-        || GeneralPropertiesManager.getBoolean("server.ssl", false));
-  }
-
-  private int getServerPort(HttpServletRequest request) {
-    return GeneralPropertiesManager.getInteger("server.http.port", request.getServerPort());
   }
 
   private String alertUserAboutPwdExpiration(String userId, String fromUserId,

@@ -30,8 +30,8 @@ import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +55,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
 
   @Override
   public String getDestination(String function, ProfilSessionController profileSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "#";
     String userId = request.getParameter("userId");
     String m_context = request.getScheme() + "://" + request.getServerName() + ":" + request.

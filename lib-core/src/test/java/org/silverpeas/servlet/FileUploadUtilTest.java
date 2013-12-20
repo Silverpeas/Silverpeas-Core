@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.web.servlet;
+package org.silverpeas.servlet;
 
 import java.io.File;
 
@@ -80,14 +80,14 @@ public class FileUploadUtilTest {
     MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
     request.setMethod("POST");
     request.setContentType(FileUploadBase.MULTIPART_FORM_DATA);
-    request.addParameter("champ1", "valeur1");    
+    request.addParameter("champ1", "valeur1");
     byte[] content = IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream("FrenchScrum.odp"));
     assertNotNull(content);
     request.addFile(new MockMultipartFile("FrenchScrum.odp", content));
     assertNotNull(content);
   }
-  
-  
+
+
   @Test
   public void testGetFileName() throws Exception {
     FileItem item = mock(FileItem.class);
@@ -99,8 +99,8 @@ public class FileUploadUtilTest {
     fileName = FileUploadUtil.getFileName(item);
     assertThat(fileName, is("test_partiel.xml"));
   }
-  
-  
+
+
    @Test
   public void testConvertPathToServerOS() throws Exception {
     String fileName = FileUtil.convertPathToServerOS(
@@ -110,8 +110,8 @@ public class FileUploadUtilTest {
     } else {
       assertThat(fileName, is("C:\\Documents and Settings\\rivoirede\\Bureau\\GED KHOLER\\import_kohler_partiel.xml"));
     }
-    
-    
+
+
     fileName = FileUtil.convertPathToServerOS("/home/silverpeas/test/result.txt");
     if(File.separatorChar == '/') {
       assertThat(fileName, is("/home/silverpeas/test/result.txt"));

@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.HistoryDocumentSorter;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
@@ -50,7 +51,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
 
   @Override
   public String getDestination(String function, VersioningSessionController versioningSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("versioningPeas", "VersioningRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + versioningSC.getUserId() + " Function=" + function);

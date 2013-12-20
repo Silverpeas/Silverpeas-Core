@@ -38,6 +38,7 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
@@ -51,7 +52,6 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
 

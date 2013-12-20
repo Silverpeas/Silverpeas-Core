@@ -35,7 +35,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -63,6 +62,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryUnit;
 
@@ -102,7 +102,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * @throws RemoteException
    */
   public String getDestinationStartPage(String function,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) throws
+      JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) throws
       ClipboardException {
     if (!jobStartPageSC.getClipboardSelectedObjects().isEmpty()) {
       request.setAttribute("ObjectsSelectedInClipboard", "true");
@@ -181,7 +181,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * @return
    */
   public String getDestinationNavBar(String function,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) {
+      JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) {
     String destination = null;
 
     if ("Main".equals(function)) {
@@ -268,7 +268,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * @throws AdminException
    */
   public String getDestinationComponent(String function,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) throws
+      JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) throws
       AdminException {
     String destination = null;
 
@@ -510,7 +510,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
   public String getDestinationSpace(String function,
       JobStartPagePeasSessionController jobStartPageSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
     String destination = null;
 
     if (function.equals("StartPageInfo")) {
@@ -797,7 +797,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       }
       destination = "/jobStartPagePeas/jsp/spaceLook.jsp";
     } else if (function.equals("UpdateSpaceLook")) {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       jobStartPageSC.updateSpaceAppearance(items);
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if (function.equals("RemoveFileToLook")) {
@@ -836,14 +836,16 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param jobStartPageSC
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination;
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobStartPageSC.getUserId() + " Function="

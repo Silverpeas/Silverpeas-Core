@@ -18,22 +18,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.util.web.servlet;
+package org.silverpeas.servlet;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.util.List;
 
 /**
  * Utility class for file uploading.
@@ -42,17 +42,23 @@ import java.util.List;
  */
 public class FileUploadUtil {
 
-
   public static final String DEFAULT_ENCODING = CharEncoding.UTF_8;
 
-  private static ServletFileUpload upload = new ServletFileUpload(
+  private static final ServletFileUpload upload = new ServletFileUpload(
       new SilverpeasDiskFileItemFactory());
 
   public static boolean isRequestMultipart(HttpServletRequest request) {
     return ServletFileUpload.isMultipartContent(request);
   }
 
-  @SuppressWarnings("unchecked")
+  /**
+   * Parses the multipart stream in the specified request to fetch the file items. This method
+   * shouldn't be used directly; instead use the HttpRequest instance.
+   *
+   * @param request the HTTP servlet request.
+   * @return a list of file items encoded into the multipart stream of the request.
+   * @throws UtilException if an error occurs while fetching the file items.
+   */
   public static List<FileItem> parseRequest(HttpServletRequest request)
       throws UtilException {
     try {
@@ -157,7 +163,7 @@ public class FileUploadUtil {
     if (file == null || !StringUtil.isDefined(file.getName())) {
       return "";
     }
-    return  FileUtil.getFilename(file.getName());
+    return FileUtil.getFilename(file.getName());
   }
 
   public static void saveToFile(File file, FileItem item) throws IOException {

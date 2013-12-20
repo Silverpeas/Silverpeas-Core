@@ -37,13 +37,14 @@ import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
@@ -85,11 +86,12 @@ public class ImportDragAndDrop extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse res)
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+    HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding("UTF-8");
-    if (!FileUploadUtil.isRequestMultipart(request)) {
+    if (!request.isContentInMultipart()) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
@@ -122,7 +124,7 @@ public class ImportDragAndDrop extends HttpServlet {
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
           + File.separator + topicId + System.currentTimeMillis() + File.separator;
 
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);

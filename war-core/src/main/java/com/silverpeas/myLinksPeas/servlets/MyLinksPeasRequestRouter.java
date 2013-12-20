@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -65,13 +66,15 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param myLinksSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, MyLinksPeasSessionController myLinksSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("myLinksPeas", "MyLinksPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myLinksSC.getUserId() + " Function=" + function);
 

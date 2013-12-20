@@ -26,10 +26,10 @@ package org.silverpeas.web.token;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.token.exception.TokenValidationException;
@@ -38,12 +38,7 @@ import org.silverpeas.token.synchronizer.SynchronizerTokenBuilder;
 import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -65,6 +60,9 @@ public class SynchronizerTokenServiceTest {
     request = mock(HttpServletRequest.class);
     session = mock(HttpSession.class);
     when(request.getSession(false)).thenReturn(session);
+    when(request.getContextPath()).thenReturn("");
+    when(request.getRequestURI()).thenReturn("/services/bidule");
+    when(request.getMethod()).thenReturn("POST");
   }
 
   @Test
@@ -89,7 +87,7 @@ public class SynchronizerTokenServiceTest {
 
     synchronizerTokenService.setSessionTokens(session);
 
-    verify(session).setAttribute(eq(SynchronizerTokenService.SESSION_TOKEN_KEY), any(
+    verify(session).setAttribute(eq(SynchronizerTokenService.SESSION_TOKEN_KEY), Mockito.any(
         SynchronizerToken.class));
     assertThat(existingToken().getValue(), not(is(TOKEN_VALUE)));
     assertThat(existingToken().getGenerationParameters(), empty());
@@ -160,8 +158,6 @@ public class SynchronizerTokenServiceTest {
             assertThat(parameter.value(), is(SynchronizerTokenService.SESSION_TOKEN_KEY));
           } else if (parameter.name().equals(TokenSettingTemplate.TOKEN_VALUE_PARAMETER)) {
             assertThat(parameter.value(), is(existingToken().getValue()));
-          } else {
-            fail("Unexpected template parameter: " + parameter.name());
           }
         }
         return expected;

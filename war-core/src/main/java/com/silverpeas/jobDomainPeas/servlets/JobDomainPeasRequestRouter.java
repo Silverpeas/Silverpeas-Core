@@ -31,7 +31,7 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -51,6 +51,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -96,14 +97,16 @@ public class JobDomainPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param jobDomainSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, JobDomainPeasSessionController jobDomainSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobDomainSC.getUserId() + " Function=" + function);
@@ -172,7 +175,7 @@ public class JobDomainPeasRequestRouter extends
               properties, request.getParameter("GroupId"), request, sendEmail);
 
         } else if (function.startsWith("usersCsvImport")) {
-          List<FileItem> fileItems = FileUploadUtil.parseRequest(request);
+          List<FileItem> fileItems = request.getFileItems();
 
           FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
           String sendEmailParam = FileUploadUtil.getParameter(fileItems, "sendEmail");

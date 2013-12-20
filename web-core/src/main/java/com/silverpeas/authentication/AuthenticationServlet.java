@@ -49,6 +49,9 @@ import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifi
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.web.token.SynchronizerTokenService;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -71,28 +74,29 @@ public class AuthenticationServlet extends HttpServlet {
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
    *
-   * @param request the HTTP request.
-   * @param response the HTTP response.
+   * @param servletRequest the HTTP request.
+   * @param servletResponse the HTTP response.
    * @throws IOException when an error occurs while processing the request or sending the response.
    * @throws javax.servlet.ServletException
    */
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
+  public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
       throws IOException, ServletException {
+    HttpRequest request = HttpRequest.decorate(servletRequest);
     // get an existing session or creates a new one.
     HttpSession session = request.getSession();
 
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding(CharEncoding.UTF_8);
     }
-    if (silverpeasSessionOpener.isAnonymousUser(request)) {
+    if (request.isWithinAnonymousUserSession()) {
       silverpeasSessionOpener.closeSession(session);
     }
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
         "org.silverpeas.authentication.settings.authenticationSettings", "");
-    boolean securedAccess = silverpeasSessionOpener.isNavigationSecure(request);
+    boolean securedAccess = request.isSecure();
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     String domainId = getDomain(request, authenticationParameters, authenticationSettings);
@@ -115,12 +119,13 @@ public class AuthenticationServlet extends HttpServlet {
       userCanTryAgainToLoginVerifier.clearCache();
 
       if (domainId != null) {
-        storeDomain(response, domainId, securedAccess);
+        storeDomain(servletResponse, domainId, securedAccess);
       }
-      storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
+      storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
+          securedAccess);
 
       // if required by user, store password in cookie
-      storePassword(response, authenticationParameters.getStoredPassword(), isNewEncryptMode,
+      storePassword(servletResponse, authenticationParameters.getStoredPassword(), isNewEncryptMode,
           authenticationParameters.getClearPassword(), securedAccess);
 
       if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
@@ -129,14 +134,14 @@ public class AuthenticationServlet extends HttpServlet {
         try {
           verifier.verify();
         } catch (AuthenticationUserMustAcceptTermsOfService authenticationUserMustAcceptTermsOfService) {
-          forward(request, response, verifier.getDestination(request));
+          forward(request, servletResponse, verifier.getDestination(request));
           return;
         }
       }
 
       MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
       if (checker.check(request, authenticationKey)) {
-        forward(request, response, checker.getDestination());
+        forward(request, servletResponse, checker.getDestination());
         return;
       }
 
@@ -145,21 +150,22 @@ public class AuthenticationServlet extends HttpServlet {
       session = request.getSession(false);
       session.
           setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
-      writeSessionCookie(response, session, securedAccess);
-      response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
+      writeSessionCookie(servletResponse, session, securedAccess);
+      writeSynchronizerTokenCookie(servletRequest, servletResponse);
+      servletResponse.sendRedirect(servletResponse.encodeRedirectURL(absoluteUrl));
       return;
     }
     // Authentication failed : remove password from cookies to avoid infinite loop
-    removeStoredPassword(response, securedAccess);
+    removeStoredPassword(servletResponse, securedAccess);
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
       if ("Error_1".equals(authenticationKey)) {
         try {
           if (userCanTryAgainToLoginVerifier.isActivated()) {
-            storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(),
+            storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
                 securedAccess);
-            storeDomain(response, domainId, securedAccess);
+            storeDomain(servletResponse, domainId, securedAccess);
           }
           url = userCanTryAgainToLoginVerifier.verify()
               .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
@@ -192,19 +198,21 @@ public class AuthenticationServlet extends HttpServlet {
           .equals(authenticationKey)) {
         // User has been successfully authenticated, but he has to change his password on his
         // first login and login / domain id can be stored
-        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
-        storeDomain(response, domainId, securedAccess);
+        storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
+            securedAccess);
+        storeDomain(servletResponse, domainId, securedAccess);
         url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential)
             .getDestinationOnFirstLogin(request);
-        forward(request, response, url);
+        forward(request, servletResponse, url);
         return;
       } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
         if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
             userCanTryAgainToLoginVerifier.getUser().getId())) {
           // If user can try again to login verifier is activated or if the user has been found
           // from credential, the login and the domain are stored
-          storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
-          storeDomain(response, domainId, securedAccess);
+          storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
+              securedAccess);
+          storeDomain(servletResponse, domainId, securedAccess);
           url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
               .getErrorDestination();
         } else {
@@ -213,14 +221,16 @@ public class AuthenticationServlet extends HttpServlet {
       } else if (authenticationParameters.isSsoMode()) {
         // User has been successfully authenticated on AD, but he has no user account on Silverpeas
         // -> login / domain id can be stored
-        storeDomain(response, domainId, securedAccess);
-        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
+        storeDomain(servletResponse, domainId, securedAccess);
+        storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
+            securedAccess);
         url = "/Login.jsp?ErrorCode=" + SSO_UNEXISTANT_USER_ACCOUNT;
       } else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
       }
     }
-    response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request)
+    servletResponse.sendRedirect(servletResponse.encodeRedirectURL(URLManager.getFullApplicationURL(
+        request)
         + url));
   }
 
@@ -338,6 +348,25 @@ public class AuthenticationServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws
       ServletException, IOException {
     doPost(request, response);
+  }
+
+  /**
+   * Because the web pages in Silverpeas has a deep use of HTML frames and of page
+   * relocation/reload, in order the requests sent by these elements can be correctly taken in
+   * charge in the token validation process, a cookie is created and valued with the synchronizer
+   * tokens.
+   *
+   * @param request the HTTP servlet request.
+   * @param response the HTTP servlet response.
+   */
+  private void writeSynchronizerTokenCookie(HttpServletRequest request, HttpServletResponse response) {
+    SynchronizerTokenService service = SynchronizerTokenServiceFactory.
+        getSynchronizerTokenService();
+    Cookie cookie = service.createCookieWithSessionToken(request, true);
+    if (cookie != null) {
+      cookie.setPath(request.getSession(false).getServletContext().getContextPath());
+      response.addCookie(cookie);
+    }
   }
 
   /**

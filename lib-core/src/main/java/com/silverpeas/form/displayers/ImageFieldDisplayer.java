@@ -47,9 +47,9 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileServerUtils;

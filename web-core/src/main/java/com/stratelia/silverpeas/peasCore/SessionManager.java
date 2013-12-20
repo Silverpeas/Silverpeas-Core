@@ -577,4 +577,12 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     return sessionInfo.getUserDetail().getLogin() + " (" + sessionInfo.getUserDetail().getDomainId()
         + ")";
   }
+
+  @Override
+  public long getNextSessionTimeOut(String sessionKey) {
+    SessionInfo session = userDataSessions.get(sessionKey);
+    long actualUserSessionTimeout = (session.getUserDetail().isAccessAdmin()) ? adminSessionTimeout
+        : userSessionTimeout;
+    return session.getLastAccessTimestamp() + actualUserSessionTimeout;
+  }
 }

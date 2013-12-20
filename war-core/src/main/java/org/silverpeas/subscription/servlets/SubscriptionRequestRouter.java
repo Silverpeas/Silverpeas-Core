@@ -26,10 +26,9 @@ package org.silverpeas.subscription.servlets;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.subscription.constant.SubscriptionFunction;
 import org.silverpeas.subscription.control.SubscriptionSessionController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * User: Yohann Chastagnier
@@ -51,7 +50,7 @@ public class SubscriptionRequestRouter
 
   @Override
   public String getDestination(final String function,
-      final SubscriptionSessionController subscriptionSC, final HttpServletRequest request) {
+      final SubscriptionSessionController subscriptionSC, final HttpRequest request) {
 
     // Initializing destination
     String destination = "";

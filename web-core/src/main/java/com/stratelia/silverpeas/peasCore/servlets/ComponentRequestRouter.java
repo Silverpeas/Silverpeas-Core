@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -63,6 +64,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   /**
    * This method has to be implemented by the component request Router it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp", when accessing
    * "http://localhost/webactiv/Ralmanach/jsp/Main.jsp")
    * @param componentSC The component Session Controller, build and initialised.
@@ -70,7 +72,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public abstract String getDestination(String function, T componentSC, HttpServletRequest request);
+  public abstract String getDestination(String function, T componentSC, HttpRequest request);
 
   public abstract T createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext);
@@ -188,7 +190,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
-    destination = getDestination(function, component, request);
+    HttpRequest httpRequest = HttpRequest.decorate(request);
+    destination = getDestination(function, component, httpRequest);
 
     // Check existence of a transverse exception
     SilverpeasTransverseWebErrorUtil.verifyErrorFromRequest(request, component.getLanguage());

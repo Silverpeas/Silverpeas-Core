@@ -37,11 +37,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
+<%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="java.io.File"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -57,14 +58,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
-    if (FileUploadUtil.isRequestMultipart(request))
+    HttpRequest httpRequest = HttpRequest.decorate(request);
+    if (httpRequest.isContentInMultipart())
     {
-	    FileItem fileItem = FileUploadUtil.getFile(request);
+	    FileItem fileItem = httpRequest.getSingleFile();
 	    if (fileItem != null)
 	    {
-		  	String fichierName = FileUploadUtil.getFileName(fileItem);
+			String fichierName = org.silverpeas.servlet.FileUploadUtil.getFileName(fileItem);
 		  	File fichier = new File(thePath, fichierName);
-		  	FileUploadUtil.saveToFile(fichier, fileItem);
+			org.silverpeas.servlet.FileUploadUtil.saveToFile(fichier, fileItem);
 
 		  	String urlPath = thePath.substring(thePath.indexOf("/website"));
 

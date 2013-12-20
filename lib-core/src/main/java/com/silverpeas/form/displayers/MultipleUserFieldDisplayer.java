@@ -31,7 +31,6 @@ import com.silverpeas.form.fieldType.MultipleUserField;
 import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.PrintWriter;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can

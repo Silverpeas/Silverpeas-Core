@@ -48,6 +48,15 @@ public class TokenSettingTemplate {
    * The name of the parameter that set the value of the token in the HTTP requests.
    */
   public static final String TOKEN_VALUE_PARAMETER = "TOKEN_VALUE";
+  /**
+   * The name of the parameter that set the expiration timestamp of the cookies in which is stored
+   * the token.
+   */
+  public static final String EXPIRATION_TIMESTAMP_PARAMETER = "EXPIRATION_TIME";
+  /**
+   * The name of the parameter that set the cookie in which is stored the token as secured.
+   */
+  public static final String SECURED_COOKIE_PARAMETER = "SECURED";
 
   public String apply(Parameter... parameters) {
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(

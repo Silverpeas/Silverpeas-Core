@@ -35,6 +35,7 @@ else {
   if (elts)
    elts.append(\$('<input>', {name: '$TOKEN_NAME$', type: 'hidden'}).val('$TOKEN_VALUE$'));
 
+  /* Use the cookie instead
   elts = \$('a');
   if (elts)
     elts.each(function() {
@@ -42,4 +43,5 @@ else {
       if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
         \$(this).attr('href', stampURL(href));
     });
+   */
 });

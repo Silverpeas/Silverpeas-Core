@@ -24,7 +24,7 @@ import com.silverpeas.ical.ImportIcalManager;
 import com.silverpeas.ical.PasswordEncoder;
 import com.silverpeas.ical.StringUtils;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -38,7 +38,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -91,6 +91,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
    * This method has to be implemented by the component request router it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Controller, build and initialised.
    * @param request The entering request. The request router need it to get parameters
@@ -98,7 +99,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      AgendaSessionController scc, HttpServletRequest request) {
+      AgendaSessionController scc, HttpRequest request) {
     SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD");
     String destination = "";
@@ -384,7 +385,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
     long fileSize = 0;
     File fileUploaded = null;
     try {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = HttpRequest.decorate(request).getFileItems();
       FileItem fileItem = FileUploadUtil.getFile(items, "fileCalendar");
       if (fileItem != null) {
         logicalName = fileItem.getName();

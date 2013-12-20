@@ -11,29 +11,6 @@
 
   <tag>
     <description>
-      Tag to print out the URL from a path relative to the application context. If the protected
-      attribute is valued at true, then the URL is also stamped with the current security tokens.
-    </description>
-    <name>url</name>
-    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.UrlTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <description>The relative path of the web resource</description>
-      <name>value</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>A boolean to indicate if the URL requires to be stamped with security tokens</description>
-      <name>protected</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Boolean</type>
-    </attribute>
-  </tag>
-  <tag>
-    <description>
       Tag to print out the full name of the current user and to use with it the userzoom silverpeas
       plugin.
     </description>

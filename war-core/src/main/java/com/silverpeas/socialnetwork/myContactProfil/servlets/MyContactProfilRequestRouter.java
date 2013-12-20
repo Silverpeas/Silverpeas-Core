@@ -30,8 +30,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -68,6 +68,7 @@ public class MyContactProfilRequestRouter extends
 
   /**
    *get Destination
+   *
    * @param function
    * @param sc
    * @param request
@@ -75,7 +76,7 @@ public class MyContactProfilRequestRouter extends
    */
   @Override
   public String getDestination(String function, MyContactProfilSessionController sc,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "#";
     String userId = request.getParameter("userId");
     if (function.equalsIgnoreCase("Infos")) {

@@ -23,9 +23,7 @@
  */
 package org.silverpeas.web.token;
 
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.Filter;
@@ -45,16 +43,8 @@ import org.silverpeas.token.exception.TokenValidationException;
  */
 public class SessionSynchronizerTokenValidator implements Filter {
 
-  // The filter configuration object we are associated with.  If
-  // this value is null, this filter instance is not currently
-  // configured.
-  private FilterConfig config = null;
   private static final Logger logger = Logger.getLogger(SessionSynchronizerTokenValidator.class.
       getSimpleName());
-  private static final String DEFAULT_RULE
-      = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard)|(clipboard)|(admin/))\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css))$";
-  private static final String RULE_PREFIX = "security.web.protected.rule";
-  private final ResourceLocator settings = new ResourceLocator("org.silverpeas.util.security", "");
 
   public SessionSynchronizerTokenValidator() {
   }
@@ -73,16 +63,13 @@ public class SessionSynchronizerTokenValidator implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
-    String requestPath = getRequestPath(request);
-    if (isProtected(requestPath)) {
-      logger.log(Level.INFO, "Validate the request for path {0}", requestPath);
-      SynchronizerTokenService service = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
+    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+    if (service.isWebSecurityByTokensEnabled()) {
       try {
         service.validate((HttpServletRequest) request);
       } catch (TokenValidationException ex) {
         logger.log(Level.SEVERE, "The request for path {0} isn''t valid: {1}",
-            new String[]{requestPath, ex.getMessage()});
+            new String[]{pathOf(request), ex.getMessage()});
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
       }
     }
@@ -103,33 +90,10 @@ public class SessionSynchronizerTokenValidator implements Filter {
    */
   @Override
   public void init(FilterConfig filterConfig) {
-    this.config = filterConfig;
+
   }
 
-  protected String getRequestPath(ServletRequest request) {
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-    String path = httpRequest.getRequestURI();
-    if (path.startsWith(httpRequest.getContextPath())) {
-      path = path.substring(httpRequest.getContextPath().length());
-    }
-    return path;
+  protected String pathOf(ServletRequest request) {
+    return ((HttpServletRequest) request).getRequestURI();
   }
-
-  protected boolean isProtected(String path) {
-    boolean isProtected = true;
-    String regexp = null;
-    Enumeration<String> properties = settings.getKeys();
-    for (; properties.hasMoreElements() && isProtected;) {
-      String property = properties.nextElement();
-      if (property.startsWith(RULE_PREFIX)) {
-        regexp = settings.getString(property);
-        isProtected &= path.matches(regexp);
-      }
-    }
-    if (regexp == null) {
-      isProtected = path.matches(DEFAULT_RULE);
-    }
-    return isProtected;
-  }
-
 }

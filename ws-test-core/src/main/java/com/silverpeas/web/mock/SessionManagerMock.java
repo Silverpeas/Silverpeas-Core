@@ -41,7 +41,7 @@ public class SessionManagerMock implements SessionManagement {
 
   private boolean noSession = false;
 
-  private Map<String, HttpSessionInfo> sessions = new HashMap<String, HttpSessionInfo>();
+  private final Map<String, HttpSessionInfo> sessions = new HashMap<String, HttpSessionInfo>();
 
   @Override
   public Collection<SessionInfo> getConnectedUsersList() {
@@ -147,5 +147,10 @@ public class SessionManagerMock implements SessionManagement {
       sessionInfo.updateLastAccess();
     }
     return sessionInfo;
+  }
+
+  @Override
+  public long getNextSessionTimeOut(String sessionKey) {
+    return System.currentTimeMillis();
   }
 }

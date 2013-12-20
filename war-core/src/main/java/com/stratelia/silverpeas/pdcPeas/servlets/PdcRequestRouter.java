@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -79,15 +80,16 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, PdcSessionController pdcSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     try {
       // récupération de la langue et passage en paramètre à la jsp

@@ -54,8 +54,6 @@ String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= false;
 
-SynchronizerTokenService securityService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-
 if (m_MainSessionCtrl == null) {
 %>
 	<script type="text/javascript">
@@ -113,7 +111,7 @@ if (m_MainSessionCtrl == null) {
       topLocation = "/admin/jsp/" + topLocation;
     }
 		%>
-    <c:set var="topLocation"><%=securityService.stampsResourceURL(topLocation, request)%></c:set>
+			<c:set var="topLocation"><%=topLocation%></c:set>
 			<script type="text/javascript">
 				top.location="<c:url value="${topLocation}" />";
 			</script>
@@ -134,7 +132,6 @@ if (m_MainSessionCtrl == null) {
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
-<view:includePlugin name="tkn"/>
 <script type="text/javascript">
 <!--
 var columntype=""
@@ -208,7 +205,7 @@ border: none;
 	<% } %>
 	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-  <frame src="<view:url value='/Ragenda/jsp/importCalendar' protected='true'/>" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+	<frame src="<%=m_sContext%>/Ragenda/jsp/importCalendar" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<noframes>
 		<body>Votre navigateur ne prend pas en charge les frames</body>
 	</noframes>
