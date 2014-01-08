@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@ import java.util.List;
 
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 
 /**
@@ -242,6 +243,9 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
    * I18N
    */
   public String getLabel(String language) {
+    if (!I18NHelper.isI18N) {
+      return getLabel();
+    }
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
     if (s != null) {
       return s.getName();
@@ -250,6 +254,9 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   }
 
   public String getDescription(String language) {
+    if (!I18NHelper.isI18N) {
+      return getDescription();
+    }
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
     if (s != null) {
       return s.getDescription();

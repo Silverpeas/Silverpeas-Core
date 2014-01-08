@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,14 +24,15 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.UnitUtil"%>
-<%@page import="org.silverpeas.quota.contant.QuotaLoad"%>
 <%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
+<%@page import="org.silverpeas.quota.constant.QuotaLoad" %>
+<%@page import="org.silverpeas.util.UnitUtil" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="space" value="${requestScope.Space}" />
 
@@ -45,11 +46,12 @@
 	String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 	boolean			objectsSelectedInClipboard = new Boolean((String) request.getAttribute("ObjectsSelectedInClipboard")).booleanValue();
 	DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
-  boolean 		isUserAdmin 		= ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
-  boolean 		isBackupEnable 		= ((Boolean)request.getAttribute("IsBackupEnable")).booleanValue();
-  boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+  boolean 		isUserAdmin 		= (Boolean)request.getAttribute("isUserAdmin");
+  boolean 		isBackupEnable 		= (Boolean)request.getAttribute("IsBackupEnable");
+  boolean 		isInHeritanceEnable = (Boolean)request.getAttribute("IsInheritanceEnable");
 
   SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
+  Set<String>	copiedComponentNames	= (Set<String>) request.getAttribute("CopiedComponents");
 
   // Component space quota
   boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
@@ -151,6 +153,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<view:includePlugin name="popup"/>
 <style type="text/css">
 .txtlibform {
 	white-space: nowrap;
@@ -199,8 +202,7 @@ function openPopup(action, larg, haut) {
 <% } %>
 
 function clipboardPaste() {
-	$.progressMessage();
-	location.href="paste";
+	showPasteOptions();
 }
 
 function clipboardCopy() {
@@ -214,6 +216,35 @@ function clipboardCut() {
 function recoverRights() {
 	$.progressMessage();
 	location.href = "RecoverSpaceRights?Id=<%=space.getId()%>";
+}
+
+function showPasteOptions() {
+	// Display copy options only if there is at least one copied compliant app (ignore cut/paste)
+	<% for (String componentName : copiedComponentNames) { %>
+	$.ajax({
+		url: webContext+'/<%=componentName%>/jsp/copyApplicationDialog.jsp',
+		async: false,
+		type: "GET",
+		dataType: "html",
+		success: function(data) {
+			  $('#pasteOptions').html(data);
+			}
+		});
+	<% } %>
+	
+	if ($('#pasteOptions').is(':empty')) {
+		$.progressMessage();
+		location.href="Paste";
+	} else {
+		$('#pasteOptionsDialog').popup('validation', {
+			title : "<%=resource.getString("JSPP.copyoptions.dialog.title")%>",
+		    callback : function() {
+		      $.progressMessage();
+		      document.pasteForm.submit();
+		      return true;
+		    }
+		});
+	}
 }
 //-->
 </script>
@@ -239,86 +270,90 @@ out.println(tabbedPane.print());
   <br clear="all"/>
 <% } %>
 <view:areaOfOperationOfCreation/>
-<view:board>
-<table cellpadding="5" cellspacing="0" border="0" width="100%">
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.name") %> :</td>
-		<td valign="baseline" width="100%" id="spaceName"><%=EncodeHelper.javaStringToHtmlString(m_SpaceName)%></td>
-	</tr>
-	<tr>
-		<td class="txtlibform" valign="top"><%=resource.getString("GML.description") %> :</td>
-		<td valign="top" width="100%" id="spaceDescription"><%=EncodeHelper.javaStringToHtmlParagraphe(m_Description)%></td>
-	</tr>
-  <% if (isComponentSpaceQuotaActivated) { %>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
-      <td valign="top" width="100%" id="componentSpaceQuota"><%=space.getComponentSpaceQuota().getMaxCount()%></td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaUsed")%> :</td>
-      <td valign="top" width="100%" id="componentSpaceQuotaLoad">
-        <fmt:message key="JSPP.componentSpaceQuotaCurrentCount"><fmt:param value="${space.componentSpaceQuota.count}"/></fmt:message>
-      </td>
-    </tr>
-  <% } %>
-  <% if (isDataStorageQuotaActivated) { %>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("JSPP.dataStorageUsed")%> :</td>
-      <td valign="top" width="100%" id="spaceDataStorageQuotaLoad"><%=dataStorageQuotaCount + " / " + dataStorageQuotaMaxCount%> (<%=space.getDataStorageQuota().getLoadPercentage().longValue()%> %)</td>
-    </tr>
-  <% } %>
-	<% if (space.getCreateDate() != null) { %>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.creationDate") %> :</td>
-		<td valign="baseline" width="100%">
-			<%=resource.getOutputDateAndHour(space.getCreateDate())%>
-			<% if (space.getCreator() != null) { %>
-				<%=resource.getString("GML.by") %> <view:username userId="<%=space.getCreator().getId()%>" />
-			<% } %>
-		</td>
-	</tr>
-	<% } %>
-	<% if (space.getUpdateDate() != null) { %>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.updateDate") %> :</td>
-		<td valign="baseline" width="100%">
-			<%=resource.getOutputDateAndHour(space.getUpdateDate())%>
-			<% if (space.getUpdater() != null) { %>
-				<%=resource.getString("GML.by") %> <view:username userId="<%=space.getUpdater().getId()%>" />
-			<% } %>
-		</td>
-	</tr>
-	<% } %>
-	<% if (!space.isRoot() && isInHeritanceEnable) { %>
-	<tr>
-		<td class="txtlibform" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
-		<td align="left" valign="baseline" width="100%">
-		<% if (space.isInheritanceBlocked()) { %>
-			<input type="radio" disabled="disabled" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
-			<input type="radio" disabled="disabled" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
-		<% } else { %>
-			<input type="radio" disabled="disabled"/> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
-			<input type="radio" disabled="disabled" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
-		<% } %>
-		</td>
-	</tr>
-	<% } %>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("JSPP.homepageType") %> :</td>
-		<td valign="baseline" width="100%"><%=pageType[m_firstPageType.intValue()] %></td>
-	</tr>
-	<% if (availableLooks.size() >= 2) { %>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
-		<td><%=spaceLook%></td>
-	</tr>
-	<% } %>
-</table>
-</view:board>
+  <div class="rightContent" id="right-content-adminSpace">
+    <viewTags:displayLastUserCRUD
+        displayHour="true"
+        createDate="${space.createDate}" createdBy="${space.creator}"
+        updateDate="${space.updateDate}" updatedBy="${space.updater}"/>
+  </div>
+
+  <div class="principalContent">
+    <div id="principal-content-adminSpace">
+      <div id="gauges-content-adminSpace">
+        <% if (isComponentSpaceQuotaActivated) { %>
+        <fmt:message key="JSPP.componentSpaceQuotaUsed" var="tmpText"/>
+        <viewTags:displayGauge title="${tmpText}"
+                               quotaBean="<%=space.getComponentSpaceQuota()%>"/>
+        <% } %>
+        <% if (isDataStorageQuotaActivated) { %>
+        <fmt:message key="JSPP.dataStorageUsed" var="tmpText"/>
+        <viewTags:displayGauge title="${tmpText}"
+                               quotaBean="<%=space.getDataStorageQuota()%>"/>
+        <% } %>
+      </div>
+      <h2 class="principal-content-title"><%=EncodeHelper.javaStringToHtmlString(m_SpaceName)%>
+      </h2>
+
+      <%if (StringUtil.isDefined(m_Description)) {%>
+      <p class="descriptionType" id="description-adminSpace"><%=EncodeHelper
+          .javaStringToHtmlParagraphe(m_Description)%>
+      </p>
+      <%}%>
+      <table width="98%" cellspacing="0" cellpadding="5" border="0" class="tableBoard">
+        <tbody>
+        <tr>
+          <td>
+            <table width="100%" cellspacing="0" cellpadding="5" border="0">
+              <tbody>
+              <% if (!space.isRoot() && isInHeritanceEnable) { %>
+              <tr>
+                <td class="txtlibform" valign="top"><%=resource
+                    .getString("JSPP.inheritanceBlockedComponent") %> :
+                </td>
+                <td align="left" valign="baseline" width="100%">
+                  <% if (space.isInheritanceBlocked()) { %>
+                  <input type="radio" disabled="disabled" checked="checked"/> <%=resource
+                    .getString("JSPP.inheritanceSpaceNotUsed")%><br/>
+                  <input type="radio" disabled="disabled"/> <%=resource
+                    .getString("JSPP.inheritanceSpaceUsed")%>
+                  <% } else { %>
+                  <input type="radio" disabled="disabled"/> <%=resource
+                    .getString("JSPP.inheritanceSpaceNotUsed")%><br/>
+                  <input type="radio" disabled="disabled" checked="checked"/> <%=resource
+                    .getString("JSPP.inheritanceSpaceUsed")%>
+                  <% } %>
+                </td>
+              </tr>
+              <% } %>
+              <tr>
+                <td class="txtlibform"><%=resource.getString("JSPP.homepageType") %> :</td>
+                <td valign="baseline" width="100%"><%=pageType[m_firstPageType.intValue()] %>
+                </td>
+              </tr>
+              <% if (availableLooks.size() >= 2) { %>
+              <tr>
+                <td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
+                <td><%=spaceLook%>
+                </td>
+              </tr>
+              <% } %>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </view:frame>
 <%
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
+<div id="pasteOptionsDialog" style="display:none">
+<form name="pasteForm" action="Paste" method="post">
+<div id="pasteOptions"></div>
+</form>
+</div>
 </body>
 </html>

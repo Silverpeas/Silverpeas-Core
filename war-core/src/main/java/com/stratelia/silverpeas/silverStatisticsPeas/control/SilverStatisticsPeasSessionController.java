@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -127,8 +127,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public SilverStatisticsPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.silverStatisticsPeas.multilang.silverStatisticsBundle",
-        "com.stratelia.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
+        "org.silverpeas.silverStatisticsPeas.multilang.silverStatisticsBundle",
+        "org.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
     setComponentRootName(URLManager.CMP_SILVERSTATISTICSPEAS);
     initYears();
   }

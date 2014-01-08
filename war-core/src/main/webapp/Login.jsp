@@ -33,19 +33,26 @@
 %>
 
 <%
-  String errorCode = request.getParameter("ErrorCode");
-  String domainId = null;
-  if (StringUtil.isInteger(request.getParameter("DomainId"))) {
-    domainId = request.getParameter("DomainId");
-  }
 
   ResourceLocator general =
       new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-  String loginPage = general.getString("loginPage");
-  if (!StringUtil.isDefined(loginPage)) {
-    loginPage = request.getContextPath() + "/defaultLogin.jsp";
+
+  String loginPage;
+  String errorCode = request.getParameter("ErrorCode");
+  if (general.getBoolean("login.sso.enabled", false) && StringUtil.isNotDefined(errorCode)) {
+    loginPage = request.getContextPath() + "/sso";
+  } else {
+    loginPage = general.getString("loginPage");
+
+    String domainId = null;
+    if (StringUtil.isInteger(request.getParameter("DomainId"))) {
+      domainId = request.getParameter("DomainId");
+    }
+    if (!StringUtil.isDefined(loginPage)) {
+      loginPage = request.getContextPath() + "/defaultLogin.jsp";
+    }
+    loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
+        request.getParameter("logout");
   }
-  loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
-      request.getParameter("logout");
   response.sendRedirect(response.encodeRedirectURL(loginPage));
 %>

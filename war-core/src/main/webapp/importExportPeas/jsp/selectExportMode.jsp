@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -41,8 +41,14 @@
 
 <html>
 <head>
-  <title>ZIP export</title>
-  <view:looknfeel/>
+<title>ZIP export</title>
+<view:looknfeel/>
+<script type="text/javascript">
+function exportData() {
+	$.progressMessage();
+	document.exportForm.submit();
+}
+</script>
 </head>
 <body>
 <view:browseBar>
@@ -51,6 +57,9 @@
 <view:window>
   <view:frame>
     <view:board>
+    <div class="inlineMessage">
+    	<fmt:message key="importExportPeas.export.warning"/>
+    </div>
     <form name="exportForm" action="/silverpeas/RimportExportPeas/jsp/ExportSavedItems" method="post">
       <fieldset>
       	<legend><fmt:message key="importExportPeas.export.what"/></legend>
@@ -63,11 +72,12 @@
     <br/>
     <center>
       <view:buttonPane>
-      	<view:button label="${exportButton}" action="javascript:document.exportForm.submit();"/>
-      	<view:button label="${closeButton}" action="javaScript:window.close();"/>
+      	<view:button label="${exportButton}" action="javascript:exportData();"/>
+      	<view:button label="${closeButton}" action="javascript:window.close();"/>
       </view:buttonPane>
     </center>
   </view:frame>
 </view:window>
+<view:progressMessage/>
 </body>
 </html>

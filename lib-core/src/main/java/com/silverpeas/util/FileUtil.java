@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,6 +20,7 @@
  */
 package com.silverpeas.util;
 
+import com.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -47,6 +48,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.tika.Tika;
 import org.silverpeas.util.mail.Mail;
 
 public class FileUtil implements MimeTypes {
@@ -58,11 +60,11 @@ public class FileUtil implements MimeTypes {
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
       new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-    @Override
-    public ConfigurationClassLoader run() {
-      return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-    }
-  });
+        @Override
+        public ConfigurationClassLoader run() {
+          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+        }
+      });
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -74,7 +76,7 @@ public class FileUtil implements MimeTypes {
   public static String convertBundleName(final String bundle) {
     return bundle.replace("com.silverpeas", "org.silverpeas").replace(
         "com.stratelia.silverpeas", "org.silverpeas").replace("com.stratelia.webactiv",
-        "org.silverpeas");
+            "org.silverpeas");
   }
 
   /**
@@ -85,33 +87,57 @@ public class FileUtil implements MimeTypes {
    * @return the name of the migrated resource.
    */
   public static String convertResourceName(final String resource) {
-    return resource.replace("com/silverpeas", "org/silverpeas").replace(
-        "com/stratelia/silverpeas", "org/silverpeas").replace("com/stratelia/webactiv",
-        "org/silverpeas");
+    return resource.replace("com/silverpeas", "org/silverpeas")
+        .replace("com/stratelia/silverpeas", "org/silverpeas")
+        .replace("com/stratelia/webactiv", "org/silverpeas");
   }
 
   /**
-   * Extract the mime-type from the file name.
+   * Detects the mime-type of the specified file.
    *
-   * @param fileName the name of the file.
-   * @return the mime-type as a String.
+   * The mime-type is first extracted from its content. If the detection fails or if the file cannot
+   * be located by its specified name, then the mime-type is detected from the file extension.
+   *
+   * @param fileName the name of the file with its path.
+   * @return the mime-type of the specified file.
    */
   public static String getMimeType(final String fileName) {
     String mimeType = null;
     final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
-    try {
-      if (MIME_TYPES_EXTENSIONS != null) {
-        mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
+    File file = new File(fileName);
+    if (file.exists()) {
+      try {
+        Tika tika = new Tika();
+        mimeType = tika.detect(file);
+      } catch (Exception ex) {
+        SilverTrace.warn("attachment", "FileUtil",
+            "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", ex.getMessage(), ex);
       }
-    } catch (final MissingResourceException e) {
-      SilverTrace.warn("attachment", "FileUtil",
-          "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
     }
-    if (mimeType == null) {
+    if (!StringUtil.isDefined(mimeType)) {
+      try {
+        if (MIME_TYPES_EXTENSIONS != null) {
+          mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
+        }
+      } catch (final MissingResourceException e) {
+        SilverTrace.warn("attachment", "FileUtil",
+            "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
+      }
+    }
+    if (!StringUtil.isDefined(mimeType)) {
       mimeType = MIME_TYPES.getContentType(fileName);
     }
-    if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
-        mimeType)) {
+    // if the mime type is application/xhml+xml or text/html whereas the file is a JSP or PHP script
+    if (XHTML_MIME_TYPE.equalsIgnoreCase(mimeType) || HTML_MIME_TYPE.equalsIgnoreCase(mimeType)) {
+      if (fileExtension.contains(JSP_EXTENSION)) {
+        mimeType = JSP_MIME_TYPE;
+      } else if (fileExtension.contains(PHP_EXTENSION)) {
+        mimeType = PHP_MIME_TYPE;
+      }
+      // if the mime type refers a ZIP archive, checks if it is an archive of the java platform
+    } else if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.
+        equalsIgnoreCase(
+            mimeType)) {
       if (JAR_EXTENSION.equalsIgnoreCase(fileExtension) || WAR_EXTENSION.equalsIgnoreCase(
           fileExtension) || EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
         mimeType = JAVA_ARCHIVE_MIME_TYPE;
@@ -321,6 +347,19 @@ public class FileUtil implements MimeTypes {
   static boolean isMsOfficeExtension(final String mimeType) {
     return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
         || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
+  }
+
+  /**
+   * Checking that the path doesn't contain relative navigation between pathes.
+   *
+   * @param path
+   * @throws RelativeFileAccessException
+   */
+  public static void checkPathNotRelative(String path) throws RelativeFileAccessException {
+    String unixPath = FilenameUtils.separatorsToUnix(path);
+    if (unixPath != null && (unixPath.contains("../") || unixPath.contains("/.."))) {
+      throw new RelativeFileAccessException();
+    }
   }
 
   public static Collection<File> listFiles(File directory, String[] extensions, boolean recursive) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,11 +49,10 @@ public class ThumbnailDAO {
       "SELECT instanceid, objectid, objecttype, "
           + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, "
           + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
+  private static final String MOVE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail "
+    + " SET instanceId = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
 
-  public ThumbnailDAO() {
-  }
-
-  public ThumbnailDetail insertThumbnail(Connection con, ThumbnailDetail thumbnailDetail) throws
+  public static ThumbnailDetail insertThumbnail(Connection con, ThumbnailDetail thumbnailDetail) throws
       SQLException {
     PreparedStatement prepStmt = null;
     try {
@@ -99,7 +98,7 @@ public class ThumbnailDAO {
     return thumbnailDetail;
   }
 
-  public void updateThumbnail(Connection con, ThumbnailDetail thumbToUpdate) throws SQLException {
+  public static void updateThumbnail(Connection con, ThumbnailDetail thumbToUpdate) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(UPDATE_THUMBNAIL);
@@ -118,7 +117,7 @@ public class ThumbnailDAO {
     }
   }
 
-  public void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
+  public static void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
@@ -132,8 +131,23 @@ public class ThumbnailDAO {
       DBUtil.close(prepStmt);
     }
   }
+  
+  public static void moveThumbnail(Connection con, ThumbnailDetail thumbToUpdate, String toInstanceId) throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(MOVE_THUMBNAIL);
+      prepStmt.setString(1, toInstanceId);
+      prepStmt.setInt(2, thumbToUpdate.getObjectId());
+      prepStmt.setInt(3, thumbToUpdate.getObjectType());
+      prepStmt.setString(4, thumbToUpdate.getInstanceId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
-  public void deleteAllThumbnails(Connection con, String instanceId) throws SQLException {
+
+  public static void deleteAllThumbnails(Connection con, String instanceId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(DELETE_COMPONENT_THUMBNAILS);
@@ -144,7 +158,7 @@ public class ThumbnailDAO {
     }
   }
 
-  public ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId, int objectType)
+  public static ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId, int objectType)
       throws SQLException {
     SilverTrace.info("publication", "ThumbnailDAO.selectByPubId()", "root.MSG_GEN_ENTER_METHOD",
         "objectId = " + objectId + "objectType" + objectType + "instanceId" + instanceId);
@@ -167,7 +181,7 @@ public class ThumbnailDAO {
     return thumbnailDetail;
   }
 
-  ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
+  static ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
     ThumbnailDetail thumbnailDetail = new ThumbnailDetail(rs.getString("instanceid"), rs.getInt(
         "objectid"), rs.getInt("objecttype"));
     thumbnailDetail.setOriginalFileName(rs.getString("originalattachmentname"));

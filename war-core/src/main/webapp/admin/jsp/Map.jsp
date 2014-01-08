@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -66,7 +66,7 @@
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script type="text/javascript">
     function notifyAdministrators(context, compoId, users, groups) {
-      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=',
+      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators',
           'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
     }
 

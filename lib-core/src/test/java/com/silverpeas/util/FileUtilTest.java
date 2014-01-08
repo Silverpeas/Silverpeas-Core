@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import com.silverpeas.util.exception.RelativeFileAccessException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -118,5 +119,40 @@ public class FileUtilTest {
 
     result = FileUtil.convertFilePath(new File("/", "test {linux}[4 ever].pdf"));
     assertThat(result, is("/test\\ \\{linux\\}\\[4\\ ever\\].pdf"));
+  }
+
+  @Test
+  public void testCheckPathNotRelative() throws RelativeFileAccessException {
+    FileUtil.checkPathNotRelative(null);
+    FileUtil.checkPathNotRelative("klkl");
+    FileUtil.checkPathNotRelative("klkl.lk");
+    FileUtil.checkPathNotRelative("klkl/dsdsd/SdsdsD/dlsls.ld");
+    FileUtil.checkPathNotRelative("klkl/dsdsd/Sdsd..sD/dlsls.ld");
+    FileUtil.checkPathNotRelative("klkl/dsdsd/Sdsd./dlsls.ld");
+    FileUtil.checkPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld");
+    FileUtil.checkPathNotRelative(".klkl/dsdsd/.Sdsd/dlsls.ld");
+    FileUtil.checkPathNotRelative("..klkl/dsdsd/.Sdsd/dlsls.ld");
+    FileUtil.checkPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld.");
+    FileUtil.checkPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld..");
+  }
+
+  @Test(expected = RelativeFileAccessException.class)
+  public void testCheckPathNotRelativeError1() throws RelativeFileAccessException {
+    FileUtil.checkPathNotRelative("../");
+  }
+
+  @Test(expected = RelativeFileAccessException.class)
+  public void testCheckPathNotRelativeError2() throws RelativeFileAccessException {
+    FileUtil.checkPathNotRelative("..\\");
+  }
+
+  @Test(expected = RelativeFileAccessException.class)
+  public void testCheckPathNotRelativeError3() throws RelativeFileAccessException {
+    FileUtil.checkPathNotRelative("/..");
+  }
+
+  @Test(expected = RelativeFileAccessException.class)
+  public void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
+    FileUtil.checkPathNotRelative("\\..");
   }
 }

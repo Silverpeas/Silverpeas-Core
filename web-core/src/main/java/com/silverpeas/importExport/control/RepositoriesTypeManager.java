@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -32,21 +32,15 @@ import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
@@ -61,10 +55,20 @@ import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailAttachment;
 import org.silverpeas.util.mail.MailExtractor;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -80,7 +84,6 @@ public class RepositoriesTypeManager {
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
    *
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param repositoriesType - objet mappé par castor contenant toutes les informations de création
    * des publications du path défini
    * @return un objet ComponentReport contenant les informations de création des publications
@@ -171,6 +174,19 @@ public class RepositoriesTypeManager {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport();
       massiveReport.addUnitReport(unitReport);
+      
+      // Check the file size
+      long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
+      long fileSize = file.length();
+      if (fileSize <= 0L) {
+        unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+        reportManager.addNumberOfFilesNotImported(1);
+        return pubDetailToCreate;
+      } else if (fileSize > maximumFileSize) {
+        unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
+        reportManager.addNumberOfFilesNotImported(1);
+        return pubDetailToCreate;
+      }
 
       // On récupére les infos nécéssaires à la création de la publication
       pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
@@ -186,6 +202,7 @@ public class RepositoriesTypeManager {
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate,
           settings);
+      unitReport.setLabel(pubDetailToCreate.getPK().getId());
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
@@ -209,24 +226,27 @@ public class RepositoriesTypeManager {
       document.setPK(pk);
       document.setFile(new SimpleAttachment());
       document.setFilename(file.getName());
-      document.setSize(file.length());
+      document.setSize(fileSize);
       document.getFile().setCreatedBy(userDetail.getId());
-      document.setCreated(new Date());
+      if (settings.useFileDates()) {
+        document.setCreated(pubDetailToCreate.getCreationDate());
+        if (pubDetailToCreate.getUpdateDate() != null) {
+          document.setUpdated(pubDetailToCreate.getUpdateDate());
+        }
+      } else {
+        document.setCreated(new Date());
+      }
       document.setForeignId(pubDetailToCreate.getPK().getId());
       document.setContentType(FileUtil.getMimeType(file.getName()));
-      if (document.getSize() > 0L) {
-        AttachmentServiceFactory.getAttachmentService()
+      AttachmentServiceFactory.getAttachmentService()
             .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
-        reportManager.addNumberOfFilesProcessed(1);
-        reportManager.addImportedFileSize(document.getSize(), componentId);
-      } else {
-        unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-        reportManager.addNumberOfFilesNotImported(1);
-      }
+      reportManager.addNumberOfFilesProcessed(1);
+      reportManager.addImportedFileSize(document.getSize(), componentId);
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverTrace
-          .error("importExport", "RepositoriesTypeManager.importFile()", "root.EX_NO_MESSAGE", ex);
+          .error("importExport", "RepositoriesTypeManager.importFile", "root.EX_NO_MESSAGE", ex);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.defaultLanguage);
     }
     return pubDetailToCreate;
   }
@@ -325,7 +345,7 @@ public class RepositoriesTypeManager {
               userDetail.getId(), pubDetail.isIndexable());
         }
       } catch (Exception e) {
-        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent()",
+        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent",
             "root.EX_NO_MESSAGE", e);
       }
     }

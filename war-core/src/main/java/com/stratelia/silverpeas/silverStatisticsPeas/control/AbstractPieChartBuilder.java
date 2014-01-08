@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,9 +49,9 @@ public abstract class AbstractPieChartBuilder {
 
   private static final int LEGEND_MAX_LENGTH = 20;
   private Map<String, StatItem> statsByInstance = null;
-  private static final String FINESSE_TOUS = "FINESSE_TOUS";
-  private static final String FINESSE_GROUPE = "FINESSE_GROUPE";
-  private static final String FINESSE_USER = "FINESSE_USER";
+  protected static final String FINESSE_TOUS = "FINESSE_TOUS";
+  protected static final String FINESSE_GROUPE = "FINESSE_GROUPE";
+  protected static final String FINESSE_USER = "FINESSE_USER";
   private String niveauFinesse = FINESSE_TOUS;
 
   private void buildStatsByInstance() {
@@ -140,6 +140,8 @@ public abstract class AbstractPieChartBuilder {
       if (statsByInstance == null) {
         buildStatsByInstance();
       }
+      
+      
 
       // Get subspaces ids and components
       String[] tabSpaceIds = null; // de type WA123
@@ -268,6 +270,10 @@ public abstract class AbstractPieChartBuilder {
     }
 
     return result;
+  }
+  
+  protected void setScope(String scope) {
+    niveauFinesse = scope;
   }
 
   public abstract String getChartTitle();

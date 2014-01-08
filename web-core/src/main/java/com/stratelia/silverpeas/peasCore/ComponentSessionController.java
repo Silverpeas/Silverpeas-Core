@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,9 +31,9 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.Collection;
@@ -75,9 +75,15 @@ public interface ComponentSessionController {
   public List getComponentParameters();
 
   /**
-   * Return the parameter value for this component instance and the given parameter name
+   * Return the parameter value of current component instance from a given parameter name
    */
   public String getComponentParameterValue(String parameterName);
+
+  /**
+   * Return the parameter value of current component instance from a given centralized parameter
+   * name
+   */
+  String getComponentParameterValue(ComponentInstanceParameterName parameterName);
 
   public String[] getUserAvailComponentIds();
 
@@ -131,5 +137,4 @@ public interface ComponentSessionController {
   public void removeClipboardElement(int index) throws Exception;
 
   public void setClipboardError(String messageId, Exception ex) throws Exception;
-
 }

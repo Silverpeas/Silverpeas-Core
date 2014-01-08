@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
+* Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -29,19 +29,18 @@ date 14/09/2000
 */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.PasteDetail;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.quota.exception.QuotaException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.spaces.SpaceTemplate;
-import com.silverpeas.util.ArrayUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
@@ -1297,6 +1296,20 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
+  /**
+   * Updates the acceptance date of a user from its id.
+   */
+  public void userAcceptsTermsOfService(String userId) {
+    SilverTrace
+        .info("admin", "AdminController.userAcceptsTermsOfService", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().userAcceptsTermsOfService(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.userAcceptsTermsOfService",
+          "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE", e);
+    }
+  }
+
   /** Block the given user */
   public void blockUser(String userId) {
     SilverTrace.info("admin", "AdminController.blockUser", "root.MSG_GEN_ENTER_METHOD");
@@ -1706,14 +1719,14 @@ public class AdminController implements java.io.Serializable {
     getAdminService().reloadCache();
   }
 
-  public String copyAndPasteComponent(String componentId, String spaceId, String userId)
+  public String copyAndPasteComponent(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
-    return getAdminService().copyAndPasteComponent(componentId, spaceId, userId);
+    return getAdminService().copyAndPasteComponent(pasteDetail);
   }
 
-  public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
+  public String copyAndPasteSpace(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
-    return getAdminService().copyAndPasteSpace(spaceId, toSpaceId, userId);
+    return getAdminService().copyAndPasteSpace(pasteDetail);
   }
 
 }

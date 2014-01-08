@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,11 +23,10 @@
  */
 package org.silverpeas.admin.space.quota.process.check;
 
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
-
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
 /**
  * @author Yohann Chastagnier
@@ -36,6 +35,7 @@ public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOf
 
   private final SpaceInst space;
   private final FileHandler fileHandler;
+  long currentCountOffset = -1;
 
   /**
    * Gets an instance from a SpaceInst and a FileHandler
@@ -65,13 +65,17 @@ public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOf
   @Override
   public long getOffset() {
 
-    // Initializing the counting result
-    long currentCountOffset = 0;
+    // Offset is guessed one time to avoid performance problems
+    if (currentCountOffset < 0) {
 
-    // space could be null if user space is performed
-    if (space != null) {
-      for (final ComponentInst component : space.getAllComponentsInst()) {
-        currentCountOffset += fileHandler.sizeOfSessionWorkingPath(component.getId());
+      // Initializing the counting result
+      currentCountOffset = 0;
+
+      // space could be null if user space is performed
+      if (space != null) {
+        for (final ComponentInst component : space.getAllComponentsInst()) {
+          currentCountOffset += fileHandler.sizeOfSessionWorkingPath(component.getId());
+        }
       }
     }
 

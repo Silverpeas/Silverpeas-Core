@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 import com.silverpeas.util.EncodeHelper;
@@ -117,7 +118,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @see
    */
   public String getHF_JavaScriptTask(HttpServletRequest request) {
-    String message = request.getParameter("message");
+    String message = Encode.forHtml(request.getParameter("message"));
     StringBuilder str = new StringBuilder();
 
     if (message != null) {
@@ -243,7 +244,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @see
    */
   public String getHF_HTMLForm(HttpServletRequest request) {
-    String message = request.getParameter("message");
+    String message = Encode.forHtml(request.getParameter("message"));
     StringBuilder str = new StringBuilder("");
     if ("REFRESH".equals(message)) {
       str.append("<form name='refreshform' action='' method='post' target='MyMain'>");

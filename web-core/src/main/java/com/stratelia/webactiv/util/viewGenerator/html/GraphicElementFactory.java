@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -59,15 +59,16 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -90,8 +91,7 @@ public class GraphicElementFactory {
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
-  private final static String defaultLook =
-      "org.silverpeas.util.viewGenerator.settings.Initial";
+  private final static String defaultLook = "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
       "org.silverpeas.general", I18NHelper.defaultLanguage);
   private final static String iconsPath = (URLManager.getApplicationURL() + settings
@@ -104,11 +104,14 @@ public class GraphicElementFactory {
   private String spaceId = null;
   private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
-  protected static final String JQUERY_JS = "jquery-1.10.1.min.js";
+  protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
+  protected static final String ANGULAR_JS = "angular.min.js";
+  protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
+  protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**
@@ -171,9 +174,9 @@ public class GraphicElementFactory {
           "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
-        lookSettings =
-            new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
-            silverpeasSettings);
+        lookSettings
+            = new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
+                silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
         lookSettings = silverpeasSettings;
@@ -303,8 +306,8 @@ public class GraphicElementFactory {
       StringBuilder defaultComponentCSS = null;
       StringBuilder specificComponentCSS = null;
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
-        ComponentInstLight component =
-            mainSessionController.getOrganisationController().getComponentInstLight(componentId);
+        ComponentInstLight component = mainSessionController.getOrganisationController().
+            getComponentInstLight(componentId);
         if (component != null) {
           String componentName = component.getName();
           String genericComponentName = getGenericComponentName(componentName);
@@ -312,7 +315,7 @@ public class GraphicElementFactory {
           defaultComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"")
               .append(contextPath).
               append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
-              genericComponentName).append(".css").append("\"/>\n");
+                  genericComponentName).append(".css").append("\"/>\n");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
           if (StringUtil.isDefined(specificStyle)) {
@@ -365,6 +368,15 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/angularjs/").append(ANGULAR_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/angularjs/").append(SILVERPEAS_ANGULAR_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
+            "\"></script>\n");
+    code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
+        .append("\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
@@ -397,8 +409,8 @@ public class GraphicElementFactory {
    */
   private void appendSpecificCSS(StringBuilder code) {
     if (StringUtil.isDefined(this.spaceId)) {
-      SpaceInstLight curSpace =
-          mainSessionController.getOrganisationController().getSpaceInstLightById(this.spaceId);
+      SpaceInstLight curSpace = mainSessionController.getOrganisationController().
+          getSpaceInstLightById(this.spaceId);
       if (curSpace != null) {
         String spaceLookStyle = curSpace.getLook();
         getSpaceLook(code, curSpace, spaceLookStyle);
@@ -430,8 +442,8 @@ public class GraphicElementFactory {
       // Check the parent space look (recursive method)
       if (!curSpace.isRoot()) {
         String fatherSpaceId = curSpace.getFatherId();
-        SpaceInstLight fatherSpace =
-            mainSessionController.getOrganisationController().getSpaceInstLightById(fatherSpaceId);
+        SpaceInstLight fatherSpace = mainSessionController.getOrganisationController().
+            getSpaceInstLightById(fatherSpaceId);
         spaceLookStyle = fatherSpace.getLook();
         getSpaceLook(code, fatherSpace, spaceLookStyle);
       } else {
@@ -892,8 +904,7 @@ public class GraphicElementFactory {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination;
     if (paginationClassName == null) {
-      paginationClassName =
-          "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
+      paginationClassName = "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
     }
     try {
       pagination = (Pagination) Class.forName(paginationClassName).newInstance();
@@ -910,8 +921,8 @@ public class GraphicElementFactory {
     String progressClassName = getFavoriteLookSettings().getString("Progress");
     ProgressMessage progress;
     if (progressClassName == null) {
-      progressClassName =
-          "com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
+      progressClassName
+          = "com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
     }
     try {
       progress = (ProgressMessage) Class.forName(progressClassName).newInstance();
@@ -939,10 +950,10 @@ public class GraphicElementFactory {
 
   public void setHttpRequest(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
-    mainSessionController =
-        (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    componentMainPage =
-        request.getRequestURI().endsWith("/Main") && !request.getRequestURI().endsWith("/jsp/Main");
+    mainSessionController = (MainSessionController) session.
+        getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+    componentMainPage = request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
+        endsWith("/jsp/Main");
   }
 
   public boolean isComponentMainPage() {

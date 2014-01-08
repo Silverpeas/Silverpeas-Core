@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
 import com.novell.ldap.LDAPAttribute;
@@ -33,35 +29,31 @@ import com.novell.ldap.LDAPSearchResults;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A LdapField stores a value of ldap field.
+ *
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
 public class LdapField extends TextField {
 
   private static final long serialVersionUID = 1L;
-
   /**
    * The ldap field type name.
    */
   static public final String TYPE = "ldap";
-
   /**
    * The ldap field dynamic variable login.
    */
   static public final String VARIABLE_LOGIN = "$$login";
-
   /**
    * The ldap field dynamic variable login for regex.
    */
   static private final String VARIABLE_REGEX_LOGIN = "\\$\\$login";
-
   private String value = "";
 
   public LdapField() {
@@ -70,6 +62,7 @@ public class LdapField extends TextField {
   /**
    * Returns the type name.
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
@@ -77,6 +70,7 @@ public class LdapField extends TextField {
   /**
    * Returns the string value of this field.
    */
+  @Override
   public String getStringValue() {
     return value;
   }
@@ -84,6 +78,7 @@ public class LdapField extends TextField {
   /**
    * Set the string value of this field.
    */
+  @Override
   public void setStringValue(String value) {
     this.value = value;
   }
@@ -91,13 +86,14 @@ public class LdapField extends TextField {
   /**
    * Returns true if the value is read only.
    */
+  @Override
   public boolean isReadOnly() {
     return false;
   }
 
   public LDAPConnection connectLdap(String host, String port)
       throws FormException {
-    LDAPConnection ldapConnection = null;
+    LDAPConnection ldapConnection;
     if (!StringUtil.isDefined(host) || !StringUtil.isDefined(port)) {
       throw new FormException("LdapField.connectLdap",
           "form.EX_CANT_CONNECT_LDAP");
@@ -124,7 +120,6 @@ public class LdapField extends TextField {
       throw new FormException("LdapField.disconnectLdap",
           "form.EX_CANT_DISCONNECT_LDAP", e);
     }
-    connection = null;
   }
 
   public void bindLdap(LDAPConnection ldapConnection, String version,
@@ -167,7 +162,7 @@ public class LdapField extends TextField {
     // parsing filter -> dynamic variable
     if (filter.contains(VARIABLE_LOGIN)) {
       try {
-        String valueLogin =  OrganisationControllerFactory.getOrganisationController()
+        String valueLogin = OrganisationControllerFactory.getOrganisationController()
             .getUserDetail(currentUserId).getLogin();
         filter = filter.replaceAll(VARIABLE_REGEX_LOGIN, valueLogin);
       } catch (Exception e) {
@@ -194,7 +189,7 @@ public class LdapField extends TextField {
       LDAPEntry entry;
       int nbReaded = 0;
       LDAPAttribute ldapAttribute;
-      String value = null;
+      String theValue = null;
       try {
         while (searchResult.hasMore()
             && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
@@ -203,15 +198,15 @@ public class LdapField extends TextField {
           if (tabSearchAttribute != null) {
             ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);
             if (ldapAttribute != null) {
-              value = ldapAttribute.getStringValue();
+              theValue = ldapAttribute.getStringValue();
             }
           } else {
-            value = entry.getDN();
+            theValue = entry.getDN();
           }
 
           nbReaded++;
-          if (StringUtil.isDefined(value)) {
-            listRes.add(value);
+          if (StringUtil.isDefined(theValue)) {
+            listRes.add(theValue);
           }
         }
       } catch (LDAPException e) {

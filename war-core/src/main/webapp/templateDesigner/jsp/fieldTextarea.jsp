@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.form.displayers.TextAreaFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
@@ -40,22 +41,21 @@
 	String rows = "";
 	String cols = "";
 	
-	if (field != null)
-	{
-		if (parameters.containsKey("rows")) {
-			rows = (String) parameters.get("rows");
+	if (field != null) {
+		if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
+			rows = parameters.get(TextAreaFieldDisplayer.PARAM_ROWS);
 		}
 		
-		if (parameters.containsKey("cols")) {
-			cols = (String) parameters.get("cols");
+		if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
+			cols = parameters.get(TextAreaFieldDisplayer.PARAM_COLS);
 		}
 	}
 %>
 <%@ include file="includeTopField.jsp.inc" %>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.rows")%> :</td><td><input type="text" name="Param_rows" value="<%=rows%>" size="5" maxLength="3"/></td>
+<td class="txtlibform"><%=resource.getString("templateDesigner.rows")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_ROWS%>" value="<%=rows%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.cols")%> :</td><td><input type="text" name="Param_cols" value="<%=cols%>" size="5" maxLength="3"/></td>
+<td class="txtlibform"><%=resource.getString("templateDesigner.cols")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_COLS%>" value="<%=cols%>" size="5" maxLength="3"/></td>
 </tr>
 <%@ include file="includeBottomField.jsp.inc" %>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,11 +29,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.jCharts.nonAxisChart.PieChart2D;
 import org.silverpeas.core.admin.OrganisationController;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author BERTINL
@@ -71,28 +74,27 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
     String title = message.getString("silverStatisticsPeas.AccessNumber") + " ";
 
     if (StringUtil.isDefined(this.filterIdGroup) && !StringUtil.isDefined(this.filterIdUser)) {
-      title += " " + message.getString("silverStatisticsPeas.EvolutionAccessGroup")
+      title += message.getString("silverStatisticsPeas.EvolutionAccessGroup")
           + " " + this.organizationController.getGroup(this.filterIdGroup).getName() + " ";
     }
     if (StringUtil.isDefined(this.filterIdUser)) {
-      title += " " + message.getString("silverStatisticsPeas.EvolutionAccessUser")
+      title += message.getString("silverStatisticsPeas.EvolutionAccessUser")
           + " " + this.organizationController.getUserDetail(this.filterIdUser)
-          .getLastName() + " ";
+          .getDisplayedName() + " ";
     }
 
     try {
       if (StringUtil.isDefined(this.spaceId) && (!this.spaceId.equals("WA0"))) {
         SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(this.spaceId);
-        title += message.getString("silverStatisticsPeas.ToSpace") + " ["
-            + space.getName() + "] ";
+        title += message.getString("silverStatisticsPeas.ToSpace") + " \""
+            + space.getName() + "\" ";
       }
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
           "UserPieChartBuilder.getChartTitle()", "root.EX_SQL_QUERY_FAILED", e);
     }
 
-    title += message.getString("silverStatisticsPeas.In") + " "
-        + this.dateFormate;
+    title += message.getString("silverStatisticsPeas.In") + " " + this.dateFormate;
 
     return title;
   }
@@ -113,6 +115,17 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
           "UserPieChartBuilder.getCmpStats()", "root.EX_SQL_QUERY_FAILED", e);
     }
     return cmpStats;
+  }
+  
+  @Override
+  public PieChart2D getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
+    setScope(AbstractPieChartBuilder.FINESSE_TOUS);
+    if (StringUtil.isDefined(filterIdGroup)) {
+      setScope(AbstractPieChartBuilder.FINESSE_GROUPE);
+    } else if (StringUtil.isDefined(filterIdUser)) {
+      setScope(AbstractPieChartBuilder.FINESSE_USER);
+    }
+    return super.getChart(spaceId, currentUserId, currentStats);
   }
 
 }

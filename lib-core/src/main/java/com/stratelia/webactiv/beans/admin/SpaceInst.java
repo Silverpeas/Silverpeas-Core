@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -37,11 +37,12 @@ import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -766,12 +767,12 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       final String stringTemplateFile) {
     if (!QuotaType.COMPONENTS_IN_SPACE.equals(quotaReached.getType())) {
       quotaReached = quotaReached.clone();
-      quotaReached.setMinCount(UnitUtil.convertTo(quotaReached.getMinCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
-      quotaReached.setMaxCount(UnitUtil.convertTo(quotaReached.getMaxCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
-      quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
+      quotaReached.setMinCount(UnitUtil.convertTo(quotaReached.getMinCount(), MemoryUnit.B,
+          MemoryUnit.MB));
+      quotaReached.setMaxCount(UnitUtil.convertTo(quotaReached.getMaxCount(), MemoryUnit.B,
+          MemoryUnit.MB));
+      quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), MemoryUnit.B,
+          MemoryUnit.MB));
     }
     SpaceInstLight space = OrganisationControllerFactory.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());
@@ -834,6 +835,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     List<SpaceProfileInst> profiles = getProfiles();
     for (SpaceProfileInst profile : profiles) {
       clone.addSpaceProfileInst(profile.clone());
+    }
+
+    for (String lang : getTranslations().keySet()) {
+      SpaceI18N translation = (SpaceI18N) getTranslation(lang);
+      clone.addTranslation(translation);
     }
 
     // clone components

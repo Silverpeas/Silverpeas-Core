@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,8 @@ import java.util.Iterator;
 
 import com.silverpeas.SilverpeasContent;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.question.model.Question;
@@ -154,6 +156,21 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   public String getContributionType() {
     // TODO Add an attribute in order to distinguish survey/poll or quizz contribution type
     return null;
+  }
+
+  /**
+   * Is the specified user can access this container of questions?
+   * <p/>
+   * A user can access a container if it has enough rights to access the application instance in
+   * which is managed this container.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this container of questions, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
   @Override

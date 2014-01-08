@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,13 +24,15 @@
 
 package com.silverpeas.form.dummy;
 
+import java.util.Map;
+
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
-import java.util.Map;
+import com.silverpeas.util.ForeignPK;
 
 /**
  * A dummy record set.
@@ -136,5 +138,15 @@ public class DummyRecordSet implements RecordSet {
   @Override
   public void indexRecord(String recordId, String formName,
       FullIndexEntry indexEntry) throws FormException {
+  }
+
+  @Override
+  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+      Map<String, String> attachmentIds) throws FormException {
+  }
+
+  @Override
+  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+      throws FormException {    
   }
 }

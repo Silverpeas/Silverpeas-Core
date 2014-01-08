@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,22 +25,27 @@ package com.silverpeas.importExportPeas.servlets;
 
 import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
+import com.silverpeas.importExport.report.ComponentReport;
+import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -52,10 +57,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.silverpeas.util.FileUtil;
-
-import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -91,6 +94,8 @@ public class ImportDragAndDrop extends HttpServlet {
       return;
     }
 
+    String userId = null;
+    String userLanguage = null;
     StringBuilder result = new StringBuilder();
     try {
       String componentId = request.getParameter("ComponentId");
@@ -103,7 +108,9 @@ public class ImportDragAndDrop extends HttpServlet {
             ((HTTPSessionInfo)sessionManagement.getSessionInfo(sessionId)).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
-      String userId = request.getParameter("UserId");
+      userId = request.getParameter("UserId");
+      userLanguage = StringUtil.isNotDefined(userId) ? I18NHelper.defaultLanguage :
+          UserDetail.getById(userId).getUserPreferences().getLanguage();
       boolean ignoreFolders = StringUtil.getBooleanValue(request.getParameter("IgnoreFolders"));
       boolean draftUsed = StringUtil.getBooleanValue(request.getParameter("Draft"));
 
@@ -165,22 +172,38 @@ public class ImportDragAndDrop extends HttpServlet {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         ImportSettings settings =
             new ImportSettings(savePath, userDetail, componentId, topicId, draftUsed, true, ImportSettings.FROM_DRAGNDROP);
-        List<PublicationDetail> importedPublications =
+        ImportReport importReport =
             massiveImporter.importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
-          for (PublicationDetail publicationDetail : importedPublications) {
-            result.append("pubid=").append(publicationDetail.getId()).append("&");
+          ComponentReport componentReport = importReport.getListComponentReport().get(0);
+          List<MassiveReport> listMassiveReport = componentReport.getListMassiveReports();
+          for (MassiveReport theMassiveReport : listMassiveReport) {
+            List<UnitReport> listMassiveUnitReport = theMassiveReport.getListUnitReports();
+            for (UnitReport unitReport : listMassiveUnitReport) {
+              if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+                result.append("pubid=").append(unitReport.getLabel()).append("&");
+              }
+            }
           }
         }
       } catch (Exception ex) {
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
+        SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, userLanguage);
         res.getOutputStream().println("ERROR");
         return;
       }
     } catch (Exception e) {
       SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
-      res.getOutputStream().println("ERROR");
+      final StringBuilder sb = new StringBuilder("ERROR: ");
+      String transverseMessage =
+          SilverpeasTransverseWebErrorUtil.performAppletAlertExceptionMessage(e, userLanguage);
+      if (isDefined(transverseMessage)) {
+        sb.append(transverseMessage);
+      } else {
+        sb.append(e.getMessage());
+      }
+      res.getOutputStream().println(sb.toString());
       return;
     }
 

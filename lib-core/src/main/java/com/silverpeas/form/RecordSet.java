@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,8 @@
 package com.silverpeas.form;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import com.silverpeas.util.ForeignPK;
 
 import java.util.Map;
 
@@ -97,8 +99,14 @@ public interface RecordSet {
    * @throw FormException when the delete fail.
    */
   public void delete(DataRecord record) throws FormException;
-  
+
   public void delete(String objectId) throws FormException;
+
+  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+      Map<String, String> oldAndNewFileIds) throws FormException;
+
+  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+      throws FormException;
 
   /**
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.

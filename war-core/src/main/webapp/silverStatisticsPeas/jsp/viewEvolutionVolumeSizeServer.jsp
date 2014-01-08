@@ -1,7 +1,7 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -153,8 +153,9 @@
 
 	          		arrayLine.addArrayCellText(item[1]);
 
-	          		cellText = arrayLine.addArrayCellText(FileRepositoryManager.formatFileSize(new Long(item[2]).longValue() * 1024));
-	          		cellText.setCompareOn(new Integer(item[2]));
+	          		Long size = new Long(item[2]);
+	          		cellText = arrayLine.addArrayCellText(FileRepositoryManager.formatFileSize(size * 1024));
+	          		cellText.setCompareOn(size);
 	        	}
 
 				out.println(arrayPane.print());

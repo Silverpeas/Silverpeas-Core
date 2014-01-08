@@ -55,17 +55,19 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
   static final long serialVersionUID = 3L;
   private PortletRegistryContext portletRegistryContext;
 
+  @Override
   public void init(PortletRegistryContext portletRegistryContext) throws PortletRegistryException {
     this.portletRegistryContext = portletRegistryContext;
   }
 
+  @Override
   public boolean deploy(String warName, boolean deployToContainer) throws Exception {
     return deploy(warName, null, null, deployToContainer);
   }
 
+  @Override
   public boolean deploy(String warName, String rolesFilename, String userInfoFilename,
       boolean deployToContainer) throws Exception {
-    boolean success;
     try {
       PortletAdminMBean portletadmin = new PortletAdmin();
       Properties roleProperties = new Properties();
@@ -77,7 +79,6 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
         userInfoProperties.load(new FileInputStream(userInfoFilename));
       }
       portletadmin.deploy(warName, roleProperties, userInfoProperties, deployToContainer);
-      success = true;
     } catch (Exception e) {
       if (logger.isLoggable(Level.SEVERE)) {
         LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0023");
@@ -86,17 +87,16 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
         logRecord.setThrown(e);
         logger.log(logRecord);
       }
-      success = false;
       throw e;
     }
-    return success;
+    return true;
   }
 
+  @Override
   public boolean undeploy(String warName, boolean undeployFromContainer) throws Exception {
-    Boolean success;
     try {
       PortletAdminMBean portletadmin = new PortletAdmin();
-      success = portletadmin.undeploy(warName, undeployFromContainer);
+      return portletadmin.undeploy(warName, undeployFromContainer);
     } catch (Exception e) {
       if (logger.isLoggable(Level.SEVERE)) {
         LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0031");
@@ -105,12 +105,11 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
         logRecord.setThrown(e);
         logger.log(logRecord);
       }
-      success = Boolean.FALSE;
       throw e;
     }
-    return success.booleanValue();
   }
 
+  @Override
   public List<PortletAppData> getPortlets(String locale) {
     List<PortletAppData> portlets = new ArrayList<PortletAppData>();
 
@@ -144,6 +143,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
     return portlets;
   }
 
+  @Override
   public List<String> getPortletNames() {
     try {
       return portletRegistryContext.getAvailablePortlets();
@@ -153,8 +153,9 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
     return Collections.EMPTY_LIST;
   }
 
+  @Override
   public List<String> getPortletApplicationNames() {
-    List portletApps = new ArrayList();
+    List<String> portletApps = new ArrayList<String>();
     try {
       List<EntityID> entityIds = portletRegistryContext.getEntityIds();
       if (entityIds != null) {
@@ -175,11 +176,12 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
     return portletApps;
   }
 
+  @Override
   public List<String> getPortletDisplayNames(String locale) {
-    List portletApps = new ArrayList();
+    List<String> portletApps = new ArrayList<String>();
     try {
       List<String> portletNames = getPortletNames();
-      String displayName = null;
+      String displayName;
       for (String portletName : portletNames) {
         if (portletName != null) {
           displayName = portletRegistryContext.getDisplayName(portletName, locale);
@@ -193,6 +195,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
     return portletApps;
   }
 
+  @Override
   public List getPortletWindowNames() {
     try {
       return portletRegistryContext.getAllPortletWindows(PortletType.LOCAL);
@@ -202,13 +205,12 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
     return Collections.EMPTY_LIST;
   }
 
+  @Override
   public boolean createPortletWindow(String portletName, String portletWindowName, String title)
       throws Exception {
-    boolean success;
     try {
       portletRegistryContext.createPortletWindow(portletName, portletWindowName, title, Locale
           .getDefault().toString());
-      success = true;
     } catch (PortletRegistryException pre) {
       if (logger.isLoggable(Level.SEVERE)) {
         LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0025");
@@ -217,25 +219,20 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
         logRecord.setThrown(pre);
         logger.log(logRecord);
       }
-      success = false;
       throw pre;
     }
-    return success;
+    return true;
   }
 
+  @Override
   public boolean modifyPortletWindow(String portletWindowName, String width, boolean visible,
       String row) throws Exception {
-    boolean success;
     try {
-      String exisitingWidth = getWidth(portletWindowName);
-      // if(!exisitingWidth.equals(width)) {
       portletRegistryContext.setWidth(portletWindowName, width, row);
-      // }
       boolean exisitingVisibleValue = isVisible(portletWindowName);
       if (exisitingVisibleValue != visible) {
         portletRegistryContext.showPortletWindow(portletWindowName, visible);
       }
-      success = true;
     } catch (PortletRegistryException pre) {
       if (logger.isLoggable(Level.SEVERE)) {
         LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0025");
@@ -244,28 +241,23 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
         logRecord.setThrown(pre);
         logger.log(logRecord);
       }
-      success = false;
       throw pre;
     }
-    return success;
+    return true;
   }
 
+  @Override
   public boolean movePortletWindows(List portletWindows) throws Exception {
-    boolean success;
-    try {
-      portletRegistryContext.movePortletWindows(portletWindows);
-      success = true;
-    } catch (Exception e) {
-      success = false;
-      throw e;
-    }
-    return success;
+    portletRegistryContext.movePortletWindows(portletWindows);
+    return true;
   }
 
+  @Override
   public boolean isVisible(String portletWindowName) throws Exception {
     return portletRegistryContext.isVisible(portletWindowName);
   }
 
+  @Override
   public String getWidth(String portletWindowName) throws Exception {
     return portletRegistryContext.getWidth(portletWindowName);
   }

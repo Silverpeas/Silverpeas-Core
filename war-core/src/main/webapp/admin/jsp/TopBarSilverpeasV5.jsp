@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -114,13 +114,11 @@ function getContext() {
   return "<%=m_sContext%>";
 }
 
-function getDomainsBarPage()
-{
+function getDomainsBarPage() {
 	return "DomainsBarSilverpeasV5.jsp";
 }
 
-function getTopBarPage()
-{
+function getTopBarPage() {
 	return "TopBarSilverpeasV5.jsp";
 }
 
@@ -128,14 +126,20 @@ function loadThisPage() {
   setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
 }
 
-function reloadTopBar()
-{
+function reloadTopBar() {
 	//Silverpeas V4 compatibility
+}
+
+function getBannerHeight() {
+	return "<%=helper.getSettings("bannerHeight", "115")%>";
+}
+function getFooterHeight() {
+	return "<%=helper.getSettings("footerHeight", "26")%>";
 }
 //-->
 </script>
 </head>
-<body bgcolor="#FFFFFF" onload="loadThisPage()">
+<body onload="loadThisPage()">
 <div id="topBar">
 	<div style="position: absolute; right: 0px; top: 0px; background-color: #FFFFFF; width: 100%"><img src="icons/silverpeasV5/px.gif" border="0" height="0" id="space2Expand" align="middle" alt=""/></div>
 	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="middle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>

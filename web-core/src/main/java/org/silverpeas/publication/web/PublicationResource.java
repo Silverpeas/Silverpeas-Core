@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,13 +20,20 @@
  */
 package org.silverpeas.publication.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableNode;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,23 +43,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableNode;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.web.RESTWebService;
-
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
@@ -93,16 +90,18 @@ public class PublicationResource extends RESTWebService {
 
     List<PublicationEntity> entities = new ArrayList<PublicationEntity>();
     for (PublicationDetail publication : publications) {
-      URI uri = getURI(publication, baseUri);
-      PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
-      if (withAttachments) {
-        Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKey(publication.getPK(), null);
-        entity.withAttachments(attachments, getUriInfo().getBaseUri().toString(), token);
+      if (publication.isValid()) {
+        URI uri = getURI(publication, baseUri);
+        PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
+        if (withAttachments) {
+          Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+              listDocumentsByForeignKey(publication.getPK(), null);
+          entity.withAttachments(attachments, getUriInfo().getBaseUri().toString(), token);
+        }
+        entities.add(entity);
       }
-      entities.add(entity);
     }
-    return entities.toArray(new PublicationEntity[0]);
+    return entities.toArray(new PublicationEntity[entities.size()]);
   }
 
   private URI getURI(PublicationDetail publication, String baseUri) {

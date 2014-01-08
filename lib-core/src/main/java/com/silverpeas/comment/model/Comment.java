@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@ package com.silverpeas.comment.model;
 import java.util.Date;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
@@ -196,6 +198,24 @@ public class Comment implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this comment?
+   * <p/>
+   * A user can access a comment if it has enough rights to access the application instance in
+   * which is managed this comment.
+   * <p/>
+   * Be caution, the access control on the commented resource is usually more reliable than using
+   * this method.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this comment, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
   @Override

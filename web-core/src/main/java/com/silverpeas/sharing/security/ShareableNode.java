@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
+* Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -47,7 +47,7 @@ public class ShareableNode extends ShareableResource<NodeDetail> {
   public String getURL() {
     if (accessedObject != null) {
       return URLManager.getSimpleURL(URLManager.URL_TOPIC, String.valueOf(accessedObject.getId()),
-          accessedObject.getNodePK().getInstanceId(), false);
+          accessedObject.getNodePK().getInstanceId(), true);
     }
     return "";
   }

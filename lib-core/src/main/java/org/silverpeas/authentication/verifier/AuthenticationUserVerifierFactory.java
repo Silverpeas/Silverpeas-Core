@@ -115,4 +115,25 @@ public class AuthenticationUserVerifierFactory {
       AuthenticationCredential credential) {
     return getUserMustChangePasswordVerifier(getUserByCredential(credential));
   }
+
+  /**
+   * Gets user must accept terms of service verifier from credentials.
+   * @param credential
+   * @return the verifier that checks if the user must accept terms of service
+   */
+  public static UserMustAcceptTermsOfServiceVerifier getUserMustAcceptTermsOfServiceVerifier(
+      AuthenticationCredential credential) {
+    return new UserMustAcceptTermsOfServiceVerifier(getUserByCredential(credential));
+  }
+
+  /**
+   * Gets user must accept terms of service verifier from a token.
+   * @param tosToken
+   * @return the verifier that checks if the user must accept terms of service
+   */
+  public synchronized static UserMustAcceptTermsOfServiceVerifier
+  getUserMustAcceptTermsOfServiceVerifier(
+      String tosToken) {
+    return UserMustAcceptTermsOfServiceVerifier.get(tosToken);
+  }
 }

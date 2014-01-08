@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -82,6 +82,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
@@ -192,12 +193,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ResultFilterVO selectedFacetEntries = null;
   private boolean platformUsesPDC = false;
   private boolean includeUsers = false;
+  
+  private static final String locationSeparator = ">";
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle,
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings");
+        "org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
     isExportEnabled = isExportLicenseOK();
     isRefreshEnabled = getSettings().getBoolean("EnableRefresh", true);
@@ -410,6 +413,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             query.addComponent(curComp);
           }
         }
+        
+        if (componentList.size() == 1) {
+          query.setRequestedFolder(getQueryParameters().getFolder());
+        }
 
         if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
@@ -608,6 +615,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     Facet authorFacet = new Facet("author", getString("pdcPeas.facet.author"));
     Facet componentFacet = new Facet("component", getString("pdcPeas.facet.service"));
     Facet dataTypeFacet = new Facet("datatype", getString("pdcPeas.facet.datatype"));
+    Facet fileTypeFacet = new Facet("filetype", getString("pdcPeas.facet.filetype"));
 
     // key is the fieldName
     Map<String, Facet> fieldFacetsMap = new HashMap<String, Facet>();
@@ -636,6 +644,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         // manage "datatype" facet
         processFacetDatatype(dataTypeFacet, result);
+        
+        if (result.isAttachment()) {
+          processFacetFiletype(fileTypeFacet, result);
+        }
 
         // manage forms fields facets
         processFacetsFormField(fieldFacetsMap, result);
@@ -646,6 +658,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     res.setAuthorFacet(authorFacet);
     res.setComponentFacet(componentFacet);
     res.setDatatypeFacet(dataTypeFacet);
+    res.setFiletypeFacet(fileTypeFacet);
     res.setFormFieldFacets(new ArrayList<Facet>(fieldFacetsMap.values()));
 
     // sort facets entries descending
@@ -677,11 +690,26 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       SearchTypeConfigurationVO theSearchType = getSearchType(instanceId, type);
       if (theSearchType != null) {
         FacetEntryVO facetEntry = new FacetEntryVO(theSearchType.getName(), String.valueOf(
-            theSearchType.
-            getConfigId()));
+            theSearchType.getConfigId()));
         if (getSelectedFacetEntries() != null) {
           if (String.valueOf(theSearchType.getConfigId()).equals(getSelectedFacetEntries().
               getDatatype())) {
+            facetEntry.setSelected(true);
+          }
+        }
+        facet.addEntry(facetEntry);
+      }
+    }
+  }
+  
+  private void processFacetFiletype(Facet facet, GlobalSilverResult result) {
+    String filename = result.getAttachmentFilename();
+    if (StringUtil.isDefined(filename)) {
+      String extension = FileRepositoryManager.getFileExtension(filename).toLowerCase();
+      if (StringUtil.isDefined(extension)) {
+        FacetEntryVO facetEntry = new FacetEntryVO(extension, extension);
+        if (getSelectedFacetEntries() != null) {
+          if (extension.equals(getSelectedFacetEntries().getFiletype())) {
             facetEntry.setSelected(true);
           }
         }
@@ -695,7 +723,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String location = result.getLocation();
     String type = result.getType();
     if (!blackList.contains(type) && StringUtil.isDefined(location)) {
-      String appLocation = location.substring(location.lastIndexOf('/') + 1);
+      String appLocation = location.substring(location.lastIndexOf(locationSeparator) + 1);
       FacetEntryVO facetEntry = new FacetEntryVO(appLocation, instanceId);
       if (getSelectedFacetEntries() != null) {
         if (instanceId.equals(getSelectedFacetEntries().getComponentId())) {
@@ -957,7 +985,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             visible = false;
           }
         }
-
+        
+        // check filetype facet
+        if (visible && StringUtil.isDefined(filter.getFiletype())) {
+          if (!gsResult.isAttachment() ||
+              !StringUtil.isDefined(gsResult.getAttachmentFilename()) ||
+              !FileRepositoryManager.getFileExtension(gsResult.getAttachmentFilename())
+                  .toLowerCase().equals(filter.getFiletype())) {
+            visible = false;
+          }
+        }
+        
         // check form field facets
         Map<String, String> gsrFormFieldsForFacets = gsResult.getFormFieldsForFacets();
         if (visible && filterFormFields) {
@@ -1188,7 +1226,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
    * permalink
    *
-   * @see URLManager.getSimpleURL
+   * @see URLManager#getSimpleURL
    * @param resultType the result type
    * @param markAsReadJS javascript string to mark this result as read
    * @param indexEntry the current indexEntry
@@ -1236,8 +1274,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     titleLinkBuilder.append("');document.location.href='");
     titleLinkBuilder.append(EncodeHelper.javaStringToJsString(underLink));
     if (openFile) {
-      titleLinkBuilder.append("&FileOpened=1';");
+      titleLinkBuilder.append("&FileOpened=1");
     }
+    titleLinkBuilder.append("';");
     return titleLinkBuilder.toString();
   }
 
@@ -1321,7 +1360,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             UserDetail user = getOrganisationController().getUserDetail(
                 componentId.substring(5, componentId.indexOf("_")));
             String component = componentId.substring(componentId.indexOf("_") + 1);
-            place = user.getDisplayedName() + " / " + component;
+            place = user.getDisplayedName() + " " + locationSeparator + " " + component;
           } else if (componentId.equals("pdc")) {
             place = getString("pdcPeas.pdc");
           } else if (componentId.equals("users")) {
@@ -1332,13 +1371,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             }
             place = places.get(componentId);
             if (place == null) {
-              ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
-                  componentId);
-              if (componentInst != null) {
-                place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
-                    + componentInst.getLabel(getLanguage());
-                places.put(componentId, place);
-              }
+              place = getLocation(componentId);
+              places.put(componentId, place);
             }
           }
           String userId = result.getCreationUser();
@@ -1352,6 +1386,23 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       places.clear();
     }
     return results;
+  }
+  
+  /**
+   * Get location of result
+   *
+   * @param instanceId - application id
+   * @return location as a String
+   */
+  public String getLocation(String instanceId) {
+    ComponentInstLight componentInst =
+        getOrganisationController().getComponentInstLight(instanceId);
+    if (componentInst != null) {
+      String spaceId = componentInst.getDomainFatherId();
+      return getSpaceLabel(spaceId) + " " + locationSeparator + " " +
+          getComponentLabel(spaceId, instanceId);
+    }
+    return "";
   }
 
   private boolean isWysiwyg(String filename, List<String> wysiwygSuffixes) {
@@ -1465,18 +1516,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       UserDetail user = getOrganisationController().getUserDetail(
           componentId.substring(5, componentId.indexOf("_")));
       String component = componentId.substring(componentId.indexOf("_") + 1);
-      location = user.getDisplayedName() + " / " + component;
+      location = user.getDisplayedName() + " " + locationSeparator + " " + component;
     } else if (componentId.equals("pdc")) {
       location = getString("pdcPeas.pdc");
     } else if (componentId.equals("users")) {
       location = "";
     } else {
-      ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
-          componentId);
-      if (componentInst != null) {
-        location = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
-            + componentInst.getLabel(getLanguage());
-      }
+      location = getLocation(componentId);
     }
 
     gsr.setLocation(location);
@@ -2365,8 +2411,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<ComponentInstLight> getAllowedComponents(String space) {
     List<ComponentInstLight> allowedList = new ArrayList<ComponentInstLight>();
     if (space != null) {
-      String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-          getUserId());
+      String[] asAvailCompoForCurUser =
+          getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId());
       for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
         ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
             asAvailCompoForCurUser[nI]);

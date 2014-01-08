@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,25 +23,23 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.web.Exposable;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -88,6 +86,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private UserDetail user = null;
   @XmlElement(required = true)
   private URI uri;
+  @XmlElement
+  private URI contactsUri;
   @XmlElement
   private String webPage;
   @XmlElement
@@ -295,6 +295,11 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   public UserProfileEntity withAsUri(URI userUri) {
     this.uri = userUri;
+    try {
+      this.contactsUri = new URI(this.uri.toString() + "/contacts");
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+    }
     return this;
   }
 
@@ -328,6 +333,10 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @Override
   public URI getURI() {
     return this.uri;
+  }
+
+  public URI getContactsURI() {
+    return this.contactsUri;
   }
 
   private String getAvatarURI() {

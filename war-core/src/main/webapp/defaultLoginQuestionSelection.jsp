@@ -58,6 +58,7 @@
   <![endif]-->
   <script type="text/javascript">
     $(document).ready(function() {
+      $('#question').focus();
       $('#questionForm').on("submit", function() {
         if (this.elements["answer"].value.length == 0) {
           alert("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
@@ -115,11 +116,12 @@
         <p><label><span><%=authenticationBundle.getString(
             "authentication.reminder.confirm") %></span><input type="password" name="answerConfirmed" id="answerConfirmed"/></label>
         </p>
-        <br/>
 
-        <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-          <a href="#" class="submit" onclick="$('#questionForm').submit()"><img src="<%=m_context%>/images/bt-ok.png" alt=""/></a>
-        </p>
+        <div class="submit">
+          <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
+            <a href="#" class="submit" onclick="$('#questionForm').submit()"><span><span>OK</span></span></a>
+          </p>
+        </div>
       </div>
     </div>
   </div>

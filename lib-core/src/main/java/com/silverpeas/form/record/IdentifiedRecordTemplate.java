@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -147,5 +147,9 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   public boolean isEncrypted() {
     return encrypted;
+  }
+  
+  public String getInstanceId() {
+    return getExternalId().split(":")[0];
   }
 }

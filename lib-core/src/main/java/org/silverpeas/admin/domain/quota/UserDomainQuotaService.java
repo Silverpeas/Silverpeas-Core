@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,17 +23,20 @@
  */
 package org.silverpeas.admin.domain.quota;
 
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.service.AbstractQuotaService;
-
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.DomainDriverManagerFactory;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.service.AbstractQuotaService;
 
 /**
  * @author Yohann Chastagnier
  */
 @Service
 public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuotaKey> {
+
+  private static final ResourceLocator settings =
+      new ResourceLocator("com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
 
   /*
    * (non-Javadoc)
@@ -47,5 +50,10 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
     } catch (final Exception e) {
       throw new QuotaException(e);
     }
+  }
+
+  @Override
+  protected boolean isActivated() {
+    return settings.getBoolean("quota.domain.users.activated", false);
   }
 }

@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
 import com.silverpeas.form.Field;
@@ -29,25 +25,26 @@ import com.silverpeas.form.FormException;
 
 /**
  * A TextField stores a text value.
+ *
  * @see Field
  * @see FieldDisplayer
  */
 public abstract class TextField implements Field {
 
   private static final long serialVersionUID = 983277921021971664L;
-
   /**
    * The text field type name.
    */
   static public final String TYPE = "text";
-
   static public final String CONTENT_TYPE = "contentType";
   static public final String CONTENT_TYPE_INT = "int";
   static public final String CONTENT_TYPE_FLOAT = "float";
+  static public final String PARAM_MAXLENGTH = "maxLength";
 
   /**
    * Returns the type name.
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
@@ -60,6 +57,7 @@ public abstract class TextField implements Field {
   /**
    * Returns the string value of this field.
    */
+  @Override
   public String getValue() {
     return getStringValue();
   }
@@ -68,15 +66,18 @@ public abstract class TextField implements Field {
    * Returns the local value of this field. There is no local format for a text field, so the
    * language parameter is unused.
    */
+  @Override
   public String getValue(String language) {
     return getStringValue();
   }
 
   /**
    * Set this field value from a local string value.
+   *
    * @throw FormException when the field is readOnly.
    * @throw FormException when the string value is ill formed.
    */
+  @Override
   public void setValue(String value) throws FormException {
     setStringValue(value);
   }
@@ -84,9 +85,11 @@ public abstract class TextField implements Field {
   /**
    * Set this field value from a local string value. There is no local format for a text field, so
    * the language parameter is unused.
+   *
    * @throw FormException when the field is readOnly.
    * @throw FormException when the string value is ill formed.
    */
+  @Override
   public void setValue(String value, String language) throws FormException {
     setStringValue(value);
   }
@@ -95,6 +98,7 @@ public abstract class TextField implements Field {
    * Returns true if the value isn't ill formed and this field isn't read only. Here any string
    * value is accepted unless the field is read only.
    */
+  @Override
   public boolean acceptValue(String value) {
     return !isReadOnly();
   }
@@ -103,6 +107,7 @@ public abstract class TextField implements Field {
    * Returns true if the value isn't ill formed and this field isn't read only. Here any string
    * value is accepted unless the field is read only.
    */
+  @Override
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
@@ -111,6 +116,7 @@ public abstract class TextField implements Field {
    * Returns true if the value isn't ill formed and this field isn't read only. Here any string
    * value is accepted unless the field is read only.
    */
+  @Override
   public boolean acceptValue(String value, String language) {
     return !isReadOnly();
   }
@@ -118,15 +124,18 @@ public abstract class TextField implements Field {
   /**
    * Returns the value of this field.
    */
+  @Override
   public Object getObjectValue() {
     return getStringValue();
   }
 
   /**
    * Set this field value.
+   *
    * @throw FormException when the field is readOnly.
    * @throw FormException when the value is not a String.
    */
+  @Override
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof String) {
       setStringValue((String) value);
@@ -143,6 +152,7 @@ public abstract class TextField implements Field {
   /**
    * Returns true if the value is a String and this field isn't read only.
    */
+  @Override
   public boolean acceptObjectValue(Object value) {
     if (value instanceof String) {
       return !isReadOnly();
@@ -154,15 +164,18 @@ public abstract class TextField implements Field {
   /**
    * Returns true if this field is not set.
    */
+  @Override
   public boolean isNull() {
     return (getStringValue() == null || getStringValue().trim().equals(""));
   }
 
   /**
    * Set to null this field.
+   *
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */
+  @Override
   public void setNull() throws FormException {
     setStringValue(null);
   }
@@ -170,6 +183,7 @@ public abstract class TextField implements Field {
   /**
    * Tests equality beetwen this field and the specified field.
    */
+  @Override
   public boolean equals(Object o) {
     String s = getStringValue();
     if (s == null) {
@@ -196,6 +210,7 @@ public abstract class TextField implements Field {
   /**
    * Compares this field with the specified field.
    */
+  @Override
   public int compareTo(Object o) {
     String s = getStringValue();
     if (s == null) {
@@ -218,6 +233,7 @@ public abstract class TextField implements Field {
     }
   }
 
+  @Override
   public int hashCode() {
     String s = getStringValue();
     return ("" + s).toLowerCase().hashCode();

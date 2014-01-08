@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -127,7 +127,7 @@ To create a new keystore from scratch, containing a single
   ...
   <fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/">
     <configfile name="general.properties">
-      <parameter key="server.ssl">false</parameter> <!-- we don't want to stay in SSL mode -->
+      <parameter key="server.ssl">true</parameter> <!-- we don't want to stay in SSL mode -->
       <parameter key="server.http.port">8000</parameter> <!-- the web port as defined in JBoss -->
     </configfile>
   </fileset>

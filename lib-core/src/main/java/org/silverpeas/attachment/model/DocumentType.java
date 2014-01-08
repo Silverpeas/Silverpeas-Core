@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -62,5 +62,16 @@ public enum DocumentType {
 
   public String getName() {
     return this.name();
+  }
+
+  public static DocumentType decode(final String name) {
+    if (name != null) {
+      for (DocumentType documentType : DocumentType.values()) {
+        if (documentType.name().equals(name)) {
+          return documentType;
+        }
+      }
+    }
+    return null;
   }
 }

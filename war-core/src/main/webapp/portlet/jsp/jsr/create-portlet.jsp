@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -69,19 +69,25 @@
     <h2 id="create-success"><c:out value="${msgSuccess}" escapeXml="false"/></h2>
 </c:if>
 
+<script type="text/javascript">
+function selectPortlet() {
+	$('#title').val($('#portletList option:selected').text());
+}
 
+$(document).ready(function() {
+	selectPortlet();
+});
+</script>
 
-<form id="create-portlet" name="createForm" method="post" action="<%=DriverUtil.getAdminURL(request)%>" >
+<form id="create-portlet" name="createForm" method="post" action="<%=DriverUtil.getAdminURL(request)%>">
    	<c:set var="list" value="${sessionScope['com.sun.portal.portletcontainer.driver.admin.portlets']}" />
 	<table cellpadding="5">
 		<tr>
 			<td class="txtlibform"><fmt:message key="portlets.selectBasePortlet"/> :</td>
 			<td>
-				<select id="portletList" name="<%=AdminConstants.PORTLET_LIST%>">
+				<select id="portletList" name="<%=AdminConstants.PORTLET_LIST%>" onchange="selectPortlet()">
 		            <c:forEach items="${list}" var="portlet">
-		                <option value="<c:out value="${portlet.name}" />" >
-		                        <c:out value="${portlet.label}" />
-		                </option>
+		                <option value="<c:out value="${portlet.name}" />"><c:out value="${portlet.label}" /></option>
 		            </c:forEach>
 		        </select>
 				<input type="hidden" name="<%=AdminConstants.CREATE_PORTLET_WINDOW_SUBMIT%>" value="1"/>
@@ -98,14 +104,11 @@
 		</tr>
 	</table>
 </form>
-
 </view:board>
-<%
-Button cancelButton		= (Button) gef.getFormButton("Annuler", "javascript:window.close();", false);
-Button validateButton 	= (Button) gef.getFormButton(message.getString("portlets.createPortletWindow"), "javascript:document.createForm.submit();", false);
-
-ButtonPane buttonPane = gef.getButtonPane();
-buttonPane.addButton(validateButton);
-buttonPane.addButton(cancelButton);
-%>
-<br/><center><%=buttonPane.print()%></center><br/>
+<br/>
+<view:buttonPane>
+  <fmt:message var="createLabel" key="portlets.createPortletWindow"/>
+  <view:button label="${createLabel}" action="javascript:document.createForm.submit();"/>
+  <fmt:message var="cancelLabel" key="GML.cancel"/>
+  <view:button label="${cancelLabel}" action="javascript:window.close();"/>
+</view:buttonPane>

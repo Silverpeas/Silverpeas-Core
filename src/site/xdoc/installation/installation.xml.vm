@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<document>
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <author>Miguel Moquillon</author>
+    <title>Installation</title>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Pre-requisite">
+      <p>Silverpeas V5 has been tested and can be automatically deployed on JBoss 6.x. Silverpeas V5 has also been successfully deployed and run on other Application Servers (such as Websphere, Weblogic, ect.).
+        Please find a list of the tools you will need to install Silverpeas below.<br/>
+      </p>
+      <subsection name="Java 6">
+        <p>Silverpeas needs a Java SE Development Kit (JDK) of version 6, which can be downloaded from Oracle
+          <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html#jdk">here</a>.<br/>
+          Don't forget to set-up the environment variable <b>JAVA_HOME</b>.
+        </p>
+        <p>Users have encountered some problems when using JDK 7 with JBoss 6.x so we currently advise you against using Java 7 with Silverpeas.</p>
+      </subsection>
+      <subsection name="Apache Maven">
+        <p>Apache Maven 3.0.x is used in Silverpeas for the building of components and the assembly. It must be installed on the target platform.<br/>
+          To install Maven, follw these steps:
+          <ol>
+            <li>Download Maven 3.0.x from the <a href="http://maven.apache.org/download.html">Apache web site</a> or one of its mirrors.</li>
+            <li>Uncompress the downloaded archive in a directory</li>
+            <li>Define the environment variable <b>M2_HOME</b> to the resulting directory.</li>
+            <li>Add <code>%M2_HOME%\bin</code> to your <code>%PATH%</code> variable.</li>
+          </ol>
+        </p>
+        <p>
+          For a complete installation description, see <a href="http://www.sonatype.com/books/maven-book/reference/installation.html">Maven - The Definitive Guide</a>
+        </p>
+        <p>For more information about Apache Maven, please see the
+          <a href="http://maven.apache.org">their website</a> or
+          <a href="http://www.sonatype.com/books/maven-book/reference/">download the ebook</a>
+        </p>
+        <p>If you are behind a <b>proxy</b> don't forget to configure it correctly for Maven:
+          <ul>
+            <li>Edit or create the file <code>~/.m2/settings.xml</code>.</li>
+            <li>Add the follwing instructions according to your proxy configuration<br/>
+              <source><![CDATA[<settings>
+  ...
+  <proxies>
+   <proxy>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.somewhere.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.somewhere.com</nonProxyHosts>
+    </proxy>
+  </proxies>
+  ...
+</settings>]]></source>
+            </li>
+          </ul>
+        </p>
+        <p>
+          For a complete configuration description, see this <a href="http://maven.apache.org/guides/mini/guide-proxies.html">Maven documentation page</a>.
+          For a complete description of each parameter see <a href="http://maven.apache.org/ref/3.0.1/maven-settings/settings.html#proxy">Maven Settings.xml configuration page</a>.
+        </p>
+      </subsection>
+      <subsection name="Postgresql">
+        <p>Silverpeas can use any JDBC compliant RDBMS, however the Open source solution is pre-configured to run on PostgreSQL 9.x.
+          which can be downloaded from <a href="http://www.postgresql.org/download/">here</a>.
+        </p>
+        <p>You will have to create a database <i>SilverpeasV5</i> with a user <i>postgres/postgres</i> with administrative rights.
+          You may use the tool <a href="http://www.pgadmin.org/download/">
+            <strong>pgAdmin</strong>
+          </a> which provides a GUI to manage Postgresql.
+        </p>
+        <subsection name="Postgresql on GNU/Linux">
+          <p>For GNU/Linux users, here are the commands to run from a xTerm console to configure such a database :<br/>
+            <source>
+              <b>silverpeas@sd-7358:~$</b> sudo apt-get install postgresql
+              <b>silverpeas@sd-7358:~$</b>  sudo -i
+              <b>root@sd-7358:~$</b>  su – postgres
+              <b>postgres@sd-7358:~$</b> psql -d template1 -c "ALTER USER postgres WITH PASSWORD '*******'"
+              <b>#</b> createdb -E UTF-8 SilverpeasV5
+              <b>#</b> exit</source>
+          </p>
+        </subsection>
+      </subsection>
+    </section>
+    <section name="Installation">
+      <p>You will get better performance with GNU/Linux systems.</p>
+      <subsection name="Installing JBoss">
+        <p>
+          <b>Since version 5.8, Silverpeas runs by default with JBoss AS 6.1.0.<br/> If you are upgrading from Silverpeas 5.7 or older please check your JBoss version.<br/></b>
+          Please download it from:</p>
+        <ul>
+          <li>
+            <a href="http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final.zip">
+              <img src="../images/windows_logo_24X24.png"/>
+              <img src="../images/linux_logo_24X24.png"/>here for both Windows and GNU/Linux</a>
+          </li>
+        </ul>
+        <p>You have to set-up the environment variable <b>JBOSS_HOME</b> for the directory in which you have extracted the JBoss archive.</p>
+        <p>Please note that the <b>administration console</b> and the <b>JMX console</b> are activated per default on JBoss 6.x, if you plan to use this server in production, don't forget to <a href="http://docs.jboss.org/jbosssecurity/docs/6.0/security_guide/html_single/index.html#chap-Consoles_and_Invokers" >secure them</a> or to remove them, following files:</p>
+        <ul>
+          <li>
+            <i>$JBOSS_HOME/server/default/deploy/admin-console-activator-jboss-beans.xml</i>
+          </li>
+          <li>
+            <i>$JBOSS_HOME/server/default/deploy/jmx-console-activator-jboss-beans.xml</i>
+          </li>
+        </ul>
+        <p>the Jboss community provides also a groovy script to secure your Jboss 6.x instance : follow the instructions from <a href="http://community.jboss.org/wiki/SimpleWayToLockUpYourJBossASInstance">this page</a>.</p>
+        <p>The first installation of Silverpeas will secure this for you since Silverpeas 5.9, but be careful, <b>the upgrade process doesn't secure your server.</b></p>
+        <p>Since the version 6.x, JBoss AS embeds HornetQ as the JMS provider. The version in JBoss AS 6.1.0 is buggy and consequence you need to upgrade it to a more recent version. From the minor version 5.11.1, Silverpeas is provided with an upgrade of HornetQ to the version 2.2.24. For the older versions of Silverpeas V5 (since 5.9) , an archive with all the necessary for upgrading HornetQ is available: <a href="http://repository.silverpeas.org/files/hornetq-upgrade.zip">hornetq-upgrade.zip</a>; unzip the archive and copy the content of the unzipped folder <code>hornetq-upgrade</code> into your Silverpeas installation (<code>%SILVERPEAS_HOME%</code> on Windows, <code>$SILVERPEAS_HOME</code> on Unix).</p>
+      </subsection>
+      <subsection name="Preparing Silverpeas">
+        <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download </p>
+        <fieldset>
+          <legend>Stable release for JBoss AS 6.x</legend>
+          <ul>
+            <li>
+              <a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}-jboss6.zip">
+                <img src="../images/windows_logo_24X24.png"/> the last stable version for Windows</a>
+            </li>
+            <li>
+              <a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}-jboss6.tar.gz">
+                <img src="../images/linux_logo_24X24.png"/> the last stable version  for GNU/Linux</a>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset>
+          <legend>Development release</legend>
+          <ul>
+            <li>
+              <a href="http://repository.silverpeas.org/files/silverpeas-${installer_version}-jboss6.zip">
+                <img src="../images/windows_logo_24X24.png"/> the current development version for Windows</a>
+            </li>
+            <li>
+              <a href="http://repository.silverpeas.org/files/silverpeas-${installer_version}-jboss6.tar.gz">
+                <img src="../images/linux_logo_24X24.png"/> the current development version for GNU/Linux</a>
+            </li>
+          </ul>
+        </fieldset>
+        <p>1. Unzip/decompress the contents into a <code>silverpeas</code> directory,</p>
+        <p>2. Define an environment variable <b>SILVERPEAS_HOME</b> that points to this directory.</p>
+        <p>For example:<br/>
+          Unzip the <b>silverpeas-${installer_stable_version}-jboss6.zip</b> file into <i>C:\Java</i>.<br/>
+          The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:/Java/silverpeas-${installer_stable_version}-jboss6</i> (the slash instead of backslash characters are normal and the
+          environment variable SILVERPEAS_HOME should be set as such).
+        </p>
+      </subsection>
+      <subsection name="Configuration">
+        <p>Silverpeas configuration is defined in the directory <code>%SILVERPEAS_HOME%\setup\settings\</code>.
+          There you should find three files :
+          <ul>
+            <li>
+              <b>config.properties: </b>where you can configure the database connection and other Silverpeas parameters
+              such as the JVM parameters for the application. We provide a <i>sample_config.properties</i> file which you can copy and edit to specify only your configuration changes.</li>
+            <li>
+              <b>JBossSettings.xml: </b>this is used for configuraing JBoss, you should not have to edit it.</li>
+            <li>
+              <b>SilverpeasSettings.xml: </b>this is a default configuration for Silverpeas. If you want your own specific configuration,
+              you can copy and paste this file to <i>CustomerSettings.xml</i> where you can define your own configuration. Creating the
+              <i>CustomerSettings.xml</i> file will avoid editing the configuration files for each upgrade of Silverpeas.</li>
+          </ul>
+        </p>
+      </subsection>
+      <subsection name="Deploying Silverpeas">
+        <p>This is a 4 steps operation which are to be executed inside the directory <code>%SILVERPEAS_HOME%\bin</code>:</p>
+        <ol>
+          <li>mvn clean install</li>
+          <li>appBuilder.bat</li>
+          <li>SilverpeasSettings.bat</li>
+          <li>dbBuilder.bat</li>
+        </ol>
+      </subsection>
+      <subsection name="Launching Silverpeas">
+        <p>In %SILVERPEAS_HOME%\bin you can launch Silverpeas with
+          <b>silverpeas_start_jboss.cmd</b>.
+        </p>
+        <p>In %SILVERPEAS_HOME%\bin you can stop Silverpeas with
+          <b>silverpeas_stop_jboss.cmd</b>.
+        </p>
+        <p>
+          You can now access Silverpeas through the following url: <a href="http://localhost:8000/silverpeas">http://localhost:8000/silverpeas</a>
+          and using the account: <strong>SilverAdmin/SilverAdmin</strong>.
+          <!-- Google Code for SuiviSilverpeas Conversion Page -->
+          <script type="text/javascript">
+            /* <![CDATA[ */
+              var google_conversion_id = 1067623059;
+              var google_conversion_language = "en";
+              var google_conversion_format = "3";
+              var google_conversion_color = "ffffff";
+              var google_conversion_label = "wINQCMmd4AEQk8WK_QM";
+              var google_conversion_value = 0;
+              /* ]]> */
+          </script>
+          <script type="text/javascript" src="http://www.googleadservices.com/pagead/conversion.js">
+          </script>
+          <noscript>
+            <div style="display:inline;">
+              <img height="1" width="1" style="border-style:none;" alt="" src="http://www.googleadservices.com/pagead/conversion/1067623059/?label=wINQCMmd4AEQk8WK_QM&amp;guid=ON&amp;script=0"/>
+            </div>
+          </noscript>
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>

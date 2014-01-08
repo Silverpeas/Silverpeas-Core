@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -50,6 +50,8 @@
     Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
     UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
     int totalNumberOfContributions = 0;
+    int totalNumberOfContributionsByGroup = 0;
+    int totalNumberOfContributionsByUser = 0;
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
@@ -112,11 +114,13 @@
 	  		if(StringUtil.isDefined(filterIdGroup)) {
 	    		cellTextCount = arrayLine.addArrayCellText(item[4]);
 	    		cellTextCount.setCompareOn(new Integer(item[4]));
+	    		totalNumberOfContributionsByGroup += Integer.parseInt(item[4]);
 	    	}
 
 	  		if(StringUtil.isDefined(filterIdUser)) {
 	    		cellTextCount = arrayLine.addArrayCellText(item[5]);
 	    		cellTextCount.setCompareOn(new Integer(item[5]));
+	    		totalNumberOfContributionsByUser += Integer.parseInt(item[5]);
 	    	}
 		}
 	}
@@ -250,7 +254,15 @@
 			<img src="<%=m_context%>/ChartServlet/?chart=PUBLI_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
 		</div>
 		<div align="center" id="total">
-			<span><span class="number"><%=totalNumberOfContributions %></span> <%=resources.getString("silverStatisticsPeas.sums.contributions") %></span>
+			<span><span class="number">
+			<% if(StringUtil.isDefined(filterIdGroup)) { %>
+				<%=totalNumberOfContributionsByGroup %>
+			<% } else if (StringUtil.isDefined(filterIdUser)) { %>
+				<%=totalNumberOfContributionsByUser %>
+			<% } else { %>
+				<%=totalNumberOfContributions %>
+			<% } %>
+			</span> <%=resources.getString("silverStatisticsPeas.sums.contributions") %></span>
 		</div>
   <% } %>
   <br/>

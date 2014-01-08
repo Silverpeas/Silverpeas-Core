@@ -1,11 +1,9 @@
 package org.silverpeas.util.mail;
 
+import com.silverpeas.util.PathTestUtil;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
-
-import com.silverpeas.util.PathTestUtil;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 

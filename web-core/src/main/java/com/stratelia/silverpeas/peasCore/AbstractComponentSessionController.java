@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -46,6 +46,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 
 
 
@@ -58,8 +59,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * The default character encoded supported by Silverpeas.
    */
   public static final String CHARACTER_ENCODING = "UTF-8";
-  private MainSessionController controller = null;
   protected ComponentContext context = null;
+  private MainSessionController controller = null;
   private String rootName = null;
   private ResourceLocator message = null;
   private ResourceLocator icon = null;
@@ -408,8 +409,17 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public String getComponentParameterValue(String parameterName) {
-    return controller.getComponentParameterValue(
-        getComponentId(), parameterName);
+    return controller.getComponentParameterValue(getComponentId(), parameterName);
+  }
+
+  /**
+   * Gets the value of the specified current component's parameter.
+   * @param parameterName the name (centralized) of the parameter to get.
+   * @return the value of the parameter.
+   */
+  @Override
+  public String getComponentParameterValue(ComponentInstanceParameterName parameterName) {
+    return getComponentParameterValue(parameterName.name());
   }
 
   /**

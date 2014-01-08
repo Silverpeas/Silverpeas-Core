@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -35,9 +31,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
@@ -57,6 +52,7 @@ import static com.stratelia.silverpeas.notificationManager.NotificationTemplateK
  * pour reellement envoyer les notifications
  */
 public class NotificationSender implements java.io.Serializable {
+
   private static final long serialVersionUID = 4165938893905145809L;
   private static ResourceLocator settings = new ResourceLocator(
       "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
@@ -65,6 +61,7 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Constructor for a standard component
+   *
    * @param instanceId the instance Id of the calling's component
    */
   public NotificationSender(String instanceId) {
@@ -74,17 +71,19 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Method declaration
+   *
    * @param metaData
    * @throws NotificationManagerException
    * @see
    */
   public void notifyUser(NotificationMetaData metaData)
-          throws NotificationManagerException {
+      throws NotificationManagerException {
     notifyUser(NotifMediaType.COMPONENT_DEFINED.getId(), metaData);
   }
 
   /**
    * Indicates if the notification is manual (sent by a Silverpeas user) or automatic.
+   *
    * @param metaData the notification metadata.
    * @return true if the notification is sent by a Silverpeas user - false otherwise.
    */
@@ -94,6 +93,7 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Method declaration
+   *
    * @param aMediaType
    * @param metaData
    * @throws NotificationManagerException
@@ -102,7 +102,8 @@ public class NotificationSender implements java.io.Serializable {
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {
 
-    OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
+    OrganisationController orgaController = OrganisationControllerFactory.
+        getOrganisationController();
 
     // String[] allUsers;
     Set<UserRecipient> usersSet = new HashSet<UserRecipient>();
@@ -158,7 +159,7 @@ public class NotificationSender implements java.io.Serializable {
               if (StringUtil.isDefined(receiver_users)) {
                 template.setAttribute(notification_receiver_users.toString(), receiver_users);
               }
-              String receiver_groups = addReceiverGroups(getGroupSet(metaData,settings));
+              String receiver_groups = addReceiverGroups(getGroupSet(metaData, settings));
               if (StringUtil.isDefined(receiver_groups)) {
                 template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
               }
@@ -216,7 +217,8 @@ public class NotificationSender implements java.io.Serializable {
 
   private boolean displayGroup(ResourceLocator settings, String groupId) {
     String threshold = settings.getString("notif.receiver.displayUser.threshold");
-    OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
+    OrganisationController orgaController = OrganisationControllerFactory.
+        getOrganisationController();
     Group group = orgaController.getGroup(groupId);
     int nbUsers = group.getNbUsers();
     boolean res1 = settings.getBoolean("notif.receiver.displayGroup", false);
@@ -240,7 +242,8 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   private String addReceiverUsers(Set<UserRecipient> usersSet) {
-    OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
+    OrganisationController orgaController = OrganisationControllerFactory.
+        getOrganisationController();
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;
@@ -256,7 +259,7 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   private String addReceiverGroups(Set<GroupRecipient> groupsSet) {
-    OrganisationController orgaController =  OrganisationControllerFactory
+    OrganisationController orgaController = OrganisationControllerFactory
         .getOrganisationController();
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
@@ -274,6 +277,7 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Add all recipients to the notification message.
+   *
    * @param usersSet set of the recipients.
    * @param languages set of recipients languages.
    * @param metaData the message metadata.
@@ -349,7 +353,7 @@ public class NotificationSender implements java.io.Serializable {
     List<String> userIds = new ArrayList<String>(usersLanguage.keySet());
     Iterator<String> languages = usersLanguage.values().iterator();
     List<String> result = new ArrayList<String>();
-    String language = null;
+    String language;
     int u = 0;
     while (languages.hasNext()) {
       language = languages.next();
@@ -407,6 +411,7 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Extract the last number from the string
+   *
    * @param chaine The String to clean
    * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
    */

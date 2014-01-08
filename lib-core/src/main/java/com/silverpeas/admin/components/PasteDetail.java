@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,10 +24,29 @@
 
 package com.silverpeas.admin.components;
 
+import java.util.Map;
+
 public class PasteDetail {
+  private String fromSpaceId;
   String fromComponentId;
+  private String toSpaceId;
   String toComponentId;
   String userId;
+  private Map<String, String> options;
+  public final static String OPTION_PREFIX = "PasteOption_";
+  
+  public PasteDetail() {
+    
+  }
+  
+  public PasteDetail(String userId) {
+    setUserId(userId);
+  }
+  
+  public PasteDetail(String fromComponentId, String userId) {
+    setFromComponentId(fromComponentId);
+    setUserId(userId);
+  }
 
   public PasteDetail(String fromComponentId, String toComponentId, String userId) {
     setFromComponentId(fromComponentId);
@@ -57,6 +76,30 @@ public class PasteDetail {
 
   public void setUserId(String userId) {
     this.userId = userId;
+  }
+
+  public void setOptions(Map<String, String> options) {
+    this.options = options;
+  }
+
+  public Map<String, String> getOptions() {
+    return options;
+  }
+
+  public void setToSpaceId(String toSpaceId) {
+    this.toSpaceId = toSpaceId;
+  }
+
+  public String getToSpaceId() {
+    return toSpaceId;
+  }
+
+  public void setFromSpaceId(String fromSpaceId) {
+    this.fromSpaceId = fromSpaceId;
+  }
+
+  public String getFromSpaceId() {
+    return fromSpaceId;
   }
 
 }

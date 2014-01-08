@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -61,6 +61,7 @@ public class UnitReport {
   public final static int ERROR_CANT_UPDATE_CONTENT = 10;
   public final static int ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT = 11;
   public final static int ERROR_NOT_EXISTS_PUBLICATION_FOR_ID = 12;
+  public final static int ERROR_FILE_SIZE_EXCEEDS_LIMIT = 13;
 
   public UnitReport() {
   }
@@ -113,5 +114,12 @@ public class UnitReport {
 
   public String getLabel() {
     return label;
+  }
+  
+  /**
+   * @param string
+   */
+  public void setLabel(String string) {
+    label = string;
   }
 }

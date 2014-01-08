@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,35 +23,47 @@
  */
 package org.silverpeas.admin.space.quota.process.check;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.process.io.IOAccess;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.management.AbstractFileProcessCheck;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.quota.constant.QuotaLoad;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.silverpeas.admin.space.SpaceServiceFactory;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.process.io.IOAccess;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.management.AbstractFileProcessCheck;
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-
 /**
  * @author Yohann Chastagnier
  */
 @Named
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
+  protected static boolean dataStorageInSpaceQuotaActivated;
+
+  static {
+    final ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings",
+            "");
+    dataStorageInSpaceQuotaActivated =
+        settings.getBoolean("quota.space.datastorage.activated", false);
+  }
 
   @Inject
   private OrganisationController organizationController;
@@ -66,15 +78,20 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   public void checkFiles(final ProcessExecutionContext processExecutionProcess,
       final FileHandler fileHandler) throws Exception {
 
+    // If not activated, noting is done
+    if (!dataStorageInSpaceQuotaActivated) {
+      return;
+    }
+
     // Treatment on write only
     if (IOAccess.READ_WRITE.equals(fileHandler.getIoAccess())) {
 
       // Checking data storage quota on each space detected
       for (final SpaceInst space : indentifyHandledSpaces(processExecutionProcess, fileHandler)) {
         try {
-          SpaceServiceFactory.getDataStorageSpaceQuotaService().verify(
-              DataStorageSpaceQuotaKey.from(space),
-              SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
+          SpaceServiceFactory.getDataStorageSpaceQuotaService()
+              .verify(DataStorageSpaceQuotaKey.from(space),
+                  SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
         } catch (final QuotaException quotaException) {
 
           // Loading the component from which a user action has generated a quota exception
@@ -85,7 +102,11 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
           }
 
           // Throwing the data storage exception
-          throw new DataStorageQuotaException(quotaException.getQuota(), space, fromComponent);
+          DataStorageQuotaException exception =
+              new DataStorageQuotaException(quotaException.getQuota(), space, fromComponent);
+          NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+              .performExceptionMessage(exception, MessageManager.getLanguage()));
+          throw exception;
         }
       }
     }
@@ -120,10 +141,13 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     }
 
     // Loading all SpaceInst detected
-    final List<SpaceInst> spaces = new ArrayList<SpaceInst>();
+    final List<SpaceInst> handledSpaces = new ArrayList<SpaceInst>();
     for (final String spaceId : spaceIds) {
-      spaces.add(organizationController.getSpaceInstById(spaceId));
+      SpaceInst handledSpace = organizationController.getSpaceInstById(spaceId);
+      if (!QuotaLoad.UNLIMITED.equals(handledSpace.getDataStorageQuota().getLoad())) {
+        handledSpaces.add(handledSpace);
+      }
     }
-    return spaces;
+    return handledSpaces;
   }
 }

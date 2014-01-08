@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -30,17 +30,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.management.AbstractFileProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
@@ -55,12 +52,8 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -292,47 +285,38 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     final List<String> result = new ArrayList<String>();
     final String itemName = template.getFieldName();
     try {
-      // TODO - MODIFYING THIS PROCESSES EXECUTION AFTER NEW ATTACHMENT HANDLING INTEGRATION
-      ProcessFactory.getProcessManagement().execute(
-          new AbstractFileProcess<ProcessExecutionContext>() {
-            @Override
-            public void processFiles(ProcessExecutionContext processExecutionProcess,
-                ProcessSession session, FileHandler fileHandler) throws Exception {
-
-              String value = processUploadedFile(items, itemName, pageContext, fileHandler);
-              String param =
-                  FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
-              boolean updateValue = true;
-              if (param != null && !pageContext.isCreation()) {
-                // field contained a file
-                boolean deleteAttachment = false;
-                if (param.startsWith("remove_")) {
-                  // user removes explicitly file
-                  deleteAttachment = true;
-                } else if (value != null && StringUtil.isInteger(param)) {
-                  // new file has been uploaded
-                  // existing file must be removed
-                  deleteAttachment = true;
-                } else if (value == null) {
-                  // file has not been updated
-                  // field must not be updated
-                  updateValue = false;
-                }
-                if (deleteAttachment) {
-                  String attachmentId = field.getAttachmentId();
-                  deleteAttachment(attachmentId, pageContext);
-                }
-              }
-              if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-                  && !StringUtil.isDefined(value)) {
-                // do nothing
-                updateValue = false;
-              }
-              if (updateValue) {
-                result.addAll(update(value, field, template, pageContext));
-              }
-            }
-          }, new ProcessExecutionContext(pageContext.getComponentId()));
+      String value = processUploadedFile(items, itemName, pageContext);
+      String param =
+          FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
+      boolean updateValue = true;
+      if (param != null && !pageContext.isCreation()) {
+        // field contained a file
+        boolean deleteAttachment = false;
+        if (param.startsWith("remove_")) {
+          // user removes explicitly file
+          deleteAttachment = true;
+        } else if (value != null && StringUtil.isInteger(param)) {
+          // new file has been uploaded
+          // existing file must be removed
+          deleteAttachment = true;
+        } else if (value == null) {
+          // file has not been updated
+          // field must not be updated
+          updateValue = false;
+        }
+        if (deleteAttachment) {
+          String attachmentId = field.getAttachmentId();
+          deleteAttachment(attachmentId, pageContext);
+        }
+      }
+      if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+          && !StringUtil.isDefined(value)) {
+        // do nothing
+        updateValue = false;
+      }
+      if (updateValue) {
+        result.addAll(update(value, field, template, pageContext));
+      }
     } catch (Exception e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
@@ -340,7 +324,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   private String processUploadedFile(List<FileItem> items, String parameterName,
-      PagesContext pagesContext, FileHandler fileHandler) throws Exception {
+      PagesContext pagesContext) throws Exception {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);
     if (!item.isFormField()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -23,7 +23,6 @@ package com.silverpeas.sharing.model;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
-import com.silverpeas.sharing.services.VersionFileAccessControl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentException;
@@ -41,8 +40,8 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue("Versionned")
 public class VersionFileTicket extends Ticket {
+  private static final long serialVersionUID = 7046398587440076818L;
 
-  private static final long serialVersionUID = 1L;
   private static final VersionFileAccessControl accessControl = new VersionFileAccessControl();
 
   public VersionFileTicket(int sharedObjectId, String componentId, String creatorId,
@@ -91,7 +90,7 @@ public class VersionFileTicket extends Ticket {
   }
 
   @Override
-  public ShareableAccessControl<HistorisedDocument> getAccessControl() {
+  public ShareableAccessControl<VersionFileTicket, HistorisedDocument> getAccessControl() {
     return accessControl;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,38 +29,38 @@
 (function($) {
 
   $.popup = {
-    initialized : false,
-    doInitialize : function() {
+    initialized: false,
+    doInitialize: function() {
       if (!$.popup.initialized) {
         $.i18n.properties({
-          name : 'generalMultilang',
-          path : webContext + '/services/bundles/org/silverpeas/multilang/',
-          language : '$$', /* by default the language of the user in the current session */
-          mode : 'map'
+          name: 'generalMultilang',
+          path: webContext + '/services/bundles/org/silverpeas/multilang/',
+          language: '$$', /* by default the language of the user in the current session */
+          mode: 'map'
         });
         $.popup.initialized = true;
       }
     },
-    showWaiting : function() {
+    showWaiting: function() {
       var $waiting = $("#spWaiting");
-      if ($waiting.size() == 0) {
+      if ($waiting.size() === 0) {
         $waiting = $("<div>").attr('id', 'spWaiting').attr('style',
-            'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
+                'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
         $(document.body).append($waiting);
         $waiting.popup("waiting");
+
+        // Little hack to prevent some unexpected errors when escape key is
+        // pressed during an ajax request
+        $waiting.dialog("widget").keydown(function(e) {
+          if (e.keyCode === 27) {
+            e.preventDefault();
+          }
+        });
       } else {
         $waiting.dialog("open");
       }
-
-      // Little hack to prevent some unexpected errors when escape key is
-      // pressed during an ajax request
-      $waiting.dialog("widget").keydown(function(e) {
-        if (e.keyCode == 27) {
-          e.preventDefault();
-        }
-      });
     },
-    hideWaiting : function() {
+    hideWaiting: function() {
       var $waiting = $("#spWaiting");
       if ($waiting.size() > 0) {
         $waiting.dialog("close");
@@ -72,19 +72,18 @@
    * The different methods on messages handled by the plugin.
    */
   var methods = {
-
     /**
      * The modal free dialog : configure as you want your popup.
      */
-    free : function(options) {
+    free: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
 
       // Internal settings
       settings = $.extend(__buildInternalSettings({
-        buttonDisplayed : false,
-        width : 'auto'
+        buttonDisplayed: false,
+        width: 'auto'
       }), settings);
 
       if (__isIE7()) {
@@ -100,28 +99,26 @@
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal basic dialog. (scroll is deactivated)
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
-    basic : function(options) {
+    basic: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonDisplayed : false,
-        disabledParentScroll : true,
-        width : 'auto'
+        buttonDisplayed: false,
+        disabledParentScroll: true,
+        width: 'auto'
       }));
 
       if (__isIE7()) {
@@ -137,87 +134,80 @@
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal information dialog.
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    information : function(options) {
+    information: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      if (!settings.title || settings.title == null || settings.title.length == 0) {
+      if (!settings.title) {
         settings.title = $.i18n.prop('GML.information.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo : $.i18n.prop('GML.ok'),
-        isMaxWidth : true
+        buttonTextNo: $.i18n.prop('GML.ok'),
+        isMaxWidth: true
       }));
 
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal help dialog.
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    help : function(options) {
+    help: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      if (!settings.title || settings.title == null || settings.title.length == 0) {
+      if (!settings.title) {
         settings.title = $.i18n.prop('GML.help.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo : $.i18n.prop('GML.ok'),
-        isMaxWidth : true,
-        dialogClass : 'help-modal-message'
+        buttonTextNo: $.i18n.prop('GML.ok'),
+        isMaxWidth: true,
+        dialogClass: 'help-modal-message'
       }));
 
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal validation dialog.
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    validation : function(options) {
+    validation: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextYes : $.i18n.prop('GML.validate'),
-        buttonTextNo : $.i18n.prop('GML.cancel'),
-        isMaxWidth : true
+        buttonTextYes: $.i18n.prop('GML.validate'),
+        buttonTextNo: $.i18n.prop('GML.cancel'),
+        isMaxWidth: true
       }));
 
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal confirmation dialog.
      * A warning icon is automatically inserted into the title bar.
@@ -225,14 +215,13 @@
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
-    confirmation : function(options) {
+    confirmation: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      if (!settings.title || settings.title == null || settings.title.length == 0) {
+      if (!settings.title) {
         settings.title = $.i18n.prop('GML.confirmation.dialog.title');
       }
       var $title = $('<div>').attr('style', 'display: table;');
@@ -243,46 +232,44 @@
       var $titleText = $('<div>').attr('style', 'display: table-cell;vertical-align: bottom;');
       $titleText.html(settings.title);
       $titleRow.append($('<div>').attr('style',
-          'display: table-cell;vertical-align: middle;').append($icon));
+              'display: table-cell;vertical-align: middle;').append($icon));
       $titleRow.append($titleText);
       settings.title = $('<div>').append($title).html();
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextYes : $.i18n.prop('GML.yes'),
-        buttonTextNo : $.i18n.prop('GML.no'),
-        isMaxWidth : true
+        buttonTextYes: $.i18n.prop('GML.yes'),
+        buttonTextNo: $.i18n.prop('GML.no'),
+        isMaxWidth: true
       }));
 
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal preview dialog.
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
-    preview : function(options) {
+    preview: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
       settings.title = $.i18n.prop('GML.preview.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title =
-            settings.title + " " + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+                settings.title + " " + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonDisplayed : false,
-        width : 'auto'
+        buttonDisplayed: false,
+        width: 'auto'
       }));
 
       if (__isIE7()) {
@@ -298,33 +285,30 @@
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal view dialog.
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed,
-     * - keydown : the callback on keydown event on the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
-    view : function(options) {
+    view: function(options) {
 
       // Common settings
       var settings = __extendCommonSettings(options);
       settings.title = $.i18n.prop('GML.view.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title =
-            settings.title + " " + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
+                settings.title + " " + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonDisplayed : false,
-        disabledParentScroll : true,
-        width : 'auto'
+        buttonDisplayed: false,
+        width: 'auto'
       }));
 
       if (__isIE7()) {
@@ -340,11 +324,10 @@
       // Dialog
       return __openPopup($(this), settings);
     },
-
     /**
      * The modal waiting dialog.
      */
-    waiting : function() {
+    waiting: function() {
       var $container = $(this);
 
       // Common settings
@@ -352,11 +335,11 @@
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        displayTitle : false,
-        closeOnEscape : false,
-        buttonDisplayed : false,
-        width : "32px",
-        height : 39
+        displayTitle: false,
+        closeOnEscape: false,
+        buttonDisplayed: false,
+        width: "32px",
+        height: 39
       }));
 
       // Waiting animation
@@ -391,10 +374,9 @@
    */
   function __extendCommonSettings(options) {
     var settings = {
-      title : '',
-      callback : null,
-      keydown : null,
-      callbackOnClose : null
+      title: '',
+      callback: null,
+      callbackOnClose: null
     };
     if (options) {
       $.extend(settings, options);
@@ -407,16 +389,16 @@
    */
   function __buildInternalSettings(options) {
     var settings = {
-      displayTitle : true,
-      closeOnEscape : true,
-      disabledParentScroll : false,
-      buttonDisplayed : true,
-      buttonTextYes : '',
-      buttonTextNo : '',
-      isMaxWidth : false,
-      width : 570,
-      height : 'auto',
-      dialogClass : ''
+      displayTitle: true,
+      closeOnEscape: true,
+      disabledParentScroll: false,
+      buttonDisplayed: true,
+      buttonTextYes: '',
+      buttonTextNo: '',
+      isMaxWidth: false,
+      width: 570,
+      height: 'auto',
+      dialogClass: ''
     };
     if (options) {
       $.extend(settings, options);
@@ -428,7 +410,7 @@
    * Private function that checks if the browser is an IE7 one
    */
   function __isIE7() {
-    return (navigator.appVersion.indexOf("MSIE 7.") != -1);
+    return (navigator.appVersion.indexOf("MSIE 7.") !== -1);
   }
 
   /**
@@ -444,13 +426,13 @@
     return $this.each(function() {
       var $_this = $(this);
       $_this.dialog({
-        closeOnEscape : options.closeOnEscape,
-        title : options.title,
-        autoOpen : false,
-        modal : true,
-        resizable : false,
-        height : options.height,
-        dialogClass : options.dialogClass
+        closeOnEscape: options.closeOnEscape,
+        title: options.title,
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        height: options.height,
+        dialogClass: options.dialogClass
       });
 
       // Removing the title if requested
@@ -463,8 +445,8 @@
         var buttons = [];
         if (options.buttonTextYes) {
           buttons.push({
-            text : options.buttonTextYes,
-            click : function() {
+            text: options.buttonTextYes,
+            click: function() {
               var isok = true;
               if (options.callback) {
                 isok = options.callback.call(this);
@@ -477,8 +459,8 @@
         }
         if (options.buttonTextNo) {
           buttons.push({
-            text : options.buttonTextNo,
-            click : function() {
+            text: options.buttonTextNo,
+            click: function() {
               $_this.dialog("close");
             }
           });
@@ -507,18 +489,11 @@
 
       // Width
       var width = "" + options.width;
-      width = (width != 'auto') ? width.replace(/px/, '') + 'px' : width;
+      width = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
       if (options.isMaxWidth) {
         $_this.dialog("option", "width", "auto");
       } else {
         $_this.dialog("option", "width", width);
-      }
-
-      // keydown
-      if (options.keydown) {
-        $_this.dialog("widget").keydown(function(e) {
-          options.keydown.call(this, e);
-        });
       }
 
       // Dialog opening
@@ -536,9 +511,9 @@
       if (options.isMaxWidth) {
         // If max width is required, resizing and repositioning after the dialog open
         $_this.dialog("widget").css('max-width', width);
-        $_this.dialog({ position : { my : "center", at : "center", of : window } });
+        $_this.dialog({position: {my: "center", at: "center", of: window}});
       }
-    })
+    });
   }
 
 })(jQuery);
@@ -555,22 +530,22 @@
 function getHtmlAndDisplayInPopup(url, options) {
   $.popup.showWaiting();
   $.ajax({
-    url : url,
-    type : 'GET',
-    dataType : 'html',
-    cache : false,
-    async : false,
-    success : function(data, status, jqXHR) {
+    url: url,
+    type: 'GET',
+    dataType: 'html',
+    cache: false,
+    async: false,
+    success: function(data, status, jqXHR) {
       var $popup = $('#popupHelperContainer');
       if ($popup.length == 0) {
-        $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+        $popup = $('<div>', {'id': 'popupHelperContainer', 'style': 'display: none'});
         $popup.appendTo(document.body);
       }
       $popup.empty();
       $popup.append(data);
       $popup.popup('free', options);
     },
-    error : function(jqXHR, textStatus, errorThrown) {
+    error: function(jqXHR, textStatus, errorThrown) {
       alert(errorThrown);
     }
   });

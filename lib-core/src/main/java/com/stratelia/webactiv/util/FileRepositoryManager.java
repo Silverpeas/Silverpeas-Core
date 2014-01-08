@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,22 +20,20 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import org.silverpeas.search.indexEngine.IndexFileManager;
-import org.silverpeas.util.UnitUtil;
-
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 import static java.io.File.separatorChar;
 
@@ -253,6 +251,9 @@ public class FileRepositoryManager {
     if (!StringUtil.isDefined(extension)) {
       extension = filename;
     }
+    if (extension == null) {
+      extension = "";
+    }
     String fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
     if (fileIcon == null) {
       fileIcon = unknownFileIcon;
@@ -310,6 +311,15 @@ public class FileRepositoryManager {
       return "1 < t < 5 mins";
     }
     return " t > 5 mins";
+  }
+
+  /**
+   * Gets the file size limit for an upload.
+   * @return
+   */
+  public static long getUploadMaximumFileSize() {
+    return uploadSettings.getLong("MaximumFileSize",
+        UnitUtil.convertTo(10, MemoryUnit.MB, MemoryUnit.B));
   }
 
   /**

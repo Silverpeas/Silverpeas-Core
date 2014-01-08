@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -184,6 +184,10 @@ public class WAIndexSearcher {
           TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
           if (termQueryOnAuthor != null) {
             booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
+          }
+          PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
+          if (termQueryOnFolder != null) {
+            booleanQuery.add(termQueryOnFolder, BooleanClause.Occur.MUST);
           }
 
           try {
@@ -401,6 +405,7 @@ public class WAIndexSearcher {
     indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
     indexEntry.setFilename(doc.get(IndexManager.FILENAME));
+    indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
     indexEntry.setScore(scoreDoc.score); // TODO check the score.
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
@@ -581,5 +586,13 @@ public class WAIndexSearcher {
     }
     Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
     return new TermQuery(authorTerm);
+  }
+  
+  protected PrefixQuery getTermQueryOnFolder(QueryDescription query) {
+    if (!StringUtil.isDefined(query.getRequestedFolder())) {
+      return null;
+    }
+    Term term = new Term(IndexManager.PATH, query.getRequestedFolder());
+    return new PrefixQuery(term);
   }
 }

@@ -60,6 +60,7 @@
   <script type="text/javascript">
     var webContext = '<%=m_context%>';
     $(document).ready(function() {
+      $('#oldPassword').focus();
       handlePasswordForm({
         passwordFormId : 'changePwdForm',
         passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePassword"/>',
@@ -100,17 +101,18 @@
         <p><label><span><%=authenticationBundle.getString(
             "authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
         </p>
-        <br/>
 
-        <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-          <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><img src="<%=m_context%>/images/bt-ok.png" alt=""/></a>
-        </p>
+        <div class="submit">
+          <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
+            <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><span><span>OK</span></span></a>
+          </p>
 
-        <p>
+          <p>
           <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
             <%=authenticationBundle.getString("authentication.password.showRules") %>
           </a></span>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   </div>

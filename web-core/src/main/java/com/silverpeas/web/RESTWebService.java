@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,13 +23,10 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.session.SessionInfo;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationController;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -37,10 +34,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import java.util.Collection;
 
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
+
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.session.SessionInfo;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
@@ -48,6 +51,11 @@ import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
  */
 public abstract class RESTWebService {
 
+  /**
+   * The HTTP header parameter that provides the real size of an array of resources. It is for
+   * client side when a pagination mechanism is used in order to calculate the number of pages.
+   */
+  public static final String RESPONSE_HEADER_ARRAYSIZE = "X-Silverpeas-Size";
   @Inject
   private OrganisationController organizationController;
   @Context
@@ -58,6 +66,8 @@ public abstract class RESTWebService {
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
   private Collection<SilverpeasRole> userRoles = null;
+
+  private ResourceLocator bundle = null;
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
@@ -80,16 +90,19 @@ public abstract class RESTWebService {
    * authentication failure).
    */
   public void validateUserAuthentication(final UserPriviledgeValidation validation) throws
-          WebApplicationException {
+      WebApplicationException {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
     // If user authentication is done by API Token catched from HTTP URL request, HTTP_SESSIONKEY
     // is not returned into HTTP response header
     if (request.getHeader(HTTP_SESSIONKEY) != null || (request.getHeader(HTTP_AUTHORIZATION) != null
-            && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
+        && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
     }
     this.userDetail = session.getUserDetail();
+    if (this.userDetail != null) {
+      MessageManager.setLanguage(this.userDetail.getUserPreferences().getLanguage());
+    }
   }
 
   /**
@@ -107,7 +120,7 @@ public abstract class RESTWebService {
    * resource.
    */
   public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
-          WebApplicationException {
+      WebApplicationException {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }
 
@@ -160,11 +173,12 @@ public abstract class RESTWebService {
    */
   protected UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
-            getUserDetail().getId());
+        getUserDetail().getId());
   }
 
   /**
    * Gets roles of the authenticated user.
+   *
    * @return
    */
   protected Collection<SilverpeasRole> getUserRoles() {
@@ -182,5 +196,32 @@ public abstract class RESTWebService {
    */
   protected OrganisationController getOrganisationController() {
     return organizationController;
+  }
+
+  /**
+   * Gets the location of the bundle to use.
+<<<<<<< HEAD
+=======
+   *
+>>>>>>> 5cb005970119cb3c84dc9f7fa344814104fe20a8
+   * @return
+   */
+  protected String getBundleLocation() {
+    return null;
+  }
+
+  /**
+   * Gets the bundle to use.
+<<<<<<< HEAD
+=======
+   *
+>>>>>>> 5cb005970119cb3c84dc9f7fa344814104fe20a8
+   * @return
+   */
+  protected ResourceLocator getBundle() {
+    if (bundle == null) {
+      bundle = new ResourceLocator(getBundleLocation(), getUserPreferences().getLanguage());
+    }
+    return bundle;
   }
 }

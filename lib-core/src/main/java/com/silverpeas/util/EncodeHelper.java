@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,13 +20,10 @@
  */
 package com.silverpeas.util;
 
-import javax.xml.bind.DatatypeConverter;
-
-import org.silverpeas.util.Charsets;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
+import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.util.Charsets;
 
 /**
  * Util class to encode special string or characters
@@ -43,7 +40,7 @@ public class EncodeHelper {
    * @return javascript string encoded
    */
   public static String javaStringToJsString(String javastring) {
-    if (isNotDefined(javastring)) {
+    if (!isDefined(javastring)) {
       return "";
     }
     return StringEscapeUtils.escapeEcmaScript(javastring);
@@ -56,7 +53,7 @@ public class EncodeHelper {
    * @return html string encoded
    */
   public static String javaStringToHtmlString(String javastring) {
-    if (isNotDefined(javastring)) {
+    if (!isDefined(javastring)) {
       return "";
     }
     return StringEscapeUtils.escapeHtml4(javastring).replace("œ", "&oelig;");
@@ -67,7 +64,11 @@ public class EncodeHelper {
   }
 
   public static String escapeXml(String javastring) {
-    return StringEscapeUtils.escapeXml(javastring);
+    if (isDefined(javastring)) {
+      return StringEscapeUtils.escapeXml(javastring);
+    } else {
+      return "";
+    }
   }
 
   /**
@@ -77,7 +78,7 @@ public class EncodeHelper {
    * @return html string encoded
    */
   public static String convertWhiteSpacesForHTMLDisplay(String javastring) {
-    if (isNotDefined(javastring)) {
+    if (!isDefined(javastring)) {
       return "";
     }
     StringBuilder resSB = new StringBuilder(javastring.length() + 10);
@@ -116,7 +117,7 @@ public class EncodeHelper {
    * @return html string JAVA encoded
    */
   public static String htmlStringToJavaString(String htmlstring) {
-    if (htmlstring == null) {
+    if (!isDefined(htmlstring)) {
       return "";
     }
     return StringEscapeUtils.unescapeHtml4(htmlstring);
@@ -145,7 +146,7 @@ public class EncodeHelper {
    * @deprecated
    */
   public static String encodeSpecialChar(String javastring) {
-    if (isNotDefined(javastring)) {
+    if (!isDefined(javastring)) {
       return "";
     }
     return javastring;
@@ -159,7 +160,7 @@ public class EncodeHelper {
    * @return Returns the transformed text without specific codes.
    */
   public static String transformStringForBD(String sText) {
-    if (sText == null) {
+    if (!isDefined(sText)) {
       return "";
     }
 
@@ -215,7 +216,7 @@ public class EncodeHelper {
   private EncodeHelper() {
   }
 
-  private static boolean isNotDefined(String str) {
-    return str == null || str.isEmpty();
+  private static boolean isDefined(String text) {
+    return text != null && !text.isEmpty();
   }
 }

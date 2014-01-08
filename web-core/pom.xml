@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.13-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -222,6 +222,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>net.sourceforge.spnego</groupId>
+      <artifactId>spnego</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
@@ -258,6 +262,14 @@
       <artifactId>pdc</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder-jsp</artifactId>
     </dependency>
   </dependencies>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,21 +24,12 @@
 
 package com.silverpeas.thumbnail.control;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-
-import javax.imageio.ImageIO;
-
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
-
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
-import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -49,9 +40,15 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
 public class ThumbnailController {
 
-  private static final ThumbnailService thumbnailService = new ThumbnailServiceImpl();
   private static final ResourceLocator publicationSettings = new ResourceLocator(
       "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
@@ -61,32 +58,34 @@ public class ThumbnailController {
   public ThumbnailController() {
   }
 
+  private static ThumbnailService getThumbnailService() {
+    return ThumbnailServiceFactory.getThumbnailService();
+  }
+
   /**
    * To update thumbnails files informations.
+   *
    * @param thumbDetail :ThumbnailDetail.
-   * @param thumbnailWidth
-   * @param thumbnailHeight
    * @author Sebastien ROCHET
    */
-  public static void updateThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth,
-      int thumbnailHeight) {
+  public static void updateThumbnail(ThumbnailDetail thumbDetail) {
 
     try {
-      ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
+      ThumbnailDetail completeThumbnail = getThumbnailService().getCompleteThumbnail(thumbDetail);
       // first, delete former thumbnail
       if (completeThumbnail != null) {
         if (completeThumbnail.getCropFileName() != null) {
           deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
               .getCropFileName());
         }
-        thumbnailService.deleteThumbnail(thumbDetail);
+        getThumbnailService().deleteThumbnail(thumbDetail);
       }
       thumbDetail.setCropFileName(null);
       thumbDetail.setXLength(-1);
       thumbDetail.setXStart(-1);
       thumbDetail.setYLength(-1);
       thumbDetail.setYStart(-1);
-      thumbnailService.createThumbnail(thumbDetail);
+      getThumbnailService().createThumbnail(thumbDetail);
     } catch (Exception e) {
       throw new ThumbnailRuntimeException("ThumbnailController.updateThumbnail()",
           SilverpeasRuntimeException.ERROR, "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
@@ -97,7 +96,7 @@ public class ThumbnailController {
 
     try {
       // delete the file on server
-      ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
+      ThumbnailDetail completeThumbnail = getThumbnailService().getCompleteThumbnail(thumbDetail);
       if (completeThumbnail != null) {
         if (completeThumbnail.getOriginalFileName() != null) {
           deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
@@ -107,7 +106,7 @@ public class ThumbnailController {
           deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
               .getCropFileName());
         }
-        thumbnailService.deleteThumbnail(thumbDetail);
+        getThumbnailService().deleteThumbnail(thumbDetail);
       }
     } catch (Exception fe) {
       throw new ThumbnailRuntimeException(
@@ -120,7 +119,7 @@ public class ThumbnailController {
       int thumbnailHeight) {
     try {
       // create line in db
-      ThumbnailDetail thumdAdded = thumbnailService.createThumbnail(thumbDetail);
+      ThumbnailDetail thumdAdded = getThumbnailService().createThumbnail(thumbDetail);
       // create crop thumbnail
       if (thumdAdded.getCropFileName() == null && thumdAdded.isCropable()) {
         createCropFile(thumbnailWidth, thumbnailHeight, thumdAdded);
@@ -135,10 +134,88 @@ public class ThumbnailController {
   public static ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail) {
     try {
       // get thumbnail
-      return thumbnailService.getCompleteThumbnail(thumbDetail);
+      return getThumbnailService().getCompleteThumbnail(thumbDetail);
     } catch (Exception e) {
       throw new ThumbnailRuntimeException("ThumbnailController.getCompleteThumbnail()",
           SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_COMPLETE_THUMBNAIL_KO", e);
+    }
+  }
+  
+  public static void copyThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+    ThumbnailDetail vignette =
+        ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
+            fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
+            ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
+    try {
+      if (vignette != null) {
+        ThumbnailDetail thumbDetail =
+            new ThumbnailDetail(toPK.getInstanceId(),
+                Integer.valueOf(toPK.getId()),
+                ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        if (vignette.getOriginalFileName().startsWith("/")) {
+          thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
+          thumbDetail.setMimeType(vignette.getMimeType());
+        } else {
+          String from = getImageDirectory(fromPK.getInstanceId()) + vignette.getOriginalFileName();
+
+          String type = FilenameUtils.getExtension(vignette.getOriginalFileName());
+          String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+
+          String to = getImageDirectory(toPK.getInstanceId()) + newOriginalImage;
+          FileRepositoryManager.copyFile(from, to);
+          thumbDetail.setOriginalFileName(newOriginalImage);
+
+          // then copy thumbnail image if exists
+          if (vignette.getCropFileName() != null) {
+            from = getImageDirectory(fromPK.getInstanceId()) + vignette.getCropFileName();
+            type = FilenameUtils.getExtension(vignette.getCropFileName());
+            String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+            to = getImageDirectory(toPK.getInstanceId()) + newThumbnailImage;
+            FileRepositoryManager.copyFile(from, to);
+            thumbDetail.setCropFileName(newThumbnailImage);
+          }
+          thumbDetail.setMimeType(vignette.getMimeType());
+          thumbDetail.setXLength(vignette.getXLength());
+          thumbDetail.setYLength(vignette.getYLength());
+          thumbDetail.setXStart(vignette.getXStart());
+          thumbDetail.setYStart(vignette.getYStart());
+        }
+        getThumbnailService().createThumbnail(thumbDetail);
+      }
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailController.copyThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_COPY_THUMBNAIL", e);
+    }
+  }
+  
+  public static void moveThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+    ThumbnailDetail thumbnail =
+      ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
+          fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
+          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
+    try {
+      if (thumbnail != null) {
+        // move thumbnail on disk
+        if (!thumbnail.getOriginalFileName().startsWith("/")) {
+          File file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getOriginalFileName());
+          File to = new File(getImageDirectory(toPK.getInstanceId()));
+          
+          // move original thumbnail
+          FileUtils.moveFileToDirectory(file, to, true);
+          
+          // move cropped thumbnail
+          if (thumbnail.getCropFileName() != null) {
+            file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getCropFileName());
+            FileUtils.moveFileToDirectory(file, to, true);
+          }
+        }
+        
+        // move thumbnail in DB
+        getThumbnailService().moveThumbnail(thumbnail, toPK.getInstanceId());
+      }
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailController.moveThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_MOVE_THUMBNAIL", e);
     }
   }
 
@@ -196,33 +273,29 @@ public class ThumbnailController {
     }
   }
 
-  public static String getImage(String instanceId, int objectId, int objectType, int
-      thumbnailWidth, int thumbnailHeight) {
+  public static String getImage(String instanceId, int objectId, int objectType) {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
     // default size if creation
-    String[] imageProps = getImageAndMimeType(thumbDetail, thumbnailWidth, thumbnailHeight);
+    String[] imageProps = getImageAndMimeType(thumbDetail);
     return imageProps[0];
   }
 
-  public static String getImageMimeType(String instanceId, int objectId, int objectType,
-      int thumbnailWidth, int thumbnailHeight) {
+  public static String getImageMimeType(String instanceId, int objectId, int objectType) {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
 
     // default size if creation
-    String[] imageProps = getImageAndMimeType(thumbDetail, thumbnailWidth, thumbnailHeight);
+    String[] imageProps = getImageAndMimeType(thumbDetail);
     return imageProps[1];
   }
 
   /**
+   *
    * @param thumbDetail
-   * @param thumbnailWidth
-   * @param thumbnailHeight
    * @return
    */
-  public static String[] getImageAndMimeType(ThumbnailDetail thumbDetail, int thumbnailWidth,
-      int thumbnailHeight) {
+  public static String[] getImageAndMimeType(ThumbnailDetail thumbDetail) {
     try {
-      ThumbnailDetail thumbDetailComplete = thumbnailService.getCompleteThumbnail(thumbDetail);
+      ThumbnailDetail thumbDetailComplete = getThumbnailService().getCompleteThumbnail(thumbDetail);
       if (thumbDetailComplete != null) {
         if (thumbDetailComplete.getCropFileName() != null) {
           return new String[] { thumbDetailComplete.getCropFileName(),
@@ -246,7 +319,7 @@ public class ThumbnailController {
   public static ThumbnailDetail cropThumbnail(ThumbnailDetail thumbnail, int thumbnailWidth,
       int thumbnailHeight) {
     try {
-      ThumbnailDetail thumbDetailComplete = thumbnailService.getCompleteThumbnail(thumbnail);
+      ThumbnailDetail thumbDetailComplete = getThumbnailService().getCompleteThumbnail(thumbnail);
       if (thumbDetailComplete.getCropFileName() != null) {
         // on garde toujours le meme nom de fichier par contre on le supprime
         // puis le recreer avec les nouvelles coordonnees
@@ -267,7 +340,7 @@ public class ThumbnailController {
       thumbDetailComplete.setXLength(thumbnail.getXLength());
       thumbDetailComplete.setYStart(thumbnail.getYStart());
       thumbDetailComplete.setYLength(thumbnail.getYLength());
-      thumbnailService.updateThumbnail(thumbDetailComplete);
+      getThumbnailService().updateThumbnail(thumbDetailComplete);
       return thumbDetailComplete;
     } catch (Exception e) {
       throw new ThumbnailRuntimeException(
@@ -333,11 +406,11 @@ public class ThumbnailController {
           getImageDirectory(thumbDetailComplete.getInstanceId()), pathCropFile,
           thumbDetailComplete,
           thumbnailWidth, thumbnailHeight);
-      thumbnailService.updateThumbnail(thumbDetailComplete);
+      getThumbnailService().updateThumbnail(thumbDetailComplete);
     }
   }
 
-  private static String getImageDirectory(String instanceId) {
+  protected static String getImageDirectory(String instanceId) {
     return FileRepositoryManager.getAbsolutePath(instanceId) + publicationSettings.getString(
         "imagesSubDirectory") + File.separatorChar;
   }

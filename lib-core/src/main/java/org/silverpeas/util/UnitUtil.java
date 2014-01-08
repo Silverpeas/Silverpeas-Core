@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,11 +23,10 @@
  */
 package org.silverpeas.util;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.EnumSet;
+import org.silverpeas.util.memory.MemoryData;
+import org.silverpeas.util.memory.MemoryUnit;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.math.BigDecimal;
 
 /**
  * Unit values handling tools
@@ -36,54 +35,25 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class UnitUtil {
 
-  private static final ResourceLocator utilMessages = new ResourceLocator(
-      "org.silverpeas.util.multilang.util", "");
-
-  /* Byte, Kilo-Byte, Mega-Byte, ... */
-  public static enum memUnit {
-
-    B(1, "o", "bytes"), KB(2, "ko", "Kb"), MB(3, "mo", "Mb"), GB(4, "go", "Gb"), TB(5, "to", "Tb");
-    private final String bundleKey;
-    private final String bundleDefault;
-    private final BigDecimal limit;
-    private final int power;
-
-    private memUnit(int power, final String bundleKey, final String bundleDefault) {
-      this.bundleKey = bundleKey;
-      this.bundleDefault = bundleDefault;
-      this.limit = byteMultiplier.pow(power);
-      this.power = power;
-    }
-
-    protected String getBundleKey() {
-      return bundleKey;
-    }
-
-    protected String getBundleDefault() {
-      return bundleDefault;
-    }
-
-    public BigDecimal getLimit() {
-      return limit;
-    }
-
-    public int getPower() {
-      return power;
-    }
-  }
-  private static BigDecimal byteMultiplier = new BigDecimal(String.valueOf(1024));
-
   /**
-   * Converting a computer data storage value
-   *
-   * @param value
-   * @param from
+   * Converting a computer data storage value (bytes)
+   * @param byteValue
    * @param to
    * @return
    */
-  public static long convertTo(final long value, final memUnit from, final memUnit to) {
-    final BigDecimal decimalValue = convertTo(new BigDecimal(String.valueOf(value)), from, to);
-    return decimalValue.setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+  public static long convertTo(final long byteValue, final MemoryUnit to) {
+    return getMemData(byteValue).getRoundedSizeConverted(to).longValue();
+  }
+
+  /**
+   * Converting a computer data storage value (bytes)
+   *
+   * @param byteValue
+   * @param to
+   * @return
+   */
+  public static BigDecimal convertTo(BigDecimal byteValue, final MemoryUnit to) {
+    return getMemData(byteValue).getSizeConverted(to);
   }
 
   /**
@@ -94,16 +64,31 @@ public class UnitUtil {
    * @param to
    * @return
    */
-  public static BigDecimal convertTo(BigDecimal value, final memUnit from, final memUnit to) {
-    final int fromPower = from.getPower();
-    final int toPower = to.getPower();
-    final int offsetPower = fromPower - toPower;
-    if (offsetPower > 0) {
-      return value.multiply(byteMultiplier.pow(Math.abs(offsetPower)));
-    } else if (offsetPower < 0) {
-      return value.divide(byteMultiplier.pow(Math.abs(offsetPower)));
-    }
-    return value;
+  public static long convertTo(final long value, final MemoryUnit from, final MemoryUnit to) {
+    return getMemData(value, from).getRoundedSizeConverted(to).longValue();
+  }
+
+  /**
+   * Converting a computer data storage value
+   *
+   * @param value
+   * @param from
+   * @param to
+   * @return
+   */
+  public static BigDecimal convertTo(BigDecimal value, final MemoryUnit from, final MemoryUnit to) {
+    return getMemData(value, from).getSizeConverted(to);
+  }
+
+  /**
+   * Converting a computer data storage value
+   *
+   * @param memoryData
+   * @param to
+   * @return
+   */
+  public static BigDecimal convertAndRoundTo(MemoryData memoryData, final MemoryUnit to) {
+    return memoryData.getRoundedSizeConverted(to);
   }
 
   /**
@@ -113,8 +98,8 @@ public class UnitUtil {
    * @param to
    * @return
    */
-  public static String formatValue(final long byteValue, final memUnit to) {
-    return formatValue(new BigDecimal(String.valueOf(byteValue)), memUnit.B, to);
+  public static String formatValue(final long byteValue, final MemoryUnit to) {
+    return getMemData(byteValue).getFormattedValue(to);
   }
 
   /**
@@ -124,8 +109,8 @@ public class UnitUtil {
    * @param to
    * @return
    */
-  public static String formatValue(final BigDecimal byteValue, final memUnit to) {
-    return formatValue(byteValue, memUnit.B, to);
+  public static String formatValue(final BigDecimal byteValue, final MemoryUnit to) {
+    return getMemData(byteValue).getFormattedValue(to);
   }
 
   /**
@@ -136,8 +121,8 @@ public class UnitUtil {
    * @param to
    * @return
    */
-  public static String formatValue(final long value, final memUnit from, final memUnit to) {
-    return formatValue(new BigDecimal(String.valueOf(value)), from, to);
+  public static String formatValue(final long value, final MemoryUnit from, final MemoryUnit to) {
+    return getMemData(value, from).getFormattedValue(to);
   }
 
   /**
@@ -148,18 +133,9 @@ public class UnitUtil {
    * @param to
    * @return formated value
    */
-  public static String formatValue(final BigDecimal value, final memUnit from, final memUnit to) {
-    final StringBuilder sb = new StringBuilder(128);
-    BigDecimal convertedValue = convertTo(value, from, to);
-    int nbMaximumFractionDigits = 2;
-    if (EnumSet.of(memUnit.B, memUnit.KB).contains(to)) {
-      nbMaximumFractionDigits = 0;
-    }
-    convertedValue = convertedValue.setScale(nbMaximumFractionDigits, BigDecimal.ROUND_HALF_UP);
-    sb.append(new DecimalFormat().format(convertedValue));
-    sb.append(" ");
-    sb.append(utilMessages.getString(to.getBundleKey(), to.getBundleDefault()));
-    return sb.toString();
+  public static String formatValue(final BigDecimal value, final MemoryUnit from,
+      final MemoryUnit to) {
+    return getMemData(value, from).getFormattedValue(to);
   }
 
   /**
@@ -169,7 +145,7 @@ public class UnitUtil {
    * @return String
    */
   public static String formatMemSize(final long memSize) {
-    return formatMemSize(memSize, memUnit.B);
+    return getMemData(memSize).getBestDisplayValue();
   }
 
   /**
@@ -179,7 +155,7 @@ public class UnitUtil {
    * @return String
    */
   public static String formatMemSize(final BigDecimal memSize) {
-    return formatMemSize(memSize, memUnit.B);
+    return getMemData(memSize).getBestDisplayValue();
   }
 
   /**
@@ -189,8 +165,8 @@ public class UnitUtil {
    * @param from the unit of the given size
    * @return String
    */
-  public static String formatMemSize(final long memSize, final memUnit from) {
-    return formatMemSize(new BigDecimal(String.valueOf(memSize)), from);
+  public static String formatMemSize(final long memSize, final MemoryUnit from) {
+    return getMemData(memSize, from).getBestDisplayValue();
   }
 
   /**
@@ -200,15 +176,48 @@ public class UnitUtil {
    * @param from the unit of the given size
    * @return String
    */
-  public static String formatMemSize(final BigDecimal memSize, final memUnit from) {
-    BigDecimal byteMemSize = convertTo(memSize, from, memUnit.B);
-    memUnit to = memUnit.values()[memUnit.values().length - 1];
-    for (final memUnit currentUnit : memUnit.values()) {
-      if (currentUnit.getLimit().compareTo(byteMemSize) > 0) {
-        to = currentUnit;
-        break;
-      }
-    }
-    return formatValue(byteMemSize, memUnit.B, to);
+  public static String formatMemSize(final BigDecimal memSize, final MemoryUnit from) {
+    return getMemData(memSize, from).getBestDisplayValue();
+  }
+
+  /**
+   * Get the memory data
+   * @param memSize size in bytes
+   * @return MemoryData
+   */
+  public static MemoryData getMemData(final long memSize) {
+    return getMemData(memSize, MemoryUnit.B);
+  }
+
+  /**
+   * Get the memory data
+   * @param memSize size in bytes
+   * @return MemoryData
+   */
+  public static MemoryData getMemData(final BigDecimal memSize) {
+    return getMemData(memSize, MemoryUnit.B);
+  }
+
+  /**
+   * Get the memory data
+   * @param memSize size
+   * @param from the unit of the given size
+   * @return MemoryData
+   */
+  public static MemoryData getMemData(final long memSize, final MemoryUnit from) {
+    BigDecimal byteMemSize =
+        MemoryData.convertTo(new BigDecimal(String.valueOf(memSize)), from, MemoryUnit.B);
+    return new MemoryData(byteMemSize.setScale(0, BigDecimal.ROUND_HALF_UP).longValue());
+  }
+
+  /**
+   * Get the memory data
+   * @param memSize size
+   * @param from the unit of the given size
+   * @return MemoryData
+   */
+  public static MemoryData getMemData(final BigDecimal memSize, final MemoryUnit from) {
+    BigDecimal byteMemSize = MemoryData.convertTo(memSize, from, MemoryUnit.B);
+    return new MemoryData(byteMemSize);
   }
 }

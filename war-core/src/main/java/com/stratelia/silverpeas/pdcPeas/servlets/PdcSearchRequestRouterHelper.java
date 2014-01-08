@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,18 +20,8 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -44,6 +34,13 @@ import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class PdcSearchRequestRouterHelper {
 
@@ -114,8 +111,7 @@ public class PdcSearchRequestRouterHelper {
         "root.MSG_GEN_PARAM_VALUE", "authorSearch = " + authorSearch);
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     queryParameters.setKeywords(query);
-    queryParameters.setSpaceId(spaceId);
-    queryParameters.setInstanceId(componentId);
+    queryParameters.setSpaceIdAndInstanceId(spaceId, componentId);
     queryParameters.setCreatorId(authorSearch);
     queryParameters.setAfterDate(afterdate);
     queryParameters.setBeforeDate(beforedate);
@@ -141,13 +137,14 @@ public class PdcSearchRequestRouterHelper {
 
     if (pdcSC.getSearchType() >= PdcSearchSessionController.SEARCH_ADVANCED) {
       String lang = pdcSC.getLanguage();
-      queryParameters.setSpaceId(request.getParameter("spaces"));
-      queryParameters.setInstanceId(request.getParameter("componentSearch"));
+      queryParameters.setSpaceIdAndInstanceId(request.getParameter("spaces"),
+          request.getParameter("componentSearch"));
       queryParameters.setCreatorId(request.getParameter("authorSearch"));
       queryParameters.setAfterDate(getDateFromRequest("createafterdate", lang, request));
       queryParameters.setBeforeDate(getDateFromRequest("createbeforedate", lang, request));
       queryParameters.setAfterUpdateDate(getDateFromRequest("updateafterdate", lang, request));
       queryParameters.setBeforeUpdateDate(getDateFromRequest("updatebeforedate", lang, request));
+      queryParameters.setFolder(request.getParameter(QueryParameters.PARAM_FOLDER));
     }
 
     String paramNbResToDisplay = request.getParameter("nbRes");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,12 @@
  */
 package org.silverpeas.util.mail;
 
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,7 +37,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -42,14 +47,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.internet.ParseException;
-
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
@@ -142,7 +139,7 @@ public class EMLExtractor implements MailExtractor {
   private String processMultipart(Multipart multipart, List<MailAttachment> attachments) throws
       MessagingException, IOException {
     int partsNumber = multipart.getCount();
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < partsNumber; i++) {
       Part part = multipart.getBodyPart(i);
       sb.append(processMailPart(part, attachments));
@@ -187,14 +184,16 @@ public class EMLExtractor implements MailExtractor {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType());
       } catch (ParseException e) {
-        e.printStackTrace();
+        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
+            "root.EX_NO_MESSAGE", e);
       }
     } else if (Part.INLINE.equals(disposition)) {
       try {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType()) && getFileName(part) == null;
       } catch (ParseException e) {
-        e.printStackTrace();
+        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
+            "root.EX_NO_MESSAGE", e);
       }
     }
     return false;
@@ -207,14 +206,16 @@ public class EMLExtractor implements MailExtractor {
         ContentType type = new ContentType(part.getContentType());
         fileName = type.getParameter("name");
       } catch (ParseException e) {
-        e.printStackTrace();
+        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
+            "root.EX_NO_MESSAGE", e);
       }
     }
     if (StringUtil.isDefined(fileName) && fileName.startsWith("=?") && fileName.endsWith("?=")) {
       try {
         fileName = MimeUtility.decodeText(part.getFileName());
       } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();
+        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
+            "root.EX_NO_MESSAGE", e);
       }
     }
     return fileName;

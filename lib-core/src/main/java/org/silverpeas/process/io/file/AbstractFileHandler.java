@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,19 +23,8 @@
  */
 package org.silverpeas.process.io.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.silverpeas.util.MapUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -44,7 +33,10 @@ import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.management.ProcessManagement;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Bases of file handler functionnalities whose a lot of these are protected and only usable by
@@ -64,6 +56,8 @@ public abstract class AbstractFileHandler {
   private final File sessionRootPath = new File(FileRepositoryManager.getTemporaryPath());
   private final ProcessSession session;
   private final Map<FileBasePath, Set<File>> toDelete = new HashMap<FileBasePath, Set<File>>();
+  private final Map<String, Set<DummyHandledFile>> dummyHandledFiles =
+      new HashMap<String, Set<DummyHandledFile>>();
   private IOAccess ioAccess = IOAccess.READ_ONLY;
 
   /**
@@ -254,7 +248,6 @@ public abstract class AbstractFileHandler {
 
   /**
    * Build session temporary path
-   * @param basePath
    * @return
    */
   File getSessionTemporaryPath() {
@@ -264,11 +257,37 @@ public abstract class AbstractFileHandler {
   /**
    * This method calculates the size of files contained in the given relative root path from the
    * session and subtracts from the previous result the size of files marked to be deleted.
+   * Dummy handled files are included (according to relativeRootPath that is normally a list of
+   * component instance ids).
    */
   public long sizeOfSessionWorkingPath(final String... relativeRootPath) {
     long size = 0;
     for (final FileBasePath basePath : handledBasePath) {
       size += sizeOfSessionWorkingPath(basePath, relativeRootPath);
+    }
+
+    // Finally adding/removing the size of dummy handled files
+    Set<String> componentInstanceIds = new HashSet<String>();
+    if (relativeRootPath != null) {
+      // Only a part of dummy files is aimed
+      Collections.addAll(componentInstanceIds, relativeRootPath);
+    }
+    if (componentInstanceIds.isEmpty()) {
+      // If relativeRootPath is empty, then all dummy files are aimed
+      componentInstanceIds.addAll(dummyHandledFiles.keySet());
+    }
+    for (String componentInstanceId : componentInstanceIds) {
+      Set<DummyHandledFile> dummyHandledFilesOfCurrentComponentInstanceId =
+          dummyHandledFiles.get(componentInstanceId);
+      if (dummyHandledFilesOfCurrentComponentInstanceId != null) {
+        for (DummyHandledFile dummyHandledFile : dummyHandledFilesOfCurrentComponentInstanceId) {
+          if (dummyHandledFile.isDeleted()) {
+            size -= dummyHandledFile.getSize();
+          } else {
+            size += dummyHandledFile.getSize();
+          }
+        }
+      }
     }
     return size;
   }
@@ -290,7 +309,7 @@ public abstract class AbstractFileHandler {
 
     // Root path (or file ?)
     final File rootPath =
-        FileUtils.getFile(sessionRootPath, rootPathParts.toArray(new String[] {}));
+        FileUtils.getFile(sessionRootPath, rootPathParts.toArray(new String[rootPathParts.size()]));
 
     // Size of not deleted files
     long size = (rootPath.exists()) ? FileUtils.sizeOf(rootPath) : 0;
@@ -317,6 +336,7 @@ public abstract class AbstractFileHandler {
 
   /**
    * Gets handled root directories from the session. (reads, writes, deletes)
+   * The result contains root directories of dummy handled files.
    * @param skipDeleted
    * @return
    */
@@ -325,6 +345,7 @@ public abstract class AbstractFileHandler {
     for (final FileBasePath basePath : handledBasePath) {
       rootPathNames.addAll(getSessionHandledRootPathNames(basePath, skipDeleted));
     }
+    rootPathNames.addAll(dummyHandledFiles.keySet());
     return rootPathNames;
   }
 
@@ -370,8 +391,38 @@ public abstract class AbstractFileHandler {
   }
 
   /**
-   * Delete session path
+   * Gets handled root directory Files of a base path from the session. (reads, writes)
+   * @return
+   */
+  public Collection<File> listAllSessionHandledRootPathFiles() {
+    final Set<File> rootPathFiles = new HashSet<File>();
+    for (final FileBasePath basePath : handledBasePath) {
+      rootPathFiles.addAll(listAllSessionHandledRootPathFiles(basePath));
+    }
+    return rootPathFiles;
+  }
+
+  /**
+   * Gets handled root directory Files of a base path from the session. (reads, writes)
    * @param basePath
+   * @return
+   */
+  protected Collection<File> listAllSessionHandledRootPathFiles(final FileBasePath basePath) {
+    final Set<File> rootPathNames = new HashSet<File>();
+    if (isHandledPath(basePath)) {
+
+      // reads and writes
+      final File[] directories =
+          getSessionPath(basePath).listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+      if (directories != null) {
+        rootPathNames.addAll(Arrays.asList(directories));
+      }
+    }
+    return rootPathNames;
+  }
+
+  /**
+   * Delete session path
    * @return
    */
   protected void deleteSessionWorkingPath() {
@@ -405,8 +456,11 @@ public abstract class AbstractFileHandler {
     // Cleaning
     final File sessionPath = FileUtils.getFile(sessionRootPath, getSession().getId());
     if (sessionPath.exists()) {
-      for (final File file : sessionPath.listFiles()) {
-        FileUtils.deleteQuietly(file);
+      File[] files = sessionPath.listFiles();
+      if (files != null) {
+        for (final File file : files) {
+          FileUtils.deleteQuietly(file);
+        }
       }
     }
   }
@@ -424,8 +478,9 @@ public abstract class AbstractFileHandler {
       File currentFile;
       while ((currentFile = fifo.poll()) != null) {
         if (currentFile.isDirectory()) {
-          for (final File fileUnderDirectoty : currentFile.listFiles()) {
-            fifo.add(fileUnderDirectoty);
+          File[] files = currentFile.listFiles();
+          if (files != null) {
+            Collections.addAll(fifo, files);
           }
         } else {
           FileUtils.copyFile(currentFile, translateToRealPath(basePath, currentFile));
@@ -490,5 +545,35 @@ public abstract class AbstractFileHandler {
    */
   private void setIoAccess(final IOAccess ioAccess) {
     this.ioAccess = ioAccess;
+  }
+
+  /**
+   * Add a dummy file.
+   * It can be useful for process check operations.
+   * @param dummyHandledFile
+   */
+  public void addDummyHandledFile(DummyHandledFile dummyHandledFile) {
+    setIoAccess(IOAccess.READ_WRITE);
+    MapUtil
+        .putAddSet(dummyHandledFiles, dummyHandledFile.getComponentInstanceId(), dummyHandledFile);
+  }
+
+  /**
+   * Remove a dummy file.
+   * It can be useful for process check operations.
+   * @param dummyHandledFile
+   */
+  public void removeDummyHandledFile(DummyHandledFile dummyHandledFile) {
+    MapUtil.removeValueSet(dummyHandledFiles, dummyHandledFile.getComponentInstanceId(),
+        dummyHandledFile);
+  }
+
+  /**
+   * Gets the dummy handled files from a given component instance id.
+   * A component instance id can be see as a root handled directory.
+   * @return
+   */
+  public Set<DummyHandledFile> getDummyHandledFiles(String componentInstanceId) {
+    return dummyHandledFiles.get(componentInstanceId);
   }
 }

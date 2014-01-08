@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -75,7 +75,7 @@ String showNotOnlyPertinentAxisAndValues = (String) request.getAttribute("showAl
 boolean showAllAxis = ("true".equals(showNotOnlyPertinentAxisAndValues));
 showNotOnlyPertinentAxisAndValues = showAllAxis ? showNotOnlyPertinentAxisAndValues : "";
 
-List			allComponents		= (List) request.getAttribute("ComponentList");
+List<ComponentInstLight> allComponents		= (List<ComponentInstLight>) request.getAttribute("ComponentList");
 List			allSpaces			= (List) request.getAttribute("SpaceList");
 QueryParameters query				= (QueryParameters) request.getAttribute("QueryParameters");
 String			spaceSelected		= null;
@@ -86,6 +86,7 @@ String			createBeforeDate	= null;
 String			updateAfterDate		= null;
 String			updateBeforeDate	= null;
 UserDetail		userDetail			= null;
+String			folder				= null;
 if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
@@ -95,6 +96,7 @@ if (query != null) {
 	updateAfterDate		= DateUtil.getInputDate(query.getAfterUpdateDate(), language);
 	updateBeforeDate	= DateUtil.getInputDate(query.getBeforeUpdateDate(), language);
 	userDetail			= query.getCreatorDetail();
+	folder				= query.getFolder();
 }
 
 if (keywords == null) {
@@ -171,13 +173,13 @@ function onLoadStart() {
 
 function saveAsInterestCenter() {
 	
-  var values = $('#used_pdc').pdc('selectedValues');
-	document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+	setPositionIntoForm();
 	
-	if (document.AdvancedSearch.iCenterId.selectedIndex)
+	if (document.AdvancedSearch.iCenterId.selectedIndex) {
 		icName = document.AdvancedSearch.iCenterId.options[document.AdvancedSearch.iCenterId.selectedIndex].text;
-	else
+	} else {
 		icName = "";
+	}
 	url			= "<%=m_context%><%=URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)%>newICenter.jsp?icName="+icName;
 	windowName = "createICenter";
 	width		= "600";
@@ -245,20 +247,31 @@ function addValue(selectItem, axisId)
 }
 
 function sendQuery() {
-	var values = $('#used_pdc').pdc('selectedValues');
-  if (values.length > 0) {
-    document.AdvancedSearch.AxisValueCouples.value = values.flatten();
-  }
-  if (document.AdvancedSearch.query.value == "*")
+	setPositionIntoForm();
+    if (document.AdvancedSearch.query.value == "*") {
 		document.AdvancedSearch.query.value = "";
-	if (checkDates())
-	{
-		top.topFrame.document.searchForm.query.value = "";
+    }
+	if (checkDates()) {
+		try {
+		  // clear global input search
+		  top.topFrame.document.searchForm.query.value = "";
+		} catch (e) {
+		  // catch exceptions if this input does not exist
+		}
 		document.AdvancedSearch.action = "AdvancedSearch";
 		
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
+}
+
+function setPositionIntoForm() {
+	<% if (activeSelection.booleanValue() || searchType == 2) { %>
+	var values = $('#used_pdc').pdc('selectedValues');
+  	if (values.length > 0) {
+      document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+    }
+  	<% } %>
 }
 
 function sendSelectionQuery() {
@@ -376,6 +389,11 @@ function deleteUser()
 	userId.setAttribute("value", "");
 
 	document.getElementById("deleteURL").style.visibility = "hidden";
+}
+
+function showExplorer() {
+	var componentId = $("#componentSearch").val();
+	SP_openWindow('<%=URLManager.getApplicationURL()%>/explorer/jsp/explorer.jsp?elementHidden=<%=QueryParameters.PARAM_FOLDER %>&elementVisible=pathAsString&resultType=path&scope='+componentId,'explorer',400,600,'scrollbars=yes');
 }
 
  $(document).ready(function(){
@@ -567,21 +585,31 @@ if (!activeSelection.booleanValue())
 			<%
 				out.println("<td valign=\"top\"  align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
 				out.println("<td align=\"left\">");
-				out.println("<select name=\"componentSearch\" size=\"1\" onchange=\"javascript:viewAdvancedSearch()\">");
+				out.println("<select id=\"componentSearch\" name=\"componentSearch\" size=\"1\" onchange=\"javascript:viewAdvancedSearch()\">");
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
-				ComponentInstLight component = null;
-				for(int nI = 0; allComponents!=null && nI < allComponents.size(); nI++) {
-						selected	= "";
-						component	= (ComponentInstLight) allComponents.get(nI);
-						if (component.getId().equals(componentSelected)){
-							selected = " selected=\"selected\"";
-						}
-						out.println("<option value=\""+component.getId()+"\""+selected+">"+component.getLabel(language)+"</option>");
+				if (allComponents != null) {
+					for(ComponentInstLight component : allComponents) {
+							selected = "";
+							if (component.getId().equals(componentSelected)){
+								selected = " selected=\"selected\"";
+							}
+							out.println("<option value=\""+component.getId()+"\""+selected+">"+component.getLabel(language)+"</option>");
+					}
 				}
 				out.println("</select>");
 				out.println("</td>");
 			%>
         </tr>
+        <% if (StringUtil.isDefined(componentSelected) && componentSelected.startsWith("kmelia")) { %>
+        <tr id="folder-filter">
+        	<td class="txtlibform"><%=resource.getString("GML.theme")%></td>
+        	<td>
+        		<input type="text" id="pathAsString" size="60" disabled="disabled"/>
+        		<input type="hidden" id="<%=QueryParameters.PARAM_FOLDER %>" name="<%=QueryParameters.PARAM_FOLDER %>" value="<%=folder %>" /> 
+        		<a href="#" onclick="javascript:showExplorer();" title="<%=resource.getString("GML.upload.choose.browse")%>"><img src="<%=resource.getIcon("pdcPeas.folder")%>" alt="<%=resource.getString("GML.upload.choose.browse")%>"/></a>
+        	</td>
+        </tr>
+        <% } %>
         <!-- Affichage du type des publications -->
         <tr align="center" id="contribution-type-filter">
           <td valign="top"  align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>

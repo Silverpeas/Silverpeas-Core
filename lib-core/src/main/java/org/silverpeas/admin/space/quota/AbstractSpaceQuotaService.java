@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,23 +23,22 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.service.AbstractQuotaService;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey> extends
-    AbstractQuotaService<T> implements SpaceQuotaService<T> {
+public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
+    extends AbstractQuotaService<T> implements SpaceQuotaService<T> {
 
   /**
    * Creates a quota key
@@ -49,11 +48,11 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
   abstract protected T createKeyFrom(SpaceInst space);
 
   /*
-   * (non-Javadoc)
-   * @see
-   * org.silverpeas.admin.space.quota.ComponentSpaceQuotaService#getQuotaReachedFromSpacePath(org.
-   * silverpeas.admin.space.quota.ComponentSpaceQuotaKey)
-   */
+     * (non-Javadoc)
+     * @see
+     * org.silverpeas.admin.space.quota.ComponentSpaceQuotaService#getQuotaReachedFromSpacePath(org.
+     * silverpeas.admin.space.quota.ComponentSpaceQuotaKey)
+     */
   @Override
   public Quota getQuotaReachedFromSpacePath(final T key) {
     Quota spaceQuotaReached = new Quota();
@@ -95,11 +94,13 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
   @Override
   public Quota verify(T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     Quota quota = super.verify(key, countingOffset);
     while (key.isValid() && !key.getSpace().isRoot()) {
-      key =
-          createKeyFrom(OrganisationControllerFactory.getFactory().getOrganisationController()
-              .getSpaceInstById(key.getSpace().getDomainFatherId()));
+      key = createKeyFrom(OrganisationControllerFactory.getOrganisationController()
+          .getSpaceInstById(key.getSpace().getDomainFatherId()));
       quota = super.verify(key, countingOffset);
     }
     return quota;

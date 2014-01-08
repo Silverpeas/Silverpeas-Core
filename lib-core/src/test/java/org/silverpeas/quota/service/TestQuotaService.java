@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -57,5 +57,10 @@ public class TestQuotaService extends AbstractQuotaService<TestQuotaKey> impleme
   @Override
   public void setCount(final int count) {
     this.count = count;
+  }
+
+  @Override
+  protected boolean isActivated() {
+    return true;
   }
 }

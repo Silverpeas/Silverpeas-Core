@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -55,7 +55,7 @@ public class GetLinkFileServlet extends HttpServlet {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
     Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(keyFile);
-    if (ticket.isValid()) {
+    if (ticket != null && ticket.isValid()) {
       // recherche des infos sur le fichier...
       String filePath = null;
       String fileType = null;
@@ -93,7 +93,7 @@ public class GetLinkFileServlet extends HttpServlet {
         DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
         SharingServiceFactory.getSharingTicketService().addDownload(download);
         return;
-      } catch (Exception ex) {
+      } catch (Exception ignored) {
       } finally {
         if (input != null) {
           IOUtils.closeQuietly(input);

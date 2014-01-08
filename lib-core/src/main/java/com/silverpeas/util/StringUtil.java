@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -224,6 +224,22 @@ public class StringUtil extends StringUtils {
     } else {
       return text.substring(0, maxLength - 3) + TRUNCATED_TEXT_SUFFIX;
     }
+  }
+
+  /**
+   * Replace parts of a text by an one replacement string. The text to replace is specified by a
+   * regex.
+   * @param source the original text
+   * @param regex the regex that permits to identify parts of text to replace
+   * @param replacement the replacement text
+   * @return The source text modified
+   */
+  public static String regexReplace(String source, String regex, String replacement) {
+    if (StringUtil.isNotDefined(source) || StringUtil.isNotDefined(regex)) {
+      return source;
+    }
+    String replacementText = StringUtil.isDefined(replacement) ? replacement : "";
+    return source.replaceAll(regex, replacement);
   }
 
   /**

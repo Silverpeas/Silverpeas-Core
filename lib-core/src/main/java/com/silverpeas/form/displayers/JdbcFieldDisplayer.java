@@ -1,36 +1,24 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
-
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -42,12 +30,19 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.webactiv.util.DBUtil;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A JdbcFieldDisplayer is an object which can display a listbox in HTML the content of a listbox to
  * a end user and can retrieve via HTTP any updated value.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -55,7 +50,7 @@ import com.stratelia.webactiv.util.DBUtil;
  */
 public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
-  private final static String[] MANAGED_TYPES = new String[] { JdbcField.TYPE };
+  private final static String[] MANAGED_TYPES = new String[]{JdbcField.TYPE};
   private final static String mandatoryImg = Util.getIcon("mandatoryField");
 
   /**
@@ -67,6 +62,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   /**
    * Returns the name of the managed types.
+   *
    * @return
    */
   public String[] getManagedTypes() {
@@ -82,6 +78,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param template
    * @param pagesContext
@@ -108,6 +105,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
+   *
    * @param out
    * @param field
    * @param template
@@ -183,13 +181,14 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     out.println(html.toString());
 
   }
-  
+
   private void getAutocompleteFragment(FieldTemplate template, String fieldValue,
       String valueFieldType, Collection<String> entries, PagesContext pageContext,
       StringBuilder html) {
     String fieldName = template.getFieldName();
     int zindex =
-        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex())) * 9000;
+        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex()))
+        * 9000;
     html.append("<style type=\"text/css\">\n").append(" #listAutocomplete").append(fieldName).
         append(" {\n");
     html.append("  width:15em;\n");
@@ -223,7 +222,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
           .append("<img src=\"")
           .append(mandatoryImg)
           .append(
-              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
+          "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
     }
 
     html.append("<script type=\"text/javascript\">\n");
@@ -270,7 +269,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     html.append(" });\n");
     html.append("</script>\n");
   }
-  
+
   private void getListboxFragment(FieldTemplate template, String fieldValue, String valueFieldType,
       Collection<String> entries, PagesContext pageContext, StringBuilder html) {
     html.append("<select name=\"").append(template.getFieldName()).append("\"");
@@ -288,7 +287,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
       html.append(" value=\"").append(entry).append("\">").append(entry).append("</option>\n");
     }
     html.append("</select>\n");
-    
+
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
         && !template.isHidden() && pageContext.useMandatory()) {
       html.append(Util.getMandatorySnippet());
@@ -298,6 +297,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   *
    * @param newValue
    * @param field
    * @param template
@@ -306,6 +306,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * @throws FormException if the field type is not a managed type or if the field doesn't accept
    * the new value.
    */
+  @Override
   public List<String> update(String newValue, JdbcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!JdbcField.TYPE.equals(field.getTypeName())) {

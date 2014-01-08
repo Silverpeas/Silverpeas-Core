@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,26 +23,17 @@
  */
 package org.silverpeas.attachment.web;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -54,19 +45,22 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  *
@@ -76,15 +70,7 @@ import com.sun.jersey.multipart.FormDataParam;
 @RequestScoped
 @Path("documents/{componentId}/document/create")
 @Authorized
-public class SimpleDocumentResourceCreator extends RESTWebService {
-
-  @PathParam("componentId")
-  private String componentId;
-
-  @Override
-  public String getComponentId() {
-    return componentId;
-  }
+public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResource {
 
   /**
    * Create the document identified by the requested URI and from the content and some additional
@@ -149,98 +135,100 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       String fileDescription,
       String foreignId, String indexIt, String type, String comment, String context) throws
       IOException {
-    String uploadedFilename = filename;
-    if (StringUtil.isNotDefined(filename)) {
-      uploadedFilename = fileDetail.getFileName();
-    }
-    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)) {
-      File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
-      FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-      
-      //check the file size
-      ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-      long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-      long fileSize = tempFile.length();
-      if(fileSize > maximumFileSize) {
-        FileUtils.deleteQuietly(tempFile);
-        throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
+    try {
+      String uploadedFilename = filename;
+      if (StringUtil.isNotDefined(filename)) {
+        uploadedFilename = fileDetail.getFileName();
       }
+      if (uploadedInputStream != null && fileDetail != null &&
+          StringUtil.isDefined(uploadedFilename)) {
+        File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
+        FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
 
-      String lang = I18NHelper.checkLanguage(language);
-      String title = fileTitle;
-      String description = fileDescription;
-      if (!StringUtil.isDefined(fileTitle)) {
-        MetadataExtractor extractor = new MetadataExtractor();
-        MetaData metadata = extractor.extractMetadata(tempFile);
-        if (StringUtil.isDefined(metadata.getTitle())) {
-          title = metadata.getTitle();
+        //check the file
+        checkUploadedFile(tempFile);
+
+        String lang = I18NHelper.checkLanguage(language);
+        String title = fileTitle;
+        String description = fileDescription;
+        if (!StringUtil.isDefined(fileTitle)) {
+          MetadataExtractor extractor = new MetadataExtractor();
+          MetaData metadata = extractor.extractMetadata(tempFile);
+          if (StringUtil.isDefined(metadata.getTitle())) {
+            title = metadata.getTitle();
+          } else {
+            title = "";
+          }
+          if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
+            description = metadata.getSubject();
+          }
+        }
+        if (!StringUtil.isDefined(description)) {
+          description = "";
+        }
+
+        DocumentType attachmentContext;
+        if (!StringUtil.isDefined(context)) {
+          attachmentContext = DocumentType.attachment;
         } else {
-          title = "";
+          attachmentContext = DocumentType.valueOf(context);
         }
-        if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
-          description = metadata.getSubject();
-        }
-      }
-      if (!StringUtil.isDefined(description)) {
-        description = "";
-      }
-
-      DocumentType attachmentContext;
-      if (!StringUtil.isDefined(context)) {
-        attachmentContext = DocumentType.attachment;
-      } else {
-        attachmentContext = DocumentType.valueOf(context);
-      }
-      SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
-      String userId = getUserDetail().getId();
-      SimpleDocument document;
-      boolean needCreation = true;
-      boolean publicDocument = true;
-      if (StringUtil.isDefined(type) && StringUtil.isInteger(type)) {
-        document = AttachmentServiceFactory.getAttachmentService().findExistingDocument(pk,
-            uploadedFilename, new ForeignPK(foreignId, componentId), lang);
-        publicDocument = Integer.parseInt(type) == DocumentVersion.TYPE_PUBLIC_VERSION;
-        needCreation = document == null;
-        if (document == null) {
-          document = new HistorisedDocument(pk, foreignId, 0, userId,
-              new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
+        SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
+        String userId = getUserDetail().getId();
+        SimpleDocument document;
+        boolean needCreation = true;
+        boolean publicDocument = true;
+        if (StringUtil.isDefined(type) && StringUtil.isInteger(type)) {
+          document = AttachmentServiceFactory.getAttachmentService()
+              .findExistingDocument(pk, uploadedFilename,
+                  new ForeignPK(foreignId, getComponentId()), lang);
+          publicDocument = Integer.parseInt(type) == DocumentVersion.TYPE_PUBLIC_VERSION;
+          needCreation = document == null;
+          if (document == null) {
+            document = new HistorisedDocument(pk, foreignId, 0, userId,
+                new SimpleAttachment(uploadedFilename, lang, title, description,
+                    fileDetail.getSize(), FileUtil.getMimeType(uploadedFilename), userId,
+                    new Date(), null));
+            document.setDocumentType(attachmentContext);
+          }
+          document.setPublicDocument(publicDocument);
+          document.setComment(comment);
+        } else {
+          document = new SimpleDocument(pk, foreignId, 0, false, null, new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
               FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
           document.setDocumentType(attachmentContext);
         }
-        document.setPublicDocument(publicDocument);
-        document.setComment(comment);
-      } else {
-        document = new SimpleDocument(pk, foreignId, 0, false, null,
-            new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
-            FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
-        document.setDocumentType(attachmentContext);
-      }
-      document.setLanguage(lang);
-      document.setTitle(title);
-      document.setDescription(description);
-      document.setSize(fileSize);
-      InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-      if (needCreation) {
-        document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-            content, StringUtil.getBooleanValue(indexIt), publicDocument);
-      } else {
-        document.edit(userId);
-        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, lang);
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content,
-            StringUtil.getBooleanValue(indexIt), true);
-        UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
-        unlockContext.addOption(UnlockOption.UPLOAD);
-        if (!publicDocument) {
-          unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+        document.setLanguage(lang);
+        document.setTitle(title);
+        document.setDescription(description);
+        document.setSize(tempFile.length());
+        InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
+        if (needCreation) {
+          document = AttachmentServiceFactory.getAttachmentService()
+              .createAttachment(document, content, StringUtil.getBooleanValue(indexIt),
+                  publicDocument);
+        } else {
+          document.edit(userId);
+          AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, lang);
+          AttachmentServiceFactory.getAttachmentService()
+              .updateAttachment(document, content, StringUtil.getBooleanValue(indexIt), true);
+          UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
+          unlockContext.addOption(UnlockOption.UPLOAD);
+          if (!publicDocument) {
+            unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+          }
+          AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
         }
-        AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+        content.close();
+        FileUtils.deleteQuietly(tempFile);
+        URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
+            getLanguage()).build();
+        return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
       }
-      content.close();
-      FileUtils.deleteQuietly(tempFile);
-      URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
-          getLanguage()).build();
-      return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
+      return null;
+    } catch (RuntimeException re) {
+      performRuntimeException(re);
     }
-    return null;
+    throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
   }
 }

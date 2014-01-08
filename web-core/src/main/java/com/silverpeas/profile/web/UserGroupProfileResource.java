@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,8 +32,9 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
-import org.silverpeas.util.ListSlice;
-
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -42,12 +43,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.util.List;
-import java.util.Set;
+import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.web.RESTWebService.RESPONSE_HEADER_ARRAYSIZE;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
@@ -70,7 +70,6 @@ public class UserGroupProfileResource extends RESTWebService {
    * profiles to sent back.
    */
   public static final String RESPONSE_HEADER_GROUPSIZE = "X-Silverpeas-GroupSize";
-
   @Inject
   private UserProfileService profileService;
 
@@ -83,8 +82,8 @@ public class UserGroupProfileResource extends RESTWebService {
   /**
    * Gets all the root user groups in Silverpeas.
    *
-   * @param groupIds requested group identifiers. If this parameter is filled,
-   * sub groups are also returned.
+   * @param groupIds requested group identifiers. If this parameter is filled, sub groups are also
+   * returned.
    * @param name a pattern on the name of the root groups to retrieve. If null, all the root groups
    * are fetched.
    * @param domain the unique identifier of the domain the groups has to be related.
@@ -124,7 +123,8 @@ public class UserGroupProfileResource extends RESTWebService {
     UserGroupProfileEntity[] entities =
         asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
     return Response.ok(entities).
-        header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, allGroups.getOriginalListSize()).build();
   }
 
   /**
@@ -185,7 +185,8 @@ public class UserGroupProfileResource extends RESTWebService {
     ListSlice<Group> groups = getOrganisationController().searchGroups(criteria);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
-            header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).build() ;
+        header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, groups.getOriginalListSize()).build();
   }
 
   /**
@@ -243,12 +244,14 @@ public class UserGroupProfileResource extends RESTWebService {
     }
     ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteria);
     return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
-            header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, subgroups.getOriginalListSize()).build();
   }
 
   @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException("The UserGroupProfileResource doesn't belong to any component"
+    throw new UnsupportedOperationException(
+        "The UserGroupProfileResource doesn't belong to any component"
         + " instances");
   }
 

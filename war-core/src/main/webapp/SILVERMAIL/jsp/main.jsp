@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -87,7 +87,7 @@ function newMessage() {
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(silvermailScc.getString("LireNotification"), "Main", true);
   tabbedPane.addTab(silvermailScc.getString("SendedUserNotifications"), "SendedUserNotifications", false);
-  tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "personalization_Notification.jsp?Action=NotificationView", false);
+  tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "ParametrizeNotification", false);
   
   out.println(window.printBefore());
   out.println(tabbedPane.print());
@@ -134,7 +134,7 @@ function newMessage() {
     else
 		line.addArrayCellText( "" );    
     
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSubject()) + "</a>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + message.getSubject() + "</a>" + hasBeenReadenOrNotEnd);
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();

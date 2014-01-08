@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,25 +20,14 @@
  */
 package com.stratelia.webactiv.util.publication.model;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.form.*;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
@@ -51,7 +40,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
@@ -62,11 +50,26 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 /**
  * This object contains the description of a publication
@@ -621,7 +624,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getImage() {
     ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
       return imageProps[0];
     }
     return null;
@@ -631,7 +634,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getImageMimeType() {
     ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
       return imageProps[1];
     }
     return null;
@@ -905,7 +908,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
           } else {
             SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(attachmentId, getPK().getInstanceId()),
-                language);
+                    language);
             if (attachment != null) {
               fieldValue = attachment.getAttachmentURL();
             }
@@ -1003,12 +1006,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
         getComponentName());
     SilverTrace.
         info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-        "foreignKey = " + foreignKey.toString());
+            "foreignKey = " + foreignKey.toString());
     Collection<SimpleDocument> attachmentList = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
     SilverTrace.
         info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-        "attachmentList.size() = " + attachmentList.size());
+            "attachmentList.size() = " + attachmentList.size());
     return attachmentList;
   }
 
@@ -1259,6 +1262,36 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this publication?
+   * <p/>
+   * A user can access a publication if he has enough rights to access both the application instance
+   * in which is managed this publication and one of the nodes to which this publication belongs to.
+   *
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this publication, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController = AccessControllerProvider.getAccessController(
+        "componentAccessController");
+    boolean canBeAccessed = accessController.
+        isUserAuthorized(user.getId(), getComponentInstanceId());
+    if (canBeAccessed) {
+      AccessController<NodePK> nodeAccessController = AccessControllerProvider.getAccessController(
+          "nodeAccessController");
+      Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(getId(),
+          getInstanceId()));
+      for (NodePK aNode : nodes) {
+        canBeAccessed = nodeAccessController.isUserAuthorized(user.getId(), aNode);
+        if (canBeAccessed) {
+          break;
+        }
+      }
+    }
+    return canBeAccessed;
   }
 
   /**

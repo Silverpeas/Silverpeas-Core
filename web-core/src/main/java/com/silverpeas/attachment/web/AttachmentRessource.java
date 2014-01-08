@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,6 +20,15 @@
  */
 package com.silverpeas.attachment.web;
 
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.ZipManager;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +37,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.StringTokenizer;
 import java.util.UUID;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -39,25 +47,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilderException;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.ZipManager;
-import com.silverpeas.web.RESTWebService;
-
-import com.stratelia.webactiv.util.FileRepositoryManager;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 @Service
 @RequestScoped

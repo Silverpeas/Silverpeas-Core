@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.owasp.encoder.Encode;
 
 /**
  * Class declaration
@@ -116,7 +117,7 @@ public class POPUPSessionController extends AbstractComponentSessionController {
       NotificationMetaData notifMetaData = new NotificationMetaData();
 
       notifMetaData.setTitle("");
-      notifMetaData.setContent(message);
+      notifMetaData.setContent(Encode.forHtml(message));
       notifMetaData.setSource(getUserDetail().getDisplayedName());
       notifMetaData.setSender(getUserId());
       notifMetaData.setAnswerAllowed(true);

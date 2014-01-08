@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,9 +24,7 @@
 
 package com.silverpeas.thumbnail.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
+import com.silverpeas.annotation.Service;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDAO;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -35,12 +33,16 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+@Service
 public class ThumbnailServiceImpl implements ThumbnailService {
 
-  private ThumbnailDAO dao;
-
-  public ThumbnailServiceImpl() {
-    dao = new ThumbnailDAO();
+  protected ThumbnailServiceImpl() {
+    // This constructor declaration avoid the direct use of this implementation ...
+    // Callers have to use the ThumbnailServiceFactory or the @inject annotation to perform
+    // Thumbnail services.
   }
 
   @Override
@@ -48,7 +50,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      return dao.insertThumbnail(con, thumbDetail);
+      return ThumbnailDAO.insertThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
           SilverpeasException.ERROR,
@@ -67,7 +69,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      dao.updateThumbnail(con, thumbDetail);
+      ThumbnailDAO.updateThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.updateAttachment()",
           SilverpeasException.ERROR,
@@ -82,7 +84,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      dao.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
+      ThumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
           thumbDetail.getInstanceId());
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteThumbnail()",
@@ -98,7 +100,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      return dao.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
+      return ThumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
           thumbDetail.getObjectType());
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.getCompleteThumbnail()",
@@ -113,11 +115,24 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      // delete all thumbnails
-      dao.deleteAllThumbnails(con, componentId);
+      ThumbnailDAO.deleteAllThumbnails(con, componentId);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
           SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  @Override
+  public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId) throws ThumbnailException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      ThumbnailDAO.moveThumbnail(con, thumbDetail, toInstanceId);
+    } catch (SQLException se) {
+      throw new ThumbnailException("ThumbnailBmImpl.moveThumbnail()",
+          SilverpeasException.ERROR, "thumbnail.EX_MSG_CANT_MOVE_THUMBNAIL", se);
     } finally {
       DBUtil.close(con);
     }

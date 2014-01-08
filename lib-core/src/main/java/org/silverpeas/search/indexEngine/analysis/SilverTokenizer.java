@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -30,6 +30,8 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeSource;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A grammar-based tokenizer constructed with JFlex <p> This should be a good tokenizer for most
@@ -119,7 +121,15 @@ public class SilverTokenizer extends Tokenizer {
     int posIncr = 1;
 
     while (true) {
-      int tokenType = scanner.getNextToken();
+      int tokenType = -1;
+      
+      try {
+        tokenType = scanner.getNextToken();
+      } catch (Error e) {
+        SilverTrace.error("indexEngine", "SilverTokenizer.incrementToken", "root.MSG_GEN_PARAM_VALUE",
+            "Error while tokenizing content : " + e.getMessage());
+        return false;
+      }
 
       if (tokenType == StandardTokenizerInterface.YYEOF) {
         return false;

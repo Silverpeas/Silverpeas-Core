@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,21 +20,20 @@
  */
 package com.stratelia.silverpeas.pdcPeas.model;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-
 public class QueryParameters implements java.io.Serializable {
-  // class version identifier
-
+  
+  public static final String PARAM_FOLDER = "folderSearch";
+  
   private static final long serialVersionUID = -5191736720955151540L;
   private String keywords = null;
   private String spaceId = null;
@@ -46,6 +45,8 @@ public class QueryParameters implements java.io.Serializable {
   private Date beforeupdatedate = null;
   private Map<String, String> xmlQuery = null;
   private String xmlTitle = null;
+  private String folder = null;
+  
   // attributes below are used only to display info in the search page
   private UserDetail creatorDetail = null;
 
@@ -97,23 +98,34 @@ public class QueryParameters implements java.io.Serializable {
     return spaceId;
   }
 
+  /**
+   * By using this method the spaceId filter is set.
+   * The instanceId (if any) is cleared.
+   * @param spaceId
+   */
   public void setSpaceId(String spaceId) {
-    if (!StringUtil.isDefined(spaceId) || spaceId.equals("*")) {
-      this.spaceId = null;
-    } else {
-      this.spaceId = spaceId;
-    }
+    setSpaceIdAndInstanceId(spaceId, null);
   }
 
   public String getInstanceId() {
     return instanceId;
   }
 
-  public void setInstanceId(String instanceId) {
-    if (!StringUtil.isDefined(instanceId) || instanceId.equals("*")) {
-      this.instanceId = null;
-    } else {
-      this.instanceId = instanceId;
+  /**
+   * Setting an instanceId while the spaceId is not defined makes no sense here.
+   * That's why a spaceId must be passed to the method, if it is null, empty or "*",
+   * then no instanceId is set.
+   * @param spaceId
+   * @param instanceId
+   */
+  public void setSpaceIdAndInstanceId(String spaceId, String instanceId) {
+    this.spaceId = null;
+    this.instanceId = null;
+    if (StringUtil.isDefined(spaceId) && !spaceId.equals("*")) {
+      this.spaceId = spaceId;
+      if (StringUtil.isDefined(instanceId) && !instanceId.equals("*")) {
+        this.instanceId = instanceId;
+      }
     }
   }
 
@@ -244,5 +256,13 @@ public class QueryParameters implements java.io.Serializable {
   public boolean isDefined() {
     return StringUtil.isDefined(keywords) || afterdate != null || beforedate != null || StringUtil
         .isDefined(creatorId);
+  }
+
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
+
+  public String getFolder() {
+    return folder;
   }
 }

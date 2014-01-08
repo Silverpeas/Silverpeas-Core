@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,20 +20,17 @@
  */
 package org.silverpeas.authentication;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationHostException;
@@ -46,18 +43,18 @@ import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
  * authentication process as it wraps all the mechanism and the delegation to perform the actual
@@ -69,7 +66,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class AuthenticationService {
 
   private static final String module = "authentication";
-
   static final protected String m_JDBCUrl;
   static final protected String m_AccessLogin;
   static final protected String m_AccessPasswd;
@@ -86,10 +82,12 @@ public class AuthenticationService {
   static final protected String m_UserIdColumnName;
   static final protected String m_UserLoginColumnName;
   static final protected String m_UserDomainColumnName;
-
   static protected int m_AutoInc = 1;
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
   public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
+  public static final String ERROR_BAD_CREDENTIAL = "Error_1";
+  public static final String ERROR_AUTHENTICATION_FAILURE = "Error_2";
+  public static final String ERROR_PASSWORD_NOT_AVAILABLE = "Error_5";
 
   static {
     ResourceLocator propFile = new ResourceLocator(
@@ -192,10 +190,39 @@ public class AuthenticationService {
   public String authenticate(final AuthenticationCredential userCredential) {
     String key = null;
     if (userCredential.getLogin() != null) {
-      if (userCredential.isPasswordSet()) {
-        key = authenticateByLoginAndPasswordAndDomain(userCredential);
-      } else {
-        key = authenticateByLoginAndDomain(userCredential);
+      try {
+        if (userCredential.isPasswordSet()) {
+          key = authenticateByLoginAndPasswordAndDomain(userCredential);
+        } else {
+          key = authenticateByLoginAndDomain(userCredential);
+        }
+      } catch (AuthenticationException ex) {
+        SilverTrace.error(module, "AuthenticationService.authenticate()",
+            "authentication.EX_USER_REJECTED",
+            "DomainId=" + userCredential.getDomainId() + ";User=" + userCredential.getLogin(), ex);
+        String errorCause = ERROR_AUTHENTICATION_FAILURE;
+        Exception nested = ex.getNested();
+        if (nested != null) {
+          if (nested instanceof AuthenticationException) {
+            ex = (AuthenticationException) nested;
+          }
+        }
+        if (ex instanceof AuthenticationBadCredentialException) {
+          errorCause = ERROR_BAD_CREDENTIAL;
+        } else if (ex instanceof AuthenticationHostException) {
+          errorCause = ERROR_AUTHENTICATION_FAILURE;
+        } else if (ex instanceof AuthenticationPwdNotAvailException) {
+          errorCause = ERROR_PASSWORD_NOT_AVAILABLE;
+        } else if (ex instanceof AuthenticationPasswordExpired) {
+          errorCause = ERROR_PWD_EXPIRED;
+        } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
+          errorCause = ERROR_PWD_MUST_BE_CHANGED;
+        } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
+          errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
+        } else if (ex instanceof AuthenticationUserAccountBlockedException) {
+          errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+        }
+        return errorCause;
       }
     }
     return key;
@@ -209,7 +236,8 @@ public class AuthenticationService {
    * with the domain to which the user belongs.
    * @return an authentication key if the authentication succeed, null otherwise.
    */
-  private String authenticateByLoginAndPasswordAndDomain(AuthenticationCredential credential) {
+  private String authenticateByLoginAndPasswordAndDomain(AuthenticationCredential credential)
+      throws AuthenticationException {
     // Test data coming from calling page
     String login = credential.getLogin();
     String password = credential.getPassword();
@@ -217,6 +245,9 @@ public class AuthenticationService {
     if (login == null || password == null || domainId == null) {
       return null;
     }
+
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
     Connection connection = null;
     try {
@@ -229,43 +260,12 @@ public class AuthenticationService {
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
-      // Verify that the user can login
-      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
-
       // Authentification test
       authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database
       return getAuthenticationKey(login, domainId);
 
-    } catch (AuthenticationException ex) {
-      SilverTrace.error(module,
-          "AuthenticationService.authenticate()",
-          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-          + login, ex);
-      String errorCause = "Error_2";
-      Exception nested = ex.getNested();
-      if (nested != null) {
-        if (nested instanceof AuthenticationException) {
-          ex = (AuthenticationException) nested;
-        }
-      }
-      if (ex instanceof AuthenticationBadCredentialException) {
-        errorCause = "Error_1";
-      } else if (ex instanceof AuthenticationHostException) {
-        errorCause = "Error_2";
-      } else if (ex instanceof AuthenticationPwdNotAvailException) {
-        errorCause = "Error_5";
-      } else if (ex instanceof AuthenticationPasswordExpired) {
-        errorCause = ERROR_PWD_EXPIRED;
-      } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
-        errorCause = ERROR_PWD_MUST_BE_CHANGED;
-      } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
-        errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
-      } else if (ex instanceof AuthenticationUserAccountBlockedException) {
-        errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
-      }
-      return errorCause;
     } finally {
       closeConnection(connection);
     }
@@ -278,7 +278,8 @@ public class AuthenticationService {
    * belongs.
    * @return an authentication key if the authentication succeed, null otherwise.
    */
-  private String authenticateByLoginAndDomain(AuthenticationCredential credential) {
+  private String authenticateByLoginAndDomain(AuthenticationCredential credential)
+      throws AuthenticationException {
     // Test data coming from calling page
     String login = credential.getLogin();
     String domainId = credential.getDomainId();
@@ -291,6 +292,7 @@ public class AuthenticationService {
     Connection connection = null;
     boolean authenticationOK = false;
     try {
+
       // Open connection
       connection = openConnection();
 
@@ -308,7 +310,7 @@ public class AuthenticationService {
     } catch (Exception ex) {
       SilverTrace.warn(module, "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
-      return "Error_2";
+      return ERROR_AUTHENTICATION_FAILURE;
     } finally {
       DBUtil.close(resultSet, prepStmt);
       closeConnection(connection);
@@ -317,6 +319,10 @@ public class AuthenticationService {
     String key = null;
 
     if (authenticationOK) {
+
+      // Verify that the user can login
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+
       // Generate a random key and store it in database
       try {
         key = getAuthenticationKey(login, domainId);
@@ -324,7 +330,7 @@ public class AuthenticationService {
         SilverTrace.warn(module, "AuthenticationService.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User="
             + login, e);
-        return "Error_2";
+        return ERROR_AUTHENTICATION_FAILURE;
       }
     }
 
@@ -610,5 +616,4 @@ public class AuthenticationService {
     // Return the AuthenticationServer instance with the specified unique name
     return AuthenticationServer.getAuthenticationServer(authenticationServerName);
   }
-
 }

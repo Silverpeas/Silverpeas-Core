@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,154 +24,172 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.util.*"%>
-<%@ page import="com.silverpeas.look.LookHelper"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="java.util.*" %>
+<%@ page import="com.silverpeas.look.LookHelper" %>
+<%@ page import="com.stratelia.webactiv.util.*" %>
+<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*" %>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementFactory" %>
->>>>>>> master
+<%@ page import="org.owasp.encoder.Encode" %>
 
-<%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+<%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
 <%
-    String m_context = URLManager.getApplicationURL();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
-    if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
-    LookHelper lookHelper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+  String m_context = URLManager.getApplicationURL();
+  MainSessionController m_MainSessionCtrl = (MainSessionController) session
+      .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  ClipboardSessionController clipboardSC =
+      (ClipboardSessionController) request.getAttribute("clipboardScc");
+  if (clipboardSC != null) {
+    clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+  }
+  LookHelper lookHelper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
-    int nbConnectedUsers = 0;
-    String language = m_MainSessionCtrl.getFavoriteLanguage();
-    ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
-    ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
-    String connectedUsers = message.getString("connectedUsers");
-    boolean displayConnectedUsers = homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null && lookHelper.getSettings("displayConnectedUsers", true);
-    if (displayConnectedUsers) {
-      SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
-      nbConnectedUsers = sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
-        if (nbConnectedUsers <= 1) {
-            connectedUsers = message.getString("connectedUser");
-        }
+  int nbConnectedUsers = 0;
+  String language = m_MainSessionCtrl.getFavoriteLanguage();
+  ResourceLocator message =
+      new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+  ResourceLocator homePageSettings =
+      new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+  String connectedUsers = message.getString("connectedUsers");
+  boolean displayConnectedUsers =
+      homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null &&
+          lookHelper.getSettings("displayConnectedUsers", true);
+  if (displayConnectedUsers) {
+    SessionManagement sessionManagement =
+        SessionManagementFactory.getFactory().getSessionManagement();
+    nbConnectedUsers =
+        sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
+    if (nbConnectedUsers <= 1) {
+      connectedUsers = message.getString("connectedUser");
     }
+  }
 
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript">
-var counter = 0;
-<%
-   if (clipboardSC != null)
-   {
-        out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
-   }
-   else
-   {
-        out.println("var interval = 5;");
-   }
-%>
+  <title></title>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript">
+    var counter = 0;
+    <%
+       if (clipboardSC != null)
+       {
+            out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
+       }
+       else
+       {
+            out.println("var interval = 5;");
+       }
+    %>
 
-// call Update function in 1 second after first load
-ID = window.setTimeout ("DoIdle(" + interval + ");", interval * 1000);
+    // call Update function in 1 second after first load
+    ID = window.setTimeout("DoIdle(" + interval + ");", interval * 1000);
 
-<% if (displayConnectedUsers) { %>
+    <% if (displayConnectedUsers) { %>
     // call "TopBar refresh" in x second after first load
-    ID = window.setTimeout ("refreshTopBar(" + interval + ");", interval * 500);
-<% } %>
-//--------------------------------------------------------------------------------------DoIdle
-// Idle function
-function DoIdle()
-{
-	counter ++;
-	self.location.href = "../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE";
-}
+    ID = window.setTimeout("refreshTopBar(" + interval + ");", interval * 500);
+    <% } %>
+    //--------------------------------------------------------------------------------------DoIdle
+    // Idle function
+    function DoIdle() {
+      counter++;
+      self.location.href = "../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE";
+    }
 
-<% if (displayConnectedUsers) { %>
-function refreshTopBar()
-{
-	top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
-}
-<% } %>
+    <% if (displayConnectedUsers) { %>
+    function refreshTopBar() {
+      top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
+    }
+    <% } %>
 
-//--------------------------------------------------------------------------------------DoTask
-// Do taks javascript function
-function DoTask() {
-	<%
-	if (clipboardSC != null) {
-		String MessageError = clipboardSC.getMessageError();
-		if (MessageError != null)
-				out.println ("alert ('" + MessageError + "')");
-		out.println (clipboardSC.getHF_JavaScriptTask(request));
-	}
-	%>
-}
-
-//--------------------------------------------------------------------------------------OpenDiscussion
-function OpenDiscussion(page,nom,largeur,hauteur,options) {
-	if (!top.scriptFrame.impopup || (top.scriptFrame.impopup.closed)) {
-		top.scriptFrame.impopup = SP_openWindow(page,nom,largeur, hauteur,options);
-	} else {
-		 top.scriptFrame.impopup.focus(); 
-	}
-
-	 <%
-		String messageId = (String) request.getAttribute("MessageID");
-
-		if(messageId != null) {
-			com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(messageId);
-		}
-	 %>
-}
-
-//--------------------------------------------------------------------------------------test
-// Developer test
-function test () {
-  //window.alert ('clipboardName='+top.ClipboardWindow.name);
-  status = top.ClipboardWindow.document.pasteform.compR.value;
-}
-</script>
-</head>
-<body onload="DoTask();"><pre>
-Frame cachee, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
-<%
-		Enumeration values = request.getParameterNames();
-		String sep = "";
-		while(values.hasMoreElements()) {
-			String name = (String)values.nextElement();
-			if (name != null) {
-		      String value = request.getParameter(name);
-            if(name.compareTo("submit") != 0) {
-				   if (value != null)
-					   out.print(sep + name + "=" + value);
-				   else
-					   out.print(sep + name + "=null");
-				   sep = "&";
-            }
-			}
+    //--------------------------------------------------------------------------------------DoTask
+    // Do taks javascript function
+    function DoTask() {
+      <%
+      if (clipboardSC != null) {
+        String MessageError = clipboardSC.getMessageError();
+        if (MessageError != null) {
+          out.println("alert ('" + MessageError + "')");
+        }
+        out.println (clipboardSC.getHF_JavaScriptTask(request));
       }
-	%>
+      %>
+    }
+
+    //--------------------------------------------------------------------------------------OpenDiscussion
+    function OpenDiscussion(page, nom, largeur, hauteur, options) {
+      if (!top.scriptFrame.impopup || (top.scriptFrame.impopup.closed)) {
+        top.scriptFrame.impopup = SP_openWindow(page, nom, largeur, hauteur, options);
+      } else {
+        top.scriptFrame.impopup.focus();
+      }
+
+      <%
+       String messageId = (String) request.getAttribute("MessageID");
+
+       if(messageId != null) {
+         com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(messageId);
+       }
+      %>
+    }
+
+    //--------------------------------------------------------------------------------------test
+    // Developer test
+    function test() {
+      //window.alert ('clipboardName='+top.ClipboardWindow.name);
+      status = top.ClipboardWindow.document.pasteform.compR.value;
+    }
+  </script>
+</head>
+<body onload="DoTask();">
+<pre>
+Frame cachee, Time = <%
+  if (clipboardSC != null) {
+    out.print(String.valueOf(clipboardSC.getCounter()));
+  }
+%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
+<%
+  Enumeration values = request.getParameterNames();
+  String sep = "";
+  while (values.hasMoreElements()) {
+    String name = (String) values.nextElement();
+    if (name != null) {
+      String value = Encode.forHtml(request.getParameter(name));
+      if (name.compareTo("submit") != 0) {
+        if (value != null) {
+          out.print(sep + name + "=" + value);
+        } else {
+          out.print(sep + name + "=null");
+        }
+        sep = "&";
+      }
+    }
+  }
+%>
 	<a href="javascript:onClick=test()">test...</a>
 	</pre>
-<%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
+<%if (clipboardSC != null) {
+  out.println(clipboardSC.getHF_HTMLForm(request));
+}
+%>
 <!-- SessionId pour securisation pages Web -->
 <form name="ctrl" action="">
-	<input type="hidden" name="sessionId" value="<%=session.getId()%>"/>
+  <input type="hidden" name="sessionId" value="<%=session.getId()%>"/>
 </form>
 </body>
 </html>

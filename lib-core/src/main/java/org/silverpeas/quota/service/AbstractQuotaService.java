@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,10 +23,9 @@
  */
 package org.silverpeas.quota.service;
 
-import javax.inject.Inject;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.quota.contant.QuotaLoad;
+import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaFullException;
 import org.silverpeas.quota.exception.QuotaNotEnoughException;
@@ -39,6 +38,8 @@ import org.silverpeas.quota.service.dao.QuotaDAO;
 import org.silverpeas.quota.service.dao.jdbc.JDBCQuotaDAO;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 /**
  * @author Yohann Chastagnier
@@ -150,6 +151,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    */
   @Override
   public Quota verify(final T key) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     return verify(key, SimpleQuotaCountingOffset.from(0));
   }
 
@@ -160,6 +164,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   @Override
   public Quota verify(final T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     // Returning the quota used by this verify process
     return verify(key, getByQuotaKey(key, true), countingOffset);
   }
@@ -169,8 +176,20 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    */
   protected Quota verify(final T key, final Quota quota,
       final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
+
+    SilverTrace
+        .debug("quota", "AbstractQuotaService.verify()", "quota.BEFORE_VERIFY", quota.toString());
+
     if (quota.exists()) {
-      quota.setCount(getCurrentCount(key) + countingOffset.getOffset());
+      long offset = countingOffset.getOffset();
+      quota.setCount(getCurrentCount(key) + offset);
+
+      SilverTrace.debug("quota", "AbstractQuotaService.verify()", "quota.AFTER_VERIFY",
+          quota.toString() + ", APPLIED OFFSET=" + offset);
+
       final QuotaLoad quotaLoad = quota.getLoad();
       if (QuotaLoad.OUT_OF_BOUNDS.equals(quotaLoad)) {
         throw new QuotaOutOfBoundsException(quota);
@@ -195,4 +214,10 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
       quotaRepository.delete(quota);
     }
   }
+
+  /**
+   * Indicates if the type of quota is activated
+   * @return
+   */
+  abstract protected boolean isActivated();
 }
