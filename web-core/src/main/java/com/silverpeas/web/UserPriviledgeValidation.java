@@ -177,12 +177,7 @@ public class UserPriviledgeValidation {
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
 
-    // Search among http request parameters one called HTTP_SESSIONKEY
-    if (!isDefined(sessionKey)) {
-      sessionKey = request.getParameter(HTTP_SESSIONKEY);
-    }
-
-    // Try with JSession id
+    // if no session key is passed among the HTTP headers, check the request is within a session
     if (!isDefined(sessionKey)) {
       HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {

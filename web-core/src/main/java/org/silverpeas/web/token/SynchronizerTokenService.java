@@ -57,8 +57,8 @@ public class SynchronizerTokenService {
 
   protected static final String SESSION_TOKEN_KEY = "X-STKN";
   private static final String DEFAULT_RULE
-      = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard)|(clipboard)|(admin/))\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css))$";
-  private static final String RULE_PREFIX = "security.web.protected.rule";
+      = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(repository/))\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar))$";
+  private static final String RULE_PREFIX = "security.web.protection.rule";
   private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
   private static final ResourceLocator settings
@@ -69,9 +69,9 @@ public class SynchronizerTokenService {
   }
 
   /**
-   * Sets a session token to the specified HTTP session. A session token is a token used to validate
-   * that any requests to a protected web resource are well done within an open and valid user
-   * session. The setting occurs only if the security mechanism by token is enabled.
+   * Sets a session token for the specified HTTP session. A session token is a token used to
+   * validate that any requests to a protected web resource are well done within an open and valid
+   * user session. The setting occurs only if the security mechanism by token is enabled.
    *
    * @param session the user session to protect with a synchronizer token.
    */
@@ -183,7 +183,7 @@ public class SynchronizerTokenService {
    */
   public Cookie createCookieWithSessionToken(HttpServletRequest request, boolean force) {
     HttpRequest httpRequest = HttpRequest.decorate(request);
-    if (isWebSecurityByTokensEnabled() && httpRequest.hasCookie(SESSION_TOKEN_KEY) == force) {
+    if (isWebSecurityByTokensEnabled() && (!httpRequest.hasCookie(SESSION_TOKEN_KEY) || force)) {
       Token token = getSessionToken(httpRequest);
       if (token.isDefined()) {
         Cookie cookie = new Cookie(SESSION_TOKEN_KEY, token.getValue());

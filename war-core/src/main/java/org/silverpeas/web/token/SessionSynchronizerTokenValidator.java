@@ -23,21 +23,29 @@
  */
 package org.silverpeas.web.token;
 
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.silverpeas.token.exception.TokenValidationException;
 
 /**
- * A validator of a session token for each incoming request.
+ * A validator of a session token for each incoming request. For each protected web resources, the
+ * requests are expected to carry a synchronizer token that must match the token mapped with the
+ * user session. The request validation is in fact delegated to a
+ * {@link org.silverpeas.web.token.SynchronizerTokenService} instance; this object just process the
+ * status of the validation.
  *
  * @author mmoquillon
  */
@@ -52,8 +60,14 @@ public class SessionSynchronizerTokenValidator implements Filter {
   /**
    * Validates the incoming request is performed within a valid user session.
    *
-   * @param request The servlet request we are processing
-   * @param response The servlet response we are creating
+   * If the request isn't sent within an opened user session, then the user is redirected to the
+   * authentication page.
+   *
+   * If the request is sent within an opened user session but it doesn't carry a valid session
+   * synchronizer token, then it is rejected and a forbidden status is sent back.
+   *
+   * @param request The servlet request to validate.
+   * @param response The servlet response to sent back.
    * @param chain The filter chain we are processing
    *
    * @exception IOException if an input/output error occurs
@@ -66,14 +80,22 @@ public class SessionSynchronizerTokenValidator implements Filter {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
     if (service.isWebSecurityByTokensEnabled()) {
       try {
-        service.validate((HttpServletRequest) request);
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        checkAuthenticatedRequest(httpRequest);
+        service.validate(httpRequest);
+        chain.doFilter(request, response);
       } catch (TokenValidationException ex) {
         logger.log(Level.SEVERE, "The request for path {0} isn''t valid: {1}",
             new String[]{pathOf(request), ex.getMessage()});
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
+      } catch (UnauthenticatedRequestException ex) {
+        logger.log(Level.SEVERE, "The request for path {0} isn''t sent within an opened session",
+            pathOf(request));
+        redirectToAuthenticationPage(request, response);
       }
+    } else {
+      chain.doFilter(request, response);
     }
-    chain.doFilter(request, response);
   }
 
   /**
@@ -93,7 +115,38 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   }
 
+  private void checkAuthenticatedRequest(HttpServletRequest request) throws
+      UnauthenticatedRequestException {
+    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+    if (service.isAProtectedResource(request)) {
+      HttpSession session = request.getSession(false);
+      if (session == null || session.getAttribute(
+          MainSessionController.MAIN_SESSION_CONTROLLER_ATT) == null) {
+        throw new UnauthenticatedRequestException();
+      }
+    }
+  }
+
+  private void redirectToAuthenticationPage(ServletRequest request, ServletResponse response)
+      throws ServletException, IOException {
+    String destination = GeneralPropertiesManager.getString("sessionTimeout");
+    HttpServletResponse httpResponse = (HttpServletResponse) response;
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    if (destination.startsWith("http") || destination.startsWith("ftp")) {
+      httpResponse.sendRedirect(httpResponse.encodeRedirectURL(destination));
+    } else {
+      RequestDispatcher requestDispatcher = httpRequest.getRequestDispatcher(destination);
+      requestDispatcher.forward(httpRequest, httpResponse);
+    }
+  }
+
   protected String pathOf(ServletRequest request) {
     return ((HttpServletRequest) request).getRequestURI();
+  }
+
+  private static class UnauthenticatedRequestException extends Exception {
+
+    private static final long serialVersionUID = 9173126171348369053L;
+
   }
 }
