@@ -57,7 +57,7 @@ public class SynchronizerTokenService {
 
   protected static final String SESSION_TOKEN_KEY = "X-STKN";
   private static final String DEFAULT_RULE
-      = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(repository/))\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar))$";
+      = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
   private static final String RULE_PREFIX = "security.web.protection.rule";
   private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
@@ -208,19 +208,15 @@ public class SynchronizerTokenService {
    * validate.
    */
   protected boolean isAProtectedResource(HttpServletRequest request) {
-    boolean isProtected = true;
-    String regexp = null;
     String path = getRequestPath(request);
+    boolean isProtected = path.matches(DEFAULT_RULE);
     Enumeration<String> properties = settings.getKeys();
     for (; properties.hasMoreElements() && isProtected;) {
       String property = properties.nextElement();
       if (property.startsWith(RULE_PREFIX)) {
-        regexp = settings.getString(property);
-        isProtected &= path.matches(regexp);
+        String rule = settings.getString(property);
+        isProtected &= path.matches(rule);
       }
-    }
-    if (regexp == null) {
-      isProtected = path.matches(DEFAULT_RULE);
     }
     return isProtected;
   }

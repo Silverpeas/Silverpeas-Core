@@ -62,6 +62,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <param-value>sun-portlet.xml</param-value>
   </context-param>
   <filter>
+    <description>
+      To ensure the encoding of the request parameters are in UTF-8. This filter MUST be the first
+      one in order to work correctly.
+    </description>
     <filter-name>CharacterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
     <init-param>
@@ -74,15 +78,27 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </init-param>
   </filter>
   <filter>
+    <description>
+      To decorate the incoming HTTP request by a HttpRequest instance that provides more useful
+      functionalities.
+    </description>
     <filter-name>HttpServletRequestDecoration</filter-name>
     <filter-class>org.silverpeas.web.filter.HttpServletRequestDecoration</filter-class>
   </filter>
   <filter>
     <!-- MessageFilter Filter -->
+    <description>
+      To manage for each incoming request, the life-cycle of a l10n message container in which
+      are set the messages for the end-user.
+    </description>
     <filter-name>MessageFilter</filter-name>
     <filter-class>org.silverpeas.web.filter.MessageFilter</filter-class>
   </filter>
   <filter>
+    <description>
+      To validate each incoming HTTP request to a protected resource by using a synchronizer token
+      mechanism.
+    </description>
     <filter-name>SessionSynchronizerTokenValidator</filter-name>
     <filter-class>org.silverpeas.web.token.SessionSynchronizerTokenValidator</filter-class>
   </filter>
@@ -93,6 +109,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </filter>
   <filter>
     <!-- WebCORSFilter Filter -->
+    <description>
+      To handle cross-origin resource sharing.
+    </description>
     <filter-name>WebCORSFilter</filter-name>
     <filter-class>org.silverpeas.web.filter.WebCORSFilter</filter-class>
   </filter>

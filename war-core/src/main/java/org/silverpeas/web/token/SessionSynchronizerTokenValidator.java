@@ -120,8 +120,8 @@ public class SessionSynchronizerTokenValidator implements Filter {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
     if (service.isAProtectedResource(request)) {
       HttpSession session = request.getSession(false);
-      if (session == null || session.getAttribute(
-          MainSessionController.MAIN_SESSION_CONTROLLER_ATT) == null) {
+      if (session == null || session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)
+          == null) {
         throw new UnauthenticatedRequestException();
       }
     }
