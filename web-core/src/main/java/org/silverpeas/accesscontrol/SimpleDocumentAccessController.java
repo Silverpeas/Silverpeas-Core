@@ -23,18 +23,10 @@
  */
 package org.silverpeas.accesscontrol;
 
-import java.util.Collection;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.NodeAccessController;
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -42,6 +34,10 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.util.Collection;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  *
@@ -90,7 +86,7 @@ public class SimpleDocumentAccessController implements AccessController<SimpleDo
               "root.NO_EX_MESSAGE", ex);
           return false;
         }
-        return false;
+        return true;
       } else if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
         String nodeId = foreignId.substring("Node_".length());
         return getNodeAccessController().isUserAuthorized(userId, new NodePK(nodeId, object.
