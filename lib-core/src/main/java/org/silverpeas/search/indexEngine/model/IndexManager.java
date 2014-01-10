@@ -125,7 +125,7 @@ public class IndexManager {
     String indexPath = getIndexDirectoryPath(indexEntry);
     IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
     removeIndexEntry(writer, indexEntry.getPK());
-    indexDocs(writer, indexEntry);
+    index(writer, indexEntry);
     SilverTrace.debug("applicationIndexer", "IndexManager().addIndexEntry()",
         "applicationIndexer.MSG_INDEXING_COMPONENT_ITEM", "componentId = "
         + indexEntry.getComponent());
@@ -158,7 +158,7 @@ public class IndexManager {
                 "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't optimize index " + writerPath, e);
           }
 
-          SilverTrace.info("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
+          SilverTrace.info("indexEngine", "IndexManager.optimize()", "root.MSG_GEN_PARAM_VALUE",
               "# of documents indexed in " + writerPath + " = " + writer.maxDoc());
           // Then, close the writer
           try {
@@ -317,26 +317,27 @@ public class IndexManager {
    * @param writer
    * @param indexEntry
    */
-  private void indexDocs(IndexWriter writer, FullIndexEntry indexEntry) {
+  private void index(IndexWriter writer, FullIndexEntry indexEntry) {
+    SilverTrace.info("indexEngine", "IndexManager.index", "root.MSG_GEN_ENTER_METHOD",
+        "IndexEntryPK = " + indexEntry.toString());
     try {
       writer.addDocument(makeDocument(indexEntry));
-      SilverTrace.debug("indexEngine", "IndexManager.indexDocs",
+      SilverTrace.info("indexEngine", "IndexManager.index",
           "indexEngine.INFO_ADD_REQUEST_SUCCEED", indexEntry.toString());
     } catch (Exception e) {
-      if (StringUtil.isDefined(indexEntry.getFilename())) {
-        SilverTrace.error("indexEngine", "IndexManager.indexDocs",
-            "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.getFilename() + " ", e);
-      } else {
-        SilverTrace.error("indexEngine", "IndexManager.indexDocs",
-            "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.getTitle() + " ", e);
-      }
+      SilverTrace.error("indexEngine", "IndexManager.index",
+            "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.toString(), e);
     }
+    SilverTrace.info("indexEngine", "IndexManager.index", "root.MSG_GEN_EXIT_METHOD",
+        "IndexEntryPK = " + indexEntry.toString());
   }
 
   /**
    * Create a lucene Document object with the given indexEntry.
    */
   private Document makeDocument(FullIndexEntry indexEntry) {
+    SilverTrace.info("indexEngine", "IndexManager.makeDocument", "root.MSG_GEN_ENTER_METHOD",
+        "IndexEntryPK = " + indexEntry.toString());
     Document doc = new Document();
     // fields creation
     doc.add(new Field(KEY, indexEntry.getPK().toString(), YES, NOT_ANALYZED));
@@ -522,6 +523,9 @@ public class IndexManager {
     }
     // Add server name inside Lucene doc
     doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, NOT_ANALYZED));
+    
+    SilverTrace.info("indexEngine", "IndexManager.makeDocument", "root.MSG_GEN_EXIT_METHOD",
+        "IndexEntryPK = " + indexEntry.toString());
     return doc;
   }
 
@@ -544,7 +548,7 @@ public class IndexManager {
    * Add file to Document
    */
   private void addFile(Document doc, FileDescription fileDescription) {
-    SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("indexEngine", "IndexManager.addFile", "root.MSG_GEN_ENTER_METHOD",
         "file = " + fileDescription.getPath() + ", type = " + fileDescription.getFormat());
     File file = new File(fileDescription.getPath());
     if (!file.exists() || !file.isFile()) {
