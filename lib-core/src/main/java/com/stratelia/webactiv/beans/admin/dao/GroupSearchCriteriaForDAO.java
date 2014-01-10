@@ -26,13 +26,12 @@ package com.stratelia.webactiv.beans.admin.dao;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -43,10 +42,10 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
-  private static final String QUERY = "select {0} from {1} {2} order by name";
-  private StringBuilder filter = new StringBuilder();
-  private Set<String> tables = new HashSet<String>();
-  private List<String> domainIds = new ArrayList<String>();
+  private static final String QUERY = "select distinct {0} from {1} {2} order by name";
+  private final StringBuilder filter = new StringBuilder();
+  private final Set<String> tables = new HashSet<String>();
+  private final List<String> domainIds = new ArrayList<String>();
   private PaginationPage page = null;
 
   public static GroupSearchCriteriaForDAO newCriteria() {
@@ -156,7 +155,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
       StringBuilder[] sqlLists = asSQLList(roleIds);
       StringBuilder theQuery = getFixedQuery().
           append(
-          "(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId in ").
+              "(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId in ").
           append(sqlLists[0]);
       for (int i = 1; i < sqlLists.length; i++) {
         theQuery.append(" or ST_UserRole_Group_Rel.userRoleId in ").append(sqlLists[i]);
@@ -275,7 +274,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   public SearchCriteria onPagination(PaginationPage page) {
     if (filter.toString().endsWith(" and ")) {
       filter.delete(filter.toString().lastIndexOf(" and "), filter.length());
-    } else if  (filter.toString().endsWith(" or ")) {
+    } else if (filter.toString().endsWith(" or ")) {
       filter.delete(filter.toString().lastIndexOf(" or "), filter.length());
     }
     this.page = page;
