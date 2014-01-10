@@ -76,10 +76,13 @@ public class SimpleDocumentAccessController implements AccessController<SimpleDo
         try {
           Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
               object.getInstanceId()));
-          for (NodePK nodePk : nodes) {
-            if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
-              return true;
+          if (!nodes.isEmpty()) {
+            for (NodePK nodePk : nodes) {
+              if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
+                return true;
+              }
             }
+            return false;
           }
         } catch (Exception ex) {
           SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
