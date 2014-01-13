@@ -842,14 +842,9 @@
       </c:if>
 
           try {
-            var browser = jQuery.uaMatch(navigator.userAgent).browser;
-            var documentWidth = $(document).width();
-            if (browser == "webkit") {
-              documentWidth = "980";
-            }
-
+            var documentWidth = 980;
             if ($(window).width() < documentWidth) {
-              window.resizeTo(documentWidth, 758);
+              window.resizeTo(documentWidth, 600);
             }
           } catch (e) {
             // to prevent errors according to cross browser compatibility
