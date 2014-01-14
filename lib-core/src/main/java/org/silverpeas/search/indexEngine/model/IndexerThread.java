@@ -92,7 +92,7 @@ public class IndexerThread extends Thread {
         request = null;
 
         synchronized (requestList) {
-          SilverTrace.debug("indexEngine", "IndexerThread",
+          SilverTrace.info("indexEngine", "IndexerThread",
               "root.MSG_GEN_PARAM_VALUE", "# of items to index = "
               + requestList.size());
           if (!requestList.isEmpty()) {
@@ -207,9 +207,11 @@ class AddIndexEntryRequest implements Request {
    */
   @Override
   public void process(IndexManager indexManager) {
-    SilverTrace.debug("indexEngine", "IndexerThread",
-        "indexEngine.INFO_PROCESS_ADD_REQUEST", indexEntry.toString());
+    SilverTrace.info("indexEngine", "AddIndexEntryRequest.process", "root.MSG_GEN_ENTER_METHOD",
+        indexEntry.toString());
     indexManager.addIndexEntry(indexEntry);
+    SilverTrace.info("indexEngine", "AddIndexEntryRequest.process", "root.MSG_GEN_EXIT_METHOD",
+        indexEntry.toString());
   }
 
   private final FullIndexEntry indexEntry;
@@ -234,9 +236,11 @@ class RemoveIndexEntryRequest implements Request {
    */
   @Override
   public void process(IndexManager indexManager) {
-    SilverTrace.debug("indexEngine", "IndexerThread",
-        "indexEngine.INFO_PROCESS_REMOVE_REQUEST", indexEntry.toString());
+    SilverTrace.info("indexEngine", "RemoveIndexEntryRequest.process", "root.MSG_GEN_ENTER_METHOD",
+        indexEntry.toString());
     indexManager.removeIndexEntry(indexEntry);
+    SilverTrace.info("indexEngine", "RemoveIndexEntryRequest.process", "root.MSG_GEN_EXIT_METHOD",
+        indexEntry.toString());
   }
 
   private final IndexEntryPK indexEntry;
