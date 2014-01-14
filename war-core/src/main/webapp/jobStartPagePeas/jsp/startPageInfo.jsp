@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
+<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
 <%@page import="org.silverpeas.quota.constant.QuotaLoad" %>
 <%@page import="org.silverpeas.util.UnitUtil" %>
@@ -39,6 +41,8 @@
 <%@ include file="check.jsp" %>
 
 <%
+  SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+  String      key             = tokenService.getSessionTokenFromRequest(request);
 	int	 			maintenanceState 	= (Integer) request.getAttribute("MaintenanceState");
 	String	 		m_SpaceId 			= (String) request.getAttribute("currentSpaceId");
 	Integer 		m_firstPageType 	= (Integer)request.getAttribute("FirstPageType");
@@ -192,7 +196,7 @@ function openPopup(action, larg, haut) {
 		function deleteSpace() {
 		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+EncodeHelper.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
 		    	$.progressMessage();
-		    	setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>\";", 500);
+			setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>&Key=<%= key %>\";", 500);
 			}
 		}
 	<% } %>

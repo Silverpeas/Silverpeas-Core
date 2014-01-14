@@ -37,15 +37,16 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
-
+import java.util.Date;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.web.token.SynchronizerTokenService;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     SilverpeasAuthenticatedHttpServlet {
@@ -57,6 +58,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   /**
    * This method has to be implemented in the component request Router class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   *
    * @return the name of the session controller.
    */
   public abstract String getSessionControlBeanName();
@@ -104,7 +106,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
-            + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
+        + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
     if (mainSessionCtrl.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
@@ -142,7 +144,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       if (!bCompoAllowed) {
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
             "peasCore.MSG_USER_NOT_ALLOWED", "User=" + mainSessionCtrl.getUserId()
-                + " | componentId=" + componentId + " | spaceId=" + spaceId);
+            + " | componentId=" + componentId + " | spaceId=" + spaceId);
         destination = GeneralPropertiesManager.getString("accessForbidden",
             "/admin/jsp/accessForbidden.jsp");
         return destination;
@@ -154,18 +156,17 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     ResourcesWrapper resources = new ResourcesWrapper(component.getMultilang(),
         component.getIcon(), component.getSettings(), component.getLanguage());
     request.setAttribute("resources", resources);
-    request.setAttribute("browseContext", new String[] {
-          component.getSpaceLabel(), component.getComponentLabel(),
-          component.getSpaceId(), component.getComponentId(),
-          component.getComponentUrl() });
+    request.setAttribute("browseContext", new String[]{
+      component.getSpaceLabel(), component.getComponentLabel(),
+      component.getSpaceId(), component.getComponentId(),
+      component.getComponentUrl()});
     request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.
         getComponentUrl());
 
     if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function)
         && !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
-      GraphicElementFactory gef =
-          (GraphicElementFactory) session
-              .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      GraphicElementFactory gef = (GraphicElementFactory) session
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       gef.setComponentId(component.getComponentId());
       gef.setHttpRequest(request);
     }
@@ -245,6 +246,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       } else {
         request.setAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI",
             request.getRequestURI());
+        // set the session token so that is can be available for all JSPs in the case some of them
+        // require it for some specific protected actions.
+        SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
+            getSynchronizerTokenService();
+        tokenService.setSessionTokenToRequest(request);
+
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
@@ -252,7 +259,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         } else {
           SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
-                  + destination + "' not found !");
+              + destination + "' not found !");
         }
       }
     } catch (Exception e) {
@@ -260,7 +267,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
                 SilverpeasException.ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-                    + destination, e));
+                + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher(
             "/admin/jsp/errorpageMain.jsp").forward(request, response);
       } catch (Exception ex) {
@@ -272,12 +279,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-                  + destination, e);
+              + destination, e);
         } else {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-                  + destination, e);
+              + destination, e);
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_ERROR_PAGE_FAILED",
@@ -312,8 +319,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       MainSessionController mainSessionCtrl,
       String spaceId, String componentId) {
     // ask to MainSessionController to create the ComponentContext
-    ComponentContext componentContext =
-        mainSessionCtrl.createComponentContext(spaceId, componentId);
+    ComponentContext componentContext = mainSessionCtrl.createComponentContext(spaceId, componentId);
     // instanciate a new CSC
     T component = createComponentSessionController(mainSessionCtrl, componentContext);
     if (componentId == null) {
@@ -324,12 +330,13 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
     SilverTrace.info("peasCore", "ComponentRequestRouter.setComponentSessionController",
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId
-            + " | componentId=" + componentId);
+        + " | componentId=" + componentId);
     return component;
   }
 
   /**
    * Set GEF and look helper space identifier
+   *
    * @param req current HttpServletRequest
    * @param componentId the component identifier
    */

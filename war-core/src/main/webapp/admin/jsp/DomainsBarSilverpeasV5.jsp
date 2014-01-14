@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
+<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -243,7 +245,7 @@ out.println(gef.getLookStyleSheet());
 
     function toForgottenPassword() {
     	var form = document.getElementById("authForm");
-        if (form.elements["Login"].value.length == 0) {
+        if (form.elements["Login"].value.length === 0) {
             alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
         } else {
         	form.action = "<%=urlToForgottenPwd%>";

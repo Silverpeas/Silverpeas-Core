@@ -91,6 +91,7 @@ session.removeAttribute("RedirectToSpaceId");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
+<view:includePlugin name="jquery"/>
 <view:includePlugin name="tkn"/>
 <script type="text/javascript">
 var columntype=""

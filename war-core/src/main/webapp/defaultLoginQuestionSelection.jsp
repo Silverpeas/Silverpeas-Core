@@ -41,6 +41,7 @@
   <link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <view:includePlugin name="jquery"/>
+  <view:includePlugin name="tkn"/>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -60,13 +61,13 @@
     $(document).ready(function() {
       $('#question').focus();
       $('#questionForm').on("submit", function() {
-        if (this.elements["answer"].value.length == 0) {
+        if (this.elements["answer"].value.length === 0) {
           alert("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
           return false;
-        } else if (this.elements["answerConfirmed"].value.length == 0) {
+        } else if (this.elements["answerConfirmed"].value.length === 0) {
           alert("<%=authenticationBundle.getString("authentication.reminder.answer.confirm") %>");
           return false;
-        } else if (this.elements["answer"].value != this.elements["answerConfirmed"].value) {
+        } else if (this.elements["answer"].value !== this.elements["answerConfirmed"].value) {
           alert("<%=authenticationBundle.getString("authentication.reminder.answer.different") %>");
           return false;
         }

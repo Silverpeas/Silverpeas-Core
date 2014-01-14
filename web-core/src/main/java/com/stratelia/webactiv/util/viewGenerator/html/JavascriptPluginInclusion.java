@@ -283,7 +283,6 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
-    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
     return xhtml;
   }

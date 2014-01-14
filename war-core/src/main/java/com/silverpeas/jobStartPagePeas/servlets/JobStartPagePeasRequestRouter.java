@@ -63,8 +63,11 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.web.token.SynchronizerTokenService;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
@@ -496,7 +499,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
     return destination;
   }
-  
+
   private Map<String, String> getPasteOptions(HttpServletRequest request) {
     Map<String, String[]> parameters = request.getParameterMap();
     Map<String, String> pasteOptions = new HashMap<String, String>();
@@ -576,7 +579,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request.
             getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
-            request),
+                request),
             request.getParameter("SelectedLook"),
             request.getParameter("ComponentSpaceQuota"),
             request.getParameter("DataStorageQuota"));
@@ -631,6 +634,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       }
     } else if (function.equals("DeleteSpace")) {
       // Delete the space
+      validateProtectedAction(request);
       String spaceId = request.getParameter("Id");
       jobStartPageSC.deleteSpace(spaceId);
       refreshNavBar(jobStartPageSC, request);
@@ -893,7 +897,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
         request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
-        
+
         request.setAttribute("CopiedComponents", jobStartPageSC.getCopiedComponents());
 
         request.setAttribute("Space", spaceint1);
@@ -1141,8 +1145,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters =
-        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
+    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(waComponent.
+        getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1178,8 +1182,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
           getComponentByName(componentName), sessionController.getLanguage());
       setSpacesNameInRequest(sessionController, request);
-      List<LocalizedParameter> visibleParameters =
-          sessionController.getVisibleParameters(componentName, componentInstSelected.
+      List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(
+          componentName, componentInstSelected.
           getSortedParameters());
       Parameter hiddenParam = createIsHiddenParam("no");
       visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
@@ -1218,8 +1222,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters =
-        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
+    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(waComponent.
+        getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1245,5 +1249,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());
     request.setAttribute("Scope", sessionController.getScope());
+  }
+
+  private void validateProtectedAction(HttpServletRequest request) throws TokenValidationException {
+    SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
+        getSynchronizerTokenService();
+    String token = request.getParameter("Key");
+    tokenService.validate(token, request);
   }
 }

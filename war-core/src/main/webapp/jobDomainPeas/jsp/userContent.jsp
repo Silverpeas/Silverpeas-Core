@@ -22,6 +22,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
+<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -34,6 +36,8 @@
 
 <%@ include file="check.jsp" %>
 <%
+  SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+  String key = tokenService.getSessionTokenFromRequest(request);
   Domain domObject = (Domain) request.getAttribute("domainObject");
   UserFull userObject = (UserFull) request.getAttribute("userObject");
   String groupsPath = (String) request.getAttribute("groupsPath");
@@ -63,15 +67,15 @@
     if (userObject.isBlockedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
-              "userUnblock?Iduser=" + thisUserId);
+              "userUnblock?Iduser=" + thisUserId + "&Key=" + key);
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
-              "userBlock?Iduser=" + thisUserId);
+              "userBlock?Iduser=" + thisUserId + "&Key=" + key);
     }
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:ConfirmAndSend('" + resource.getString("JDP.userDelConfirm") +
-            "','userDelete?Iduser=" + thisUserId + "')");
+            "','userDelete?Iduser=" + thisUserId + "&Key=" + key + "')");
   }
   if (isDomainSync && !isGroupManager) {
     operationPane
@@ -80,11 +84,11 @@
     if (userObject.isBlockedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
-              "userUnblock?Iduser=" + thisUserId);
+              "userUnblock?Iduser=" + thisUserId + "&Key=" + key);
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
-              "userBlock?Iduser=" + thisUserId);
+              "userBlock?Iduser=" + thisUserId + "&Key=" + key);
     }
     operationPane
         .addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),

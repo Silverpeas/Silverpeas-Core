@@ -21,6 +21,22 @@ function stampURL(url) {
   return url += (url.indexOf('?') < 0 ? '?' : '&') + '$TOKEN_NAME$' + "=" + '$TOKEN_VALUE$';
 }
 
+function setTokens() {
+  var elts = jQuery('form');
+  if (elts)
+   elts.append(jQuery('<input>', {name: '$TOKEN_NAME$', type: 'hidden'}).val('$TOKEN_VALUE$'));
+
+  /* Use the cookie instead
+  elts = jQuery('a');
+  if (elts)
+    elts.each(function() {
+      var href = jQuery(this).attr('href');
+      if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
+        jQuery(this).attr('href', stampURL(href));
+    });
+  */
+}
+
 if (!window.XMLHttpRequest.prototype)
   alert("You navigator isn't supported by Silverpeas,\nplease choose one that supports the ECMA-standardized Javascript");
 else {
@@ -30,18 +46,8 @@ else {
   };
 }
 
-\$(document).ready(function() {
-  var elts = \$('form');
-  if (elts)
-   elts.append(\$('<input>', {name: '$TOKEN_NAME$', type: 'hidden'}).val('$TOKEN_VALUE$'));
 
-  /* Use the cookie instead
-  elts = \$('a');
-  if (elts)
-    elts.each(function() {
-      var href = \$(this).attr('href');
-      if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
-        \$(this).attr('href', stampURL(href));
-    });
-   */
+
+jQuery(document).ready(function() {
+  setTokens();
 });

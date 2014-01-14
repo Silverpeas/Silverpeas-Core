@@ -150,6 +150,9 @@ public class AuthenticationServlet extends HttpServlet {
       session = request.getSession(false);
       session.
           setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
+      SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
+          getSynchronizerTokenService();
+      tokenService.setSessionTokens(session);
       writeSessionCookie(servletResponse, session, securedAccess);
       writeSynchronizerTokenCookie(servletRequest, servletResponse);
       servletResponse.sendRedirect(servletResponse.encodeRedirectURL(absoluteUrl));

@@ -117,8 +117,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private void checkAuthenticatedRequest(HttpServletRequest request) throws
       UnauthenticatedRequestException {
-    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    if (service.isAProtectedResource(request)) {
+    if (isProtectedResource(request) && !isCredentialManagement(request)) {
       HttpSession session = request.getSession(false);
       if (session == null || session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)
           == null) {
@@ -140,7 +139,17 @@ public class SessionSynchronizerTokenValidator implements Filter {
     }
   }
 
-  protected String pathOf(ServletRequest request) {
+  private boolean isCredentialManagement(HttpServletRequest request) {
+    return request.getRequestURI().contains("/CredentialsServlet/") || request.getRequestURI().
+        contains("/services/password/");
+  }
+
+  private boolean isProtectedResource(HttpServletRequest request) {
+    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+    return service.isAProtectedResource(request);
+  }
+
+  private String pathOf(ServletRequest request) {
     return ((HttpServletRequest) request).getRequestURI();
   }
 
