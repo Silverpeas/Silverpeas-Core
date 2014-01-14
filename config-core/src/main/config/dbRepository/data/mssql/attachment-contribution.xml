@@ -30,7 +30,7 @@
   <requirement>
   </requirement>
   
-  <current version="012">
+  <current version="013">
   </current>
 
   <upgrade version="002">
@@ -93,6 +93,12 @@
   <upgrade version="011">
     <create_table>
       <file name="AttachmentMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.attachment.AttachmentMigrator" methodname="migrateAttachments"/>
+    </create_table>
+  </upgrade>
+
+  <upgrade version="012">
+    <create_table>
+      <file name="WysiwygMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.wysiwyg.WysiwygCorrector" methodname="migrateDocuments"/>
     </create_table>
   </upgrade>
 
