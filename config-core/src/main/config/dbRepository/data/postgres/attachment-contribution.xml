@@ -30,7 +30,7 @@
   <requirement>
   </requirement>
 
-  <current version="013">
+  <current version="012">
   </current>
 
   <upgrade version="003">
@@ -50,7 +50,7 @@
       <file name="postgres\attachment\up005\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-    
+
   <upgrade version="006">
     <create_table>
       <file name="postgres\attachment\up006\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
@@ -71,29 +71,23 @@
       <file name="postgres\attachment\up008\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-    
+
   <upgrade version="009">
     <create_table>
       <file name="postgres\attachment\up009\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-    
-        
+
+
   <upgrade version="010">
     <create_table>
       <file name="postgres\attachment\up010\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="011">
     <create_table>
       <file name="AttachmentMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.attachment.AttachmentMigrator" methodname="migrateAttachments"/>
-    </create_table>
-  </upgrade>
-
-  <upgrade version="012">
-    <create_table>
-      <file name="WysiwygMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.wysiwyg.WysiwygCorrector" methodname="migrateDocuments"/>
     </create_table>
   </upgrade>
 
