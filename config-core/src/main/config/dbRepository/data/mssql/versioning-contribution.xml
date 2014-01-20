@@ -28,14 +28,14 @@
 <contribution product="versioning">
 
   <requirement>
-  </requirement>  
-  
-  <current version="012">
+  </requirement>
+
+  <current version="013">
     <create_table>
-      <file name="mssql\versioning\012\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\versioning\013\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
     <drop_table>
-      <file name="mssql\versioning\012\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\versioning\013\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </drop_table>
   </current>
 
@@ -44,7 +44,7 @@
       <file name="mssql\versioning\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-	
+
   <upgrade version="003">
     <create_table>
       <file name="mssql\versioning\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
@@ -65,40 +65,46 @@
       <file name="mssql\versioning\up005\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_constraint>
   </upgrade>
-  
+
   <upgrade version="006">
     <create_table>
       <file name="mssql\versioning\up006\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="007">
     <create_table>
       <file name="mssql\versioning\up007\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="008">
     <create_table>
       <file name="mssql\versioning\up008\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="009">
     <create_table>
       <file name="mssql\versioning\up009\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="010">
     <create_table>
       <file name="mssql\versioning\up010\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-    </create_table>    
+    </create_table>
   </upgrade>
-  
+
   <upgrade version="011">
     <create_table>
       <file name="VersioningMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.version.VersioningMigrator" methodname="migrateDocuments"/>
+    </create_table>
+  </upgrade>
+
+  <upgrade version="012">
+    <create_table>
+      <file name="WysiwygMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.wysiwyg.WysiwygCorrector" methodname="migrateDocuments"/>
     </create_table>
   </upgrade>
 
