@@ -123,11 +123,14 @@ public class SpaceInstManager {
       // duplicates existing translations
       Map<String, Translation> translations = spaceInst.getTranslations();
       for (String lang : translations.keySet()) {
-        SpaceI18N translation = (SpaceI18N) translations.get(lang);
-        SpaceI18NRow row =
-            new SpaceI18NRow(newSpaceRow.id, lang, translation.getName(),
-                translation.getDescription());
-        ddManager.getOrganization().spaceI18N.createTranslation(row);
+        if (!lang.equals(newSpaceRow.lang)) {
+          // default language stored in main table must not be stored in i18n table
+          SpaceI18N translation = (SpaceI18N) translations.get(lang);
+          SpaceI18NRow row =
+              new SpaceI18NRow(newSpaceRow.id, lang, translation.getName(),
+                  translation.getDescription());
+          ddManager.getOrganization().spaceI18N.createTranslation(row);
+        }
       }
 
       // Create the SpaceProfile nodes
