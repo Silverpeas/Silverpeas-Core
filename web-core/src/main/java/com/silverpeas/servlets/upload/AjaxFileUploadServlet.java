@@ -115,8 +115,11 @@ public class AjaxFileUploadServlet extends HttpServlet {
           }
           if (!isInWhiteList(filename)) {
             hasError = true;
-            errorMessage += "The file " + filename
-                + " isn't uploaded! Only HTML files can be uploaded<br/>";
+            errorMessage += "The file " + filename + " is not uploaded!";
+            errorMessage += (StringUtil.isDefined(whiteList) ? " Only " + whiteList.replaceAll(
+                " ", ", ")
+                + " file types can be uploaded<br/>"
+                : " No allowed file format has been defined for upload<br/>");
           } else {
             filename = System.currentTimeMillis() + "-" + filename;
             File targetDirectory = new File(uploadDir, fileItem.getFieldName());
