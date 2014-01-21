@@ -491,7 +491,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </init-param>
     <init-param>
       <param-name>WHITE_LIST</param-name>
-      <param-value>html htm odt doc pdf</param-value>
+      <param-value>html htm odt doc docx pdf</param-value>
     </init-param>
   </servlet>
   -->
