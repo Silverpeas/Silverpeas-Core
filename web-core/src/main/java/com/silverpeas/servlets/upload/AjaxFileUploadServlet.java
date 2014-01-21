@@ -21,6 +21,19 @@
 package com.silverpeas.servlets.upload;
 
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,22 +43,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * Sample servlet to upload file in an ajax way.
- *
  * @author ehugonnet
  */
 public class AjaxFileUploadServlet extends HttpServlet {
@@ -55,6 +55,9 @@ public class AjaxFileUploadServlet extends HttpServlet {
   private static final String WHITE_LIST = "WHITE_LIST";
   private static final String FILE_UPLOAD_STATS = "FILE_UPLOAD_STATS";
   private static final String FILE_UPLOAD_PATHS = "FILE_UPLOAD_PATHS";
+  private static final String UPLOAD_ERRORS = "UPLOAD_ERRORS";
+  private static final String UPLOAD_FATAL_ERROR = "UPLOAD_FATAL_ERROR";
+  private static final String SAVING_FILE_FLAG = "SAVING_FILE_FLAG";
   private static String uploadDir;
   private static String whiteList;
 
@@ -79,152 +82,156 @@ public class AjaxFileUploadServlet extends HttpServlet {
     if ("status".equals(request.getParameter("q"))) {
       doStatus(session, response);
     } else {
-      doFileUpload(session, request, response);
+      doFileUpload(session, request);
     }
   }
 
   /**
    * Do the effective upload of files.
-   *
    * @param session the HttpSession
    * @param request the multpart request
-   * @param response the response
    * @throws IOException
    */
   @SuppressWarnings("unchecked")
-  private void doFileUpload(HttpSession session, HttpServletRequest request,
-      HttpServletResponse response) throws IOException {
+  private void doFileUpload(HttpSession session, HttpServletRequest request) throws IOException {
     try {
+      session.setAttribute(UPLOAD_ERRORS, "");
+      session.setAttribute(UPLOAD_FATAL_ERROR, "");
+      List<String> paths = new ArrayList<String>();
+      session.setAttribute(FILE_UPLOAD_PATHS, paths);
       FileUploadListener listener = new FileUploadListener(request.getContentLength());
       session.setAttribute(FILE_UPLOAD_STATS, listener.getFileUploadStats());
       FileItemFactory factory = new MonitoringFileItemFactory(listener);
       ServletFileUpload upload = new ServletFileUpload(factory);
       List<FileItem> items = (List<FileItem>) upload.parseRequest(request);
-      boolean hasError = false;
+      startingToSaveUploadedFile(session);
       String errorMessage = "";
-      List<String> paths = new ArrayList<String>(items.size());
-      session.setAttribute(FILE_UPLOAD_PATHS, paths);
       for (FileItem fileItem : items) {
         if (!fileItem.isFormField() && fileItem.getSize() > 0L) {
-          String filename = fileItem.getName();
-          if (filename.indexOf('/') >= 0) {
-            filename = filename.substring(filename.lastIndexOf('/') + 1);
-          }
-          if (filename.indexOf('\\') >= 0) {
-            filename = filename.substring(filename.lastIndexOf('\\') + 1);
-          }
-          if (!isInWhiteList(filename)) {
-            hasError = true;
-            errorMessage += "The file " + filename + " is not uploaded!";
-            errorMessage += (StringUtil.isDefined(whiteList) ? " Only " + whiteList.replaceAll(
-                " ", ", ")
-                + " file types can be uploaded<br/>"
-                : " No allowed file format has been defined for upload<br/>");
-          } else {
-            filename = System.currentTimeMillis() + "-" + filename;
-            File targetDirectory = new File(uploadDir, fileItem.getFieldName());
-            targetDirectory.mkdirs();
-            File uploadedFile = new File(targetDirectory, filename);
-            OutputStream out = null;
-            try {
-              out = new FileOutputStream(uploadedFile);
-              IOUtils.copy(fileItem.getInputStream(), out);
-              paths.add(uploadedFile.getParentFile().getName() + '/' + uploadedFile.getName());
-            } finally {
-              IOUtils.closeQuietly(out);
+          try {
+            String filename = fileItem.getName();
+            if (filename.indexOf('/') >= 0) {
+              filename = filename.substring(filename.lastIndexOf('/') + 1);
             }
+            if (filename.indexOf('\\') >= 0) {
+              filename = filename.substring(filename.lastIndexOf('\\') + 1);
+            }
+            if (!isInWhiteList(filename)) {
+              errorMessage += "The file " + filename + " is not uploaded!";
+              errorMessage += (StringUtil.isDefined(whiteList) ?
+                  " Only " + whiteList.replaceAll(" ", ", ") + " file types can be uploaded<br/>" :
+                  " No allowed file format has been defined for upload<br/>");
+              session.setAttribute(UPLOAD_ERRORS, errorMessage);
+            } else {
+              filename = System.currentTimeMillis() + "-" + filename;
+              File targetDirectory = new File(uploadDir, fileItem.getFieldName());
+              targetDirectory.mkdirs();
+              File uploadedFile = new File(targetDirectory, filename);
+              OutputStream out = null;
+              try {
+                out = new FileOutputStream(uploadedFile);
+                IOUtils.copy(fileItem.getInputStream(), out);
+                paths.add(uploadedFile.getParentFile().getName() + '/' + uploadedFile.getName());
+              } finally {
+                IOUtils.closeQuietly(out);
+              }
+            }
+          } finally {
             fileItem.delete();
           }
         }
       }
-      String uploadedFiles = getUploadedFilePaths(paths);
-      if (!hasError) {
-        sendCompleteResponse(response, uploadedFiles, null);
-      } else {
-        sendCompleteResponse(response, uploadedFiles, errorMessage);
-      }
     } catch (Exception e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
-      sendCompleteResponse(response, "[]",
+      session.setAttribute(UPLOAD_FATAL_ERROR,
           "Could not process uploaded file. Please see log for details.");
+    } finally {
+      endingToSaveUploadedFile(session);
     }
+  }
+
+  private synchronized void startingToSaveUploadedFile(HttpSession session) {
+    session.setAttribute(SAVING_FILE_FLAG, SAVING_FILE_FLAG);
+  }
+
+  private synchronized void endingToSaveUploadedFile(HttpSession session) {
+    session.setAttribute(SAVING_FILE_FLAG, null);
+  }
+
+  private synchronized boolean isSavingUploadedFile(HttpSession session) {
+    return session.getAttribute(SAVING_FILE_FLAG) != null;
   }
 
   /**
    * Return the current status of the upload.
-   *
    * @param session the HttpSession.
    * @param response where the status is to be written.
    * @throws IOException
    */
   private void doStatus(HttpSession session, HttpServletResponse response) throws IOException {
+    boolean isSavingUploadedFiles = isSavingUploadedFile(session);
+    Long bytesProcessed = null;
+    Long totalSize = null;
+    FileUploadListener.FileUploadStats fileUploadStats =
+        (FileUploadListener.FileUploadStats) session.getAttribute(FILE_UPLOAD_STATS);
+    if (fileUploadStats != null) {
+      bytesProcessed = fileUploadStats.getBytesRead();
+      totalSize = fileUploadStats.getTotalSize();
+    }
+
     // Make sure the status response is not cached by the browser
     response.addHeader("Expires", "0");
     response.addHeader("Cache-Control", "no-store, no-cache, must-revalidate");
     response.addHeader("Cache-Control", "post-check=0, pre-check=0");
     response.addHeader("Pragma", "no-cache");
 
-    FileUploadListener.FileUploadStats fileUploadStats
-        = (FileUploadListener.FileUploadStats) session.getAttribute(FILE_UPLOAD_STATS);
-    if (fileUploadStats != null) {
-      long bytesProcessed = fileUploadStats.getBytesRead();
-      long sizeTotal = fileUploadStats.getTotalSize();
-      long percentComplete = (long) Math.floor(((double) bytesProcessed / (double) sizeTotal)
-          * 100.0);
-      response.getWriter().println("<b>Upload Status:</b><br/>");
-
-      if (fileUploadStats.getBytesRead() != fileUploadStats.getTotalSize()) {
-        response.getWriter().println(
-            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete
-            + "%;\"></div></div>");
-      } else {
-        response
-            .getWriter()
-            .println(
-                "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: 100%;\"></div></div>");
-        response.getWriter().println("Complete.<br/>");
-      }
-    }
-    if (fileUploadStats != null && fileUploadStats.getBytesRead() == fileUploadStats.getTotalSize()) {
+    String fatalError = (String) session.getAttribute(UPLOAD_FATAL_ERROR);
+    if (StringUtil.isDefined(fatalError)) {
       List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
       String uploadedFilePaths = getUploadedFilePaths(paths);
-      response.getWriter().println(
-          "<b>Upload complete.</b>");
-      response.getWriter().println(
-          "<script type='text/javascript'>window.parent.stop('', " + uploadedFilePaths
-          + "); stop('', " + uploadedFilePaths + ");</script>");
+      response.getWriter().println("<b>Upload uncomplete.</b>");
+      response.getWriter()
+          .println("<script type='text/javascript'>window.parent.stop('" + fatalError + "', " +
+              uploadedFilePaths +
+              "); stop('', " + uploadedFilePaths + ");</script>");
+      return;
     }
-  }
 
-  /**
-   * Send the response after the upload.
-   *
-   * @param response the HttpServletResponse.
-   * @param paths the paths to the uploaded files.
-   * @param message the error message.
-   * @throws IOException
-   */
-  private void sendCompleteResponse(HttpServletResponse response, String paths, String message)
-      throws IOException {
-    if (message == null) {
-      response
-          .getOutputStream()
-          .print(
-              "<html><head><script type='text/javascript'>function killUpdate() { window.parent.stop('', "
-              + paths + " ); }</script></head><body onload='killUpdate()'></body></html>");
-    } else {
-      response
-          .getOutputStream()
-          .print(
-              "<html><head><script type='text/javascript'>function killUpdate() { window.parent.stop('"
-              + message + "', ''); }</script></head><body onload='killUpdate()'></body></html>");
+    if (bytesProcessed != null) {
+      long percentComplete =
+          (long) Math.floor((bytesProcessed.doubleValue() / totalSize.doubleValue()) * 100.0);
+      response.getWriter().println("<b>Upload Status:</b><br/>");
+
+      if (!bytesProcessed.equals(totalSize)) {
+        response.getWriter().println(
+            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete +
+                "%;\"></div></div>");
+      } else {
+        response.getWriter().println(
+            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: 100%;" +
+                "\"></div></div>");
+
+        if (!isSavingUploadedFiles) {
+          List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
+          String uploadedFilePaths = getUploadedFilePaths(paths);
+          String errors = (String) session.getAttribute(UPLOAD_ERRORS);
+          if (StringUtil.isDefined(errors)) {
+            response.getWriter().println("<b>Upload complete with error(s).</b><br/>");
+          } else {
+            response.getWriter().println("<b>Upload complete.</b><br/>");
+            errors = "";
+          }
+          response.getWriter()
+              .println("<script type='text/javascript'>window.parent.stop('" + errors + "', " +
+                  uploadedFilePaths + ");</script>");
+        }
+      }
     }
   }
 
   /**
    * Compute a javascript array from the uploaded file paths
-   *
-   * @param session the HttpSession.
+   * @param paths les fichiers traités.
    */
   @SuppressWarnings("unchecked")
   private String getUploadedFilePaths(List<String> paths) throws IOException {
