@@ -195,8 +195,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     }
 
     String safeMessage = Encode.forHtml(txtMessage);
+    String safeTitle = Encode.forHtml(txtTitle);
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        Integer.parseInt(currentPriorityId), txtTitle, safeMessage);
+        Integer.parseInt(currentPriorityId), safeTitle, safeMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
     notifMetaData.addUserRecipients(selectedUsers);
@@ -262,7 +263,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         }
         valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").append(
             selected).append(">").append(EncodeHelper.javaStringToHtmlString(
-            elmt.getProperty("name"))).append("</option>\n");
+                    elmt.getProperty("name"))).append("</option>\n");
       }
     }
     return valret.toString();
