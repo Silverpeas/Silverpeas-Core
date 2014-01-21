@@ -57,8 +57,8 @@ import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConst
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
   @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
   @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SMTP'"),
-  @ActivationConfigProperty(propertyName = "destination", propertyValue =
-      "java:/queue/notificationsQueue")},
+  @ActivationConfigProperty(propertyName = "destination", propertyValue
+      = "java:/queue/notificationsQueue")},
     description = "Message driven bean to send notifications by email")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SMTPListener extends AbstractListener implements MessageListener {
@@ -90,7 +90,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     // process the target param string, containing the FROM and the SUBJECT email fields.
     Map<String, Object> keyValue = notification.getTargetParam();
     String tmpFromString = (String) keyValue.get("FROM");
-    String tmpSubjectString = (String) keyValue.get("SUBJECT");
+    String tmpSubjectString = EncodeHelper.htmlStringToJavaString((String) keyValue.get("SUBJECT"));
     String tmpUrlString = (String) keyValue.get("URL");
     String tmpLanguageString = (String) keyValue.get("LANGUAGE");
     String tmpAttachmentIdString = (String) keyValue.get("ATTACHMENTID");

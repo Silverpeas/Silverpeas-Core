@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -104,7 +103,6 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       throws SILVERMAILException {
     Collection<SILVERMAILMessage> messages = SILVERMAILPersistence.getMessageOfFolder(Integer
         .parseInt(getUserId()), folderName);
-    secureMessageForHTML(messages);
     return messages;
   }
 
@@ -125,7 +123,6 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       notifByUser = getNotificationInterface().getAllNotifByUser(userId);
       for (SendedNotificationDetail sendedNotif : notifByUser) {
         sendedNotif.setSource(getSource(sendedNotif.getComponentId()));
-        secureMessageForHTML(sendedNotif);
         sendedNotifByUser.add(sendedNotif);
       }
     } catch (NotificationManagerException e) {
@@ -150,7 +147,6 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     try {
       sendedNotification = getNotificationInterface().getNotification(Integer.parseInt(notifId));
       sendedNotification.setSource(getSource(sendedNotification.getComponentId()));
-      secureMessageForHTML(sendedNotification);
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
           "NotificationSender.getUserMessageList()",
@@ -223,7 +219,6 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   public SILVERMAILMessage getMessage(long messageId)
       throws SILVERMAILException {
     SILVERMAILMessage msg = SILVERMAILPersistence.getMessage(messageId);
-    secureMessageForHTML(msg);
     return msg;
   }
 
@@ -251,19 +246,4 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     return getMessage(currentMessageId);
   }
 
-  private void secureMessageForHTML(SendedNotificationDetail notif) {
-    // it is expected the message body is already securized against XSS attack
-    notif.setTitle(Encode.forHtml(notif.getTitle()));
-  }
-
-  private void secureMessageForHTML(SILVERMAILMessage msg) {
-    // it is expected the message ody is already securized against XSS attack
-    msg.setSubject(Encode.forHtml(msg.getSubject()));
-  }
-
-  private void secureMessageForHTML(Collection<SILVERMAILMessage> messages) {
-    for (SILVERMAILMessage msg : messages) {
-      secureMessageForHTML(msg);
-    }
-  }
 }
