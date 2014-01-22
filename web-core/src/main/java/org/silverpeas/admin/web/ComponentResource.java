@@ -76,7 +76,7 @@ public class ComponentResource extends AbstractAdminResource {
    * If the user isn't authorized to access the component, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         ComponentInstLight.
+   * ComponentInstLight.
    */
   @GET
   @Produces(APPLICATION_JSON)
@@ -129,13 +129,12 @@ public class ComponentResource extends AbstractAdminResource {
               getUserPreferences().getLanguage());
       UsersAndGroupsRoleEntity roleEntity;
       for (ProfileInst profile : profiles) {
-        if (SilverpeasRole.exists(profile.getName()) &&
-            (aimedRoles.isEmpty() || aimedRoles.contains(profile.getName()))) {
-          SilverpeasRole role = SilverpeasRole.from(profile.getName());
+        SilverpeasRole role = SilverpeasRole.from(profile.getName());
+        if (role != null && (aimedRoles.isEmpty() || aimedRoles.contains(role.getName()))) {
           roleEntity = result.get(role);
           if (roleEntity == null) {
             roleEntity = UsersAndGroupsRoleEntity
-                .createFrom(role, resource.getString("JSPP." + profile.getName()));
+                .createFrom(role, resource.getString("JSPP." + role.getName()));
             roleEntity
                 .withURI(buildURIOfComponentUsersAndGroupsRoles(componentId, role, getUriInfo()))
                 .withParentURI(buildURIOfComponent(componentId, getUriInfo()));
