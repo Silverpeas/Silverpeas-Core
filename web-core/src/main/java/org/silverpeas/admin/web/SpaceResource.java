@@ -159,13 +159,12 @@ public class SpaceResource extends AbstractAdminResource {
               getUserPreferences().getLanguage());
       UsersAndGroupsRoleEntity roleEntity;
       for (SpaceProfileInst profile : profiles) {
-        if (SilverpeasRole.exists(profile.getName()) &&
-            (aimedRoles.isEmpty() || aimedRoles.contains(profile.getName()))) {
-          SilverpeasRole role = SilverpeasRole.from(profile.getName());
+        SilverpeasRole role = SilverpeasRole.from(profile.getName());
+        if (role != null && (aimedRoles.isEmpty() || aimedRoles.contains(role.getName()))) {
           roleEntity = result.get(role);
           if (roleEntity == null) {
             roleEntity = UsersAndGroupsRoleEntity
-                .createFrom(role, resource.getString("JSPP." + profile.getName()));
+                .createFrom(role, resource.getString("JSPP." + role.getName()));
             roleEntity.withURI(buildURIOfSpaceUsersAndGroupsRoles(spaceId, role, getUriInfo()))
                 .withParentURI(buildURIOfSpace(spaceId, getUriInfo()));
             result.put(role, roleEntity);
