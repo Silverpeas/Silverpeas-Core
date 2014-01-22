@@ -104,7 +104,7 @@
 
   <upgrade version="012">
     <create_table>
-      <file name="WysiwygMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.wysiwyg.WysiwygCorrector" methodname="migrateDocuments"/>
+      <file name="WysiwygMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.wysiwyg.WysiwygCorrector" methodname="adjustDocuments"/>
     </create_table>
   </upgrade>
 
