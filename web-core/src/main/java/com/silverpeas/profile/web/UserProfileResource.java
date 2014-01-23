@@ -23,7 +23,6 @@
  */
 package com.silverpeas.profile.web;
 
-import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
@@ -257,7 +256,7 @@ public class UserProfileResource extends RESTWebService {
   @GET
   @Path("count/domain/{domainId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserCountEntity getDomainUsersCount(@PathParam("domainId") String domainId) throws IOException {
+  public UserCountEntity getDomainUsersCount(@PathParam("domainId") String domainId) {
     Integer count = getOrganisationController().getDomainUsersCount(
         QUERY_ALL_DOMAINS.equals(domainId) ? null : domainId);
     UserCountEntity userCountEntity = new UserCountEntity(count);
