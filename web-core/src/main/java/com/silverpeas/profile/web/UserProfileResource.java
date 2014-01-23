@@ -23,19 +23,7 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
@@ -52,13 +40,25 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
 import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.web.RESTWebService.RESPONSE_HEADER_ARRAYSIZE;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -86,6 +86,11 @@ public class UserProfileResource extends RESTWebService {
    * only the users part of a user group will be fetched.
    */
   public static final String QUERY_ALL_GROUPS = "all";
+  /**
+   * Specific identifier of a user domain meaning all the user domains in Silverpeas.
+   */
+  public static final String QUERY_ALL_DOMAINS = "all";
+  
   @Inject
   private UserProfileService profileService;
   @Inject
@@ -240,6 +245,25 @@ public class UserProfileResource extends RESTWebService {
         asWebEntity(users, locatedAt(usersUri))).
         header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, users.getOriginalListSize()).build();
+  }
+  
+  /**
+   * Get the number of users belonging to the domain which ID is given as parameter.
+   * 
+   * @param domainId the unique identifier of the domain whose users have to be counted. The
+   * specific identifier "all" give the count of all domains' users.
+   * @return the JSON serialization of the count of users belonging to the specified domain.
+   */
+  @GET
+  @Path("count/domain/{domainId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public UserCountEntity getDomainUsersCount(@PathParam("domainId") String domainId) throws IOException {
+    Integer count = getOrganisationController().getDomainUsersCount(
+        QUERY_ALL_DOMAINS.equals(domainId) ? null : domainId);
+    UserCountEntity userCountEntity = new UserCountEntity(count);
+    final URI uri = identifiedBy(getUriInfo().getAbsolutePath());
+    userCountEntity.withAsUri(uri);
+    return userCountEntity;
   }
 
   /**

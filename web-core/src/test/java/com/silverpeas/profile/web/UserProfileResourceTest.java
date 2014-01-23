@@ -23,25 +23,26 @@
  */
 package com.silverpeas.profile.web;
 
+import java.util.List;
+import javax.ws.rs.core.Response;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import java.util.List;
-import javax.ws.rs.core.Response;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-
-import static com.silverpeas.profile.web.UserProfileTestResources.*;
+import static com.silverpeas.profile.web.UserProfileTestResources.JAVA_PACKAGE;
+import static com.silverpeas.profile.web.UserProfileTestResources.SPRING_CONTEXT;
+import static com.silverpeas.profile.web.UserProfileTestResources.USER_PROFILE_PATH;
 import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 
 /**
@@ -427,7 +428,6 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(aGroup.getDomainId() + "0");
-      List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
       getAt(aResourceURI() + "?group=" + aGroup.getId(), getWebEntityClass());
       fail("The user shouldn't be get as it is unaccessible");
     } catch (UniformInterfaceException ex) {
@@ -447,7 +447,6 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(aGroup.getDomainId() + "0");
-      List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
       getAt(aResourceURI() + "?group=" + aGroup.getId(), getWebEntityClass());
       fail("The user shouldn't be get as it is unaccessible");
     } catch (UniformInterfaceException ex) {
@@ -556,6 +555,29 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     UserProfileEntity[] actualContacts = getAt(aResourceURI() + "/" + aUser.getId() + "/contacts",
             getWebEntityClass());
     assertThat(actualContacts.length, is(expectedContacts.length));
+  }
+  
+  /**
+   * A user can see how many users belong to a domain.
+   */
+  @Test
+  public void getUserCountOfADomain() {
+    List<String> domainIds = getTestResources().getAllDomainIds();
+    String domainId = domainIds.get(0);
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
+    UserCountEntity userCount = getAt(
+        aResourceURI() + "/count/domain/" + domainId, UserCountEntity.class);
+    assertThat(userCount.getCount(), is(expectedUsers.length));
+  }
+  
+  /**
+   * A user can see how many users belong to all domains.
+   */
+  @Test
+  public void getUserCountOfAllDomains() {
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
+    UserCountEntity userCount = getAt(aResourceURI() + "/count/domain/all", UserCountEntity.class);
+    assertThat(userCount.getCount(), is(expectedUsers.length));
   }
 
   @Override
