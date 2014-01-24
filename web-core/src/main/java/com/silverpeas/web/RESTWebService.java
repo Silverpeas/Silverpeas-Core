@@ -200,10 +200,6 @@ public abstract class RESTWebService {
 
   /**
    * Gets the location of the bundle to use.
-<<<<<<< HEAD
-=======
-   *
->>>>>>> 5cb005970119cb3c84dc9f7fa344814104fe20a8
    * @return
    */
   protected String getBundleLocation() {
@@ -212,10 +208,6 @@ public abstract class RESTWebService {
 
   /**
    * Gets the bundle to use.
-<<<<<<< HEAD
-=======
-   *
->>>>>>> 5cb005970119cb3c84dc9f7fa344814104fe20a8
    * @return
    */
   protected ResourceLocator getBundle() {

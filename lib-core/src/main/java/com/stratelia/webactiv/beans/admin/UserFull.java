@@ -93,7 +93,7 @@ public class UserFull extends UserDetail {
   public String getToken() {
     try {
       UserReference ref = UserReference.fromUser(this);
-      return PersistentResourceToken.createToken(ref).getValue();
+      return PersistentResourceToken.getOrCreateToken(ref).getValue();
     } catch (TokenException e) {
       throw new TokenRuntimeException(e.getMessage(), e);
     }

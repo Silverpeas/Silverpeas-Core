@@ -108,7 +108,7 @@ public class PersistentResourceToken implements Token {
   /**
    * Creates a token for the specified resource.
    *
-   * If the specified resource has already a token, then returns it. Otherwise a new token is
+   * If the specified resource has already a token, then renews it. Otherwise a new token is
    * generated and persisted into the data source.
    *
    * @param resource the resource for which the token has to be generated.
@@ -119,6 +119,26 @@ public class PersistentResourceToken implements Token {
       TokenException {
     PersistentResourceTokenService service = TokenServiceFactory.getTokenService();
     return service.initialize(resource);
+  }
+
+  /**
+   * Gets a token for the specified resource and creates it if it doesn't exist.
+   *
+   * If the specified resource has already a token, then returns it. Otherwise a new token is
+   * generated and persisted into the data source.
+   *
+   * @param resource the resource for which the token has to be generated.
+   * @return a token for the specified resource.
+   * @throws TokenException
+   */
+  public static PersistentResourceToken getOrCreateToken(final EntityReference resource) throws
+      TokenException {
+    PersistentResourceTokenService service = TokenServiceFactory.getTokenService();
+    PersistentResourceToken token = service.get(resource);
+    if (!token.isDefined()) {
+      token = service.initialize(resource);
+    }
+    return token;
   }
 
   /**
