@@ -41,7 +41,6 @@ import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
-import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.util.Charsets;
 
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -67,8 +66,6 @@ public class UserPriviledgeValidation {
   private AccessController<SimpleDocument> documentAccessController;
   @Inject
   private OrganisationController organisationController;
-  @Inject
-  private PersistentResourceTokenService tokenService;
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. By the user
    * session key could be passed a user token to perform a HTTP request without opening a session.
@@ -89,17 +86,17 @@ public class UserPriviledgeValidation {
   /**
    * Validates the authentication of the user at the origin of a web request.
    *
-   * The validation checks first the user is already authenticated and in that case its
-   * authenticated session is always valid. Otherwise it attempt to openSession the user by using
-   * its credentials passed through the request (as an HTTP header). Once the authentication
-   * succeed, the identification of the user is done and detail about it can then be got. A runtime
-   * exception is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The
-   * validation fails when one of the belowed situation is occuring: <ul> <li>The user session key
-   * is invalid;</li> <li>The user isn't authenticated and no credentials are passed with the
+   * The validation checks first the user is already authenticated and then it has a valid opened
+   * session in Silverpeas. Otherwise it attempts to open a new session for the user by using its
+   * credentials passed through the request (as an HTTP header). Once the authentication succeed,
+   * the identification of the user is done and detail about it can then be got. A runtime exception
+   * is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The validation
+   * fails when one of the belowed situation is occuring: <ul> <li>The user session key is
+   * invalid;</li> <li>The user isn't authenticated and no credentials are passed with the
    * request;</li> <li>The user authentication failed.</li> </ul>
    *
    * @param request the HTTP request from which the authentication of the caller can be done.
-   * @return details on the user at the origin of the specified request.
+   * @return the opened session of the user at the origin of the specified request.
    * @throws WebApplicationException exception if the validation failed.
    */
   public SessionInfo validateUserAuthentication(final HttpServletRequest request) throws
@@ -166,10 +163,10 @@ public class UserPriviledgeValidation {
 
   /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header or URL parameter X-Silverpeas-Session. If no such parameter is
-   * set, it is then retrieved from the current HTTP session if any. If the incoming request isn't
-   * sent within an active HTTP session, then an empty string is returned as no HTTP session was
-   * defined for the current request.
+   * retrieved from the HTTP header X-Silverpeas-Session. If no such parameter is set, the session
+   * is then retrieved from the specified HTTP request. In the case the incoming request isn't sent
+   * within an opened HTTP session, then an empty string is returned as no HTTP session was defined
+   * for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
@@ -226,17 +223,24 @@ public class UserPriviledgeValidation {
   }
 
   /**
-   * Validates the current user session with the specified session key. If the incoming request is
-   * within an opened HTTP session (not so stateless, should be avoided in RESTful REST web services
-   * for both scalability and REST policy reasons), then take checks this session is valid before
-   * processing the request. If the session is valid, then detail about the user is returned,
-   * otherwise a WebApplicationException exception is thrown. As the anonymous user has no opened
-   * session, when a request is recieved by this web service and that request does neither belong to
-   * an opened session nor carries autentication information, it is accepted only if the anonymous
-   * access is authorized; in that case, the request is attached to the anonymous user account.
+   * Validates the current user session with the specified session key. The session key is either an
+   * identifier of an opened HTTP session or an identifier token associated to an existing user.
+   *
+   * This method checks first that the specified key identifies uniquely an opened session in
+   * Silverpeas. In this case it validates this session matches the one within which the current
+   * HTTP request was sent. If the validation succeeds, the HTTP session is returned. If the key
+   * doesn't identify any opened session, the method validates it matchs the identifier token of a
+   * user in Silverpeas and in this case a session is then created only for the current request and
+   * is returned. If the validation fails, a WebApplicationException exception is thrown.
+   *
+   * As the anonymous user has no opened session, when a request is recieved by this web service and
+   * that request does neither belong to an opened session nor carries autentication information, it
+   * is accepted only if the anonymous access is activated; in this case, an anonymous session is
+   * created for the circumstance.
    *
    * @param sessionKey the user session key.
-   * @return the detail about the user requesting this web service.
+   * @return the session identified by the specified session key. It can be either an opened HTTP
+   * session or a session spawned only for the current request.
    */
   private SessionInfo validateUserSession(String sessionKey) {
     SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);

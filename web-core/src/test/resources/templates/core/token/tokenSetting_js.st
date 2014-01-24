@@ -18,28 +18,44 @@ function enrichXMLHttpRequest() {
 }
 
 function stampURL(url) {
-  return url += (url.indexOf('?') < 0 ? '?' : '&') + '$TOKEN_NAME$' + "=" + '$TOKEN_VALUE$';
+  if ('$SESSION_TOKEN_NAME$')
+    url += (url.indexOf('?') < 0 ? '?' : '&') + '$SESSION_TOKEN_NAME$' + "=" + '$SESSION_TOKEN_VALUE$';
+  if ('$NAV_TOKEN_NAME$')
+    url += (url.indexOf('?') < 0 ? '?' : '&') + '$NAV_TOKEN_NAME$' + "=" + '$NAV_TOKEN_VALUE$';
+  return url;
+}
+
+function setTokens() {
+  var elts = jQuery('form');
+  if (elts)
+   if ('$SESSION_TOKEN_NAME$')
+     elts.append(jQuery('<input>', {name: '$SESSION_TOKEN_NAME$', type: 'hidden'}).val('$SESSION_TOKEN_VALUE$'));
+   if ('$NAV_TOKEN_NAME$')
+     elts.append(jQuery('<input>', {name: '$NAV_TOKEN_NAME$', type: 'hidden'}).val('$NAV_TOKEN_VALUE$'));
+
+  /* Use the cookie instead
+  elts = jQuery('a');
+  if (elts)
+    elts.each(function() {
+      var href = jQuery(this).attr('href');
+      if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
+        jQuery(this).attr('href', stampURL(href));
+    });
+  */
 }
 
 if (!window.XMLHttpRequest.prototype)
   alert("You navigator isn't supported by Silverpeas,\nplease choose one that supports the ECMA-standardized Javascript");
 else {
   enrichXMLHttpRequest();
-  XMLHttpRequest.prototype.onsend = function(data) {
-    this.setRequestHeader("$TOKEN_NAME$", "$TOKEN_VALUE$");
-  };
+  if ('$SESSION_TOKEN_NAME$')
+    XMLHttpRequest.prototype.onsend = function(data) {
+      this.setRequestHeader("$SESSION_TOKEN_NAME$", "$SESSION_TOKEN_VALUE$");
+    };
 }
 
-\$(document).ready(function() {
-  var elts = \$('form');
-  if (elts)
-   elts.append(\$('<input>', {name: '$TOKEN_NAME$', type: 'hidden'}).val('$TOKEN_VALUE$'));
 
-  elts = \$('a');
-  if (elts)
-    elts.each(function() {
-      var href = \$(this).attr('href');
-      if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
-        \$(this).attr('href', stampURL(href));
-    });
+
+jQuery(document).ready(function() {
+  setTokens();
 });

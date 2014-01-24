@@ -1,52 +1,51 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.clipboardPeas.servlets;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.servlet.HttpRequest;
-
 import javax.servlet.http.HttpSession;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSessionController> {
+
   private static final long serialVersionUID = 1L;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -61,6 +60,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   *
    * @return
    */
   @Override
@@ -84,7 +84,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
     SilverTrace.info("clipboardPeas",
         "ClipboardRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD",
         " componentName = " + clipboardSC.getClass().getName() + "; function = " + function);
-    String destination = "";
+    String destination;
     if (function.startsWith("copyForm")) {
       destination = "/clipboard/jsp/copyForm.jsp";
     } else if (function.startsWith("paste")) {
@@ -129,7 +129,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
             removed++;
           }
         }
-      } catch (Exception e) {
+      } catch (ClipboardException e) {
         SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
             "clipboardPeas.EX_CANT_WRITE", "delete.jsp", e);
       }
@@ -156,7 +156,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
           String removedValue = request.getParameter("clipboardId" + i);
           clipboardSC.setClipboardSelectedElement(i, removedValue != null);
         }
-      } catch (Exception e) {
+      } catch (ClipboardException e) {
         SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
             "clipboardPeas.EX_CANT_WRITE", "selectionpaste.jsp", e);
       }
@@ -186,7 +186,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
     SessionManagementFactory factory = SessionManagementFactory.getFactory();
     SessionManagement sessionManagement = factory.getSessionManagement();
     SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
-    if (sessionInfo != null) {
+    if (sessionInfo.isDefined()) {
       if (destination.startsWith("/clipboard/jsp/Idle")) {
         // Set the idle time
         sessionInfo.setAsIdle();

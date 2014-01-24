@@ -31,7 +31,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
@@ -56,8 +55,6 @@ import org.silverpeas.servlets.credentials.TermsOfServiceRequestHandler;
 import org.silverpeas.servlets.credentials.TermsOfServiceResponseHandler;
 import org.silverpeas.servlets.credentials.ValidationAnswerHandler;
 import org.silverpeas.servlets.credentials.ValidationQuestionHandler;
-import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)
@@ -112,7 +109,6 @@ public class CredentialsServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    renewSecurityToken(request);
     String function = getFunction(request);
     FunctionHandler handler = handlers.get(function);
     if (handler != null) {
@@ -139,6 +135,9 @@ public class CredentialsServlet extends HttpServlet {
         destinationPage = handler.doAction(request);
       }
 
+      /*if (!destinationPage.contains("Login.jsp")) {
+       renewSecurityToken(request);
+       }*/
       if (destinationPage.startsWith("http")) {
         AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());
@@ -181,14 +180,5 @@ public class CredentialsServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     doGet(request, response);
-  }
-
-  private void renewSecurityToken(HttpServletRequest request) {
-    HttpSession session = request.getSession(false);
-    if (session != null) {
-      SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
-      tokenService.setSessionTokens(session);
-    }
   }
 }

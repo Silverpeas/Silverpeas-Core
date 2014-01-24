@@ -23,19 +23,21 @@
  */
 package org.silverpeas.web.token;
 
-import java.util.Arrays;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
+import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.lang.reflect.Field;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.synchronizer.SynchronizerToken;
 import org.silverpeas.token.synchronizer.SynchronizerTokenBuilder;
-import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -53,16 +55,28 @@ public class SynchronizerTokenServiceTest {
   private HttpServletRequest request;
   private HttpSession session;
   private SynchronizerToken existingToken;
+  private SessionInfo sessionInfo;
   private final SynchronizerTokenService synchronizerTokenService = new SynchronizerTokenService();
 
   @Before
-  public void setupMocks() {
+  public void setupMocks() throws Exception {
     request = mock(HttpServletRequest.class);
     session = mock(HttpSession.class);
     when(request.getSession(false)).thenReturn(session);
     when(request.getContextPath()).thenReturn("");
     when(request.getRequestURI()).thenReturn("/services/bidule");
     when(request.getMethod()).thenReturn("POST");
+
+    UserDetail user = new UserDetail();
+    user.setId("32");
+    sessionInfo = new HTTPSessionInfo(session, "192.168.1.10", user);
+
+    SessionManagement sessionManagement = mock(SessionManagement.class);
+    when(sessionManagement.getSessionInfo(anyString())).thenReturn(SessionInfo.NoneSession);
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    Field attr = SessionManagementFactory.class.getDeclaredField("sessionManagement");
+    attr.setAccessible(true);
+    attr.set(factory, sessionManagement);
   }
 
   @Test
@@ -73,7 +87,7 @@ public class SynchronizerTokenServiceTest {
 
   @Test
   public void settingOfASessionToken() {
-    synchronizerTokenService.setSessionTokens(session);
+    synchronizerTokenService.setUpSessionTokens(sessionInfo);
 
     ArgumentCaptor<SynchronizerToken> argument = ArgumentCaptor.forClass(SynchronizerToken.class);
     verify(session).setAttribute(eq(SynchronizerTokenService.SESSION_TOKEN_KEY), argument.capture());
@@ -85,7 +99,7 @@ public class SynchronizerTokenServiceTest {
   public void renewOfASessionToken() {
     prepareHttpSessionWithToken();
 
-    synchronizerTokenService.setSessionTokens(session);
+    synchronizerTokenService.setUpSessionTokens(sessionInfo);
 
     verify(session).setAttribute(eq(SynchronizerTokenService.SESSION_TOKEN_KEY), Mockito.any(
         SynchronizerToken.class));
@@ -117,13 +131,6 @@ public class SynchronizerTokenServiceTest {
   }
 
   @Test(expected = TokenValidationException.class)
-  public void validationFailureFromNoSessionTokenSet() throws TokenValidationException {
-    when(request.getHeader(SynchronizerTokenService.SESSION_TOKEN_KEY)).thenReturn(TOKEN_VALUE);
-
-    synchronizerTokenService.validate(request);
-  }
-
-  @Test(expected = TokenValidationException.class)
   public void validationOfAnInvalidTokenFromARequestHeader() throws TokenValidationException {
     prepareHttpSessionWithToken();
     when(request.getHeader(SynchronizerTokenService.SESSION_TOKEN_KEY)).thenReturn("Toto");
@@ -137,36 +144,6 @@ public class SynchronizerTokenServiceTest {
     when(request.getParameter(SynchronizerTokenService.SESSION_TOKEN_KEY)).thenReturn("Toto");
 
     synchronizerTokenService.validate(request);
-  }
-
-  @Test
-  public void applyATokenSilverpeasTemplate() {
-    prepareHttpSessionWithToken();
-    TokenSettingTemplate template = mock(TokenSettingTemplate.class);
-    final String expected = "Silverpeas forever";
-    doAnswer(new Answer<String>() {
-
-      @Override
-      public String answer(InvocationOnMock invocation) throws Throwable {
-        Object[] arguments = invocation.getArguments();
-        assertThat(arguments.length, is(2));
-        for (Object argument : arguments) {
-          Parameter parameter = (Parameter) argument;
-          assertThat(parameter.name(), isIn(Arrays.asList(TokenSettingTemplate.TOKEN_NAME_PARAMETER,
-              TokenSettingTemplate.TOKEN_VALUE_PARAMETER)));
-          if (parameter.name().equals(TokenSettingTemplate.TOKEN_NAME_PARAMETER)) {
-            assertThat(parameter.value(), is(SynchronizerTokenService.SESSION_TOKEN_KEY));
-          } else if (parameter.name().equals(TokenSettingTemplate.TOKEN_VALUE_PARAMETER)) {
-            assertThat(parameter.value(), is(existingToken().getValue()));
-          }
-        }
-        return expected;
-      }
-    }).when(template).apply((Parameter[]) anyVararg());
-
-    String actual = synchronizerTokenService.applyTemplate(template, request);
-
-    assertThat(actual, is(expected));
   }
 
   private void prepareHttpSessionWithToken() {

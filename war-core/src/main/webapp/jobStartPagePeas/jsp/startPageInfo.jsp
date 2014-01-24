@@ -41,8 +41,7 @@
 <%@ include file="check.jsp" %>
 
 <%
-  SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-  String      key             = tokenService.getSessionTokenFromRequest(request);
+  String      key             = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
 	int	 			maintenanceState 	= (Integer) request.getAttribute("MaintenanceState");
 	String	 		m_SpaceId 			= (String) request.getAttribute("currentSpaceId");
 	Integer 		m_firstPageType 	= (Integer)request.getAttribute("FirstPageType");

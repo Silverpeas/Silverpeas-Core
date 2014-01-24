@@ -25,10 +25,17 @@ package org.silverpeas.web.token;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.silverpeas.token.Token;
+import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
+
+import static org.silverpeas.web.token.SynchronizerTokenService.NAVIGATION_TOKEN_KEY;
+import static org.silverpeas.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
 
 /**
  * A setter of security tokens in the web pages, so any requests emitted from them will be validated
@@ -53,13 +60,36 @@ public class ProtectedWebPageUpdater extends HttpServlet {
     response.setContentType("application/javascript");
     PrintWriter out = response.getWriter();
     try {
-      SynchronizerTokenService service = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
-      String script = service.applyTemplate(new TokenSettingTemplate(), request);
+      String script = applyTemplate(new TokenSettingTemplate(), request);
       out.println(script);
     } finally {
       out.close();
     }
+  }
+
+  protected String applyTemplate(TokenSettingTemplate template, HttpServletRequest request) {
+    String result = "";
+    SynchronizerTokenService service = SynchronizerTokenServiceFactory.
+        getSynchronizerTokenService();
+    List<Parameter> parameters = new ArrayList<Parameter>(4);
+    Token token = service.getSessionToken(request);
+    if (token.isDefined()) {
+      parameters.add(new TokenSettingTemplate.Parameter(
+          TokenSettingTemplate.SESSION_TOKEN_NAME_PARAMETER, SESSION_TOKEN_KEY));
+      parameters.add(new TokenSettingTemplate.Parameter(
+          TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER, token.getValue()));
+    }
+    token = service.getNavigationToken(request);
+    if (token.isDefined()) {
+      parameters.add(new TokenSettingTemplate.Parameter(
+          TokenSettingTemplate.NAVIGATION_TOKEN_NAME_PARAMETER, NAVIGATION_TOKEN_KEY));
+      parameters.add(new TokenSettingTemplate.Parameter(
+          TokenSettingTemplate.NAVIGATION_TOKEN_VALUE_PARAMETER, token.getValue()));
+    }
+    if (!parameters.isEmpty()) {
+      result = template.apply(parameters);
+    }
+    return result;
   }
 
   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

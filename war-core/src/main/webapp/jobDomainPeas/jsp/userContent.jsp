@@ -36,8 +36,7 @@
 
 <%@ include file="check.jsp" %>
 <%
-  SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-  String key = tokenService.getSessionTokenFromRequest(request);
+  String key = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
   Domain domObject = (Domain) request.getAttribute("domainObject");
   UserFull userObject = (UserFull) request.getAttribute("userObject");
   String groupsPath = (String) request.getAttribute("groupsPath");

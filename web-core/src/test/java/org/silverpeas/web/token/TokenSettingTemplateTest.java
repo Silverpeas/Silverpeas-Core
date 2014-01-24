@@ -46,13 +46,13 @@ public class TokenSettingTemplateTest {
   public void applyTheTokenSettingTemplate() {
     TokenSettingTemplate template = new TokenSettingTemplate();
     String result = template.apply(
-        new Parameter(TokenSettingTemplate.TOKEN_NAME_PARAMETER, TOKEN_NAME),
-        new Parameter(TokenSettingTemplate.TOKEN_VALUE_PARAMETER, TOKEN_VALUE));
+        new Parameter(TokenSettingTemplate.SESSION_TOKEN_NAME_PARAMETER, TOKEN_NAME),
+        new Parameter(TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER, TOKEN_VALUE));
 
     assertThat(result, containsString(TOKEN_NAME));
     assertThat(result, containsString(TOKEN_VALUE));
-    assertThat(result, not(containsString(TokenSettingTemplate.TOKEN_NAME_PARAMETER)));
-    assertThat(result, not(containsString(TokenSettingTemplate.TOKEN_VALUE_PARAMETER)));
+    assertThat(result, not(containsString(TokenSettingTemplate.SESSION_TOKEN_NAME_PARAMETER)));
+    assertThat(result, not(containsString(TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER)));
   }
 
   @Test
@@ -60,8 +60,8 @@ public class TokenSettingTemplateTest {
     TokenSettingTemplate template = new TokenSettingTemplate();
     String result = template.apply();
 
-    assertThat(result, not(containsString(TokenSettingTemplate.TOKEN_NAME_PARAMETER)));
-    assertThat(result, not(containsString(TokenSettingTemplate.TOKEN_VALUE_PARAMETER)));
+    assertThat(result, not(containsString(TokenSettingTemplate.SESSION_TOKEN_NAME_PARAMETER)));
+    assertThat(result, not(containsString(TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER)));
     assertThat(result, not(containsString(TOKEN_NAME)));
     assertThat(result, not(containsString(TOKEN_VALUE)));
   }

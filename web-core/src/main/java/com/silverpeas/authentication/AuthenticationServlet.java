@@ -50,8 +50,11 @@ import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.token.Token;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+
+import static org.silverpeas.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -150,11 +153,8 @@ public class AuthenticationServlet extends HttpServlet {
       session = request.getSession(false);
       session.
           setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
-      SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
-      tokenService.setSessionTokens(session);
       writeSessionCookie(servletResponse, session, securedAccess);
-      writeSynchronizerTokenCookie(servletRequest, servletResponse);
+      writeSynchronizerTokenCookie(servletRequest, servletResponse, securedAccess);
       servletResponse.sendRedirect(servletResponse.encodeRedirectURL(absoluteUrl));
       return;
     }
@@ -362,11 +362,18 @@ public class AuthenticationServlet extends HttpServlet {
    * @param request the HTTP servlet request.
    * @param response the HTTP servlet response.
    */
-  private void writeSynchronizerTokenCookie(HttpServletRequest request, HttpServletResponse response) {
+  private void writeSynchronizerTokenCookie(HttpServletRequest request, HttpServletResponse response,
+      boolean securedAccess) {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.
         getSynchronizerTokenService();
-    Cookie cookie = service.createCookieWithSessionToken(request, true);
-    if (cookie != null) {
+    if (service.isWebSecurityByTokensEnabled()) {
+      Token token = service.getSessionToken(request);
+      Cookie cookie = new Cookie(SESSION_TOKEN_KEY, token.getValue());
+      cookie.setHttpOnly(true);
+      cookie.setMaxAge(-1);
+      if (securedAccess) {
+        cookie.setSecure(request.isSecure());
+      }
       cookie.setPath(request.getSession(false).getServletContext().getContextPath());
       response.addCookie(cookie);
     }

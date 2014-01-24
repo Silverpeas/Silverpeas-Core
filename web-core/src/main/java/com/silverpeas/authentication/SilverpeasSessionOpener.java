@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
@@ -95,7 +96,7 @@ public class SilverpeasSessionOpener {
       String allowPasswordChange = (String) session.getAttribute(
           Authentication.PASSWORD_CHANGE_ALLOWED);
       MainSessionController controller;
-      if (sessionInfo == null) {
+      if (!sessionInfo.isDefined()) {
         // the session is a new one, then open it in Silverpeas
         controller = new MainSessionController(authKey, session.getId());
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
@@ -103,8 +104,10 @@ public class SilverpeasSessionOpener {
         controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
         if (!controller.getCurrentUserDetail().isDeletedState()) {
           if (!UserDetail.isAnonymousUser(controller.getUserId())) {
-            sessionManagement.openSession(controller.getCurrentUserDetail(), request);
+            sessionInfo = sessionManagement.openSession(controller.getCurrentUserDetail(), request);
             registerSuccessfulConnexion(controller);
+            SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(
+                sessionInfo);
           }
         }
       } else {

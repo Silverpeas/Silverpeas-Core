@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.token.Token;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
@@ -53,7 +54,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
-  private UserAndGroupSelectionProcessor selectionProcessor = new UserAndGroupSelectionProcessor();
+  private final UserAndGroupSelectionProcessor selectionProcessor
+      = new UserAndGroupSelectionProcessor();
 
   /**
    * This method has to be implemented in the component request Router class. returns the session
@@ -250,7 +252,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         // require it for some specific protected actions.
         SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
             getSynchronizerTokenService();
-        tokenService.setSessionTokenToRequest(request);
+        Token token = tokenService.getSessionToken(request);
+        request.setAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
 
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);

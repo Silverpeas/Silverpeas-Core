@@ -165,8 +165,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   @Override
   public synchronized SessionInfo validateSession(String sessionKey) {
-    SessionInfo si = userDataSessions.get(sessionKey);
-    if (si != null) {
+    SessionInfo si = getSessionInfo(sessionKey);
+    if (si.isDefined()) {
       si.updateLastAccess();
     }
     userNotificationSessions.remove(sessionKey);
@@ -250,7 +250,11 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   @Override
   public synchronized SessionInfo getSessionInfo(String sessionId) {
-    return userDataSessions.get(sessionId);
+    SessionInfo session = userDataSessions.get(sessionId);
+    if (session == null) {
+      session = SessionInfo.NoneSession;
+    }
+    return session;
   }
 
   /**

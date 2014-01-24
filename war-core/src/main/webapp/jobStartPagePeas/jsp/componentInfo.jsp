@@ -112,8 +112,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 %>
 
 <%
-SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-String      key             = tokenService.getSessionTokenFromRequest(request);
+String      key             = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");

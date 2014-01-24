@@ -23,27 +23,27 @@
  */
 package com.silverpeas.web;
 
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
-
-import java.util.Collection;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.notification.message.MessageManager;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Collection;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.token.Token;
+import org.silverpeas.web.token.SynchronizerTokenService;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
@@ -98,6 +98,12 @@ public abstract class RESTWebService {
     if (request.getHeader(HTTP_SESSIONKEY) != null || (request.getHeader(HTTP_AUTHORIZATION) != null
         && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+      SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
+          getSynchronizerTokenService();
+      tokenService.setUpSessionTokens(session);
+      Token token = tokenService.getSessionToken(session);
+      getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.
+          getValue());
     }
     this.userDetail = session.getUserDetail();
     if (this.userDetail != null) {
@@ -200,6 +206,7 @@ public abstract class RESTWebService {
 
   /**
    * Gets the location of the bundle to use.
+   *
    * @return
    */
   protected String getBundleLocation() {
@@ -208,6 +215,7 @@ public abstract class RESTWebService {
 
   /**
    * Gets the bundle to use.
+   *
    * @return
    */
   protected ResourceLocator getBundle() {

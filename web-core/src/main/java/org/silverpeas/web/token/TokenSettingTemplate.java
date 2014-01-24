@@ -25,6 +25,8 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A template from which a Javascript script is generated for setting the synchronizer tokens in the
@@ -41,13 +43,21 @@ public class TokenSettingTemplate {
   private static final String TEMPLATE_NAME = "tokenSetting_js";
   private static final String TEMPLATE_PATH = "token";
   /**
-   * The name of the parameter that set the name of the token in the HTTP requests.
+   * The name of the parameter that set the name of the session token in the HTTP requests.
    */
-  public static final String TOKEN_NAME_PARAMETER = "TOKEN_NAME";
+  public static final String SESSION_TOKEN_NAME_PARAMETER = "SESSION_TOKEN_NAME";
   /**
-   * The name of the parameter that set the value of the token in the HTTP requests.
+   * The name of the parameter that set the value of the session token in the HTTP requests.
    */
-  public static final String TOKEN_VALUE_PARAMETER = "TOKEN_VALUE";
+  public static final String SESSION_TOKEN_VALUE_PARAMETER = "SESSION_TOKEN_VALUE";
+  /**
+   * The name of the parameter that set the name of the navigation token in the HTTP requests.
+   */
+  public static final String NAVIGATION_TOKEN_NAME_PARAMETER = "NAV_TOKEN_NAME";
+  /**
+   * The name of the parameter that set the value of the navigation token in the HTTP requests.
+   */
+  public static final String NAVIGATION_TOKEN_VALUE_PARAMETER = "NAV_TOKEN_VALUE";
   /**
    * The name of the parameter that set the expiration timestamp of the cookies in which is stored
    * the token.
@@ -59,6 +69,10 @@ public class TokenSettingTemplate {
   public static final String SECURED_COOKIE_PARAMETER = "SECURED";
 
   public String apply(Parameter... parameters) {
+    return apply(Arrays.asList(parameters));
+  }
+
+  public String apply(List<Parameter> parameters) {
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         TokenSettingTemplate.TEMPLATE_PATH);
     for (Parameter parameter : parameters) {

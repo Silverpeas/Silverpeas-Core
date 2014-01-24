@@ -31,8 +31,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-    SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    String  key             = tokenService.getSessionTokenFromRequest(request);
+    String  key             = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
 	  Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
     String 	groupsPath 				= (String)request.getAttribute("groupsPath");

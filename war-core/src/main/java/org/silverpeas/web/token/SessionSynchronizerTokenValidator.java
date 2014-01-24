@@ -23,7 +23,11 @@
  */
 package org.silverpeas.web.token;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -78,9 +82,9 @@ public class SessionSynchronizerTokenValidator implements Filter {
       throws IOException, ServletException {
 
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    if (service.isWebSecurityByTokensEnabled()) {
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    if (service.isWebSecurityByTokensEnabled() && isProtectedResource(httpRequest)) {
       try {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
         checkAuthenticatedRequest(httpRequest);
         service.validate(httpRequest);
         chain.doFilter(request, response);
@@ -117,10 +121,16 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private void checkAuthenticatedRequest(HttpServletRequest request) throws
       UnauthenticatedRequestException {
-    if (isProtectedResource(request) && !isCredentialManagement(request)) {
+    if (!isCredentialManagement(request)) {
+      boolean isAuthenticated = false;
       HttpSession session = request.getSession(false);
-      if (session == null || session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)
-          == null) {
+      if (session != null) {
+        SessionManagement sessionManagement = SessionManagementFactory.getFactory().
+            getSessionManagement();
+        SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
+        isAuthenticated = sessionInfo.isDefined();
+      }
+      if (!isAuthenticated) {
         throw new UnauthenticatedRequestException();
       }
     }
@@ -141,12 +151,18 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isCredentialManagement(HttpServletRequest request) {
     return request.getRequestURI().contains("/CredentialsServlet/") || request.getRequestURI().
-        contains("/services/password/");
+        contains("/services/password/") || (isWebServiceRequested(request)
+        && StringUtil.isDefined(request.getHeader(UserPriviledgeValidation.HTTP_AUTHORIZATION)));
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    return service.isAProtectedResource(request);
+    return service.isAProtectedResource(request) && !(isWebServiceRequested(request) && StringUtil.
+        isDefined(request.getHeader(UserPriviledgeValidation.HTTP_SESSIONKEY)));
+  }
+
+  private boolean isWebServiceRequested(HttpServletRequest request) {
+    return request.getRequestURI().contains("/services/");
   }
 
   private String pathOf(ServletRequest request) {

@@ -24,8 +24,11 @@
 package org.silverpeas.web.token;
 
 import com.silverpeas.calendar.DateTime;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Enumeration;
@@ -34,7 +37,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;
@@ -56,6 +58,7 @@ import org.silverpeas.token.synchronizer.SynchronizerToken;
 public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
+  public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String DEFAULT_RULE
       = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
   private static final String RULE_PREFIX = "security.web.protection.rule";
@@ -69,31 +72,47 @@ public class SynchronizerTokenService {
   }
 
   /**
-   * Sets a session token for the specified HTTP session. A session token is a token used to
-   * validate that any requests to a protected web resource are well done within an open and valid
-   * user session. The setting occurs only if the security mechanism by token is enabled.
+   * Sets up a session token for the specified Silverpeas session. It creates a synchronizer token
+   * to protect the specified opened user session. If a token is already protecting the session, the
+   * token is then renewed.
+   *
+   * A session token is a token used to validate that any requests to a protected web resource are
+   * correctly sent within an opened and valid user session. The setting occurs only if the security
+   * mechanism by token is enabled.
    *
    * @param session the user session to protect with a synchronizer token.
    */
-  public void setSessionTokens(HttpSession session) {
+  public void setUpSessionTokens(SessionInfo session) {
     if (isWebSecurityByTokensEnabled()) {
-      MainSessionController controller = (MainSessionController) session.getAttribute(
-          MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      String userId = "anonymous";
-      if (controller != null) {
-        UserDetail user = controller.getCurrentUserDetail();
-        userId = user.getId() + " (" + user.getDisplayedName() + ")";
-      }
+      UserDetail user = session.getUserDetail();
+      Token token = session.getAttribute(SESSION_TOKEN_KEY);
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
-      Token token = (Token) session.getAttribute(SESSION_TOKEN_KEY);
       if (token != null) {
-        logger.log(Level.FINEST, "Generate new session token for user {0}", userId);
+        logger.log(Level.INFO, "Renew the session token for the user {0}", user.getId());
         token = generator.renew(token);
       } else {
-        logger.log(Level.FINEST, "Renew the session token for user {0}", userId);
+        logger.log(Level.INFO, "Create the session token for the user {0}", user.getId());
         token = generator.generate();
       }
       session.setAttribute(SESSION_TOKEN_KEY, token);
+    }
+  }
+
+  /**
+   * Sets up a navigation token for the user behind the specified request. It creates a synchronizer
+   * token to protect the web navigation of the user from this start (the current resource targeted
+   * by the request). Within a protected navigation, each request must be stamped with the
+   * navigation token in order to be accepted (otherwise the request is rejected). Each time a
+   * request is validated with a navigation token, the token is then renewed.
+   *
+   * @param request an HTTP request from which the navigation to protect is identified.
+   */
+  public void setUpNavigationTokens(HttpServletRequest request) {
+    if (isWebSecurityByTokensEnabled()) {
+      HttpSession session = request.getSession();
+      TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
+      Token token = generator.generate();
+      session.setAttribute(NAVIGATION_TOKEN_KEY, token);
     }
   }
 
@@ -114,31 +133,34 @@ public class SynchronizerTokenService {
     if (isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
       logger.log(Level.FINEST, "Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
+      // is there a user session opened?
       if (expectedToken.isDefined()) {
-        String actualToken = request.getHeader(SESSION_TOKEN_KEY);
-        if (StringUtil.isNotDefined(actualToken)) {
-          actualToken = request.getParameter(SESSION_TOKEN_KEY);
-          if (StringUtil.isNotDefined(actualToken)) {
-            actualToken = (String) request.getAttribute(SESSION_TOKEN_KEY);
-            if (StringUtil.isNotDefined(actualToken) && !request.getMethod().equals("POST")) {
-              // use cookie only for other HTTP method than POST; the cookie should be avoided to
-              // carry a synchronizer token for security reason.
-              logger.log(Level.WARNING, "Validation of the request for path {0} by cookie",
-                  getRequestPath(request));
-              Cookie[] cookies = request.getCookies();
-              if (cookies != null) {
-                for (int i = 0; i < cookies.length && StringUtil.isNotDefined(actualToken); i++) {
-                  if (cookies[i].getName().equals(SESSION_TOKEN_KEY)) {
-                    actualToken = cookies[i].getValue();
-                  }
-                }
+        String actualToken = getTokenInRequest(SESSION_TOKEN_KEY, request);
+        if (StringUtil.isNotDefined(actualToken) && !request.getMethod().equals("POST")) {
+          // use cookie only for other HTTP method than POST; the cookie should be avoided to
+          // carry a synchronizer token for security reason.
+          logger.log(Level.WARNING, "Validation of the request for path {0} by cookie",
+              getRequestPath(request));
+          Cookie[] cookies = request.getCookies();
+          if (cookies != null) {
+            for (int i = 0; i < cookies.length && StringUtil.isNotDefined(actualToken); i++) {
+              if (cookies[i].getName().equals(SESSION_TOKEN_KEY)) {
+                actualToken = cookies[i].getValue();
               }
             }
           }
         }
-        validate(actualToken, request);
-      } else {
-        throwTokenInvalidException();
+        validate(actualToken, expectedToken);
+      }
+
+      // is the navigation protected by a token?
+      // the token is poped from the current session.
+      expectedToken = getTokenInSession(NAVIGATION_TOKEN_KEY, request, true);
+      if (expectedToken.isDefined()) {
+        logger.log(Level.INFO, "Validate the request origin for path {0}", getRequestPath(request));
+        String actualToken = getTokenInRequest(NAVIGATION_TOKEN_KEY, request);
+        validate(actualToken, expectedToken);
+
       }
     }
   }
@@ -158,89 +180,15 @@ public class SynchronizerTokenService {
    */
   public void validate(String token, HttpServletRequest request) throws TokenValidationException {
     Token expectedToken = getSessionToken(request);
-    if (!(StringUtil.isDefined(token) && expectedToken.isDefined() && expectedToken.getValue().
-        equals(token))) {
-      throwTokenInvalidException();
-    }
+    validate(token, expectedToken);
   }
 
   /**
-   * Applies the specified template with the tokens in the specified requests.
+   * Is the security mechanism based on the synchronizer token pattern enabled?
    *
-   * Some peculiar codes are generated from a template and then executed in the behalf of a web page
-   * in order to set a security context. Such codes are for example to set the tokens in each form
-   * of a web page so that the request will be validated by the token validator.
-   *
-   * @param template a security template to use.
-   * @param request the request containing the data required to apply the template.
-   * @return the result of the template application.
+   * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
    */
-  public String applyTemplate(TokenSettingTemplate template, HttpServletRequest request) {
-    String result = "";
-    Token token = getSessionToken(request);
-    if (token != null && token.isDefined()) {
-      TokenSettingTemplate.Parameter tokenKey = new TokenSettingTemplate.Parameter(
-          TokenSettingTemplate.TOKEN_NAME_PARAMETER, SESSION_TOKEN_KEY);
-      TokenSettingTemplate.Parameter tokenValue = new TokenSettingTemplate.Parameter(
-          TokenSettingTemplate.TOKEN_VALUE_PARAMETER, token.getValue());
-      result = template.apply(tokenKey, tokenValue);
-    }
-    return result;
-  }
-
-  /**
-   * Creates a cookie valued with the synchronizer token used to protect the user session. This
-   * method is useful for web pages using relocation to load some contents and with which the usual
-   * way to set the token within the browser request or the AJAX request cannot work.
-   *
-   * If the security mechanism based on the tokens is disabled or if there is no token protecting
-   * the HTTP session, then null is returned.
-   *
-   * @param request the HTTP request.
-   * @param force a boolean indicating if the cookie should be created even it already exists in the
-   * request.
-   * @return the cookie if the security mechanism based on the tokens is enabled and there is a
-   * token that protects the current HTTP session.
-   */
-  public Cookie createCookieWithSessionToken(HttpServletRequest request, boolean force) {
-    HttpRequest httpRequest = HttpRequest.decorate(request);
-    if (isWebSecurityByTokensEnabled() && (!httpRequest.hasCookie(SESSION_TOKEN_KEY) || force)) {
-      Token token = getSessionToken(httpRequest);
-      if (token.isDefined()) {
-        Cookie cookie = new Cookie(SESSION_TOKEN_KEY, token.getValue());
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(-1);
-        cookie.setSecure(httpRequest.isSecure());
-        return cookie;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Sets explicitly the session token into the specified request as an attribute.
-   *
-   * This method is for the JSP that requires to fetch the token in order to use it for example in
-   * the build of URL for specific actions.
-   *
-   * @param request the request for which the token will be set as an attribute.
-   */
-  public void setSessionTokenToRequest(HttpServletRequest request) {
-    Token token = getSessionToken(request);
-    request.setAttribute(SESSION_TOKEN_KEY, token.getValue());
-  }
-
-  /**
-   * Gets the session token from the specified request.
-   *
-   * @param request the request.
-   * @return the token or null if the token wasn't set into the request.
-   */
-  public String getSessionTokenFromRequest(HttpServletRequest request) {
-    return (String) request.getAttribute(SESSION_TOKEN_KEY);
-  }
-
-  protected boolean isWebSecurityByTokensEnabled() {
+  public boolean isWebSecurityByTokensEnabled() {
     return settings.getBoolean(SECURITY_ACTIVATION_KEY, false);
   }
 
@@ -273,13 +221,31 @@ public class SynchronizerTokenService {
    * @return the synchronizer token. If no token was set for the session mapped with the specified
    * request or if no session was opened, then the returned token isn't defined (NoneToken).
    */
-  protected Token getSessionToken(HttpServletRequest request) {
-    Token token = null;
-    HttpSession session = request.getSession(false);
-    if (session != null) {
-      token = (Token) session.getAttribute(SESSION_TOKEN_KEY);
-    }
+  public Token getSessionToken(HttpServletRequest request) {
+    return getTokenInSession(SESSION_TOKEN_KEY, request, false);
+  }
+
+  /**
+   * Gets the synchronizer token used to protect the specified user session.
+   *
+   * @param session an opened session of a user in Silverpeas
+   * @return the token protecting the specified session.
+   */
+  public Token getSessionToken(SessionInfo session) {
+    Token token = session.getAttribute(SESSION_TOKEN_KEY);
     return (token == null ? SynchronizerToken.NoneToken : token);
+  }
+
+  /**
+   * Gets the current one-time synchronizer token used to protect the web navigation within which
+   * the specified request is sent.
+   *
+   * @param request an HTTP request.
+   * @return the synchronizer token. If no token carried by the specified request to validate its
+   * origin, then a NoneToken is returned.
+   */
+  public Token getNavigationToken(HttpServletRequest request) {
+    return getTokenInSession(NAVIGATION_TOKEN_KEY, request, false);
   }
 
   private String getRequestPath(HttpServletRequest request) {
@@ -291,8 +257,54 @@ public class SynchronizerTokenService {
     return path;
   }
 
+  private void validate(String actualToken, Token expectedToken) throws TokenValidationException {
+    if (!(StringUtil.isDefined(actualToken) && expectedToken.isDefined()
+        && expectedToken.getValue().equals(actualToken))) {
+      throwTokenInvalidException();
+    }
+  }
+
   private void throwTokenInvalidException() throws TokenValidationException {
     DateTime now = DateTime.now();
     throw new TokenValidationException("Attempt of a CSRF attack detected at " + now.toISO8601());
   }
+
+  private Token getTokenInSession(String tokenId, HttpServletRequest request, boolean pop) {
+    Token token = null;
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+      token = (Token) session.getAttribute(tokenId);
+      if (token != null && pop) {
+        session.removeAttribute(tokenId);
+      }
+    }
+    if (token == null) {
+      String sessionId = request.getHeader(UserPriviledgeValidation.HTTP_SESSIONKEY);
+      if (StringUtil.isDefined(sessionId)) {
+        SessionManagement sessionManagement = SessionManagementFactory.getFactory().
+            getSessionManagement();
+        SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionId);
+        if (sessionInfo.isDefined()) {
+          token = sessionInfo.getAttribute(tokenId);
+          if (token != null && pop) {
+            sessionInfo.unsetAttribute(tokenId);
+          }
+        }
+      }
+    }
+
+    return (token == null ? SynchronizerToken.NoneToken : token);
+  }
+
+  private String getTokenInRequest(String tokenId, HttpServletRequest request) {
+    String token = request.getHeader(tokenId);
+    if (StringUtil.isNotDefined(token)) {
+      token = request.getParameter(tokenId);
+      if (StringUtil.isNotDefined(token)) {
+        token = (String) request.getAttribute(tokenId);
+      }
+    }
+    return token;
+  }
+
 }

@@ -29,6 +29,8 @@ import java.util.Map;
  */
 public class SessionInfo {
 
+  public static final SessionInfo NoneSession = new SessionInfo(null, null);
+
   private final String sessionId;
   private String ipAddress;
   private final UserDetail userDetail;
@@ -172,5 +174,15 @@ public class SessionInfo {
    */
   public void onClosed() {
     attributes.clear();
+  }
+
+  /**
+   * Is this session is defined? A session is defined if it a session opened to a user in
+   * Silverpeas.
+   *
+   * @return true if this session is defined, false otherwise.
+   */
+  public boolean isDefined() {
+    return this != NoneSession && this.getUserDetail() != null;
   }
 }
