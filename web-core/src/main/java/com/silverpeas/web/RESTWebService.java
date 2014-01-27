@@ -26,6 +26,7 @@ package com.silverpeas.web;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -93,17 +94,19 @@ public abstract class RESTWebService {
       WebApplicationException {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
-    // If user authentication is done by API Token catched from HTTP URL request, HTTP_SESSIONKEY
-    // is not returned into HTTP response header
-    if (request.getHeader(HTTP_SESSIONKEY) != null || (request.getHeader(HTTP_AUTHORIZATION) != null
-        && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
+    // Sent back the identifier of the spawned session in the HTTP response
+    if (StringUtil.isDefined(session.getSessionId()) && session.getLastAccessTimestamp() == session.
+        getOpeningTimestamp()) {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
-      SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
-      tokenService.setUpSessionTokens(session);
-      Token token = tokenService.getSessionToken(session);
-      getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.
-          getValue());
+      if (request.getHeader(HTTP_AUTHORIZATION) != null
+          && session.getLastAccessTimestamp() == session.getOpeningTimestamp()) {
+        SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
+            getSynchronizerTokenService();
+        tokenService.setUpSessionTokens(session);
+        Token token = tokenService.getSessionToken(session);
+        getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.
+            getValue());
+      }
     }
     this.userDetail = session.getUserDetail();
     if (this.userDetail != null) {

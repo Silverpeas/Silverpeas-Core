@@ -36,6 +36,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceFactory;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.OrganisationController;
@@ -205,21 +208,33 @@ public class UserPriviledgeValidation {
    * @return the detail about the authenticated user requested this web service.
    */
   private SessionInfo authenticateUser(final HttpServletRequest request) {
+    SessionInfo session = SessionInfo.NoneSession;
     String userCredentials = request.getHeader(HTTP_AUTHORIZATION);
     if (isDefined(userCredentials)) {
       String decoded = new String(Base64.decodeBase64(userCredentials), Charsets.UTF_8);
       // the first ':' character is the separator according to the RFC 2617 in basic digest
       int loginPasswordSeparatorIndex = decoded.indexOf(':');
-      String userId = decoded.substring(0, loginPasswordSeparatorIndex);
-      String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-      UserFull user = organisationController.getUserFull(userId);
-      if (user == null || !user.getPassword().equals(password)) {
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      if (loginPasswordSeparatorIndex > 0) {
+        String userId = decoded.substring(0, loginPasswordSeparatorIndex);
+        String password = decoded.substring(loginPasswordSeparatorIndex + 1);
+        UserFull user = organisationController.getUserFull(userId);
+        if (user != null) {
+          AuthenticationCredential credential = AuthenticationCredential
+              .newWithAsLogin(user.getLogin())
+              .withAsPassword(password)
+              .withAsDomainId(user.getDomainId());
+          AuthenticationService authenticator = AuthenticationServiceFactory.getService();
+          String key = authenticator.authenticate(credential);
+          if (!authenticator.isInError(key)) {
+            session = sessionManagement.openSession(user);
+          }
+        }
       }
-      return sessionManagement.openSession(user);
-    } else {
+    }
+    if (!session.isDefined()) {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
+    return session;
   }
 
   /**

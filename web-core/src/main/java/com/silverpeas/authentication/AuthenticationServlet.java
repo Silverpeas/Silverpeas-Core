@@ -40,6 +40,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceFactory;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
@@ -66,7 +67,7 @@ import static org.silverpeas.web.token.SynchronizerTokenService.SESSION_TOKEN_KE
  */
 public class AuthenticationServlet extends HttpServlet {
 
-  private static final AuthenticationService authService = new AuthenticationService();
+  private static final AuthenticationService authService = AuthenticationServiceFactory.getService();
   private static final long serialVersionUID = -8695946617361150513L;
   private static final SilverpeasSessionOpener silverpeasSessionOpener
       = new SilverpeasSessionOpener();
@@ -116,7 +117,7 @@ public class AuthenticationServlet extends HttpServlet {
         = AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential);
     userCanTryAgainToLoginVerifier.clearSession(request);
 
-    if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
+    if (!authService.isInError(authenticationKey)) {
 
       // Clearing user connection attempt cache.
       userCanTryAgainToLoginVerifier.clearCache();

@@ -140,6 +140,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
       throws ServletException, IOException {
     String destination = GeneralPropertiesManager.getString("sessionTimeout");
     HttpServletResponse httpResponse = (HttpServletResponse) response;
+    httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     if (destination.startsWith("http") || destination.startsWith("ftp")) {
       httpResponse.sendRedirect(httpResponse.encodeRedirectURL(destination));

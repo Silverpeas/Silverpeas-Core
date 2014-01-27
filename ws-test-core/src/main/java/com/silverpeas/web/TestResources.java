@@ -24,6 +24,7 @@
 package com.silverpeas.web;
 
 import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.mock.AccessControllerMock;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
@@ -34,11 +35,17 @@ import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.sun.istack.logging.Logger;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
 import javax.inject.Inject;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.EntityReference;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
@@ -49,9 +56,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * It is a wrapper of the resources required in the RESTWebServiceTest test cases. It defines also
@@ -93,8 +98,44 @@ public abstract class TestResources implements ApplicationContextAware {
   @Inject
   private TokenServiceMockWrapper tokenServiceMockWrapper;
   private static ApplicationContext context;
+  private final AuthenticationService authenticationService;
 
   private int maxUserId = Integer.valueOf(USER_ID_IN_TEST);
+
+  /**
+   * Constructs the resouces for testing. It set ups a mock of the authentication service so that
+   * the authentication succeeds with users registered by the registerUser() method. This is useful
+   * with tests on the web services.
+   */
+  public TestResources() {
+    authenticationService = mock(AuthenticationService.class);
+    try {
+      Field service = AuthenticationServiceFactory.class.getDeclaredField("service");
+      service.setAccessible(true);
+      service.set(AuthenticationServiceFactory.getFactory(), authenticationService);
+
+      final Answer<String> answer = new Answer<String>() {
+
+        @Override
+        public String answer(InvocationOnMock invocation) throws Throwable {
+          AuthenticationCredential credential
+              = (AuthenticationCredential) invocation.getArguments()[0];
+          String login = credential.getLogin();
+          if (StringUtil.isDefined(login)) {
+            UserDetail user = organizationControllerMockWrapper.getUserDetail(login);
+            if (user != null && user.getDomainId().equals(credential.getDomainId())) {
+              return "OK";
+            }
+          }
+          return "Error_";
+        }
+
+      };
+      when(authenticationService.authenticate(any(AuthenticationCredential.class))).then(answer);
+    } catch (Exception ex) {
+      Logger.getLogger(ex.getClass()).log(Level.INFO, ex.getMessage());
+    }
+  }
 
   /**
    * Gets a TestResources instance managed by the IoC container within which is running the test
@@ -247,6 +288,11 @@ public abstract class TestResources implements ApplicationContextAware {
     }
     when(mock.getUserDetail(user.getId())).thenReturn(user);
     when(mock.getDomain(user.getDomainId())).thenReturn(domain);
+    if (!StringUtil.isDefined(user.getLogin())) {
+      user.setLogin(user.getId());
+    } else {
+      when(mock.getUserDetail(user.getLogin())).thenReturn(user);
+    }
     if (user instanceof UserFull) {
       UserFull userFull = (UserFull) user;
       when(mock.getUserFull(user.getId())).thenReturn(userFull);
