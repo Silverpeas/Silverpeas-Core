@@ -112,7 +112,6 @@ public class GraphicElementFactory {
   protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
-  private static final String SECURITY_JS = "silverpeas-tkn.js";
 
   /**
    * Constructor declaration
@@ -375,8 +374,8 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
             "\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/").append(SECURITY_JS).append("\"></script>\n");
+    code.append(JavascriptPluginInclusion.includeSecurityTokenizing(new ElementContainer()).toString())
+        .append("\n");
     code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
         .append("\n");
     if (StringUtil.isDefined(specificJS)) {

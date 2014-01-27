@@ -37,17 +37,21 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import java.util.Date;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     SilverpeasAuthenticatedHttpServlet {
@@ -56,6 +60,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
   private final UserAndGroupSelectionProcessor selectionProcessor
       = new UserAndGroupSelectionProcessor();
+  private static final Collection<Pattern> SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS;
+
+  static {
+    SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS = new ArrayList<Pattern>();
+    SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS.add(Pattern.compile("^(?i)(main)"));
+  }
 
   /**
    * This method has to be implemented in the component request Router class. returns the session
@@ -80,6 +90,21 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   public abstract T createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext);
+
+  /**
+   * Indicates if the session security token has to be renewed from the given requested function ?
+   * @return true if the the token has to be renewed
+   */
+  protected boolean hasTheSessionSecurityTokenToBeRenewed(String function) {
+    boolean hasToBeRenewed = false;
+    for (Pattern sessionSecurityTokenPattern : SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS) {
+      if (sessionSecurityTokenPattern.matcher(function).matches()) {
+        hasToBeRenewed = true;
+        break;
+      }
+    }
+    return hasToBeRenewed;
+  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
@@ -178,9 +203,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         || function.startsWith("portlet") || function.equals("GoToFilesTab")) {
       // only for instanciable components
       if (componentId != null) {
-        SilverStatisticsManager.getInstance().addStatAccess(
-            component.getUserId(), new Date(), component.getComponentName(),
-            component.getSpaceId(), component.getComponentId());
+        SilverStatisticsManager.getInstance().addStatAccess(component.getUserId(), new Date(),
+            component.getComponentName(), component.getSpaceId(), component.getComponentId());
       }
     }
 
@@ -196,6 +220,11 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     HttpRequest httpRequest = HttpRequest.decorate(request);
     destination = getDestination(function, component, httpRequest);
 
+    // Session security token management
+    if (hasTheSessionSecurityTokenToBeRenewed(function)) {
+      renewSessionSecurityToken(request);
+    }
+
     // Check existence of a transverse exception
     SilverpeasTransverseWebErrorUtil.verifyErrorFromRequest(request, component.getLanguage());
 
@@ -203,9 +232,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
     }
 
-    SilverTrace.info("couverture",
-        "ComponentRequestRouter.computeDestination()", "couverture.MSG_RR_JSP",
-        "destination = '" + destination + "'");
+    SilverTrace.info("couverture", "ComponentRequestRouter.computeDestination()",
+        "couverture.MSG_RR_JSP", "destination = '" + destination + "'");
 
     // Update last accessed time depending on destination
     // see ClipboardRequestRouter

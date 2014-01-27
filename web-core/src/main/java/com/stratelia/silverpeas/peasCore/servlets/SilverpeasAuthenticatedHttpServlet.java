@@ -24,16 +24,20 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.authentication.SilverpeasSessionOpener;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import java.io.IOException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import java.io.IOException;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -45,8 +49,8 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = 3879578969267125005L;
 
-  private static final SilverpeasSessionOpener silverpeasSessionOpener
-      = new SilverpeasSessionOpener();
+  private static final SilverpeasSessionOpener silverpeasSessionOpener =
+      new SilverpeasSessionOpener();
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
@@ -97,6 +101,16 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   }
 
   /**
+   * Renews the session security token.
+   * @param request
+   */
+  protected void renewSessionSecurityToken(final HttpServletRequest request) {
+    SessionInfo sessionInfo = SessionManagementFactory.getFactory().getSessionManagement()
+        .getSessionInfo(getMainSessionController(request).getSessionId());
+    SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(sessionInfo);
+  }
+
+  /**
    * Expires the current user session (even if no user session exists) and stop all treatments.
    * Sends an RuntimeException.
    */
@@ -115,7 +129,6 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   /**
    * Retrieves the Main session controller.
-   *
    * @param request
    * @return
    */
