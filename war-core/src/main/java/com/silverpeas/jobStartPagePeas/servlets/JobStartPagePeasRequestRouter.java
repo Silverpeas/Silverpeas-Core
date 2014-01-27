@@ -63,11 +63,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryUnit;
-import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
@@ -634,7 +631,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       }
     } else if (function.equals("DeleteSpace")) {
       // Delete the space
-      validateProtectedAction(request);
       String spaceId = request.getParameter("Id");
       jobStartPageSC.deleteSpace(spaceId);
       refreshNavBar(jobStartPageSC, request);
@@ -1249,12 +1245,5 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());
     request.setAttribute("Scope", sessionController.getScope());
-  }
-
-  private void validateProtectedAction(HttpServletRequest request) throws TokenValidationException {
-    SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-        getSynchronizerTokenService();
-    String token = request.getParameter("Key");
-    tokenService.validate(token, request);
   }
 }

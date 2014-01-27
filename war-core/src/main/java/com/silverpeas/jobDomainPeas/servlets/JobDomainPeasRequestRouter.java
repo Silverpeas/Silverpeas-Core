@@ -57,9 +57,6 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.token.exception.TokenValidationException;
-import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 /**
  * Class declaration
@@ -210,13 +207,10 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request, sendEmail);
         } else if (function.startsWith("userBlock")) {
-          validateProtectedAction(request);
           jobDomainSC.blockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userUnblock")) {
-          validateProtectedAction(request);
           jobDomainSC.unblockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
-          validateProtectedAction(request);
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
           String userId = request.getParameter("Iduser");
@@ -389,7 +383,6 @@ public class JobDomainPeasRequestRouter extends
           bHaveToRefreshDomain = jobDomainSC.updateGroupSubUsers(
               jobDomainSC.getTargetGroup().getId(), jobDomainSC.getSelectedUsersIds());
         } else if (function.startsWith("groupDelete")) {
-          validateProtectedAction(request);
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
@@ -862,12 +855,5 @@ public class JobDomainPeasRequestRouter extends
       }
     }
     return properties;
-  }
-
-  private void validateProtectedAction(HttpServletRequest request) throws TokenValidationException {
-    SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-        getSynchronizerTokenService();
-    String token = request.getParameter("Key");
-    tokenService.validate(token, request);
   }
 }

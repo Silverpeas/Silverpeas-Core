@@ -33,15 +33,12 @@ function setTokens() {
    if ('$NAV_TOKEN_NAME$')
      elts.append(jQuery('<input>', {name: '$NAV_TOKEN_NAME$', type: 'hidden'}).val('$NAV_TOKEN_VALUE$'));
 
-  /* Use the cookie instead
   elts = jQuery('a');
-  if (elts)
-    elts.each(function() {
-      var href = jQuery(this).attr('href');
-      if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
+  elts.on('click', function(event) {
+    var href = jQuery(this).attr('href');
+    if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
         jQuery(this).attr('href', stampURL(href));
-    });
-  */
+  });
 }
 
 if (!window.XMLHttpRequest.prototype)

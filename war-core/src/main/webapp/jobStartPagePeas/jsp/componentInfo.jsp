@@ -112,7 +112,6 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 %>
 
 <%
-String      key             = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");
@@ -197,7 +196,7 @@ function openPopup(action, larg, haut) {
 
 function deleteInstance() {	
     if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+EncodeHelper.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
-	location.href = "DeleteInstance?ComponentNum=<%=compoInst.getId()%>&Key=<%= key %>";
+	location.href = "DeleteInstance?ComponentNum=<%=compoInst.getId()%>";
 	}
 }
 

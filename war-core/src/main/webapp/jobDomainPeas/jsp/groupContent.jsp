@@ -31,7 +31,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-    String  key             = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
 	  Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
     String 	groupsPath 				= (String)request.getAttribute("groupsPath");
@@ -53,7 +52,7 @@
     {
     	//Group operations
         operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId + "&Key=" + key +"')");
+        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId + "')");
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "groupSynchro?Idgroup="+thisGroupId);
 
@@ -68,7 +67,7 @@
 	        // Group operations
 	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
 	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId + "&Key=" + key +"')");
+	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId + "')");
 	        // User operations
           operationPane.addLine();
 	        operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
@@ -88,7 +87,7 @@
     	    if (!isGroupManagerDirectly) {
               operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString(
                   "GML.delete"), "javascript:ConfirmAndSend('" + resource.getString(
-                  "JDP.groupDelConfirm") + "','groupDelete?Idgroup=" + thisGroupId + "&Key=" + key + "')");
+                  "JDP.groupDelConfirm") + "','groupDelete?Idgroup=" + thisGroupId + "')");
             }
             // User operations
             operationPane.addLine();

@@ -121,7 +121,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private void checkAuthenticatedRequest(HttpServletRequest request) throws
       UnauthenticatedRequestException {
-    if (!isCredentialManagement(request)) {
+    if (!isCredentialManagement(request) && !isWebDAVResource(request)) {
       boolean isAuthenticated = false;
       HttpSession session = request.getSession(false);
       if (session != null) {
@@ -151,8 +151,9 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isCredentialManagement(HttpServletRequest request) {
-    return request.getRequestURI().contains("/CredentialsServlet/") || request.getRequestURI().
-        contains("/services/password/") || (isWebServiceRequested(request)
+    String uri = request.getRequestURI();
+    return uri.contains("/CredentialsServlet/") || uri.contains("/services/password/") || uri.
+        contains("/AuthenticationServlet") || (isWebServiceRequested(request)
         && StringUtil.isDefined(request.getHeader(UserPriviledgeValidation.HTTP_AUTHORIZATION)));
   }
 
@@ -160,6 +161,10 @@ public class SessionSynchronizerTokenValidator implements Filter {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
     return service.isAProtectedResource(request) && !(isWebServiceRequested(request) && StringUtil.
         isDefined(request.getHeader(UserPriviledgeValidation.HTTP_SESSIONKEY)));
+  }
+
+  private boolean isWebDAVResource(HttpServletRequest request) {
+    return request.getRequestURI().contains("/repository/jackrabbit");
   }
 
   private boolean isWebServiceRequested(HttpServletRequest request) {

@@ -31,10 +31,11 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.token.Token;
@@ -59,13 +60,15 @@ public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
-  private static final String DEFAULT_RULE
-      = "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
+  private static final String DEFAULT_RULE = "^.*$";
+  //= "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
   private static final String RULE_PREFIX = "security.web.protection.rule";
   private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
   private static final ResourceLocator settings
       = new ResourceLocator("org.silverpeas.util.security", "");
+  private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList(new String[]{"POST",
+    "PUT", "DELETE"});
 
   protected SynchronizerTokenService() {
 
@@ -88,10 +91,12 @@ public class SynchronizerTokenService {
       Token token = session.getAttribute(SESSION_TOKEN_KEY);
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       if (token != null) {
-        logger.log(Level.INFO, "Renew the session token for the user {0}", user.getId());
+        logger.log(Level.INFO, "Renew the session token for the user {0} ({1})", new String[]{user.
+          getId(), user.getDisplayedName()});
         token = generator.renew(token);
       } else {
-        logger.log(Level.INFO, "Create the session token for the user {0}", user.getId());
+        logger.log(Level.INFO, "Create the session token for the user {0} ({1})", new String[]{user.
+          getId(), user.getDisplayedName()});
         token = generator.generate();
       }
       session.setAttribute(SESSION_TOKEN_KEY, token);
@@ -109,6 +114,7 @@ public class SynchronizerTokenService {
    */
   public void setUpNavigationTokens(HttpServletRequest request) {
     if (isWebSecurityByTokensEnabled()) {
+      logger.log(Level.INFO, "Create a navigation token for path {0}", getRequestPath(request));
       HttpSession session = request.getSession();
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       Token token = generator.generate();
@@ -131,25 +137,11 @@ public class SynchronizerTokenService {
    */
   public void validate(HttpServletRequest request) throws TokenValidationException {
     if (isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
-      logger.log(Level.FINEST, "Validate the request for path {0}", getRequestPath(request));
+      logger.log(Level.INFO, "Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
       // is there a user session opened?
       if (expectedToken.isDefined()) {
         String actualToken = getTokenInRequest(SESSION_TOKEN_KEY, request);
-        if (StringUtil.isNotDefined(actualToken) && !request.getMethod().equals("POST")) {
-          // use cookie only for other HTTP method than POST; the cookie should be avoided to
-          // carry a synchronizer token for security reason.
-          logger.log(Level.WARNING, "Validation of the request for path {0} by cookie",
-              getRequestPath(request));
-          Cookie[] cookies = request.getCookies();
-          if (cookies != null) {
-            for (int i = 0; i < cookies.length && StringUtil.isNotDefined(actualToken); i++) {
-              if (cookies[i].getName().equals(SESSION_TOKEN_KEY)) {
-                actualToken = cookies[i].getValue();
-              }
-            }
-          }
-        }
         validate(actualToken, expectedToken);
       }
 
@@ -160,7 +152,6 @@ public class SynchronizerTokenService {
         logger.log(Level.INFO, "Validate the request origin for path {0}", getRequestPath(request));
         String actualToken = getTokenInRequest(NAVIGATION_TOKEN_KEY, request);
         validate(actualToken, expectedToken);
-
       }
     }
   }
@@ -195,19 +186,25 @@ public class SynchronizerTokenService {
   /**
    * Is the resource targeted by the specified request must be protected by a synchronizer token?
    *
+   * A resource is protected if either the request is a POST, PUT or a DELETE HTTP method or if the
+   * requested URI is declared as to be protected.
+   *
    * @param request the request to a possibly protected resource.
    * @return true if the requested resource is a protected one and then the request should be
    * validate.
    */
   protected boolean isAProtectedResource(HttpServletRequest request) {
-    String path = getRequestPath(request);
-    boolean isProtected = path.matches(DEFAULT_RULE);
-    Enumeration<String> properties = settings.getKeys();
-    for (; properties.hasMoreElements() && isProtected;) {
-      String property = properties.nextElement();
-      if (property.startsWith(RULE_PREFIX)) {
-        String rule = settings.getString(property);
-        isProtected &= path.matches(rule);
+    boolean isProtected = DEFAULT_PROTECTED_METHODS.contains(request.getMethod());
+    if (!isProtected && request.getMethod().equals("GET")) {
+      String path = getRequestPath(request);
+      isProtected = path.matches(DEFAULT_RULE);
+      Enumeration<String> properties = settings.getKeys();
+      for (; properties.hasMoreElements() && isProtected;) {
+        String property = properties.nextElement();
+        if (property.startsWith(RULE_PREFIX)) {
+          String rule = settings.getString(property);
+          isProtected &= path.matches(rule);
+        }
       }
     }
     return isProtected;

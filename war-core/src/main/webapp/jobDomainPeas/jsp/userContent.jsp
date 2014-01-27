@@ -36,7 +36,6 @@
 
 <%@ include file="check.jsp" %>
 <%
-  String key = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
   Domain domObject = (Domain) request.getAttribute("domainObject");
   UserFull userObject = (UserFull) request.getAttribute("userObject");
   String groupsPath = (String) request.getAttribute("groupsPath");
@@ -66,15 +65,15 @@
     if (userObject.isBlockedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
-              "userUnblock?Iduser=" + thisUserId + "&Key=" + key);
+              "userUnblock?Iduser=" + thisUserId);
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
-              "userBlock?Iduser=" + thisUserId + "&Key=" + key);
+              "userBlock?Iduser=" + thisUserId);
     }
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:ConfirmAndSend('" + resource.getString("JDP.userDelConfirm") +
-            "','userDelete?Iduser=" + thisUserId + "&Key=" + key + "')");
+            "','userDelete?Iduser=" + thisUserId+ "')");
   }
   if (isDomainSync && !isGroupManager) {
     operationPane
@@ -83,11 +82,11 @@
     if (userObject.isBlockedState()) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUnblock"), resource.getString("JDP.userUnblock"),
-              "userUnblock?Iduser=" + thisUserId + "&Key=" + key);
+              "userUnblock?Iduser=" + thisUserId);
     } else {
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
-              "userBlock?Iduser=" + thisUserId + "&Key=" + key);
+              "userBlock?Iduser=" + thisUserId);
     }
     operationPane
         .addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
