@@ -21,18 +21,21 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 import com.silverpeas.form.AbstractForm;
-import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.MultiValuableField;
 import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.Util;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 
@@ -41,7 +44,7 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
  * @author ehugonnet
  * @param <T>
  */
-public abstract class AbstractMultiValuableFieldDisplayer<T extends Field> implements FieldDisplayer<T> {
+public abstract class AbstractMultiValuableFieldDisplayer<T extends MultiValuableField> implements FieldDisplayer<T> {
 
   @Override
   public List<String> update(List<FileItem> items, T field, FieldTemplate template,
@@ -91,4 +94,72 @@ public abstract class AbstractMultiValuableFieldDisplayer<T extends Field> imple
       }
     }
   }
+  
+  /**
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the field type is not a managed type.
+   * </UL>
+   */
+  @Override
+  public void display(PrintWriter out, T field, FieldTemplate template,
+      PagesContext pageContext) throws FormException {
+    if (field == null) {
+      return;
+    }
+    String fieldName = template.getFieldName();
+    int nbInputsToDisplay = template.getMaximumNumberOfValues();
+    
+    List<String> values = field.getValues(pageContext.getLanguage());
+    
+    boolean mandatory = template.isMandatory();
+    boolean showMoreFields = false;
+    for (int i=0; i<nbInputsToDisplay; i++) {
+      String value = "";
+      String currentFieldId = fieldName;
+      String currentVisibility = AbstractForm.REPEATED_FIELD_CSS_SHOW;
+      
+      if (i == 0) {
+        value = (!field.isNull() ? values.get(0) : getDefaultValue(template, pageContext));
+      } else {
+        currentFieldId = fieldName+AbstractForm.REPEATED_FIELD_SEPARATOR+i;
+        mandatory = false;
+        if (values != null && i < values.size()) {
+          value = values.get(i);
+        } else {
+          value = "";
+        }
+        if (!StringUtil.isDefined(value)) {
+          currentVisibility = AbstractForm.REPEATED_FIELD_CSS_HIDE;
+          showMoreFields = true;
+        }
+      }
+      if (pageContext.isBlankFieldsUse()) {
+        value = "";
+      }
+            
+      out.println("<div id=\"field_"+currentFieldId+"\" class=\"field_"+fieldName+" "+currentVisibility+"\">");
+      
+      displayInput(currentFieldId, value, mandatory, field, template, pageContext, out);
+      
+      out.println("</div>");
+    }
+    if (showMoreFields && !template.isDisabled() && !template.isReadOnly() && !template.isHidden()) {
+      Util.printOneMoreInputSnippet(fieldName, pageContext, out);
+    }
+  }
+  
+  protected String getDefaultValue(FieldTemplate template, PagesContext pageContext) {
+    if (pageContext.isIgnoreDefaultValues()) {
+      return "";
+    }
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+    String defaultValue = (parameters.containsKey("default") ? parameters.get("default") : "");
+    return defaultValue;
+  }
+  
+  public abstract void displayInput(String inputId, String value, boolean mandatory, T field,
+      FieldTemplate template, PagesContext pageContext, PrintWriter out);
 }
