@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +37,7 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
@@ -50,19 +50,18 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileServerUtils;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 
 /**
- *
  * @author ehugonnet
  */
-public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
-  
+public abstract class AbstractFileFieldDisplayer extends
+    AbstractMultiValuableFieldDisplayer<FileField> {
+
   protected static final String OPERATION_KEY = "Operation";
-  
+
   /**
    * The different kinds of operation that can be applied into an attached file.
    */
@@ -92,14 +91,13 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Deletes the specified attachment, identified by its unique identifier.?
-   *
    * @param attachmentId the unique identifier of the attachment to delete.
    * @param pageContext the context of the page.
    */
   protected void deleteAttachment(String attachmentId, PagesContext pageContext) {
     SilverTrace.info("form", "AbstractFileFieldDisplayer.deleteAttachment",
         "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId + ", componentId = "
-        + pageContext.getComponentId());
+            + pageContext.getComponentId());
     SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
     SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
         pageContext.getContentLanguage());
@@ -110,20 +108,21 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Returns the name of the managed types.
-   *
    * @return
    */
   public String[] getManagedTypes() {
-    return new String[]{FileField.TYPE};
+    return new String[] { FileField.TYPE };
   }
-  
+
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
-   * template. <LI>the field type is not a managed type. </UL>
-   *
+   * log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
+   * </UL>
    * @param pageContext
    */
   @Override
@@ -135,12 +134,12 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       out.println(" if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println(
           "   var " + fieldName + "Value = document.getElementById('" + fieldName
-          + FileField.PARAM_ID_SUFFIX + "').value;");
+              + FileField.PARAM_ID_SUFFIX + "').value;");
       out.println("   if (" + fieldName + "Value=='' || " + fieldName
           + "Value.substring(0,7)==\"remove_\") {");
       out.println("     errorMsg+=\"  - '"
           + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " + Util.
-          getString("GML.MustBeFilled", language) + "\\n \";");
+              getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("     errorNb++;");
       out.println("   }");
       out.println(" }");
@@ -151,17 +150,49 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
     }
   }
-  
+
   @Override
   public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
+
+    String attachmentId = processInput(items, field, template.getFieldName(), 0, pageContext);
+    List<String> values = new ArrayList<String>();
+    if (StringUtil.isDefined(attachmentId)) {
+      values.add(attachmentId);
+    }
+
+    if (template.isMultivaluable()) {
+      for (int i = 1; i < template.getMaximumNumberOfValues(); i++) {
+        attachmentId = processInput(items, field, template.getFieldName() +
+            AbstractForm.REPEATED_FIELD_SEPARATOR + i, i, pageContext);
+        if (StringUtil.isDefined(attachmentId)) {
+          values.add(attachmentId);
+        }
+      }
+
+      // complete list with empty values
+      for (int i = values.size(); i < template.getMaximumNumberOfValues(); i++) {
+        values.add("");
+      }
+    }
+
+    attachmentIds.addAll(updateValues(values, field, template, pageContext));
+
+    return attachmentIds;
+  }
+
+  protected String processInput(List<FileItem> items, FileField field, String inputName, int id,
+      PagesContext pageContext) {
     try {
-      String fieldName = template.getFieldName();
-      String attachmentId = processUploadedFile(items, fieldName, pageContext);
-      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, fieldName
+      String attachmentId = processUploadedFile(items, inputName, pageContext);
+      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
           + OPERATION_KEY));
-      String currentAttachmentId = field.getAttachmentId();
+      List<String> attachmentIds = field.getAttachmentIds();
+      String currentAttachmentId = null;
+      if (id < attachmentIds.size()) {
+        currentAttachmentId = attachmentIds.get(id);
+      }
       if ((isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId))
           && !pageContext.isCreation()) {
         // delete previous attachment
@@ -169,34 +200,31 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         if (!StringUtil.isDefined(attachmentId)) {
           attachmentId = null;
         }
+      } else if (StringUtil.isDefined(currentAttachmentId)) {
+        return currentAttachmentId;
       }
-      attachmentIds.addAll(update(attachmentId, field, template, pageContext));
+      return attachmentId;
     } catch (IOException ex) {
       SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
     }
-
-    return attachmentIds;
+    return null;
   }
-  
+
   @Override
-  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
+  public List<String> updateValues(List<String> attachmentIds, FileField field,
+      FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (FileField.TYPE.equals(field.getTypeName())) {
-      if (!StringUtil.isDefined(attachmentId)) {
-        field.setNull();
-      } else {
-        field.setAttachmentId(attachmentId);
-      }
+      field.setAttachmentIds(attachmentIds);
     } else {
       throw new FormException("FileFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           FileField.TYPE);
     }
-    return Collections.singletonList(attachmentId);
+    return attachmentIds;
   }
-  
+
   /**
    * Is the specified operation is a deletion?
-   *
    * @param operation the operation.
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is a deletion, false otherwise.
@@ -207,7 +235,6 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Is the specified operation is an update?
-   *
    * @param operation the operation.
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is an update, false otherwise.
@@ -215,7 +242,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   protected boolean isUpdate(final Operation operation, final String attachmentId) {
     return StringUtil.isDefined(attachmentId) && operation == Operation.UPDATE;
   }
-  
+
   protected String processUploadedFile(List<FileItem> items, String parameterName,
       PagesContext pagesContext) throws IOException {
     String attachmentId = null;
@@ -236,15 +263,14 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     }
     return attachmentId;
   }
-  
+
   @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
-  
+
   /**
    * Checks the type of the field is as expected. The field must be of type file.
-   *
    * @param typeName the name of the type.
    * @param contextCall the context of the call: which is the caller of this method. This parameter
    * is used for trace purpose.

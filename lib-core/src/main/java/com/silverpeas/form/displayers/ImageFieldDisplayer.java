@@ -23,7 +23,6 @@ package com.silverpeas.form.displayers;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +45,7 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -62,12 +62,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
  * @see FieldDisplayer
  */
 public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
-  
-  @Override
-  public void display(PrintWriter out, FileField field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
-    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
-  }
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
@@ -82,16 +76,16 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param webContext
    * @throws FormException
    */
-  public void display(PrintWriter out, FileField field, FieldTemplate template,
-      PagesContext pagesContext, String webContext) throws FormException {
+  public void displayInput(String inputId, String value, boolean mandatory, FileField field, FieldTemplate template,
+      PagesContext pageContext, PrintWriter out) {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
+        "fieldName = " + template.getFieldName() + ", value = " + value
         + ", fieldType = " + field.getTypeName());
-    String fieldName = template.getFieldName();
-    String language = pagesContext.getLanguage();
+    String fieldName = inputId;
+    String language = pageContext.getLanguage();
     Operation defaultOperation = Operation.ADD;
-    String componentId = pagesContext.getComponentId();
-    String attachmentId = field.getValue();
+    String componentId = pageContext.getComponentId();
+    String attachmentId = value;
     SimpleDocumentPK attachmentPk;
     if (StringUtil.isLong(attachmentId)) {
       attachmentPk = new SimpleDocumentPK(null, componentId);
@@ -110,10 +104,10 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
             attachmentPk, language);
         if (attachment != null) {
           defaultOperation = Operation.UPDATE;
-          if (pagesContext.getRenderingContext() == RenderingContext.EXPORT) {
+          if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
             imageURL = "file:" + attachment.getAttachmentPath();
           } else {
-            imageURL = webContext + attachment.getAttachmentURL();
+            imageURL = URLManager.getApplicationURL() + attachment.getAttachmentURL();
           }
         }
       }
@@ -143,7 +137,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       out.println("</a>");
       out.println("&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document.getElementById('" + fieldName + "ThumbnailArea').style.display='none';"
-          + "document." + pagesContext.getFormName() + "." + fieldName
+          + "document." + pageContext.getFormName() + "." + fieldName
           + OPERATION_KEY + ".value='"+Operation.DELETION.name()+"';"
           + "\">");
       out.println("<img src=\""
@@ -170,7 +164,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
         getGalleries(fieldName, language, out);
       }
 
-      if (template.isMandatory() && pagesContext.useMandatory()) {
+      if (template.isMandatory() && pageContext.useMandatory()) {
         out.println(Util.getMandatorySnippet());
       }
 
@@ -248,43 +242,39 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       out.println("</script>");
     }
   }
-
-  @Override
-  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    List<String> attachmentIds = new ArrayList<String>();
-    String itemName = template.getFieldName();
+  
+  protected String processInput(List<FileItem> items, FileField field, String inputName, int id, PagesContext pageContext) {
+    List<String> attachmentIds = field.getAttachmentIds();
+    String currentAttachmentId = null;
+    if (id < attachmentIds.size()) {
+      currentAttachmentId = attachmentIds.get(id);
+    }
     try {
-      String newAttachmentId = processUploadedFile(items, itemName, pageContext);
-      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, itemName
+      String newAttachmentId = processUploadedFile(items, inputName, pageContext);
+      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
           + OPERATION_KEY));
-      String imageURLFromGallery = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
+      String imageURLFromGallery =
+          FileUploadUtil.getParameter(items, inputName + Field.FILE_PARAM_NAME_SUFFIX);
       if (!StringUtil.isDefined(newAttachmentId) && StringUtil.isDefined(imageURLFromGallery)) {
         // image from a gallery
         newAttachmentId = imageURLFromGallery;
       }
-      String currentAttachmentId = field.getAttachmentId();
       if (!pageContext.isCreation()) {
         if (isDeletion(operation, currentAttachmentId) || isUpdate(operation, newAttachmentId)) {
           // Former attachment must be deleted
           if (!currentAttachmentId.startsWith("/")) {
             deleteAttachment(currentAttachmentId, pageContext);
           }
-        } else if (!StringUtil.isDefined(newAttachmentId)) {
-          // pas de nouveau fichier, ni de suppression
-          // le champ ne doit pas être mis à jour
-          return attachmentIds;
+          currentAttachmentId = null;
         }
       }
-      if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-          && !StringUtil.isDefined(newAttachmentId)) {
-        return attachmentIds;
+      if (StringUtil.isDefined(newAttachmentId)) {
+        return newAttachmentId;
       }
-      attachmentIds.addAll(update(newAttachmentId, field, template, pageContext));
     } catch (IOException e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
-    return attachmentIds;
+    return currentAttachmentId;
   }
 
   /**
