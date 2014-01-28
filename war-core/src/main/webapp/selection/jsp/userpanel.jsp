@@ -371,6 +371,7 @@
                 case 'group':
                   maximizeGroupsListingPanel();
                   $scope.userPageSize = 0;
+                  $scope.userSelectionPageSize = 0;
                   $scope.groupSelectionPageSize = PageMaxSize;
                   displayedUserType = UserSource.Groups;
                   UserGroup.get({page: {number:1, size: $scope.groupPageSize}}).then(updateGroupsListing);
@@ -380,6 +381,7 @@
                   displayedUserType = UserSource.All;
                   $scope.groupPageSize = 0;
                   $scope.userSelectionPageSize = PageMaxSize;
+                  $scope.groupSelectionPageSize = 0;
                   User.get({page: {number:1, size: $scope.userPageSize}}).then(updateUsersListing);
                   break;
                 default:
@@ -393,21 +395,17 @@
               }
               $scope.currentGroup = rootGroup;
               UserGroup.get({page: {number: 1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
-              if (context.selectionScope !== 'group') {
-                $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
-                for(var i = 0; i < preselectedUsers.length; i++) {
-                  User.get(preselectedUsers[i]).then(function(user) {
-                    $scope.selectedUsers.add(user);
-                  });
-                }
+              $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
+              for(var i = 0; i < preselectedUsers.length; i++) {
+                User.get(preselectedUsers[i]).then(function(user) {
+                  $scope.selectedUsers.add(user);
+                });
               }
-              if (context.selectionScope !== 'user') {
-                $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
-                for(var i = 0; i < preselectedUserGroups.length; i++) {
-                  UserGroup.get(preselectedUserGroups[i]).then(function(group) {
-                    $scope.selectedGroups.add(group);
-                  });
-                }
+              $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
+              for(var i = 0; i < preselectedUserGroups.length; i++) {
+                UserGroup.get(preselectedUserGroups[i]).then(function(group) {
+                  $scope.selectedGroups.add(group);
+                });
               }
               resetSearchQueries();
             }
@@ -421,7 +419,6 @@
 
            /* pagination in the listings and in the selections panels */
            $scope.changeGroupListingPage = function(pageNumber) {
-             alert('coucou');
               var params = {page: {number: pageNumber, size: $scope.groupPageSize}};
               if (listingFilters.groupName)
                 params.name = listingFilters.groupName;
