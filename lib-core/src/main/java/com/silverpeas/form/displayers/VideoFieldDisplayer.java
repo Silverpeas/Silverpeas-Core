@@ -22,11 +22,8 @@ package com.silverpeas.form.displayers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.div;
@@ -44,10 +41,8 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
 import org.silverpeas.servlet.FileUploadUtil;
 
@@ -82,16 +77,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    */
   public static final String PARAMETER_AUTOPLAY = "autoplay";
   public static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
-  private static final String OPERATION_KEY = "Operation";
   private static final int DISPLAYED_HTML_OBJECTS = 2;
-
-  /**
-   * The different kinds of operation that can be applied into an attached video file.
-   */
-  private enum Operation {
-
-    ADD, UPDATE, DELETION;
-  }
 
   @Override
   public void displayScripts(final PrintWriter out, final FieldTemplate template,
@@ -144,64 +130,8 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
-    checkFieldType(field.getTypeName(), "VideoFieldDisplayer.update");
-    List<String> attachmentIds = new ArrayList<String>();
-    if (!StringUtil.isDefined(attachmentId)) {
-      field.setNull();
-    } else {
-      field.setAttachmentId(attachmentId);
-      attachmentIds.add(attachmentId);
-    }
-    return attachmentIds;
-  }
-
-  @Override
-  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    List<String> attachmentIds = new ArrayList<String>();
-    try {
-      String fieldName = template.getFieldName();
-      String attachmentId = uploadVideoFile(items, fieldName, pageContext);
-      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, fieldName
-          + OPERATION_KEY));
-      String currentAttachmentId = field.getAttachmentId();
-      if ((isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId))
-          && !pageContext.isCreation()) {
-        deleteAttachment(currentAttachmentId, pageContext);
-      }
-      if (StringUtil.isDefined(attachmentId)) {
-        attachmentIds.addAll(update(attachmentId, field, template, pageContext));
-      }
-    } catch (IOException ex) {
-      SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
-    }
-
-    return attachmentIds;
-  }
-
-  @Override
-  public boolean isDisplayedMandatory() {
-    return true;
-  }
-
-  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return DISPLAYED_HTML_OBJECTS;
-  }
-
-  /**
-   * Checks the type of the field is as expected. The field must be of type file.
-   *
-   * @param typeName the name of the type.
-   * @param contextCall the context of the call: which is the caller of this method. This parameter
-   * is used for trace purpose.
-   */
-  private void checkFieldType(final String typeName, final String contextCall) {
-    if (!Field.TYPE_FILE.equals(typeName)) {
-      SilverTrace.info("form", contextCall, "form.INFO_NOT_CORRECT_TYPE", Field.TYPE_FILE);
-    }
   }
 
   /**
@@ -336,56 +266,5 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
     videoPlayer.setAutoplay(autoplay);
     videoPlayer.setWidth(width);
     videoPlayer.setHeight(height);
-  }
-
-  /**
-   * Uploads the file containing the video and that is identified by the specified field name.
-   *
-   * @param items the items of the form. One of them is containg the video file.
-   * @param itemKey the key of the item containing the video.
-   * @param pageContext the context of the page displaying the form.
-   * @throws Exception if an error occurs while uploading the video file.
-   * @return the identifier of the uploaded attached video file.
-   */
-  private String uploadVideoFile(final List<FileItem> items, final String itemKey,
-      final PagesContext pageContext) throws IOException {
-    String attachmentId = "";
-
-    FileItem item = FileUploadUtil.getFile(items, itemKey);
-    if (!item.isFormField()) {
-      String componentId = pageContext.getComponentId();
-      String userId = pageContext.getUserId();
-      String objectId = pageContext.getObjectId();
-      String logicalName = item.getName();
-      if (StringUtil.isDefined(logicalName)) {
-        logicalName = FileUtil.getFilename(logicalName);
-        SimpleDocument document = createSimpleDocument(objectId, componentId, item, logicalName,
-            userId);
-        attachmentId = document.getId();
-      }
-    }
-    return attachmentId;
-  }
-
-  /**
-   * Is the specified operation is a deletion?
-   *
-   * @param operation the operation.
-   * @param attachmentId the identifier of the attachment on which the operation is.
-   * @return true if the operation is a deletion, false otherwise.
-   */
-  private boolean isDeletion(final Operation operation, final String attachmentId) {
-    return StringUtil.isDefined(attachmentId) && operation == Operation.DELETION;
-  }
-
-  /**
-   * Is the specified operation is an update?
-   *
-   * @param operation the operation.
-   * @param attachmentId the identifier of the attachment on which the operation is.
-   * @return true if the operation is an update, false otherwise.
-   */
-  private boolean isUpdate(final Operation operation, final String attachmentId) {
-    return StringUtil.isDefined(attachmentId) && operation == Operation.UPDATE;
-  }
+  } 
 }
