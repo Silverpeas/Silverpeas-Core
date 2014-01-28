@@ -38,8 +38,8 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -51,12 +51,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
  * @see FieldDisplayer
  */
 public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
-  
-  @Override
-  public void display(PrintWriter out, FileField field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
-    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
-  }
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
@@ -70,23 +64,23 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param template
    * @throws FormException
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pageContext, String webContext) throws FormException {
+  public void displayInput(String inputId, String value, boolean mandatory, FileField field, FieldTemplate template,
+      PagesContext pageContext, PrintWriter out) {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
-        + ", fieldType = " + field.getTypeName());
+        "fieldName = " + template.getFieldName() + ", value = " + value + ", fieldType = " + field.getTypeName());
     String language = pageContext.getContentLanguage();
     StringBuilder html = new StringBuilder(1024);
     Operation defaultOperation = Operation.ADD;
-    String fieldName = template.getFieldName();
+    String fieldName = inputId;
 
     if (!FileField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "FileFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           FileField.TYPE);
     }
 
-    String attachmentId = field.getValue();
+    String attachmentId = value;
     String componentId = pageContext.getComponentId();
+    String webContext = URLManager.getApplicationURL();
 
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {

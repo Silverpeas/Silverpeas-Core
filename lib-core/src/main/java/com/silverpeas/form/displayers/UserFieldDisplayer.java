@@ -38,14 +38,12 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
@@ -115,8 +113,8 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
    * @throws FormException
    */
   @Override
-  public void display(PrintWriter out, UserField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
+  public void displayInput(String inputId, String value, boolean mandatory, UserField field, FieldTemplate template,
+      PagesContext pageContext, PrintWriter out) {
     SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
         + ", fieldType = " + field.getTypeName());
@@ -126,31 +124,23 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
     String selectUserLab = Util.getString("userPanel", language);
     String deleteUserImg = Util.getIcon("delete");
     String deleteUserLab = Util.getString("clearUser", language);
-
+    
+    String userId = value;
     String userName = "";
-    String userId = "";
+    UserDetail user = UserDetail.getById(userId);
+    if (user != null) {
+      userName = user.getDisplayedName();
+    }
     String html = "";
 
-    String fieldName = template.getFieldName();
-
-    if (!field.getTypeName().equals(UserField.TYPE)) {
-      SilverTrace.info("form", "UserFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          UserField.TYPE);
-    } else {
-      //userId = field.getUserId();
-      //TODO
-    }
-    if (!field.isNull()) {
-      userName = field.getValue();
-    }
     html +=
-        "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\""
+        "<input type=\"hidden\"" + " id=\"" + inputId + "\" name=\"" + inputId + "\" value=\""
         + EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
 
     if (!template.isHidden()) {
       html +=
           "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
-          + "id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\""
+          + "id=\"" + inputId + "_name\" name=\"" + inputId + "$$name\" value=\""
           + EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
     }
 
@@ -168,8 +158,8 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
           + URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + pageContext.getFormName()
-          + "&elementId=" + fieldName
-          + "&elementName=" + fieldName + "_name"
+          + "&elementId=" + inputId
+          + "&elementName=" + inputId + "_name"
           + "&selectedUser=" + ((userId == null) ? "" : userId);
       if (usersOfInstanceOnly) {
         html += "&instanceId=" + pageContext.getComponentId();
@@ -185,8 +175,8 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
           + selectUserLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + pageContext.getFormName() + "." + fieldName + ".value='';"
-          + "document." + pageContext.getFormName() + "." + fieldName + "$$name"
+          + "document." + pageContext.getFormName() + "." + inputId + ".value='';"
+          + "document." + pageContext.getFormName() + "." + inputId + "$$name"
           + ".value='';"
           + "\">";
       html += "<img src=\""
@@ -234,15 +224,4 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
     return 2;
   }
 
-  @Override
-  public List<String> update(List<FileItem> items, UserField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName();
-    String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-        && !StringUtil.isDefined(value)) {
-      return new ArrayList<String>();
-    }
-    return update(value, field, template, pageContext);
-  }
 }
