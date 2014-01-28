@@ -20,9 +20,7 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,19 +28,16 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 
-import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -53,87 +48,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see Form
  * @see FieldDisplayer
  */
-public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<TextField> {
-
-  private final static String[] MANAGED_TYPES = new String[]{TextField.TYPE};
+public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<TextField> {
 
   /**
    * Constructeur
    */
   public TextFieldDisplayer() {
-  }
-
-  /**
-   * Returns the name of the managed types.
-   *
-   * @return
-   */
-  public String[] getManagedTypes() {
-    return MANAGED_TYPES;
-  }
-
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
-  @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
-    String language = pagesContext.getLanguage();
-    String label = template.getLabel(language);
-
-    if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-    StringBuilder script = new StringBuilder(10000);
-
-    if (template.isMandatory() && pagesContext.useMandatory()) {
-      script.append("		if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
-      script.append("			errorMsg+=\"  - '").append(label).append("' ").
-          append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
-      script.append("			errorNb++;\n");
-      script.append("		}\n");
-    }
-
-    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-    String contentType = parameters.get(TextField.CONTENT_TYPE);
-    if (contentType != null) {
-      if (contentType.equals(TextField.CONTENT_TYPE_INT)) {
-        script.append("		if (field.value != \"\" && !(/^-?\\d+$/.test(field.value))) {\n");
-        script.append("			errorMsg+=\"  - '").append(label).append("' ").
-            append(Util.getString("GML.MustContainsNumber", language)).append(
-            "\\n\";\n");
-        script.append("			errorNb++;\n");
-        script.append("		}\n");
-      } else if (contentType.equals(TextField.CONTENT_TYPE_FLOAT)) {
-        script.append("		field.value = field.value.replace(\",\", \".\")\n");
-        script.append("		if (field.value != \"\" && !(/^([+-]?(((\\d+(\\.)?)|(\\d*\\.\\d+))");
-        script.append("([eE][+-]?\\d+)?))$/.test(field.value))) {\n");
-        script.append("			errorMsg+=\"  - '").append(label).append("' ");
-        script.append(Util.getString("GML.MustContainsFloat", language)).append("\\n\";\n");
-        script.append("			errorNb++;\n");
-        script.append("		}\n");
-      }
-    }
-
-    String nbMaxCar = (parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters.get(TextField.PARAM_MAXLENGTH) : Util.
-        getSetting("nbMaxCar"));
-    script.append("		if (! isValidText(field, ").append(nbMaxCar).append(")) {\n");
-    script.append("			errorMsg+=\"  - '").append(label).append("' ").
-        append(Util.getString("ContainsTooLargeText", language)).append(nbMaxCar).append(" ").
-        append(Util.getString("Characters", language)).append("\\n\";\n");
-    script.append("			errorNb++;\n");
-    script.append("		}\n");
-    out.print(script.toString());
-
-    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
   /**
@@ -145,17 +65,9 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
    * </UL>
    */
   @Override
-  public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    if (field == null) {
-      return;
-    }
-
-    if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-
+  public void displayInput(String inputId, String value, boolean mandatory, TextField field, FieldTemplate template,
+      PagesContext pageContext, PrintWriter out) {
+    
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
@@ -178,128 +90,62 @@ public class TextFieldDisplayer extends AbstractMultiValuableFieldDisplayer<Text
       }
     }
 
-    String defaultValue =
-        (parameters.containsKey("default") ? parameters.get("default") : "");
-    if (pageContext.isIgnoreDefaultValues()) {
-      defaultValue = "";
-    }
-    
-    int nbInputsToDisplay = template.getMaximumNumberOfValues();
-    
-    List<String> values = field.getValues(pageContext.getLanguage());
-    
-    boolean mandatory = template.isMandatory();
-    boolean showMoreFields = false;
-    for (int i=0; i<nbInputsToDisplay; i++) {
-      String value = "";
-      String currentFieldId = fieldName;
-      String currentVisibility = AbstractForm.REPEATED_FIELD_CSS_SHOW;
-      
-      if (i == 0) {
-        value = (!field.isNull() ? values.get(0) : defaultValue);
-      } else {
-        currentFieldId = fieldName+AbstractForm.REPEATED_FIELD_SEPARATOR+i;
-        mandatory = false;
-        if (i < values.size()) {
-          value = values.get(i);
-        } else {
-          value = "";
-        }
-        if (!StringUtil.isDefined(value)) {
-          currentVisibility = AbstractForm.REPEATED_FIELD_CSS_HIDE;
-          showMoreFields = true;
-        }
-      }
-      if (pageContext.isBlankFieldsUse()) {
-        value = "";
-      }
-            
-      out.println("<div id=\"field_"+currentFieldId+"\" class=\"field_"+fieldName+" "+currentVisibility+"\">");
-      
-      input textInput = new input();
-      textInput.setName(currentFieldId);
-      textInput.setID(currentFieldId);
-      textInput.setValue(EncodeHelper.javaStringToHtmlString(value));
-      textInput.setType(template.isHidden() ? input.hidden : input.text);
-      textInput.setMaxlength(parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters
+    input textInput = new input();
+    textInput.setName(inputId);
+    textInput.setID(inputId);
+    textInput.setValue(EncodeHelper.javaStringToHtmlString(value));
+    textInput.setType(template.isHidden() ? input.hidden : input.text);
+    textInput.setMaxlength(parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters
           .get(TextField.PARAM_MAXLENGTH) : "1000");
-      textInput.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
-      if (parameters.containsKey("border")) {
-        textInput.setBorder(Integer.parseInt(parameters.get("border")));
-      }
-      if (template.isDisabled()) {
-        textInput.setDisabled(true);
-      } else if (template.isReadOnly()) {
-        textInput.setReadOnly(true);
-      }
-      if (StringUtil.isDefined(cssClass)) {
-        textInput.setClass(cssClass);
-      }
+    textInput.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
+    if (parameters.containsKey("border")) {
+      textInput.setBorder(Integer.parseInt(parameters.get("border")));
+    }
+    if (template.isDisabled()) {
+      textInput.setDisabled(true);
+    } else if (template.isReadOnly()) {
+      textInput.setReadOnly(true);
+    }
+    if (StringUtil.isDefined(cssClass)) {
+      textInput.setClass(cssClass);
+    }
 
-      img image = null;
-      if (mandatory && !template.isDisabled() && !template.isReadOnly() && !template.
+    img image = null;
+    if (mandatory && !template.isDisabled() && !template.isReadOnly() && !template.
           isHidden() && pageContext.useMandatory()) {
-        image = new img();
-        image.setSrc(Util.getIcon("mandatoryField"));
-        image.setWidth(5);
-        image.setHeight(5);
-        image.setBorder(0);
-      }
-      
-      if (suggestions != null && !suggestions.isEmpty()) {
-        TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
-        out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
-  
-        out.println(textInput.toString());
-  
-        out.println("<div id=\"container" + fieldName + "\"/>\n");
-        out.println("</div>\n");
-  
-        if (image != null) {
-          image.setStyle("position:absolute;left:16em;top:5px");
-          out.println(image.toString());
-        }
-  
-        TextFieldImpl.printSuggestionsScripts(pageContext, fieldName, suggestions, out);
-      } else {
-        if (image != null) {
-          ElementContainer container = new ElementContainer();
-          container.addElement(textInput);
-          container.addElement("&nbsp;");
-          container.addElement(image);
-          out.println(container.toString());
-        } else {
-          out.println(textInput.toString());
-        }
-      }
-      
-      out.println("</div>");
+      image = new img();
+      image.setSrc(Util.getIcon("mandatoryField"));
+      image.setWidth(5);
+      image.setHeight(5);
+      image.setBorder(0);
     }
-    if (showMoreFields) {
-      Util.printOneMoreInputSnippet(fieldName, pageContext, out);
-    }
-  }
 
-  @Override
-  public List<String> updateValues(List<String> newValues, TextField field, FieldTemplate template,
-      PagesContext pagesContext)
-      throws FormException {
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-    if (field.acceptValues(newValues, pagesContext.getLanguage())) {
-      field.setValues(newValues, pagesContext.getLanguage());
+    if (suggestions != null && !suggestions.isEmpty()) {
+      TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
+      out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
+
+      out.println(textInput.toString());
+
+      out.println("<div id=\"container" + fieldName + "\"/>\n");
+      out.println("</div>\n");
+
+      if (image != null) {
+        image.setStyle("position:absolute;left:16em;top:5px");
+        out.println(image.toString());
+      }
+
+      TextFieldImpl.printSuggestionsScripts(pageContext, fieldName, suggestions, out);
     } else {
-      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
+      if (image != null) {
+        ElementContainer container = new ElementContainer();
+        container.addElement(textInput);
+        container.addElement("&nbsp;");
+        container.addElement(image);
+        out.println(container.toString());
+      } else {
+        out.println(textInput.toString());
+      }
     }
-    return new ArrayList<String>();
-  }
-
-  @Override
-  public boolean isDisplayedMandatory() {
-    return true;
   }
 
   @Override

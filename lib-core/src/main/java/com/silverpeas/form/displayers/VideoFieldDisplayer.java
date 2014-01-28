@@ -36,7 +36,6 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
@@ -108,10 +107,10 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
   }
 
   @Override
-  public void display(PrintWriter out, FileField field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
+  public void displayInput(String inputId, String value, boolean mandatory, FileField field, FieldTemplate template,
+      PagesContext pageContext, PrintWriter out) {
     checkFieldType(template.getTypeName(), "VideoFieldDisplayer.display");
-    String attachmentId = field.getValue();
+    String attachmentId = value;
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = "";
     }
@@ -120,9 +119,9 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
       VideoPlayer videoPlayer = new VideoPlayer();
       videoPlayer.init(xhtmlcontainer);
       if (template.isReadOnly()) {
-        displayVideo(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
+        displayVideo(videoPlayer, attachmentId, template, xhtmlcontainer, pageContext);
       } else if (!template.isDisabled()) {
-        displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
+        displayVideoFormInput(videoPlayer, attachmentId, template, inputId, xhtmlcontainer, pageContext);
       }
 
       out.println(xhtmlcontainer.toString());
@@ -187,9 +186,9 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param pagesContext the context of the displaying page.
    */
   private void displayVideoFormInput(final VideoPlayer videoPlayer,
-      final String attachmentId, final FieldTemplate template,
+      final String attachmentId, final FieldTemplate template, String inputId,
       final ElementContainer xhtmlContainer, final PagesContext pagesContext) {
-    String fieldName = template.getFieldName();
+    String fieldName = inputId;
     String language = pagesContext.getLanguage();
     String deletionIcon = Util.getIcon("delete");
     String deletionLab = Util.getString("removeFile", language);

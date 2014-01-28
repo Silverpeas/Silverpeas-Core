@@ -56,7 +56,7 @@ public abstract class AbstractForm implements Form {
   
   public static final String REPEATED_FIELD_CSS_SHOW = "field-occurrence-shown";
   public static final String REPEATED_FIELD_CSS_HIDE = "field-occurrence-hidden";
-  public static final String REPEATED_FIELD_SEPARATOR = "_|SP|_";
+  public static final String REPEATED_FIELD_SEPARATOR = "__SSPP__";
   
 
   /**
