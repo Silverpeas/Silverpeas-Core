@@ -73,7 +73,7 @@
     }
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:ConfirmAndSend('" + resource.getString("JDP.userDelConfirm") +
-            "','userDelete?Iduser=" + thisUserId+ "')");
+            "','" + thisUserId+ "')");
   }
   if (isDomainSync && !isGroupManager) {
     operationPane
@@ -106,9 +106,10 @@
   <view:looknfeel/>
   <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
   <script language="JavaScript">
-    function ConfirmAndSend(textToDisplay, targetURL) {
+    function ConfirmAndSend(textToDisplay, userId) {
       if (window.confirm(textToDisplay)) {
-        window.location.href = targetURL;
+        jQuery('#Iduser').val(userId);
+        jQuery('#deletionForm').submit();
       }
     }
   </script>
@@ -232,6 +233,9 @@
 
     </table>
   </fieldset>
+  <form id="deletionForm" action="userDelete" method="POST">
+    <input id="Iduser" type="hidden" name="Iduser"/>
+  </form>
   </view:frame>
 <%
   out.println(window.printAfter());

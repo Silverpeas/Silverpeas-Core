@@ -26,6 +26,14 @@ function stampURL(url) {
 }
 
 function setTokens() {
+  function hasProtectedWord(href) {
+    var actions = ['delete','update','create','block','unblock'];
+    for (var i = 0; i < actions.length; i++) {
+       if (href.toLowerCase().indexOf(actions[i]))
+          return true;
+    }
+    return false;
+  }
   var elts = jQuery('form');
   if ('$SESSION_TOKEN_NAME$')
    elts.append(jQuery('<input>', {name: '$SESSION_TOKEN_NAME$', type: 'hidden'}).val('$SESSION_TOKEN_VALUE$'));
@@ -33,11 +41,11 @@ function setTokens() {
    elts.append(jQuery('<input>', {name: '$NAV_TOKEN_NAME$', type: 'hidden'}).val('$NAV_TOKEN_VALUE$'));
 
   elts = jQuery('a');
-  elts.on('click', function(event) {
+  elts.each(function() {
     var href = jQuery(this).attr('href');
-    if (href && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
-        jQuery(this).attr('href', stampURL(href));
-  });
+    if (href && hasProtectedWord(href) && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0)
+      jQuery(this).attr('href', stampURL(href));
+  })
 }
 
 if (!window.XMLHttpRequest.prototype)

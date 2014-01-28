@@ -196,12 +196,15 @@ function openPopup(action, larg, haut) {
 
 function deleteInstance() {	
     if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+EncodeHelper.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
-	location.href = "DeleteInstance?ComponentNum=<%=compoInst.getId()%>";
+      jQuery('#ComponentNum').val('<%=compoInst.getId()%>');
+      jQuery('#infoInstance').attr('action', 'DeleteInstance').submit();
 	}
 }
 
 function updateInstance() {
-	location.href = "UpdateInstance?ComponentNum=<%=compoInst.getId()%>&Translation="+currentLanguage;
+  jQuery('#ComponentNum').val('<%=compoInst.getId()%>');
+  jQuery('#Translation').val(currentLanguage);
+  jQuery('#infoInstance').attr('action', 'DeleteInstance').submit();
 }
 
 function clipboardCopy() {
@@ -214,7 +217,9 @@ function clipboardCut() {
 </script>
 </head>
 <body id="admin-component">
-<form name="infoInstance" action="" method="post">
+<form id="infoInstance" name="infoInstance" action="" method="post">
+  <input id="ComponentNum" name="ComponentNum" type="hidden"/>
+  <input id="Translation"  name="Translation"  type="hidden"/>
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());

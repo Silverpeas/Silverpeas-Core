@@ -159,12 +159,17 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isProtectedResource(HttpServletRequest request) {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    return service.isAProtectedResource(request) && !(isWebServiceRequested(request) && StringUtil.
-        isDefined(request.getHeader(UserPriviledgeValidation.HTTP_SESSIONKEY)));
+    return service.isAProtectedResource(request) && !isFileDragAndDrop(request)
+        && !(isWebServiceRequested(request) && StringUtil.isDefined(request.getHeader(
+                UserPriviledgeValidation.HTTP_SESSIONKEY)));
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
     return request.getRequestURI().contains("/repository/jackrabbit");
+  }
+
+  private boolean isFileDragAndDrop(HttpServletRequest request) {
+    return request.getRequestURI().contains("DragAndDrop/");
   }
 
   private boolean isWebServiceRequested(HttpServletRequest request) {

@@ -194,13 +194,16 @@ function openPopup(action, larg, haut) {
     if (isUserAdmin || (m_SubSpace != null)) { %>
 		function deleteSpace() {
 		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+EncodeHelper.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
-		    	$.progressMessage();
-			setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>&Key=<%= key %>\";", 500);
+			$('#spaceForm').attr('action', 'DeleteSpace');
+          $('#Id').val('<%=space.getId()%>');
+          $.progressMessage();
+			setTimeout("jQuery('#spaceForm').submit();", 500);
 			}
 		}
 	<% } %>
 		function updateSpace() {
-			location.href = "UpdateSpace?Translation="+currentLanguage;
+      $('#Translation').val(currentLanguage);
+      $('#spaceForm').attr('action', 'UpdateSpace').submit();
 		}
 <% } %>
 
@@ -218,7 +221,8 @@ function clipboardCut() {
 
 function recoverRights() {
 	$.progressMessage();
-	location.href = "RecoverSpaceRights?Id=<%=space.getId()%>";
+  $('#Id').val('<%=space.getId()%>');
+  $('#spaceForm').attr('action', 'RecoverSpaceRights').submit();
 }
 
 function showPasteOptions() {
@@ -357,6 +361,10 @@ out.println(window.printAfter());
 <form name="pasteForm" action="Paste" method="post">
 <div id="pasteOptions"></div>
 </form>
+  <form id="spaceForm" action="" method="POST">
+    <input id='Translation' name='Translation' type='hidden'/>
+    <input id='Id' name='Id' type='hidden'/>
+  </form>
 </div>
 </body>
 </html>

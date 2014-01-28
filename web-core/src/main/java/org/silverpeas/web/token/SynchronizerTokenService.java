@@ -32,7 +32,6 @@ import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,7 +59,8 @@ public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
-  private static final String DEFAULT_RULE = "^.*$";
+  private static final String DEFAULT_RULE
+      = "(?i)^/\\w+/jsp/.*(delete|update|creat|block|unblock).*$";
   //= "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
   private static final String RULE_PREFIX = "security.web.protection.rule";
   private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
@@ -157,24 +157,6 @@ public class SynchronizerTokenService {
   }
 
   /**
-   * Validates the specified token with the security properties mapped to the user behind the
-   * specified request.
-   *
-   * From the request, the security properties mapped with the user are fetched and then used to
-   * validate the specified token. If no security properties are defined for the user behind the
-   * specified request, then the validation fail (an intrusive attempt is performed).
-   *
-   * @param token a token.
-   * @param request an HTTP request from a Silverpeas user.
-   * @throws TokenValidationException if the token isn't valid or if the security properties mapped
-   * to the user behind the request cannot be retrieved.
-   */
-  public void validate(String token, HttpServletRequest request) throws TokenValidationException {
-    Token expectedToken = getSessionToken(request);
-    validate(token, expectedToken);
-  }
-
-  /**
    * Is the security mechanism based on the synchronizer token pattern enabled?
    *
    * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
@@ -198,14 +180,6 @@ public class SynchronizerTokenService {
     if (!isProtected && request.getMethod().equals("GET")) {
       String path = getRequestPath(request);
       isProtected = path.matches(DEFAULT_RULE);
-      Enumeration<String> properties = settings.getKeys();
-      for (; properties.hasMoreElements() && isProtected;) {
-        String property = properties.nextElement();
-        if (property.startsWith(RULE_PREFIX)) {
-          String rule = settings.getString(property);
-          isProtected &= path.matches(rule);
-        }
-      }
     }
     return isProtected;
   }

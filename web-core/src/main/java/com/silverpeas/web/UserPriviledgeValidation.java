@@ -145,7 +145,7 @@ public class UserPriviledgeValidation {
    */
   public void validateUserAuthorizationOnComponentInstance(final UserDetail user, String instanceId)
       throws WebApplicationException {
-    if (!componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
+    if (user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
@@ -159,7 +159,7 @@ public class UserPriviledgeValidation {
    */
   public void validateUserAuthorizationOnAttachment(final UserDetail user, SimpleDocument doc)
       throws WebApplicationException {
-    if (!documentAccessController.isUserAuthorized(user.getId(), doc)) {
+    if (user == null || !documentAccessController.isUserAuthorized(user.getId(), doc)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

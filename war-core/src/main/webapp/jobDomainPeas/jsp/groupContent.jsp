@@ -52,7 +52,7 @@
     {
     	//Group operations
         operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId + "')");
+        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','"+thisGroupId + "')");
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "groupSynchro?Idgroup="+thisGroupId);
 
@@ -67,7 +67,7 @@
 	        // Group operations
 	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
 	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId + "')");
+	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','"+thisGroupId + "')");
 	        // User operations
           operationPane.addLine();
 	        operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
@@ -87,7 +87,7 @@
     	    if (!isGroupManagerDirectly) {
               operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString(
                   "GML.delete"), "javascript:ConfirmAndSend('" + resource.getString(
-                  "JDP.groupDelConfirm") + "','groupDelete?Idgroup=" + thisGroupId + "')");
+                  "JDP.groupDelConfirm") + "','" + thisGroupId + "')");
             }
             // User operations
             operationPane.addLine();
@@ -111,11 +111,12 @@
 <head>
 <view:looknfeel/>
 <script type="text/javascript">
-function ConfirmAndSend(textToDisplay,targetURL)
+function ConfirmAndSend(textToDisplay,groupId)
 {
     if (window.confirm(textToDisplay))
     {
-        window.location.href = targetURL;
+        jQuery('#Idgroup').val(groupId);
+        jQuery('#deletionForm').submit();
     }
 }
 </script>
@@ -226,6 +227,9 @@ if (showTabs) {
   out.println(arrayPaneUser.print());
 %>
 </view:frame>
+<form id="deletionForm" action="groupDelete" method="POST">
+  <input id="Idgroup" type="hidden" name="Idgroup"/>
+</form>
 <% out.println(window.printAfter()); %>
 </body>
 </html>
