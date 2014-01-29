@@ -66,6 +66,16 @@
   function __display(userId, isSpace, id) {
     var $display = $('#responsible-popup-content');
     var data = __getResponsibles(isSpace, id);
+    if (!isSpace && $.isEmptyObject(data.usersAndGroupsRoles)) {
+      // No responsible founded, so searching on space on which component is attached ...
+      var spaceOfComponent = __getJSonData(data.parentURI);
+      if (spaceOfComponent && spaceOfComponent.id) {
+        isSpace = true;
+        id = spaceOfComponent.id;
+        data = __getResponsibles(isSpace, id);
+      }
+    }
+
     var title = $('<div>').append($('.space-or-component-responsibles-operation').text() +
             " ").append($('<b>').append(data.label)).html();
     if ($display.length !== 0) {

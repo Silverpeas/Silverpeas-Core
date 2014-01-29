@@ -111,11 +111,14 @@ public class ComponentInstManager {
       // duplicates existing translations
       Map<String, Translation> translations = componentInst.getTranslations();
       for (String lang : translations.keySet()) {
-        ComponentI18N translation = (ComponentI18N) translations.get(lang);
-        ComponentInstanceI18NRow row =
-            new ComponentInstanceI18NRow(newInstance.id, lang, translation.getName(),
-            translation.getDescription());
-        ddManager.getOrganization().instanceI18N.createTranslation(row);
+        if (!lang.equals(newInstance.lang)) {
+          // default language stored in main table must not be stored in i18n table
+          ComponentI18N translation = (ComponentI18N) translations.get(lang);
+          ComponentInstanceI18NRow row =
+              new ComponentInstanceI18NRow(newInstance.id, lang, translation.getName(),
+              translation.getDescription());
+          ddManager.getOrganization().instanceI18N.createTranslation(row);
+        }
       }
 
       // Add the parameters if necessary

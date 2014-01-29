@@ -20,41 +20,87 @@
  */
 package com.stratelia.webactiv;
 
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
 public enum SilverpeasRole {
   admin, Manager, publisher, writer, user, reader, supervisor, privilegedUser;
 
+  // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
+  public static EnumSet<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);
+
   @JsonValue
   public String getName() {
     return name();
   }
 
+  /**
+   * Indicates if a role is greater than an other one.
+   * @param role
+   * @return
+   */
+  public boolean isGreaterThan(SilverpeasRole role) {
+    // For now, ordinal value is used ...
+    return ordinal() < role.ordinal();
+  }
+
+  /**
+   * Indicates if a role is greater than or equals an other one.
+   * @param role
+   * @return
+   */
+  public boolean isGreaterThanOrEquals(SilverpeasRole role) {
+    // For now, ordinal value is used ...
+    return ordinal() <= role.ordinal();
+  }
+
   @JsonCreator
   public static SilverpeasRole from(String name) {
-    if (name != null) {
-      for (SilverpeasRole silverpeasRole : SilverpeasRole.values()) {
-        if (name.equals(silverpeasRole.name())) {
-          return silverpeasRole;
+    if (name == null) {
+      return null;
+    }
+    String trimmedName = name.trim();
+    try {
+      return valueOf(trimmedName);
+    } catch (Exception e) {
+      // Safe mode method (but less efficient)
+      for (SilverpeasRole role : values()) {
+        if (role.getName().equalsIgnoreCase(trimmedName)) {
+          return role;
         }
       }
+      return null;
     }
-    return null;
   }
 
   public static boolean exists(String name) {
     return from(name) != null;
   }
 
+  /**
+   * Lists the roles from a string. (Each one separated by a comma)
+   * @param roles
+   * @return
+   */
+  public static Set<SilverpeasRole> listFrom(String roles) {
+    return from(StringUtil.isDefined(roles) ? StringUtil.split(roles, ",") : null);
+  }
+
   public static Set<SilverpeasRole> from(String[] roles) {
     Set<SilverpeasRole> result = EnumSet.noneOf(SilverpeasRole.class);
     if (roles != null) {
       for (String role : roles) {
-        result.add(SilverpeasRole.valueOf(role));
+        SilverpeasRole silverpeasRole = from(role);
+        if (silverpeasRole != null) {
+          result.add(silverpeasRole);
+        }
       }
     }
     return result;
@@ -63,7 +109,7 @@ public enum SilverpeasRole {
   public boolean isInRole(String... roles) {
     try {
       for (String aRole : roles) {
-        if (this == valueOf(aRole)) {
+        if (this == from(aRole)) {
           return true;
         }
       }
@@ -71,5 +117,50 @@ public enum SilverpeasRole {
       return false;
     }
     return false;
+  }
+
+  /**
+   * Gets on or several roles as a string.
+   * They are separated between them by comma.
+   * @param roles
+   * @return
+   */
+  public static String asString(Set<SilverpeasRole> roles) {
+    if (roles == null) {
+      return null;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (SilverpeasRole role : roles) {
+      if (sb.length() > 0) {
+        sb.append(",");
+      }
+      sb.append(role.name());
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Gets the greater role from the given ones.
+   * @param roles
+   * @return
+   */
+  public static SilverpeasRole getGreaterFrom(SilverpeasRole... roles) {
+    return getGreaterFrom(Arrays.asList(roles));
+  }
+
+  /**
+   * Gets the greater role from the given ones.
+   * @param roles
+   * @return
+   */
+  public static SilverpeasRole getGreaterFrom(Collection<SilverpeasRole> roles) {
+    if (CollectionUtil.isEmpty(roles)) {
+      return null;
+    }
+    @SuppressWarnings("unchecked") EnumSet<SilverpeasRole> givenRoles =
+        (roles instanceof EnumSet) ? (EnumSet) roles : EnumSet.copyOf(roles);
+
+    // For now, the greater it the fisrt of the EnumSet
+    return givenRoles.iterator().next();
   }
 }
