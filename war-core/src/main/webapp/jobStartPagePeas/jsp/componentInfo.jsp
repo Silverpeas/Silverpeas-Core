@@ -24,9 +24,6 @@
 
 --%>
 
-<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
-<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
-<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -196,15 +193,17 @@ function openPopup(action, larg, haut) {
 
 function deleteInstance() {	
     if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+EncodeHelper.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
-      jQuery('#ComponentNum').val('<%=compoInst.getId()%>');
-      jQuery('#infoInstance').attr('action', 'DeleteInstance').submit();
+      var $form = jQuery('#infoInstance');
+      jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
+      $form.attr('action', 'DeleteInstance').submit();
 	}
 }
 
 function updateInstance() {
-  jQuery('#ComponentNum').val('<%=compoInst.getId()%>');
-  jQuery('#Translation').val(currentLanguage);
-  jQuery('#infoInstance').attr('action', 'DeleteInstance').submit();
+  var $form = jQuery('#infoInstance');
+  jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
+  jQuery('#Translation', $form).val(currentLanguage);
+  $form.attr('action', 'UpdateInstance').submit();
 }
 
 function clipboardCopy() {

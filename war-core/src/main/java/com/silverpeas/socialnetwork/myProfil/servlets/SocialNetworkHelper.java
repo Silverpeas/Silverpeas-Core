@@ -53,7 +53,7 @@ public class SocialNetworkHelper {
 
     switch (route) {
       case LinkToSVP:
-        redirectURL.append("/RMyProfil/jsp/CreateLinkToSVP?&networkId=");
+        redirectURL.append("/RMyProfil/jsp/AddLinkToSVP?&networkId=");
         break;
 
       case PublishStatus:

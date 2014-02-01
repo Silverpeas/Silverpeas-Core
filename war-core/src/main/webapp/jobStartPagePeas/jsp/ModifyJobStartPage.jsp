@@ -39,9 +39,9 @@ browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 	String m_firstPageParam	= (String) request.getAttribute("FirstPageParam");
 	if (m_firstPageParam == null || m_firstPageParam.equals("null"))
 		m_firstPageParam = "";
-		
+
 	DisplaySorted[] m_Components = (DisplaySorted[])request.getAttribute("Peas");
-	
+
 	String 	defaultSP 	= "";
 	String	peasSP 		= "";
 	String 	portletSP 	= "";
@@ -92,13 +92,13 @@ function isCorrectForm() {
     var errorNb = 0;
     var toCheck = document.multichoice.URL.value;
     if (isWhitespace(toCheck)) {
-    	errorMsg+="<%=resource.getString("GML.theField")%> '<%=resource.getString("JSPP.webPage")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-    	errorNb++;
+	errorMsg+="<%=resource.getString("GML.theField")%> '<%=resource.getString("JSPP.webPage")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	errorNb++;
     }
-    
+
     switch(errorNb)
     {
-    	case 0 :
+	case 0 :
             result = true;
             break;
         default :
@@ -106,7 +106,7 @@ function isCorrectForm() {
             result = false;
             break;
      }
-     return result;	  
+     return result;
 }
 function sendData()
 {
@@ -123,7 +123,7 @@ $(document).ready(function() {
 	$('input:not([id="url-radio"][id="url-input"])').focus(function() {
 		$('#urlhelp').hide("fast");
 	});
-	
+
 	$('#url-radio').focus(function() {
 		$('#urlhelp').show("fast");
 	});
@@ -136,7 +136,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<% 
+<%
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
@@ -155,7 +155,7 @@ out.println(board.printBefore());
 		<td class="textePetitBold"><input type="radio" name="choix" value="SelectPeas" <%=peasSP%>/> <%=resource.getString("JSPP.peas")%> :</td>
 		<td>
 			<select name="peas" size="1">
-			<%				
+			<%
 					String checked = "";
 					for(int i = 0; i < m_Components.length; i++) {
 						if (m_firstPageParam.equals(m_Components[i].id)) {
@@ -193,7 +193,7 @@ out.println(board.printAfter());
  out.println(bouton.print());
 %>
 </center>
-<% 
+<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>

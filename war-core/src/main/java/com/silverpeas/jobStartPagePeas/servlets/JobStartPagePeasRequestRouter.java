@@ -114,13 +114,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       return null;
     }
     switch (startPage) {
-      case UpdateJobStartPage:
+      case ModifyJobStartPage:
         SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
         request.setAttribute("FirstPageType", Integer.valueOf(spaceint1.getFirstPageType()));
         request.setAttribute("FirstPageParam", spaceint1.getFirstPageExtraParam());
         request.setAttribute("Peas", jobStartPageSC.getManagedSpaceComponents());
         setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-        return "/jobStartPagePeas/jsp/UpdateJobStartPage.jsp";
+        return "/jobStartPagePeas/jsp/ModifyJobStartPage.jsp";
       case Choice:
         return getDestination(request.getParameter("choix"), jobStartPageSC, request);
       case DefaultStartPage:

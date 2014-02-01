@@ -137,7 +137,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         myLinksSC.createLink(generateLink(request, false));
         // retour sur le liste des liens
         destination = getDestination("ViewLinks", myLinksSC, request);
-      } else if (function.equals("CreateLinkFromComponent")) {
+      } else if (function.equals("AddLinkFromComponent")) {
         // récupération des paramètres transmis et création de l'objet
         // LinkDetail
         myLinksSC.createLink(generateLink(request, true));

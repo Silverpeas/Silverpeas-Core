@@ -23,16 +23,18 @@
  */
 package org.silverpeas.web.token;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
+import org.silverpeas.token.Token;
+import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.silverpeas.token.Token;
-import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.silverpeas.web.token.SynchronizerTokenService.NAVIGATION_TOKEN_KEY;
 import static org.silverpeas.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
@@ -75,12 +77,18 @@ public class ProtectedWebPageUpdater extends HttpServlet {
     Token token = service.getSessionToken(request);
     if (token.isDefined()) {
       parameters.add(new TokenSettingTemplate.Parameter(
-          TokenSettingTemplate.SESSION_TOKEN_NAME_PARAMETER, SESSION_TOKEN_KEY));
+          TokenSettingTemplate.CREATION_MENU_CONTAINER_ID,
+          OperationsOfCreationAreaTag.CREATION_AREA_ID));
       parameters.add(new TokenSettingTemplate.Parameter(
-          TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER, token.getValue()));
+          TokenSettingTemplate.SESSION_TOKEN_NAME_PARAMETER, SESSION_TOKEN_KEY));
+      parameters.add(
+          new TokenSettingTemplate.Parameter(TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER, token.getValue()));
     }
     token = service.getNavigationToken(request);
     if (token.isDefined()) {
+      parameters.add(new TokenSettingTemplate.Parameter(
+          TokenSettingTemplate.CREATION_MENU_CONTAINER_ID,
+          OperationsOfCreationAreaTag.CREATION_AREA_ID));
       parameters.add(new TokenSettingTemplate.Parameter(
           TokenSettingTemplate.NAVIGATION_TOKEN_NAME_PARAMETER, NAVIGATION_TOKEN_KEY));
       parameters.add(new TokenSettingTemplate.Parameter(

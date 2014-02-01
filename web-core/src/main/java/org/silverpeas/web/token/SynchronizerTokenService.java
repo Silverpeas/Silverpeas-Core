@@ -31,17 +31,18 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.synchronizer.SynchronizerToken;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A service to manage the synchronizer tokens used in Silverpeas to protect the user sessions or
@@ -59,8 +60,9 @@ public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
-  private static final String DEFAULT_RULE
-      = "(?i)^/\\w+/jsp/.*(delete|update|creat|block|unblock).*$";
+  private static final String UNPROTECTED_URI_RULE = "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|services/password/)).*";
+  private static final String DEFAULT_GET_RULE
+      = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
   //= "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
   private static final String RULE_PREFIX = "security.web.protection.rule";
   private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
@@ -176,10 +178,13 @@ public class SynchronizerTokenService {
    * validate.
    */
   protected boolean isAProtectedResource(HttpServletRequest request) {
-    boolean isProtected = DEFAULT_PROTECTED_METHODS.contains(request.getMethod());
-    if (!isProtected && request.getMethod().equals("GET")) {
-      String path = getRequestPath(request);
-      isProtected = path.matches(DEFAULT_RULE);
+    boolean isProtected = false;
+    if (request.getRequestURI().matches(UNPROTECTED_URI_RULE)) {
+      isProtected = DEFAULT_PROTECTED_METHODS.contains(request.getMethod());
+      if (!isProtected && request.getMethod().equals("GET")) {
+        String path = getRequestPath(request);
+        isProtected = path.matches(DEFAULT_GET_RULE);
+      }
     }
     return isProtected;
   }

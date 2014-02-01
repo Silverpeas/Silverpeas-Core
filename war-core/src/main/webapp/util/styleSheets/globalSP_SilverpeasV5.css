@@ -439,6 +439,10 @@ Definition des class de style Silverpeas
   margin-bottom: 10px;
 }
 
+#genericForm {
+  height: 0;
+}
+
 #agenda #currentScope,
 #agenda #jump,
 #agenda #today {

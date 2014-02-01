@@ -259,7 +259,7 @@
         dataType: "script"
       });
     }
-    if (User === undefined) {
+    if (typeof User === 'undefined') {
       $.ajax({
         url: webContext + "/util/javaScript/angularjs/services/silverpeas-profile.js",
         async: false,

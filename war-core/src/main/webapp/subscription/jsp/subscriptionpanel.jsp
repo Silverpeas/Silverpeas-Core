@@ -102,7 +102,7 @@
      * Go to screen that proposing to select groups and users : User Panel.
      */
     function modifyForcedSubscriptions() {
-      $("<form>").attr('method', 'POST').attr('action',
+      $("<form>").attr('method', 'GET').attr('action',
           '<c:url value="/RSubscription/jsp/ToUserPanel"/>').appendTo(document.body).submit();
     }
 

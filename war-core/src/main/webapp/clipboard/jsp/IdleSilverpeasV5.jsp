@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -42,6 +43,7 @@
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementFactory" %>
 <%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="com.silverpeas.util.StringUtil" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
@@ -51,8 +53,10 @@
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   ClipboardSessionController clipboardSC =
       (ClipboardSessionController) request.getAttribute("clipboardScc");
+  String javascripTask = "";
   if (clipboardSC != null) {
     clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+    javascripTask = clipboardSC.getHF_JavaScriptTask(request);
   }
   LookHelper lookHelper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
@@ -83,6 +87,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title></title>
+  <%if(StringUtil.isDefined(javascripTask)){%>
+  <view:includePlugin name="jquery"/>
+  <view:includePlugin name="tkn"/>
+  <%}%>
   <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
   <script type="text/javascript">
     var counter = 0;
@@ -126,7 +134,7 @@
         if (MessageError != null) {
           out.println("alert ('" + MessageError + "')");
         }
-        out.println (clipboardSC.getHF_JavaScriptTask(request));
+        out.println(javascripTask);
       }
       %>
     }

@@ -84,7 +84,7 @@ function goToOperationInAnotherWindow(larg, haut) {
 
 function deleteRoleContent() {	
     if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceManager")%>")) { 
-    	location.href = "DeleteSpaceManager?Role=<%=role%>";
+      jQuery('#genericForm').attr('action', "DeleteSpaceManager?Role=<%=role%>").submit();
 	}
 }	
 </script>
@@ -211,5 +211,6 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<form id="genericForm" action="" method="POST"></form>
 </body>
 </html>

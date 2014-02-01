@@ -34,9 +34,8 @@ function __stampURL(url, tokenName, tokenValue) {
   return url += (url.indexOf('?') < 0 ? '?' : '&') + tokenName + "=" + tokenValue;
 }
 
-function setTokens() {
-  function hasProtectedWord(href) {
-    var hrefLowerCase = href.toLowerCase();
+function setTokens(targetContainerSelector) {
+  function hasProtectedWord(hrefLowerCase) {
     var actions = ['delete','update','create','block','unblock'];
     for (var i = 0; i < actions.length; i++) {
       if (hrefLowerCase.indexOf(actions[i]) >= 0) {
@@ -46,9 +45,11 @@ function setTokens() {
     return false;
   };
 
-  var elts = jQuery('form');
+  var targetContainer = (targetContainerSelector) ? jQuery(targetContainerSelector) : jQuery(document);
+
+  var elts = jQuery('form', targetContainer);
   if ('$SESSION_TOKEN_NAME$') {
-    //jQuery('input[name="$SESSION_TOKEN_NAME$"]', elts).remove();
+    jQuery('input[name="$SESSION_TOKEN_NAME$"]', elts).remove();
     elts.append(jQuery('<input>', {'name' : '$SESSION_TOKEN_NAME$', 'type' : 'hidden'}).val('$SESSION_TOKEN_VALUE$'));
   }
   if ('$NAV_TOKEN_NAME$') {
@@ -56,11 +57,15 @@ function setTokens() {
     elts.append(jQuery('<input>', {'name' : '$NAV_TOKEN_NAME$', 'type' : 'hidden'}).val('$NAV_TOKEN_VALUE$'));
   }
 
-  elts = jQuery('a');
+  elts = jQuery('a', targetContainer);
   elts.each(function() {
-    var href = jQuery(this).attr('href');
-    if (href && hasProtectedWord(href) && href.indexOf('#') < 0 && href.toLowerCase().indexOf('javascript') < 0) {
-      jQuery(this).attr('href', stampURL(href));
+    var _this = jQuery(this);
+    var href = _this.attr('href');
+    if (href) {
+      var hrefLowerCase = href.toLowerCase();
+      if (hasProtectedWord(hrefLowerCase) && hrefLowerCase.indexOf('#') < 0 && hrefLowerCase.indexOf('javascript') < 0) {
+        _this.attr('href', stampURL(href));
+      }
     }
   })
 }
@@ -75,6 +80,10 @@ if (!window.XMLHttpRequest.prototype) {
     };
   }
 }
+
+jQuery(document).bind('menuRendered', function(){
+  setTokens('#$CREATION_MENU_CONTAINER_ID$');
+});
 
 jQuery(document).ready(function() {
   try {

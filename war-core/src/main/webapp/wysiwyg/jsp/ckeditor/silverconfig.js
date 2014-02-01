@@ -9,10 +9,11 @@ CKEDITOR.editorConfig = function( config )
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	
-	config.contentsCss = '/silverpeas/util/styleSheets/globalSP_SilverpeasV5.css';
-	config.filebrowserImageBrowseUrl = config.baseHref+'../jsp/uploadFile.jsp';
-	config.filebrowserFlashBrowseUrl = config.baseHref+'../jsp/uploadFile.jsp';
-	config.filebrowserBrowseUrl = config.baseHref+'../jsp/uploadFile.jsp';
+	config.contentsCss = webContext + '/util/styleSheets/globalSP_SilverpeasV5.css';
+  config.baseHref = webContext + '/wysiwyg/jsp/';
+	config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
+	config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
+	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
 	//config.extraPlugins = 'jwplayer';
 	
 	config.toolbar_Default = [

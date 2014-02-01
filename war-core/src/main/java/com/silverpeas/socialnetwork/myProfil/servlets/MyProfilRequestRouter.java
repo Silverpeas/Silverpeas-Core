@@ -137,7 +137,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == LinkToSVP) {
         return socialNetworkHelper.buildAuthenticationURL(request, route);
-      } else if (route == CreateLinkToSVP) {
+      } else if (route == AddLinkToSVP) {
         socialNetworkHelper.linkToSilverpeas(myProfilSC, request);
         request.setAttribute("View", MyNetworks.name());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";

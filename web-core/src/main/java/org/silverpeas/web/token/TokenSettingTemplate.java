@@ -25,6 +25,8 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,6 +44,10 @@ public class TokenSettingTemplate {
    */
   private static final String TEMPLATE_NAME = "tokenSetting_js";
   private static final String TEMPLATE_PATH = "token";
+  /**
+   * The name of the parameter that set the name of the creation menu item container id.
+   */
+  public static final String CREATION_MENU_CONTAINER_ID = "CREATION_MENU_CONTAINER_ID";
   /**
    * The name of the parameter that set the name of the session token in the HTTP requests.
    */
