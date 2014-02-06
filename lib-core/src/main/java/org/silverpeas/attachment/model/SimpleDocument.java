@@ -308,7 +308,6 @@ public class SimpleDocument implements Serializable {
   public void edit(String currentEditor) {
     this.editedBy = currentEditor;
     this.reservation = new Date();
-    OrganisationControllerFactory.getFactory();
     String day =
         OrganisationControllerFactory.getOrganisationController()
             .getComponentParameterValue(getInstanceId(), "nbDayForReservation");
