@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jobDomainPeas.servlets;
 
 import com.silverpeas.jobDomainPeas.JobDomainPeasException;
@@ -31,7 +27,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -48,11 +43,6 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -61,9 +51,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class JobDomainPeasRequestRouter extends
@@ -73,6 +70,7 @@ public class JobDomainPeasRequestRouter extends
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -96,14 +94,16 @@ public class JobDomainPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param jobDomainSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, JobDomainPeasSessionController jobDomainSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobDomainSC.getUserId() + " Function=" + function);
@@ -158,8 +158,8 @@ public class JobDomainPeasRequestRouter extends
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
           String sendEmailParam = request.getParameter("sendEmail");
-          boolean sendEmail =
-              (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
+          boolean sendEmail
+              = (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
 
           jobDomainSC.createUser(
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLogin")),
@@ -172,12 +172,12 @@ public class JobDomainPeasRequestRouter extends
               properties, request.getParameter("GroupId"), request, sendEmail);
 
         } else if (function.startsWith("usersCsvImport")) {
-          List<FileItem> fileItems = FileUploadUtil.parseRequest(request);
+          List<FileItem> fileItems = request.getFileItems();
 
           FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
           String sendEmailParam = FileUploadUtil.getParameter(fileItems, "sendEmail");
-          boolean sendEmail =
-              (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
+          boolean sendEmail
+              = (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
 
           if (fileItem != null) {
             jobDomainSC.importCsvUsers(fileItem, sendEmail, request);
@@ -195,8 +195,8 @@ public class JobDomainPeasRequestRouter extends
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
           String sendEmailParam = request.getParameter("sendEmail");
-          boolean sendEmail =
-              (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
+          boolean sendEmail
+              = (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
 
           jobDomainSC.modifyUser(request.getParameter("Iduser"),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
@@ -214,8 +214,8 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
           String userId = request.getParameter("Iduser");
-          UserAccessLevel accessLevel =
-              UserAccessLevel.from(request.getParameter("userAccessLevel"));
+          UserAccessLevel accessLevel = UserAccessLevel.
+              from(request.getParameter("userAccessLevel"));
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
@@ -389,8 +389,8 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
-          bHaveToRefreshDomain =
-              jobDomainSC.importGroup(EncodeHelper.htmlStringToJavaString(request.
+          bHaveToRefreshDomain = jobDomainSC.importGroup(EncodeHelper.htmlStringToJavaString(
+              request.
               getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
@@ -478,31 +478,31 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.returnIntoGroup(null);
           } // Operation functions
           else if (function.startsWith("domainCreate")) {
-            String newDomainId =
-                jobDomainSC.createDomain(EncodeHelper.htmlStringToJavaString(request
+            String newDomainId = jobDomainSC.createDomain(EncodeHelper.htmlStringToJavaString(
+                request
                 .getParameter("domainName")),
                 EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
                 EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
                 EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
                 EncodeHelper.htmlStringToJavaString(request
-                .getParameter("domainAuthentication")),
+                    .getParameter("domainAuthentication")),
                 EncodeHelper
                 .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
                 EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
-            String newDomainId =
-                jobDomainSC.createSQLDomain(EncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
+            String newDomainId = jobDomainSC.createSQLDomain(EncodeHelper.htmlStringToJavaString(
+                request
+                .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
                     .getParameter("domainDescription")), EncodeHelper
-                    .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
-                    .getParameter("userDomainQuotaMaxCount"));
+                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
+                .getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
-            String modifiedDomainId =
-                jobDomainSC.modifyDomain(EncodeHelper.htmlStringToJavaString(request.
+            String modifiedDomainId = jobDomainSC.modifyDomain(EncodeHelper.htmlStringToJavaString(
+                request.
                 getParameter("domainName")),
                 EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
                 EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
@@ -515,12 +515,12 @@ public class JobDomainPeasRequestRouter extends
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
-            String modifiedDomainId =
-                jobDomainSC.modifySQLDomain(EncodeHelper.htmlStringToJavaString(request
+            String modifiedDomainId = jobDomainSC.modifySQLDomain(EncodeHelper.
+                htmlStringToJavaString(request
                     .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
                     .getParameter("domainDescription")), EncodeHelper
-                    .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
-                    .getParameter("userDomainQuotaMaxCount"));
+                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
+                .getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain="
                 + modifiedDomainId);
             destination = "goBack.jsp";
@@ -574,25 +574,24 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.groupAdd")
-              +
-              "..."));
+              + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupModify")) {
           request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
           request.setAttribute("action", "groupModify");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-              "JDP.groupUpdate") + "..."));
+                  "JDP.groupUpdate") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupImport")) {
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-              "JDP.groupImport") + "..."));
+                  "JDP.groupImport") + "..."));
           destination = "groupImport.jsp";
         } else if (function.startsWith("displaySelectUserOrGroup")) {
-          destination =
-              jobDomainSC.initSelectionPeasForOneGroupOrUser((String) request.getAttribute(
-              "myComponentURL"));
+          destination = jobDomainSC.initSelectionPeasForOneGroupOrUser((String) request.
+              getAttribute(
+                  "myComponentURL"));
         } else if (function.startsWith("displayAddRemoveUsers")) {
           destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute(
               "myComponentURL"));

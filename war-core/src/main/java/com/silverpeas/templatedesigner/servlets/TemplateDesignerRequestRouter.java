@@ -37,7 +37,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -47,6 +47,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.crypto.CryptoException;
 
 import java.io.File;
@@ -86,15 +87,17 @@ public class TemplateDesignerRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param templateDesignerSC The component Session Control, build and initialized.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function,
       TemplateDesignerSessionController templateDesignerSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     String root = "/templateDesigner/jsp/";
     SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()",
@@ -292,8 +295,8 @@ public class TemplateDesignerRequestRouter extends
     }
   }
 
-  private PublicationTemplate request2Template(HttpServletRequest request) throws IOException {
-    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+  private PublicationTemplate request2Template(HttpRequest request) throws IOException {
+    List<FileItem> parameters = request.getFileItems();
     String name = FileUploadUtil.getParameter(parameters, "Name");
     String description = FileUploadUtil.getParameter(parameters, "Description");
     boolean visible = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Visible"));

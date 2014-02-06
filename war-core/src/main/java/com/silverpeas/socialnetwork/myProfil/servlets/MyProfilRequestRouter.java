@@ -30,10 +30,9 @@ import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -54,6 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.crypto.CryptMD5;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
@@ -78,6 +78,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   /**
+   *
    * @param function
    * @param myProfilSC
    * @param request
@@ -85,7 +86,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    */
   @Override
   public String getDestination(String function, MyProfilSessionController myProfilSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = valueOf(function);
@@ -136,7 +137,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == LinkToSVP) {
         return socialNetworkHelper.buildAuthenticationURL(request, route);
-      } else if (route == CreateLinkToSVP) {
+      } else if (route == AddLinkToSVP) {
         socialNetworkHelper.linkToSilverpeas(myProfilSC, request);
         request.setAttribute("View", MyNetworks.name());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
@@ -202,9 +203,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    * @return String
    * @throws UtilException
    */
-  protected String saveAvatar(HttpServletRequest request, String nameAvatar)
+  protected String saveAvatar(HttpRequest request, String nameAvatar)
       throws UtilException {
-    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+    List<FileItem> parameters = request.getFileItems();
     String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     ImageProfil img = new ImageProfil(nameAvatar);

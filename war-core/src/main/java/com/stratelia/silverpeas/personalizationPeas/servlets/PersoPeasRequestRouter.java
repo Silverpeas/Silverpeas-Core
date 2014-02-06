@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.servlet.HttpRequest;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -71,6 +72,7 @@ public class PersoPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param personalizationScc The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -78,7 +80,7 @@ public class PersoPeasRequestRouter extends
    */
   @Override
   public String getDestination(final String function,
-      final PersonalizationSessionController personalizationScc, final HttpServletRequest request) {
+      final PersonalizationSessionController personalizationScc, final HttpRequest request) {
     SilverTrace.info(getSessionControlBeanName(),
         "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "function = " + function);

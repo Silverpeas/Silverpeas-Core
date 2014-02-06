@@ -24,30 +24,30 @@
 package com.silverpeas.authentication.web;
 
 import com.silverpeas.web.TestResources;
-import static com.silverpeas.web.TestResources.TEST_RESOURCES_NAME;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import javax.inject.Named;
 import org.silverpeas.admin.user.constant.UserState;
 
-import javax.inject.Named;
+import static com.silverpeas.web.TestResources.TEST_RESOURCES_NAME;
 
 /**
  * The resources required by tests on the REST services.
  */
 @Named(TEST_RESOURCES_NAME)
 public class WebTestResources extends TestResources {
-  
+
   public static final String SPRING_CONTEXT = "spring-authentication-webservice.xml";
-  
+
   public static final String WEB_PACKAGES = "com.silverpeas.web";
-  
+
   public static final String COMPONENT_ID = "kmelia36";
-  
+
   public static final String WEB_RESOURCE_ID = "42";
-  
+
   public static final String WEB_RESOURCE_PATH = "resources/" + COMPONENT_ID + "/" + WEB_RESOURCE_ID;
-  
+
   private static final UserFull user = new UserFull();
-  
+
   static {
     user.setFirstName("Toto");
     user.setLastName("Chez-les-papoos");
@@ -57,7 +57,7 @@ public class WebTestResources extends TestResources {
     user.setPassword("motherfucker");
     user.setState(UserState.VALID);
   }
-  
+
   public UserFull getAUser() {
     return user;
   }

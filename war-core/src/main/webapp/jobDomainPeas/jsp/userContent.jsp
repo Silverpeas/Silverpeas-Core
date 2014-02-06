@@ -22,6 +22,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
+<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -71,7 +73,7 @@
     }
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:ConfirmAndSend('" + resource.getString("JDP.userDelConfirm") +
-            "','userDelete?Iduser=" + thisUserId + "')");
+            "','" + thisUserId+ "')");
   }
   if (isDomainSync && !isGroupManager) {
     operationPane
@@ -104,9 +106,10 @@
   <view:looknfeel/>
   <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
   <script language="JavaScript">
-    function ConfirmAndSend(textToDisplay, targetURL) {
+    function ConfirmAndSend(textToDisplay, userId) {
       if (window.confirm(textToDisplay)) {
-        window.location.href = targetURL;
+        jQuery('#Iduser').val(userId);
+        jQuery('#deletionForm').submit();
       }
     }
   </script>
@@ -230,6 +233,9 @@
 
     </table>
   </fieldset>
+  <form id="deletionForm" action="userDelete" method="POST">
+    <input id="Iduser" type="hidden" name="Iduser"/>
+  </form>
   </view:frame>
 <%
   out.println(window.printAfter());

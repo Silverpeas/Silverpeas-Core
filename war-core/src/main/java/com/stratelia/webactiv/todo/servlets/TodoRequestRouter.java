@@ -33,8 +33,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.todo.control.ToDoSessionController;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
@@ -67,6 +67,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Controller, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -74,7 +75,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, ToDoSessionController scc,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("todo", "TodoRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
     String destination = "";
 

@@ -82,3 +82,8 @@ angular.module('silverpeas.services', ['silverpeas', 'silverpeas.adapters']);
  */
 angular.module('silverpeas.directives', ['silverpeas']);
 
+/**
+ * Provider of the promise manager in AngularJS to be used in plain old javascript.
+ * @type {promise}
+ */
+var Promise = angular.injector(['ng']).get('$q');

@@ -56,6 +56,6 @@
         class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 
   <bean name="tokenServiceFactory"
-        class="org.silverpeas.token.service.TokenServiceFactory" factory-method="getInstance"/>
+        class="org.silverpeas.token.persistent.service.TokenServiceFactory" factory-method="getInstance"/>
 </beans>
 

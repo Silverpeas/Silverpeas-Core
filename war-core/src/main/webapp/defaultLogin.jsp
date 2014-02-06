@@ -54,6 +54,7 @@
   <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <view:includePlugin name="jquery"/>
+  <view:includePlugin name="tkn"/>
   <script type="text/javascript">
     <!--
     // Public domain cookie code written by:
@@ -61,7 +62,7 @@
     // (bdortch@netw.com)
     function getCookieVal(offset) {
       var endstr = document.cookie.indexOf(";", offset);
-      if (endstr == -1) {
+      if (endstr === -1) {
         endstr = document.cookie.length;
       }
       return unescape(document.cookie.substring(offset, endstr));
@@ -74,10 +75,10 @@
       var i = 0;
       while (i < clen) {
         var j = i + alen;
-        if (document.cookie.substring(i, j) == arg)
+        if (document.cookie.substring(i, j) === arg)
           return getCookieVal(j);
         i = document.cookie.indexOf(" ", i) + 1;
-        if (i == 0) break;
+        if (i === 0) break;
       }
 
       return null;
@@ -90,7 +91,7 @@
     function checkCookie() {
       <% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
       var form = document.getElementById("formLogin");
-      if (GetCookie("svpPassword") != document.getElementById("formLogin").Password.value) {
+      if (GetCookie("svpPassword") !== document.getElementById("formLogin").Password.value) {
         form.cryptedPassword.value = "";
       } else {
         if (form.storePassword.checked) {
@@ -102,7 +103,7 @@
 
     function loginQuestion() {
       var form = document.getElementById("formLogin");
-      if (form.elements["Login"].value.length == 0) {
+      if (form.elements["Login"].value.length === 0) {
         alert('<fmt:message key="authentication.logon.loginMissing" />');
       } else {
         form.action = '<c:url value="/CredentialsServlet/LoginQuestion" />';
@@ -112,7 +113,7 @@
 
     function resetPassword() {
       var form = document.getElementById("formLogin");
-      if (form.elements["Login"].value.length == 0) {
+      if (form.elements["Login"].value.length === 0) {
         alert('<fmt:message key="authentication.logon.loginMissing" />');
       } else {
         form.action = '<c:url value="/CredentialsServlet/ForgotPassword" />';
@@ -122,7 +123,7 @@
 
     function changePassword() {
       var form = document.getElementById("formLogin");
-      if (form.elements["Login"].value.length == 0) {
+      if (form.elements["Login"].value.length === 0) {
         alert('<fmt:message key="authentication.logon.loginMissing" />');
       } else {
         form.action = '<c:url value="/CredentialsServlet/ChangePasswordFromLogin" />';
@@ -138,7 +139,7 @@
 
     $(document).ready(function() {
       $("#DomainId").keypress(function(event) {
-        if (event.keyCode == 13) {
+        if (event.keyCode === 13) {
           checkForm();
         }
       });
@@ -288,31 +289,31 @@
 <!-- Fin class="page" -->
 
 <script type="text/javascript">
-  nbCookiesFound = 0;
+  var nbCookiesFound = 0;
   var domainId = <%=domainId%>;
 
   /* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
-  if (domainId == null && GetCookie("defaultDomain") != null) {
+  if (domainId === null && GetCookie("defaultDomain")) {
     <% for (int i = 0 ; i < listDomains.size() && listDomains.size() > 1; i++) { %>
-    if (GetCookie("defaultDomain").toString() == "<%=(listDomains.get(i).getId())%>") {
+    if (GetCookie("defaultDomain").toString() === "<%=(listDomains.get(i).getId())%>") {
       document.getElementById("DomainId").options[<%=i%>].selected = true;
     }
     <% } %>
   }
 
-  if (GetCookie("svpLogin") != null) {
+  if (GetCookie("svpLogin")) {
     nbCookiesFound = nbCookiesFound + 1;
     document.getElementById("Login").value = GetCookie("svpLogin").toString();
   }
 
   <%  if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-  if (GetCookie("svpPassword") != null) {
+  if (GetCookie("svpPassword")) {
     nbCookiesFound = nbCookiesFound + 1;
     document.getElementById("Password").value = GetCookie("svpPassword").toString();
   }
   <%  } %>
 
-  if (nbCookiesFound == 2) {
+  if (nbCookiesFound === 2) {
     document.getElementById("formLogin").cryptedPassword.value = "Yes";
     <% if (!com.silverpeas.util.StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
     document.getElementById("formLogin").submit();

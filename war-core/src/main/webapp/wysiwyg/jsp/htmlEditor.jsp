@@ -157,39 +157,68 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 } else if ("Load".equals(actionWysiwyg)) {
 
   spaceId = request.getParameter("SpaceId");
+  if (spaceId == null) {
+    spaceId = (String) request.getAttribute("SpaceId");
+  }
   session.setAttribute("WYSIWYG_SpaceId", spaceId);
 
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "spaceId = " + spaceId);
 
   spaceName = request.getParameter("SpaceName");
+  if (spaceName == null) {
+    spaceName = (String) request.getAttribute("SpaceName");
+  }
   session.setAttribute("WYSIWYG_SpaceName", spaceName);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "spaceName = " + spaceName);
 
   componentId = request.getParameter("ComponentId");
+  if (componentId == null) {
+    componentId = (String) request.getAttribute("ComponentId");
+  }
   session.setAttribute("WYSIWYG_ComponentId", componentId);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "componentId = " + componentId);
 
   componentName = request.getParameter("ComponentName");
+  if (componentName == null) {
+    componentName = (String) request.getAttribute("ComponentName");
+  }
   session.setAttribute("WYSIWYG_ComponentName", componentName);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "componentName = " + componentName);
 
   objectId = request.getParameter("ObjectId");
+  if (objectId == null) {
+    objectId = (String) request.getAttribute("ObjectId");
+  }
   session.setAttribute("WYSIWYG_ObjectId", objectId);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "ObjectId = " + objectId);
 
   returnUrl = request.getParameter("ReturnUrl");
+  if (returnUrl == null) {
+    returnUrl = (String) request.getAttribute("ReturnUrl");
+  }
   session.setAttribute("WYSIWYG_ReturnUrl", returnUrl);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "return Url= " + returnUrl);
 
   browseInformation = request.getParameter("BrowseInfo");
+  if (browseInformation == null) {
+    browseInformation = (String) request.getAttribute("BrowseInfo");
+  }
   session.setAttribute("WYSIWYG_BrowseInfo", browseInformation);
-    userId = ((MainSessionController) session.getAttribute(
+
+  userId = ((MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
   session.setAttribute("WYSIWYG_UserId", userId);
 
   fileName = request.getParameter("FileName");
+  if (fileName == null) {
+    fileName = (String) request.getAttribute("FileName");
+  }
   session.setAttribute("WYSIWYG_FileName", fileName);
+
   path = request.getParameter("Path");
+  if (path == null) {
+    path = (String) request.getAttribute("Path");
+  }
   if (componentId.startsWith("webSites")) {
     path = WysiwygController.getWebsiteRepository() + path;
   }
@@ -198,13 +227,23 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 
   language = request.getParameter("Language");
   if (language == null) {
+    language = (String) request.getAttribute("Language");
+  }
+  if (language == null) {
     language = "en";
   }
   session.setAttribute("WYSIWYG_Language", language);
+
   contentLanguage = request.getParameter("ContentLanguage");
+  if (contentLanguage == null) {
+    contentLanguage = (String) request.getAttribute("ContentLanguage");
+  }
   session.setAttribute("WYSIWYG_ContentLanguage", contentLanguage);
 
   indexIt = request.getParameter("IndexIt");
+  if (indexIt == null) {
+    indexIt = (String) request.getAttribute("IndexIt");
+  }
   session.setAttribute("WYSIWYG_IndexIt", indexIt);
 
   if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {

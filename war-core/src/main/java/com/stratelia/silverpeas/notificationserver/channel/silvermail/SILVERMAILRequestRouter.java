@@ -41,8 +41,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 /**
@@ -89,7 +89,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
   }
 
   public String getDestination(String action,
-      SILVERMAILSessionController componentSC, HttpServletRequest request) {
+      SILVERMAILSessionController componentSC, HttpRequest request) {
     String destination = "/SILVERMAIL/jsp/" + action;
     String function = extractFunctionName(action);
 

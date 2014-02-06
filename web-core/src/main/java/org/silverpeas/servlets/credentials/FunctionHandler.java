@@ -1,45 +1,42 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.servlets.credentials;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.authentication.password.ForgottenPasswordException;
-import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
-import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.authentication.password.ForgottenPasswordException;
+import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
+import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.web.token.SynchronizerTokenService;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 /**
  * @author ehugonnet
@@ -49,10 +46,10 @@ public abstract class FunctionHandler {
   private ResourceBundle resources;
   private ResourceLocator m_Multilang;
   private ForgottenPasswordMailManager forgottenPasswordMailManager;
-  private ResourceLocator general = 
-      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
-  private ResourceLocator authenticationSettings =
-      new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+  private ResourceLocator general
+      = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+  private final ResourceLocator authenticationSettings = new ResourceLocator(
+      "org.silverpeas.authentication.settings.authenticationSettings", "");
 
   public FunctionHandler() {
     resources = FileUtil.loadBundle("org.silverpeas.peasCore.SessionManager", Locale.ROOT);
@@ -165,6 +162,12 @@ public abstract class FunctionHandler {
 
   public ResourceLocator getAuthenticationSettings() {
     return authenticationSettings;
+  }
+
+  protected void renewSecurityToken(HttpServletRequest request) {
+    SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
+        getSynchronizerTokenService();
+    tokenService.setUpNavigationTokens(request);
   }
 
 }

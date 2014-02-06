@@ -46,10 +46,10 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer

@@ -7,6 +7,6 @@
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
   <jdbc:embedded-database id="jpaDataSource" type="H2">
-    <jdbc:script location="classpath:/org/silverpeas/token/service/create-database.sql" />
+    <jdbc:script location="classpath:/org/silverpeas/token/persistent/service/create-database.sql" />
   </jdbc:embedded-database>
 </beans>

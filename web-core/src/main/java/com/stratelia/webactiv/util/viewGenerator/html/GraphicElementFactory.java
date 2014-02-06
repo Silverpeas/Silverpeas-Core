@@ -59,16 +59,15 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -375,6 +374,8 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
             "\"></script>\n");
+    code.append(JavascriptPluginInclusion.includeSecurityTokenizing(new ElementContainer()).toString())
+        .append("\n");
     code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
         .append("\n");
     if (StringUtil.isDefined(specificJS)) {

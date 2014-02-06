@@ -58,12 +58,12 @@ function goToOperationInAnotherWindow(larg, haut) {
 	windowName = "userPanelWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
 	userPanelWindow = SP_openWindow("groupManagersChoose", windowName, larg, haut, windowParams, false);
-}    
+}
 
-function deleteRoleContent() {	
-    if (window.confirm("<%=resource.getString("JDP.GroupManagersDeleteConfirmation")%>")) { 
-    	location.href = "groupManagersDelete";
-	}
+function deleteRoleContent() {
+  if (window.confirm("<%=resource.getString("JDP.GroupManagersDeleteConfirmation")%>")) {
+    jQuery('#genericForm').attr('action', "groupManagersDelete").submit();
+  }
 }	
 </script>
 </head>
@@ -123,6 +123,7 @@ out.println(board.printBefore());
 </TR>
 </TABLE>
 </center>
+<form id="genericForm" action="" method="POST"></form>
 <%
 out.println(board.printAfter());
 out.println(frame.printAfter());

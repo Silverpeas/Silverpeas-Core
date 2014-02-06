@@ -92,6 +92,8 @@
   <% if (!isAnonymousAccessAuthorized) { %>
   <title><%=generalMultilang.getString("GML.popupTitle")%>
   </title>
+  <view:includePlugin name="jquery"/>
+  <view:includePlugin name="tkn"/>
   <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <!--[if lt IE 8]>
@@ -114,7 +116,7 @@
   <script type="text/javascript">
     function getCookieVal(offset) {
       var endstr = document.cookie.indexOf(";", offset);
-      if (endstr == -1) {
+      if (endstr === -1) {
         endstr = document.cookie.length;
       }
       return unescape(document.cookie.substring(offset, endstr));
@@ -127,10 +129,10 @@
       var i = 0;
       while (i < clen) {
         var j = i + alen;
-        if (document.cookie.substring(i, j) == arg)
+        if (document.cookie.substring(i, j) === arg)
           return getCookieVal(j);
         i = document.cookie.indexOf(" ", i) + 1;
-        if (i == 0) break;
+        if (i === 0) break;
       }
 
       return null;
@@ -139,7 +141,7 @@
     function checkForm() {
       var form = document.getElementById("EDform");
       <% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-      if (GetCookie("svpPassword") != document.getElementById("EDform").Password.value) {
+      if (GetCookie("svpPassword") !== document.getElementById("EDform").Password.value) {
         form.cryptedPassword.value = "";
       } else {
         if (form.storePassword.checked)
@@ -152,7 +154,7 @@
 
     function loginQuestion() {
       var form = document.getElementById("EDform");
-      if (form.elements["Login"].value.length == 0) {
+      if (form.elements["Login"].value.length === 0) {
         alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
       } else {
         form.action = '<c:url value="/CredentialsServlet/LoginQuestion" />';
@@ -162,7 +164,7 @@
 
     function resetPassword() {
       var form = document.getElementById("EDform");
-      if (form.elements["Login"].value.length == 0) {
+      if (form.elements["Login"].value.length === 0) {
         alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
       } else {
         form.action = '<c:url value="/CredentialsServlet/ForgotPassword" />';
@@ -172,7 +174,7 @@
 
     function checkSubmit(ev) {
       var touche = ev.keyCode;
-      if (touche == 13)
+      if (touche === 13)
         checkForm();
     }
   </script>

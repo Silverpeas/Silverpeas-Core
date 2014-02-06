@@ -33,7 +33,7 @@ import com.silverpeas.thumbnail.ThumbnailSessionController;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -44,6 +44,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.servlet.HttpRequest;
 
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
@@ -53,7 +54,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   @Override
   public String getDestination(String function, ThumbnailSessionController thumbnailSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     if (!function.startsWith("images")) {
       String action = getAction(request);
@@ -61,7 +62,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       List<FileItem> parameters = null;
       if (action == null) {
         try {
-          parameters = FileUploadUtil.parseRequest(request);
+          parameters = request.getFileItems();
         } catch (UtilException e) {
           SilverTrace.error("thumbnail", "ThumbnailRequestRouter.getAction",
               "root.MSG_GEN_PARAM_VALUE", e);

@@ -157,7 +157,7 @@ function onChangeFrequency() {
   </c:if>
     
   <p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
-  <form name="channelForm">
+  <form name="channelForm" action="" method="POST">
     <input type="hidden" name="Action"/>
     <input type="hidden" name="id"/>
     <input type="hidden" name="SelectedChannels"/>

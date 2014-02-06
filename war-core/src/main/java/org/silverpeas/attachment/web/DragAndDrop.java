@@ -25,7 +25,8 @@ import com.silverpeas.util.MetaData;
 import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -47,7 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -89,23 +89,24 @@ public class DragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-    if (!FileUploadUtil.isRequestMultipart(req)) {
+    HttpRequest request = HttpRequest.decorate(req);
+    if (!request.isContentInMultipart()) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
     ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
     boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
-    String userId = req.getParameter("UserId");
+    String userId = request.getParameter("UserId");
     try {
-      req.setCharacterEncoding(CharEncoding.UTF_8);
-      String componentId = req.getParameter("ComponentId");
-      String id = req.getParameter("PubId");
-      String lang = I18NHelper.checkLanguage(req.getParameter("lang"));
+      request.setCharacterEncoding(CharEncoding.UTF_8);
+      String componentId = request.getParameter("ComponentId");
+      String id = request.getParameter("PubId");
+      String lang = I18NHelper.checkLanguage(request.getParameter("lang"));
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId + ", id = " + id + ", userId = " + userId);
-      boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
+      boolean bIndexIt = StringUtil.getBooleanValue(request.getParameter("IndexIt"));
 
-      List<FileItem> items = FileUploadUtil.parseRequest(req);
+      List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
@@ -122,7 +123,7 @@ public class DragAndDrop extends HttpServlet {
             SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
                 id, 0, false, new SimpleAttachment(fileName, lang, null, null, item.getSize(),
                 mimeType, userId, new Date(), null));
-            document.setDocumentType(determineDocumentType(req));
+            document.setDocumentType(determineDocumentType(request));
             File tempFile = File.createTempFile("silverpeas_", fileName);
             try {
               FileUploadUtil.saveToFile(tempFile, item);

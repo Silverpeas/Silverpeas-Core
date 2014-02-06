@@ -45,6 +45,7 @@
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <view:includePlugin name="jquery"/>
+  <view:includePlugin name="tkn"/>
   <script src="<%=m_context%>/password.js" type="text/javascript"></script>
   <!--[if lt IE 8]>
   <style type="text/css">
@@ -69,7 +70,7 @@
         passwordFormId : 'changePwdForm',
         passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordBeforeExpiration"/>',
         passwordInputId : 'newPassword'
-      })
+      });
     });
   </script>
   <script src="<%=m_context%>/util/javaScript/silverpeas-password.js" type="text/javascript"></script>
