@@ -112,6 +112,7 @@ public class GraphicElementFactory {
   protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
+  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
 
   /**
    * Constructor declaration
@@ -286,7 +287,6 @@ public class GraphicElementFactory {
   public String getLookStyleSheet() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
         "root.MSG_GEN_ENTER_METHOD");
-    String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     String charset = getGeneralSettings().getString("charset", CharEncoding.UTF_8);
@@ -329,7 +329,7 @@ public class GraphicElementFactory {
 
       // append default global CSS
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
-      code.append(standardStyle).append("\"/>\n");
+      code.append(STANDARD_CSS).append("\"/>\n");
 
       code.append("<!--[if IE]>\n");
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
