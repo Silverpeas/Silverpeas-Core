@@ -282,4 +282,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   public void switchComponentBehaviour(String componentId, boolean toVersionning) {
     realService.switchComponentBehaviour(componentId, toVersionning);
   }
+
+  @Override
+  public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk, final boolean allowing) {
+    realService.switchAllowingDownloadForReaders(pk, allowing);
+  }
 }

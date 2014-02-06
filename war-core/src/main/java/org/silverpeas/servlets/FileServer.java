@@ -20,23 +20,14 @@
  */
 package org.silverpeas.servlets;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
-
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,8 +37,17 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
@@ -74,12 +74,25 @@ public class FileServer extends AbstractFileSender {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "FileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
+
+    HttpSession session = req.getSession(true);
+    MainSessionController mainSessionCtrl = (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
+      SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
+          "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
+              GeneralPropertiesManager.getString("sessionTimeout"));
+      res.sendRedirect(
+          URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
+      return;
+    }
+
     String mimeType = req.getParameter(MIME_TYPE_PARAMETER);
     String sourceFile = req.getParameter(SOURCE_FILE_PARAMETER);
     String archiveIt = req.getParameter(ARCHIVE_IT_PARAMETER);
     String dirType = req.getParameter(DIR_TYPE_PARAMETER);
     String userId = req.getParameter(USER_ID_PARAMETER);
-    String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
     String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
     String zip = req.getParameter(ZIP_PARAMETER);
     String fileName = req.getParameter(FILE_NAME_PARAMETER);
@@ -95,20 +108,14 @@ public class FileServer extends AbstractFileSender {
       attachment = AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
+        if (!isSimpleDocumentAuthorized(mainSessionCtrl.getCurrentUserDetail().getId(),
+            attachment)) {
+          throw new ServletException("You can't access this file " + attachment.getFilename());
+        }
+
         mimeType = attachment.getContentType();
         sourceFile = attachment.getFilename();
       }
-    }
-    HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
-      SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
-          + GeneralPropertiesManager.getString("sessionTimeout"));
-      res.sendRedirect(
-          URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
-      return;
     }
 
     String filePath = null;
@@ -186,6 +193,13 @@ public class FileServer extends AbstractFileSender {
       }
     }
     return isAllowed;
+  }
+
+  private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment) {
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(userId, attachment,
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }
 
   @Override

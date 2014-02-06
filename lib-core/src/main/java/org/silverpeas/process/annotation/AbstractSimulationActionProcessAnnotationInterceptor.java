@@ -58,7 +58,7 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
       Map<Class<Annotation>, List<Object>> annotedParametersValues) throws Exception {
 
     // Simulation is processed only if no simulation is already working
-    if (CacheServiceFactory.getThreadCacheService().get(SIMULATION_PROCESS_PERFORMED) == null) {
+    if (CacheServiceFactory.getRequestCacheService().get(SIMULATION_PROCESS_PERFORMED) == null) {
       try {
 
         // Master annotation
@@ -127,7 +127,7 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
           }
 
           // Indicating that a functional check has been performed
-          CacheServiceFactory.getThreadCacheService().put(SIMULATION_PROCESS_PERFORMED, true);
+          CacheServiceFactory.getRequestCacheService().put(SIMULATION_PROCESS_PERFORMED, true);
         }
 
         // Invoking finally the proxy method initially called
@@ -141,7 +141,7 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
 
         // Removing the flag indicating that a functional check has been performed (out of the
         // service)
-        CacheServiceFactory.getThreadCacheService().remove(SIMULATION_PROCESS_PERFORMED);
+        CacheServiceFactory.getRequestCacheService().remove(SIMULATION_PROCESS_PERFORMED);
       }
     }
 

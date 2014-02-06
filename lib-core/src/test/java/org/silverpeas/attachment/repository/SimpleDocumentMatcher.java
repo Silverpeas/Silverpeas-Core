@@ -23,9 +23,9 @@
  */
 package org.silverpeas.attachment.repository;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-
 import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
@@ -101,6 +101,19 @@ public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
     }
     if (document.getFile() != other.getFile() && (document.getFile() == null || !document.getFile().
         equals(other.getFile()))) {
+      return false;
+    }
+    if ((document.getForbiddenDownloadForRoles() == null &&
+        other.getForbiddenDownloadForRoles() != null) ||
+        (document.getForbiddenDownloadForRoles() != null &&
+            other.getForbiddenDownloadForRoles() == null) ||
+        (document.getForbiddenDownloadForRoles() != null &&
+            other.getForbiddenDownloadForRoles() != null &&
+            document.getForbiddenDownloadForRoles().size() ==
+                other.getForbiddenDownloadForRoles().size() && CollectionUtils
+            .intersection(document.getForbiddenDownloadForRoles(),
+                other.getForbiddenDownloadForRoles()).size() !=
+            document.getForbiddenDownloadForRoles().size())) {
       return false;
     }
     return true;

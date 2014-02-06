@@ -27,16 +27,20 @@ package org.silverpeas.servlets;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.cache.service.CacheServiceFactory;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * @author sv To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * This class contains all Silverpeas's needs around WEB application lifecycles.
  */
-public class SilverListener implements HttpSessionListener, ServletContextListener {
+public class SilverListener
+    implements HttpSessionListener, ServletContextListener, ServletRequestListener {
   // HttpSessionListener methods
   @Override
   public void sessionCreated(HttpSessionEvent event) {
@@ -56,12 +60,33 @@ public class SilverListener implements HttpSessionListener, ServletContextListen
   public void contextInitialized(ServletContextEvent event) {
   }
 
+  @Override
+  public void requestDestroyed(final ServletRequestEvent sre) {
+    // Clearing cache at this level avoids memory leaks
+    clearRequestCache();
+  }
+
+  @Override
+  public void requestInitialized(final ServletRequestEvent sre) {
+    // Clearing cache at this level ensures that it is cleared before that all treatments behind the
+    // request are performed
+    clearRequestCache();
+  }
+
   // Clear session informations
   private void remove(HttpSessionEvent event) {
     SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement =  factory.getSessionManagement();
+    SessionManagement sessionManagement = factory.getSessionManagement();
     sessionManagement.closeSession(event.getSession().getId());
-    SilverTrace.info("peasCore", "SilverListener.sessionDestroyed",
-        "peasCore.MSG_END_OF_HTTPSESSION", "ID=" + event.getSession().getId());
+    SilverTrace
+        .info("peasCore", "SilverListener.sessionDestroyed", "peasCore.MSG_END_OF_HTTPSESSION",
+            "ID=" + event.getSession().getId());
+  }
+
+  /**
+   * Clears the cache associated to the request.
+   */
+  private void clearRequestCache() {
+    CacheServiceFactory.getRequestCacheService().clear();
   }
 }

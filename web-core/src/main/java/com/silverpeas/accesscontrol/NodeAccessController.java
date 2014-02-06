@@ -24,10 +24,9 @@
 
 package com.silverpeas.accesscontrol;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -37,12 +36,17 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Check the access to a node for a user.
  * @author ehugonnet
  */
 @Named
-public class NodeAccessController implements AccessController<NodePK> {
+public class NodeAccessController extends AbstractAccessController<NodePK> {
 
   @Inject
   private OrganisationController controller;
@@ -59,23 +63,35 @@ public class NodeAccessController implements AccessController<NodePK> {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, NodePK nodePK) {
+  public boolean isUserAuthorized(String userId, NodePK nodePK,
+      final AccessControlContext context) {
+    return isUserAuthorized(getUserRoles(context, userId, nodePK));
+  }
+
+  public boolean isUserAuthorized(Set<SilverpeasRole> nodeUserRoles) {
+    return CollectionUtil.isNotEmpty(nodeUserRoles);
+  }
+
+  public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId,
+      NodePK nodePK) {
     NodeDetail node;
     try {
       node = getNodeBm().getHeader(nodePK, false);
     } catch (Exception ex) {
       SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
           "root.NO_EX_MESSAGE", ex);
-      return false;
+      return EnumSet.noneOf(SilverpeasRole.class);
     }
     if (node != null) {
       if (!node.haveRights()) {
-        return true;
+        return SilverpeasRole
+            .from(getOrganisationController().getUserProfiles(userId, nodePK.getInstanceId()));
       }
-      return getOrganisationController().isObjectAvailable(node.getRightsDependsOn(),
-          ObjectType.NODE, nodePK.getInstanceId(), userId);
+      return SilverpeasRole.from(getOrganisationController()
+          .getUserProfiles(userId, nodePK.getInstanceId(), node.getRightsDependsOn(),
+              ObjectType.NODE));
     }
-    return false;
+    return EnumSet.noneOf(SilverpeasRole.class);
   }
 
   public NodeBm getNodeBm() throws Exception {

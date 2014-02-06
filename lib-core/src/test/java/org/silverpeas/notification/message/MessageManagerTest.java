@@ -59,7 +59,7 @@ public class MessageManagerTest {
   public void initialize() {
     String registredKey =
         CacheServiceFactory.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceFactory.getThreadCacheService().put(MessageManager.class, registredKey);
+    CacheServiceFactory.getRequestCacheService().put(MessageManager.class, registredKey);
     assertThat(getMessageContainer().getMessages(), emptyIterable());
   }
 
@@ -67,7 +67,7 @@ public class MessageManagerTest {
    * Clear out the thread cache the registred key referenced.
    */
   public void destroy() {
-    CacheServiceFactory.getThreadCacheService().remove(MessageManager.class);
+    CacheServiceFactory.getRequestCacheService().remove(MessageManager.class);
   }
 
   @Test

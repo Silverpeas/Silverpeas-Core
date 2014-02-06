@@ -112,7 +112,7 @@ public class PublicationsTypeManager {
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
       boolean bExportPublicationPath, NodePK rootPK) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     PublicationsType publicationsType = new PublicationsType();
     List<PublicationType> listPubType = new ArrayList<PublicationType>();
     PdcImportExport pdc_impExp = new PdcImportExport();
@@ -457,7 +457,7 @@ public class PublicationsTypeManager {
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, NodePK nodeRootPK)
       throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     
     GEDImportExport gedIE = null;
     NodeImportExport nodeIE = new NodeImportExport();
@@ -511,7 +511,7 @@ public class PublicationsTypeManager {
   public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport,
       UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath,
       boolean useNameForFolders, NodePK rootPK) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     List<AttachmentDetail> result = new ArrayList<AttachmentDetail>();
 
     // Parcours des publications à exporter
@@ -588,7 +588,7 @@ public class PublicationsTypeManager {
       ImportReportManager reportManager) {
     GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(settings.getUser(), settings
         .getComponentId());
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(gedIE.getCurentUserDetail());
     PdcImportExport pdcIE = new PdcImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
     CoordinateImportExport coordinateIE = new CoordinateImportExport();

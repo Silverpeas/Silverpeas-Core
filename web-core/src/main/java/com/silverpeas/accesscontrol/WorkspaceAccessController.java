@@ -34,7 +34,7 @@ import javax.inject.Named;
  * Check the access to a Silverpeas workspace for a user.
  */
 @Named
-public class WorkspaceAccessController implements AccessController<String> {
+public class WorkspaceAccessController extends AbstractAccessController<String> {
 
   @Inject
   private ComponentAccessController componentAccessController;
@@ -45,7 +45,8 @@ public class WorkspaceAccessController implements AccessController<String> {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, String spaceId) {
+  public boolean isUserAuthorized(String userId, String spaceId,
+      final AccessControlContext context) {
     boolean isAuthorized = false;
     if (spaceId == null) { // Personal space
       isAuthorized = true;

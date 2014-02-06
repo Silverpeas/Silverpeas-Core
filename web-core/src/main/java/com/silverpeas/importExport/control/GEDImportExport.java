@@ -114,7 +114,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public GEDImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
-    attachmentIE = new AttachmentImportExport();
+    attachmentIE = new AttachmentImportExport(curentUserDetail);
   }
 
   /**
@@ -664,8 +664,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
         listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument attDetail : documents) {
       try {
-        FileRepositoryManager.copyFile(attDetail.getAttachmentPath(),
-            exportPublicationPath + File.separator + attDetail.getFilename());
+        if (attDetail.isDownloadAllowedForRolesFrom(getCurentUserDetail())) {
+          FileRepositoryManager.copyFile(attDetail.getAttachmentPath(),
+              exportPublicationPath + File.separator + attDetail.getFilename());
+        }
       } catch (IOException ex) {
         // TODO: gerer l exception!!
       }

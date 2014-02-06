@@ -21,15 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.mock;
+package org.silverpeas.admin.mock;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
+import org.silverpeas.util.ListSlice;
+
+import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Named;
 
-import org.silverpeas.util.ListSlice;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -54,7 +55,7 @@ public class OrganizationControllerMockWrapper extends OrganizationController {
    * Gets the mock of the OrganizationController class wrapped by this instance.
    * @return an OrganizationController mock.
    */
-  public OrganizationController getOrganizationControllerMock() {
+  public OrganizationController getMock() {
     return mock;
   }
 

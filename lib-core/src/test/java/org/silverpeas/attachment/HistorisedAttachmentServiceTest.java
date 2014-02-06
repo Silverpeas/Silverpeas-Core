@@ -23,6 +23,47 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
+import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import javax.jcr.LoginException;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,50 +78,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.jcr.LoginException;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
-import org.silverpeas.search.indexEngine.IndexFileManager;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -614,6 +611,80 @@ public class HistorisedAttachmentServiceTest {
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document1));
       assertThat(result.get(1), SimpleDocumentMatcher.matches(document2));
       assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+    } finally {
+      if (session != null) {
+        session.logout();
+      }
+    }
+  }
+
+  /**
+   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
+   *
+   * @throws LoginException
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  @Test
+  public void testSwitchAllowingDownloadForReaders() throws RepositoryException, IOException {
+    WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
+    Session session = null;
+    SimpleDocumentPK documentPK = null;
+    try {
+      session = repository.login(new SilverpeasSystemCredentials());
+      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String foreignId = foreignKey.getId();
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
+              "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+              MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      documentPK = instance.createAttachment(document, content).getPk();
+      session.save();
+
+    } finally {
+      if (session != null) {
+        session.logout();
+      }
+    }
+    // Simulate an other call ... closing old session and opening a new one
+    try {
+      session = repository.login(new SilverpeasSystemCredentials());
+
+      // Verifying document is created.
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, notNullValue());
+      assertThat(result, hasSize(1));
+      SimpleDocument documentOfResult = result.get(0);
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(), nullValue());
+
+      // Allowing readers (but nothing is saved in JCR)
+      instance.switchAllowingDownloadForReaders(documentPK, true);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(), nullValue());
+
+      // Forbidding readers
+      instance.switchAllowingDownloadForReaders(documentPK, false);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(),
+          contains(SilverpeasRole.user, SilverpeasRole.reader));
+
+      // Forbidding again readers (but nothing is saved in JCR)
+      instance.switchAllowingDownloadForReaders(documentPK, false);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(),
+          contains(SilverpeasRole.user, SilverpeasRole.reader));
+
+      // Allowing readers
+      instance.switchAllowingDownloadForReaders(documentPK, true);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(), nullValue());
+
     } finally {
       if (session != null) {
         session.logout();
