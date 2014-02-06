@@ -60,12 +60,13 @@ public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
-  private static final String UNPROTECTED_URI_RULE = "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|services/password/)).*";
+  private static final String UNPROTECTED_URI_RULE =
+      "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
-  //= "^/(?!(util/)|(images/)|(Main/)|(Rclipboard/)|(LinkFile/)|(repository/)|.*DragAndDrop/)\\w+/.*(?<!(.gif)|(.png)|(.jpg)|(.js)|(.css)|(.jar)|(.swf)|(.properties)|(.html))$";
-  private static final String RULE_PREFIX = "security.web.protection.rule";
   private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
+  private static final String SECURITY_SESSION_TOKEN_RENEW_KEY =
+      "security.web.protection.sessiontoken.renew";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
   private static final ResourceLocator settings
       = new ResourceLocator("org.silverpeas.util.security", "");
@@ -165,6 +166,15 @@ public class SynchronizerTokenService {
    */
   public boolean isWebSecurityByTokensEnabled() {
     return settings.getBoolean(SECURITY_ACTIVATION_KEY, false);
+  }
+
+  /**
+   * Is the renew of the synchronizer tokens used to protect a user session enabled?
+   *
+   * @return true if the renew of session tokens is enabled in Silverpeas, false otherwise.
+   */
+  public boolean isSessionTokenRenewEnabled() {
+    return settings.getBoolean(SECURITY_SESSION_TOKEN_RENEW_KEY, false);
   }
 
   /**
