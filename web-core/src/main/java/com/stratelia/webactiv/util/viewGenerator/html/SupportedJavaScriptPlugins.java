@@ -126,5 +126,9 @@ public enum SupportedJavaScriptPlugins {
    * Javascript to update a web page by setting the security tokens for each link (anchor, form,
    * ...) and Ajax requests.
    */
-  tkn
+  tkn,
+  /**
+   * Lightweight slideshow. Easy to use but not only a few features.
+   */
+  lightslideshow
 }
