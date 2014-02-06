@@ -139,7 +139,7 @@ public class SynchronizerTokenService {
    */
   public void validate(HttpServletRequest request) throws TokenValidationException {
     if (isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
-      logger.log(Level.INFO, "Validate the request for path {0}", getRequestPath(request));
+      logger.log(Level.FINE, "Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
       // is there a user session opened?
       if (expectedToken.isDefined()) {
@@ -148,10 +148,10 @@ public class SynchronizerTokenService {
       }
 
       // is the navigation protected by a token?
-      // the token is poped from the current session.
+      // the token is popped from the current session.
       expectedToken = getTokenInSession(NAVIGATION_TOKEN_KEY, request, true);
       if (expectedToken.isDefined()) {
-        logger.log(Level.INFO, "Validate the request origin for path {0}", getRequestPath(request));
+        logger.log(Level.FINE, "Validate the request origin for path {0}", getRequestPath(request));
         String actualToken = getTokenInRequest(NAVIGATION_TOKEN_KEY, request);
         validate(actualToken, expectedToken);
       }
