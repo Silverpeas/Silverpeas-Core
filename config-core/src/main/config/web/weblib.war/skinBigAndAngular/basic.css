@@ -66,7 +66,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut, .textePetit
 }
 #outils a, #topBar #outils div.avatarName a {
 	color:#fff;
-	line-height:50px
+	line-height:24px;
 }
 #topBar #outils div.avatarName a {    
 	font-size: 16px;
@@ -80,14 +80,15 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut, .textePetit
     width: auto;
     z-index: 1;
 }
-#topBar #outils div.userNav {  
+#topBar #outils div.userNav {      
 	bottom: 0;
-    height: 36px;
+    height: 24px;
     line-height: 14px;
+    margin-right: 52px;
+    padding: 0;
     position: absolute;
     right: 0;
     z-index: 100;
-	padding-right: 52px;
 }
 
 #topBar #outils div.avatarName img {

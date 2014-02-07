@@ -99,7 +99,7 @@ public class SPDesktopServlet extends HttpServlet {
       request.getSession().removeAttribute("Silverpeas_Portlet_SpaceId");
     } else if (isDefined(spaceId)) {
       request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
-      spaceHomePage = getSpaceHomepage(spaceId, request);
+      spaceHomePage = getSpaceHomepageURL(spaceId, request);
     }
 
     if (isDefined(spaceHomePage)) {
@@ -614,7 +614,7 @@ public class SPDesktopServlet extends HttpServlet {
         WindowInvokerConstants.DRIVER_ROLE)));
   }
 
-  private String getSpaceHomepage(String spaceId, final HttpServletRequest request)
+  private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
     OrganisationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = null;
@@ -631,6 +631,10 @@ public class SPDesktopServlet extends HttpServlet {
           (m_MainSessionCtrl.getCurrentUserDetail().isAccessUser() ||
               m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest())) {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
+      }
+      
+      if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
+        return URLManager.getApplicationURL() + "/look/jsp/spaceHomePage.jsp?SpaceId="+spaceId;
       }
 
       // Page d'accueil de l'espace = Composant

@@ -31,6 +31,7 @@ import java.util.List;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 
 /**
@@ -294,6 +295,15 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   
   public boolean isWorkflow() {
     return Instanciateur.isWorkflow(getName());
+  }
+  
+  public String getIcon(boolean bigOne) {
+    String app = getName();
+    if (isWorkflow()) {
+      app = "processManager";
+    }
+    String size = bigOne ? "Big.png" : "Small.gif";
+    return URLManager.getApplicationURL() + "/util/icons/component/" + app + size;
   }
 
   @Override
