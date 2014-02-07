@@ -222,8 +222,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.spnego</groupId>
-      <artifactId>spnego</artifactId>
+      <groupId>org.silverpeas.spnego</groupId>
+      <artifactId>silverpeas-spnego</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
