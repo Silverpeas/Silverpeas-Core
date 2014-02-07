@@ -20,6 +20,7 @@
  */
 package com.silverpeas.portlets.portal;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -27,6 +28,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.PortletType;
@@ -598,6 +600,17 @@ public class SPDesktopServlet extends HttpServlet {
 
     return m_MainSessionCtrl;
   }
+  
+  private String getDefaultSpaceHomepageURL(final HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    GraphicElementFactory gef =
+        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    ResourceLocator settings = gef.getFavoriteLookSettings();
+    if (settings != null) {
+      return settings.getString("spaceHomepage");
+    }
+    return null;
+  }
 
   private OrganisationController getOrganizationController(final HttpServletRequest request) {
     return getMainSessionController(request).getOrganisationController();
@@ -625,6 +638,7 @@ public class SPDesktopServlet extends HttpServlet {
     if (spaceStruct != null) {
       MainSessionController m_MainSessionCtrl = getMainSessionController(request);
       String userId = m_MainSessionCtrl.getUserId();
+      
 
       // Maintenance Mode
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
@@ -633,11 +647,15 @@ public class SPDesktopServlet extends HttpServlet {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
       
+      // Default home page
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
-        return URLManager.getApplicationURL() + "/look/jsp/spaceHomePage.jsp?SpaceId="+spaceId;
+        String defaultSpaceHomepageURL = getDefaultSpaceHomepageURL(request);
+        if (StringUtil.isDefined(defaultSpaceHomepageURL)) {
+          return URLManager.getApplicationURL() + defaultSpaceHomepageURL + "?SpaceId=" + spaceId;
+        }
       }
 
-      // Page d'accueil de l'espace = Composant
+      // Home page = one app
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
@@ -646,7 +664,7 @@ public class SPDesktopServlet extends HttpServlet {
         }
       }
 
-      // Page d'accueil de l'espace = URL
+      // Home page = custom URL
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String s_sUserLogin = "%ST_USER_LOGIN%";
