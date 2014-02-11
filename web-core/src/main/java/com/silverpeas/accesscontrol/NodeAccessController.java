@@ -27,6 +27,7 @@ package com.silverpeas.accesscontrol;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.silverpeas.util.ComponentHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -62,7 +63,13 @@ public class NodeAccessController implements AccessController<NodePK> {
   public boolean isUserAuthorized(String userId, NodePK nodePK) {
     NodeDetail node;
     try {
-      node = getNodeBm().getHeader(nodePK, false);
+      if (isKmax(nodePK)) {
+        // publications in kmax are categorized into one or more classification axis instead of
+        // nodes and the positioning don't support a right mechanism.
+        return true;
+      } else {
+        node = getNodeBm().getHeader(nodePK, false);
+      }
     } catch (Exception ex) {
       SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
           "root.NO_EX_MESSAGE", ex);
@@ -91,5 +98,9 @@ public class NodeAccessController implements AccessController<NodePK> {
       controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
+  }
+
+  private boolean isKmax(NodePK nodePK) {
+    return ComponentHelper.getInstance().isKmax(nodePK.getInstanceId());
   }
 }

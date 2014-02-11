@@ -24,6 +24,9 @@
 
 package com.silverpeas.accesscontrol;
 
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.WAComponent;
+import org.junit.Before;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -55,6 +58,13 @@ public class NodeAccessControllerTest {
   private final String componentId = "kmelia18";
 
   public NodeAccessControllerTest() {
+  }
+
+  @Before
+  public void setUp() {
+    WAComponent kmelia = Mockito.mock(WAComponent.class);
+    Mockito.when(kmelia.getName()).thenReturn("kmelia");
+    Instanciateur.addWAComponentForTest(kmelia);
   }
 
   /**

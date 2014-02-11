@@ -81,6 +81,10 @@ public class Instanciateur {
     }
   }
 
+  public static void addWAComponentForTest(WAComponent component) {
+    componentsByName.put(component.getName(), component);
+  }
+
   /**
    * Creates new instantiator
    */
