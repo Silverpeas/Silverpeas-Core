@@ -62,7 +62,9 @@ public class SimpleDocumentAccessController implements AccessController<SimpleDo
 
   @Override
   public boolean isUserAuthorized(String userId, SimpleDocument object) {
-    if (ComponentHelper.getInstance().isThemeTracker(object.getInstanceId())) {
+    ComponentHelper componentHelper = ComponentHelper.getInstance();
+    String componentId = object.getInstanceId();
+    if (componentHelper.isThemeTracker(componentId)) {
       String foreignId = object.getForeignId();
       if (StringUtil.isInteger(foreignId)) {
         try {
@@ -72,20 +74,22 @@ public class SimpleDocumentAccessController implements AccessController<SimpleDo
               "root.NO_EX_MESSAGE", e);
           return false;
         }
-        try {
-          Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
-              object.getInstanceId()));
-          for (NodePK nodePk : nodes) {
-            if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
-              return true;
+        if (!componentHelper.isKmax(componentId)) {
+          try {
+            Collection<NodePK> nodes = getPublicationBm()
+                .getAllFatherPK(new PublicationPK(foreignId, object.getInstanceId()));
+            for (NodePK nodePk : nodes) {
+              if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
+                return true;
+              }
             }
+          } catch (Exception ex) {
+            SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+                "root.NO_EX_MESSAGE", ex);
+            return false;
           }
-        } catch (Exception ex) {
-          SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
-              "root.NO_EX_MESSAGE", ex);
           return false;
         }
-        return false;
       } else if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
         String nodeId = foreignId.substring("Node_".length());
         return getNodeAccessController().isUserAuthorized(userId, new NodePK(nodeId, object.
