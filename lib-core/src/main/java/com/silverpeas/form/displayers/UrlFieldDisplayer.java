@@ -21,7 +21,6 @@
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -168,28 +167,5 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
       }
     }
     out.println(html);
-  }
-  
-  @Override
-  public List<String> update(String newValue, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
-
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("UrlFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-
-    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
-      field.setValue(newValue, PagesContext.getLanguage());
-    } else {
-      throw new FormException("UrlFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
-    }
-    return new ArrayList<String>();
-  }
-
-  @Override
-  public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
-    return 1;
   }
 }
