@@ -2,17 +2,20 @@ package com.silverpeas.form.displayers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public abstract class AbstractTextFieldDisplayer<T extends Field> extends
-    AbstractFieldDisplayer<T> {
+    AbstractFieldDisplayer<TextField> {
   
   private final static String[] MANAGED_TYPES = new String[]{TextField.TYPE};
   
@@ -90,6 +93,28 @@ public abstract class AbstractTextFieldDisplayer<T extends Field> extends
   @Override
   public boolean isDisplayedMandatory() {
     return true;
+  }
+  
+  @Override
+  public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
+    return 1;
+  }
+  
+  @Override
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
+      throw new FormException("AbstractTextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
+    }
+
+    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
+      field.setValue(newValue, PagesContext.getLanguage());
+    } else {
+      throw new FormException("AbstractTextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
+    }
+    return new ArrayList<String>();
   }
 
 }

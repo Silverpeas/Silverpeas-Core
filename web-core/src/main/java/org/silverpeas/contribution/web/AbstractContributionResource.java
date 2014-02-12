@@ -133,8 +133,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
 
       // User field case
       UserField userField = (UserField) field;
-      //TODO
-      entity = FormFieldValueEntity.createFrom(userField.getUserIds().get(0), userField.getValue());
+      entity = FormFieldValueEntity.createFrom(userField.getUserId(), userField.getValue());
 
     } else {
 
