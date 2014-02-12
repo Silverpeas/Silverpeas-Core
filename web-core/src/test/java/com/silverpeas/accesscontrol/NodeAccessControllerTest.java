@@ -34,13 +34,21 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
+import static org.mockito.Mockito.mock;
 
 /**
  *
@@ -53,7 +61,15 @@ public class NodeAccessControllerTest {
   private final String userId = "5";
   private final String componentId = "kmelia18";
 
+  private ComponentAccessControllerForTest componentAccessController;
+
   public NodeAccessControllerTest() {
+  }
+
+  @Before
+  public void setup() {
+    CacheServiceFactory.getRequestCacheService().clear();
+    componentAccessController = mockComponentAccessController();
   }
 
   /**
@@ -62,18 +78,19 @@ public class NodeAccessControllerTest {
    */
   @Test
   public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNode() throws Exception {
-    OrganisationController orga = Mockito.mock(OrganizationController.class);
+    componentAccessController.addUserRoles(SilverpeasRole.user);
+    OrganisationController orga = mock(OrganizationController.class);
     Mockito.when(orga.getUserProfiles(userId, componentId))
         .thenReturn(new String[]{SilverpeasRole.user.name()});
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = Mockito.mock(NodeBm.class);
+    NodeBm nodeBm = mock(NodeBm.class);
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
         thenReturn(nodeBm);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    NodeAccessController instance = new NodeAccessController(orga);
+    NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(true));
   }
@@ -84,16 +101,17 @@ public class NodeAccessControllerTest {
    */
   @Test
   public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnComponent() throws Exception {
-    OrganisationController orga = Mockito.mock(OrganizationController.class);
+    componentAccessController.setRightOnTopicEnabled();
+    OrganisationController orga = mock(OrganizationController.class);
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = Mockito.mock(NodeBm.class);
+    NodeBm nodeBm = mock(NodeBm.class);
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
         thenReturn(nodeBm);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    NodeAccessController instance = new NodeAccessController(orga);
+    NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(false));
   }
@@ -104,19 +122,21 @@ public class NodeAccessControllerTest {
    */
   @Test
   public void userIsAuthorizedWhithRightsDependOn() throws Exception {
+    componentAccessController.addUserRoles(SilverpeasRole.user);
+    componentAccessController.setRightOnTopicEnabled();
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = Mockito.mock(NodeBm.class);
+    NodeBm nodeBm = mock(NodeBm.class);
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
         thenReturn(nodeBm);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    OrganisationController orga = Mockito.mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     Mockito.when(orga.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
         .thenReturn(new String[]{SilverpeasRole.user.name()});
-    NodeAccessController instance = new NodeAccessController(orga);
+    NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(true));
     Mockito.verify(orga, Mockito.times(1)).getUserProfiles(userId, componentId, 5, ObjectType.NODE);
@@ -128,20 +148,69 @@ public class NodeAccessControllerTest {
    */
   @Test
   public void userIsNotAuthorizedWhithRightsDependOn() throws Exception {
+    componentAccessController.addUserRoles(SilverpeasRole.user);
+    componentAccessController.setRightOnTopicEnabled();
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = Mockito.mock(NodeBm.class);
+    NodeBm nodeBm = mock(NodeBm.class);
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
         thenReturn(nodeBm);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    OrganisationController orga = Mockito.mock(OrganizationController.class);
-    NodeAccessController instance = new NodeAccessController(orga);
+    OrganisationController orga = mock(OrganizationController.class);
+    NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(false));
     Mockito.verify(orga, Mockito.times(1)).getUserProfiles(userId, componentId, 5, ObjectType.NODE);
 
+  }
+
+  private NodeAccessController createNodeAccessController(OrganisationController controller) {
+    return new NodeAccessControllerForTest(controller);
+  }
+
+  private class NodeAccessControllerForTest extends NodeAccessController {
+
+    NodeAccessControllerForTest(final OrganisationController controller) {
+      super(controller);
+    }
+
+    @Override
+    protected ComponentAccessController getComponentAccessController() {
+      return componentAccessController;
+    }
+  }
+
+  private ComponentAccessControllerForTest mockComponentAccessController() {
+    return new ComponentAccessControllerForTest();
+  }
+
+  private class ComponentAccessControllerForTest extends ComponentAccessController {
+
+    Set<SilverpeasRole> userRoles = EnumSet.noneOf(SilverpeasRole.class);
+    boolean isRightOnTopicEnabled = false;
+
+    public ComponentAccessControllerForTest addUserRoles(SilverpeasRole... userRoles) {
+      Collections.addAll(this.userRoles, userRoles);
+      return this;
+    }
+
+    public ComponentAccessControllerForTest setRightOnTopicEnabled() {
+      isRightOnTopicEnabled = true;
+      return this;
+    }
+
+    @Override
+    protected void fillUserRoles(final Set<SilverpeasRole> userRoles,
+        final AccessControlContext context, final String userId, final String componentId) {
+      userRoles.addAll(this.userRoles);
+    }
+
+    @Override
+    public boolean isRightOnTopicsEnabled(final String componentId) {
+      return isRightOnTopicEnabled;
+    }
   }
 }

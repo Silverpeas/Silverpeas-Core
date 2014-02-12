@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -1433,7 +1434,6 @@ public class SimpleDocumentAccessControllerTest {
       nbCallOfPublicationBmGetAllFatherPK = 1;
       return this;
     }
-
 
     public void verifyMethodCalls() {
       verify(componentAccessController, times(nbCallOfComponentAccessControllerGetUserRoles))

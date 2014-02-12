@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -47,6 +46,9 @@ import java.util.Set;
  */
 @Named
 public class NodeAccessController extends AbstractAccessController<NodePK> {
+
+  @Inject
+  private ComponentAccessController componentAccessController;
 
   @Inject
   private OrganisationController controller;
@@ -72,26 +74,41 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
     return CollectionUtil.isNotEmpty(nodeUserRoles);
   }
 
-  public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId,
-      NodePK nodePK) {
+  @Override
+  protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
+      String userId, NodePK nodePK) {
+
+    // Component access control
+    final Set<SilverpeasRole> componentUserRoles =
+        getComponentAccessController().getUserRoles(context, userId, nodePK.getInstanceId());
+    if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
+      return;
+    }
+
+    // If rights are not handled from the node, then filling the user role containers with these
+    // of component
+    if (!getComponentAccessController().isRightOnTopicsEnabled(nodePK.getInstanceId())) {
+      userRoles.addAll(componentUserRoles);
+      return;
+    }
+
     NodeDetail node;
     try {
       node = getNodeBm().getHeader(nodePK, false);
     } catch (Exception ex) {
       SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
           "root.NO_EX_MESSAGE", ex);
-      return EnumSet.noneOf(SilverpeasRole.class);
+      return;
     }
     if (node != null) {
       if (!node.haveRights()) {
-        return SilverpeasRole
-            .from(getOrganisationController().getUserProfiles(userId, nodePK.getInstanceId()));
+        userRoles.addAll(componentUserRoles);
+        return;
       }
-      return SilverpeasRole.from(getOrganisationController()
+      userRoles.addAll(SilverpeasRole.from(getOrganisationController()
           .getUserProfiles(userId, nodePK.getInstanceId(), node.getRightsDependsOn(),
-              ObjectType.NODE));
+              ObjectType.NODE)));
     }
-    return EnumSet.noneOf(SilverpeasRole.class);
   }
 
   public NodeBm getNodeBm() throws Exception {
@@ -107,5 +124,16 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
       controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
+  }
+
+  /**
+   * Gets a controller of access on the components of a publication.
+   * @return a ComponentAccessController instance.
+   */
+  protected ComponentAccessController getComponentAccessController() {
+    if (componentAccessController == null) {
+      componentAccessController = new ComponentAccessController();
+    }
+    return componentAccessController;
   }
 }
