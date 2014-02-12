@@ -161,10 +161,6 @@ public class Util {
     return Boolean.parseBoolean(paramValue);
   }
   
-  public static String list2String(List<String> list) {
-    return StringUtil.join(list, MultiValuableField.JOIN_SEPARATOR);
-  }
-  
   public static void printOneMoreInputSnippet(String fieldName, PagesContext pageContext,
       PrintWriter out) {
     out.println("<a href=\"#\" id=\"moreField-" + fieldName + "\" onclick=\"showOneMoreField('" +
@@ -172,5 +168,12 @@ public class Util {
     out.println("<img src=\"" + Util.getIcon("add") + "\" width=\"14px\"> ");
     out.println(Util.getString("field.multivaluable.add", pageContext.getLanguage()));
     out.println("</a>");
+  }
+  
+  public static String getFieldOccurrenceName(String fieldName, int occurrence) {
+    if (occurrence == 0) {
+      return fieldName;
+    }
+    return fieldName + AbstractForm.REPEATED_FIELD_SEPARATOR + occurrence;
   }
 }

@@ -6081,7 +6081,7 @@ form .forms .fields > li:nth-child(even) {
 	right:1%;
 }
 
-.forms .field ul.multivalues {
+.forms .field ul.repeatable-field-list {
 	list-style-type: none;
 	padding-left: 0px;
 }

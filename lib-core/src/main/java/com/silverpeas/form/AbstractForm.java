@@ -181,17 +181,14 @@ public abstract class AbstractForm implements Form {
             fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
 
             if (fieldDisplayer != null) {
-              
-              int nbFieldsToDisplay = fieldTemplate.getMaximumNumberOfValues();              
+              int nbFieldsToDisplay = fieldTemplate.getMaximumNumberOfOccurrences();              
               for (int i=0; i<nbFieldsToDisplay; i++) {
-                String currentFieldName = fieldName;
+                String currentFieldName = Util.getFieldOccurrenceName(fieldName, i);
+                ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
                 if (i > 0) {
-                  currentFieldName = fieldName+REPEATED_FIELD_SEPARATOR+i;
-                  ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
                   ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
                 }
-                out.append("	field = document.getElementById(\"").append(currentFieldName)
-                    .append("\");\n");
+                out.append("	field = document.getElementById(\"").append(currentFieldName).append("\");\n");
                 out.append("	if (field == null) {\n");
                 // try to find field by name
                 out.append("  field = $(\"input[name=").append(currentFieldName).append("]\");\n");
@@ -230,7 +227,7 @@ public abstract class AbstractForm implements Form {
           .append("	default :\n")
           .append("		errorMsg = \"")
           .append(Util.getString("GML.ThisFormContains", language))
-          .append("\" + errorNb + \" ")
+          .append(" \" + errorNb + \" ")
           .append(Util.getString("GML.errors", language))
           .append(" :\\n \" + errorMsg;\n")
           .append("		window.alert(errorMsg);\n")
@@ -242,10 +239,11 @@ public abstract class AbstractForm implements Form {
           .append("	\n\n");
       
       out.append("function showOneMoreField(fieldName) {\n");
-          out.append("$('.field_'+fieldName+'."+REPEATED_FIELD_CSS_HIDE+":first').removeClass('"+REPEATED_FIELD_CSS_HIDE+"').addClass('"+REPEATED_FIELD_CSS_SHOW+"');\n");
-          out.append("if ($('.field_'+fieldName+'.field-occurrence-hidden').length == 0) {\n");
-              out.append(" $('#form-row-'+fieldName+' #moreField-'+fieldName).hide();\n");
-          out.append("}\n");
+      out.append("$('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + ":first').removeClass('" +
+          REPEATED_FIELD_CSS_HIDE + "').addClass('" + REPEATED_FIELD_CSS_SHOW + "');\n");
+      out.append("if ($('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + "').length == 0) {\n");
+      out.append(" $('#form-row-'+fieldName+' #moreField-'+fieldName).hide();\n");
+      out.append("}\n");
       out.append("}\n");
       
       out.append("</script>\n");
@@ -298,8 +296,6 @@ public abstract class AbstractForm implements Form {
     List<String> attachmentIds = new ArrayList<String>();
 
     for (FieldTemplate fieldTemplate : fieldTemplates) {
-      FieldDisplayer fieldDisplayer = null;
-
       // Have to check if field is not readonly, if so no need to update
       if (!fieldTemplate.isReadOnly()) {
         if (fieldTemplate != null) {
@@ -307,18 +303,18 @@ public abstract class AbstractForm implements Form {
           String fieldType = fieldTemplate.getTypeName();
           String fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
-            if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
+            if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
               fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
             }
             if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
-              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+              FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
-                attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
-                    fieldTemplate, pagesContext));
+                for (int occ=0; occ<fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
+                  attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName, occ),
+                      fieldTemplate, pagesContext)); 
+                }
               }
             }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
           } catch (Exception e) {
             SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
           }
@@ -364,8 +360,6 @@ public abstract class AbstractForm implements Form {
                   fieldTemplate, pagesContext));
             }
           }
-        } catch (FormException fe) {
-          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
         } catch (Exception e) {
           SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
         }
@@ -405,8 +399,6 @@ public abstract class AbstractForm implements Form {
               isEmpty = !StringUtil.isDefined(itemValue);
             }
           }
-        } catch (FormException fe) {
-          SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, fe);
         } catch (Exception e) {
           SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, e);
         }
@@ -468,5 +460,18 @@ public abstract class AbstractForm implements Form {
 
   public String getName() {
     return name;
+  }
+  
+  protected Field getSureField(FieldTemplate fieldTemplate, DataRecord record, int occurrence) {
+    Field field = null;
+    try {
+      field = record.getField(fieldTemplate.getFieldName(), occurrence);
+      if (field == null) {
+        field = fieldTemplate.getEmptyField(occurrence);
+      }
+    } catch (FormException fe) {
+      SilverTrace.error("form", "AbstractForm.display", "form.EX_CANT_GET_FORM", null, fe);
+    }
+    return field;
   }
 }

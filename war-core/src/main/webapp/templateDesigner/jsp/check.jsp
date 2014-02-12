@@ -71,6 +71,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 

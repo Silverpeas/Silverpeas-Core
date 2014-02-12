@@ -20,19 +20,14 @@
  */
 package com.silverpeas.form.fieldType;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.form.AbstractMultiValuableField;
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.Util;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A UserField stores a user reference.
@@ -40,7 +35,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
-public class UserField extends AbstractMultiValuableField {
+public class UserField extends AbstractField {
 
   private static final long serialVersionUID = -861888647155176647L;
   /**
@@ -65,17 +60,17 @@ public class UserField extends AbstractMultiValuableField {
   /**
    * Returns the user id referenced by this field.
    */
-  public List<String> getUserIds() {
-    return userIds;
+  public String getUserId() {
+    return userId;
   }
 
   /**
    * Set the userd id referenced by this field.
    */
-  public void setUserIds(List<String> userIds) {
+  public void setUserId(String userId) {
     SilverTrace.info("form", "UserField.setUserId",
-        "root.MSG_GEN_ENTER_METHOD", "userIds = " + userIds);
-    this.userIds = userIds;
+        "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+    this.userId = userId;
   }
 
   /**
@@ -89,25 +84,21 @@ public class UserField extends AbstractMultiValuableField {
    * Returns the string value of this field : aka the user name.
    */
   @Override
-  public List<String> getValues() {
-    String theUserIds = StringUtil.join(getUserIds(), ", ");
+  public String getValue() {
+    String theUserId = getUserId();
     SilverTrace.info("form", "UserField.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "userIds = " + theUserIds);
-    if (!StringUtil.isDefined(theUserIds)) {
-      return getUserIds();
+        "userId = " + theUserId);
+    if (!StringUtil.isDefined(theUserId)) {
+      return theUserId;
     }
 
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
-    List<String> userNames = new ArrayList<String>();
-    for (String userId : getUserIds()) {
-      UserDetail user = oc.getUserDetail(userId);
-      if (user == null) {
-        userNames.add("user(" + userId + ")");
-      } else {
-        userNames.add(user.getDisplayedName());
-      }
+    UserDetail user = OrganisationControllerFactory.getOrganisationController().getUserDetail(
+        getUserId());
+    if (user == null) {
+      return "user(" + getUserId() + ")";
     }
-    return userNames;
+
+    return user.getDisplayedName();
   }
 
   /**
@@ -115,29 +106,29 @@ public class UserField extends AbstractMultiValuableField {
    * language parameter is unused.
    */
   @Override
-  public List<String> getValues(String language) {
-    return getValues();
+  public String getValue(String language) {
+    return getValue();
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
   @Override
-  public void setValues(List<String> values) throws FormException {
+  public void setValue(String value) throws FormException {
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
   @Override
-  public void setValues(List<String> values, String language) throws FormException {
+  public void setValue(String value, String language) throws FormException {
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
   @Override
-  public boolean acceptValues(List<String> values) {
+  public boolean acceptValue(String value) {
     return false;
   }
 
@@ -145,7 +136,7 @@ public class UserField extends AbstractMultiValuableField {
    * Always returns false since a user reference can't be computed from a user name.
    */
   @Override
-  public boolean acceptValues(List<String> values, String language) {
+  public boolean acceptValue(String value, String language) {
     return false;
   }
 
@@ -153,76 +144,63 @@ public class UserField extends AbstractMultiValuableField {
    * Returns the User referenced by this field.
    */
   @Override
-  public List<Object> getObjectValues() {
-    if (getUserIds() == null) {
+  public Object getObjectValue() {
+    if (getUserId() == null) {
       return null;
     }
-    List<Object> users = new ArrayList<Object>();
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
-    for (String userId : getUserIds()) {
-      if (StringUtil.isDefined(userId)) {
-        users.add(oc.getUserDetail(userId));
-      }
-    }
-    return users;
+    return OrganisationControllerFactory.getOrganisationController().getUserDetail(getUserId());
   }
 
   /**
    * Set user referenced by this field.
    */
   @Override
-  public void setObjectValues(List<Object> values) throws FormException {
-    List<String> userIds = new ArrayList<String>();
-    for (Object value : values) {
-      if (value instanceof UserDetail) {
-        userIds.add(((UserDetail) value).getId());
-      } else if (value == null) {
-        userIds.add("");
-      } else {
-        throw new FormException("UserField.setObjectValue", "form.EXP_NOT_AN_USER");
-      }
+  public void setObjectValue(Object value) throws FormException {
+    if (value instanceof UserDetail) {
+      setUserId(((UserDetail) value).getId());
+    } else if (value == null) {
+      setUserId("");
+    } else {
+      throw new FormException("UserField.setObjectValue",
+          "form.EXP_NOT_AN_USER");
     }
-    setUserIds(userIds);
   }
 
   /**
    * Returns true if the value is a String and this field isn't read only.
    */
   @Override
-  public boolean acceptObjectValues(List<Object> values) {
-    for (Object value : values) {
-      if (value instanceof UserDetail) {
-        // do nothing
-      } else {
-        return false;
-      }
+  public boolean acceptObjectValue(Object value) {
+    if (value instanceof UserDetail) {
+      return !isReadOnly();
+    } else {
+      return false;
     }
-    return !isReadOnly();
   }
 
   /**
    * Returns this field value as a normalized String : a user id
    */
   @Override
-  public List<String> getStringValues() {
-    return getUserIds();
+  public String getStringValue() {
+    return getUserId();
   }
 
   /**
    * Set this field value from a normalized String : a user id
    */
   @Override
-  public void setStringValues(List<String> values) {
+  public void setStringValue(String value) {
     SilverTrace.info("form", "UserField.setStringValue",
-        "root.MSG_GEN_ENTER_METHOD", "values = " + StringUtil.join(values, ","));
-    setUserIds(values);
+        "root.MSG_GEN_ENTER_METHOD", "value = " + value);
+    setUserId(value);
   }
 
   /**
    * Returns true if this field isn't read only.
    */
   @Override
-  public boolean acceptStringValues(List<String> values) {
+  public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
 
@@ -231,7 +209,7 @@ public class UserField extends AbstractMultiValuableField {
    */
   @Override
   public boolean isNull() {
-    return (getUserIds() == null);
+    return (getUserId() == null);
   }
 
   /**
@@ -242,7 +220,7 @@ public class UserField extends AbstractMultiValuableField {
    */
   @Override
   public void setNull() throws FormException {
-    setUserIds(null);
+    setUserId(null);
   }
 
   /**
@@ -250,12 +228,12 @@ public class UserField extends AbstractMultiValuableField {
    */
   @Override
   public boolean equals(Object o) {
-    String s = Util.list2String(getUserIds());
+    String s = getUserId();
     if (s == null) {
       s = "";
     }
     if (o instanceof UserField) {
-      String t = Util.list2String(((UserField) o).getUserIds());
+      String t = ((UserField) o).getUserId();
       if (t == null) {
         t = "";
       }
@@ -270,22 +248,22 @@ public class UserField extends AbstractMultiValuableField {
    */
   @Override
   public int compareTo(Object o) {
-    String s = Util.list2String(getValues());
+    String s = getValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof UserField) {
-      String t = Util.list2String(((UserField) o).getValues());
+      String t = ((UserField) o).getValue();
       if (t == null) {
         t = "";
       }
 
       if (s.equals(t)) {
-        s = Util.list2String(getUserIds());
+        s = getUserId();
         if (s == null) {
           s = "";
         }
-        t = Util.list2String(((UserField) o).getUserIds());
+        t = ((UserField) o).getUserId();
         if (t == null) {
           t = "";
         }
@@ -298,11 +276,11 @@ public class UserField extends AbstractMultiValuableField {
 
   @Override
   public int hashCode() {
-    String s = Util.list2String(getUserIds());
+    String s = getUserId();
     return ("" + s).hashCode();
   }
   /**
    * The referenced userId.
    */
-  private List<String> userIds = null;
+  private String userId = null;
 }

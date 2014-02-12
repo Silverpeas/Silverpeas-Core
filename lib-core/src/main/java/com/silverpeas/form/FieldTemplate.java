@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.form.record.Parameter;
-import com.silverpeas.form.record.Repeatable;
 
 /**
  * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
@@ -99,6 +98,7 @@ public interface FieldTemplate {
    * Returns an empty Field built on this template.
    */
   public Field getEmptyField() throws FormException;
+  public Field getEmptyField(int occurrence) throws FormException;
 
   public boolean isSearchable();
 
@@ -106,8 +106,8 @@ public interface FieldTemplate {
   
   public boolean isUsedAsFacet();
   
-  public int getMaximumNumberOfValues();
+  public int getMaximumNumberOfOccurrences();
   
-  public boolean isMultivaluable();
+  public boolean isRepeatable();
 
 }

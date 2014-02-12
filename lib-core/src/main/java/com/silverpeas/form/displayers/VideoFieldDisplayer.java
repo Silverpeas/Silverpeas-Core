@@ -29,21 +29,19 @@ import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.webactiv.util.FileServerUtils;
-import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer
@@ -107,10 +105,10 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
   }
 
   @Override
-  public void displayInput(String inputId, String value, boolean mandatory, FileField field, FieldTemplate template,
-      PagesContext pageContext, PrintWriter out) {
+  public void display(PrintWriter out, FileField field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
     checkFieldType(template.getTypeName(), "VideoFieldDisplayer.display");
-    String attachmentId = value;
+    String attachmentId = field.getValue();
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = "";
     }
@@ -119,14 +117,15 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
       VideoPlayer videoPlayer = new VideoPlayer();
       videoPlayer.init(xhtmlcontainer);
       if (template.isReadOnly()) {
-        displayVideo(videoPlayer, attachmentId, template, xhtmlcontainer, pageContext);
+        displayVideo(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
       } else if (!template.isDisabled()) {
-        displayVideoFormInput(videoPlayer, attachmentId, template, inputId, xhtmlcontainer, pageContext);
+        displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext, field);
       }
 
       out.println(xhtmlcontainer.toString());
     }
   }
+
 
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
@@ -186,9 +185,9 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param pagesContext the context of the displaying page.
    */
   private void displayVideoFormInput(final VideoPlayer videoPlayer,
-      final String attachmentId, final FieldTemplate template, String inputId,
-      final ElementContainer xhtmlContainer, final PagesContext pagesContext) {
-    String fieldName = inputId;
+      final String attachmentId, final FieldTemplate template,
+      final ElementContainer xhtmlContainer, final PagesContext pagesContext, FileField field) {
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String language = pagesContext.getLanguage();
     String deletionIcon = Util.getIcon("delete");
     String deletionLab = Util.getString("removeFile", language);

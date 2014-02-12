@@ -127,13 +127,18 @@ public class MyFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  public int getMaximumNumberOfValues() {
+  public int getMaximumNumberOfOccurrences() {
     return 1;
   }
   
   @Override
-  public boolean isMultivaluable() {
+  public boolean isRepeatable() {
     return false;
+  }
+
+  @Override
+  public Field getEmptyField(int occurrence) throws FormException {
+    return null;
   }
 
 }

@@ -24,13 +24,25 @@
 
 package com.silverpeas.form.record;
 
-import com.silverpeas.form.AbstractMultiValuableField;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.silverpeas.util.crypto.CryptoException;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.FormRuntimeException;
-import com.silverpeas.form.MultiValuableField;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
@@ -46,20 +58,6 @@ import com.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.silverpeas.util.crypto.CryptoException;
 
 /**
  * The GenericRecordSetManage all the GenericRecordSet. It is a singleton.
@@ -619,6 +617,7 @@ public class GenericRecordSetManager {
       fieldTemplate.setLabel(field.getLabel());
       fieldTemplate.setUsedAsFacet(field.isUsedAsFacet());
       fieldTemplate.setParametersObj(field.getParametersObj());
+      fieldTemplate.setMaximumNumberOfOccurrences(field.getMaximumNumberOfOccurrences());
 
       wrapped.addFieldTemplate(fieldTemplate);
     }
@@ -918,7 +917,7 @@ public class GenericRecordSetManager {
         String fieldName = fieldNameAndIndex[0];
         int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
         
-        String fieldValue = rows.get(fieldName);
+        String fieldValue = rows.get(fieldNameIndexed);
         insert.setInt(1, recordId);
         insert.setString(2, fieldName);
         insert.setString(3, fieldValue);
@@ -1010,19 +1009,12 @@ public class GenericRecordSetManager {
         String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
         String fieldName = fieldNameAndIndex[0];
         int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
-        Field field = record.getField(fieldName);
+        Field field = record.getField(fieldName, fieldValueIndex);
         String fieldValue = rows.get(fieldNameIndexed);
-        if (field != null) {// We have found a field corresponding to the fieldName
-          if (field instanceof MultiValuableField) {
-            SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
-                "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + "fieldValueIndex = " +
-                    fieldValueIndex + ", fieldValue=" + fieldValue);
-            ((MultiValuableField) field).addValue(fieldValue);
-          } else {
-            SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
-                "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
-            field.setStringValue(fieldValue);
-          }
+        if (field != null) {// We found a field corresponding to the fieldName
+          SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
+              "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
+          field.setStringValue(fieldValue);
         }
       }
     } finally {
@@ -1101,23 +1093,12 @@ public class GenericRecordSetManager {
   private Map<String, String> getRowsToStore(GenericDataRecord record, boolean crypt)
       throws FormException, CryptoException {
     Map<String, String> rows = new HashMap<String, String>();
-    for (String fieldName : record.getFieldNames()) {
-      Field field = record.getField(fieldName);
-      String fieldNameIndexed = fieldName+SEPARATOR+"0";
-      if (field instanceof AbstractMultiValuableField) {
-        List<String> values = ((AbstractMultiValuableField) field).getStringValues();
-        if (values != null && !values.isEmpty()) {
-          for (int i=0; i<values.size(); i++) {
-            fieldNameIndexed = fieldName+SEPARATOR+i;
-            rows.put(fieldNameIndexed, values.get(i));
-          }
-        }
-      } else {
-        rows.put(fieldNameIndexed, field.getStringValue());
-      }
+    for (Field field : record.getFields()) {
+      String fieldNameIndexed = field.getName()+SEPARATOR+field.getOccurrence();
+      rows.put(fieldNameIndexed, field.getStringValue());
       
       SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
-          "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
+          "root.MSG_GEN_PARAM_VALUE", "fieldNameIndexed = " + fieldNameIndexed
           + ", fieldValue = " + field.getStringValue()
           + ", recordId = " + record.getInternalId());
     }

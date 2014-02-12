@@ -82,7 +82,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   private boolean usedAsFacet = false;
   
   @XmlElement(defaultValue = "1")
-  private int maximumNumberOfValues = 1;
+  private int maximumNumberOfOccurrences = 1;
 
   /**
    * Builds a GenericFieldTemplate
@@ -372,15 +372,20 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   /**
    * Returns an empty Field built on this template.
    */
-  @SuppressWarnings("unchecked")
   @Override
   public Field getEmptyField() throws FormException {
+    return getEmptyField(0);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public Field getEmptyField(int occurrence) throws FormException {
     try {
       Class[] noParameterClass = ArrayUtil.EMPTY_CLASS_ARRAY;
       Constructor constructor = fieldImpl.getConstructor(noParameterClass);
       Object[] noParameter = ArrayUtil.EMPTY_OBJECT_ARRAY;
       Field field = (Field) constructor.newInstance(noParameter);
-
+      field.setName(fieldName);
+      field.setOccurrence(occurrence);
       return field;
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
@@ -501,7 +506,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       clone.setTemplateName(this.getTemplateName());
       clone.setTypeName(this.getTypeName());
       clone.setUsedAsFacet(isUsedAsFacet());
-      clone.setMaximumNumberOfValues(getMaximumNumberOfValues());
+      clone.setMaximumNumberOfOccurrences(getMaximumNumberOfOccurrences());
     } catch (FormException e) {
       throw new RuntimeException(e);
     }
@@ -509,17 +514,17 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   }
 
   @Override
-  public int getMaximumNumberOfValues() {
-    return maximumNumberOfValues;
+  public int getMaximumNumberOfOccurrences() {
+    return maximumNumberOfOccurrences;
   }
   
-  public void setMaximumNumberOfValues(int nb) {
-    maximumNumberOfValues = nb;
+  public void setMaximumNumberOfOccurrences(int nb) {
+    maximumNumberOfOccurrences = nb;
   }
   
   @Override
-  public boolean isMultivaluable() {
-    return maximumNumberOfValues > 1;
+  public boolean isRepeatable() {
+    return maximumNumberOfOccurrences > 1;
   }
 
 }

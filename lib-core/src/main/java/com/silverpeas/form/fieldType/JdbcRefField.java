@@ -20,11 +20,12 @@
  */
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import org.owasp.encoder.Encode;
 
-public class JdbcRefField implements Field {
+public class JdbcRefField extends AbstractField {
 
   private static final long serialVersionUID = -2738403979429471532L;
   static public final String TYPE = "jdbcRef";

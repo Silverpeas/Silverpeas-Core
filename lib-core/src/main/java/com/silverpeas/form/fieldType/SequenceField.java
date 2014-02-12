@@ -20,9 +20,6 @@
  */
 package com.silverpeas.form.fieldType;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,6 +27,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 
 public class SequenceField extends TextField {
 
@@ -48,7 +49,7 @@ public class SequenceField extends TextField {
       + " and f.fieldName = ?"
       + " and t.externalId like ?";
   private static final int NUMBER_ERROR = -1;
-  private List<String> values = new ArrayList<String>();
+  private String value = "";
 
   public SequenceField() {
     super();
@@ -60,13 +61,13 @@ public class SequenceField extends TextField {
   }
 
   @Override
-  public void setStringValues(List<String> values) {
-    this.values = values;
+  public void setStringValue(String value) {
+    this.value = value;
   }
 
   @Override
-  public List<String> getStringValues() {
-    return values;
+  public String getStringValue() {
+    return value;
   }
 
   @Override

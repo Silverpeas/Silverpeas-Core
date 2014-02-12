@@ -410,7 +410,7 @@ public class TemplateDesignerRequestRouter extends
     
     String nbMaxValues = request.getParameter("NbMaxValues");
     if (StringUtil.isInteger(nbMaxValues)) {
-      field.setMaximumNumberOfValues(Integer.parseInt(nbMaxValues));
+      field.setMaximumNumberOfOccurrences(Integer.parseInt(nbMaxValues));
     }
 
     Enumeration<String> paramNames = request.getParameterNames();

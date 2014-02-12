@@ -76,16 +76,16 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param webContext
    * @throws FormException
    */
-  public void displayInput(String inputId, String value, boolean mandatory, FileField field, FieldTemplate template,
-      PagesContext pageContext, PrintWriter out) {
+  public void display(PrintWriter out, FileField field, FieldTemplate template,
+      PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + value
+        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId()
         + ", fieldType = " + field.getTypeName());
-    String fieldName = inputId;
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String language = pageContext.getLanguage();
     Operation defaultOperation = Operation.ADD;
     String componentId = pageContext.getComponentId();
-    String attachmentId = value;
+    String attachmentId = field.getAttachmentId();
     SimpleDocumentPK attachmentPk;
     if (StringUtil.isLong(attachmentId)) {
       attachmentPk = new SimpleDocumentPK(null, componentId);
@@ -243,13 +243,10 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     }
   }
   
-  protected String processInput(List<FileItem> items, FileField field, String inputName, int id, PagesContext pageContext) {
-    List<String> attachmentIds = field.getAttachmentIds();
-    String currentAttachmentId = null;
-    if (id < attachmentIds.size()) {
-      currentAttachmentId = attachmentIds.get(id);
-    }
+  protected String processInput(List<FileItem> items, FileField field, PagesContext pageContext) {
+    String currentAttachmentId = field.getAttachmentId();
     try {
+      String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
       String newAttachmentId = processUploadedFile(items, inputName, pageContext);
       Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
           + OPERATION_KEY));
