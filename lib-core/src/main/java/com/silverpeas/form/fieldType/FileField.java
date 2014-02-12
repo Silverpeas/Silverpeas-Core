@@ -24,9 +24,6 @@
 
 package com.silverpeas.form.fieldType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 
@@ -59,33 +56,40 @@ public class FileField extends TextField {
   public FileField() {
   }
   
-  public List<String> getAttachmentIds() {
-    return attachmentIds;
+  public String getAttachmentId() {
+    return attachmentId;
   }
   
-  public void setAttachmentIds(List<String> attachmentIds) {
-    this.attachmentIds = attachmentIds;
+  public void setAttachmentId(String attachmentId) {
+    this.attachmentId = attachmentId;
   }
+  
   
   /**
    * Returns the string value of this field.
    */
   @Override
-  public List<String> getStringValues() {
-    return attachmentIds;
+  public String getStringValue() {
+    return attachmentId;
   }
 
   /**
    * Set the string value of this field.
    */
   @Override
-  public void setStringValues(List<String> values) {
-    this.attachmentIds = values;
+  public void setStringValue(String value) {
+    this.attachmentId = value;
   }
 
   /**
    * The referenced attachment ids.
    */
-  private List<String> attachmentIds = new ArrayList<String>();
+  private String attachmentId = null;
+
+  @Override
+  public boolean isReadOnly() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
 }

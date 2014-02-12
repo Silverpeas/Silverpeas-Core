@@ -26,7 +26,6 @@ import java.io.PrintWriter;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
@@ -64,21 +63,21 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param template
    * @throws FormException
    */
-  public void displayInput(String inputId, String value, boolean mandatory, FileField field, FieldTemplate template,
-      PagesContext pageContext, PrintWriter out) {
+  public void display(PrintWriter out, FileField field, FieldTemplate template,
+      PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + value + ", fieldType = " + field.getTypeName());
+        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId() + ", fieldType = " + field.getTypeName());
     String language = pageContext.getContentLanguage();
     StringBuilder html = new StringBuilder(1024);
     Operation defaultOperation = Operation.ADD;
-    String fieldName = inputId;
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
 
     if (!FileField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "FileFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           FileField.TYPE);
     }
 
-    String attachmentId = value;
+    String attachmentId = field.getAttachmentId();
     String componentId = pageContext.getComponentId();
     String webContext = URLManager.getApplicationURL();
 

@@ -2,20 +2,17 @@ package com.silverpeas.form.displayers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.MultiValuableField;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public abstract class AbstractMultiValuableTextFieldDisplayer<T extends MultiValuableField> extends
-    AbstractMultiValuableFieldDisplayer<T> {
+public abstract class AbstractTextFieldDisplayer<T extends Field> extends
+    AbstractFieldDisplayer<T> {
   
   private final static String[] MANAGED_TYPES = new String[]{TextField.TYPE};
   
@@ -88,23 +85,6 @@ public abstract class AbstractMultiValuableTextFieldDisplayer<T extends MultiVal
     out.print(script.toString());
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
-  }
-  
-  @Override
-  public List<String> updateValues(List<String> newValues, T field, FieldTemplate template,
-      PagesContext pagesContext)
-      throws FormException {
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("AbstractMultiValuableTextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-    if (field.acceptValues(newValues, pagesContext.getLanguage())) {
-      field.setValues(newValues, pagesContext.getLanguage());
-    } else {
-      throw new FormException("AbstractMultiValuableTextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
-    }
-    return new ArrayList<String>();
   }
   
   @Override

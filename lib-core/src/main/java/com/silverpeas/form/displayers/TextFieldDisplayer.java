@@ -21,6 +21,7 @@
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +33,14 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -48,7 +51,7 @@ import com.silverpeas.util.StringUtil;
  * @see Form
  * @see FieldDisplayer
  */
-public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<TextField> {
+public class TextFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
 
   /**
    * Constructeur
@@ -65,10 +68,18 @@ public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<
    * </UL>
    */
   @Override
-  public void displayInput(String inputId, String value, boolean mandatory, TextField field, FieldTemplate template,
-      PagesContext pageContext, PrintWriter out) {
-    
-    String fieldName = template.getFieldName();
+  public void display(PrintWriter out, TextField field, FieldTemplate template, PagesContext pageContext)
+      throws FormException {
+    if (field == null) {
+      return;
+    }
+
+    if (!field.getTypeName().equals(TextField.TYPE)) {
+      SilverTrace.info("form", "TextFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
+    }
+
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     // Suggestions used ?
@@ -90,13 +101,23 @@ public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<
       }
     }
 
+    String defaultValue =
+        (parameters.containsKey("default") ? parameters.get("default") : "");
+    if (pageContext.isIgnoreDefaultValues()) {
+      defaultValue = "";
+    }
+    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+    if (pageContext.isBlankFieldsUse()) {
+      value = "";
+    }
+
     input textInput = new input();
-    textInput.setName(inputId);
-    textInput.setID(inputId);
+    textInput.setName(fieldName);
+    textInput.setID(fieldName);
     textInput.setValue(EncodeHelper.javaStringToHtmlString(value));
     textInput.setType(template.isHidden() ? input.hidden : input.text);
     textInput.setMaxlength(parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters
-          .get(TextField.PARAM_MAXLENGTH) : "1000");
+        .get(TextField.PARAM_MAXLENGTH) : "1000");
     textInput.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
     if (parameters.containsKey("border")) {
       textInput.setBorder(Integer.parseInt(parameters.get("border")));
@@ -111,8 +132,8 @@ public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<
     }
 
     img image = null;
-    if (mandatory && !template.isDisabled() && !template.isReadOnly() && !template.
-          isHidden() && pageContext.useMandatory()) {
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
+        isHidden() && pageContext.useMandatory()) {
       image = new img();
       image.setSrc(Util.getIcon("mandatoryField"));
       image.setWidth(5);
@@ -120,7 +141,7 @@ public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<
       image.setBorder(0);
     }
 
-    if (suggestions != null && !suggestions.isEmpty()) {
+    if (suggestions != null && suggestions.size() > 0) {
       TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
       out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
 
@@ -146,6 +167,28 @@ public class TextFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<
         out.println(textInput.toString());
       }
     }
+  }
+
+  @Override
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
+      PagesContext pagesContext)
+      throws FormException {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
+      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
+    }
+    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
+      field.setValue(newValue, pagesContext.getLanguage());
+    } else {
+      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
+    }
+    return new ArrayList<String>();
+  }
+
+  @Override
+  public boolean isDisplayedMandatory() {
+    return true;
   }
 
   @Override

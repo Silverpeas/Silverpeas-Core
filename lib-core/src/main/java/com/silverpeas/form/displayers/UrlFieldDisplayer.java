@@ -20,10 +20,20 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
@@ -31,12 +41,6 @@ import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -47,7 +51,7 @@ import org.apache.ecs.xhtml.input;
  * @see Form
  * @see FieldDisplayer
  */
-public class UrlFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<TextField> {
+public class UrlFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
 
   public UrlFieldDisplayer() {
   }
@@ -61,12 +65,12 @@ public class UrlFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<T
    * </UL>
    */
   @Override
-  public void displayInput(String inputId, String value, boolean mandatory, TextField field, FieldTemplate template,
-      PagesContext pageContext, PrintWriter out) {
-    
+  public void display(PrintWriter out, TextField field, FieldTemplate template,
+      PagesContext pageContext) throws FormException {
+    String value;
     String html = "";
 
-    String fieldName = template.getFieldName();
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     SilverTrace.info("form", "UrlFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE", "fieldName="
         + fieldName);
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
@@ -74,6 +78,16 @@ public class UrlFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<T
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "UrlFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
+    }
+
+    String defaultValue =
+        (parameters.containsKey("default") ? parameters.get("default") : "");
+    if (pageContext.isIgnoreDefaultValues()) {
+      defaultValue = "";
+    }
+    value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+    if (pageContext.isBlankFieldsUse()) {
+      value = "";
     }
 
     if (template.isReadOnly() && !template.isHidden()) {
@@ -99,8 +113,8 @@ public class UrlFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<T
       }
 
       input inputField = new input();
-      inputField.setName(inputId);
-      inputField.setID(inputId);
+      inputField.setName(fieldName);
+      inputField.setID(fieldName);
       inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
@@ -125,7 +139,7 @@ public class UrlFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<T
         image.setBorder(0);
       }
 
-      if (suggestions != null && !suggestions.isEmpty()) {
+      if (suggestions != null && suggestions.size() > 0) {
         TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
         out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
 
@@ -154,6 +168,24 @@ public class UrlFieldDisplayer extends AbstractMultiValuableTextFieldDisplayer<T
       }
     }
     out.println(html);
+  }
+  
+  @Override
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
+
+    if (!TextField.TYPE.equals(field.getTypeName())) {
+      throw new FormException("UrlFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
+    }
+
+    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
+      field.setValue(newValue, PagesContext.getLanguage());
+    } else {
+      throw new FormException("UrlFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
+    }
+    return new ArrayList<String>();
   }
 
   @Override

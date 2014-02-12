@@ -15,14 +15,14 @@ boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
 boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
-boolean showMultiValuesParam = "text".equals(displayer) || "url".equals(displayer) || "user".equals(displayer) || "file".equals(displayer) || "image".equals(displayer) || "video".equals(displayer);
+boolean showMultiValuesParam = "text".equals(displayer) || "url".equals(displayer) || "file".equals(displayer) || "image".equals(displayer) || "video".equals(displayer);
 boolean shownInNewWindow = "pdc".equals(displayer);
 String checked = "checked=\"checked\"";
 
 if (field != null) {
 	name 			= field.getFieldName();
-	if (field.isMultivaluable()) {
-		nbMaxValues = field.getMaximumNumberOfValues();
+	if (field.isRepeatable()) {
+		nbMaxValues = field.getMaximumNumberOfOccurrences();
 		multivaluableChecked = checked;
 	}
 	actionForm 		= "UpdateField";
@@ -60,6 +60,8 @@ if (field != null) {
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<% } else { %>
+<view:includePlugin name="tkn"/>
 <% } %>
 
 <script type="text/javascript">

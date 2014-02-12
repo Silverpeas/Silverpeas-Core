@@ -137,6 +137,11 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   public Field getEmptyField() throws FormException {
     throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
   }
+  
+  @Override
+  public Field getEmptyField(int occurrence) throws FormException {
+    throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
+  }
 
   public boolean isSearchable() {
     return false;
@@ -151,12 +156,12 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   }
   
   @Override
-  public int getMaximumNumberOfValues() {
+  public int getMaximumNumberOfOccurrences() {
     return 1;
   }
     
   @Override
-  public boolean isMultivaluable() {
+  public boolean isRepeatable() {
     return false;
   }
 

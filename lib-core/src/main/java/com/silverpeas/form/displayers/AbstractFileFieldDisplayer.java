@@ -27,17 +27,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.servlet.FileUploadUtil;
 
-import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
@@ -47,18 +50,12 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 
 /**
  * @author ehugonnet
  */
-public abstract class AbstractFileFieldDisplayer extends
-    AbstractMultiValuableFieldDisplayer<FileField> {
+public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   protected static final String OPERATION_KEY = "Operation";
 
@@ -156,43 +153,20 @@ public abstract class AbstractFileFieldDisplayer extends
       PagesContext pageContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
 
-    String attachmentId = processInput(items, field, template.getFieldName(), 0, pageContext);
-    List<String> values = new ArrayList<String>();
-    if (StringUtil.isDefined(attachmentId)) {
-      values.add(attachmentId);
-    }
+    String attachmentId = processInput(items, field, pageContext);
 
-    if (template.isMultivaluable()) {
-      for (int i = 1; i < template.getMaximumNumberOfValues(); i++) {
-        attachmentId = processInput(items, field, template.getFieldName() +
-            AbstractForm.REPEATED_FIELD_SEPARATOR + i, i, pageContext);
-        if (StringUtil.isDefined(attachmentId)) {
-          values.add(attachmentId);
-        }
-      }
-
-      // complete list with empty values
-      for (int i = values.size(); i < template.getMaximumNumberOfValues(); i++) {
-        values.add("");
-      }
-    }
-
-    attachmentIds.addAll(updateValues(values, field, template, pageContext));
+    attachmentIds.addAll(update(attachmentId, field, template, pageContext));
 
     return attachmentIds;
   }
 
-  protected String processInput(List<FileItem> items, FileField field, String inputName, int id,
-      PagesContext pageContext) {
+  protected String processInput(List<FileItem> items, FileField field, PagesContext pageContext) {
     try {
+      String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
       String attachmentId = processUploadedFile(items, inputName, pageContext);
       Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
           + OPERATION_KEY));
-      List<String> attachmentIds = field.getAttachmentIds();
-      String currentAttachmentId = null;
-      if (id < attachmentIds.size()) {
-        currentAttachmentId = attachmentIds.get(id);
-      }
+      String currentAttachmentId = field.getAttachmentId();
       if ((isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId))
           && !pageContext.isCreation()) {
         // delete previous attachment
@@ -210,17 +184,19 @@ public abstract class AbstractFileFieldDisplayer extends
     return null;
   }
 
-  @Override
-  public List<String> updateValues(List<String> attachmentIds, FileField field,
-      FieldTemplate template,
+  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (FileField.TYPE.equals(field.getTypeName())) {
-      field.setAttachmentIds(attachmentIds);
+      if (!StringUtil.isDefined(attachmentId)) {
+        field.setNull();
+      } else {
+        field.setAttachmentId(attachmentId);
+      }
     } else {
       throw new FormException("FileFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           FileField.TYPE);
     }
-    return attachmentIds;
+    return Collections.singletonList(attachmentId);
   }
 
   /**

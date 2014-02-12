@@ -20,12 +20,14 @@
  */
 package com.silverpeas.form.fieldType;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A GroupField stores a group reference.
@@ -33,7 +35,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  * @see Field
  * @see FieldDisplayer
  */
-public class GroupField implements Field {
+public class GroupField extends AbstractField {
 
   /**
    *

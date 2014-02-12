@@ -25,6 +25,9 @@
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -38,12 +41,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
@@ -53,7 +50,7 @@ import java.util.Map;
  * @see Form
  * @see FieldDisplayer
  */
-public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<UserField> {
+public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   /**
    * Returns the name of the managed types.
@@ -62,7 +59,7 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
   public String[] getManagedTypes() {
     return new String[] { UserField.TYPE };
   }
-
+  
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
@@ -78,8 +75,7 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
 
     if (!UserField.TYPE.equals(template.getTypeName())) {
@@ -113,8 +109,8 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
    * @throws FormException
    */
   @Override
-  public void displayInput(String inputId, String value, boolean mandatory, UserField field, FieldTemplate template,
-      PagesContext pageContext, PrintWriter out) {
+  public void display(PrintWriter out, UserField field, FieldTemplate template,
+      PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
         + ", fieldType = " + field.getTypeName());
@@ -124,23 +120,30 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
     String selectUserLab = Util.getString("userPanel", language);
     String deleteUserImg = Util.getIcon("delete");
     String deleteUserLab = Util.getString("clearUser", language);
-    
-    String userId = value;
+
     String userName = "";
-    UserDetail user = UserDetail.getById(userId);
-    if (user != null) {
-      userName = user.getDisplayedName();
-    }
+    String userId = "";
     String html = "";
 
+    String fieldName = template.getFieldName();
+
+    if (!field.getTypeName().equals(UserField.TYPE)) {
+      SilverTrace.info("form", "UserFieldDisplayer.display",
+          "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
+    } else {
+      userId = field.getUserId();
+    }
+    if (!field.isNull()) {
+      userName = field.getValue();
+    }
     html +=
-        "<input type=\"hidden\"" + " id=\"" + inputId + "\" name=\"" + inputId + "\" value=\""
+        "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\""
         + EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
 
     if (!template.isHidden()) {
       html +=
           "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
-          + "id=\"" + inputId + "_name\" name=\"" + inputId + "$$name\" value=\""
+          + "id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\""
           + EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
     }
 
@@ -158,8 +161,8 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
           + URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + pageContext.getFormName()
-          + "&elementId=" + inputId
-          + "&elementName=" + inputId + "_name"
+          + "&elementId=" + fieldName
+          + "&elementName=" + fieldName + "_name"
           + "&selectedUser=" + ((userId == null) ? "" : userId);
       if (usersOfInstanceOnly) {
         html += "&instanceId=" + pageContext.getComponentId();
@@ -175,8 +178,8 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
           + selectUserLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + pageContext.getFormName() + "." + inputId + ".value='';"
-          + "document." + pageContext.getFormName() + "." + inputId + "$$name"
+          + "document." + pageContext.getFormName() + "." + fieldName + ".value='';"
+          + "document." + pageContext.getFormName() + "." + fieldName + "$$name"
           + ".value='';"
           + "\">";
       html += "<img src=\""
@@ -194,14 +197,14 @@ public class UserFieldDisplayer extends AbstractMultiValuableFieldDisplayer<User
   }
 
   @Override
-  public List<String> updateValues(List<String> values, UserField field, FieldTemplate template,
+  public List<String> update(String newId, UserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
 
     if (UserField.TYPE.equals(field.getTypeName())) {
-      if (values == null || values.isEmpty()) {
+      if (!StringUtil.isDefined(newId)) {
         field.setNull();
       } else {
-        field.setUserIds(values);
+        field.setUserId(newId);
       }
     } else {
       throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",

@@ -20,15 +20,10 @@
  */
 package com.silverpeas.form.fieldType;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.silverpeas.form.AbstractMultiValuableField;
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.MultiValuableField;
-import com.silverpeas.form.Util;
-import com.silverpeas.util.StringUtil;
 
 /**
  * A TextField stores a text value.
@@ -36,7 +31,7 @@ import com.silverpeas.util.StringUtil;
  * @see Field
  * @see FieldDisplayer
  */
-public abstract class TextField extends AbstractMultiValuableField {
+public abstract class TextField extends AbstractField {
 
   private static final long serialVersionUID = 983277921021971664L;
   /**
@@ -57,11 +52,16 @@ public abstract class TextField extends AbstractMultiValuableField {
   }
 
   /**
+   * Returns true if the value is read only.
+   */
+  public abstract boolean isReadOnly();
+
+  /**
    * Returns the string value of this field.
    */
   @Override
-  public List<String> getValues() {
-    return getStringValues();
+  public String getValue() {
+    return getStringValue();
   }
 
   /**
@@ -69,8 +69,8 @@ public abstract class TextField extends AbstractMultiValuableField {
    * language parameter is unused.
    */
   @Override
-  public List<String> getValues(String language) {
-    return getStringValues();
+  public String getValue(String language) {
+    return getStringValue();
   }
 
   /**
@@ -80,8 +80,8 @@ public abstract class TextField extends AbstractMultiValuableField {
    * @throw FormException when the string value is ill formed.
    */
   @Override
-  public void setValues(List<String> values) throws FormException {
-    setStringValues(values);
+  public void setValue(String value) throws FormException {
+    setStringValue(value);
   }
 
   /**
@@ -92,15 +92,8 @@ public abstract class TextField extends AbstractMultiValuableField {
    * @throw FormException when the string value is ill formed.
    */
   @Override
-  public void setValues(List<String> values, String language) throws FormException {
-    setStringValues(values);
-  }
-  
-  @Override
-  public void setValue(String value, String lang) throws FormException {
-    List<String> values = new ArrayList<String>();
-    values.add(value);
-    setValues(values, lang);
+  public void setValue(String value, String language) throws FormException {
+    setStringValue(value);
   }
 
   /**
@@ -108,7 +101,7 @@ public abstract class TextField extends AbstractMultiValuableField {
    * value is accepted unless the field is read only.
    */
   @Override
-  public boolean acceptValues(List<String> values) {
+  public boolean acceptValue(String value) {
     return !isReadOnly();
   }
 
@@ -117,7 +110,7 @@ public abstract class TextField extends AbstractMultiValuableField {
    * value is accepted unless the field is read only.
    */
   @Override
-  public boolean acceptStringValues(List<String> values) {
+  public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
 
@@ -126,7 +119,7 @@ public abstract class TextField extends AbstractMultiValuableField {
    * value is accepted unless the field is read only.
    */
   @Override
-  public boolean acceptValues(List<String> values, String language) {
+  public boolean acceptValue(String value, String language) {
     return !isReadOnly();
   }
 
@@ -134,8 +127,8 @@ public abstract class TextField extends AbstractMultiValuableField {
    * Returns the value of this field.
    */
   @Override
-  public List getObjectValues() {
-    return getStringValues();
+  public Object getObjectValue() {
+    return getStringValue();
   }
 
   /**
@@ -145,17 +138,16 @@ public abstract class TextField extends AbstractMultiValuableField {
    * @throw FormException when the value is not a String.
    */
   @Override
-  public void setObjectValues(List<Object> values) throws FormException {
-    List<String> strings = new ArrayList<String>();
-    for (Object object : values) {
-      if (object instanceof String) {
-        strings.add((String) object);
-      } else if (object != null) {
-        throw new FormException("TextField.setObjectValue", "form.EXP_NOT_A_STRING");
+  public void setObjectValue(Object value) throws FormException {
+    if (value instanceof String) {
+      setStringValue((String) value);
+    } else {
+      if (value != null) {
+        throw new FormException("TextField.setObjectValue",
+            "form.EXP_NOT_A_STRING");
+      } else {
+        setNull();
       }
-    }
-    if (strings.isEmpty()) {
-      setNull();
     }
   }
 
@@ -163,16 +155,12 @@ public abstract class TextField extends AbstractMultiValuableField {
    * Returns true if the value is a String and this field isn't read only.
    */
   @Override
-  public boolean acceptObjectValues(List<Object> values) {
-    List<String> strings = new ArrayList<String>();
-    for (Object object : values) {
-      if (object instanceof String) {
-        strings.add((String) object);
-      } else {
-        return false;
-      }
+  public boolean acceptObjectValue(Object value) {
+    if (value instanceof String) {
+      return !isReadOnly();
+    } else {
+      return false;
     }
-    return !isReadOnly();
   }
 
   /**
@@ -180,7 +168,7 @@ public abstract class TextField extends AbstractMultiValuableField {
    */
   @Override
   public boolean isNull() {
-    return (getStringValues() == null || !StringUtil.isDefined(StringUtil.join(getStringValues(), null)));
+    return (getStringValue() == null || getStringValue().trim().equals(""));
   }
 
   /**
@@ -191,7 +179,7 @@ public abstract class TextField extends AbstractMultiValuableField {
    */
   @Override
   public void setNull() throws FormException {
-    setStringValues(null);
+    setStringValue(null);
   }
 
   /**
@@ -199,19 +187,19 @@ public abstract class TextField extends AbstractMultiValuableField {
    */
   @Override
   public boolean equals(Object o) {
-    String s = Util.list2String(getStringValues());
+    String s = getStringValue();
     if (s == null) {
       s = "";
     }
 
     if (o instanceof TextField) {
-      String t = Util.list2String(((TextField) o).getStringValues());
+      String t = ((TextField) o).getStringValue();
       if (t == null) {
         t = "";
       }
       return s.equalsIgnoreCase(t);
-    } else if (o instanceof MultiValuableField) {
-      String t = Util.list2String(((MultiValuableField) o).getValues());
+    } else if (o instanceof Field) {
+      String t = ((Field) o).getValue("");
       if (t == null) {
         t = "";
       }
@@ -226,18 +214,18 @@ public abstract class TextField extends AbstractMultiValuableField {
    */
   @Override
   public int compareTo(Object o) {
-    String s = Util.list2String(getStringValues());
+    String s = getStringValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof TextField) {
-      String t = Util.list2String(((TextField) o).getStringValues());
+      String t = ((TextField) o).getStringValue();
       if (t == null) {
         t = "";
       }
       return s.compareTo(t);
-    } else if (o instanceof MultiValuableField) {
-      String t = Util.list2String(((MultiValuableField) o).getValues());
+    } else if (o instanceof Field) {
+      String t = ((Field) o).getValue("");
       if (t == null) {
         t = "";
       }
@@ -249,7 +237,7 @@ public abstract class TextField extends AbstractMultiValuableField {
 
   @Override
   public int hashCode() {
-    String s = Util.list2String(getStringValues());
+    String s = getStringValue();
     return ("" + s).toLowerCase().hashCode();
   }
 }

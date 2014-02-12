@@ -20,12 +20,17 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.MultiValuableField;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.form.fieldType.TextField;
@@ -34,11 +39,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -109,18 +109,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     Map<String, String> parameters = template.getParameters(language);
     String value = "";
     if (!field.isNull()) {
-      if (field instanceof MultiValuableField) {
-        List<String> values = ((MultiValuableField) field).getValues();
-        if (values != null && !values.isEmpty()) {
-          value += "<ul class=\"multivalues\">\n";
-          for (String aValue : values) {
-            if (StringUtil.isDefined(aValue)) {
-              value += "<li>"+aValue+"</li>\n";
-            }
-          }
-          value += "</ul>\n";
-        }
-      } else if (field.getTypeName().equals(DateField.TYPE)) {
+      if (field.getTypeName().equals(DateField.TYPE)) {
         try {
           value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
         } catch (Exception e) {
