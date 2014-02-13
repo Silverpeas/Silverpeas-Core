@@ -9,12 +9,20 @@ CKEDITOR.editorConfig = function( config )
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	
-	config.contentsCss = webContext + '/util/styleSheets/globalSP_SilverpeasV5.css';
-  config.baseHref = webContext + '/wysiwyg/jsp/';
+	//config.contentsCss = webContext + '/util/styleSheets/globalSP_SilverpeasV5.css';
+    config.baseHref = webContext + '/wysiwyg/jsp/';
 	config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
 	//config.extraPlugins = 'jwplayer';
+	//config.forcePasteAsPlainText = true;
+	
+	config.stylesSet = [
+	       {name: 'Titre 1', element: 'h2', attributes : { 'class' : 'wysiwyg-title1' }},
+           {name: 'Titre 2', element: 'h3', attributes : { 'class' : 'wysiwyg-title2' }},
+           {name: 'Focus', element:'strong', attributes : { 'class' : 'wysiwyg-focus' }},
+           {name: 'Paragraphe important', element:'p', attributes : { 'class' : 'wysiwyg-important' }}
+	];
 	
 	config.toolbar_Default = [
 	       { name: 'document',    items : [ 'Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates' ] },

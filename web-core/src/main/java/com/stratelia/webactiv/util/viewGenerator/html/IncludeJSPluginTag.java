@@ -115,6 +115,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case tkn:
           includeSecurityTokenizing(xhtml);
           break;
+        case lightslideshow:
+          includeLightweightSlideshow(xhtml);
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore

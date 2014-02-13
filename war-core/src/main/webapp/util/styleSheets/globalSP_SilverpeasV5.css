@@ -5853,7 +5853,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 .list-responsible-user .userName a,
 #portletPages .list-responsible-user .userName a{
-  font-size:14px;
+  font-size:12px;
   color:#333333;
   font-weight:bold;
   line-height:12px;
@@ -5932,6 +5932,40 @@ ul.tagit li.tagit-choice a.tagit-close {
 
 #advanced-search table.tableBoard tr td:first-child {
   width:180px;
+}
+
+h2.wysiwyg-title1 {
+	border-left:3px solid #2a2a2a ;
+	color:#2a2a2a;
+	font-size:16px;
+	padding:0 6px;
+}
+h3.wysiwyg-title2{
+	border-left:3px solid #7eb73b ;
+	color:#7eb73b;
+	font-size:14px;
+	padding:0 6px;
+}
+
+strong.wysiwyg-focus {
+	background-color:#2a2a2a ;
+	color:#FFF;
+}
+
+p.wysiwyg-important{
+	background-color: #F5F5F5;
+	border-radius: 0 10px 0 10px;
+	padding: 9.5px;
+	border:1px solid #ebebeb;
+	font-size:110%;
+}
+
+blockquote {
+    border-left:1px solid #E4E4E4;
+    margin:0;
+    padding-left:1.5em;
+    font-style:italic;
+    color:#666;
 }
 
 /*responsive design */

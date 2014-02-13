@@ -128,4 +128,7 @@ public interface LookHelper {
   public abstract boolean isDisplayPDCInHomePage();
   
   public abstract String getSpaceWithCSSToApply();
+  
+  public DefaultSpaceHomePage getSpaceHomePage(String spaceId);
+
 }

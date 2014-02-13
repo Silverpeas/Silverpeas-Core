@@ -132,11 +132,15 @@
       if (dataOfUsers.length > 0) {
         $target.append($newLine);
         if (isSpace) {
-          $target.append($('<h5>', {
+          var $div = $('<div>', {'id':'space-admins'});
+          $target.append($div);
+          $div.append($('<h5>', {
             'class': 'textePetitBold title-list-responsible-user'
           }).append(usersAndGroups.label));
+          __prepareRoleResponsibles($div, userId, dataOfUsers);
+        } else {
+          __prepareRoleResponsibles($target, userId, dataOfUsers);
         }
-        __prepareRoleResponsibles($target, userId, dataOfUsers);
         $newLine = $('<br/>');
       }
     });
@@ -149,10 +153,12 @@
           administrators.push(administrator);
         });
         if (administrators.length > 0) {
-          $target.append($newLine);
-	      $target.append($('<h5>',
+          var $div = $('<div>', {'id':'global-admins'});
+          $target.append($div);
+          $div.append($newLine);
+          $div.append($('<h5>',
 	         {'class': 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
-	      __prepareRoleResponsibles($target, userId, administrators);
+	      __prepareRoleResponsibles($div, userId, administrators);
 	      $newLine = $('<br/>');
 	    }
       });

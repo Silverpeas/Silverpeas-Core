@@ -24,7 +24,14 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
+import java.util.List;
+
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
  * The default implementation of Window interface
@@ -33,8 +40,6 @@ import com.silverpeas.util.StringUtil;
  */
 public class WindowWithContextualDiv extends AbstractWindow {
 
-  String contextualDiv = null;
-
   /**
    * Constructor declaration
    * @see
@@ -42,99 +47,27 @@ public class WindowWithContextualDiv extends AbstractWindow {
   public WindowWithContextualDiv() {
     super();
   }
+  
+  public String getContextualDiv() {
+    String spaceIds = "";
+    String componentId = getGEF().getComponentId();
+    OrganisationController oc = getGEF().getMainSessionController().getOrganisationController();
+    if (StringUtil.isDefined(componentId)) {
+      List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public String printBefore() {
-    StringBuilder result = new StringBuilder(200);
-    String width = getWidth();
-    int nbCols = 1;
-    if (getOperationPane().nbOperations() > 0) {
-      nbCols = 2;
-    }
-
-    contextualDiv = getContextualDiv();
-    if (StringUtil.isDefined(contextualDiv)) {
-      result.append(contextualDiv);
-    }
-
-    result.append("<table width=\"").append(width).append(
-        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
-    if (isBrowseBarVisible()) {
-      result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
-      result.append(getBrowseBar().print());
-      result.append("</td>");
-      if (nbCols == 2) {
-        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
-        result.append(getOperationPane().print());
-        result.append("</td>");
-      } else {
-        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
-        result.append("&nbsp;");
-        result.append("</td>");
+      for (SpaceInst spaceInst : spaces) {
+        String spaceId = spaceInst.getId();
+        if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+          spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
+        }
+        spaceIds += spaceId + " ";
       }
-      result.append("</tr>");
-    }
-    result.append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
-    result
-        .append(
-        "<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
-    return result.toString();
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public String printAfter() {
-    StringBuilder result = new StringBuilder(200);
-    String iconsPath = getIconsPath();
-    result.append("</td></tr></table></td></tr></table>");
-    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-    result.append("<tr><td class=\"basGaucheWindow\">");
-    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-    result.append("</td><td class=\"basMilieuWindow\">");
-    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-    result.append("</td><td class=\"basDroiteWindow\">");
-    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-    result.append("</td></tr></table>");
-    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-    result.append("<tr><td>");
-    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
-        "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
-    result.append("</td><td width=\"100%\">");
-    result.append("&nbsp;");
-    result.append("</td><td>");
-    result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
-    result.append("</td></tr></table>");
-    if (StringUtil.isDefined(contextualDiv)) {
-      result.append("</div>");
     }
 
-    result.append(displayWelcomeMessage());
-
-    return result.toString();
+    if (StringUtil.isDefined(spaceIds)) {
+      ComponentInstLight component = oc.getComponentInstLight(componentId);
+      return "<div class=\"" + spaceIds + component.getName() + " " + componentId + "\">";
+    }
+    return null;
   }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  @Override
-  public String print() {
-    StringBuilder result = new StringBuilder(500);
-    result.append(printBefore());
-    result.append(getBody());
-    result.append(printAfter());
-    return result.toString();
-  }
-
 }
