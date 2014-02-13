@@ -208,7 +208,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
-        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+        "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages = new ResourceLocator(resources.getString("MessageBundle"),
@@ -779,16 +779,19 @@ public class LookSilverpeasV5Helper implements LookHelper {
       homepage.setSubSpaces(subspaces);
     }
 
-    if (resources.getBoolean("space.homepage.apps", true) ||
-        resources.getBoolean("space.homepage.events", true)) {
+    boolean displayApps = resources.getBoolean("space.homepage.apps", true);
+    boolean displayEvents = resources.getBoolean("space.homepage.events", true);
+    if (displayApps || displayEvents) {
       // get allowed apps
       String[] appIds = getOrganisationController().getAvailCompoIdsAtRoot(currentSpaceId, userId);
       List<ComponentInstLight> apps = new ArrayList<ComponentInstLight>();
       for (String appId : appIds) {
         ComponentInstLight app = getOrganisationController().getComponentInstLight(appId);
-        apps.add(app);
-        if (resources.getBoolean("space.homepage.events", true) &&
-            app.getName().equals("almanach") && !StringUtil.isDefined(homepage.getNextEventsURL())) {
+        if (displayApps) {
+          apps.add(app);
+        }
+        if (displayEvents && app.getName().equals("almanach") &&
+            !StringUtil.isDefined(homepage.getNextEventsURL())) {
           homepage.setNextEventsURL(URLManager.getApplicationURL()+URLManager.getURL(null, appId)+"portlet");
         }
       }

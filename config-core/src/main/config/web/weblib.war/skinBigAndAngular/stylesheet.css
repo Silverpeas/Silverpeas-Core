@@ -81,23 +81,23 @@ a:hover {
 }
 
 #domainsBar .spaceLevel1 a.spaceURL, #domainsBar .spaceLevel1On a.spaceURL {
-     background: url("imgDesign/bg_menu_level1.png") no-repeat scroll 0px 0px transparent;
+     background: url("imgDesign/bg_menu_level1.png") no-repeat scroll 0px bottom transparent;
      color: #101010;
      display: block;
      font-size: 19px;
      font-weight: 100;
      line-height: 19px;
-     min-height: 26px;
-     padding: 13px 10px 4px 45px;
+     min-height: 18px;
+     padding: 13px 10px 17px  45px;
 }
 
 #domainsBar .spaceLevel1 a.spaceURL:hover {
-     background: url("imgDesign/bg_menu_level1Hover.png") no-repeat scroll 0px 0px transparent;
+     background: url("imgDesign/bg_menu_level1Hover.png") no-repeat scroll  0px bottom  transparent;
      color: #101010;
 }
 
 #domainsBar .spaceLevel1On a.spaceURL:hover, #domainsBar .spaceLevel1On a.spaceURL {
-     background: url("imgDesign/bg_menu_level1On.png") no-repeat scroll 0px 0px #FFFFFF;
+     background: url("imgDesign/bg_menu_level1On.png") no-repeat scroll  0px bottom  #FFFFFF;
      color: #101010;
      padding-left: 15px;
 }
@@ -268,6 +268,10 @@ a:hover {
      color: #5D5D5E;
 }
 
+.yuimenuitemlabel, .yuimenuitemlabel:visited, .yuimenubaritemlabel, .yuimenubaritemlabel:visited {
+	   color: #5D5D5E;
+}
+
 .yuimenu .yuimenubaritem-selected, .yuimenu .yuimenuitem-selected {
      background-color: #F2D5D8;
 }
@@ -277,6 +281,8 @@ a:hover {
      border-color: #EC9C01;
      color: #FFFFFF;
 }
+
+#portletPages .list-responsible-user .action a:hover, .list-responsible-user .action a:hover {border-bottom:0}
 
 #blog #titresTopics a, #blog #titresArchives a, #blog #titresLiens a, .titreCouleur {
      color: #444443;
@@ -392,6 +398,9 @@ a:hover {
      padding-left: 38px;
 }
 
+.spaceHome .spaceNavigation li.browse-component p {
+     padding-left: 0;
+}
 .spaceHome #spaceManager h2.portlet-title {
      color: #7EB73B;
 }
@@ -407,11 +416,11 @@ a:hover {
 
 .portlet #calendar li.events {
      background: none repeat scroll 0% 0% #F0F0F0;
-	 border-bottom: 1px solid #F0F0F0;
-	 margin:0;
+border-bottom: 1px solid #F0F0F0;
+margin:0;
 }
 
-.portlet #calendar  .eventInfo {
+.portlet #calendar .eventInfo {
      background-color: #FFFFFF;
 }
 
@@ -424,6 +433,7 @@ a:hover {
      border: 0px none;
      margin: 0px;
      padding: 0px;
+	 behavior: none;
 }
 
 .spaceHome #publication.bgDegradeGris {
@@ -431,6 +441,7 @@ a:hover {
      border-top: 2px dotted #E4E4E4;
      margin-top: 2em;
      padding-top: 1em;
+	 behavior: none;
 }
 
 .spaceHome #publication .header h4 {
@@ -439,6 +450,10 @@ a:hover {
      font-weight: 100;
      margin: 0px;
      padding: 0px;
+}
+
+.header h4 {
+    font-size: 100%;
 }
 
 .spaceHome #publication li {
@@ -456,7 +471,7 @@ a:hover {
 }
 
 .spaceHome #publication li a:hover b {
-	color:#1C94D4;
+color:#1C94D4;
 }
 
 .spaceHome #publication li .userToZoom {
@@ -469,7 +484,7 @@ a:hover {
 
 .spaceHome #spaceQuiskInfo li.slide > h4 {
      color: #EC7501;
-     font-size: 13px;
+     font-size: 15px;
      font-weight: 100;
      line-height: 120%;
 }
