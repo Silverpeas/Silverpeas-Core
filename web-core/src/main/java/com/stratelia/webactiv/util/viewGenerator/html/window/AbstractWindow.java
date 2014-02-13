@@ -35,10 +35,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType;
+
 import org.silverpeas.core.admin.OrganisationController;
 
 /**
@@ -52,6 +53,7 @@ public abstract class AbstractWindow implements Window {
   private String body = null;
   private String width = null;
   private boolean browserBarDisplayable = true;
+  String contextualDiv = null;
 
   /**
    * Constructor declaration
@@ -172,28 +174,7 @@ public abstract class AbstractWindow implements Window {
     return this.browseBar;
   }
 
-  public String getContextualDiv() {
-    String spaceIds = "";
-    String componentId = gef.getComponentId();
-    OrganisationController oc = gef.getMainSessionController().getOrganisationController();
-    if (StringUtil.isDefined(componentId)) {
-      List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
-
-      for (SpaceInst spaceInst : spaces) {
-        String spaceId = spaceInst.getId();
-        if (!spaceId.startsWith("WA")) {
-          spaceId = "WA" + spaceId;
-        }
-        spaceIds += spaceId + " ";
-      }
-    }
-
-    if (StringUtil.isDefined(spaceIds)) {
-      ComponentInstLight component = oc.getComponentInstLight(componentId);
-      return "<div class=\"" + spaceIds + component.getName() + " " + componentId + "\">";
-    }
-    return null;
-  }
+  public abstract String getContextualDiv();
 
   @Override
   public boolean isBrowseBarVisible() {
@@ -292,5 +273,119 @@ public abstract class AbstractWindow implements Window {
       }
     }
     return "";
+  }
+  
+  /**
+   * Add an operation that permits to display responsibles for a space or an application.
+   */
+  protected void addSpaceOrComponentResponsibleOperation() {
+    if (!getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
+        !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
+      if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
+          StringUtil.isDefined(getGEF().getSpaceId())) ||
+          StringUtil.isDefined(getGEF().getComponentId())) {
+        if (getOperationPane().nbOperations() > 0) {
+          getOperationPane().addLine();
+        }
+        final String label;
+        final String action;
+        if (OperationPaneType.space.equals(getOperationPane().getType())) {
+          label = GeneralPropertiesManager.getString("GML.space.responsibles", "Responsables")
+              .replaceAll("''", "'");
+          action = "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
+              "','" + getGEF().getSpaceId() + "')";
+        } else {
+          label = GeneralPropertiesManager.getString("GML.component.responsibles", "Responsables")
+              .replaceAll("''", "'");
+          action =
+              "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
+                  "','" + getGEF().getComponentId() + "')";
+        }
+        getOperationPane().addOperation("", label, "javascript:" + action + ";",
+            "space-or-component-responsibles-operation");
+      }
+    }
+  }
+  
+  @Override
+  public String printBefore() {
+    StringBuilder result = new StringBuilder(200);
+    String width = getWidth();
+    int nbCols = 1;
+    addSpaceOrComponentResponsibleOperation();
+    if (getOperationPane().nbOperations() > 0) {
+      nbCols = 2;
+    }
+
+    contextualDiv = getContextualDiv();
+    if (StringUtil.isDefined(contextualDiv)) {
+      result.append(contextualDiv);
+    }
+
+    result.append("<table width=\"").append(width).append(
+        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
+    if (isBrowseBarVisible()) {
+      result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
+      result.append(getBrowseBar().print());
+      result.append("</td>");
+      if (nbCols == 2) {
+        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+        result.append(getOperationPane().print());
+        result.append("</td>");
+      } else {
+        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+        result.append("&nbsp;");
+        result.append("</td>");
+      }
+      result.append("</tr>");
+    }
+    result.append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
+    result
+        .append(
+        "<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
+    return result.toString();
+  }
+  
+  @Override
+  public String printAfter() {
+    StringBuilder result = new StringBuilder(200);
+    String iconsPath = getIconsPath();
+    result.append("</td></tr></table></td></tr></table>");
+    
+    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+    result.append("<tr><td class=\"basGaucheWindow\">");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("</td><td class=\"basMilieuWindow\">");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("</td><td class=\"basDroiteWindow\">");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("</td></tr></table>");
+    
+    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+    result.append("<tr><td>");
+    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
+        "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+    result.append("</td><td width=\"100%\">");
+    result.append("&nbsp;");
+    result.append("</td><td>");
+    result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
+        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+    result.append("</td></tr></table>");
+    if (StringUtil.isDefined(contextualDiv)) {
+      result.append("</div>");
+    }
+
+    result.append(displayWelcomeMessage());
+
+    return result.toString();
+  }
+  
+  @Override
+  public String print() {
+    StringBuilder result = new StringBuilder(500);
+    result.append(printBefore());
+    result.append(getBody());
+    result.append(printAfter());
+    return result.toString();
   }
 }

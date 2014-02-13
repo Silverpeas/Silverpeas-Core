@@ -137,8 +137,10 @@
           $div.append($('<h5>', {
             'class': 'textePetitBold title-list-responsible-user'
           }).append(usersAndGroups.label));
+          __prepareRoleResponsibles($div, userId, dataOfUsers);
+        } else {
+          __prepareRoleResponsibles($target, userId, dataOfUsers);
         }
-        __prepareRoleResponsibles($div, userId, dataOfUsers);
         $newLine = $('<br/>');
       }
     });

@@ -5853,7 +5853,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 .list-responsible-user .userName a,
 #portletPages .list-responsible-user .userName a{
-  font-size:14px;
+  font-size:12px;
   color:#333333;
   font-weight:bold;
   line-height:12px;
@@ -5958,6 +5958,14 @@ p.wysiwyg-important{
 	padding: 9.5px;
 	border:1px solid #ebebeb;
 	font-size:110%;
+}
+
+blockquote {
+    border-left:1px solid #E4E4E4;
+    margin:0;
+    padding-left:1.5em;
+    font-style:italic;
+    color:#666;
 }
 
 /*responsive design */

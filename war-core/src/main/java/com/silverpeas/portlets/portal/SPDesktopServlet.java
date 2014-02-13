@@ -630,15 +630,18 @@ public class SPDesktopServlet extends HttpServlet {
   private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
     OrganisationController organizationCtrl = getOrganizationController(request);
-    SpaceInst spaceStruct = null;
-    if (!SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
-      spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
-    }
+    SpaceInst spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
 
     if (spaceStruct != null) {
       MainSessionController m_MainSessionCtrl = getMainSessionController(request);
       String userId = m_MainSessionCtrl.getUserId();
       
+      // Force context reset
+      GraphicElementFactory gef =
+          (GraphicElementFactory) request.getSession().getAttribute(
+              GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      gef.setSpaceId(spaceId);
+      gef.setComponentId(null);
 
       // Maintenance Mode
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&

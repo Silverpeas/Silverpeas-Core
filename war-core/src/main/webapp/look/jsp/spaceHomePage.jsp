@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
@@ -125,7 +127,6 @@ List<UserDetail> admins = homepage.getAdmins();
 
 .spaceHome .spaceNavigation li div {
      display: inline-block;
-     line-height: 1.2;
      vertical-align: middle;
 }
 
@@ -135,14 +136,20 @@ List<UserDetail> admins = homepage.getAdmins();
 
 .spaceHome .spaceNavigation li p {
      font-size: 90%;
-     margin: 0px;
+     margin: -13px 0 0 0;
      padding: 0px;
 }
 
-.spaceHome .spaceNavigation li img {
-     margin: 0px 4px;
-     vertical-align: middle;
-     width: 26px;
+.spaceHome .spaceNavigation li.browse-component{
+     padding-left: 36px;
+	 position:relative;
+}
+
+.spaceHome .spaceNavigation li img {    
+	left: 5px;
+    position: absolute;
+    top: 25%;
+    width: 26px;
 }
 
 .spaceHome #spaceQuiskInfo ul.carousel {
@@ -173,6 +180,7 @@ List<UserDetail> admins = homepage.getAdmins();
      left: 4px;
      margin: 0px;
      padding: 0px;
+	 z-index:90;
 }
 
 .spaceHome #spaceQuiskInfo .slides-pagination a {
@@ -185,7 +193,7 @@ List<UserDetail> admins = homepage.getAdmins();
 }
 
 .spaceHome #admins #global-admins,
-.spaceHome #admins #space-admins h5 {
+ .spaceHome #admins #space-admins h5 {
      display: none;
 }
 </style>
@@ -193,6 +201,9 @@ List<UserDetail> admins = homepage.getAdmins();
 <view:includePlugin name="lightslideshow"/>
 <script type="text/javascript">
 <!--
+function goToSpaceItem(url) {
+	location.href=url;
+}
 $(document).ready(function() {
 	// if at least one item have got a description
 	if ($.trim($(".spaceNavigation li p").text()).length!=0){
@@ -211,16 +222,18 @@ $(document).ready(function() {
 -->
 </script>
 </head>
-<body class="spaceHome">
+<body class="spaceHome <%=helper.getSubSpaceId() %>">
 <view:browseBar spaceId="<%=helper.getSubSpaceId() %>"/>
+<view:operationPane type="<%=OperationPaneType.space %>">
+</view:operationPane>
 <view:window>
   <!--INTEGRATION HOME SPACE -->
                         <div id="portletPages" class="rightContent"> 
-                          <% if (!admins.isEmpty()) { %>
+                          <% if (admins != null && !admins.isEmpty()) { %>
                           <!-- gestionnaires -->
                           <div class="portlet" id="spaceManager">
                             <div class=" header">
-                              <h2 class="portlet-title">Administrateurs de l'espace</h2>
+                              <h2 class="portlet-title"><%=helper.getString("lookSilverpeasV5.homepage.space.admins") %></h2>
                             </div>
 							<div class="portlet-content">
 								<ul class="list-responsible-user">
@@ -238,7 +251,7 @@ $(document).ready(function() {
 						  <!-- QuickInfo -->
 						  <div class="portlet" id="spaceQuiskInfo">
                             <div class=" header">
-                              <h2 class="portlet-title">Actualités</h2>
+                              <h2 class="portlet-title"><%=helper.getString("lookSilverpeasV5.homepage.space.news") %></h2>
                             </div>
                             <div class="portlet-content slideshow"data-transition="crossfade" data-loop="true" data-skip="false">
 								<ul class="carousel">
@@ -260,7 +273,7 @@ $(document).ready(function() {
 						   <!-- events -->
 							 <div class="portlet" id="spaceEvent">
                             <div class=" header">
-                              <h2 class="portlet-title">Prochains évènements</h2>
+                              <h2 class="portlet-title"><%=helper.getString("lookSilverpeasV5.homepage.space.events") %></h2>
                             </div>
                             <div id="calendar" class="portlet-content">
                              <iframe src="<%=homepage.getNextEventsURL() %>" frameborder="0" height="250px"></iframe>
@@ -278,11 +291,11 @@ $(document).ready(function() {
                             	<p></p>
                             <% } %>
                            
-                          <% if (!apps.isEmpty() || !subspaces.isEmpty()) { %>
+                          <% if ((apps != null && !apps.isEmpty()) || (subspaces != null && !subspaces.isEmpty())) { %>
                           <div class="spaceNavigation">
 							<ul>
 								<% for (SpaceInstLight subspace : subspaces) { %>
-								<li class="browse-space bgDegradeGris" onclick="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>">
+								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>')">
 									<div>
 										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>"><%=subspace.getName(helper.getLanguage()) %></a>
 										<% if (StringUtil.isDefined(subspace.getDescription())) { %>
@@ -292,7 +305,7 @@ $(document).ready(function() {
 								</li>
 								<% } %>
 								<% for (ComponentInstLight app : apps) { %>
-								<li class="browse-component bgDegradeGris" onclick="<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>">
+								<li class="browse-component bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>')">
 									<div>
 										<img src="<%=app.getIcon(true) %>" /> 
 										<a href="<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>"><%=app.getLabel(helper.getLanguage()) %></a>
@@ -309,7 +322,7 @@ $(document).ready(function() {
 							<% if (publications != null && !publications.isEmpty()) { %>
                           <div class="bgDegradeGris portlet" id="publication">
                             <div class="bgDegradeGris header">
-                              <h4 class="clean">Dernières publications</h4>
+                              <h4 class="clean"><%=helper.getString("lookSilverpeasV5.homepage.space.publications") %></h4>
                             </div>
 
 							<ul id="publicationList">

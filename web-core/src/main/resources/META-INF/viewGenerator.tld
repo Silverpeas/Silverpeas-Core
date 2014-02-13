@@ -759,6 +759,13 @@
       com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneTag
     </tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>Set type of OperationPane (personal, space or component)</description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to define a separator line between two operations in an OperationPane.
