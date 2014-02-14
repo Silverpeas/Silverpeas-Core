@@ -36,7 +36,7 @@
 </head>
 <body>
 <%
-Iterator templates = (Iterator) ((List)request.getAttribute("Templates")).iterator();
+List<PublicationTemplate> templates = (List<PublicationTemplate>) request.getAttribute("Templates");
 
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"));
@@ -51,9 +51,7 @@ arrayPane.addArrayColumn(resource.getString("GML.description"));
 ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resource.getString("templateDesigner.visibility"));
 arrayColumn2.setSortable(false);
 
-while(templates.hasNext())
-{	
-  PublicationTemplate template = (PublicationTemplate) templates.next();
+for(PublicationTemplate template : templates) {
 	ArrayLine ligne = arrayPane.addArrayLine();
 	
 	ligne.addArrayCellLink(template.getName(), "ViewTemplate?Template="+template.getFileName());
@@ -61,10 +59,11 @@ while(templates.hasNext())
 	
 	IconPane icon = gef.getIconPane();
 	Icon viewIcon = icon.addIcon();
-	if (template.isVisible())
-		viewIcon.setProperties(resource.getIcon("templateDesigner.visible"), "");
-	else
-		viewIcon.setProperties(resource.getIcon("templateDesigner.hidden"), "");
+	if (template.isVisible()) {
+		viewIcon.setProperties(resource.getIcon("templateDesigner.visible"), resource.getString("templateDesigner.visible"));
+	} else {
+		viewIcon.setProperties(resource.getIcon("templateDesigner.masque"), resource.getString("templateDesigner.hidden"));
+	}
 	ligne.addArrayCellIconPane(icon);
 }
 
