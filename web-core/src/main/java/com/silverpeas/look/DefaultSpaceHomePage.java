@@ -20,67 +20,77 @@
  */
 package com.silverpeas.look;
 
-import java.util.List;
-
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
+import java.util.Collections;
+import java.util.List;
+
 public class DefaultSpaceHomePage {
 
   private SpaceInstLight space;
-  private List<SpaceInstLight> subSpaces;
-  private List<UserDetail> admins;
-  private List<ComponentInstLight> apps;
-  private List<PublicationDetail> publications;
-  private List<PublicationDetail> news;
+  private List<SpaceInstLight> subSpaces = Collections.EMPTY_LIST;
+  private List<UserDetail> admins = Collections.EMPTY_LIST;
+  private List<ComponentInstLight> apps = Collections.EMPTY_LIST;
+  private List<PublicationDetail> publications = Collections.EMPTY_LIST;
+  private List<PublicationDetail> news = Collections.EMPTY_LIST;
   private String nextEventsURL;
-  
+
   public SpaceInstLight getSpace() {
     return space;
   }
+
   public void setSpace(SpaceInstLight space) {
     this.space = space;
   }
+
   public List<PublicationDetail> getPublications() {
     return publications;
   }
+
   public void setPublications(List<PublicationDetail> publications) {
     this.publications = publications;
   }
+
   public List<PublicationDetail> getNews() {
     return news;
   }
+
   public void setNews(List<PublicationDetail> news) {
     this.news = news;
   }
+
   public List<SpaceInstLight> getSubSpaces() {
     return subSpaces;
   }
+
   public void setSubSpaces(List<SpaceInstLight> subSpaces) {
     this.subSpaces = subSpaces;
   }
+
   public List<ComponentInstLight> getApps() {
     return apps;
   }
+
   public void setApps(List<ComponentInstLight> apps) {
     this.apps = apps;
   }
+
   public List<UserDetail> getAdmins() {
     return admins;
   }
+
   public void setAdmins(List<UserDetail> admins) {
     this.admins = admins;
   }
-  
+
   public String getNextEventsURL() {
     return nextEventsURL;
   }
+
   public void setNextEventsURL(String nextEventsURL) {
     this.nextEventsURL = nextEventsURL;
-  }  
-  
-  
-   
+  }
 }

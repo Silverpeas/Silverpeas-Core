@@ -24,8 +24,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -33,14 +31,12 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType;
-
-import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author neysseri
@@ -289,14 +285,15 @@ public abstract class AbstractWindow implements Window {
         }
         final String label;
         final String action;
+        ResourceLocator bundle =
+            GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage());
         if (OperationPaneType.space.equals(getOperationPane().getType())) {
-          label = GeneralPropertiesManager.getString("GML.space.responsibles", "Responsables")
-              .replaceAll("''", "'");
+          label = bundle.getString("GML.space.responsibles", "Responsables").replaceAll("''", "'");
           action = "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
               "','" + getGEF().getSpaceId() + "')";
         } else {
-          label = GeneralPropertiesManager.getString("GML.component.responsibles", "Responsables")
-              .replaceAll("''", "'");
+          label =
+              bundle.getString("GML.component.responsibles", "Responsables").replaceAll("''", "'");
           action =
               "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
                   "','" + getGEF().getComponentId() + "')";

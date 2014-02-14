@@ -68,10 +68,16 @@ public class DefaultDataStorageSpaceQuotaService implements DataStorageSpaceQuot
     return new Quota();
   }
 
+  @Override
+  public Quota initialize(final DataStorageSpaceQuotaKey key, final Quota quota)
+      throws QuotaException {
+    return null;
+  }
+
   /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
-   */
+     * (non-Javadoc)
+     * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
+     */
   @Override
   public Quota get(final DataStorageSpaceQuotaKey key) throws QuotaException {
     return new Quota();

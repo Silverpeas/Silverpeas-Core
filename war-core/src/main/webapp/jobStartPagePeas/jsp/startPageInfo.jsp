@@ -179,7 +179,7 @@ function showTranslation(lang)
 	<%=I18NHelper.updateHTMLLinks(space)%>
 
 	document.getElementById("spaceName").innerHTML = eval("name_"+lang);
-	document.getElementById("spaceDescription").innerHTML = eval("desc_"+lang);
+	document.getElementById("description-adminSpace").innerHTML = eval("desc_"+lang);
 
 	currentLanguage = lang;
 }
@@ -298,7 +298,7 @@ out.println(tabbedPane.print());
                                quotaBean="<%=space.getDataStorageQuota()%>"/>
         <% } %>
       </div>
-      <h2 class="principal-content-title"><%=EncodeHelper.javaStringToHtmlString(m_SpaceName)%>
+      <h2 id="spaceName" class="principal-content-title"><%=EncodeHelper.javaStringToHtmlString(m_SpaceName)%>
       </h2>
 
       <%if (StringUtil.isDefined(m_Description)) {%>

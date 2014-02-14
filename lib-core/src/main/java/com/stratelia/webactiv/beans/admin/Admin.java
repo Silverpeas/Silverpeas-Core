@@ -20,34 +20,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import com.stratelia.webactiv.util.DateUtil;
-import org.silverpeas.admin.space.SpaceServiceFactory;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.util.ListSlice;
-
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
@@ -60,7 +32,6 @@ import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
@@ -79,12 +50,29 @@ import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.model.Quota;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.ListSlice;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.sql.Connection;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
@@ -7055,7 +7043,8 @@ public final class Admin {
     boolean pasteAllowed = !isParent(spaceId, toSpaceId);
     if (pasteAllowed) {
       // paste space itself
-      SpaceInst newSpace = getSpaceInstById(spaceId).clone();
+      SpaceInst oldSpace = getSpaceInstById(spaceId);
+      SpaceInst newSpace = oldSpace.clone();
       newSpace.setId("-1");
       List<String> newBrotherIds;
       if (StringUtil.isDefined(toSpaceId)) {
@@ -7088,6 +7077,20 @@ public final class Admin {
 
       // Add space
       newSpaceId = addSpaceInst(pasteDetail.getUserId(), newSpace);
+
+      // Copy space quota
+      Quota dataStorageQuota = SpaceServiceFactory.getDataStorageSpaceQuotaService()
+          .get(DataStorageSpaceQuotaKey.from(oldSpace));
+      if (dataStorageQuota.exists()) {
+        SpaceServiceFactory.getDataStorageSpaceQuotaService()
+            .initialize(DataStorageSpaceQuotaKey.from(newSpace), dataStorageQuota);
+      }
+      Quota componentQuota = SpaceServiceFactory.getComponentSpaceQuotaService()
+          .get(ComponentSpaceQuotaKey.from(oldSpace));
+      if (componentQuota.exists()) {
+        SpaceServiceFactory.getComponentSpaceQuotaService()
+            .initialize(ComponentSpaceQuotaKey.from(newSpace), componentQuota);
+      }
 
       // verify space homepage
       String componentIdAsHomePage = null;
