@@ -293,6 +293,9 @@ public class TemplateDesignerRequestRouter extends
     if (displayer.equals("map")) {
       return "fieldMap.jsp";
     }
+    if (displayer.equals("email")) {
+      return "fieldEmail.jsp";
+    }
     return "fieldText.jsp";
   }
 

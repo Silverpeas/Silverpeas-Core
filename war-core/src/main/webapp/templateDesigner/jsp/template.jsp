@@ -120,6 +120,7 @@ browseBar.setPath(resource.getString("templateDesigner.template"));
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldText"), "javascript:openWindow('text')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTextarea"), resource.getString("templateDesigner.newFieldTextarea"), "javascript:openWindow('textarea')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldURL"), resource.getString("templateDesigner.newFieldURL"), "javascript:openWindow('url')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldEmail"), resource.getString("templateDesigner.newFieldEmail"), "javascript:openWindow('email')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldWysiwyg"), resource.getString("templateDesigner.newFieldWysiwyg"), "javascript:openWindow('wysiwyg')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldRadio"), resource.getString("templateDesigner.newFieldRadio"), "javascript:openWindow('radio')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldCheckbox"), resource.getString("templateDesigner.newFieldCheckbox"), "javascript:openWindow('checkbox')");

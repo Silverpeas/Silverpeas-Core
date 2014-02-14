@@ -26,6 +26,22 @@ public abstract class AbstractTextFieldDisplayer<T extends Field> extends
     return MANAGED_TYPES;
   }
   
+  protected void addMandatoryScript(StringBuilder script, FieldTemplate template, PagesContext pageContext) {
+    if (template.isMandatory() && pageContext.useMandatory()) {
+      String language = pageContext.getLanguage();
+      String label = template.getLabel(language);
+      script.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
+      script.append("     errorMsg+=\"  - '").append(label).append("' ").
+          append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
+      script.append("     errorNb++;\n");
+      script.append("   }\n");
+    }
+  }
+  
+  protected void addSpecificScript(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
+    
+  }
+  
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
@@ -48,13 +64,9 @@ public abstract class AbstractTextFieldDisplayer<T extends Field> extends
     }
     StringBuilder script = new StringBuilder(10000);
 
-    if (template.isMandatory() && pagesContext.useMandatory()) {
-      script.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
-      script.append("     errorMsg+=\"  - '").append(label).append("' ").
-          append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
-      script.append("     errorNb++;\n");
-      script.append("   }\n");
-    }
+    addMandatoryScript(script, template, pagesContext);
+    
+    addSpecificScript(out, template, pagesContext);
 
     Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
     String contentType = parameters.get(TextField.CONTENT_TYPE);
