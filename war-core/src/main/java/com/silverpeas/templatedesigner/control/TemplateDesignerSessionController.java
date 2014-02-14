@@ -518,11 +518,11 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
    * Is the specified field should be a read only one in view?
    *
    * @param fieldName the name of the field.
-   * @return true if the field shlould be read only when it is only printed as such and no in a form
+   * @return true if the field should be read only when it is only printed as such and no in a form
    * for change.
    */
   private boolean isAReadOnlyField(final String fieldName) {
-    return Arrays.asList("wysiwyg", "url", "image", "file", "video", "map").contains(fieldName);
+    return Arrays.asList("wysiwyg", "url", "image", "file", "video", "map", "email").contains(fieldName);
   }
 
   public List<LocalizedComponent> getComponentsUsingForms() {
