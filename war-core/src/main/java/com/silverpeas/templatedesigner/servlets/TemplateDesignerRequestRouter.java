@@ -289,9 +289,11 @@ public class TemplateDesignerRequestRouter extends
     }
     if (displayer.equals("explorer")) {
       return "fieldExplorer.jsp";
-    } else {
-      return "fieldText.jsp";
     }
+    if (displayer.equals("map")) {
+      return "fieldMap.jsp";
+    }
+    return "fieldText.jsp";
   }
 
   private PublicationTemplate request2Template(HttpRequest request) throws IOException {
