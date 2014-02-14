@@ -522,7 +522,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
    * for change.
    */
   private boolean isAReadOnlyField(final String fieldName) {
-    return Arrays.asList("wysiwyg", "url", "image", "file", "video").contains(fieldName);
+    return Arrays.asList("wysiwyg", "url", "image", "file", "video", "map").contains(fieldName);
   }
 
   public List<LocalizedComponent> getComponentsUsingForms() {

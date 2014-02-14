@@ -129,6 +129,7 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTime"), re
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldFile"), resource.getString("templateDesigner.newFieldFile"), "javascript:openWindow('file')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldImage"), resource.getString("templateDesigner.newFieldImage"), "javascript:openWindow('image')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldVideo"), resource.getString("templateDesigner.newFieldVideo"), "javascript:openWindow('video')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMap"), resource.getString("templateDesigner.newFieldMap"), "javascript:openWindow('map')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldUser"), resource.getString("templateDesigner.newFieldUser"), "javascript:openWindow('user')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMultipleUsers"), resource.getString("templateDesigner.newFieldMultipleUsers"), "javascript:openWindow('multipleUser')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldGroup"), resource.getString("templateDesigner.newFieldGroup"), "javascript:openWindow('group')");
