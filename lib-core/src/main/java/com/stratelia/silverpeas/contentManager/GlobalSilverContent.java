@@ -24,22 +24,21 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import java.util.Iterator;
-
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+
+import java.util.Iterator;
 import java.util.Map;
 
 /**
  * This class allows the result jsp page of the global search to show all features (name,
  * description, location)
  */
-public class GlobalSilverContent extends AbstractI18NBean implements java.io.Serializable {
+public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18N>
+    implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
-  private String name = "";
-  private String description = "";
   private String url = "";
   private String location = "";
   private String id = "";
@@ -66,10 +65,10 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   private float score = 0;
   private String type = "";
 
-  public void init(String name, String desc, String url, String location,
-      String id, String instanceId, String date, String icon, String userId) {
-    this.name = name;
-    this.description = desc;
+  public void init(String name, String desc, String url, String location, String id,
+      String instanceId, String date, String icon, String userId) {
+    setName(name);
+    setDescription(desc);
     this.url = url;
     this.location = location;
     this.id = id;
@@ -78,21 +77,21 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
     this.icon_url = icon;
     this.userId = userId;
 
-    GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(
-        I18NHelper.defaultLanguage, name, description);
+    GlobalSilverContentI18N gscI18N =
+        new GlobalSilverContentI18N(I18NHelper.defaultLanguage, name, desc);
     addTranslation(gscI18N);
   }
 
   // constructor
-  public GlobalSilverContent(String name, String desc, String id,
-      String spaceId, String instanceId, String date, String userId) {
+  public GlobalSilverContent(String name, String desc, String id, String spaceId, String instanceId,
+      String date, String userId) {
     init(name, desc, null, null, id, instanceId, date, null, userId);
     this.spaceId = spaceId;
   }
 
   public GlobalSilverContent(MatchingIndexEntry mie) {
-    init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie
-        .getComponent(), mie.getLastModificationDate(), null, mie.getCreationUser());
+    init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie.getComponent(),
+        mie.getLastModificationDate(), null, mie.getCreationUser());
     setCreationDate(mie.getCreationDate());
 
     // add the sortable feld from XML form
@@ -101,28 +100,26 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
     Iterator<String> languages = mie.getLanguages();
     while (languages.hasNext()) {
       String language = languages.next();
-      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
-          mie.getTitle(language), mie.getPreview(language));
+      GlobalSilverContentI18N gscI18N =
+          new GlobalSilverContentI18N(language, mie.getTitle(language), mie.getPreview(language));
       addTranslation(gscI18N);
     }
   }
 
   // constructor
   public GlobalSilverContent(SilverContentInterface sci, String location) {
-    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci
-        .getId(), sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci
-        .getCreatorId());
+    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci.getId(),
+        sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci.getCreatorId());
     this.creationDate = sci.getSilverCreationDate();
 
     processLanguages(sci);
   }
 
   // constructor
-  public GlobalSilverContent(SilverContentInterface sci, String location,
-      String creatorFirstName, String creatorLastName) {
-    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci
-        .getId(), sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci
-        .getCreatorId());
+  public GlobalSilverContent(SilverContentInterface sci, String location, String creatorFirstName,
+      String creatorLastName) {
+    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci.getId(),
+        sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci.getCreatorId());
     this.creationDate = sci.getSilverCreationDate();
     this.creatorFirstName = creatorFirstName;
     this.creatorLastName = creatorLastName;
@@ -134,8 +131,8 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
     Iterator<String> languages = sci.getLanguages();
     while (languages != null && languages.hasNext()) {
       String language = languages.next();
-      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
-          sci.getName(language), sci.getDescription(language));
+      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language, sci.getName(language),
+          sci.getDescription(language));
       addTranslation(gscI18N);
     }
   }
@@ -143,41 +140,6 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   //
   // public methods
   //
-  public String getName() {
-    return name;
-  }
-
-  public String getName(String language) {
-    if (!I18NHelper.isI18N) {
-      return getName();
-    }
-
-    GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations()
-        .get(language);
-    if (s == null) {
-      s = (GlobalSilverContentI18N) getNextTranslation();
-    }
-
-    return s.getName();
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
-      return getDescription();
-    }
-
-    GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations()
-        .get(language);
-    if (s == null) {
-      s = (GlobalSilverContentI18N) getNextTranslation();
-    }
-
-    return s.getDescription();
-  }
 
   public String getURL() {
     return url;
@@ -268,7 +230,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   }
 
   public void setTitle(String title) {
-    this.name = title;
+    setName(title);
   }
 
   public String getThumbnailHeight() {

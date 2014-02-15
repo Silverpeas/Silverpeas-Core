@@ -23,6 +23,7 @@ package org.silverpeas.node.web;
 import com.silverpeas.util.i18n.Translation;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -94,7 +95,7 @@ public class NodeEntity implements Exposable {
     this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
 
     // set translations
-    Map<String, Translation> theTranslations = node.getTranslations();
+    Map<String, NodeI18NDetail> theTranslations = node.getTranslations();
     List<NodeTranslationEntity> translationEntities = new ArrayList<NodeTranslationEntity>();
     for (Translation translation : theTranslations.values()) {
       NodeTranslationEntity translationEntity =

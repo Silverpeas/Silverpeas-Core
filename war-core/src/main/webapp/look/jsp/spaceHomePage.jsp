@@ -38,6 +38,7 @@
 <%@page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.look.LookHelper"%>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -285,8 +286,8 @@ $(document).ready(function() {
                         <div class="principalContent">
                           <h1 class="spaceName"><%=space.getName(helper.getLanguage()) %></h1>
                         
-                        	<% if (StringUtil.isDefined(space.getDescription())) { %>
-                            	<p class="spaceDescription"><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(space.getDescription()) %></p>
+                        	<% if (StringUtil.isDefined(space.getDescription(helper.getLanguage()))) { %>
+                            	<p class="spaceDescription"><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(space.getDescription(helper.getLanguage())) %></p>
                             <% } else { %>
                             	<p></p>
                             <% } %>
@@ -298,8 +299,8 @@ $(document).ready(function() {
 								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>')">
 									<div>
 										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>"><%=subspace.getName(helper.getLanguage()) %></a>
-										<% if (StringUtil.isDefined(subspace.getDescription())) { %>
-											<p><%=subspace.getDescription() %></p>
+										<% if (StringUtil.isDefined(subspace.getDescription(helper.getLanguage()))) { %>
+											<p><%=subspace.getDescription(helper.getLanguage()) %></p>
 										<% } %>
 									</div>
 								</li>

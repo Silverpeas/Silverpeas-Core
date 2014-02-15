@@ -24,21 +24,19 @@
 
 package com.stratelia.webactiv.util.questionContainer.model;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 
-public class QuestionContainerHeader extends AbstractI18NBean implements java.io.Serializable,
-    SilverContentInterface {
+import java.util.Collection;
+import java.util.Iterator;
+
+public class QuestionContainerHeader extends AbstractBean
+    implements java.io.Serializable, SilverContentInterface {
 
   private static final long serialVersionUID = 6871118433726400355L;
   private QuestionContainerPK pk = null;
-  private String title = null;
-  private String description = null;
   private String comment = null;
   private String creatorId = null;
   private String creationDate = null;
@@ -137,11 +135,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   }
 
   public String getTitle() {
-    return title;
-  }
-
-  public String getDescription() {
-    return description;
+    return getName();
   }
 
   public String getComment() {
@@ -205,11 +199,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   }
 
   public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
+    setName(title);
   }
 
   public void setComment(String comment) {
@@ -270,10 +260,6 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
 
   // methods to be implemented by SilverContentInterface
 
-  public String getName() {
-    return getTitle();
-  }
-
   public String getURL() {
     return "searchResult?Type=QuestionContainer&Id=" + getId();
   }
@@ -306,18 +292,6 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     if (URLManager.displayUniversalLinks()) {
       return URLManager.getSimpleURL(URLManager.URL_SURVEY, getId(), getInstanceId());
     }
-    return null;
-  }
-
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  public String getName(String language) {
-    return getName();
-  }
-
-  public Iterator<String> getLanguages() {
     return null;
   }
 

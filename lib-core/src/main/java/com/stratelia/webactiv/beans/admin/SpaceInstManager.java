@@ -94,7 +94,7 @@ public class SpaceInstManager {
     spaceInst.setLanguage(spaceInstToCopy.getLanguage());
 
     // Create a copy of space translations
-    for (Translation translation : spaceInstToCopy.getTranslations().values()) {
+    for (SpaceI18N translation : spaceInstToCopy.getTranslations().values()) {
       spaceInst.addTranslation(translation);
     }
     spaceInst.setDisplaySpaceFirst(spaceInstToCopy.isDisplaySpaceFirst());
@@ -121,7 +121,7 @@ public class SpaceInstManager {
       sSpaceNodeId = idAsString(newSpaceRow.id);
       
       // duplicates existing translations
-      Map<String, Translation> translations = spaceInst.getTranslations();
+      Map<String, SpaceI18N> translations = spaceInst.getTranslations();
       for (String lang : translations.keySet()) {
         if (!lang.equals(newSpaceRow.lang)) {
           // default language stored in main table must not be stored in i18n table

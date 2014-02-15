@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -22,24 +22,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.pdc.model;
+package com.silverpeas.util.i18n;
 
-import com.silverpeas.util.i18n.Translation;
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
- * This class contains headers of axis. And uses the persistence class for the DAO. The user can
- * access to the axis main information.
+ * The abstraction of Silverpeas's beans.
  */
-public class AxisHeaderI18N extends Translation implements java.io.Serializable {
+public abstract class AbstractBean extends AbstractI18NBean {
+  private static final long serialVersionUID = 3300278318449203747L;
 
-  // Class version identifier
-  private static final long serialVersionUID = -1418233065462620219L;
-
-  public AxisHeaderI18N() {
+  @Override
+  public final Iterator<String> getLanguages() {
+    return null;
   }
 
-  public AxisHeaderI18N(int axisId, String lang, String name, String description) {
-    super(lang, name, description);
-    setObjectId(Integer.toString(axisId));
+  @Override
+  public final String getDescription(String language) {
+    return getDescription();
+  }
+
+  @Override
+  public final String getName(String language) {
+    return getName();
   }
 }

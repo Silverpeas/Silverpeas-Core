@@ -357,7 +357,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           node.setLanguage(axisHeader.getLanguage());
           node.setRemoveTranslation(axisHeader.isRemoveTranslation());
           node.setTranslationId(axisHeader.getTranslationId());
-          node.setTranslations(axisHeader.getTranslations());
+          node.setTranslationsFrom(axisHeader.getTranslations());
           tree.updateRoot(con, node);
         }
 
