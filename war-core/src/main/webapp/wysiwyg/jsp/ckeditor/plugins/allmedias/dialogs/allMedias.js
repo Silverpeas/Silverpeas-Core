@@ -71,7 +71,7 @@
 				 classid: 'clsid:6BF52A52-394A-11D3-B153-00C04F79FAA6',
 				 codebase: 'http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701',
 				 pluginspage: 'http://activex.microsoft.com/',
-		       exts:['wma','m4a','wav','mpg','mid','mp3']
+		       exts:['wma','m4a','wav','mpg','mid']
 			},
 		    {player:'rpvideo',idx:0,
 		         types: ['audio/x-pn-realaudio-plugin','audio/x-pn-realaudio-plugin','audio/x-pn-realaudio-plugin'],
@@ -86,20 +86,27 @@
 				 pluginspage: 'http://www.apple.com/qtactivex',
 		         exts:['qt']
 			},
-			{player:'flashvideo',idx:0,types: ['application/x-shockwave-flash','application/x-shockwave-flash','application/x-shockwave-flash',			'application/x-shockwave-flash','application/x-shockwave-flash'],
+			{player:'flashvideo',idx:0,types: ['application/x-shockwave-flash','application/x-shockwave-flash','application/x-shockwave-flash','application/x-shockwave-flash','application/x-shockwave-flash'],
 				 classid: 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000',
 				 codebase: 'http://download.macroallMedias.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0',
 				 pluginspage: 'http://www.macroallMedias.com/go/getflashplayer',
 				 src: 'jwplayer.swf', //相对插件路径
 		         exts:['flv','mov','mp4','m4v','f4v']
-			},/*
+			},
+			/*{player:'flashaudio',idx:0,types: ['application/x-shockwave-flash'],
+				 classid: 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000',
+				 codebase: 'http://download.macroallMedias.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0',
+				 pluginspage: 'http://www.macroallMedias.com/go/getflashplayer',
+				 src: 'http://www.google.com/reader/ui/3523697345-audio-player.swf', //相对插件路径
+		         exts:['mp3']
+			},*/
 			{player:'flashaudio',idx:0,types: ['application/x-shockwave-flash'],
 				 classid: 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000',
 				 codebase: 'http://download.macroallMedias.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0',
 				 pluginspage: 'http://www.macroallMedias.com/go/getflashplayer',
-				 src: 'plugins/allmedias/player.swf', //相对插件路径
+				 src: 'plugins/allmedias/dewplayer.swf', //相对插件路径
 		         exts:['mp3']
-			},*/
+			},
 			{player:'pdfReader',idx:0,types: ['application/pdf'],
 				 classid: 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000',
 				 codebase: 'http://download.macroallMedias.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0',
@@ -363,14 +370,14 @@
 						width: (this.getValueOf('info',　'width') || 400),
 						height: 45
 					};
-				}/*else if(myExtPlayer.player == 'flashaudio'){
+				}else if(myExtPlayer.player == 'flashaudio'){
 					attributes = {
-						flashvars: 'soundFile=' + CKEDITOR.tools.htmlEncode( this.getValueOf('info',　'src') || '') ,
+						flashvars: 'mp3=' + CKEDITOR.tools.htmlEncode( this.getValueOf('info',　'src') || '')+'&showtime=true&autostart='+this.getValueOf('properties',　'play')+'&autoreplay='+this.getValueOf('properties',　'loop'),
 						src: CKEDITOR.getUrl(myExtPlayer.src || '') ,
-						width: (this.getValueOf('info',　'width') || 50),
+						width: (this.getValueOf('info',　'width') || 400),
 						height: 25
 					};
-				}*/
+				}
 				else{
 					attributes = {
 						src: CKEDITOR.tools.htmlEncode( this.getValueOf('info',　'src') || '')
@@ -441,14 +448,14 @@
 												+ 'pluginspage ="' + (mp.pluginspage || '') +'" '
 												+' style="height:' + height + 'px;width:'+ width +'px"';
 										}
-										/*else if(mp.player == 'flashaudio'){
+										else if(mp.player == 'flashaudio'){
 											width = (dialog.getValueOf('info',　'width') || 25);
 										    height = (dialog.getValueOf('info',　'height') || 100);
-											objsrc = ' flashvars="autostart=true&soundFile=' + CKEDITOR.tools.htmlEncode( previewPreloader.getAttribute( 'src' )) +'" '
+											objsrc = ' flashvars="autostart=false&mp3=' + CKEDITOR.tools.htmlEncode( previewPreloader.getAttribute( 'src' )) +'" '
 											 //+'width="' + width +'" height="' + height +'" '
 											 + 'soundFile="' + CKEDITOR.tools.htmlEncode( CKEDITOR.getUrl(previewPreloader.getAttribute( 'src' ))) + '" '
 											 + 'src ="' + CKEDITOR.getUrl((mp.src || '')) +'" ';
-										}*/
+										}
 										else
 										{
 											width = (dialog.getValueOf('info',　'width') || 400);

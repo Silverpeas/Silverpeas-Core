@@ -2,8 +2,8 @@
 Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
-CKEDITOR.plugins.setLang( 'allMedias', 'fr', {
-	allMedias: 'Insert All Medias',
+CKEDITOR.plugins.setLang( 'allmedias', 'fr', {
+	allmedias: 'Vidéos, Sons, PDF',
 	access: 'Script Access',
 	accessAlways: 'Always',
 	accessNever: 'Never',
@@ -13,15 +13,15 @@ CKEDITOR.plugins.setLang( 'allMedias', 'fr', {
 	alignBaseline: 'Baseline',
 	alignTextTop: 'Text Top',
 	bgcolor: 'Background color',
-	chkFull: 'Allow Fullscreen',
-	chkLoop: 'Loop',
-	chkMenu: 'Enable Media Menu',
-	chkPlay: 'Auto Play',
+	chkFull: 'Plein écran autorisé',
+	chkLoop: 'Boucle',
+	chkMenu: 'Menu activé',
+	chkPlay: 'Lecture auto',
 	flashvars: 'Variables for Media',
 	hSpace: 'HSpace',
 	properties: 'Media Properties',
-	propertiesTab: 'Properties',
-	quality: 'Quality',
+	propertiesTab: 'Propriétés',
+	quality: 'Qualité',
 	qualityAutoHigh: 'Auto High',
 	qualityAutoLow: 'Auto Low',
 	qualityBest: 'Best',

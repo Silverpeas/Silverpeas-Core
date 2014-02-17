@@ -19,7 +19,7 @@
 	CKEDITOR.plugins.add( 'allmedias', {
 		requires: 'dialog,fakeobjects',
 		//langEntries: 'en,zh-cn,zh', // %REMOVE_LINE_CORE%
-		lang: ['en', 'zh-cn', 'zh'],
+		lang: ['en', 'zh-cn', 'zh', 'fr'],
 		icons: 'allmedias', // %REMOVE_LINE_CORE%
 		onLoad: function() {
 			CKEDITOR.addCss( 'img.cke_allMedias' +
@@ -40,7 +40,7 @@
 			editor.ui.addButton && editor.ui.addButton( 'allmedias', {
 				label: editor.lang.allmedias.allmedias,
 				command: 'allmedias',
-				toolbar: 'insert,20'
+				toolbar: 'insert'
 			});
 			CKEDITOR.dialog.add( 'allmedias', this.path + 'dialogs/allMedias.js' );
 
