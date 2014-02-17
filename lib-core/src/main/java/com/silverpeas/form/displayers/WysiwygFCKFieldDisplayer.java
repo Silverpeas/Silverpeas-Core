@@ -282,6 +282,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       builder.append("toolbarStartupExpanded : ").append("false").append(",\n");
       builder.append("customConfig : '").append(configFile).append("',\n");
       builder.append("toolbar : '").append("XMLForm").append("'\n");
+      String skin = settings.getString("skin");
+      if (StringUtil.isDefined(skin)) {
+        builder.append("skin : '").append(skin).append("'\n");
+      }
       builder.append("});");
 
       out.println(builder.toString());
