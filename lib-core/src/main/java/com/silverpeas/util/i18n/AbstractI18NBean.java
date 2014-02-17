@@ -37,10 +37,10 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
   private static final long serialVersionUID = 756146888448232764L;
 
   /* Name of the bean */
-  private String name;
+  private String name = "";
 
   /* Description of the bean */
-  private String description;
+  private String description = "";
 
   private String language = null;
   private String translationId = null;
@@ -85,13 +85,13 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
    */
   public String getName(String language) {
     if (!I18NHelper.isI18N) {
-      return getName();
+      return name;
     }
     T translation = selectTranslation(language);
     if (translation != null) {
       return translation.getName();
     } else {
-      return getName();
+      return name;
     }
   }
 
@@ -102,13 +102,13 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
    */
   public String getDescription(String language) {
     if (!I18NHelper.isI18N) {
-      return getDescription();
+      return description;
     }
     T translation = selectTranslation(language);
     if (translation != null) {
       return translation.getDescription();
     } else {
-      return getDescription();
+      return description;
     }
   }
 
