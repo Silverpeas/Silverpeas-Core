@@ -23,37 +23,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -67,6 +36,33 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  *
@@ -156,12 +152,13 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)) {
       File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-      
+
       //check the file size
-      ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+      ResourceLocator uploadSettings = new ResourceLocator(
+          "org.silverpeas.util.uploads.uploadSettings", "");
       long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
       long fileSize = tempFile.length();
-      if(fileSize > maximumFileSize) {
+      if (fileSize > maximumFileSize) {
         FileUtils.deleteQuietly(tempFile);
         throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
       }
@@ -204,7 +201,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         if (document == null) {
           document = new HistorisedDocument(pk, foreignId, 0, userId,
               new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
-              FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
+                  FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
           document.setDocumentType(attachmentContext);
         }
         document.setPublicDocument(publicDocument);
@@ -212,7 +209,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       } else {
         document = new SimpleDocument(pk, foreignId, 0, false, null,
             new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
-            FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
+                FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
         document.setDocumentType(attachmentContext);
       }
       document.setLanguage(lang);
@@ -237,6 +234,10 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       }
       content.close();
       FileUtils.deleteQuietly(tempFile);
+
+      // in the case the document is a CAD one, process it for Actify
+      ActifyDocumentProcessor.getProcessor().process(document);
+
       URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
           getLanguage()).build();
       return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
