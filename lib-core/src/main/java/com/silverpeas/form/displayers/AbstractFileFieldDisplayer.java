@@ -146,8 +146,10 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
           .append(" }\n");
     }
 
-    Util.includeFileNameLengthChecker(template, pageContext, out);
-    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+    if (!template.isReadOnly()) {
+      Util.includeFileNameLengthChecker(template, pageContext, out);
+      Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+    }
   }
 
   @Override
