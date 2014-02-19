@@ -20,7 +20,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 
@@ -75,34 +73,6 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
   public static final String PARAMETER_AUTOPLAY = "autoplay";
   public static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
   private static final int DISPLAYED_HTML_OBJECTS = 2;
-
-  @Override
-  public void displayScripts(final PrintWriter out, final FieldTemplate template,
-      final PagesContext pageContext) throws IOException {
-    checkFieldType(template.getTypeName(), "VideoFieldDisplayer.displayScripts");
-    String language = pageContext.getLanguage();
-    String fieldName = template.getFieldName();
-    if (template.isMandatory() && pageContext.useMandatory()) {
-      out.append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
-          .append("		var ").append(fieldName).append("Value = document.getElementById('")
-          .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n")
-          .append("   var ").append(fieldName).append("Operation = document.")
-          .append(pageContext.getFormName()).append(".")
-          .append(fieldName).append(OPERATION_KEY).append(".value;\n")
-          .append("		if (").append(fieldName).append("Value=='' || ")
-          .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
-          "') {\n")
-          .append("			errorMsg+=\"  - '")
-          .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
-          .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
-          .append("			errorNb++;\n")
-          .append("		}\n")
-          .append("	}\n");
-    }
-
-    Util.includeFileNameLengthChecker(template, pageContext, out);
-    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
-  }
 
   @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
@@ -229,7 +199,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
     fileInput.setName(fieldName);
     input attachmentInput = new input();
     attachmentInput.setType("hidden").setName(fieldName + Field.FILE_PARAM_NAME_SUFFIX).setValue(
-        attachmentId).setID(fieldName + Field.FILE_PARAM_NAME_SUFFIX);
+        attachmentId).setID(fieldName + FileField.PARAM_ID_SUFFIX);
     input operationInput = new input();
     operationInput.setType("hidden").setName(fieldName + OPERATION_KEY).setValue(defaultOperation.
         name()).setID(fieldName + OPERATION_KEY);

@@ -115,6 +115,9 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       html.append("<input type=\"file\" size=\"50\" id=\"").append(fieldName).append("\" name=\"").
           append(fieldName).append("\"/>");
+      html.append("<input type=\"hidden\" id=\"").append(fieldName + FileField.PARAM_ID_SUFFIX)
+          .append("\" name=\"").append(fieldName + Field.FILE_PARAM_NAME_SUFFIX)
+          .append("\" value=\"").append(attachmentId).append("\"/>");
       html.append("<input type=\"hidden\" id=\"").append(fieldName).
           append(OPERATION_KEY + "\" name=\"").append(fieldName).
           append(OPERATION_KEY + "\" value=\"").append(defaultOperation.name()).append("\"/>");

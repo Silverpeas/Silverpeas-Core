@@ -123,29 +123,31 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * @param pageContext
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
-      throws java.io.IOException {
+  public void displayScripts(final PrintWriter out, final FieldTemplate template,
+      final PagesContext pageContext) throws IOException {
+    checkFieldType(template.getTypeName(), "AbstractFileFieldDisplayer.displayScripts");
     String language = pageContext.getLanguage();
     String fieldName = template.getFieldName();
     if (template.isMandatory() && pageContext.useMandatory()) {
-      out.println(" if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println(
-          "   var " + fieldName + "Value = document.getElementById('" + fieldName
-              + FileField.PARAM_ID_SUFFIX + "').value;");
-      out.println("   if (" + fieldName + "Value=='' || " + fieldName
-          + "Value.substring(0,7)==\"remove_\") {");
-      out.println("     errorMsg+=\"  - '"
-          + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " + Util.
-              getString("GML.MustBeFilled", language) + "\\n \";");
-      out.println("     errorNb++;");
-      out.println("   }");
-      out.println(" }");
+      out.append("  if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
+          .append("   var ").append(fieldName).append("Value = document.getElementById('")
+          .append(fieldName).append(FileField.PARAM_ID_SUFFIX).append("').value;\n")
+          .append("   var ").append(fieldName).append("Operation = document.")
+          .append(pageContext.getFormName()).append(".")
+          .append(fieldName).append(OPERATION_KEY).append(".value;\n")
+          .append("   if (").append(fieldName).append("Value=='' || ")
+          .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
+          "') {\n")
+          .append("     errorMsg+=\"  - '")
+          .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
+          .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
+          .append("     errorNb++;\n")
+          .append("   }\n")
+          .append(" }\n");
     }
 
-    if (!template.isReadOnly()) {
-      Util.includeFileNameLengthChecker(template, pageContext, out);
-      Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
-    }
+    Util.includeFileNameLengthChecker(template, pageContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
   }
 
   @Override

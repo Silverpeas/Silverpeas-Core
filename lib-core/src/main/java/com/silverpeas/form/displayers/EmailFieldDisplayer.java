@@ -68,8 +68,6 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
           TextField.TYPE);
     }
     StringBuilder script = new StringBuilder(10000);
-
-    addMandatoryScript(script, template, pageContext);
     
     script.append("   if (!checkemail(field.value)) {\n");
     script.append("     errorMsg+=\"  - '").append(label).append("' ").
@@ -79,8 +77,6 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
     script.append("   }\n");
     
     out.print(script.toString());
-
-    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
   }
 
   /**
