@@ -416,7 +416,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           getRecordTemplate(SCOPE_VIEW).getFieldList());
 
       // Save others xml files (data.xml, view.xml, update.xml
-      ((PublicationTemplateImpl) template).saveRecordTemplates();
+      template.saveRecordTemplates();
 
       if (resetCache) {
         // reset caches partially
@@ -474,7 +474,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private void saveLayer(String filePath, String dir) throws PublicationTemplateException {
     try {
       File file = new File(dir, FilenameUtils.getName(filePath));
-      if (file != null && file.exists()) {
+      if (file.exists()) {
         file.delete();
       }
       FileUtils.moveFileToDirectory(new File(filePath), new File(dir), false);

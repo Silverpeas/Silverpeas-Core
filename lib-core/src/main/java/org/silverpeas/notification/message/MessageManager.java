@@ -23,8 +23,10 @@
  */
 package org.silverpeas.notification.message;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 /**
@@ -149,6 +151,38 @@ public class MessageManager {
   public static String getRegistredKey() {
     return CacheServiceFactory.getRequestCacheService().get(MessageManager.class, String.class);
   }
+
+  /**
+   * Gets the resource locator from the given property file and by taking into account of the
+   * current known language.
+   * @param propertyFileBaseName
+   * @return
+   */
+  public static ResourceLocator getResourceLocator(String propertyFileBaseName) {
+    return getResourceLocator(getRegistredKey(), propertyFileBaseName, null);
+  }
+
+  /**
+   * Gets the resource locator from the given property file and given language.
+   * @param propertyFileBaseName
+   * @param language
+   * @return
+   */
+  protected static ResourceLocator getResourceLocator(String registredKey,
+      String propertyFileBaseName, String language) {
+    MessageContainer container = getMessageContainer(registredKey);
+
+    // If null, manager has not been initialized -> ERROR is traced
+    if (container == null) {
+      SilverTrace.error("notification", "MessageManager.getResourceLocator",
+          "MESSAGE_MANAGER.NOT_INITIALIZED", "ResourceLocator : " + propertyFileBaseName);
+      return null;
+    }
+
+    return container.getResourceLocator(propertyFileBaseName,
+        StringUtil.isDefined(language) ? language : container.getLanguage());
+  }
+
 
   /**
    * Gets the message container.

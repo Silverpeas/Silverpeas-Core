@@ -24,6 +24,16 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.TypeManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -31,16 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.TypeManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A GenericDataRecord use a Field[] and a GenericRecordTemplate.
@@ -61,31 +61,29 @@ public class GenericDataRecord implements DataRecord, Serializable {
   public GenericDataRecord(RecordTemplate template) throws FormException {
     this.template = template;
 
-    String[] fieldNames = template.getFieldNames();
-    int size = fieldNames.length;
     List<Field> allFields = new ArrayList<Field>();
     fieldsByName = new HashMap<String, List<Field>>();
 
-    String fieldName;
     FieldTemplate fieldTemplate;
     Field field;
-    for (int i = 0; i < size; i++) {
-      fieldName = fieldNames[i];
+    for (final String fieldName : template.getFieldNames()) {
       fieldTemplate = template.getFieldTemplate(fieldName);
       List<Field> occurrences = new ArrayList<Field>();
-      for (int o=0; o<fieldTemplate.getMaximumNumberOfOccurrences(); o++) {
+      int maximumNumberOfOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+      for (int o = 0; o < maximumNumberOfOccurrences; o++) {
         field = fieldTemplate.getEmptyField(o);
         occurrences.add(field);
       }
       fieldsByName.put(fieldName, occurrences);
-      allFields.addAll(occurrences);      
+      allFields.addAll(occurrences);
     }
-    fields = allFields.toArray(new Field[0]);
+    fields = allFields.toArray(new Field[allFields.size()]);
   }
 
   /**
    * Returns the data record id. The record is known by its external id.
    */
+  @Override
   public String getId() {
     return externalId;
   }
@@ -93,6 +91,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
   /**
    * Gives an id to the record. Caution ! the record is known by its external id.
    */
+  @Override
   public void setId(String id) {
     // if (this.externalId == null)
     this.externalId = id;
@@ -109,6 +108,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
    * Returns the named field.
    * @throw FormException when the fieldName is unknown.
    */
+  @Override
   public Field getField(String fieldName) throws FormException {
     Field result = fieldsByName.get(fieldName).get(0);
 
@@ -142,6 +142,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
    * Returns the field at the index position in the record.
    * @throw FormException when the fieldIndex is unknown.
    */
+  @Override
   public Field getField(int fieldIndex) throws FormException {
     if (fieldIndex >= 0 && fieldIndex < fields.length) {
       return fields[fieldIndex];
@@ -153,6 +154,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
   /**
    * Return true if this record has not been inserted in a RecordSet.
    */
+  @Override
   public boolean isNew() {
     return (id == -1);
   }
@@ -202,6 +204,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
             TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
+        //noinspection unchecked
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
         formValues.put(fieldName, sw.toString());
       } catch (Exception e) {

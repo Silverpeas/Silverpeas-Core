@@ -31,6 +31,10 @@ import com.silverpeas.form.FormFatalException;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.util.ArrayUtil;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -38,11 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A generic FieldTemplate implementation.
@@ -75,6 +74,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   private List<Label> labelsObj = new ArrayList<Label>();
   @XmlElement(name = "parameter")
   private List<Parameter> parametersObj = new ArrayList<Parameter>();
+  @XmlElement(name = "isSearchable", required = true, defaultValue = "false")
   private boolean searchable = false;
   private String templateName = null;
   
@@ -344,13 +344,13 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
         String value = vTokenizer.nextToken();
         keyValuePairs.put(key, value);
       }
-    } else if (keys != null && values == null) {
+    } else if (keys != null) {
       StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
       while (kTokenizer.hasMoreTokens()) {
         String key = kTokenizer.nextToken();
         keyValuePairs.put(key, key);
       }
-    } else if (keys == null && values != null) {
+    } else if (values != null) {
       StringTokenizer vTokenizer = new StringTokenizer(values, "##");
       while (vTokenizer.hasMoreTokens()) {
         String value = vTokenizer.nextToken();
@@ -376,7 +376,8 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   public Field getEmptyField() throws FormException {
     return getEmptyField(0);
   }
-  
+
+  @Override
   @SuppressWarnings("unchecked")
   public Field getEmptyField(int occurrence) throws FormException {
     try {
@@ -407,9 +408,8 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       } else if (obj instanceof GenericFieldTemplate) {
         return ((GenericFieldTemplate) obj).getFieldName().equals(
             this.getFieldName());
-      } else {
-        return false;
       }
+      return false;
     } catch (Exception e) {
       return false;
     }
@@ -451,6 +451,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   /**
    * Used by the castor xml mapping.
    */
+  @Override
   public List<Parameter> getParametersObj() {
     return parametersObj;
   }
@@ -480,6 +481,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     this.templateName = templateName;
   }
 
+  @Override
   public boolean isUsedAsFacet() {
     return usedAsFacet;
   }
@@ -488,9 +490,10 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     this.usedAsFacet = usedAsFacet;
   }
 
+  @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "CloneDoesntCallSuperClone"})
   @Override
   public GenericFieldTemplate clone() {
-    GenericFieldTemplate clone = null;
+    GenericFieldTemplate clone;
     try {
       clone = new GenericFieldTemplate();
       clone.setDisabled(this.isDisabled());
@@ -519,7 +522,13 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   }
   
   public void setMaximumNumberOfOccurrences(int nb) {
-    maximumNumberOfOccurrences = nb;
+    // If the occurrence number is stricly lower than 1, the value is forced to 1.
+    // This avoids potential technical errors in different uses of the formular.
+    if (nb > 1) {
+      maximumNumberOfOccurrences = nb;
+    } else {
+      maximumNumberOfOccurrences = 1;
+    }
   }
   
   @Override

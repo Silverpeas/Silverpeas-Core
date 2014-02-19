@@ -24,10 +24,13 @@
 package org.silverpeas.notification.message;
 
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,6 +38,8 @@ import java.util.Set;
  * Date: 07/11/13
  */
 public class MessageContainer {
+  private final Map<String, ResourceLocator> resourceLocators =
+      new HashMap<String, ResourceLocator>();
 
   private final List<MessageListener> listeners = new ArrayList<MessageListener>();
   private String language = I18NHelper.defaultLanguage;
@@ -45,6 +50,22 @@ public class MessageContainer {
    */
   MessageContainer() {
     super();
+  }
+
+  /**
+   * Gets the resource locator from the given property file and given language.
+   * @param propertyFileBaseName
+   * @param lang
+   * @return
+   */
+  public ResourceLocator getResourceLocator(String propertyFileBaseName, String lang) {
+    String cacheKey = propertyFileBaseName + "@" + lang;
+    ResourceLocator resourceLocator = resourceLocators.get(cacheKey);
+    if (resourceLocator == null) {
+      resourceLocator = new ResourceLocator(propertyFileBaseName, lang);
+      resourceLocators.put(cacheKey, resourceLocator);
+    }
+    return resourceLocator;
   }
 
   /**
