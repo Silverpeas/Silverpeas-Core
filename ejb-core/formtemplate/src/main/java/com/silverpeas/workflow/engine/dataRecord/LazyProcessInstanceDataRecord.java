@@ -28,7 +28,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.FormFatalException;
@@ -53,7 +52,7 @@ import com.silverpeas.workflow.api.user.UserSettings;
  * action.<actionName>.label action.<actionName>.date action.<actionName>.actor The users :
  * participant.<participantName>
  */
-public class LazyProcessInstanceDataRecord implements DataRecord {
+public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord {
 
   private static final long serialVersionUID = 1L;
 
@@ -71,20 +70,6 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
    */
   public String getId() {
     return instance.getInstanceId();
-  }
-
-  /**
-   * The id of an instance is immutable.
-   */
-  public void setId(String externalId) {
-    // do nothing
-  }
-
-  /**
-   * An instance is always registred.
-   */
-  public boolean isNew() {
-    return true;
   }
 
   /**
@@ -226,20 +211,6 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
 
   public String[] getFieldNames() {
     return new String[0];
-  }
-
-  public String getLanguage() {
-    return null;
-  }
-
-  public void setLanguage(String lang) {
-    // do nothing
-  }
-
-  @Override
-  public Map<String, String> getValues(String language) {
-    // no implemented yet !
-    return new HashMap<String, String>();
   }
 
   /**

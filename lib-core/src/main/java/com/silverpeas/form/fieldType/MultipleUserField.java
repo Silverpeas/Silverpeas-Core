@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.ArrayUtil;
@@ -42,7 +43,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
-public class MultipleUserField implements Field {
+public class MultipleUserField extends AbstractField {
 
   private static final long serialVersionUID = 1412147782354556460L;
   /**

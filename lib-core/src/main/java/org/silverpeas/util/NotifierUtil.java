@@ -23,6 +23,7 @@
  */
 package org.silverpeas.util;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.notification.message.MessageManager;
 
 /**
@@ -33,6 +34,16 @@ import org.silverpeas.notification.message.MessageManager;
  * Date: 23/07/13
  */
 public class NotifierUtil {
+
+  /**
+   * Gets the resource locator from the given property file and by taking into account of the
+   * current known language.
+   * @param propertyFileBaseName
+   * @return
+   */
+  public static ResourceLocator getResourceLocator(String propertyFileBaseName) {
+    return MessageManager.getResourceLocator(propertyFileBaseName);
+  }
 
   /**
    * Add an severe message.

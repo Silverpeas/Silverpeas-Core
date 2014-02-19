@@ -25,9 +25,11 @@
 package com.silverpeas.form;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -157,5 +159,21 @@ public class Util {
   public static boolean getBooleanValue(Map<String, String> parameters, String parameter) {
     String paramValue = parameters.containsKey(parameter) ? parameters.get(parameter) : "false";
     return Boolean.parseBoolean(paramValue);
+  }
+  
+  public static void printOneMoreInputSnippet(String fieldName, PagesContext pageContext,
+      PrintWriter out) {
+    out.println("<a href=\"#\" id=\"moreField-" + fieldName + "\" onclick=\"showOneMoreField('" +
+        fieldName + "');return false;\">");
+    out.println("<img src=\"" + Util.getIcon("add") + "\" width=\"14px\"> ");
+    out.println(Util.getString("field.multivaluable.add", pageContext.getLanguage()));
+    out.println("</a>");
+  }
+  
+  public static String getFieldOccurrenceName(String fieldName, int occurrence) {
+    if (occurrence == 0) {
+      return fieldName;
+    }
+    return fieldName + AbstractForm.REPEATED_FIELD_SEPARATOR + occurrence;
   }
 }

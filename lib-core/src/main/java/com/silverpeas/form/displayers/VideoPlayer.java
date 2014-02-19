@@ -146,7 +146,7 @@ public class VideoPlayer {
    * @param an XHTML element into which the resources declaration will be rendered.
    */
   public void init(final ConcreteElement element) {
-    script cssLoading = new script("$(head).append(\"" + playerStyle + "\")").setType(
+    script cssLoading = new script("$(document.head).append(\"" + playerStyle + "\")").setType(
         "text/javascript");
     script jsInclusion = new script().setType("text/javascript").setSrc(flowPlayerJS);
     if (element instanceof ElementContainer) {

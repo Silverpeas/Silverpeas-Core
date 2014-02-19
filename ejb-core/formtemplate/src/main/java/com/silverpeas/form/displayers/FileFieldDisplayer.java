@@ -20,25 +20,12 @@
  */
 package com.silverpeas.form.displayers;
 
-
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
@@ -49,11 +36,9 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -64,53 +49,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
  * @see Form
  * @see FieldDisplayer
  */
-public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
-
-  /**
-   * Returns the name of the managed types.
-   *
-   * @return
-   */
-  public String[] getManagedTypes() {
-    return new String[]{FileField.TYPE};
-  }
-
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
-   * template. <LI>the field type is not a managed type. </UL>
-   *
-   * @param pageContext
-   */
-  @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
-      throws IOException {
-    String language = pageContext.getLanguage();
-    String fieldName = template.getFieldName();
-    if (!FileField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "FileFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          FileField.TYPE);
-    }
-    if (template.isMandatory() && pageContext.useMandatory()) {
-      out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		var " + fieldName + "Value = document.getElementById('" + fieldName
-          + FileField.PARAM_ID_SUFFIX + "').value;");
-      out.println("   	if (" + fieldName + "Value=='' || " + fieldName
-          + "Value.substring(0,7)==\"remove_\") {");
-      out.println("      	errorMsg+=\"  - '" + EncodeHelper.javaStringToJsString(template.getLabel(
-          language)) + "' " + Util.getString("GML.MustBeFilled", language) + "\\n \";");
-      out.println("      	errorNb++;");
-      out.println("   	}");
-      out.println("   } ");
-    }
-
-    if (!template.isReadOnly()) {
-      Util.includeFileNameLengthChecker(template, pageContext, out);
-      Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
-    }
-  }
+public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
@@ -124,34 +63,31 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * @param template
    * @throws FormException
    */
-  @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
-    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
-  }
-
-  public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pageContext, String webContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
-        + ", fieldType = " + field.getTypeName());
+        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId() + ", fieldType = " + field.getTypeName());
     String language = pageContext.getContentLanguage();
     StringBuilder html = new StringBuilder(1024);
-
-    String fieldName = template.getFieldName();
+    Operation defaultOperation = Operation.ADD;
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
 
     if (!FileField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "FileFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           FileField.TYPE);
     }
 
-    String attachmentId = field.getValue();
+    String attachmentId = field.getAttachmentId();
     String componentId = pageContext.getComponentId();
+    String webContext = URLManager.getApplicationURL();
 
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
       attachment = AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
+      if (attachment != null) {
+        defaultOperation = Operation.UPDATE;
+      }
     } else {
       attachmentId = "";
     }
@@ -179,10 +115,13 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       html.append("<input type=\"file\" size=\"50\" id=\"").append(fieldName).append("\" name=\"").
           append(fieldName).append("\"/>");
+      html.append("<input type=\"hidden\" id=\"").append(fieldName + FileField.PARAM_ID_SUFFIX)
+          .append("\" name=\"").append(fieldName + Field.FILE_PARAM_NAME_SUFFIX)
+          .append("\" value=\"").append(attachmentId).append("\"/>");
       html.append("<input type=\"hidden\" id=\"").append(fieldName).
-          append(FileField.PARAM_ID_SUFFIX + "\" name=\"").append(fieldName).
-          append(FileField.PARAM_NAME_SUFFIX + "\" value=\"").append(attachmentId).append("\"/>");
-
+          append(OPERATION_KEY + "\" name=\"").append(fieldName).
+          append(OPERATION_KEY + "\" value=\"").append(defaultOperation.name()).append("\"/>");
+      
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
         String deleteLab = Util.getString("removeFile", language);
@@ -196,7 +135,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html.append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('div").
             append(fieldName).append("').style.display='none';" + "document.").
             append(pageContext.getFormName()).append(".").append(fieldName).
-            append(FileField.PARAM_NAME_SUFFIX + ".value='remove_").append(attachmentId).append(
+            append(OPERATION_KEY + ".value='").append(Operation.DELETION.name()).append(
             "';" + "\">");
         html.append("<img src=\"").append(deleteImg).
             append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).
@@ -244,31 +183,6 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     return sb.toString();
   }
 
-  @Override
-  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
-    if (FileField.TYPE.equals(field.getTypeName())) {
-      if (!StringUtil.isDefined(attachmentId)) {
-        field.setNull();
-      } else {
-        field.setAttachmentId(attachmentId);
-      }
-    } else {
-      throw new FormException("FileFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          FileField.TYPE);
-    }
-    return Collections.singletonList(attachmentId);
-  }
-
-  /**
-   *
-   * @return
-   */
-  @Override
-  public boolean isDisplayedMandatory() {
-    return true;
-  }
-
   /**
    * Method declaration
    *
@@ -279,104 +193,4 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     return 2;
   }
 
-  @Override
-  public List<String> update(final List<FileItem> items, final FileField field, final FieldTemplate template,
-      final PagesContext pageContext) throws FormException {
-    final List<String> result = new ArrayList<String>();
-    final String itemName = template.getFieldName();
-    try {
-      String value = processUploadedFile(items, itemName, pageContext);
-      String param =
-          FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
-      boolean updateValue = true;
-      if (param != null && !pageContext.isCreation()) {
-        // field contained a file
-        boolean deleteAttachment = false;
-        if (param.startsWith("remove_")) {
-          // user removes explicitly file
-          deleteAttachment = true;
-        } else if (value != null && StringUtil.isInteger(param)) {
-          // new file has been uploaded
-          // existing file must be removed
-          deleteAttachment = true;
-        } else if (value == null) {
-          // file has not been updated
-          // field must not be updated
-          updateValue = false;
-        }
-        if (deleteAttachment) {
-          String attachmentId = field.getAttachmentId();
-          deleteAttachment(attachmentId, pageContext);
-        }
-      }
-      if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-          && !StringUtil.isDefined(value)) {
-        // do nothing
-        updateValue = false;
-      }
-      if (updateValue) {
-        result.addAll(update(value, field, template, pageContext));
-      }
-    } catch (Exception e) {
-      SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
-    }
-    return result;
-  }
-
-  private String processUploadedFile(List<FileItem> items, String parameterName,
-      PagesContext pagesContext) throws Exception {
-    String attachmentId = null;
-    FileItem item = FileUploadUtil.getFile(items, parameterName);
-    if (!item.isFormField()) {
-      String componentId = pagesContext.getComponentId();
-      String userId = pagesContext.getUserId();
-      String objectId = pagesContext.getObjectId();
-      if (StringUtil.isDefined(item.getName())) {
-        String fileName = FileUtil.getFilename(item.getName());
-        SilverTrace.info("form", "AbstractForm.processUploadedFile", "root.MSG_GEN_PARAM_VALUE",
-            "fullFileName on Unix = " + fileName);
-        long size = item.getSize();
-        if (size > 0L) {
-          SimpleDocument document = createSimpleDocument(objectId, componentId, item,
-              fileName, userId, pagesContext.isVersioningUsed());
-          return document.getId();
-        }
-          }
-        }
-    return attachmentId;
-  }
-
-  private SimpleDocument createSimpleDocument(String objectId, String componentId, FileItem item,
-      String logicalName, String userId, boolean versionned) throws IOException {
-    SimpleDocumentPK documentPk = new SimpleDocumentPK(null, componentId);
-    SimpleDocument document;
-    if (versionned) {
-      document = new HistorisedDocument(documentPk, objectId, 0, new SimpleAttachment(logicalName,
-          null, null, null, item.getSize(), FileUtil.getMimeType(logicalName), userId, new Date(),
-          null));
-    } else {
-      document = new SimpleDocument(documentPk, objectId, 0, false, null, new SimpleAttachment(
-          logicalName, null, null, null, item.getSize(), FileUtil.getMimeType(logicalName), userId,
-          new Date(), null));
-    }
-    document.setDocumentType(DocumentType.form);
-    InputStream in = item.getInputStream();
-    try {
-      return AttachmentServiceFactory.getAttachmentService().createAttachment(document, in, false);
-    } finally {
-      IOUtils.closeQuietly(in);
-    }
-
-  }
-
-  private void deleteAttachment(String attachmentId, PagesContext pageContext) {
-    SilverTrace.info("form", "AbstractForm.deleteAttachment", "root.MSG_GEN_ENTER_METHOD",
-        "attachmentId = " + attachmentId + ", componentId = " + pageContext.getComponentId());
-    SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
-    SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
-        pageContext.getContentLanguage());
-    if (doc != null) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
-    }
-  }
 }

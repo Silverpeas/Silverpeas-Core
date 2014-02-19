@@ -24,6 +24,7 @@
 package org.silverpeas.notification.message;
 
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +78,65 @@ public class MessageManagerTest {
     MessageManager.setLanguage(otherLanguage);
     assertThat(I18NHelper.defaultLanguage, not(is(otherLanguage)));
     assertThat(MessageManager.getLanguage(), is(otherLanguage));
+  }
+
+  @Test
+  public void getResourceLocator() {
+    ResourceLocator locator =
+        MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
+    ResourceLocator utilLocator =
+        MessageManager.getResourceLocator("org.silverpeas.util.multilang.util");
+    MessageManager.setLanguage("otherLanguage");
+    ResourceLocator locatorOtherLanguage =
+        MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
+    ResourceLocator utilLocatorOtherLanguage =
+        MessageManager.getResourceLocator("org.silverpeas.util.multilang.util");
+
+    assertThat(locator, notNullValue());
+    assertThat(locatorOtherLanguage, notNullValue());
+    assertThat(utilLocator, notNullValue());
+    assertThat(utilLocatorOtherLanguage, notNullValue());
+
+    assertThat(locator, not(sameInstance(locatorOtherLanguage)));
+    assertThat(locator, not(sameInstance(utilLocator)));
+    assertThat(locator, not(sameInstance(utilLocatorOtherLanguage)));
+    assertThat(locatorOtherLanguage, not(sameInstance(utilLocator)));
+    assertThat(locatorOtherLanguage, not(sameInstance(utilLocatorOtherLanguage)));
+    assertThat(utilLocator, not(sameInstance(utilLocatorOtherLanguage)));
+
+    MessageManager.setLanguage(I18NHelper.defaultLanguage);
+    assertThat(locator,
+        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n")));
+    assertThat(utilLocator,
+        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util")));
+    MessageManager.setLanguage("otherLanguage");
+    assertThat(locatorOtherLanguage,
+        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n")));
+    assertThat(utilLocatorOtherLanguage,
+        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util")));
+
+
+    MessageManager.setLanguage("en");
+    ResourceLocator locatorEn =
+        MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
+
+    assertThat(locator.getString("language_fr"), is("Fran\u00e7ais"));
+    assertThat(locatorEn.getString("language_fr"), is("French"));
+  }
+
+  @Test
+  public void getResourceLocatorVerifyAfterTrash() {
+    getResourceLocator();
+    MessageManager.destroy();
+    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n"),
+        nullValue());
+    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util"),
+        nullValue());
+    MessageManager.setLanguage("otherLanguage");
+    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n"),
+        nullValue());
+    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util"),
+        nullValue());
   }
 
   @Test

@@ -20,14 +20,14 @@
  */
 package org.silverpeas.servlet;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
@@ -35,9 +35,12 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.CharEncoding;
 
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 /**
  * Utility class for file uploading.
- *
  * @author ehugonnet
  */
 public class FileUploadUtil {
@@ -54,7 +57,6 @@ public class FileUploadUtil {
   /**
    * Parses the multipart stream in the specified request to fetch the file items. This method
    * shouldn't be used directly; instead use the HttpRequest instance.
-   *
    * @param request the HTTP servlet request.
    * @return a list of file items encoded into the multipart stream of the request.
    * @throws UtilException if an error occurs while fetching the file items.
@@ -73,7 +75,6 @@ public class FileUploadUtil {
   /**
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
-   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
@@ -95,10 +96,24 @@ public class FileUploadUtil {
     return defaultValue;
   }
 
+  public static List<String> getParameterValues(List<FileItem> items, String parameterName,
+      String encoding) {
+    List<String> values = new ArrayList<String>();
+    for (FileItem item : items) {
+      if (item.isFormField() && item.getFieldName().startsWith(parameterName)) {
+        try {
+          values.add(item.getString(encoding));
+        } catch (UnsupportedEncodingException e) {
+          values.add(item.getString());
+        }
+      }
+    }
+    return values;
+  }
+
   /**
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
-   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
@@ -111,7 +126,6 @@ public class FileUploadUtil {
 
   /**
    * Get the parameter value from the list of FileItems. Returns null if the parameter is not found.
-   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @return the parameter value from the list of FileItems. Returns null if the parameter is not

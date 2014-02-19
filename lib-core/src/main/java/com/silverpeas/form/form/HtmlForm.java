@@ -216,18 +216,29 @@ public class HtmlForm extends AbstractForm {
       if (field != null) {
         boolean fieldFound = false;
         for (FieldTemplate fieldTemplate : getFieldTemplates()) {
-          String fieldType;
-          String fieldDisplayerName;
           currentFieldName = currentFieldName.substring(currentFieldName.indexOf('.') + 1,
               currentFieldName.length());
           if (fieldTemplate != null
               && fieldTemplate.getFieldName().equalsIgnoreCase(currentFieldName)) {
-            fieldType = fieldTemplate.getTypeName();
-            fieldDisplayerName = fieldTemplate.getDisplayerName();
+            String fieldType = fieldTemplate.getTypeName();
+            String fieldDisplayerName = fieldTemplate.getDisplayerName();
             FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                 fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
-              fieldDisplayer.display(out, field, fieldTemplate, pc);
+              if (!fieldTemplate.isRepeatable()) {
+                field = getSureField(fieldTemplate, record, 0);
+                fieldDisplayer.display(out, field, fieldTemplate, pc);
+              } else {
+                int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+                out.println("<ul class=\"repeatable-field-list field_"+fieldName+"\">");
+                for (int occ = 0; occ < maxOccurrences; occ++) {
+                  out.println("<li class=\"repeatable-field-list-element"+occ+"\">");
+                  field = getSureField(fieldTemplate, record, occ);
+                  fieldDisplayer.display(out, field, fieldTemplate, pc);
+                  out.println("</li>");
+                }
+                out.println("</ul>");
+              }
             }
             fieldFound = true;
             break;

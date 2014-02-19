@@ -72,8 +72,6 @@ public class InstanciateurTest {
 
   @Before
   public void setUp() {
-    PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH
-        + File.separatorChar + "templateMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 

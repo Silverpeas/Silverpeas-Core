@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
@@ -48,7 +49,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @see Field
  * @see FieldDisplayer
  */
-public class ExplorerField implements Field {
+public class ExplorerField extends AbstractField {
 
   private static final long serialVersionUID = -4982574221213514901L;
   /**

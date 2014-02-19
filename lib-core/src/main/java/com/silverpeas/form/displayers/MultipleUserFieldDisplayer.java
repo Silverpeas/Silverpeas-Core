@@ -52,7 +52,7 @@ import org.silverpeas.servlet.FileUploadUtil;
 public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleUserField> {
 
   static final private String ROWS_DEFAULT_VALUE = "5";
-  static final private String COLS_DEFAULT_VALUE = "100";
+  static final private String COLS_DEFAULT_VALUE = "50";
 
   /**
    * Returns the name of the managed types.

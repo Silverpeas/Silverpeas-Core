@@ -20,19 +20,14 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -43,13 +38,8 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
-import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer
@@ -82,44 +72,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    */
   public static final String PARAMETER_AUTOPLAY = "autoplay";
   public static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
-  private static final String OPERATION_KEY = "Operation";
   private static final int DISPLAYED_HTML_OBJECTS = 2;
-
-  /**
-   * The different kinds of operation that can be applied into an attached video file.
-   */
-  private enum Operation {
-
-    ADD, UPDATE, DELETION;
-  }
-
-  @Override
-  public void displayScripts(final PrintWriter out, final FieldTemplate template,
-      final PagesContext pageContext) throws IOException {
-    checkFieldType(template.getTypeName(), "VideoFieldDisplayer.displayScripts");
-    String language = pageContext.getLanguage();
-    String fieldName = template.getFieldName();
-    if (template.isMandatory() && pageContext.useMandatory()) {
-      out.append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
-          .append("		var ").append(fieldName).append("Value = document.getElementById('")
-          .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n")
-          .append("   var ").append(fieldName).append("Operation = document.")
-          .append(pageContext.getFormName()).append(".")
-          .append(fieldName).append(OPERATION_KEY).append(".value;\n")
-          .append("		if (").append(fieldName).append("Value=='' || ")
-          .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
-          "') {\n")
-          .append("			errorMsg+=\"  - '")
-          .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
-          .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
-          .append("			errorNb++;\n")
-          .append("		}\n")
-          .append("	}\n");
-    }
-
-    Util.includeFileNameLengthChecker(template, pageContext, out);
-    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
-  }
 
   @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
@@ -136,72 +89,17 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
       if (template.isReadOnly()) {
         displayVideo(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
       } else if (!template.isDisabled()) {
-        displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
+        displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext, field);
       }
 
       out.println(xhtmlcontainer.toString());
     }
   }
 
-  @Override
-  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
-    checkFieldType(field.getTypeName(), "VideoFieldDisplayer.update");
-    List<String> attachmentIds = new ArrayList<String>();
-    if (!StringUtil.isDefined(attachmentId)) {
-      field.setNull();
-    } else {
-      field.setAttachmentId(attachmentId);
-      attachmentIds.add(attachmentId);
-    }
-    return attachmentIds;
-  }
-
-  @Override
-  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    List<String> attachmentIds = new ArrayList<String>();
-    try {
-      String fieldName = template.getFieldName();
-      String attachmentId = uploadVideoFile(items, fieldName, pageContext);
-      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, fieldName
-          + OPERATION_KEY));
-      String currentAttachmentId = field.getAttachmentId();
-      if ((isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId))
-          && !pageContext.isCreation()) {
-        deleteAttachment(currentAttachmentId, pageContext);
-      }
-      if (StringUtil.isDefined(attachmentId)) {
-        attachmentIds.addAll(update(attachmentId, field, template, pageContext));
-      }
-    } catch (IOException ex) {
-      SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
-    }
-
-    return attachmentIds;
-  }
-
-  @Override
-  public boolean isDisplayedMandatory() {
-    return true;
-  }
 
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return DISPLAYED_HTML_OBJECTS;
-  }
-
-  /**
-   * Checks the type of the field is as expected. The field must be of type file.
-   *
-   * @param typeName the name of the type.
-   * @param contextCall the context of the call: which is the caller of this method. This parameter
-   * is used for trace purpose.
-   */
-  private void checkFieldType(final String typeName, final String contextCall) {
-    if (!Field.TYPE_FILE.equals(typeName)) {
-      SilverTrace.info("form", contextCall, "form.INFO_NOT_CORRECT_TYPE", Field.TYPE_FILE);
-    }
   }
 
   /**
@@ -258,8 +156,8 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    */
   private void displayVideoFormInput(final VideoPlayer videoPlayer,
       final String attachmentId, final FieldTemplate template,
-      final ElementContainer xhtmlContainer, final PagesContext pagesContext) {
-    String fieldName = template.getFieldName();
+      final ElementContainer xhtmlContainer, final PagesContext pagesContext, FileField field) {
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String language = pagesContext.getLanguage();
     String deletionIcon = Util.getIcon("delete");
     String deletionLab = Util.getString("removeFile", language);
@@ -301,7 +199,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
     fileInput.setName(fieldName);
     input attachmentInput = new input();
     attachmentInput.setType("hidden").setName(fieldName + Field.FILE_PARAM_NAME_SUFFIX).setValue(
-        attachmentId).setID(fieldName + Field.FILE_PARAM_NAME_SUFFIX);
+        attachmentId).setID(fieldName + FileField.PARAM_ID_SUFFIX);
     input operationInput = new input();
     operationInput.setType("hidden").setName(fieldName + OPERATION_KEY).setValue(defaultOperation.
         name()).setID(fieldName + OPERATION_KEY);
@@ -336,56 +234,5 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
     videoPlayer.setAutoplay(autoplay);
     videoPlayer.setWidth(width);
     videoPlayer.setHeight(height);
-  }
-
-  /**
-   * Uploads the file containing the video and that is identified by the specified field name.
-   *
-   * @param items the items of the form. One of them is containg the video file.
-   * @param itemKey the key of the item containing the video.
-   * @param pageContext the context of the page displaying the form.
-   * @throws Exception if an error occurs while uploading the video file.
-   * @return the identifier of the uploaded attached video file.
-   */
-  private String uploadVideoFile(final List<FileItem> items, final String itemKey,
-      final PagesContext pageContext) throws IOException {
-    String attachmentId = "";
-
-    FileItem item = FileUploadUtil.getFile(items, itemKey);
-    if (!item.isFormField()) {
-      String componentId = pageContext.getComponentId();
-      String userId = pageContext.getUserId();
-      String objectId = pageContext.getObjectId();
-      String logicalName = item.getName();
-      if (StringUtil.isDefined(logicalName)) {
-        logicalName = FileUtil.getFilename(logicalName);
-        SimpleDocument document = createSimpleDocument(objectId, componentId, item, logicalName,
-            userId);
-        attachmentId = document.getId();
-      }
-    }
-    return attachmentId;
-  }
-
-  /**
-   * Is the specified operation is a deletion?
-   *
-   * @param operation the operation.
-   * @param attachmentId the identifier of the attachment on which the operation is.
-   * @return true if the operation is a deletion, false otherwise.
-   */
-  private boolean isDeletion(final Operation operation, final String attachmentId) {
-    return StringUtil.isDefined(attachmentId) && operation == Operation.DELETION;
-  }
-
-  /**
-   * Is the specified operation is an update?
-   *
-   * @param operation the operation.
-   * @param attachmentId the identifier of the attachment on which the operation is.
-   * @return true if the operation is an update, false otherwise.
-   */
-  private boolean isUpdate(final Operation operation, final String attachmentId) {
-    return StringUtil.isDefined(attachmentId) && operation == Operation.UPDATE;
-  }
+  } 
 }
