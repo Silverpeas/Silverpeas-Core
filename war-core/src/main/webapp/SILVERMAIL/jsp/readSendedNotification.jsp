@@ -49,7 +49,7 @@
     <script type="text/javascript" >
       function deleteMessage( notifId )
       {
-        window.opener.location = "DeleteSendedNotification.jsp?NotifId=" + notifId;
+        window.opener.deleteMessage(notifId, true);
         window.close();
       }
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.quota;
 
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 
 /**
  * @author Yohann Chastagnier

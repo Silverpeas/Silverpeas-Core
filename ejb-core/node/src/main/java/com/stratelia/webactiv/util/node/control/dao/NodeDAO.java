@@ -431,11 +431,11 @@ public class NodeDAO {
 
   private static void setTranslations(Connection con, NodeDetail node) throws SQLException {
     // Add default translation
-    Translation nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node.getName(), node.
+    NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node.getName(), node.
         getDescription());
     node.addTranslation(nodeI18NDetail);
     if (I18NHelper.isI18N) {
-      List<Translation> translations = NodeI18NDAO.getTranslations(con, node.getId());
+      List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, node.getId());
       for (int t = 0; translations != null && t < translations.size(); t++) {
         nodeI18NDetail = translations.get(t);
         node.addTranslation(nodeI18NDetail);

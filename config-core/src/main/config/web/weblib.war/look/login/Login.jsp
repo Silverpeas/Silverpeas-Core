@@ -29,7 +29,8 @@
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.authentication.*"%>
+<%@ page import="com.stratelia.silverpeas.authentication.AuthenticationService"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
 
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -38,15 +39,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%
-// Invalidate the previous session
-session.invalidate();
-
-// Get a LoginPasswordAuthentication object
-LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+AuthenticationService service = new AuthenticationService();
 
 // list of domains
-Hashtable domains = lpAuth.getAllDomains();
-ArrayList domainsIds = lpAuth.getDomainsIds();
+List<Domain> domains = service.getAllDomains();
 %>
 <html>
 <head>
@@ -70,10 +66,10 @@ Domain : <select name="DomainId" size="1">
 	<%  }
 	else
 	{
-		for (int i = 0 ; i < domainsIds.size(); i++)
+		for (Domain domain: domains)
 		{ 
 	%>
-		<option value="<%=((String)domainsIds.get(i))%>"> <%=domains.get((String)domainsIds.get(i))%></option>
+		<option value="<%=domain.getId()%>"> <%=domain.getName()%></option>
 	<%  }
 	}
 	%>

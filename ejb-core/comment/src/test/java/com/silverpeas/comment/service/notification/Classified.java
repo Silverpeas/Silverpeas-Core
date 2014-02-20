@@ -25,8 +25,13 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A silverpeas content to use in tests.
@@ -38,6 +43,7 @@ public class Classified implements SilverpeasContent {
   private String instanceId;
   private UserDetail author;
   private String title;
+  private List<String> unauthorizedUsers = new ArrayList<String>();
   
   public Classified(String id, String instanceId) {
     this.id = id;
@@ -90,8 +96,17 @@ public class Classified implements SilverpeasContent {
   }
 
   @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    return !unauthorizedUsers.contains(user.getId());
+  }
+
+  @Override
   public String getSilverpeasContentId() {
     return "";
+  }
+
+  public void unauthorize(UserDetail user) {
+    unauthorizedUsers.add(user.getId());
   }
   
 }

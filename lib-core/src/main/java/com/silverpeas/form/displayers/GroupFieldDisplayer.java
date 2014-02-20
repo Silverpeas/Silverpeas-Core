@@ -40,10 +40,10 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.GroupField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can

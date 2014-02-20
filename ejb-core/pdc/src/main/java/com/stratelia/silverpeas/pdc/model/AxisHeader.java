@@ -32,15 +32,11 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
  * access to the axis main information.
  */
-public class AxisHeader extends AbstractI18NBean implements java.io.Serializable {
+public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java.io.Serializable {
 
   // Class version identifier
   private static final long serialVersionUID = 5523411511012194843L;
   private WAPrimaryKey pk;
-  /**
-   * The name of the axe
-   */
-  private String name = null;
   /**
    * The type of the axe
    */
@@ -61,10 +57,6 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
    * The rootId of the axe
    */
   private int rootId = -1;
-  /**
-   * The description of the axe
-   */
-  private String description = null;
 
   //
   // Constructor
@@ -75,7 +67,7 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
   public AxisHeader(AxisPK pk, String name, String type, int order,
       String creationDate, String creatorId, int rootId) {
     setPK(pk);
-    this.name = name;
+    setName(name);
     this.type = type;
     this.order = order;
     this.creationDate = creationDate;
@@ -86,28 +78,28 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
   public AxisHeader(AxisPK pk, String name, String type, int order,
       String creationDate, String creatorId, int rootId, String description) {
     setPK(pk);
-    this.name = name;
+    setName(name);
+    setDescription(description);
     this.type = type;
     this.order = order;
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.rootId = rootId;
-    this.description = description;
   }
 
   public AxisHeader(String id, String name, String type, int order, int rootId,
       String description) {
     setPK(new AxisPK(id));
-    this.name = name;
+    setName(name);
+    setDescription(description);
     this.type = type;
     this.order = order;
     this.rootId = rootId;
-    this.description = description;
   }
 
   public AxisHeader(String id, String name, String type, int order, int rootId) {
     setPK(new AxisPK(id));
-    this.name = name;
+    setName(name);
     this.type = type;
     this.order = order;
     this.rootId = rootId;
@@ -115,42 +107,14 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
 
   public AxisHeader(AxisHeaderPersistence persistence) {
     this.pk = persistence.getPK();
-    this.name = persistence.getName();
-    this.description = persistence.getDescription();
+    setName(persistence.getName());
+    setDescription(persistence.getDescription());
     this.creationDate = persistence.getCreationDate();
     this.creatorId = persistence.getCreatorId();
     this.order = persistence.getAxisOrder();
     this.rootId = persistence.getRootId();
     this.type = persistence.getAxisType();
     setLanguage(persistence.getLang());
-  }
-
-  /**
-   * Returns the name of the axe.
-   * @return the name
-   */
-  public String getName() {
-    return this.name;
-  }
-
-  public String getName(String language) {
-    if (!I18NHelper.isI18N) {
-      return getName();
-    }
-    AxisHeaderI18N s = (AxisHeaderI18N) getTranslations().get(language);
-    if (s == null) {
-      s = (AxisHeaderI18N) getNextTranslation();
-    }
-
-    return s.getName();
-  }
-
-  /**
-   * set a name for an axe
-   * @param name - the name of the axe
-   */
-  public void setName(String name) {
-    this.name = name;
   }
 
   /**
@@ -231,35 +195,6 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
    */
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
-  }
-
-  /**
-   * Returns the description of the axe.
-   * @return the description
-   */
-  public String getDescription() {
-    return this.description;
-  }
-
-  public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
-      return getDescription();
-    }
-
-    AxisHeaderI18N s = (AxisHeaderI18N) getTranslations().get(language);
-    if (s == null) {
-      s = (AxisHeaderI18N) getNextTranslation();
-    }
-
-    return s.getDescription();
-  }
-
-  /**
-   * set a description for an axe
-   * @param description - the description of the axe
-   */
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public WAPrimaryKey getPK() {

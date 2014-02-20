@@ -43,9 +43,9 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.ExplorerField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * An ExplorerFieldDisplayer is an object which allow to browse Silverpeas treeview (nodes) and to
@@ -76,7 +76,6 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
    * </UL>
    * @param out
    * @param template
-   * @param pagesContext
    * @throws java.io.IOException
    */
   @Override
@@ -110,7 +109,6 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
    * </UL>
    * @param out
    * @param field
-   * @param PagesContext
    * @param template
    * @throws FormException
    */

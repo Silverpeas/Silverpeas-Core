@@ -20,29 +20,28 @@
  */
 package org.silverpeas.importExport.attachment;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-
+import com.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Class declaration
  *
  * @author
  */
-public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes,
-    Cloneable {
+public final class AttachmentDetail extends AbstractBean
+    implements Serializable, MimeTypes, Cloneable {
 
   private static final long serialVersionUID = 5441809463555598057L;
   public static final String ATTACHMENTS_FOLDER = "attachments";
@@ -53,8 +52,6 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   transient public static final int GROUP_DUMMY = 4;
   private AttachmentPK pk = null;
   private String physicalName = null;
-  private String logicalName = null;
-  private String description = null;
   private String type = null;
   private Date creationDate;
   private long size;
@@ -137,8 +134,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
           "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     }
     this.physicalName = physicalName;
-    this.logicalName = logicalName;
-    this.description = description;
+    setLogicalName(logicalName);
+    setDescription(description);
     this.type = type;
     checkMimeType();
     this.size = size;
@@ -157,8 +154,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
         "Contructor without author and without title",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     this.physicalName = physicalName;
-    this.logicalName = logicalName;
-    this.description = description;
+    setLogicalName(logicalName);
+    setDescription(description);
     this.type = type;
     checkMimeType();
     this.size = size;
@@ -175,8 +172,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     SilverTrace.info("attachment", "Contructor without author but with title",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     this.physicalName = physicalName;
-    this.logicalName = logicalName;
-    this.description = description;
+    setLogicalName(logicalName);
+    setDescription(description);
     this.type = type;
     checkMimeType();
     this.size = size;
@@ -213,8 +210,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
           "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     }
     this.physicalName = physicalName;
-    this.logicalName = logicalName;
-    this.description = description;
+    setLogicalName(logicalName);
+    setDescription(description);
     this.type = type;
     checkMimeType();
     this.size = size;
@@ -294,7 +291,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * @see
    */
   public String getLogicalName() {
-    return logicalName;
+    return getName();
   }
 
   /**
@@ -306,27 +303,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   public void setLogicalName(String logicalName) {
     SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()",
         "root.MSG_GEN_PARAM_VALUE", "logicalName = " + logicalName);
-    this.logicalName = logicalName;
-  }
-
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param desc
-   * @see
-   */
-  public void setDescription(String desc) {
-    this.description = desc;
+    setName(logicalName);
   }
 
   /**
@@ -504,14 +481,14 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   public int getAttachmentGroup() {
     int valret = GROUP_FILE;
 
-    if (description != null) {
-      if (description.startsWith("link")) {
+    if (getDescription() != null) {
+      if (getDescription().startsWith("link")) {
         valret = GROUP_FILE_LINK;
-      } else if (description.startsWith("html")) {
+      } else if (getDescription().startsWith("html")) {
         valret = GROUP_HTML_LINK;
-      } else if (description.startsWith("dir")) {
+      } else if (getDescription().startsWith("dir")) {
         valret = GROUP_DIR;
-      } else if (description.startsWith("dummy")) {
+      } else if (getDescription().startsWith("dummy")) {
         valret = GROUP_DUMMY;
       }
     }
@@ -582,7 +559,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   public String getExtension() {
-    return FileRepositoryManager.getFileExtension(logicalName);
+    return FileRepositoryManager.getFileExtension(getLogicalName());
   }
 
   @Override
@@ -592,11 +569,11 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     clone.setCloneId(cloneId);
     clone.setContext(context);
     clone.setCreationDate(creationDate);
-    clone.setDescription(description);
+    clone.setDescription(getDescription());
     clone.setForeignKey(foreignKey);
     clone.setInfo(info);
     clone.setInstanceId(instanceId);
-    clone.setLogicalName(logicalName);
+    clone.setLogicalName(getLogicalName());
     clone.setOrderNum(orderNum);
     clone.setPhysicalName(physicalName);
     clone.setPK(pk);
@@ -640,9 +617,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * if type is known as application/octet-stream, try to find right mimeType
    */
   public void checkMimeType() {
-    if (logicalName != null
-        && (!StringUtil.isDefined(type) || DEFAULT_MIME_TYPE.equalsIgnoreCase(type))) {
-      type = FileUtil.getMimeType(logicalName);
+    if (getLogicalName() != null && (!StringUtil.isDefined(type) || DEFAULT_MIME_TYPE.equalsIgnoreCase(type))) {
+      type = FileUtil.getMimeType(getLogicalName());
     }
   }
 

@@ -1,0 +1,82 @@
+/**
+ * Author:      Matt Hinchliffe <www.maketea.co.uk>
+ * Modified:    03/11/2012
+ * Description: Simple jQuery slideshow
+ * Example:
+ * <div class="slideshow">
+ *     <ul class="carousel">
+ *         <li class="slide"><a href="#">Option 1</a></li>
+ *         <li class="slide"><a href="#">Option 2</a></li>
+ *     </ul>
+ * </div>
+ */
+
+/* slides */
+.slideshow {
+	position:relative;
+	margin:0 0 1em;
+}
+	.slideshow a {
+		font-size:.75em;
+		line-height:2em;
+		text-decoration:none;
+		color:#fff;
+		background:#666;
+	}
+		.slideshow a:hover,
+		.slideshow .selected a {
+			background-color:#333;
+		}
+
+	.carousel {
+		margin:0;
+		padding:0;
+		list-style:none;
+	}
+		.slide {
+			z-index:100;
+		}
+			.slide img {
+				display:block;
+			}
+
+/* pagination */
+.slides-pagination {
+	position:absolute;
+	bottom:1em;
+	left:1em;
+	margin:0;
+	padding:0;
+	list-style:none;
+	z-index:110;
+}
+	.slides-pagination li {
+		display:inline;
+	}
+		.slides-pagination a {
+			display:block;
+			float:left;
+			width:2em;
+			margin-right:5px;
+		}
+
+/* skip */
+.slides-next,
+.slides-prev {
+	position:absolute;
+	top:50%;
+	margin-top:-1em;
+	padding:0 .5em;
+	z-index:120;
+}
+.slides-next {
+	right:0;
+}
+.slides-prev {
+	left:0;
+}
+.slides-next.disabled,
+.slides-prev.disabled {
+	opacity:.5;
+	cursor:auto;
+}

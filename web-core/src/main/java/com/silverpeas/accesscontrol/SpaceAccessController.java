@@ -23,17 +23,17 @@
  */
 package com.silverpeas.accesscontrol;
 
+import org.silverpeas.core.admin.OrganisationController;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Check the access to a space for a user.
  * @author Yohann Chastagnier
  */
 @Named
-public class SpaceAccessController implements AccessController<String> {
+public class SpaceAccessController extends AbstractAccessController<String> {
 
   @Inject
   private OrganisationController organizationController;
@@ -42,7 +42,8 @@ public class SpaceAccessController implements AccessController<String> {
   }
 
   @Override
-  public boolean isUserAuthorized(final String userId, final String spaceId) {
+  public boolean isUserAuthorized(final String userId, final String spaceId,
+      final AccessControlContext context) {
     return organizationController.isSpaceAvailable(spaceId, userId);
   }
 }

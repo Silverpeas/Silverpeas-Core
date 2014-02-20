@@ -28,26 +28,28 @@ import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The class SpaceInst is the representation in memory of a space
  */
-public class SpaceInst extends AbstractI18NBean implements Serializable, Comparable<SpaceInst>,
-    Cloneable {
+public class SpaceInst extends AbstractI18NBean<SpaceI18N>
+    implements Serializable, Comparable<SpaceInst>, Cloneable {
 
   public static final String PERSONAL_SPACE_ID = "-10";
   public static final String DEFAULT_SPACE_ID = "-20";
@@ -65,12 +67,6 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   /* Unique identifier of the father of the space */
   private String domainFatherId;
-
-  /* Unique identifier of the space */
-  private String name;
-
-  /* Describe the space */
-  private String description;
 
   /* User Id of the creator of the space */
   private String creatorUserId;
@@ -123,8 +119,6 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   public SpaceInst() {
     id = "";
     domainFatherId = "";
-    name = "";
-    description = "";
     creatorUserId = "";
     firstPageType = 0;
     firstPageExtraParam = "";
@@ -178,71 +172,15 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     return domainFatherId;
   }
 
-  /**
-   * Set the space name
-   *
-   * @param sName The new space name
-   */
-  public void setName(String sName) {
-    name = sName;
-  }
-
-  /**
-   * Get the space name
-   *
-   * @return the space name
-   */
-  public String getName() {
-    return name;
-  }
-
+  @Override
   public String getName(String language) {
 
     if (isPersonalSpace) {
-      return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace",
-          "Mon espace");
-    } else {
-      if (!I18NHelper.isI18N) {
-        return getName();
-      }
-      SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-      if (s != null) {
-        return s.getName();
-      } else {
-        return getName();
-      }
-    }
-  }
-
-  /**
-   * Set the space description
-   *
-   * @param sDescription The new space description
-   */
-  public void setDescription(String sDescription) {
-    description = sDescription;
-  }
-
-  /**
-   * Get the space description
-   *
-   * @return The space description
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
-      return getDescription();
+      return GeneralPropertiesManager.getGeneralMultilang(language)
+          .getString("GML.personalSpace", "Mon espace");
     }
 
-    SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-    if (s != null) {
-      return s.getDescription();
-    } else {
-      return getDescription();
-    }
+    return super.getName(language);
   }
 
   /**
@@ -766,12 +704,12 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       final String stringTemplateFile) {
     if (!QuotaType.COMPONENTS_IN_SPACE.equals(quotaReached.getType())) {
       quotaReached = quotaReached.clone();
-      quotaReached.setMinCount(UnitUtil.convertTo(quotaReached.getMinCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
-      quotaReached.setMaxCount(UnitUtil.convertTo(quotaReached.getMaxCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
-      quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
-          UnitUtil.memUnit.MB));
+      quotaReached.setMinCount(
+          UnitUtil.convertTo(quotaReached.getMinCount(), MemoryUnit.B, MemoryUnit.MB));
+      quotaReached.setMaxCount(
+          UnitUtil.convertTo(quotaReached.getMaxCount(), MemoryUnit.B, MemoryUnit.MB));
+      quotaReached.setCount(
+          UnitUtil.convertTo(quotaReached.getCount(), MemoryUnit.B, MemoryUnit.MB));
     }
     SpaceInstLight space = OrganisationControllerFactory.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());
@@ -802,10 +740,10 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
           && ObjectUtils.equals(other.firstPageType, firstPageType)
           && ObjectUtils.equals(other.orderNum, orderNum)
           && ObjectUtils.equals(other.creatorUserId, creatorUserId)
-          && ObjectUtils.equals(other.description, description)
+          && ObjectUtils.equals(other.getDescription(), getDescription())
           && ObjectUtils.equals(other.domainFatherId, domainFatherId)
           && ObjectUtils.equals(other.firstPageExtraParam, firstPageExtraParam)
-          && ObjectUtils.equals(other.name, name);
+          && ObjectUtils.equals(other.getName(), getName());
     }
     return false;
   }
@@ -813,7 +751,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   @Override
   public int hashCode() {
     return ObjectUtils.hashCodeMulti(createDate, id, level, look, firstPageType, orderNum,
-        creatorUserId, description, domainFatherId, firstPageExtraParam, name);
+        creatorUserId, getDescription(), domainFatherId, firstPageExtraParam, getName());
   }
 
   @Override
@@ -821,13 +759,13 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     SpaceInst clone = new SpaceInst();
 
     // clone basic information
-    clone.setDescription(description);
+    clone.setDescription(getDescription());
     clone.setDisplaySpaceFirst(displaySpaceFirst);
     clone.setFirstPageExtraParam(firstPageExtraParam);
     clone.setFirstPageType(firstPageType);
     clone.setInheritanceBlocked(inheritanceBlocked);
     clone.setLook(look);
-    clone.setName(name);
+    clone.setName(getName());
     clone.setPersonalSpace(isPersonalSpace);
 
     // clone profiles

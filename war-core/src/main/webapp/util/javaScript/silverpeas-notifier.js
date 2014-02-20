@@ -30,8 +30,8 @@
  */
 function notyInfo(text, customOptions) {
   var options = {
-    text : text,
-    type : 'information'
+    text: text,
+    type: 'information'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -45,8 +45,25 @@ function notyInfo(text, customOptions) {
  */
 function notySuccess(text, customOptions) {
   var options = {
-    text : text,
-    type : 'success'
+    text: text,
+    type: 'success'
+  };
+  if (customOptions) {
+    $.extend(options, customOptions);
+  }
+  __noty(options);
+}
+
+/**
+ * Helper to display a Silverpeas warning notification.
+ * @param text
+ */
+function notyWarning(text, customOptions) {
+  var options = {
+    text: text,
+    timeout: false,
+    closeWith: ['button'], // ['click', 'button', 'hover']
+    type: 'warning'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -60,10 +77,10 @@ function notySuccess(text, customOptions) {
  */
 function notyError(text, customOptions) {
   var options = {
-    text : text,
-    timeout : false,
-    closeWith : ['button'], // ['click', 'button', 'hover']
-    type : 'error'
+    text: text,
+    timeout: false,
+    closeWith: ['button'], // ['click', 'button', 'hover']
+    type: 'error'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -77,10 +94,110 @@ function notyError(text, customOptions) {
  */
 function __noty(customOptions) {
   var options = $.extend({
-    layout : 'topCenter',
-    theme : 'silverpeas',
-    timeout : 5000,
-    dismissQueue : true
+    layout: 'topCenter',
+    theme: 'silverpeas',
+    timeout: 5000,
+    dismissQueue: true
   }, customOptions);
-  noty(options);
+  if (options.text) {
+    noty(options);
+  }
+}
+
+/**
+ * Helper to display registred messages.
+ * @param registredKey
+ */
+function notyRegistredMessages(registredKey) {
+  jQuery(document).ready(function() {
+    var url = webContext + '/services/messages/' + registredKey;
+
+    // Ajax request
+    jQuery.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'json',
+      cache: false,
+      async: true,
+      success: function(result) {
+        if (result && result.messages) {
+          jQuery.each(result.messages, function(index, message) {
+
+            // Default options
+            var messageOptions = {
+              text: message.content,
+              type: message.type,
+              timeout: false,
+              layout: 'topCenter'
+            };
+            if (jQuery.isNumeric(message.displayLiveTime) && message.displayLiveTime > 0) {
+              messageOptions.timeout = message.displayLiveTime;
+            } else {
+              messageOptions.closeWith = ['button']; // ['click', 'button', 'hover']
+            }
+
+            // Specific options
+            switch (message.type) {
+              case 'info' :
+                messageOptions.type = 'information';
+                break;
+              case 'success' :
+              case 'warning' :
+              case 'error' :
+                break;
+              case 'severe' :
+                messageOptions.modal = true;
+                messageOptions.layout = 'center';
+                break;
+              default :
+                // Message is not supported
+                window.console &&
+                        window.console.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
+                                messageOptions.type + ', message : ' + messageOptions.content);
+                return;
+            }
+
+            // Displaying the notification
+            __noty(messageOptions);
+          });
+        }
+      }
+    });
+  });
+}
+
+/**
+ * Setup all JQuery Ajax call to handle returns of messages (or technical errors).
+ */
+function notySetupAjaxMessages() {
+  var error = function(jqXHR, errorThrown) {
+    var errorMsg = jqXHR.responseText;
+    if (!jQuery.trim(errorMsg)) {
+      errorMsg = errorThrown;
+    }
+    window.console && window.console.log('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
+  };
+  var complete = function(jqXHR) {
+    if (!jqXHR.notySetupAjaxMessagesCompleteDone) {
+      jqXHR.notySetupAjaxMessagesCompleteDone = true;
+      var registredKeyOfMessages = jqXHR.getResponseHeader('X-Silverpeas-MessageKey');
+      if (registredKeyOfMessages) {
+        notyRegistredMessages(registredKeyOfMessages);
+      }
+    }
+  };
+  jQuery.ajaxSetup({
+    error: function(jqXHR, textStatus, errorThrown) {
+      error.call(this, jqXHR, errorThrown);
+    },
+    complete: function(jqXHR, textStatus) {
+      complete.call(this, jqXHR);
+    }
+  });
+  jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
+    error.call(this, jqXHR, errorThrown);
+  });
+  jQuery(document).ajaxComplete(function(event, jqXHR, settings) {
+    complete.call(this, jqXHR);
+  });
 }

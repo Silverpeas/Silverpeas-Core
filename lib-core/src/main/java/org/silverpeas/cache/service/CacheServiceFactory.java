@@ -31,13 +31,20 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 public class CacheServiceFactory {
 
   private static final CacheServiceFactory instance = new CacheServiceFactory();
-
+  private final SimpleCacheService threadCacheService;
+  private final SimpleCacheService requestCacheService;
   private final CacheService cacheService;
 
   /**
    * Initialization of service instances
    */
   private CacheServiceFactory() {
+
+    // Thread cache
+    threadCacheService = new ThreadCacheService();
+
+    // Request cache
+    requestCacheService = new ThreadCacheService();
 
     // Common cache
     int nbMaxElements =
@@ -49,17 +56,39 @@ public class CacheServiceFactory {
   }
 
   /**
-   * @return the cacheService
-   */
-  public static CacheService getCacheService() {
-    return getInstance().cacheService;
-  }
-
-  /**
    * Gets an instance of this CacheServiceFactory class.
    * @return a CacheServiceFactory instance.
    */
   private static CacheServiceFactory getInstance() {
     return instance;
+  }
+
+  /**
+   * Gets a useful volatile cache : after the end of the current thread execution, the associated
+   * cache is trashed.
+   * BE VERY VERE VERY CAREFULLY : into web application with thread pool management,
+   * the thread is never killed and this cache is never cleared. If you want the cache cleared
+   * after a end of request, please use {@link #getRequestCacheService()}.
+   * @return a cache associated to the current thread
+   */
+  public static SimpleCacheService getThreadCacheService() {
+    return getInstance().threadCacheService;
+  }
+
+  /**
+   * Gets a useful cache in relation with a request : after the end of the request execution,
+   * the associated cache is trashed.
+   * @return a cache associated to the current request
+   */
+  public static SimpleCacheService getRequestCacheService() {
+    return getInstance().requestCacheService;
+  }
+
+  /**
+   * Gets the cache of the application.
+   * @return an applicative cache ervice
+   */
+  public static CacheService getApplicationCacheService() {
+    return getInstance().cacheService;
   }
 }

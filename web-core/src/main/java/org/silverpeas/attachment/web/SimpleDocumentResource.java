@@ -20,10 +20,31 @@
  */
 package org.silverpeas.attachment.web;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,61 +57,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.WebdavServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 @Service
 @RequestScoped
 @Path("documents/{componentId}/document/{id}")
 @Authorized
-public class SimpleDocumentResource extends RESTWebService {
+public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
-  @PathParam("componentId")
-  private String componentId;
   @PathParam("id")
   private String simpleDocumentId;
-
-  @Override
-  public String getComponentId() {
-    return componentId;
-  }
 
   public String getSimpleDocumentId() {
     return simpleDocumentId;
@@ -190,78 +167,77 @@ public class SimpleDocumentResource extends RESTWebService {
   protected SimpleDocumentEntity updateSimpleDocument(InputStream uploadedInputStream,
       FormDataContentDisposition fileDetail, String filename, String lang, String title,
       String description, String versionType, String comment) throws IOException {
-    SimpleDocument document = getSimpleDocument(lang);
-    boolean isPublic = false;
-    if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
-      isPublic = Integer.parseInt(versionType) == DocumentVersion.TYPE_PUBLIC_VERSION;
-      document.setPublicDocument(isPublic);
-    }
-    document.setUpdatedBy(getUserDetail().getId());
-    document.setLanguage(lang);
-    document.setTitle(title);
-    document.setDescription(description);
-    document.setComment(comment);
-    String uploadedFilename = filename;
-    if (StringUtil.isNotDefined(filename)) {
-      uploadedFilename = fileDetail.getFileName();
-    }
-    boolean isWebdav = false;
-    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)
-        && !"no_file".equalsIgnoreCase(uploadedFilename)) {
-      document.setFilename(uploadedFilename);
-      document.setContentType(FileUtil.getMimeType(uploadedFilename));
-      File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
-      FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-      
-      //check the file size
-      ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-      long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-      long fileSize = tempFile.length();
-      if(fileSize > maximumFileSize) {
-        FileUtils.deleteQuietly(tempFile);
-        throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
+    try {
+      SimpleDocument document = getSimpleDocument(lang);
+      boolean isPublic = false;
+      if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
+        isPublic = Integer.parseInt(versionType) == DocumentVersion.TYPE_PUBLIC_VERSION;
+        document.setPublicDocument(isPublic);
       }
-      
-      document.setSize(fileSize);
-      InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-      if (!StringUtil.isDefined(document.getEditedBy())) {
-        document.edit(getUserDetail().getId());
+      document.setUpdatedBy(getUserDetail().getId());
+      document.setLanguage(lang);
+      document.setTitle(title);
+      document.setDescription(description);
+      document.setComment(comment);
+      String uploadedFilename = filename;
+      if (StringUtil.isNotDefined(filename)) {
+        uploadedFilename = fileDetail.getFileName();
       }
-      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
-          true);
-      content.close();
-      FileUtils.deleteQuietly(tempFile);
-    } else {
-      isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
-      if (document.isVersioned()) {
-        isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
-        File content = new File(document.getAttachmentPath());
-        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), getUserDetail()
-            .getId(), document.getLanguage());
+      boolean isWebdav = false;
+      if (uploadedInputStream != null && fileDetail != null &&
+          StringUtil.isDefined(uploadedFilename) && !"no_file".equalsIgnoreCase(uploadedFilename)) {
+        document.setFilename(uploadedFilename);
+        document.setContentType(FileUtil.getMimeType(uploadedFilename));
+        File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
+        FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+
+        //check the file
+        checkUploadedFile(tempFile);
+
+        document.setSize(tempFile.length());
+        InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
+        if (!StringUtil.isDefined(document.getEditedBy())) {
+          document.edit(getUserDetail().getId());
+        }
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
             true);
+        content.close();
+        FileUtils.deleteQuietly(tempFile);
       } else {
-        if (isWebdav) {
-          WebdavServiceFactory.getWebdavService().getUpdatedDocument(document);
+        isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
+        if (document.isVersioned()) {
+          isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
+          File content = new File(document.getAttachmentPath());
+          AttachmentServiceFactory.getAttachmentService()
+              .lock(document.getId(), getUserDetail().getId(), document.getLanguage());
+          AttachmentServiceFactory.getAttachmentService()
+              .updateAttachment(document, content, true, true);
+        } else {
+          if (isWebdav) {
+            WebdavServiceFactory.getWebdavService().getUpdatedDocument(document);
+          }
+          AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
         }
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
       }
+      UnlockContext unlockContext =
+          new UnlockContext(document.getId(), getUserDetail().getId(), lang, comment);
+      if (isWebdav) {
+        unlockContext.addOption(UnlockOption.WEBDAV);
+      } else {
+        unlockContext.addOption(UnlockOption.UPLOAD);
+      }
+      if (!isPublic) {
+        unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+      }
+      AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+      document = getSimpleDocument(lang);
+      URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
+          getLanguage()).build();
+      return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
+    } catch (RuntimeException re) {
+      performRuntimeException(re);
     }
-    UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(),
-        lang, comment);
-    if (isWebdav) {
-      unlockContext.addOption(UnlockOption.WEBDAV);
-    } else {
-      unlockContext.addOption(UnlockOption.UPLOAD);
-    }
-    if (!isPublic) {
-      unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
-    }
-    AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
-    document = getSimpleDocument(lang);
-    URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
-        getLanguage()).build();
-    return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
+    throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
   }
 
   /**
@@ -305,8 +281,8 @@ public class SimpleDocumentResource extends RESTWebService {
   @Override
   public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
       WebApplicationException {
-    super.validateUserAuthorization(validation);
-    validation.validateUserAuthorizationOnAttachment(getUserDetail(), getSimpleDocument(null));
+    validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUserDetail(),
+        getSimpleDocument(null));
   }
 
   /**
@@ -376,8 +352,8 @@ public class SimpleDocumentResource extends RESTWebService {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), componentId),
-        defaultLanguage);
+        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), getComponentId()),
+            defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position - 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
@@ -400,8 +376,8 @@ public class SimpleDocumentResource extends RESTWebService {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), componentId),
-        defaultLanguage);
+        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), getComponentId()),
+            defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position + 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
@@ -473,6 +449,26 @@ public class SimpleDocumentResource extends RESTWebService {
         defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
+  }
+
+  /**
+   * Forbid or allow the download of the document for readers.
+   * @return JSON download state for readers. allowedDownloadForReaders = true or false.
+   */
+  @POST
+  @Path("switchDownloadAllowedForReaders")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String switchDownloadAllowedForReaders(@FormParam("allowed") final boolean allowed) {
+
+    // Performing the request
+    SimpleDocument document = getSimpleDocument(null);
+    AttachmentServiceFactory.getAttachmentService()
+        .switchAllowingDownloadForReaders(document.getPk(), allowed);
+
+    // JSON Response.
+    return MessageFormat.format(
+        "'{'\"allowedDownloadForReaders\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
+        allowed, document.getOldSilverpeasId(), document.getId());
   }
 
   SimpleDocument getSimpleDocument(String lang) {

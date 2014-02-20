@@ -42,12 +42,12 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
@@ -68,27 +68,28 @@ public class VersionedDragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-    if (!FileUploadUtil.isRequestMultipart(req)) {
+    HttpRequest request = HttpRequest.decorate(req);
+    if (!request.isContentInMultipart()) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
-    req.setCharacterEncoding(CharEncoding.UTF_8);
-    String componentId = req.getParameter("ComponentId");
+    request.setCharacterEncoding(CharEncoding.UTF_8);
+    String componentId = request.getParameter("ComponentId");
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId);
-    String foreignId = req.getParameter("Id");
+    String foreignId = request.getParameter("Id");
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = "
         + foreignId);
-    int userId = Integer.parseInt(req.getParameter("UserId"));
+    int userId = Integer.parseInt(request.getParameter("UserId"));
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
         "userId = " + userId);
-    boolean publicDocument = !StringUtil.getBooleanValue(req.getParameter("Type"));
-    boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
+    boolean publicDocument = !StringUtil.getBooleanValue(request.getParameter("Type"));
+    boolean bIndexIt = StringUtil.getBooleanValue(request.getParameter("IndexIt"));
 
-    String documentId = req.getParameter("DocumentId");
+    String documentId = request.getParameter("DocumentId");
 
-    String lang = I18NHelper.checkLanguage(req.getParameter("lang"));
-    List<FileItem> items = FileUploadUtil.parseRequest(req);
+    String lang = I18NHelper.checkLanguage(request.getParameter("lang"));
+    List<FileItem> items = request.getFileItems();
     for (FileItem item : items) {
       if (!item.isFormField()) {
         String fileName = FileUtil.getFilename(item.getName());

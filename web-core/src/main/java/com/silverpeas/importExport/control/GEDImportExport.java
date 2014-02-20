@@ -54,7 +54,6 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
@@ -73,6 +72,15 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -83,14 +91,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -114,7 +114,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public GEDImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
-    attachmentIE = new AttachmentImportExport();
+    attachmentIE = new AttachmentImportExport(curentUserDetail);
   }
 
   /**
@@ -238,7 +238,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
           if (pubDet_temp != null) {
             pubAlreadyExist = true;
           }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
       }
 
@@ -322,13 +322,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
     return getCurrentComponentId().startsWith("kmax");
   }
 
-  public void createPublicationContent(ImportReportManager reportManager, UnitReport unitReport,
-      int pubId, PublicationContentType pubContent, String userId, String language) throws
-      ImportExportException {
-    createPublicationContent(reportManager, unitReport, pubId, pubContent, userId, FileServerUtils.
-        getApplicationContext(), language);
-  }
-
   /**
    * Methode de creation du contenu d une publication importee
    *
@@ -337,13 +330,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param pubContent - object de mapping castor contenant les informations d importation du
    * contenu
    * @param userId
-   * @param webContext
-   * @param lang
+   * @param language
    * @throws ImportExportException
    */
   public void createPublicationContent(ImportReportManager reportManager, UnitReport unitReport,
-      int pubId, PublicationContentType pubContent, String userId, String webContext,
-      String language) throws ImportExportException {
+      int pubId, PublicationContentType pubContent, String userId, String language)
+      throws ImportExportException {
     WysiwygContentType wysiwygType = pubContent.getWysiwygContentType();
     XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
     try {
@@ -415,6 +407,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             } else {
               fieldValue = xmlFieldValue;
             }
+            //noinspection unchecked
             fieldDisplayer.update(fieldValue, field, fieldTemplate, formContext);
           }
         }
@@ -438,7 +431,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       throws UtilException, WysiwygException, ImportExportException {
     // Recuperation du nouveau contenu wysiwyg
     File wysiwygFile = null;
-    String wysiwygText = "";
+    String wysiwygText;
     try {
       wysiwygFile = new File(FileUtil.convertPathToServerOS(wysiwygType.getPath()));
       if (!wysiwygFile.exists() && !wysiwygFile.isFile()) {
@@ -459,10 +452,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     if (wysiwygText == null) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-      if (wysiwygFile != null) {
-        throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath());
-      }
+      throw new ImportExportException("GEDImportExport.createPublicationContent()",
+          "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath());
     }
     // Suppression de tout le contenu wysiwyg s il existe
     if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), String.valueOf(pubId), lang)) {
@@ -470,7 +461,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       try {
         WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(),
             String.valueOf(pubId));
-      } catch (WysiwygException ex) {
+      } catch (WysiwygException ignored) {
       }
     }
     // Creation du fichier de contenu wysiwyg sur les serveur
@@ -553,7 +544,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     String newWysiwygText = wysiwygText;
 
     Enumeration<String> classes = mapping.getKeys();
-    while (mapping != null && classes.hasMoreElements()) {
+    while (classes.hasMoreElements()) {
       String oldString = classes.nextElement();
       String newString = mapping.getString(oldString);
       newWysiwygText = replaceWysiwygStringForImport(oldString, newString, newWysiwygText);
@@ -673,8 +664,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
         listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument attDetail : documents) {
       try {
-        FileRepositoryManager.copyFile(attDetail.getAttachmentPath(),
-            exportPublicationPath + File.separator + attDetail.getFilename());
+        if (attDetail.isDownloadAllowedForRolesFrom(getCurentUserDetail())) {
+          FileRepositoryManager.copyFile(attDetail.getAttachmentPath(),
+              exportPublicationPath + File.separator + attDetail.getFilename());
+        }
       } catch (IOException ex) {
         // TODO: gerer l exception!!
       }
@@ -807,7 +800,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * definies dans le fichier xml d'importation.
    *
    * @param unitReport
-   * @param userDetail
+   * @param settings
    * @param pubDetail
    * @param listNode_Type
    * @return
@@ -823,9 +816,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode de creation d'une publication dans le cas d'une importation massive
    *
    * @param unitReport
-   * @param userDetail
    * @param pubDetail
-   * @param nodeId
+   * @param settings
    * @return
    * @throws ImportExportException
    */
@@ -965,8 +957,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode renvoyant la liste des topics de la publication sous forme de NodePK
    *
-   * @param pubId - id de la publication dont on veut les topics
-   * @param componentId
+   * @param pubPK - pk de la publication dont on veut les topics
    * @return - liste des nodesPk de la publication
    * @throws ImportExportException
    */

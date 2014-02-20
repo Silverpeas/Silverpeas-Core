@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Action;
@@ -71,6 +70,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.servlet.HttpRequest;
 
 public class WorkflowDesignerRequestRouter extends
     ComponentRequestRouter<WorkflowDesignerSessionController> {
@@ -105,13 +105,15 @@ public class WorkflowDesignerRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param workflowDesignerSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      WorkflowDesignerSessionController workflowDesignerSC, HttpServletRequest request) {
+      WorkflowDesignerSessionController workflowDesignerSC, HttpRequest request) {
     String destination = null;
     FunctionHandler handler = getHandler(function);
     SilverTrace.info("workflowDesigner", "WorkflowDesignerRequestRouter.getDestination()",
@@ -337,7 +339,7 @@ public class WorkflowDesignerRequestRouter extends
       if ("ImportWorkflow".equals(function)) {
         return root + "importWorkflow.jsp";
       } else if ("DoImportWorkflow".equals(function)) {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 
         /*
          * Une seule donnée le fichier à uploader.

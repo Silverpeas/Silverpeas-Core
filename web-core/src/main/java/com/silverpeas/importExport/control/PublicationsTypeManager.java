@@ -52,7 +52,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -61,14 +60,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -81,7 +72,16 @@ import org.silverpeas.importExport.versioning.Document;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static java.io.File.separator;
 
@@ -112,7 +112,7 @@ public class PublicationsTypeManager {
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
       boolean bExportPublicationPath, NodePK rootPK) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     PublicationsType publicationsType = new PublicationsType();
     List<PublicationType> listPubType = new ArrayList<PublicationType>();
     PdcImportExport pdc_impExp = new PdcImportExport();
@@ -457,7 +457,7 @@ public class PublicationsTypeManager {
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, NodePK nodeRootPK)
       throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     
     GEDImportExport gedIE = null;
     NodeImportExport nodeIE = new NodeImportExport();
@@ -511,7 +511,7 @@ public class PublicationsTypeManager {
   public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport,
       UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath,
       boolean useNameForFolders, NodePK rootPK) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     List<AttachmentDetail> result = new ArrayList<AttachmentDetail>();
 
     // Parcours des publications à exporter
@@ -583,18 +583,12 @@ public class PublicationsTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
-   *
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
-   * @param publicationsType - objet mappé par castor contenant toutes les informations de création
-   * des publications de type unitaire
-   * @param targetComponentId - id du composant dans lequel creer les publications unitaires
-   * @param isPOIUsed
    */
   public void processImport(PublicationsType publicationsType, ImportSettings settings,
       ImportReportManager reportManager) {
     GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(settings.getUser(), settings
         .getComponentId());
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(gedIE.getCurentUserDetail());
     PdcImportExport pdcIE = new PdcImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
     CoordinateImportExport coordinateIE = new CoordinateImportExport();
@@ -756,9 +750,7 @@ public class PublicationsTypeManager {
                 }
               }
               // process the publication's attachments
-              ResourceLocator uploadSettings = new ResourceLocator(
-                  "org.silverpeas.util.uploads.uploadSettings", "");
-              long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+              long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
 
               if (attachments != null) {
 
@@ -889,9 +881,11 @@ public class PublicationsTypeManager {
               }
             }
           } catch (Exception ex) {
-            unitReport.setError(UnitReport.ERROR_ERROR);
             SilverTrace.error("importExport", "PublicationsTypeManager.processImport()",
                 "root.EX_NO_MESSAGE", ex);
+            unitReport.setError(UnitReport.ERROR_ERROR);
+            SilverpeasTransverseErrorUtil
+                .throwTransverseErrorIfAny(ex, userDetail.getUserPreferences().getLanguage());
           }
         }
       }

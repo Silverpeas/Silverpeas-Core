@@ -29,8 +29,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selectionPeas.control.SelectionPeasWrapperSessionController;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +63,7 @@ public class SelectionPeasWrapper extends
    * Do the requested function and return the destination url.
    */
   public String getDestination(String function, SelectionPeasWrapperSessionController session,
-      HttpServletRequest request) {
+      HttpRequest request) {
     try {
       if (function.equals("open")) {
         session.setFormName(request.getParameter("formName"));

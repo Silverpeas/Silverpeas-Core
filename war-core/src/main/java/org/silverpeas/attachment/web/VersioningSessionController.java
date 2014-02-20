@@ -127,7 +127,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
     return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
-        .searchDocumentById(documentPK, null)).getHistory();
+        .searchDocumentById(documentPK, null)).getFunctionalHistory();
   }
 
   /**

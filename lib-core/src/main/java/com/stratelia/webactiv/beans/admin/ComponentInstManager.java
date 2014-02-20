@@ -79,7 +79,7 @@ public class ComponentInstManager {
     componentInst.setLanguage(componentInstToCopy.getLanguage());
 
     // Create a copy of component translations
-    for (Translation translation : componentInstToCopy.getTranslations().values()) {
+    for (ComponentI18N translation : componentInstToCopy.getTranslations().values()) {
       componentInst.addTranslation(translation);
     }
 
@@ -109,13 +109,16 @@ public class ComponentInstManager {
       String sComponentNodeId = idAsString(newInstance.id);
 
       // duplicates existing translations
-      Map<String, Translation> translations = componentInst.getTranslations();
+      Map<String, ComponentI18N> translations = componentInst.getTranslations();
       for (String lang : translations.keySet()) {
-        ComponentI18N translation = (ComponentI18N) translations.get(lang);
-        ComponentInstanceI18NRow row =
-            new ComponentInstanceI18NRow(newInstance.id, lang, translation.getName(),
-            translation.getDescription());
-        ddManager.getOrganization().instanceI18N.createTranslation(row);
+        if (!lang.equals(newInstance.lang)) {
+          // default language stored in main table must not be stored in i18n table
+          ComponentI18N translation = translations.get(lang);
+          ComponentInstanceI18NRow row =
+              new ComponentInstanceI18NRow(newInstance.id, lang, translation.getName(),
+              translation.getDescription());
+          ddManager.getOrganization().instanceI18N.createTranslation(row);
+        }
       }
 
       // Add the parameters if necessary

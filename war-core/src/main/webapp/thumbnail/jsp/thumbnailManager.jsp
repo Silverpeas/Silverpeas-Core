@@ -24,6 +24,7 @@
 
 --%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
@@ -69,6 +70,7 @@
 	}
 %>
 
+<view:includePlugin name="tkn"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">

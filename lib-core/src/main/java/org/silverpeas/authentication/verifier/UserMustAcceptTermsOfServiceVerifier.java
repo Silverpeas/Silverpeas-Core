@@ -77,7 +77,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
       throws AuthenticationUserMustAcceptTermsOfService {
     if (isTermsOfServiceAcceptanceDateIsExpired()) {
       // Caching for 10 minutes
-      tosToken = CacheServiceFactory.getCacheService().add(this, LIVE_10_MINUTES);
+      tosToken = CacheServiceFactory.getApplicationCacheService().add(this, LIVE_10_MINUTES);
       throw new AuthenticationUserMustAcceptTermsOfService();
     }
     return this;
@@ -108,7 +108,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    * @return
    */
   protected static synchronized UserMustAcceptTermsOfServiceVerifier get(String tosToken) {
-    UserMustAcceptTermsOfServiceVerifier verifier = CacheServiceFactory.getCacheService()
+    UserMustAcceptTermsOfServiceVerifier verifier = CacheServiceFactory.getApplicationCacheService()
         .get(tosToken, UserMustAcceptTermsOfServiceVerifier.class);
     if (verifier == null) {
       verifier = new UserMustAcceptTermsOfServiceVerifier(null);
@@ -122,7 +122,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    */
   private static synchronized void clearCache(String tosToken) {
     if (tosToken != null) {
-      CacheServiceFactory.getCacheService().remove(tosToken);
+      CacheServiceFactory.getApplicationCacheService().remove(tosToken);
     }
   }
 }

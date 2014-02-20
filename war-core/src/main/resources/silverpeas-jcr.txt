@@ -14,6 +14,11 @@
   mixin
   - slv:comment (STRING)
 
+/* Mixin downloadable */
+[slv:downloadable]
+  mixin
+  - slv:forbiddenDownloadForRoles (STRING) IGNORE
+
 [slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable, slv:commentable
   - slv:foreignKey (STRING) 
   - slv:instanceId (STRING) MANDATORY

@@ -138,7 +138,7 @@ public class SilverpeasLoginModule implements LoginModule {
                 .getUserID()).withAsPassword(new String(sc.getPassword())).withAsDomainId(domainId);
             String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
-              userId = administrator.authenticate(key, null, false);
+              userId = administrator.identify(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
                   isRoot(userId));
               fillPrincipal(principal);
@@ -169,7 +169,7 @@ public class SilverpeasLoginModule implements LoginModule {
                 .getUsername()).withAsDomainId(domainId);
             String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
-              userId = administrator.authenticate(key, null, false);
+              userId = administrator.identify(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
                   isRoot(userId));
               validateDigestUser(principal, sc);

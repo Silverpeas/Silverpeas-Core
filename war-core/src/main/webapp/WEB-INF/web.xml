@@ -24,10 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name>Silverpeas</display-name>
   <description>Collaborative portal organizer</description>
   <context-param>
@@ -65,6 +62,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <param-value>sun-portlet.xml</param-value>
   </context-param>
   <filter>
+    <description>
+      To ensure the encoding of the request parameters are in UTF-8. This filter MUST be the first
+      one in order to work correctly.
+    </description>
     <filter-name>CharacterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
     <init-param>
@@ -77,12 +78,40 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </init-param>
   </filter>
   <filter>
+    <description>
+      To decorate the incoming HTTP request by a HttpRequest instance that provides more useful
+      functionalities.
+    </description>
+    <filter-name>HttpServletRequestDecoration</filter-name>
+    <filter-class>org.silverpeas.web.filter.HttpServletRequestDecoration</filter-class>
+  </filter>
+  <filter>
+    <!-- MessageFilter Filter -->
+    <description>
+      To manage for each incoming request, the life-cycle of a l10n message container in which
+      are set the messages for the end-user.
+    </description>
+    <filter-name>MessageFilter</filter-name>
+    <filter-class>org.silverpeas.web.filter.MessageFilter</filter-class>
+  </filter>
+  <filter>
+    <description>
+      To validate each incoming HTTP request to a protected resource by using a synchronizer token
+      mechanism.
+    </description>
+    <filter-name>SessionSynchronizerTokenValidator</filter-name>
+    <filter-class>org.silverpeas.web.token.SessionSynchronizerTokenValidator</filter-class>
+  </filter>
+  <filter>
     <!-- PortletAppEngine Filter -->
     <filter-name>PortletAppEngineFilter</filter-name>
     <filter-class>com.sun.portal.portletcontainer.appengine.PortletAppEngineFilter</filter-class>
   </filter>
   <filter>
     <!-- WebCORSFilter Filter -->
+    <description>
+      To handle cross-origin resource sharing.
+    </description>
     <filter-name>WebCORSFilter</filter-name>
     <filter-class>org.silverpeas.web.filter.WebCORSFilter</filter-class>
   </filter>
@@ -91,13 +120,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <!-- PAE Filter Mapping -->
+    <filter-name>HttpServletRequestDecoration</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>MessageFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>SessionSynchronizerTokenValidator</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>PortletAppEngineFilter</filter-name>
     <servlet-name>PortletAppEngineServlet</servlet-name>
     <dispatcher>INCLUDE</dispatcher>
   </filter-mapping>
   <filter-mapping>
-    <!-- WebCORSFilter Filter mapping -->
     <filter-name>WebCORSFilter</filter-name>
     <url-pattern>/services/*</url-pattern>
   </filter-mapping>
@@ -106,6 +145,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </listener>
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.silverpeas.web.token.SessionSynchronizerTokenSetter</listener-class>
   </listener>
   <listener>
     <listener-class>com.sun.portal.container.service.ServiceManagerContextListenerImpl</listener-class>
@@ -482,7 +524,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </init-param>
     <init-param>
       <param-name>WHITE_LIST</param-name>
-      <param-value>html htm odt doc pdf</param-value>
+      <param-value>html htm odt doc docx pdf</param-value>
     </init-param>
   </servlet>
   -->
@@ -585,6 +627,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet>
     <servlet-name>OutlookSyncCalendarServlet</servlet-name>
     <servlet-class>org.silverpeas.calendar.OutlookSyncCalendarServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>TokenWebPageUpdater</servlet-name>
+    <servlet-class>org.silverpeas.web.token.ProtectedWebPageUpdater</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>REST Container</servlet-name>
@@ -973,6 +1019,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>NodesJSONServlet</servlet-name>
     <url-pattern>/Explorer/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TokenWebPageUpdater</servlet-name>
+    <url-pattern>/util/javaScript/silverpeas-tkn.js</url-pattern>
+  </servlet-mapping>
   <jsp-config>
     <jsp-property-group>
       <url-pattern>*.jsp</url-pattern>
@@ -1041,6 +1091,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <error-page>
     <exception-type>org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException</exception-type>
     <location>/admin/jsp/errorpageDataStorageQuota.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.silverpeas.admin.component.exception.ComponentFileFilterException</exception-type>
+    <location>/admin/jsp/errorpageForbiddenFile.jsp</location>
   </error-page>
   <security-constraint>
     <display-name>Authentification</display-name>

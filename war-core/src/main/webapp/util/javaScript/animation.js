@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 String.prototype.startsWith = function(str) {
-  return this.indexOf(str) == 0;
+  return this.indexOf(str) === 0;
 };
 
 // PopUp Window
@@ -47,7 +47,7 @@ function SP_openWindow(page, nom, largeur, hauteur, options) {
     left = 0;
   }
   return window.open(page, nom,
-      "top=" + top + ",left=" + left + ",width=" + largeur + ",height=" + hauteur + "," + options);
+          "top=" + top + ",left=" + left + ",width=" + largeur + ",height=" + hauteur + "," + options);
 }
 
 function openDialog(url, nom, largeur, hauteur, parm) {
@@ -67,7 +67,8 @@ function winPrint() {
 // RollOver
 function MM_swapImgRestore() { //v3.0
   var i, x, a = document.MM_sr;
-  for (i = 0; a && i < a.length && (x = a[i]) && x.oSrc; i++) x.src = x.oSrc;
+  for (i = 0; a && i < a.length && (x = a[i]) && x.oSrc; i++)
+    x.src = x.oSrc;
 }
 
 function MM_preloadImages() { //v3.0
@@ -78,7 +79,7 @@ function MM_preloadImages() { //v3.0
     }
     var i, j = d.MM_p.length, a = MM_preloadImages.arguments;
     for (i = 0; i < a.length; i++)
-      if (a[i].indexOf("#") != 0) {
+      if (a[i].indexOf("#") !== 0) {
         d.MM_p[j] = new Image;
         d.MM_p[j++].src = a[i];
       }
@@ -97,8 +98,10 @@ function MM_findObj(n, d) { //v3.0
   if (!(x = d[n]) && d.all) {
     x = d.all[n];
   }
-  for (i = 0; !x && i < d.forms.length; i++) x = d.forms[i][n];
-  for (i = 0; !x && d.layers && i < d.layers.length; i++) x = MM_findObj(n, d.layers[i].document);
+  for (i = 0; !x && i < d.forms.length; i++)
+    x = d.forms[i][n];
+  for (i = 0; !x && d.layers && i < d.layers.length; i++)
+    x = MM_findObj(n, d.layers[i].document);
   return x;
 }
 

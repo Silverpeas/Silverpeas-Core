@@ -23,30 +23,35 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.notification.message.MessageManager;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
  * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
+ *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath =
-      URLManager.getApplicationURL() + "/util/styleSheets/";
+  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
+  private static final String angularjsPath = javascriptPath + "angularjs/";
+  private static final String angularjsServicesPath = angularjsPath + "services/";
+  private static final String angularjsDirectivesPath = angularjsPath + "directives/";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
-  private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
+  private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
@@ -71,7 +76,8 @@ public class JavascriptPluginInclusion {
   private static final String jqueryNotifierPath = jqueryPath + "noty/";
   private static final String JQUERY_NOTIFIER_BASE = "jquery.noty.js";
   private static final String JQUERY_NOTIFIER_TOP = "layouts/top.js";
-  private static final String JQUERY_NOTIFIER_CENTER = "layouts/topCenter.js";
+  private static final String JQUERY_NOTIFIER_TOPCENTER = "layouts/topCenter.js";
+  private static final String JQUERY_NOTIFIER_CENTER = "layouts/center.js";
   private static final String JQUERY_NOTIFIER_THEME = "themes/silverpeas.js";
   private static final String SILVERPEAS_NOTIFIER = "silverpeas-notifier.js";
   private static final String JQUERY_TAGS = "tagit/tagit.js";
@@ -84,9 +90,18 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
   private static final String JQUERY_MIGRATION = "jquery-migrate-1.2.1.min.js";
+  private static final String JQUERY_SVG = "raphael.min.js";
+  private static final String JQUERY_GAUGE = "justgage.min.js";
+  private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
+  private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
+  private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
+  private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
+  private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
+  private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
 
   /**
    * Centralization of script instantiation.
+   *
    * @param src
    * @return
    */
@@ -96,6 +111,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
+   *
    * @param content
    * @return
    */
@@ -105,6 +121,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of link instantiation.
+   *
    * @param href
    * @return
    */
@@ -122,6 +139,12 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePdc(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
+    return xhtml;
+  }
+  
+  public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
+    xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
     return xhtml;
   }
 
@@ -147,6 +170,7 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePagination(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryCssPath + PAGINATION_TOOL + ".css"));
     xhtml.addElement(script((jqueryPath + PAGINATION_TOOL + ".js")));
+    xhtml.addElement(script((angularjsDirectivesPath + SILVERPEAS_PAGINATOR)));
     return xhtml;
   }
 
@@ -156,7 +180,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeUserZoom(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_USERZOOM));
@@ -164,13 +188,13 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeInvitMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
     return xhtml;
   }
 
   public static ElementContainer includeMessageMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
     return xhtml;
   }
@@ -186,10 +210,10 @@ public class JavascriptPluginInclusion {
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.platform.responsibles", "")).append("';");
+        .getString("GML.platform.responsibles", "")).append("';");
     responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.notification.send", "")).append("';");
+        .getString("GML.notification.send", "")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }
@@ -211,9 +235,17 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeNotifier(final ElementContainer xhtml) {
     xhtml.addElement(script(jqueryPath + JQUERY_NOTIFIER_BASE));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOP));
+    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOPCENTER));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_THEME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_NOTIFIER));
+    StringBuilder script = new StringBuilder();
+    script.append("notySetupAjaxMessages();");
+    String registredKeyOfMessages = MessageManager.getRegistredKey();
+    if (StringUtil.isDefined(registredKeyOfMessages)) {
+      script.append("notyRegistredMessages('").append(registredKeyOfMessages).append("');");
+    }
+    xhtml.addElement(scriptContent(script.toString()));
     return xhtml;
   }
 
@@ -230,6 +262,19 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static ElementContainer includeGauge(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + JQUERY_SVG));
+    xhtml.addElement(script(jqueryPath + JQUERY_GAUGE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_GAUGE));
+    return xhtml;
+  }
+
+  public static ElementContainer includeComment(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + JQUERY_AUTORESIZE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_COMMENT));
+    return xhtml;
+  }
+
   public static ElementContainer includeJQuery(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryCssPath + GraphicElementFactory.JQUERYUI_CSS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
@@ -242,6 +287,11 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeTags(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + STYLESHEET_TAGS));
     xhtml.addElement(script(jqueryPath + JQUERY_TAGS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
     return xhtml;
   }
 }

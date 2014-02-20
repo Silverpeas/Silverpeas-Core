@@ -75,7 +75,7 @@
         </Collection>
       </Collection>
     </Properties>
-  </PortletApp>  
+  </PortletApp>    
   <PortletApp name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -98,34 +98,6 @@
         <Collection name="text/html">
           <String value="VIEW"/>
           <String value="EDIT"/>
-          <String value="HELP"/>
-        </Collection>
-      </Collection>
-    </Properties>
-  </PortletApp>  
-  <PortletApp name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet">
-    <Properties>
-      <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas My last publications read portlet"/>
-      <String name="shortTitle" value="My last publications consulted"/>
-      <String name="description" value="Last publications consulted"/>
-      <String name="archiveName" value="war-ic-exp.war"/>
-      <Collection name="supportedContentTypes">
-        <String value="text/html"/>
-      </Collection>
-      <Collection name="displayNameMap">
-        <String name="fr" value="Dernières publications consultées"/>
-        <String name="en" value="Latest publications consulted"/>
-        <String name="de" value="Aktuelle VeröffentlichungenVeröffentlichung lesen"/>
-      </Collection>
-      <Collection name="descriptionMap">
-        <String name="fr" value="Les dernières publications que j'ai consultées"/>
-        <String name="en" value="The latest publications consulted"/>
-        <String name="de" value="Die neuesten Publikationen konsultiert"/>
-      </Collection>
-      <Collection name="supportsMap">
-        <Collection name="text/html">
-          <String value="VIEW"/>
           <String value="HELP"/>
         </Collection>
       </Collection>
@@ -158,6 +130,62 @@
       </Collection>
     </Properties>
   </PortletApp>
+    <PortletApp name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My last accessed applications portlet"/>
+      <String name="shortTitle" value="My last accessed applications"/>
+      <String name="description" value="Last accessed applications"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes dernières applications consultées"/>
+        <String name="en" value="My last accessed applications"/>
+        <String name="de" value="Meine letzten Zugegriffs Anwendungen"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Les dernières applications que j'ai consultées"/>
+        <String name="en" value="The last applications I consulted"/>
+        <String name="de" value="Die letzte Anwendung, die ich konsultiert"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>  
+  <PortletApp name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My last publications read portlet"/>
+      <String name="shortTitle" value="My last publications consulted"/>
+      <String name="description" value="Last publications consulted"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes dernières publications consultées"/>
+        <String name="en" value="My latest publications consulted"/>
+        <String name="de" value="Meine aktuellen Veröffentlichungen lesen"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Les dernières publications que j'ai consultées"/>
+        <String name="en" value="The latest publications consulted"/>
+        <String name="de" value="Die neuesten Publikationen konsultiert"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>    
   <PortletApp name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles">
     <Properties>
       <String name="archiveType" value="war"/>

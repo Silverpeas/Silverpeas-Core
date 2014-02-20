@@ -68,7 +68,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
     {
         if (window.confirm(textToDisplay))
         {
-            window.location.href = targetURL;
+          jQuery('#genericForm').attr('action', targetURL).submit();
         }
     }
 
@@ -150,5 +150,6 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <form name="goBack" action="Main" method="post"></form>
+<form id="genericForm" action="" method="POST"></form>
 </body>
 </html>

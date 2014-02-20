@@ -36,9 +36,12 @@ import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.util.ListSlice;
-
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,16 +52,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
 import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.web.RESTWebService.RESPONSE_HEADER_ARRAYSIZE;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -118,6 +118,7 @@ public class UserProfileResource extends RESTWebService {
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
    * @param domain the unique identifier of the domain the users have to be related.
+   * @param accessLevels filters the users by the access level in Silverpeas.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
@@ -150,7 +151,8 @@ public class UserProfileResource extends RESTWebService {
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
         asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
-        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -236,7 +238,8 @@ public class UserProfileResource extends RESTWebService {
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -295,12 +298,14 @@ public class UserProfileResource extends RESTWebService {
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(contacts, locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, contacts.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_USERSIZE, contacts.getOriginalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, contacts.getOriginalListSize()).build();
   }
 
   @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
+    throw new UnsupportedOperationException(
+        "The UserProfileResource doesn't belong to any component"
         + " instances");
   }
 
@@ -408,7 +413,9 @@ public class UserProfileResource extends RESTWebService {
       String[] pageAttributes = page.split(";");
       int nth = Integer.valueOf(pageAttributes[0]);
       int count = Integer.valueOf(pageAttributes[1]);
-      paginationPage = new PaginationPage(nth, count);
+      if (count > 0) {
+        paginationPage = new PaginationPage(nth, count);
+      }
     }
     return paginationPage;
   }

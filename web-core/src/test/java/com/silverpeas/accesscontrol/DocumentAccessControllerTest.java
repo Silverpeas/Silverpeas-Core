@@ -21,28 +21,30 @@
 
 package com.silverpeas.accesscontrol;
 
-import java.util.Collection;
-
-import org.silverpeas.importExport.versioning.Document;
-
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.ForeignPK;
-
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.importExport.versioning.Document;
 
+import java.util.Collection;
+
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -53,6 +55,9 @@ import static org.junit.Assert.assertThat;
 public class DocumentAccessControllerTest {
 
   private final String userId = "bart";
+  private final String componentId = "yellowPages18";
+  private final NodePK nodePk1 = new NodePK("5", componentId);
+  private final NodePK nodePk2 = new NodePK("11", componentId);
 
   public DocumentAccessControllerTest() {
   }
@@ -64,26 +69,32 @@ public class DocumentAccessControllerTest {
    */
   @Test
   public void UserIsAuthorized() throws Exception {
-    String componentId = "yellowPages18";
-    NodePK nodePk1 = new NodePK("5", componentId);
-    NodePK nodePk2 = new NodePK("11", componentId);
     Collection<NodePK> fathers = CollectionUtil.asList(nodePk1, nodePk2);
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    PublicationBm publicationBm = Mockito.mock(PublicationBm.class);
-    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-        PublicationBm.class)).thenReturn(publicationBm);
-    Mockito.when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
+    PublicationBm publicationBm = mock(PublicationBm.class);
+    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
+        .thenReturn(publicationBm);
+    when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
-    NodeAccessController accessController = Mockito.mock(NodeAccessController.class);
+    NodeAccessController accessController = mock(NodeAccessController.class);
 
-    Mockito.when(accessController.isUserAuthorized(userId, nodePk1)).thenReturn(false);
-    Mockito.when(accessController.isUserAuthorized(userId, nodePk2)).thenReturn(
-        true);
+    when(accessController
+        .isUserAuthorized(anyString(), any(NodePK.class), any(AccessControlContext.class)))
+        .thenAnswer(new Answer<Boolean>() {
+
+          @Override
+          public Boolean answer(final InvocationOnMock invocation) throws Throwable {
+            String userIdArgs = (String) invocation.getArguments()[0];
+            NodePK nodePkArgs = (NodePK) invocation.getArguments()[1];
+            return userId.equals(userIdArgs) && nodePk2.equals(nodePkArgs);
+          }
+        });
+
     DocumentAccessController instance = new DocumentAccessController(accessController);
     boolean result = instance.isUserAuthorized(userId, document);
-    assertThat(result, Matchers.is(true));
+    assertThat(result, is(true));
   }
 
   /**
@@ -93,23 +104,18 @@ public class DocumentAccessControllerTest {
    */
   @Test
   public void UserIsNotAuthorized() throws Exception {
-    String componentId = "yellowPages18";
-    NodePK nodePk1 = new NodePK("5", componentId);
-    NodePK nodePk2 = new NodePK("11", componentId);
     Collection<NodePK> fathers = CollectionUtil.asList(nodePk1, nodePk2);
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    PublicationBm publicationBm = Mockito.mock(PublicationBm.class);
-    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-        PublicationBm.class)).thenReturn(publicationBm);
-    Mockito.when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
+    PublicationBm publicationBm = mock(PublicationBm.class);
+    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
+        .thenReturn(publicationBm);
+    when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
-    NodeAccessController accessController = Mockito.mock(NodeAccessController.class);
-    Mockito.when(accessController.isUserAuthorized(userId, nodePk1)).thenReturn(false);
-    Mockito.when(accessController.isUserAuthorized(userId, nodePk2)).thenReturn(false);
+    NodeAccessController accessController = mock(NodeAccessController.class);
     DocumentAccessController instance = new DocumentAccessController(accessController);
     boolean result = instance.isUserAuthorized(userId, document);
-    assertThat(result, Matchers.is(false));
+    assertThat(result, is(false));
   }
 }

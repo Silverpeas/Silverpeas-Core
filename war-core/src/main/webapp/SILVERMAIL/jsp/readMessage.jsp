@@ -58,8 +58,17 @@
     <script>
       function deleteMessage( pID )
       {
-        window.opener.location = "DeleteMessage.jsp?ID=" + pID + "&SpaceId=<c:out value="${param.SpaceId}"/>&from=<c:out value="${from}"/>";
-        window.close();
+        if (window.opener.deleteMessage) {
+          window.opener.deleteMessage(pID, true, '${param.SpaceId}', '${from}');
+          window.close();
+        } else {
+          var $form = jQuery('#genericForm');
+          jQuery('#ID', $form).val(pID);
+          jQuery('#SpaceId', $form).val('${param.SpaceId}');
+          jQuery('#from', $form).val('${from}');
+          $form.attr('action', "DeleteMessage.jsp").submit();
+          closeWindow();
+        }
       }
 
       function goTo()
@@ -131,5 +140,11 @@
         </center>
       </view:frame>
     </view:window>
+    <form id="genericForm" action="" method="POST">
+      <input id="ID" name="ID" type="hidden"/>
+      <input id="folder" name="folder" type="hidden"/>
+      <input id="SpaceId" name="SpaceId" type="hidden"/>
+      <input id="from" name="from" type="hidden"/>
+    </form>
   </body>
 </html>

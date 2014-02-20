@@ -25,17 +25,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.result;
 
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.search.ResultDisplayer;
@@ -44,7 +33,6 @@ import com.silverpeas.search.ResultSearchRendererUtil;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -52,6 +40,15 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tag to display result search element (GlobalSilverResult) object. Add extra information from
@@ -249,7 +246,7 @@ public class HtmlSearchResultTag extends TagSupport {
     String sDownloadURL = gsr.getDownloadLink();
     String sLocation = gsr.getLocation();
     String sCreatorName = gsr.getCreatorName();
-    String sCreationDate = null;
+    String sCreationDate;
     try {
       if (sortValue == 4) {
         sCreationDate = settings.getOutputDate(gsr.getCreationDate());
@@ -273,7 +270,7 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append(serverName).append("\">");
     
     if (activeSelection || exportEnabled) {
-      if (gsr.isExportable()) {
+      if (gsr.isExportable() && gsr.isUserAllowedToDownloadFile()) {
         String checked = "";
         if (gsr.isSelected()) {
           checked = "checked=\"checked\"";
@@ -314,12 +311,13 @@ public class HtmlSearchResultTag extends TagSupport {
       }
       sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
     }
-    
+
     result.append("<div class=\"locationTitle\">");
     String curResultId = "readSpanId_" + gsr.getResultId();
     if (activeSelection) {
-      result.append("<span id=\"").append(curResultId).append(
-          "\" class=\"textePetitBold\">").append(sName).append("</span>");
+      result.append("<span id=\"").append(curResultId).append("\" class=\"textePetitBold")
+          .append((gsr.isUserAllowedToDownloadFile()) ? "" : " forbidden-download").append("\">")
+          .append(sName).append("</span>");
     } else {
       String cssClass = "";
       String cssClassDisableVisited = "";
@@ -327,15 +325,24 @@ public class HtmlSearchResultTag extends TagSupport {
         cssClass = "markedAsRead";
         cssClassDisableVisited = "markedAsReadDisableVisited";
       }
-      result.append("<a href=\"").append(sURL).append("\" class=\"").append(
-          cssClassDisableVisited).append("\"><span id=\"").append(curResultId).append(
-          "\" class=\"").append(cssClass).append("\">").append(sName).append("</span></a>");
+      if (!gsr.isUserAllowedToDownloadFile()) {
+        cssClass += " forbidden-download";
+      }
+      if (gsr.isUserAllowedToDownloadFile()) {
+        result.append("<a href=\"").append(sURL).append("\" class=\"")
+            .append(cssClassDisableVisited).append("\">");
+      }
+      result.append("<span id=\"").append(curResultId).append("\" class=\"").append(cssClass)
+          .append("\">").append(sName).append("</span>");
+      if (gsr.isUserAllowedToDownloadFile()) {
+        result.append("</a>");
+      }
     }
     if (gsr.getIndexEntry() != null && gsr.getIndexEntry().isAlias()) {
       result.append(" (").append(settings.getString("GML.alias")).append(")");
     }
-    
-    if (StringUtil.isDefined(sDownloadURL)) {
+
+    if (StringUtil.isDefined(sDownloadURL) && gsr.isUserAllowedToDownloadFile()) {
       // affiche le lien pour le téléchargement
       result.append("<a href=\"").append(sDownloadURL).append("\" class=\"fileDownload\" target=\"_blank\">").append(
           downloadSrc).append("</a>");
@@ -355,7 +362,17 @@ public class HtmlSearchResultTag extends TagSupport {
           .append("\" alt=\"").append(settings.getString("GML.view")).append("\" title=\"")
           .append(settings.getString("GML.view")).append("\"/>");
     }
-    
+    if (!gsr.isDownloadAllowedForReaders()) {
+      String forbiddenDownloadHelp = "";
+      forbiddenDownloadHelp =
+          gsr.isUserAllowedToDownloadFile() ? settings.getString("GML.download.forbidden.readers") :
+              settings.getString("GML.download.forbidden");
+      result.append(" <img class=\"forbidden-download-file\" src=\"")
+          .append(settings.getIcon("pdcPeas.file.forbidden-download")).append("\" alt=\"")
+          .append(forbiddenDownloadHelp).append("\" title=\"").append(forbiddenDownloadHelp)
+          .append("\"/>");
+    }
+
     result.append("</div>");
     
     if (StringUtil.isDefined(sDescription)) {

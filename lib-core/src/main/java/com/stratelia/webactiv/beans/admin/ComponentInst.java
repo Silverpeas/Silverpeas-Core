@@ -20,6 +20,14 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.admin.notification.ComponentJsonPatch;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.notification.jsondiff.Operation;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,23 +35,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.silverpeas.notification.jsondiff.Operation;
-
-import com.silverpeas.admin.notification.ComponentJsonPatch;
-
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-
-public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
-    Comparable<ComponentInst> {
+public class ComponentInst extends AbstractI18NBean<ComponentI18N>
+    implements Serializable, Cloneable, Comparable<ComponentInst> {
 
   private static final long serialVersionUID = 1L;
   public final static String STATUS_REMOVED = "R";
   private String id;
   private String name;
-  private String label;
-  private String description;
   private String domainFatherId;
   private int order;
   private Date createDate = null;
@@ -68,8 +66,6 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   public ComponentInst() {
     id = "";
     name = "";
-    label = "";
-    description = "";
     domainFatherId = "";
     order = 0;
     profiles = new ArrayList<ProfileInst>();
@@ -87,8 +83,8 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     ComponentInst ci = new ComponentInst();
     ci.setId(id);
     ci.setName(name);
-    ci.setLabel(label);
-    ci.setDescription(description);
+    ci.setLabel(getLabel());
+    ci.setDescription(getDescription());
     ci.setDomainFatherId(domainFatherId);
     ci.setOrderNum(order);
     ci.setPublic(isPublic);
@@ -130,28 +126,30 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return id;
   }
 
+  /**
+   * This method is a hack (technical debt)
+   * @param sName
+   */
+  @Override
   public void setName(String sName) {
     name = sName;
   }
 
+  /**
+   * This method is a hack (technical debt)
+   * @return
+   */
+  @Override
   public String getName() {
     return name;
   }
 
   public void setLabel(String sLabel) {
-    label = sLabel;
+    super.setName(sLabel);
   }
 
   public String getLabel() {
-    return label;
-  }
-
-  public void setDescription(String sDescription) {
-    description = sDescription;
-  }
-
-  public String getDescription() {
-    return description;
+    return super.getName();
   }
 
   public void setDomainFatherId(String sDomainFatherId) {
@@ -314,21 +312,17 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return "";
   }
 
-  public String getLabel(String language) {
-    ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null) {
-      return s.getName();
-    } else {
-      return getLabel();
-    }
+  /**
+   * Gets a component instance parameter from a centralized parameter name.
+   * @param parameterName
+   * @return
+   */
+  public String getParameterValue(ComponentInstanceParameterName parameterName) {
+    return getParameterValue(parameterName.name());
   }
 
-  public String getDescription(String language) {
-    ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null) {
-      return s.getDescription();
-    }
-    return getDescription();
+  public String getLabel(String language) {
+    return super.getName(language);
   }
 
   public boolean isHidden() {
@@ -406,8 +400,8 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     patch.setComponentType(getName());
     List<Operation> operations = new ArrayList<Operation>(10 + parameters.size());
     patch.addOperation(Operation.determineOperation("name", name, newComponent.getName()));
-    patch.addOperation(Operation.determineOperation("label", label, newComponent.getLabel()));
-    patch.addOperation(Operation.determineOperation("description", description, newComponent
+    patch.addOperation(Operation.determineOperation("label", getLabel(), newComponent.getLabel()));
+    patch.addOperation(Operation.determineOperation("description", getDescription(), newComponent
         .getDescription()));
     patch.addOperation(Operation.determineOperation("domainFatherId", domainFatherId, newComponent
         .getDomainFatherId()));

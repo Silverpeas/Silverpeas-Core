@@ -1620,7 +1620,7 @@ public class PublicationBmEJB implements PublicationBm {
       try {
         ThumbnailDetail thumbnail = pubDetail.getThumbnail();
         if (thumbnail != null) {
-          String[] imageProps = ThumbnailController.getImageAndMimeType(thumbnail, -1, -1);
+          String[] imageProps = ThumbnailController.getImageAndMimeType(thumbnail);
           indexEntry.setThumbnail(imageProps[0]);
           indexEntry.setThumbnailMimeType(imageProps[1]);
         }
@@ -1816,7 +1816,7 @@ public class PublicationBmEJB implements PublicationBm {
   private PublicationDetail loadTranslations(PublicationDetail detail) {
     PublicationI18N translation = new PublicationI18N(detail.getLanguage(), detail.getName(), detail
         .getDescription(), detail.getKeywords());
-    List<Translation> translations = new ArrayList<Translation>();
+    List<PublicationI18N> translations = new ArrayList<PublicationI18N>();
     translations.add(translation);
     if (I18NHelper.isI18N) {
       Connection con = getConnection();

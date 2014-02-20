@@ -25,7 +25,6 @@ import javax.jcr.Property;
 
 /**
  * Constants used in Silverpeas JCR implementation.
- *
  * @author Emmanuel Hugonnet
  * @version $revision$
  */
@@ -187,15 +186,22 @@ public interface JcrConstants extends Property {
    * Silverpeas Mixin to add an owner to the node.
    */
   String SLV_OWNABLE_MIXIN = "slv:ownable";
-  
+
   /**
    * Silverpeas Mixin to add an comment to the node.
    */
   String SLV_COMMENTABLE_MIXIN = "slv:commentable";
+
+  /**
+   * Silverpeas Mixin to add download data to the node.
+   */
+  String SLV_DOWNLOADABLE_MIXIN = "slv:downloadable";
+
   /**
    * Translation node 's name prefix. A translation's name should be TRANSLATION_NAME_PREFIX+ lang.
    */
   String TRANSLATION_NAME_PREFIX = "traduction_";
+
   /**
    * Root node for XPath Queries
    */
@@ -248,4 +254,5 @@ public interface JcrConstants extends Property {
   String SLV_PROPERTY_VERSIONED = "slv:versioned";
   String SLV_PROPERTY_XMLFORM_ID = "slv:xmlFormId";
   String SLV_PROPERTY_COMMENT = "slv:comment";
+  String SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES = "slv:forbiddenDownloadForRoles";
 }

@@ -23,16 +23,10 @@
  */
 package org.silverpeas.admin.web;
 
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_APPEARANCE_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_BASE_URI;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_COMPONENTS_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_CONTENT_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_SPACES_URI_PART;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.silverpeas.admin.web.SpaceEntity;
-
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
+import static org.silverpeas.admin.web.AdminResourceURIs.*;
 
 /**
  * @author Yohann Chastagnier

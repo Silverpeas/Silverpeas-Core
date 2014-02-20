@@ -23,18 +23,18 @@
  */
 package com.silverpeas.notification.builder;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractResourceUserNotificationBuilder<T> extends AbstractUserNotificationBuilder {
+public abstract class AbstractResourceUserNotificationBuilder<T>
+    extends AbstractUserNotificationBuilder {
 
   private T resource;
 
@@ -44,7 +44,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
    * @param title
    * @param content
    */
-  public AbstractResourceUserNotificationBuilder(final T resource, final String title, final String content) {
+  public AbstractResourceUserNotificationBuilder(final T resource, final String title,
+      final String content) {
     super(title, content);
     setResource(resource);
   }
@@ -91,7 +92,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
   }
 
   /**
-   * Initializes from notification meta data already filled the container of notification resource data
+   * Initializes from notification meta data already filled the container of notification resource
+   * data
    * @return
    */
   protected NotificationResourceData initializeNotificationResourceData() {
@@ -105,9 +107,10 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
   }
 
   /**
-   * Builds the notification resource data container. Don't forget to fill resourceId, resourceType, resourceName,
-   * resourceDescription (optional), resourceLocation (optional). If ResourceLocation is empty , it will be filled by
-   * the NotificationManager with the given componentInstanceId of NotificationMetaData
+   * Builds the notification resource data container. Don't forget to fill resourceId,
+   * resourceType, resourceName, resourceDescription (optional), resourceLocation (optional). If
+   * ResourceLocation is empty , it will be filled by the NotificationManager with the given
+   * componentInstanceId of NotificationMetaData.
    * @param resource
    * @param notificationResourceData
    */
@@ -125,7 +128,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
     }
     if (StringUtils.isBlank(resourceUrl)) {
       resourceUrl = "";
-      SilverTrace.warn("NotificationBuider", "AbstractResourceNotificationBuilder.getResourceURL(T resource)",
+      SilverTrace.warn("NotificationBuider",
+          "AbstractResourceNotificationBuilder.getResourceURL(T resource)",
           "notificationBuider.RESOURCE_URL_IS_EMPTY");
     }
     return resourceUrl;
@@ -149,11 +153,11 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
   }
 
   /**
-   * Fills notificationResourceData with silverpeasContent container
+   * Fills notificationResourceData with silverpeasContent container.
    * @param notificationResourceData
    * @param silverpeasContent
    */
-  private final void fill(final NotificationResourceData notificationResourceData,
+  private void fill(final NotificationResourceData notificationResourceData,
       final SilverpeasContent silverpeasContent) {
     notificationResourceData.setResourceId(silverpeasContent.getId());
     notificationResourceData.setResourceType(silverpeasContent.getContributionType());

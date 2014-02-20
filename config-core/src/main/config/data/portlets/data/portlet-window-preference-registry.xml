@@ -84,4 +84,11 @@
       </Collection>
     </Properties>
   </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbApplis" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

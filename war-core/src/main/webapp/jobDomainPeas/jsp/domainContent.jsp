@@ -139,7 +139,7 @@
 <script type="text/javascript">
 function ConfirmAndSend(textToDisplay,targetURL) {
     if (window.confirm(textToDisplay)) {
-        window.location.href = targetURL;
+        jQuery('#deletionForm').attr('action', targetURL).submit();
     }
 }
 
@@ -258,6 +258,8 @@ out.println(window.printBefore());
   }
 %>
 </view:frame>
+<form id="deletionForm" action="" method="POST">
+</form>
 <%
 	out.println(window.printAfter());
 %>

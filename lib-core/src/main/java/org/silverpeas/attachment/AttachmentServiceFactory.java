@@ -38,7 +38,7 @@ public class AttachmentServiceFactory {
   }
   private static final AttachmentServiceFactory factory = new AttachmentServiceFactory();
 
-  public static final AttachmentServiceFactory getInstance() {
+  public static AttachmentServiceFactory getInstance() {
     return factory;
   }
 

@@ -24,6 +24,7 @@
 package org.silverpeas.process.io.file;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -300,6 +301,54 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
+  public void testSizeOfSessionWorkingPathWithVirtualHandledFiles() throws Exception {
+    DummyHandledFile dummyHandledFile1 = new DummyHandledFileTest(50, false);
+    DummyHandledFile dummyHandledFile2 = new DummyHandledFileTest(25, false);
+    DummyHandledFile dummyHandledFile3Deleted = new DummyHandledFileTest(3, true);
+    DummyHandledFile dummyHandledFile4Deleted = new DummyHandledFileTest(4, true);
+
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(0L));
+    fileHandler.addDummyHandledFile(dummyHandledFile1);
+    fileHandler.addDummyHandledFile(dummyHandledFile2);
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(75L));
+    fileHandler.addDummyHandledFile(dummyHandledFile3Deleted);
+    fileHandler.addDummyHandledFile(dummyHandledFile4Deleted);
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(68L));
+
+    final File file1 = getFile(sessionRootPath, currentSession.getId(), "handledFile1");
+    writeStringToFile(file1, "handledFile1");
+
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(68L));
+
+    final File notHandledFile = getFile(realPath, "file1");
+    writeStringToFile(notHandledFile, "real1");
+
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(68L));
+
+    final File file2 = getFile(sessionPath, "handledFile2");
+    writeStringToFile(file2, "handledFile22");
+
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(81L));
+
+    final File file2real = getFile(realPath, "handledFile2");
+    fileHandler.getMarkedToDelete(BASE_PATH_TEST).add(file2real);
+
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(81L));
+
+    writeStringToFile(file2real, "real22");
+
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(75L));
+
+    fileHandler.getMarkedToDelete(BASE_PATH_TEST).clear();
+
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(81L));
+  }
+
+  @Test
   public void testDeleteSessionWorkingPath() {
     assertThat(realPath.exists(), is(true));
     assertThat(sessionPath.exists(), is(true));
@@ -415,6 +464,47 @@ public class AbstractFileHandlerTest {
      */
     public File getRootPathForTest() {
       return getFile(fileHandler.getSessionPath(BASE_PATH_TEST), componentInstanceId);
+    }
+  }
+
+  private class DummyHandledFileTest extends AbstractDummyHandledFile {
+
+    private final long size;
+    private final boolean deleted;
+
+    private DummyHandledFileTest(final long size, final boolean deleted) {
+      this.size = size;
+      this.deleted = deleted;
+    }
+
+    @Override
+    public String getComponentInstanceId() {
+      return "dummyComponentInstanceId";
+    }
+
+    @Override
+    public String getPath() {
+      return getName();
+    }
+
+    @Override
+    public String getName() {
+      return "dummyName_" + UUID.randomUUID().toString();
+    }
+
+    @Override
+    public long getSize() {
+      return size;
+    }
+
+    @Override
+    public String getMimeType() {
+      return null;
+    }
+
+    @Override
+    public boolean isDeleted() {
+      return deleted;
     }
   }
 }

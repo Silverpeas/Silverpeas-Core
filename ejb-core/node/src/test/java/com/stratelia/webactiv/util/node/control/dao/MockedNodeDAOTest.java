@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.util.node.control.dao;
 
 import com.silverpeas.util.i18n.I18NHelper;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.jdbc.JDBCTestModule;
@@ -61,6 +62,12 @@ public class MockedNodeDAOTest {
     factory.restoreDrivers();
   }
 
+  @Before
+  public void setup() {
+    I18NHelper.isI18N = false;
+    I18NHelper.defaultLanguage = "de";
+  }
+
   @Test
   public void testDeleteRow() throws Exception {
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
@@ -79,7 +86,6 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testLoadRowConnectionNodePKStringInt() throws Exception {
-    I18NHelper.isI18N = false;
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
     JDBCTestModule module = new JDBCTestModule(jdbcFactory);
     MockConnection mockedConnection = jdbcFactory.getMockConnection();
@@ -147,6 +153,55 @@ public class MockedNodeDAOTest {
     detail.setPath("/0/3/");
     detail.setType("default");
     NodeDAO.storeRow(mockedConnection, detail);
+    module.verifyPreparedStatementClosed("update sb_node_node set nodeName =  " +
+        "? , nodeDescription = ? , nodePath = ? ,  nodeLevelNumber = ? , " +
+        "nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, " +
+        "lang = ?, rightsDependsOn = ?  where nodeId = ? and instanceId = ?");
+    module.verifyPreparedStatementParameter("update sb_node_node", 1, "Sous Theme de Test");
+    module.verifyPreparedStatementParameter("update sb_node_node", 2,
+        "Vos publications peuvent se retrouver ici");
+    module.verifyPreparedStatementParameter("update sb_node_node", 3, "/0/3/");
+    module.verifyPreparedStatementParameter("update sb_node_node", 4, new Integer(3));
+    module.verifyPreparedStatementParameter("update sb_node_node", 5, new Integer(3));
+    module.verifyPreparedStatementParameter("update sb_node_node", 6, "");
+    module.verifyPreparedStatementParameter("update sb_node_node", 7, "Visible");
+    module.verifyPreparedStatementParameter("update sb_node_node", 8, new Integer(1));
+    module.verifyPreparedStatementParameter("update sb_node_node", 9, null);
+    module.verifyPreparedStatementParameter("update sb_node_node", 10,
+        new Integer(4));
+    module.verifyPreparedStatementParameter("update sb_node_node", 11,
+        new Integer(4));
+    module.verifyPreparedStatementParameter("update sb_node_node", 12,
+        INSTANCE_ID);
+    module.verifyNotCommitted();
+    module.verifyAllResultSetsClosed();
+    module.verifyAllStatementsClosed();
+  }
+
+  @Test
+  public void testStoreRowI18nActivated() throws Exception {
+    I18NHelper.isI18N = true;
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
+    PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
+    statementHandler.prepareGlobalUpdateCount(1);
+    NodeDetail detail = new NodeDetail();
+    detail.setNodePK(new NodePK("4", INSTANCE_ID));
+    assertEquals(4, detail.getId());
+    detail.setName("Sous Theme de Test");
+    detail.setDescription("Vos publications peuvent se retrouver ici");
+    detail.setCreationDate("2008/05/10");
+    detail.setCreatorId("7");
+    detail.setStatus("Visible");
+    detail.setLevel(3);
+    detail.setFatherPK(new NodePK("3", INSTANCE_ID));
+    detail.setModelId("");
+    detail.setRightsDependsOnMe();
+    detail.setOrder(1);
+    detail.setPath("/0/3/");
+    detail.setType("default");
+    NodeDAO.storeRow(mockedConnection, detail);
     module.verifyPreparedStatementClosed("update sb_node_node set nodeName =  "
         + "? , nodeDescription = ? , nodePath = ? ,  nodeLevelNumber = ? , "
         + "nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, "
@@ -165,7 +220,7 @@ public class MockedNodeDAOTest {
         "Visible");
     module.verifyPreparedStatementParameter("update sb_node_node", 8,
         new Integer(1));
-    module.verifyPreparedStatementParameter("update sb_node_node", 9, null);
+    module.verifyPreparedStatementParameter("update sb_node_node", 9, I18NHelper.defaultLanguage);
     module.verifyPreparedStatementParameter("update sb_node_node", 10,
         new Integer(4));
     module.verifyPreparedStatementParameter("update sb_node_node", 11,
@@ -231,6 +286,60 @@ public class MockedNodeDAOTest {
   }
 
   @Test
+  public void testMoveNodeI18nActivated() throws Exception {
+    I18NHelper.isI18N = true;
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
+    PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
+    statementHandler.prepareGlobalUpdateCount(1);
+    NodeDetail detail = new NodeDetail();
+    detail.setNodePK(new NodePK("4", INSTANCE_ID));
+    assertEquals(4, detail.getId());
+    detail.setName("Sous Theme de Test");
+    detail.setDescription("Vos publications peuvent se retrouver ici");
+    detail.setCreationDate("2008/05/10");
+    detail.setCreatorId("7");
+    detail.setStatus("Visible");
+    detail.setLevel(3);
+    detail.setFatherPK(new NodePK("3", INSTANCE_ID));
+    detail.setModelId("");
+    detail.setRightsDependsOnMe();
+    detail.setOrder(1);
+    detail.setPath("/0/3/");
+    detail.setType("default");
+    NodeDAO.storeRow(mockedConnection, detail);
+    module.verifyPreparedStatementClosed("update sb_node_node set nodeName =  "
+        + "? , nodeDescription = ? , nodePath = ? ,  nodeLevelNumber = ? , "
+        + "nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, "
+        + "lang = ?, rightsDependsOn = ?  where nodeId = ? and instanceId = ?");
+    module.verifyPreparedStatementParameter("update sb_node_node", 1,
+        "Sous Theme de Test");
+    module.verifyPreparedStatementParameter("update sb_node_node", 2,
+        "Vos publications peuvent se retrouver ici");
+    module.verifyPreparedStatementParameter("update sb_node_node", 3, "/0/3/");
+    module.verifyPreparedStatementParameter("update sb_node_node", 4,
+        new Integer(3));
+    module.verifyPreparedStatementParameter("update sb_node_node", 5,
+        new Integer(3));
+    module.verifyPreparedStatementParameter("update sb_node_node", 6, "");
+    module.verifyPreparedStatementParameter("update sb_node_node", 7,
+        "Visible");
+    module.verifyPreparedStatementParameter("update sb_node_node", 8,
+        new Integer(1));
+    module.verifyPreparedStatementParameter("update sb_node_node", 9, I18NHelper.defaultLanguage);
+    module.verifyPreparedStatementParameter("update sb_node_node", 10,
+        new Integer(4));
+    module.verifyPreparedStatementParameter("update sb_node_node", 11,
+        new Integer(4));
+    module.verifyPreparedStatementParameter("update sb_node_node", 12,
+        INSTANCE_ID);
+    module.verifyNotCommitted();
+    module.verifyAllResultSetsClosed();
+    module.verifyAllStatementsClosed();
+  }
+
+  @Test
   public void testUpdateRightsDependency() throws Exception {
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
     JDBCTestModule module = new JDBCTestModule(jdbcFactory);
@@ -272,6 +381,60 @@ public class MockedNodeDAOTest {
     module.verifyPreparedStatementParameter("update sb_node_node", 8,
         new Integer(1));
     module.verifyPreparedStatementParameter("update sb_node_node", 9, null);
+    module.verifyPreparedStatementParameter("update sb_node_node", 10,
+        new Integer(4));
+    module.verifyPreparedStatementParameter("update sb_node_node", 11,
+        new Integer(4));
+    module.verifyPreparedStatementParameter("update sb_node_node", 12,
+        INSTANCE_ID);
+    module.verifyNotCommitted();
+    module.verifyAllResultSetsClosed();
+    module.verifyAllStatementsClosed();
+  }
+
+  @Test
+  public void testUpdateRightsDependencyI18nActivated() throws Exception {
+    I18NHelper.isI18N = true;
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
+    PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
+    statementHandler.prepareGlobalUpdateCount(1);
+    NodeDetail detail = new NodeDetail();
+    detail.setNodePK(new NodePK("4", INSTANCE_ID));
+    assertEquals(4, detail.getId());
+    detail.setName("Sous Theme de Test");
+    detail.setDescription("Vos publications peuvent se retrouver ici");
+    detail.setCreationDate("2008/05/10");
+    detail.setCreatorId("7");
+    detail.setStatus("Visible");
+    detail.setLevel(3);
+    detail.setFatherPK(new NodePK("3", INSTANCE_ID));
+    detail.setModelId("");
+    detail.setRightsDependsOnMe();
+    detail.setOrder(1);
+    detail.setPath("/0/3/");
+    detail.setType("default");
+    NodeDAO.storeRow(mockedConnection, detail);
+    module.verifyPreparedStatementClosed("update sb_node_node set nodeName =  "
+        + "? , nodeDescription = ? , nodePath = ? ,  nodeLevelNumber = ? , "
+        + "nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, "
+        + "lang = ?, rightsDependsOn = ?  where nodeId = ? and instanceId = ?");
+    module.verifyPreparedStatementParameter("update sb_node_node", 1,
+        "Sous Theme de Test");
+    module.verifyPreparedStatementParameter("update sb_node_node", 2,
+        "Vos publications peuvent se retrouver ici");
+    module.verifyPreparedStatementParameter("update sb_node_node", 3, "/0/3/");
+    module.verifyPreparedStatementParameter("update sb_node_node", 4,
+        new Integer(3));
+    module.verifyPreparedStatementParameter("update sb_node_node", 5,
+        new Integer(3));
+    module.verifyPreparedStatementParameter("update sb_node_node", 6, "");
+    module.verifyPreparedStatementParameter("update sb_node_node", 7,
+        "Visible");
+    module.verifyPreparedStatementParameter("update sb_node_node", 8,
+        new Integer(1));
+    module.verifyPreparedStatementParameter("update sb_node_node", 9, I18NHelper.defaultLanguage);
     module.verifyPreparedStatementParameter("update sb_node_node", 10,
         new Integer(4));
     module.verifyPreparedStatementParameter("update sb_node_node", 11,

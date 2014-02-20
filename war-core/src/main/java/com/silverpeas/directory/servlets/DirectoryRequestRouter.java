@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -63,7 +64,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
   @Override
   public String getDestination(String function, DirectorySessionController directorySC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("mytests", "DirectoryRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + directorySC.getUserId() + " Function=" + function);

@@ -28,5 +28,5 @@ package com.silverpeas.jobStartPagePeas.servlets;
  * @author ehugonnet
  */
 public enum StartPageFunction {
-  UpdateJobStartPage, Choice, DefaultStartPage, Portlet, SelectPeas, URL, SetPortlet;
+  ModifyJobStartPage, Choice, DefaultStartPage, Portlet, SelectPeas, URL, SetPortlet;
 }

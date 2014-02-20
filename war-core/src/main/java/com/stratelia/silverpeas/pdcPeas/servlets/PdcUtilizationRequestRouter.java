@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.pdcPeas.control.PdcUtilizationSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -69,6 +70,7 @@ public class PdcUtilizationRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -77,7 +79,7 @@ public class PdcUtilizationRequestRouter extends
    */
   @Override
   public String getDestination(String function, PdcUtilizationSessionController pdcSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     // get the session controller to inform the request
     PdcFieldTemplateManager pdcFTM = pdcSC.getPdcFieldTemplateManager();

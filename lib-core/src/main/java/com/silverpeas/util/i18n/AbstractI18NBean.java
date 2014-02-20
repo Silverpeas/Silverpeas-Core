@@ -33,15 +33,103 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractI18NBean implements I18NBean, Serializable {
-
+public abstract class AbstractI18NBean<T extends Translation> implements Serializable, I18NBean<T> {
   private static final long serialVersionUID = 756146888448232764L;
+
+  /* Name of the bean */
+  private String name = "";
+
+  /* Description of the bean */
+  private String description = "";
+
   private String language = null;
   private String translationId = null;
-  private Map<String, Translation> translations = new HashMap<String, Translation>(3);
+  private Map<String, T> translations = new HashMap<String, T>(3);
   private boolean removeTranslation = false;
 
+
+  /**
+   * Gets the name of the bean (default plat-form language)
+   * @return
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Set the bean name
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * Gets the description of the bean (default plat-form language)
+   * @return
+   */
+  public final String getDescription() {
+    return description;
+  }
+
+  /**
+   * Set the bean description
+   */
+  public final void setDescription(String description) {
+    this.description = description;
+  }
+
+  /**
+   * Gets the name of the bean from the given language
+   * @param language
+   * @return
+   */
+  public String getName(String language) {
+    if (!I18NHelper.isI18N) {
+      return name;
+    }
+    T translation = selectTranslation(language);
+    if (translation != null) {
+      return translation.getName();
+    } else {
+      return name;
+    }
+  }
+
+  /**
+   * Gets the description of the bean from the given language
+   * @param language
+   * @return
+   */
+  public String getDescription(String language) {
+    if (!I18NHelper.isI18N) {
+      return description;
+    }
+    T translation = selectTranslation(language);
+    if (translation != null) {
+      return translation.getDescription();
+    } else {
+      return description;
+    }
+  }
+
+  /**
+   * Centralization.
+   * @param language
+   * @return
+   */
+  private T selectTranslation(String language) {
+    T translation = getTranslations()
+        .get(StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage);
+    if (translation == null) {
+      translation = getNextTranslation();
+    }
+    return translation;
+  }
+
   public String getLanguage() {
+    if (I18NHelper.isI18N && StringUtil.isNotDefined(language)) {
+      return I18NHelper.defaultLanguage;
+    }
     return language;
   }
 
@@ -69,35 +157,35 @@ public abstract class AbstractI18NBean implements I18NBean, Serializable {
     return translations.keySet().iterator();
   }
 
-  public Map<String, Translation> getTranslations() {
+  public Map<String, T> getTranslations() {
     return translations;
   }
 
-  public void setTranslations(Map<String, Translation> translations) {
+  public void setTranslations(Map<String, T> translations) {
     this.translations = translations;
   }
 
-  public void setTranslations(Collection<Translation> translations) {
+  public void setTranslations(Collection<T> translations) {
     if (translations != null && !translations.isEmpty()) {
-      for (Translation translation : translations) {
+      for (T translation : translations) {
         addTranslation(translation);
       }
     }
   }
 
-  public void setTranslations(List<Translation> translations) {
+  public void setTranslations(List<T> translations) {
     if (translations != null && !translations.isEmpty()) {
-      for (Translation translation : translations) {
+      for (T translation : translations) {
         addTranslation(translation);
       }
     }
   }
 
-  public Translation getTranslation(String language) {
+  public T getTranslation(String language) {
     return translations.get(language);
   }
 
-  public void addTranslation(Translation translation) {
+  public void addTranslation(T translation) {
     String language = translation.getLanguage();
     if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
@@ -106,9 +194,9 @@ public abstract class AbstractI18NBean implements I18NBean, Serializable {
     translations.put(language, translation);
   }
 
-  public Translation getNextTranslation() {
+  public T getNextTranslation() {
     Iterator<String> languages = I18NHelper.getLanguages();
-    Translation translation = null;
+    T translation = null;
     while (translation == null && languages.hasNext()) {
       translation = getTranslations().get(languages.next());
     }
@@ -118,11 +206,12 @@ public abstract class AbstractI18NBean implements I18NBean, Serializable {
   public String getLanguageToDisplay(String language) {
     String languageToDisplay = language;
 
-    Translation translation = getTranslation(language);
+    T translation = getTranslation(language);
     if (translation == null) {
       translation = getNextTranslation();
-      if (translation != null)
+      if (translation != null) {
         languageToDisplay = translation.getLanguage();
+      }
     }
 
     return languageToDisplay;

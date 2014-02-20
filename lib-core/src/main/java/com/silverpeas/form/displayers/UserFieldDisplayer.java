@@ -36,7 +36,6 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.IOException;
@@ -46,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP

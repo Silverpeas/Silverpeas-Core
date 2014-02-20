@@ -89,7 +89,7 @@ function Deletes()
 	if (existVocaSelected())
 	{
 		if (window.confirm("<%=resource.getString("thesaurus.MessageSuppressionSelectedVoca")%>")) {
-			self.location = "DeleteVoca";
+      jQuery('#genericForm').attr('action', "DeleteVoca").submit();
 		}
 	}
 	else
@@ -98,7 +98,7 @@ function Deletes()
 function Update()
 {
 	if (existVocaSelected())
-		self.location = "UpdateVocaQuery";
+    jQuery('#genericForm').attr('action', "UpdateVocaQuery").submit();
 	else
 		alert("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
 }
@@ -431,6 +431,6 @@ function validateSynonyms(termId)
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-
+<form id="genericForm" action="" method="POST"></form>
 </BODY>
 </HTML>

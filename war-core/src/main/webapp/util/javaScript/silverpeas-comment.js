@@ -41,7 +41,7 @@
  *    - fullName: the full name (first and last names) of the user,
  *    - avatar: the URI of its avatar.
  */
-(function( $ ){
+(function($) {
 
   /**
    * The parameter settings of the plugin with, for some, the default value.
@@ -86,14 +86,14 @@
       anonymous: true
     },
     update: {
-      activated: function( comment ) {
+      activated: function(comment) {
         return false;
       },
       icon: '',
       altText: 'update'
     },
     deletion: {
-      activated: function( comment ) {
+      activated: function(comment) {
         return false;
       },
       confirmation: 'Are your sure?',
@@ -107,13 +107,14 @@
       title: 'New comment:',
       ok: 'Save'
     },
-    validate: function( text ) {
-      if (text != null && $.trim(text).length > 0)
-        return true
+    validate: function(text) {
+      if (text !== null && $.trim(text).length > 0)
+        return true;
       else
         return false;
     },
-    callback: function( event ) {},
+    callback: function(event) {
+    },
     mandatory: '*',
     mandatoryText: 'mandatory'
   };
@@ -127,10 +128,10 @@
      * to apply to the comment plugin. Please see the settings declaration to have a glance at
      * the different settings parameters.
      */
-    init : function( options ) {
+    init: function(options) {
 
-      if ( options ) {
-        $.extend( settings, options );
+      if (options) {
+        $.extend(settings, options);
       }
 
       return this.each(function() {
@@ -141,9 +142,8 @@
             commentsById: new Array()
           });
         }
-      })
+      });
     },
-
     /**
      * Lists all the comments available at the specified URL.
      * The list of comments will be printed into a div element within the HTML element on which the
@@ -158,10 +158,10 @@
      * This method prepares also the update box for updating comments; the update box will contain
      * a textarea with as class comment-text for updating the text a comment .
      */
-    list : function() {
+    list: function() {
       return this.each(function() {
         var $this = $(this), comments = $this.data('comments');
-        var updateBox = $("<div id='comments-update-box'>").attr("style","display: none;").appendTo($this);
+        var updateBox = $("<div id='comments-update-box'>").attr("style", "display: none;").appendTo($this);
         var textBox = $("<div>").addClass("mandatoryField").appendTo(updateBox);
         $("<textarea>").addClass("text").appendTo(textBox).autoResize();
         $("<span>").html("&nbsp;").appendTo(textBox);
@@ -179,17 +179,16 @@
             comments.comments = theComments;
             for (var x = 0; x < theComments.length; x++) {
               comments.commentsById[theComments[x].id] = theComments[x];
-              __printComment( $this, theComments[x], 'bottom' );
+              __printComment($this, theComments[x], 'bottom');
             }
-            settings.callback( {
-              type: 'listing', 
+            settings.callback({
+              type: 'listing',
               comments: theComments
-            } );
+            });
           }
-        })
-      })
+        });
+      });
     },
-
     /**
      * Renders a box in which users can edit new comments.
      * The method accepts as argument a function from which a new well-prepared comment can be get.
@@ -199,13 +198,13 @@
      * - a button element with as class comment-button with which the new comment can be added by using the
      * URI passed in the plugin options.
      */
-    edition : function( commentCreation ) {
+    edition: function(commentCreation) {
       return this.each(function() {
         var $this = $(this), edition = settings.editionBox;
         var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
         var legende = $("<div>").addClass("legende");
         $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
-        if (settings.author && settings.author.avatar != null && settings.author.avatar.length > 0)
+        if (settings.author && settings.author.avatar && settings.author.avatar.length > 0)
           $("<img>").attr("src", settings.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
         $("<textarea>").addClass("text").appendTo(editionBox).autoResize();
         $("<span>").html("&nbsp;").appendTo(editionBox);
@@ -214,24 +213,24 @@
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
         $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
         $("<button>").addClass("button").text(edition['ok']).
-          click(function() {
-            __addComment( $this, commentCreation );
-          }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
-      })
+                click(function() {
+          __addComment($this, commentCreation);
+        }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
+      });
     }
   };
 
   /**
    * The comment namespace in JQuery in which methods on comments are provided.
    */
-  $.fn.comment = function( method ) {
+  $.fn.comment = function(method) {
 
-    if ( methods[method] ) {
-      return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-    } else if ( typeof method === 'object' || ! method ) {
-      return methods.init.apply( this, arguments );
+    if (methods[method]) {
+      return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
+    } else if (typeof method === 'object' || !method) {
+      return methods.init.apply(this, arguments);
     } else {
-      $.error( 'Method ' +  method + ' does not exist on jQuery.comment' );
+      $.error('Method ' + method + ' does not exist on jQuery.comment');
     }
 
   };
@@ -239,9 +238,9 @@
   /**
    * A private method to print the specified comment.
    */
-  function __printComment( $this, comment, position ) {
+  function __printComment($this, comment, position) {
     var update = settings.update, deletion = settings.deletion, comments = $this.data('comments'),
-    commentBox;
+            commentBox;
     if (position === 'top' && comments.comments.length > 0) {
       commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").insertBefore($('#comment' + comments.comments[0].id)));
     } else {
@@ -255,15 +254,15 @@
       $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").append($('<span>').text(comment.author.fullName).userZoom(comment.author)).appendTo(commentBox));
     $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
 
-    if (update['activated']( comment )) {
+    if (update['activated'](comment)) {
       $("<img>").attr("src", update.icon).attr("alt", update.altText).click(function() {
-        __updateComment($this, comment.id)
+        __updateComment($this, comment.id);
       }).appendTo(actionsPane);
     }
     $("<span>").html("&nbsp").appendTo(actionsPane);
-    if (deletion.activated( comment )) {
+    if (deletion.activated(comment)) {
       $("<img>").attr("src", deletion.icon).attr("alt", deletion.altText).click(function() {
-        __deleteComment($this, comment.id)
+        __deleteComment($this, comment.id);
       }).appendTo(actionsPane);
     }
   }
@@ -272,7 +271,7 @@
    * A private method to update the specified comment with a new text.
    * The remote web service is invoked to persist the update.
    */
-  function __updateComment( $this, commentId ) {
+  function __updateComment($this, commentId) {
     var comments = $this.data('comments'), comment = comments.commentsById[commentId];
     $("#comments-update-box").find("textarea").val(comment.text);
     $("#comments-update-box").dialog({
@@ -297,30 +296,30 @@
                 comment.text = data.text;
                 $("#comment" + commentId).find('pre.text').text('').append(data.text.replace(/\n/g, '<br/>'));
                 comments.commentsById[commentId] = data;
-                settings.callback( {
-                  type: 'update', 
-                  comments:  new Array( data )
-                } );
+                settings.callback({
+                  type: 'update',
+                  comments: new Array(data)
+                });
               }
             });
-            $( this ).dialog( "destroy" );
+            $(this).dialog("destroy");
           }
         },
         Annuler: function() {
-          $( this ).dialog( "destroy" );
+          $(this).dialog("destroy");
         }
       },
       close: function() {
-        $( this ).dialog( "destroy" );
+        $(this).dialog("destroy");
       }
-    })
+    });
   }
 
   /**
    * A private method to delete the specified comment with a new text.
    * The remote web service is invoked to delete effectivly the comment.
    */
-  function __deleteComment( $this, commentId ) {
+  function __deleteComment($this, commentId) {
     var comments = $this.data('comments'), msg = settings.deletion.confirmation;
     if (window.confirm(msg)) {
       $.ajax({
@@ -334,16 +333,16 @@
           }
           delete comments.commentsById[commentId];
           $("#comment" + commentId).hide('slow');
-          settings.callback( {
-            type: 'deletion', 
-            comments:  new Array( comment )
-          } );
+          settings.callback({
+            type: 'deletion',
+            comments: new Array(comment)
+          });
         }
       });
     }
   }
 
-  function __addComment( $this, commentCreation ) {
+  function __addComment($this, commentCreation) {
     var comments = $this.data('comments');
     var comment = commentCreation();
     comment.text = $("#edition-box").find("textarea").val();
@@ -356,17 +355,17 @@
         dataType: "json",
         cache: false,
         success: function(data) {
-          __printComment( $this, data, 'top' );
+          __printComment($this, data, 'top');
           comments.comments.unshift(data);
           comments.commentsById[data.id] = data;
           $("#edition-box").find("textarea").val("");
-          settings.callback( {
-            type: 'addition', 
-            comments:  new Array( data )
-          } );
+          settings.callback({
+            type: 'addition',
+            comments: new Array(data)
+          });
         }
       });
     }
   }
-})( jQuery );
+})(jQuery);
 

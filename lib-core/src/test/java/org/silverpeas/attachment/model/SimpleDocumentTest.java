@@ -23,15 +23,18 @@
  */
 package org.silverpeas.attachment.model;
 
-import java.io.File;
-import java.util.UUID;
-
-import org.junit.Test;
-
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.junit.Test;
+import org.silverpeas.admin.user.constant.UserState;
 
-import static org.hamcrest.Matchers.is;
+import java.io.File;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,9 +44,6 @@ import static org.junit.Assert.assertThat;
 public class SimpleDocumentTest {
 
   private static final String instanceId = "kmelia36";
-
-  public SimpleDocumentTest() {
-  }
 
   /**
    * Test of computeNodeName method, of class SimpleDocument.
@@ -324,5 +324,126 @@ public class SimpleDocumentTest {
     instance.setDocumentType(DocumentType.video);
     result = instance.getFolder();
     assertThat(result, is(DocumentType.video.getFolderName()));
+  }
+
+  @Test
+  public void testForbiddenDownload() {
+    UserDetailWithRoles adminUser = new UserDetailWithRoles("admin_user", SilverpeasRole.admin);
+    UserDetailWithRoles adminReaderUser =
+        new UserDetailWithRoles("admin_reader_user", SilverpeasRole.reader, SilverpeasRole.admin);
+    UserDetailWithRoles readerUser = new UserDetailWithRoles("reader_user", SilverpeasRole.reader);
+    UserDetailWithRoles readerAndPrivilegedUser =
+        new UserDetailWithRoles("reader_privileged_user", SilverpeasRole.reader,
+            SilverpeasRole.privilegedUser);
+
+    SimpleDocument instance = new SimpleDocument();
+    SimpleDocumentPK pk = new SimpleDocumentPK("dummyId", instanceId);
+    instance.setPK(pk);
+    assertThat(instance.getForbiddenDownloadForRoles(), nullValue());
+
+    assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminReaderUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(true));
+
+    // Forbid empty
+    instance.addRolesForWhichDownloadIsForbidden();
+    assertThat(instance.getForbiddenDownloadForRoles(), nullValue());
+
+    // Forbid writers
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer);
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.writer));
+
+    assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminReaderUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerUser), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(false));
+
+    // Forbid empty
+    instance.addRolesForWhichDownloadIsForbidden();
+    instance.addRolesForWhichDownloadIsAllowed();
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.writer));
+
+    // Allow writers
+    instance.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer);
+    assertThat(instance.getForbiddenDownloadForRoles(), empty());
+
+    assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminReaderUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(true));
+
+    // Forbid readers
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+
+    assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminReaderUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerUser), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(false));
+
+    // Forbid writers
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer);
+    assertThat(instance.getForbiddenDownloadForRoles(),
+        contains(SilverpeasRole.writer, SilverpeasRole.reader));
+
+    assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminReaderUser), is(true));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerUser), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(false));
+
+    // Forbid admin & Allow readers and writers
+    instance.addRolesForWhichDownloadIsAllowed(SilverpeasRole.reader, SilverpeasRole.writer);
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.admin);
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.admin));
+
+    assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminUser), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, adminReaderUser), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerUser), is(false));
+    assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(false));
+  }
+
+  private boolean isDownloadAllowedForRolesFrom(SimpleDocument instance, UserDetailWithRoles user) {
+    return user != null && instance.isDownloadAllowedForRoles(user.getRoles());
+  }
+
+  /**
+   * Class to define a User with some roles in the context of unit tests.
+   */
+  private class UserDetailWithRoles extends UserDetail {
+    private static final long serialVersionUID = -1992488455131397859L;
+    protected String[] roles = null;
+
+    public UserDetailWithRoles() {
+      super();
+    }
+
+    public UserDetailWithRoles(String userId, SilverpeasRole... roles) {
+      setId(userId);
+      setState(UserState.VALID);
+      if (roles != null) {
+        this.roles = new String[roles.length];
+        int i = 0;
+        for (SilverpeasRole role : roles) {
+          this.roles[i++] = role.name();
+        }
+      }
+    }
+
+    public Set<SilverpeasRole> getRoles() {
+      return SilverpeasRole.from(roles);
+    }
   }
 }

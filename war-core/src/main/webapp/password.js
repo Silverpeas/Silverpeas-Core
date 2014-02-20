@@ -29,31 +29,31 @@
  */
 function handlePasswordForm(params) {
   var settings = $.extend({
-    passwordFormId : '',
-    passwordInputId : '',
-    passwordFormAction : ''
+    passwordFormId: '',
+    passwordInputId: '',
+    passwordFormAction: ''
   }, params);
   if (!settings.passwordFormId || !settings.passwordInputId || !settings.passwordFormAction) {
     return false;
   }
   $.i18n.properties({
-    name : 'authentication',
-    path : webContext + '/services/bundles/org/silverpeas/authentication/multilang/',
-    language : '$$', /* by default the language of the user in the current session */
-    mode : 'map'
+    name: 'authentication',
+    path: webContext + '/services/bundles/org/silverpeas/authentication/multilang/',
+    language: '$$', /* by default the language of the user in the current session */
+    mode: 'map'
   });
 
   var $pwdInput = $('#' + settings.passwordInputId);
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
     var errorMsg = "";
-    if ($pwdInput.val() == $('#oldPassword').val()) {
+    if ($pwdInput.val() === $('#oldPassword').val()) {
       errorMsg += "- " + $.i18n.prop('authentication.password.newMustBeDifferentToOld') + "\n";
     }
-    $pwdInput.password('verify', {onError : function() {
-      errorMsg += "- " + $.i18n.prop('authentication.password.error') + "\n";
-    }});
-    if ($pwdInput.val() != $('#confirmPassword').val()) {
+    $pwdInput.password('verify', {onError: function() {
+        errorMsg += "- " + $.i18n.prop('authentication.password.error') + "\n";
+      }});
+    if ($pwdInput.val() !== $('#confirmPassword').val()) {
       errorMsg += "- " + $.i18n.prop('authentication.password.different') + "\n";
     }
     if (errorMsg) {

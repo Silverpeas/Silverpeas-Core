@@ -53,15 +53,25 @@ function readMessage(id){
 	SP_openWindow("ReadMessage.jsp?ID=" + id,"readMessage","600","380","scrollable=yes,scrollbars=yes");
 }
 
-function deleteMessage(id) {
-    if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
-		window.location = "DeleteMessage.jsp?ID="+id;
+function deleteMessage(id, skipConfirmation, spaceId, from) {
+    if(skipConfirmation || window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
+      var $form = jQuery('#genericForm');
+      jQuery('#ID', $form).val(id);
+      if (spaceId) {
+        jQuery('#SpaceId', $form).val(spaceId);
+      }
+      if (from) {
+        jQuery('#from', $form).val(from);
+      }
+      $form.attr('action', "DeleteMessage.jsp").submit();
     }
 }
 
 function deleteAllMessages() {
     if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>")){
-		window.location = "DeleteAllMessages.jsp?folder=INBOX";
+      var $form = jQuery('#genericForm');
+      jQuery('#folder', $form).val('INBOX');
+      $form.attr('action', "DeleteAllMessages.jsp").submit();
     }
 }
 
@@ -150,5 +160,11 @@ function newMessage() {
 <%
 out.println(window.printAfter());
 %>
+<form id="genericForm" action="" method="POST">
+  <input id="ID" name="ID" type="hidden"/>
+  <input id="folder" name="folder" type="hidden"/>
+  <input id="SpaceId" name="SpaceId" type="hidden"/>
+  <input id="from" name="from" type="hidden"/>
+</form>
 </body>
 </html>

@@ -26,7 +26,6 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import java.io.IOException;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
@@ -101,6 +100,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case password:
           includePassword(xhtml);
           break;
+        case gauge:
+          includeGauge(xhtml);
+          break;
         case jquery:
           includeJQuery(xhtml);
           break;
@@ -109,6 +111,12 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           break;
         case pdc:
           includePdc(xhtml);
+          break;
+        case tkn:
+          includeSecurityTokenizing(xhtml);
+          break;
+        case lightslideshow:
+          includeLightweightSlideshow(xhtml);
           break;
       }
     } catch (IllegalArgumentException ex) {

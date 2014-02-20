@@ -33,8 +33,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -70,6 +70,7 @@ public class InterestCenterPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param icSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -77,7 +78,7 @@ public class InterestCenterPeasRequestRouter extends
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function, InterestCenterSessionController icSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
 
     try {

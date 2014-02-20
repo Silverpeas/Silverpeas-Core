@@ -53,14 +53,13 @@
 </style>
 
 <view:includePlugin name="jquery"/>
+<view:includePlugin name="tkn"/>
 
 <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
-<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.css"/>" media="screen" />
 
 <!-- jQuery files -->
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>" type="text/javascript" charset="utf-8"></script>
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
-<script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 
 //whitespace characters
@@ -69,7 +68,7 @@ var whitespace = " \t\n\r";
 
 // Check whether string s is empty.
 function isEmpty(s) {
-	return ((s == null) || (s.length == 0))
+	return ((s === null) || (s === undefined) || (s.length === 0));
 }
 
 //Returns true if string s is empty or
@@ -87,7 +86,7 @@ function isWhitespace (s) {
  for (i = 0; i < s.length; i++) {
      // Check that current character isn't whitespace.
      var c = s.charAt(i);
-     if (whitespace.indexOf(c) == -1) return false;
+     if (whitespace.indexOf(c) === -1) return false;
  }
 
  // All characters are whitespace.
@@ -115,19 +114,19 @@ function isWhitespace (s) {
 // is contained within string s.
 function charInString (c, s) {
 	for (i = 0; i < s.length; i++) {
-		if (s.charAt(i) == c) return true;
-    }
-    return false
+		if (s.charAt(i) === c) return true;
+  }
+  return false;
 }
 
 function checkEmail(src)
 {
- if (src==null || src=='')
+ if (isEmpty(src))
    return true;
  else
  {
   var regex = /^[a-z0-9A-Z\_\.\-]{1,}[\@@]{1}[a-z0-9A-Z\_\.\-]*[a-z0-9A-Z]{1}[\.]{1}[a-zA-Z]{2,6}$/;
-  return !(src.match(regex)==null);
+  return !(src.match(regex) === null);
  }
 }
 
@@ -148,7 +147,7 @@ function emailExists(email) {
 		  url: "<c:url value="/MailExists"/>?email="+escape(email),
 		  async: false
 		}).done(function(data) {
-			if (data.indexOf('MailExists') != -1) {
+			if (data.indexOf('MailExists') !== -1) {
 				exists = true;
 			}
 			else {
@@ -205,7 +204,7 @@ function checkForm()
 function checkSubmit(ev)
 {
 	var touche = ev.keyCode;
-	if (touche == 13) {
+	if (touche === 13) {
       checkForm();
     }
 }

@@ -21,29 +21,24 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.stratelia.webactiv.organization.SpaceRow;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.webactiv.organization.SpaceRow;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 /**
  * @author neysseri
  */
-public class SpaceInstLight extends AbstractI18NBean implements Serializable,
-    Comparable<SpaceInstLight> {
+public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
+    implements Serializable, Comparable<SpaceInstLight> {
 
   private static final long serialVersionUID = 8772050454345960478L;
   private String id = null;
-  private String name = null;
-  private String description = null;
   private int orderNum = 0;
   private int level = -1;
   private String fatherId = null;
@@ -66,8 +61,6 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   public SpaceInstLight() {
     id = "";
     fatherId = "";
-    name = "";
-    description = "";
     orderNum = 0;
     level = -1;
     displaySpaceFirst = true;
@@ -80,7 +73,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
       setId(spaceRow.id);
       setName(spaceRow.name);
       setFatherId(spaceRow.domainFatherId);
-      description = spaceRow.description;
+      setDescription(spaceRow.description);
       orderNum = spaceRow.orderNum;
       if (spaceRow.createTime != null) {
         createDate = new Date(Long.parseLong(spaceRow.createTime));
@@ -109,7 +102,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
       setId(spaceInst.getId());
       setName(spaceInst.getName());
       setFatherId(spaceInst.getDomainFatherId());
-      description = spaceInst.getDescription();
+      setDescription(spaceInst.getDescription());
       orderNum = spaceInst.getOrderNum();
       setLevel(spaceInst.getLevel());
       createDate = spaceInst.getCreateDate();
@@ -147,32 +140,14 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     return level;
   }
 
-  /**
-   * @return
-   */
-  public String getName() {
-    return name;
-  }
-
   public String getName(String language) {
+
     if (isPersonalSpace) {
       return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace",
           "Mon espace");
-    } else {
-      if (!I18NHelper.isI18N) {
-        return getName();
-      }
-
-      SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-      if (s == null) {
-        s = (SpaceI18N) getNextTranslation();
-      }
-      if (s != null) {
-        return s.getName();
-      }
-      return getName();
-
     }
+
+    return super.getName(language);
   }
 
   public void setFatherId(int fatherId) {
@@ -201,26 +176,12 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     level = i;
   }
 
-  /**
-   * @param string
-   */
-  public void setName(String string) {
-    name = string;
-  }
-
   public boolean isRoot() {
     return isRoot(getFatherId());
   }
 
   public static boolean isRoot(String spaceId) {
     return "0".equals(spaceId);
-  }
-
-  /**
-   * @return
-   */
-  public String getDescription() {
-    return description;
   }
 
   /**

@@ -425,4 +425,13 @@ public interface AttachmentService {
    * versioned attachments become simple attachments.
    */
   public void switchComponentBehaviour(String componentId, boolean toVersionning);
+
+  /**
+   * Allows or forbids the download for readers.
+   *
+   * @param pk the id of the document.
+   * @param allowing: allowing the download for readers if true
+   * versioned attachments become simple attachments.
+   */
+  public void switchAllowingDownloadForReaders(SimpleDocumentPK pk, boolean allowing);
 }

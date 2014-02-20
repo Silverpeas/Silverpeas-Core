@@ -29,23 +29,24 @@ package com.stratelia.silverpeas.treeManager.model;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class declaration
  * @author
  */
-public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
+public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.Serializable {
 
   private static final long serialVersionUID = 4644891370102942728L;
 
   private WAPrimaryKey pk;
 
   private String treeId;
-  private String name;
-  private String description;
   private String creationDate;
   private String creatorId;
   private String path;
@@ -78,8 +79,8 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
       int orderNumber, String fatherId) {
     setPK(new TreeNodePK(id));
     this.treeId = treeId;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
@@ -105,8 +106,8 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
       int levelNumber, int orderNumber, String fatherId) {
     setPK(pk);
     this.treeId = treeId;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
@@ -137,8 +138,8 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
   public TreeNode(TreeNodePersistence persistence) {
     this.pk = persistence.getPK();
     this.treeId = persistence.getTreeId();
-    this.name = persistence.getName();
-    this.description = persistence.getDescription();
+    setName(persistence.getName());
+    setDescription(persistence.getDescription());
     this.creationDate = persistence.getCreationDate();
     this.creatorId = persistence.getCreatorId();
     this.path = persistence.getPath();
@@ -162,46 +163,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   public void setTreeId(String treeId) {
     this.treeId = treeId;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getName() {
-    return (this.name);
-  }
-
-  public String getName(String language) {
-    if (!I18NHelper.isI18N)
-      return getName();
-
-    TreeNodeI18N s = (TreeNodeI18N) getTranslations().get(language);
-    if (s == null)
-      s = (TreeNodeI18N) getNextTranslation();
-
-    return s.getName();
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getDescription() {
-    return (this.description);
-  }
-
-  public String getDescription(String language) {
-    if (!I18NHelper.isI18N)
-      return getDescription();
-
-    TreeNodeI18N s = (TreeNodeI18N) getTranslations().get(language);
-    if (s == null)
-      s = (TreeNodeI18N) getNextTranslation();
-
-    return s.getDescription();
   }
 
   /**
@@ -262,14 +223,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
     return StringUtil.isDefined(getFatherId()) && !getFatherId().equals("-1");
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   /**
    * Method declaration
    * @param date
@@ -317,7 +270,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * @param levelNumber
+   * @param orderNumber
    * @see
    */
   public void setOrderNumber(int orderNumber) {
@@ -342,4 +295,11 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
+  public void setTranslationsFrom(Map<String, AxisHeaderI18N> translations) {
+    Map<String, TreeNodeI18N> treeNodeTranslations = new HashMap<String, TreeNodeI18N>();
+    for (Map.Entry<String, AxisHeaderI18N> entry : translations.entrySet()) {
+      treeNodeTranslations.put(entry.getKey(), new TreeNodeI18N(entry.getValue()));
+    }
+    setTranslations(treeNodeTranslations);
+  }
 }

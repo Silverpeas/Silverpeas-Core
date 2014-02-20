@@ -35,7 +35,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -63,7 +62,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
@@ -101,7 +102,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * @throws RemoteException
    */
   public String getDestinationStartPage(String function,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) throws
+      JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) throws
       ClipboardException {
     if (!jobStartPageSC.getClipboardSelectedObjects().isEmpty()) {
       request.setAttribute("ObjectsSelectedInClipboard", "true");
@@ -113,13 +114,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       return null;
     }
     switch (startPage) {
-      case UpdateJobStartPage:
+      case ModifyJobStartPage:
         SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
         request.setAttribute("FirstPageType", Integer.valueOf(spaceint1.getFirstPageType()));
         request.setAttribute("FirstPageParam", spaceint1.getFirstPageExtraParam());
         request.setAttribute("Peas", jobStartPageSC.getManagedSpaceComponents());
         setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-        return "/jobStartPagePeas/jsp/UpdateJobStartPage.jsp";
+        return "/jobStartPagePeas/jsp/ModifyJobStartPage.jsp";
       case Choice:
         return getDestination(request.getParameter("choix"), jobStartPageSC, request);
       case DefaultStartPage:
@@ -180,7 +181,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * @return
    */
   public String getDestinationNavBar(String function,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) {
+      JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) {
     String destination = null;
 
     if ("Main".equals(function)) {
@@ -267,7 +268,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * @throws AdminException
    */
   public String getDestinationComponent(String function,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) throws
+      JobStartPagePeasSessionController jobStartPageSC, HttpRequest request) throws
       AdminException {
     String destination = null;
 
@@ -495,7 +496,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
     return destination;
   }
-  
+
   private Map<String, String> getPasteOptions(HttpServletRequest request) {
     Map<String, String[]> parameters = request.getParameterMap();
     Map<String, String> pasteOptions = new HashMap<String, String>();
@@ -509,7 +510,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
   public String getDestinationSpace(String function,
       JobStartPagePeasSessionController jobStartPageSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
     String destination = null;
 
     if (function.equals("StartPageInfo")) {
@@ -575,7 +576,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request.
             getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
-            request),
+                request),
             request.getParameter("SelectedLook"),
             request.getParameter("ComponentSpaceQuota"),
             request.getParameter("DataStorageQuota"));
@@ -796,7 +797,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       }
       destination = "/jobStartPagePeas/jsp/spaceLook.jsp";
     } else if (function.equals("UpdateSpaceLook")) {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       jobStartPageSC.updateSpaceAppearance(items);
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if (function.equals("RemoveFileToLook")) {
@@ -835,14 +836,16 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param jobStartPageSC
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination;
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobStartPageSC.getUserId() + " Function="
@@ -890,7 +893,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
         request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
-        
+
         request.setAttribute("CopiedComponents", jobStartPageSC.getCopiedComponents());
 
         request.setAttribute("Space", spaceint1);
@@ -1013,7 +1016,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         && StringUtil.isDefined(dataStorageQuotaMaxCount)) {
       try {
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
-            Long.valueOf(dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
+            Long.valueOf(dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
             qe);
@@ -1138,8 +1141,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters =
-        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
+    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(waComponent.
+        getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1175,8 +1178,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
           getComponentByName(componentName), sessionController.getLanguage());
       setSpacesNameInRequest(sessionController, request);
-      List<LocalizedParameter> visibleParameters =
-          sessionController.getVisibleParameters(componentName, componentInstSelected.
+      List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(
+          componentName, componentInstSelected.
           getSortedParameters());
       Parameter hiddenParam = createIsHiddenParam("no");
       visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
@@ -1215,8 +1218,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters =
-        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
+    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(waComponent.
+        getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";

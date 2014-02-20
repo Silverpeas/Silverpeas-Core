@@ -38,7 +38,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.json.JSONObject;
-import org.silverpeas.util.Charsets;
 import org.silverpeas.util.UnitUtil;
 
 import javax.ws.rs.Consumes;
@@ -134,8 +133,7 @@ public class FileUploadResource extends RESTWebService {
   @Produces(MediaType.TEXT_HTML)
   public Response uploadFile(InputStream inputStream) {
     try {
-      String fileName = new String(getHttpServletRequest().getHeader(X_FILENAME).getBytes(
-          Charsets.ISO_8859_1), Charsets.UTF_8);
+      String fileName = getHttpServletRequest().getHeader(X_FILENAME);
       if (!StringUtil.isDefined(fileName)) {
         throw new WebApplicationException(Response.Status.BAD_REQUEST);
       }

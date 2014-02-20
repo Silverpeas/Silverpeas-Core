@@ -60,6 +60,16 @@ public class EhCacheServiceTest {
   }
 
   @Test
+  public void testClear() {
+    EhCacheService service = new EhCacheService(0);
+    service.add(Object1);
+    service.add(Object2);
+    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
+    service.clear();
+    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
+  }
+
+  @Test
   public void testGet() {
     EhCacheService service = new EhCacheService(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));

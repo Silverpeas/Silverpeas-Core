@@ -25,6 +25,8 @@
 --%>
 
 <%@page import="org.silverpeas.util.UnitUtil"%>
+<%@ page import="org.silverpeas.util.memory.MemoryData" %>
+<%@ page import="org.silverpeas.util.memory.MemoryUnit" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -47,7 +49,7 @@ boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.da
 String dataStorageQuotaMaxCount = "";
 if (isDataStorageQuotaActivated) {
   dataStorageQuotaMaxCount = String.valueOf(UnitUtil.convertTo(space.getDataStorageQuota().getMaxCount(),
-      UnitUtil.memUnit.B, UnitUtil.memUnit.MB));
+      MemoryUnit.B, MemoryUnit.MB));
 }
 
 browseBar.setSpaceId(space.getId());

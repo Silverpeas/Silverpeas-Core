@@ -24,12 +24,15 @@
 
 package com.silverpeas.util;
 
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -37,6 +40,64 @@ import static org.junit.Assert.assertThat;
 public class MapUtilTest {
 
   public MapUtilTest() {
+  }
+
+  /**
+   * Test of putAddList method, of class MapUtil.
+   */
+  @Test
+  public void testPutAdd() {
+    Map<Integer, Collection<String>> map = new HashMap<Integer, Collection<String>>(2);
+    map.put(1, CollectionUtil.asList("bart"));
+    String value = "homer";
+    Collection<String> result = MapUtil.putAdd(ArrayList.class, map, 1, value);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, contains("bart", "homer"));
+    assertThat(map.size(), is(1));
+
+    value = "lisa";
+    result = MapUtil.putAdd(ArrayList.class, map, 2, value);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result, contains("lisa"));
+    assertThat(map.size(), is(2));
+  }
+
+  /**
+   * Test of putAddAllList method, of class MapUtil.
+   */
+  @Test
+  public void testPutAddAll() {
+    Map<Integer, Collection<String>> map = new HashMap<Integer, Collection<String>>(2);
+    map.put(1, CollectionUtil.asList("bart"));
+    String value = "homer";
+    Collection<String> result =
+        MapUtil.putAddAll(ArrayList.class, map, 1, CollectionUtil.asList(value));
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, contains("bart", "homer"));
+    assertThat(map.size(), is(1));
+
+    value = "lisa";
+    result =
+        MapUtil.putAddAll(ArrayList.class, map, 2, CollectionUtil.asList(value + 1, value + 2));
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, contains("lisa1", "lisa2"));
+    assertThat(map.size(), is(2));
+
+    result = MapUtil.putAddAll(ArrayList.class, map, 3, new ArrayList<String>());
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result.iterator().next(), isEmptyOrNullString());
+    assertThat(map.size(), is(3));
+
+    result = MapUtil.putAddAll(ArrayList.class, map, 4, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result.iterator().next(), isEmptyOrNullString());
+    assertThat(map.size(), is(4));
   }
 
   /**
@@ -62,6 +123,40 @@ public class MapUtilTest {
   }
 
   /**
+   * Test of putAddAllList method, of class MapUtil.
+   */
+  @Test
+  public void testPutAddAllList() {
+    Map<Integer, List<String>> map = new HashMap<Integer, List<String>>(2);
+    map.put(1, CollectionUtil.asList("bart"));
+    String value = "homer";
+    List<String> result = MapUtil.putAddAllList(map, 1, CollectionUtil.asList(value));
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, contains("bart", "homer"));
+    assertThat(map.size(), is(1));
+
+    value = "lisa";
+    result = MapUtil.putAddAllList(map, 2, CollectionUtil.asList(value + 1, value + 2));
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, contains("lisa1", "lisa2"));
+    assertThat(map.size(), is(2));
+
+    result = MapUtil.putAddAllList(map, 3, new ArrayList<String>());
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result.iterator().next(), isEmptyOrNullString());
+    assertThat(map.size(), is(3));
+
+    result = MapUtil.putAddAllList(map, 4, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result.iterator().next(), isEmptyOrNullString());
+    assertThat(map.size(), is(4));
+  }
+
+  /**
    * Test of putAddSet method, of class MapUtil.
    */
   @Test
@@ -81,6 +176,40 @@ public class MapUtilTest {
     assertThat(result, hasSize(1));
     assertThat(result, contains("lisa"));
     assertThat(map.size(), is(2));
+  }
+
+  /**
+   * Test of putAddAllSet method, of class MapUtil.
+   */
+  @Test
+  public void testPutAddAllSet() {
+    Map<Integer, Set<String>> map = new HashMap<Integer, Set<String>>(2);
+    map.put(1, CollectionUtil.asSet("bart"));
+    String value = "homer";
+    Set<String> result = MapUtil.putAddAllSet(map, 1, CollectionUtil.asList(value));
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, containsInAnyOrder("bart", "homer"));
+    assertThat(map.size(), is(1));
+
+    value = "lisa";
+    result = MapUtil.putAddAllSet(map, 2, CollectionUtil.asList(value + 1, value + 2));
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, containsInAnyOrder("lisa1", "lisa2"));
+    assertThat(map.size(), is(2));
+
+    result = MapUtil.putAddAllSet(map, 3, new HashSet<String>());
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result.iterator().next(), isEmptyOrNullString());
+    assertThat(map.size(), is(3));
+
+    result = MapUtil.putAddAllSet(map, 4, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    assertThat(result.iterator().next(), isEmptyOrNullString());
+    assertThat(map.size(), is(4));
   }
 
   /**

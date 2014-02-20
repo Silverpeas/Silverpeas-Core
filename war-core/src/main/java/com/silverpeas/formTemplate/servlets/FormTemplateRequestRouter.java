@@ -31,13 +31,13 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -72,6 +72,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
    * This method has to be implemented by the component request Router it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param controller The component Session Control, build and initialised.
    * @param request The entering request. The request Router need it to get parameters
@@ -80,7 +81,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
    */
   @Override
   public String getDestination(String function, FormTemplateSessionController controller,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("form", "FormTemplateRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD", "function = " + function);
     String destination = "";
@@ -189,8 +190,8 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
   }
 
   private String saveForm(final FormTemplateSessionController controller,
-      final HttpServletRequest request) throws PublicationTemplateException, FormException {
-    List<FileItem> items = FileUploadUtil.parseRequest(request);
+      final HttpRequest request) throws PublicationTemplateException, FormException {
+    List<FileItem> items = request.getFileItems();
     String xmlFormName = controller.getXmlFormName();
     String xmlFormShortName = getXmlFormShortName(xmlFormName);
 

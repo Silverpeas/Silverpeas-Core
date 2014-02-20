@@ -39,6 +39,7 @@ public class BrowseBarTag extends NeedWindowTag {
   private BrowseBar browseBar;
   private String extraInformations;
   private String path;
+  private String spaceId;
   private String componentId;
   private boolean ignoreComponentLink = true;
   private boolean clickable = true;
@@ -49,6 +50,10 @@ public class BrowseBarTag extends NeedWindowTag {
 
   public void setPath(String path) {
     this.path = path;
+  }
+  
+  public void setSpaceId(String spaceId) {
+    this.spaceId = spaceId;
   }
 
   public void setComponentId(String componentId) {
@@ -91,6 +96,9 @@ public class BrowseBarTag extends NeedWindowTag {
       } else {
         browseBar.setComponentId(componentId);
       }
+    }
+    if (StringUtil.isDefined(spaceId)) {
+      browseBar.setSpaceId(spaceId);
     }
     browseBar.setIgnoreComponentLink(ignoreComponentLink);
     browseBar.setClickable(clickable);
