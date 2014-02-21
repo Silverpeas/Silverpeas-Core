@@ -24,27 +24,17 @@
 
 package com.silverpeas.form.form;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.jsp.JspWriter;
-
-import com.silverpeas.form.AbstractForm;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.Util;
+import com.silverpeas.form.*;
 import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.jsp.JspWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -88,7 +78,7 @@ public class XmlForm extends AbstractForm {
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
    * </ul>
-   * @param jw
+   * @param out
    */
   private void display(PrintWriter out, PagesContext pageContext, DataRecord record) {
     SilverTrace.info("form", "XmlForm.display", "root.MSG_GEN_ENTER_METHOD");
@@ -175,10 +165,15 @@ public class XmlForm extends AbstractForm {
               aClass = "class=\"txtlibform " + fieldClass + "\"";
             }
 
+            String technicalNameHelp = "";
+            if (pageContext.isDesignMode()) {
+              technicalNameHelp = " title=\"" + fieldName + "\"";
+            }
+
             out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName +
                 "\">");
-            out.println("<label for=\"" + fieldName + "\" " + aClass + ">" + fieldLabel +
-                "</label>");
+            out.println("<label for=\"" + fieldName + "\" " + aClass + technicalNameHelp + ">" +
+                fieldLabel + "</label>");
             out.println("<div class=\"fieldInput\">");
             if (!fieldTemplate.isRepeatable()) {
               field = getSureField(fieldTemplate, record, 0);
@@ -188,6 +183,8 @@ public class XmlForm extends AbstractForm {
                 SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
               }
             } else {
+              boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName()) &&
+                  !fieldTemplate.isReadOnly();
               String currentVisibility = AbstractForm.REPEATED_FIELD_CSS_SHOW;
               int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
               Field lastNotEmptyField = getLastNotEmptyField(record, fieldName, maxOccurrences);
@@ -196,8 +193,14 @@ public class XmlForm extends AbstractForm {
                 field = getSureField(fieldTemplate, record, occ);
                 if (occ > 0) {
                   ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
-                  if (field.isNull()) {
-                    currentVisibility = AbstractForm.REPEATED_FIELD_CSS_HIDE;
+                  if (!isWriting) {
+                    currentVisibility = field.isNull() ? AbstractForm.REPEATED_FIELD_CSS_HIDE :
+                        AbstractForm.REPEATED_FIELD_CSS_SHOW;
+                  } else {
+                    currentVisibility =
+                        (lastNotEmptyField == null || (occ > lastNotEmptyField.getOccurrence())) ?
+                            AbstractForm.REPEATED_FIELD_CSS_HIDE :
+                            AbstractForm.REPEATED_FIELD_CSS_SHOW;
                   }
                 }
                 out.println("<li class=\"" + currentVisibility + " repeatable-field-list-element"+occ+"\">");
@@ -209,12 +212,9 @@ public class XmlForm extends AbstractForm {
                 out.println("</li>");
               }
               out.println("</ul>");
-              if (!"simpletext".equals(fieldTemplate.getDisplayerName()) &&
-                  !fieldTemplate.isReadOnly() && fieldTemplate.isRepeatable()) {
-                if (lastNotEmptyField == null ||
-                    (lastNotEmptyField != null && lastNotEmptyField.getOccurrence() < maxOccurrences - 1)) {
-                  Util.printOneMoreInputSnippet(fieldName, pc, out);
-                }
+              if (isWriting && (lastNotEmptyField == null ||
+                  (lastNotEmptyField.getOccurrence() < maxOccurrences - 1))) {
+                Util.printOneMoreInputSnippet(fieldName, pc, out);
               }
             }
             if (pageContext.isDesignMode()) {

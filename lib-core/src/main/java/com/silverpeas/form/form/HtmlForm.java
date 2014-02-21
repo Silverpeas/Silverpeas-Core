@@ -33,7 +33,11 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.Charsets;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -42,8 +46,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import javax.servlet.jsp.JspWriter;
-import org.silverpeas.util.Charsets;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -229,13 +231,20 @@ public class HtmlForm extends AbstractForm {
                 field = getSureField(fieldTemplate, record, 0);
                 fieldDisplayer.display(out, field, fieldTemplate, pc);
               } else {
+                boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName()) &&
+                    !fieldTemplate.isReadOnly();
                 int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
                 out.println("<ul class=\"repeatable-field-list field_"+fieldName+"\">");
                 for (int occ = 0; occ < maxOccurrences; occ++) {
-                  out.println("<li class=\"repeatable-field-list-element"+occ+"\">");
                   field = getSureField(fieldTemplate, record, occ);
-                  fieldDisplayer.display(out, field, fieldTemplate, pc);
-                  out.println("</li>");
+                  if (pagesContext.isDesignMode() || isWriting || occ == 0 || !field.isNull()) {
+                    if (occ != 0) {
+                      ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
+                    }
+                    out.println("<li class=\"repeatable-field-list-element" + occ + "\">");
+                    fieldDisplayer.display(out, field, fieldTemplate, pc);
+                    out.println("</li>");
+                  }
                 }
                 out.println("</ul>");
               }

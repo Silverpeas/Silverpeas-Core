@@ -20,18 +20,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.fileupload.FileItem;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -44,13 +32,22 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileServerUtils;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -72,10 +69,10 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param out
    * @param field
    * @param template
-   * @param pagesContext
-   * @param webContext
+   * @param pageContext
    * @throws FormException
    */
+  @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
@@ -83,7 +80,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
         + ", fieldType = " + field.getTypeName());
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String language = pageContext.getLanguage();
-    Operation defaultOperation = Operation.ADD;
+    Operation originalOperation = Operation.ADD;
     String componentId = pageContext.getComponentId();
     String attachmentId = field.getAttachmentId();
     SimpleDocumentPK attachmentPk;
@@ -98,12 +95,12 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     if (StringUtil.isDefined(attachmentId)) {
       if (attachmentId.startsWith("/")) {
         imageURL = attachmentId;
-        defaultOperation = Operation.UPDATE;
+        originalOperation = Operation.UPDATE;
       } else {
         attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
             attachmentPk, language);
         if (attachment != null) {
-          defaultOperation = Operation.UPDATE;
+          originalOperation = Operation.UPDATE;
           if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
             imageURL = "file:" + attachment.getAttachmentPath();
           } else {
@@ -153,15 +150,16 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       out.print("\" name=\"");
       out.print(fieldName);
       out.println("\"/>");
-      out.println("<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX
-          + "\" id=\"" + fieldName + FileField.PARAM_ID_SUFFIX + "\" value=\"\"/>");
+      out.println("<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
+          "\" id=\"" + fieldName + FileField.PARAM_ID_SUFFIX + "\" value=\"" + attachmentId +
+          "\"/>");
       out.println("<input type=\"hidden\" id=\"" + fieldName + OPERATION_KEY + "\" name=\"" +
-          fieldName + OPERATION_KEY + "\" value=\"" + defaultOperation.name() + "\"/>");
+          fieldName + OPERATION_KEY + "\" value=\"" + originalOperation.name() + "\"/>");
 
       // Adding "Galleries" listbox if needed
       boolean useGalleries = Util.getBooleanValue(parameters, "galleries");
       if (useGalleries) {
-        getGalleries(fieldName, language, out);
+        renderGalleries(originalOperation, fieldName, language, out);
       }
 
       if (template.isMandatory() && pageContext.useMandatory()) {
@@ -211,8 +209,9 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     out.print(paramWidth);
     out.print("/>");
   }
-  
-  private void getGalleries(String fieldName, String language, PrintWriter out) {
+
+  private void renderGalleries(final Operation originalOperation, String fieldName, String language,
+      PrintWriter out) {
     String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
     List<ComponentInstLight> galleries = WysiwygController.getGalleries();
     if (galleries != null && !galleries.isEmpty()) {
@@ -238,40 +237,11 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       out.println("$(\"#" + fieldName + "Thumbnail\").attr(\"src\", url);");
       out.println("$(\"#" + fieldName + "ThumbnailLink\").attr(\"href\", url);");
       out.println("$(\"#" + fieldName + FileField.PARAM_ID_SUFFIX + "\").attr(\"value\", url);");
+      out.println("$(\"#" + fieldName + OPERATION_KEY + "\").attr(\"value\", \"" +
+          originalOperation.name() + "\");");
       out.println("}");
       out.println("</script>");
     }
-  }
-  
-  protected String processInput(List<FileItem> items, FileField field, PagesContext pageContext) {
-    String currentAttachmentId = field.getAttachmentId();
-    try {
-      String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
-      String newAttachmentId = processUploadedFile(items, inputName, pageContext);
-      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
-          + OPERATION_KEY));
-      String imageURLFromGallery =
-          FileUploadUtil.getParameter(items, inputName + Field.FILE_PARAM_NAME_SUFFIX);
-      if (!StringUtil.isDefined(newAttachmentId) && StringUtil.isDefined(imageURLFromGallery)) {
-        // image from a gallery
-        newAttachmentId = imageURLFromGallery;
-      }
-      if (!pageContext.isCreation()) {
-        if (isDeletion(operation, currentAttachmentId) || isUpdate(operation, newAttachmentId)) {
-          // Former attachment must be deleted
-          if (!currentAttachmentId.startsWith("/")) {
-            deleteAttachment(currentAttachmentId, pageContext);
-          }
-          currentAttachmentId = null;
-        }
-      }
-      if (StringUtil.isDefined(newAttachmentId)) {
-        return newAttachmentId;
-      }
-    } catch (IOException e) {
-      SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
-    }
-    return currentAttachmentId;
   }
 
   /**

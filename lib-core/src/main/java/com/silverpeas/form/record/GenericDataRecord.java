@@ -110,15 +110,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
    */
   @Override
   public Field getField(String fieldName) throws FormException {
-    Field result = fieldsByName.get(fieldName).get(0);
-
-    if (result == null) {
-      SilverTrace.warn("form", "GenericDataRecord.getField",
-          "form.EXP_UNKNOWN_FIELD", "fieldName '" + fieldName
-          + "' in DB not found in XML descriptor");
-    }
-
-    return result;
+    return getField( fieldName,  0);
   }
   
   @Override

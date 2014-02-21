@@ -23,24 +23,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.servlet.FileUploadUtil;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
@@ -51,6 +33,23 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.servlet.FileUploadUtil;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author ehugonnet
@@ -63,7 +62,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * The different kinds of operation that can be applied into an attached file.
    */
   protected enum Operation {
-    ADD, UPDATE, DELETION;
+    ADD, UPDATE, DELETION
   }
 
   protected SimpleDocument createSimpleDocument(String objectId, String componentId, FileItem item,
@@ -166,21 +165,49 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   protected String processInput(List<FileItem> items, FileField field, PagesContext pageContext) {
     try {
+      String currentAttachmentId = field.getAttachmentId();
       String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
       String attachmentId = processUploadedFile(items, inputName, pageContext);
-      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
-          + OPERATION_KEY));
-      String currentAttachmentId = field.getAttachmentId();
-      if ((isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId))
-          && !pageContext.isCreation()) {
-        // delete previous attachment
-        deleteAttachment(currentAttachmentId, pageContext);
-        if (!StringUtil.isDefined(attachmentId)) {
-          attachmentId = null;
+      Operation operation =
+          Operation.valueOf(FileUploadUtil.getParameter(items, inputName + OPERATION_KEY));
+      if (!StringUtil.isDefined(attachmentId)) {
+        // Trying to verify if a link is performed instead of uploading a real file
+        String fileLinkOnApplication =
+            FileUploadUtil.getParameter(items, inputName + Field.FILE_PARAM_NAME_SUFFIX);
+        if (StringUtil.startsWith(fileLinkOnApplication, "/")) {
+          // The identifier is a link to a file of an application.
+          // The attachment identifier becomes the file link.
+          if (isDeletion(operation, fileLinkOnApplication)) {
+            attachmentId = null;
+          } else {
+            attachmentId = fileLinkOnApplication;
+          }
         }
-      } else if (StringUtil.isDefined(currentAttachmentId)) {
-        return currentAttachmentId;
       }
+
+      if (!pageContext.isCreation()) {
+        boolean isDeletionOfCurrent = isDeletion(operation, currentAttachmentId);
+        boolean isUpdate =
+            StringUtil.isDefined(currentAttachmentId) && StringUtil.isDefined(attachmentId) &&
+                !currentAttachmentId.equals(attachmentId);
+        boolean isAddOrUpdate = StringUtil.isDefined(attachmentId);
+        if (isDeletionOfCurrent || isUpdate) {
+
+          // Deletion of content
+          if (!StringUtil.startsWith(currentAttachmentId, "/")) {
+            // Current attachment identifier is a real one and is not a link to a resource of an
+            // application. So, deleting the previous attachment.
+            deleteAttachment(currentAttachmentId, pageContext);
+          }
+
+        } else if (!isAddOrUpdate) {
+
+          // Same value
+          return currentAttachmentId;
+        }
+      }
+
+      // Add, update, delete or no value
       return attachmentId;
     } catch (IOException ex) {
       SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
@@ -188,6 +215,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     return null;
   }
 
+  @Override
   public List<String> update(String attachmentId, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (FileField.TYPE.equals(field.getTypeName())) {
