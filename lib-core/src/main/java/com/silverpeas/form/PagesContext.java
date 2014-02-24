@@ -59,6 +59,7 @@ public class PagesContext {
   String encoding = "UTF-8";
   boolean creation = false;
   String serverURL;
+  boolean designMode = false;
 
   public PagesContext() {
   }
@@ -327,5 +328,13 @@ public class PagesContext {
   
   public void setRequest(HttpServletRequest request) {
     this.serverURL = URLManager.getServerURL(request);
+  }
+  
+  public boolean isDesignMode() {
+    return designMode;
+  }
+
+  public void setDesignMode(boolean designMode) {
+    this.designMode = designMode;
   }
 }

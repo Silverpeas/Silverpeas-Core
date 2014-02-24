@@ -124,4 +124,12 @@ public interface Field extends Serializable, Comparable {
    * @throw FormException when the field is read only.
    */
   public void setNull() throws FormException;
+  
+  public int getOccurrence();
+  
+  public void setOccurrence(int i);
+  
+  public void setName(String name);
+  
+  public String getName();
 }

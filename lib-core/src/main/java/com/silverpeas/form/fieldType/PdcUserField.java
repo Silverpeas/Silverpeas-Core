@@ -20,6 +20,7 @@
  */
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
@@ -33,7 +34,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
-public class PdcUserField implements Field {
+public class PdcUserField extends AbstractField {
 
   private static final long serialVersionUID = -1365851085995310180L;
   /**

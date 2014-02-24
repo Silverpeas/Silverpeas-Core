@@ -126,4 +126,19 @@ public class MyFieldTemplate implements FieldTemplate {
     return false;
   }
 
+  @Override
+  public int getMaximumNumberOfOccurrences() {
+    return 1;
+  }
+  
+  @Override
+  public boolean isRepeatable() {
+    return false;
+  }
+
+  @Override
+  public Field getEmptyField(int occurrence) throws FormException {
+    return null;
+  }
+
 }

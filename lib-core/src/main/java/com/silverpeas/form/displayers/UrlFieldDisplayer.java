@@ -20,6 +20,14 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -32,13 +40,6 @@ import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -49,60 +50,9 @@ import org.apache.ecs.xhtml.input;
  * @see Form
  * @see FieldDisplayer
  */
-public class UrlFieldDisplayer extends AbstractFieldDisplayer<TextField> {
+public class UrlFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
 
-  /**
-   * Constructeur
-   */
   public UrlFieldDisplayer() {
-  }
-
-  /**
-   * Returns the name of the managed types.
-   */
-  public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = TextField.TYPE;
-    return s;
-  }
-
-  /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
-   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   */
-  @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
-    String language = PagesContext.getLanguage();
-
-    if (!TextField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "UrlFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-
-    if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-          + Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
-      out.println("		errorNb++;");
-      out.println("	}");
-    }
-    out.println("	if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
-    out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-        + Util.getString("ContainsTooLargeText",
-        language) + Util.getSetting("nbMaxCar") + " " + Util.getString("Characters", language)
-        + "\\n \";");
-    out.println("		errorNb++;");
-    out.println("	}");
-
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
   }
 
   /**
@@ -119,14 +69,10 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String value;
     String html = "";
 
-    String fieldName = template.getFieldName();
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     SilverTrace.info("form", "UrlFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE", "fieldName="
         + fieldName);
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-
-    if (field == null) {
-      return;
-    }
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "UrlFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
@@ -166,8 +112,8 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       }
 
       input inputField = new input();
-      inputField.setName(template.getFieldName());
-      inputField.setID(template.getFieldName());
+      inputField.setName(fieldName);
+      inputField.setID(fieldName);
       inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
@@ -221,33 +167,5 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       }
     }
     out.println(html);
-  }
-
-  @Override
-  public List<String> update(String newValue, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
-
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      throw new FormException("UrlFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
-    }
-
-    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
-      field.setValue(newValue, PagesContext.getLanguage());
-    } else {
-      throw new FormException("UrlFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
-    }
-    return new ArrayList<String>();
-  }
-
-  @Override
-  public boolean isDisplayedMandatory() {
-    return true;
-  }
-
-  @Override
-  public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
-    return 1;
   }
 }

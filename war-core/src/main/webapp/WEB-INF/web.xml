@@ -455,6 +455,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>TemplateDesignerAJAXServlet</servlet-name>
+    <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerAJAXServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>FormLayerServlet</servlet-name>
     <servlet-class>com.silverpeas.templatedesigner.servlets.FormLayerServlet</servlet-class>
   </servlet>
@@ -880,6 +884,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>TemplateDesignerRequestRouter</servlet-name>
     <url-pattern>/RtemplateDesigner/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TemplateDesignerAJAXServlet</servlet-name>
+    <url-pattern>/AjaxTemplateDesigner/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>FormLayerServlet</servlet-name>

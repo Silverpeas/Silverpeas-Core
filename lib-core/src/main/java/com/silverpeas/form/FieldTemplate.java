@@ -98,11 +98,16 @@ public interface FieldTemplate {
    * Returns an empty Field built on this template.
    */
   public Field getEmptyField() throws FormException;
+  public Field getEmptyField(int occurrence) throws FormException;
 
   public boolean isSearchable();
 
   public String getTemplateName();
   
   public boolean isUsedAsFacet();
+  
+  public int getMaximumNumberOfOccurrences();
+  
+  public boolean isRepeatable();
 
 }
