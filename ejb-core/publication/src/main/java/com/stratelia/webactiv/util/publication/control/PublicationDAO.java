@@ -782,7 +782,30 @@ public class PublicationDAO {
     pub.setLanguage(lang);
     pub.setDraftOutDate(draftOutDate);
     pub.setExplicitRank(order);
+    
+    processVisibility(pub, beginDate, beginHour, endDate, endHour);
+
     return pub;
+  }
+  
+  private static void processVisibility(PublicationDetail publi, Date beginDate, String beginHour,
+      Date endDate, String endHour) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    Date today = calendar.getTime();
+    
+    Date dBegin = DateUtil.getDate(beginDate, beginHour);
+    Date dEnd = DateUtil.getDate(endDate, endHour);
+
+    publi.setBeginDateAndHour(dBegin);
+    publi.setEndDateAndHour(dEnd);
+
+    if (dBegin != null && dBegin.after(today)) {
+      publi.setNotYetVisible(true);
+    } else if (dEnd != null && dEnd.before(today)) {
+      publi.setNoMoreVisible(true);
+    }
   }
 
   /**
