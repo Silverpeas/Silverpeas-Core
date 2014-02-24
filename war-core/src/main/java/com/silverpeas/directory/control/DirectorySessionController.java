@@ -455,6 +455,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     } else {
       lastListUsersCalled = connectedUsers;
+      lastAlllistUsersCalled = connectedUsers;
     }
 
     return lastListUsersCalled;
