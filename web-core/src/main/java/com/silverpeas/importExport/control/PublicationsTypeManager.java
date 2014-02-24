@@ -205,7 +205,7 @@ public class PublicationsTypeManager {
       }
       exportAttachments(attachmentIE, publicationType, publicationDetail.getPK(),
           exportPublicationRelativePath, exportPublicationPath);
-      exportPdc(pdc_impExp, pubId, gedIE, publicationType);
+      exportPdc(pdc_impExp, publicationDetail.getPK(), gedIE, publicationType);
       int nbThemes = 1;
       if (!gedIE.isKmax()) {
         nbThemes = getNbThemes(gedIE, publicationType, rootPK);
@@ -264,19 +264,20 @@ public class PublicationsTypeManager {
     return true;
   }
 
-  void exportPdc(PdcImportExport pdc_impExp, String pubId, GEDImportExport gedIE,
-      PublicationType publicationType) throws ImportExportException {
+  void exportPdc(PdcImportExport pdc_impExp, PublicationPK pk, GEDImportExport gedIE,
+      PublicationType publicationType) {
     // Récupération du classement pdc
     try {
-      List<ClassifyPosition> listClassifyPostion = pdc_impExp.getPositions(gedIE.getSilverObjectId(
-          pubId), publicationType.getComponentId());
+      List<ClassifyPosition> listClassifyPostion =
+          pdc_impExp.getPositions(gedIE.getSilverObjectId(pk.getId()), pk.getInstanceId());
       if (listClassifyPostion != null && !listClassifyPostion.isEmpty()) {
         publicationType.setPdcPositionsType(new PdcPositionsType());
         publicationType.getPdcPositionsType().setListClassifyPosition(listClassifyPostion);
       }
     } catch (Exception ex) {
-      // En cas d"objet non trouvé: pas d'exception gérée par le système
-      throw new ImportExportException("importExport", "importExport.EX_CANT_GET_PDC_POSITION", ex);
+      // Do not block export in case of error
+      SilverTrace.warn("importExport", "PublicationsTypeManager.exportPdc",
+          "importExport.EX_CANT_GET_PDC_POSITION", ex);
     }
   }
 
