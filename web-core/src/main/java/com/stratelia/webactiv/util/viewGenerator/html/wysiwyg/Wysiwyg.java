@@ -24,7 +24,9 @@ public class Wysiwyg {
   }
 
   public String print() {
-    String configFile = wysiwygSettings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/ckeditor/silverconfig.js");
+    String baseDir = wysiwygSettings.getString("baseDir", "ckeditor");
+    String configFile = wysiwygSettings.getString("configFile",
+        URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
 
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
