@@ -20,10 +20,18 @@
  */
 package org.silverpeas.attachment.web;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
-
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +43,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -51,8 +58,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -61,18 +68,7 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 @Service
 @RequestScoped
@@ -210,16 +206,17 @@ public class SimpleDocumentResource extends RESTWebService {
       document.setContentType(FileUtil.getMimeType(uploadedFilename));
       File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-      
+
       //check the file size
-      ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+      ResourceLocator uploadSettings = new ResourceLocator(
+          "org.silverpeas.util.uploads.uploadSettings", "");
       long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
       long fileSize = tempFile.length();
-      if(fileSize > maximumFileSize) {
+      if (fileSize > maximumFileSize) {
         FileUtils.deleteQuietly(tempFile);
         throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
       }
-      
+
       document.setSize(fileSize);
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
       if (!StringUtil.isDefined(document.getEditedBy())) {
@@ -229,6 +226,9 @@ public class SimpleDocumentResource extends RESTWebService {
           updateAttachment(document, content, true, true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
+      // in the case the document is a CAD one, process it for Actify
+      ActifyDocumentProcessor.getProcessor().process(document);
+
     } else {
       isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
       if (document.isVersioned()) {
@@ -334,7 +334,7 @@ public class SimpleDocumentResource extends RESTWebService {
     };
     return Response.ok(stream).type(document.getContentType()).header(HttpHeaders.CONTENT_LENGTH,
         document.getSize()).header("content-disposition", "attachment;filename=" + document.
-        getFilename()).build();
+            getFilename()).build();
   }
 
   /**
@@ -372,9 +372,10 @@ public class SimpleDocumentResource extends RESTWebService {
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
-    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(
-        new ForeignPK(document.getForeignId(), componentId), I18NHelper.defaultLanguage);
+    List<SimpleDocument> docs =
+        AttachmentServiceFactory.getAttachmentService()
+            .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), componentId),
+                I18NHelper.defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position - 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
@@ -396,9 +397,9 @@ public class SimpleDocumentResource extends RESTWebService {
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
-    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(
-        new ForeignPK(document.getForeignId(), componentId), I18NHelper.defaultLanguage);
+    List<SimpleDocument> docs =
+        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+            new ForeignPK(document.getForeignId(), componentId), I18NHelper.defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position + 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
