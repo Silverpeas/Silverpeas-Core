@@ -126,10 +126,9 @@ public class CommentEntity implements Exposable {
    * @return a comment instance.
    */
   public Comment toComment() {
-    String safeText = Encode.forHtml(text);
-    Comment comment =
-        new Comment(new CommentPK(id, componentId), resourceType, new PublicationPK(resourceId,
-        componentId), Integer.valueOf(author.getId()), author.getFullName(), safeText,
+    Comment comment = new Comment(new CommentPK(id, componentId), resourceType, new PublicationPK(
+        resourceId,
+        componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
         decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
         decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
     comment.setOwnerDetail(getAuthor().toUserDetail());
@@ -237,7 +236,7 @@ public class CommentEntity implements Exposable {
   /**
    * Is this comment indexed? By default, the comment isn't indexed by the system.
    *
-* @return true if the comment is indexed, false otherwise.
+   * @return true if the comment is indexed, false otherwise.
    */
   public boolean isIndexed() {
     return indexed;
@@ -259,7 +258,7 @@ public class CommentEntity implements Exposable {
     this.id = comment.getCommentPK().getId();
     this.resourceType = comment.getResourceType();
     this.resourceId = comment.getForeignKey().getId();
-    this.text = comment.getMessage();
+    this.text = Encode.forHtml(comment.getMessage());
     this.author = UserProfileEntity.fromUser(comment.getCreator());
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
     this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.

@@ -41,6 +41,7 @@ import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.lang3.CharEncoding;
+import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 public class PublicationEntity implements Exposable {
@@ -77,8 +78,8 @@ public class PublicationEntity implements Exposable {
   }
 
   private PublicationEntity(final PublicationDetail publication, URI uri) {
-    this.setName(publication.getName());
-    this.setDescription(publication.getDescription());
+    this.setName(Encode.forHtml(publication.getName()));
+    this.setDescription(Encode.forHtml(publication.getDescription()));
     this.setUri(uri);
     this.setUpdateDate(publication.getUpdateDate());
     this.creator = UserProfileEntity.fromUser(publication.getCreator());
@@ -109,7 +110,7 @@ public class PublicationEntity implements Exposable {
     try {
       sharedUri = new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" + token + "/"
           + attachment.getId() + "/" + URLEncoder.encode(attachment.getFilename(),
-          CharEncoding.UTF_8));
+              CharEncoding.UTF_8));
     } catch (UnsupportedEncodingException ex) {
       Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
       throw new RuntimeException(ex.getMessage(), ex);
