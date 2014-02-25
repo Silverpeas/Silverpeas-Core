@@ -296,29 +296,27 @@ public class GraphicElementFactory {
     String specificJS = null;
 
     if (externalStylesheet == null) {
-      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
-          "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
+      code.append(getCSSLinkTag(contextPath + "/util/styleSheets/jquery/" + JQUERYUI_CSS));
 
       // define CSS(default and specific) and JS (specific) dedicated to current component
-      StringBuilder defaultComponentCSS = null;
-      StringBuilder specificComponentCSS = null;
+      String defaultComponentCSS = null;
+      String specificComponentCSS = null;
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
         ComponentInstLight component =
             mainSessionController.getOrganisationController().getComponentInstLight(componentId);
         if (component != null) {
           String componentName = component.getName();
           String genericComponentName = getGenericComponentName(componentName);
-          defaultComponentCSS = new StringBuilder(50);
-          defaultComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"")
-              .append(contextPath).
-              append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
-              genericComponentName).append(".css").append("\"/>\n");
+          if (component.isWorkflow()) {
+            genericComponentName = "processManager";
+          }
+          defaultComponentCSS =
+              getCSSLinkTag(contextPath + "/" + genericComponentName + "/jsp/styleSheets/" +
+                  genericComponentName + ".css");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
           if (StringUtil.isDefined(specificStyle)) {
-            specificComponentCSS = new StringBuilder(50);
-            specificComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-            specificComponentCSS.append(specificStyle).append("\"/>\n");
+            specificComponentCSS = getCSSLinkTag(specificStyle);
           }
 
           specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
@@ -326,12 +324,10 @@ public class GraphicElementFactory {
       }
 
       // append default global CSS
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
-      code.append(standardStyle).append("\"/>\n");
+      code.append(getCSSLinkTag(contextPath+standardStyle));
 
       code.append("<!--[if IE]>\n");
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-          contextPath).append(standardStyleForIE).append("\"/>\n");
+      code.append(getCSSLinkTag(contextPath+standardStyleForIE));
       code.append("<![endif]-->\n");
 
       // append default CSS of current component
@@ -347,8 +343,7 @@ public class GraphicElementFactory {
         code.append(specificComponentCSS);
       }
     } else {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet)
-          .append("\"/>\n");
+      code.append(getCSSLinkTag(externalStylesheet));
     }
 
     // append javascript
@@ -978,5 +973,9 @@ public class GraphicElementFactory {
       userLookStyle = defaultLookName;
     }
     return userLookStyle;
+  }
+  
+  private String getCSSLinkTag(String href) {
+    return "<link rel=\"stylesheet\" type=\"text/css\" href=\""+href+"\"/>\n";
   }
 }
