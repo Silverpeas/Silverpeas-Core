@@ -553,8 +553,10 @@ public class AuthenticationService {
    *
    * @param credential
    * @param email
+   * @throws AuthenticationException
    */
-  private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email) {
+  private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email)
+      throws AuthenticationException {
     AdminController admin = new AdminController(null);
     UserDetail user = UserDetail
         .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
@@ -578,7 +580,12 @@ public class AuthenticationService {
     }
 
     // Persisting user data changes.
-    admin.updateUserFull(userFull);
+    try {
+      admin.updateUserFull(userFull);
+    } catch (AdminException e) {
+      throw new AuthenticationException("AuthenticationService.onPasswordAndEmailChanged",
+          SilverpeasException.ERROR, "authentication.EX_CANT_UPDATE_USERFULL", e);
+    }
   }
 
   /**
