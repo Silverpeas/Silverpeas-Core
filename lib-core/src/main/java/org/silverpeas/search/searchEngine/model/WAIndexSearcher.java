@@ -22,7 +22,15 @@ package org.silverpeas.search.searchEngine.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -33,15 +41,28 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
-
-import org.silverpeas.search.indexEngine.model.*;
+import org.silverpeas.search.indexEngine.model.ExternalComponent;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexReadersCache;
+import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -163,10 +184,10 @@ public class WAIndexSearcher {
       rangeClauses.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
 
       if (query.getXmlQuery() != null) {
-        booleanQuery.add(getXMLQuery(query, searcher), BooleanClause.Occur.MUST);
+        booleanQuery.add(getXMLQuery(query), BooleanClause.Occur.MUST);
       } else {
         if (query.getMultiFieldQuery() != null) {
-          booleanQuery.add(getMultiFieldQuery(query, searcher), BooleanClause.Occur.MUST);
+          booleanQuery.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
         } else {
           TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
           if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
@@ -249,15 +270,9 @@ public class WAIndexSearcher {
       String[] fields = new String[I18NHelper.getNumberOfLanguages()];
 
       int l = 0;
-      Iterator<String> languages = I18NHelper.getLanguages();
-      while (languages.hasNext()) {
-        language = languages.next();
-
-        if (I18NHelper.isDefaultLanguage(language)) {
-          fields[l] = searchField;
-        } else {
-          fields[l] = searchField + "_" + language;
-        }
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String lang : languages) {
+        fields[l] = getFieldName(searchField, lang);
         l++;
       }
 
@@ -267,7 +282,7 @@ public class WAIndexSearcher {
     } else {
       // search only specified language
       if (I18NHelper.isI18N && !"*".equals(language) && !I18NHelper.isDefaultLanguage(language)) {
-        searchField = searchField + "_" + language;
+        searchField = getFieldName(searchField, language);
       }
 
       QueryParser queryParser = new QueryParser(Version.LUCENE_36, searchField, analyzer);
@@ -287,84 +302,86 @@ public class WAIndexSearcher {
     return parsedQuery;
   }
 
-  private Query getXMLQuery(QueryDescription query, Searcher searcher)
+  private Query getXMLQuery(QueryDescription query)
       throws org.silverpeas.search.searchEngine.model.ParseException {
-
     try {
-      Map<String, String> xmlQuery = query.getXmlQuery();
-      String xmlTitle = query.getXmlTitle();
-
-      int nbFields = xmlQuery.size();
-      if (StringUtil.isDefined(xmlTitle)) {
-        nbFields++;
-      }
-
-      String[] fields = xmlQuery.keySet().toArray(new String[nbFields]);
-      String[] queries = xmlQuery.values().toArray(new String[nbFields]);
-
-      if (StringUtil.isDefined(xmlTitle)) {
-        fields[nbFields - 1] = IndexManager.TITLE;
-        queries[nbFields - 1] = xmlTitle;
-      }
-
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
       Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
+      BooleanQuery booleanQuery = new BooleanQuery();
 
-      BooleanClause.Occur[] flags = new BooleanClause.Occur[fields.length];
-      for (int f = 0; f < fields.length; f++) {
-        flags[f] = BooleanClause.Occur.MUST;
+      String xmlTitle = query.getXmlTitle();
+      if (StringUtil.isDefined(xmlTitle)) {
+        Query headerQuery = getQuery(IndexManager.HEADER, xmlTitle, languages, analyzer);
+        booleanQuery.add(headerQuery, BooleanClause.Occur.MUST);
       }
 
-      Query parsedQuery = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields, flags,
-          analyzer);
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getXMLHits", "root.MSG_GEN_PARAM_VALUE",
-          "parsedQuery = " + parsedQuery.toString());
+      Map<String, String> xmlQuery = query.getXmlQuery();
+      for (String fieldName : xmlQuery.keySet()) {
+        Query fieldI18NQuery =
+            getQuery(fieldName, xmlQuery.get(fieldName), languages, analyzer);
+        booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
+      }
 
-      return parsedQuery;
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getXMLQuery",
+          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = " + booleanQuery.toString());
+      return booleanQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new org.silverpeas.search.searchEngine.model.ParseException("WAIndexSearcher", e);
     }
   }
 
-  private Query getMultiFieldQuery(QueryDescription query, Searcher searcher)
+  private Query getMultiFieldQuery(QueryDescription query)
       throws org.silverpeas.search.searchEngine.model.ParseException {
     try {
-      List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
-      String keyword = query.getQuery();
-
-      int nbFields = fieldQueries.size();
-      if (StringUtil.isDefined(keyword)) {
-        nbFields++;
-      }
-
-      String[] fields = new String[nbFields];
-      String[] queries = new String[nbFields];
-      BooleanClause.Occur[] flags = new BooleanClause.Occur[nbFields];
-
-      if (StringUtil.isDefined(keyword)) {
-        flags[nbFields - 1] = BooleanClause.Occur.MUST;
-        fields[nbFields - 1] = IndexManager.HEADER;
-        queries[nbFields - 1] = keyword;
-      }
-
-      FieldDescription fieldQuery;
-      for (int f = 0; f < fieldQueries.size(); f++) {
-        fieldQuery = fieldQueries.get(f);
-
-        flags[f] = BooleanClause.Occur.MUST;
-        fields[f] = fieldQuery.getFieldName();
-        queries[f] = fieldQuery.getContent();
-      }
-
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
       Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
-      Query parsedQuery = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields, flags,
-          analyzer);
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getMultiFieldHits",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = " + parsedQuery.toString());
-      return parsedQuery;
+      BooleanQuery booleanQuery = new BooleanQuery();
+
+      String keyword = query.getQuery();
+      if (StringUtil.isDefined(keyword)) {
+        Query headerQuery = getQuery(IndexManager.HEADER, keyword, languages, analyzer);
+        booleanQuery.add(headerQuery, BooleanClause.Occur.MUST);
+      }
+
+      List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
+      for (FieldDescription fieldQuery : fieldQueries) {
+        Query fieldI18NQuery =
+            getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages, analyzer);
+        booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
+      }
+
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getMultiFieldQuery",
+          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = " + booleanQuery.toString());
+      return booleanQuery;
     } catch (ParseException e) {
       throw new org.silverpeas.search.searchEngine.model.ParseException("WAIndexSearcher", e);
     }
+  }
 
+  /**
+   * Generates MultiFieldQuery about one field and all languages.
+   * This generated the following query : (fieldName:queryStr fieldName_en:queryStr fieldName_de:queryStr)
+   * @return a Query limited to given fieldName
+   * @throws ParseException
+   */
+  private Query getQuery(String fieldName, String queryStr, Set<String> languages, Analyzer analyzer)
+      throws ParseException {
+    Map<String, BooleanClause.Occur> fieldNames = new HashMap<String, BooleanClause.Occur>();
+    for (String language : languages) {
+      fieldNames.put(getFieldName(fieldName, language), BooleanClause.Occur.SHOULD);
+    }
+    Query query =
+        MultiFieldQueryParser.parse(Version.LUCENE_36, queryStr,
+            fieldNames.keySet().toArray(new String[fieldNames.size()]), fieldNames.values()
+                .toArray(new BooleanClause.Occur[fieldNames.size()]), analyzer);
+    return query;
+  }
+
+  private String getFieldName(String name, String language) {
+    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
+      return name;
+    }
+    return name + "_" + language;
   }
 
   /**
@@ -383,14 +400,8 @@ public class WAIndexSearcher {
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
       String language = languages.next();
-
-      if (I18NHelper.isDefaultLanguage(language)) {
-        indexEntry.setTitle(doc.get(IndexManager.TITLE), language);
-        indexEntry.setPreview(doc.get(IndexManager.PREVIEW), language);
-      } else {
-        indexEntry.setTitle(doc.get(IndexManager.TITLE + "_" + language), language);
-        indexEntry.setPreview(doc.get(IndexManager.PREVIEW + "_" + language), language);
-      }
+      indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
+      indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
     }
 
     indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
