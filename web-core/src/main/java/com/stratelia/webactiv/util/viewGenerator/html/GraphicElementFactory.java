@@ -312,9 +312,8 @@ public class GraphicElementFactory {
           if (component.isWorkflow()) {
             genericComponentName = "processManager";
           }
-          defaultComponentCSS =
-              getCSSLinkTag(contextPath + "/" + genericComponentName + "/jsp/styleSheets/" +
-                  genericComponentName + ".css");
+          defaultComponentCSS = getCSSLinkTag(contextPath + "/" + genericComponentName
+              + "/jsp/styleSheets/" + genericComponentName + ".css");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
           if (StringUtil.isDefined(specificStyle)) {
@@ -326,10 +325,10 @@ public class GraphicElementFactory {
       }
 
       // append default global CSS
-      code.append(getCSSLinkTag(contextPath+standardStyle));
+      code.append(getCSSLinkTag(contextPath + STANDARD_CSS));
 
       code.append("<!--[if IE]>\n");
-      code.append(getCSSLinkTag(contextPath+standardStyleForIE));
+      code.append(getCSSLinkTag(contextPath + standardStyleForIE));
       code.append("<![endif]-->\n");
 
       // append default CSS of current component
@@ -369,7 +368,8 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
             "\"></script>\n");
-    code.append(JavascriptPluginInclusion.includeSecurityTokenizing(new ElementContainer()).toString())
+    code.append(JavascriptPluginInclusion.includeSecurityTokenizing(new ElementContainer()).
+        toString())
         .append("\n");
     code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
         .append("\n");
@@ -986,8 +986,8 @@ public class GraphicElementFactory {
     }
     return userLookStyle;
   }
-  
+
   private String getCSSLinkTag(String href) {
-    return "<link rel=\"stylesheet\" type=\"text/css\" href=\""+href+"\"/>\n";
+    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + href + "\"/>\n";
   }
 }

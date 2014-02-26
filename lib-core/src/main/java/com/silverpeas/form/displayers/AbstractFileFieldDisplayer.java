@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +61,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * The different kinds of operation that can be applied into an attached file.
    */
   protected enum Operation {
+
     ADD, UPDATE, DELETION
   }
 
@@ -87,13 +87,14 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Deletes the specified attachment, identified by its unique identifier.?
+   *
    * @param attachmentId the unique identifier of the attachment to delete.
    * @param pageContext the context of the page.
    */
   protected void deleteAttachment(String attachmentId, PagesContext pageContext) {
     SilverTrace.info("form", "AbstractFileFieldDisplayer.deleteAttachment",
         "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId + ", componentId = "
-            + pageContext.getComponentId());
+        + pageContext.getComponentId());
     SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
     SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
         pageContext.getContentLanguage());
@@ -104,10 +105,11 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Returns the name of the managed types.
+   *
    * @return
    */
   public String[] getManagedTypes() {
-    return new String[] { FileField.TYPE };
+    return new String[]{FileField.TYPE};
   }
 
   /**
@@ -119,6 +121,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
+   *
    * @param pageContext
    */
   @Override
@@ -136,7 +139,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
           .append(fieldName).append(OPERATION_KEY).append(".value;\n")
           .append("   if (").append(fieldName).append("Value=='' || ")
           .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
-          "') {\n")
+              "') {\n")
           .append("     errorMsg+=\"  - '")
           .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
           .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
@@ -168,12 +171,12 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       String currentAttachmentId = field.getAttachmentId();
       String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
       String attachmentId = processUploadedFile(items, inputName, pageContext);
-      Operation operation =
-          Operation.valueOf(FileUploadUtil.getParameter(items, inputName + OPERATION_KEY));
+      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
+          + OPERATION_KEY));
       if (!StringUtil.isDefined(attachmentId)) {
         // Trying to verify if a link is performed instead of uploading a real file
-        String fileLinkOnApplication =
-            FileUploadUtil.getParameter(items, inputName + Field.FILE_PARAM_NAME_SUFFIX);
+        String fileLinkOnApplication = FileUploadUtil.getParameter(items, inputName
+            + Field.FILE_PARAM_NAME_SUFFIX);
         if (StringUtil.startsWith(fileLinkOnApplication, "/")) {
           // The identifier is a link to a file of an application.
           // The attachment identifier becomes the file link.
@@ -187,9 +190,8 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
       if (!pageContext.isCreation()) {
         boolean isDeletionOfCurrent = isDeletion(operation, currentAttachmentId);
-        boolean isUpdate =
-            StringUtil.isDefined(currentAttachmentId) && StringUtil.isDefined(attachmentId) &&
-                !currentAttachmentId.equals(attachmentId);
+        boolean isUpdate = StringUtil.isDefined(currentAttachmentId) && StringUtil.isDefined(
+            attachmentId) && !currentAttachmentId.equals(attachmentId);
         boolean isAddOrUpdate = StringUtil.isDefined(attachmentId);
         if (isDeletionOfCurrent || isUpdate) {
 
@@ -218,21 +220,24 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   @Override
   public List<String> update(String attachmentId, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
+    List<String> updated = new ArrayList<String>();
     if (FileField.TYPE.equals(field.getTypeName())) {
       if (!StringUtil.isDefined(attachmentId)) {
         field.setNull();
       } else {
         field.setAttachmentId(attachmentId);
+        updated.add(attachmentId);
       }
     } else {
       throw new FormException("FileFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           FileField.TYPE);
     }
-    return Collections.singletonList(attachmentId);
+    return updated;
   }
 
   /**
    * Is the specified operation is a deletion?
+   *
    * @param operation the operation.
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is a deletion, false otherwise.
@@ -243,6 +248,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Is the specified operation is an update?
+   *
    * @param operation the operation.
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is an update, false otherwise.
@@ -279,6 +285,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Checks the type of the field is as expected. The field must be of type file.
+   *
    * @param typeName the name of the type.
    * @param contextCall the context of the call: which is the caller of this method. This parameter
    * is used for trace purpose.
