@@ -48,6 +48,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -128,7 +129,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public void modifyUser(String idUser, String userLastName, String userFirstName,
       String userEMail, String userAccessLevel, String oldPassword, String newPassword,
       String userLoginQuestion, String userLoginAnswer, Map<String, String> properties)
-      throws AuthenticationException {
+      throws AuthenticationException, AdminException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
         + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="

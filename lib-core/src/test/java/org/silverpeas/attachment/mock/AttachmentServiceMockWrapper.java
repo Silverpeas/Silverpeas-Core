@@ -49,7 +49,7 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
  */
 public class AttachmentServiceMockWrapper implements AttachmentService {
 
-  private AttachmentService mock = Mockito.mock(AttachmentService.class);
+  private final AttachmentService mock = Mockito.mock(AttachmentService.class);
 
   public AttachmentService getAttachmentServiceMock() {
     return mock;
@@ -236,8 +236,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
-    return mock.changeVersionState(pk, comment);
+  public void changeVersionState(SimpleDocumentPK pk) {
+    mock.changeVersionState(pk);
   }
 
   @Override
@@ -260,11 +260,6 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   public void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
     mock.indexAllDocuments(fk, startOfVisibilityPeriod, endOfVisibilityPeriod);
-  }
-
-  @Override
-  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
-    mock.switchComponentBehaviour(componentId, toVersionning);
   }
 
 }

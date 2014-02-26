@@ -27,6 +27,7 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -531,7 +532,7 @@ public class AuthenticationService {
    *
    * @param credential
    */
-  private void onPasswordChanged(AuthenticationCredential credential) {
+  private void onPasswordChanged(AuthenticationCredential credential) throws AuthenticationException {
     AdminController admin = new AdminController(null);
     UserDetail user = UserDetail
         .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
@@ -540,14 +541,21 @@ public class AuthenticationService {
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
         .notifyPasswordChange();
 
+    UserFull userFull = admin.getUserFull(user.getId());
+
     // Reset the counter of number of successful connections for the given user.
-    user.setNbSuccessfulLoginAttempts(0);
+    userFull.setNbSuccessfulLoginAttempts(0);
 
     // Register the date of credential change
-    user.setLastLoginCredentialUpdateDate(new Date());
+    userFull.setLastLoginCredentialUpdateDate(new Date());
 
     // Persisting user data changes.
-    admin.updateUser(user);
+    try {
+      admin.updateUserFull(userFull);
+    } catch (AdminException e) {
+      throw new AuthenticationException("AuthenticationService.onPasswordChanged",
+          SilverpeasException.ERROR, "authentication.EX_CANT_UPDATE_USERFULL", e);
+    }
   }
 
   /**
