@@ -64,7 +64,7 @@ function editICenter(id) {
 }
 
 function newICenter() {
-        chemin = '<%=m_context%>/RpdcSearch/jsp/GlobalView?showNotOnlyPertinentAxisAndValues=true&mode=clear';
+    chemin = '<%=m_context%>/RpdcSearch/jsp/GlobalView?showNotOnlyPertinentAxisAndValues=true&mode=clear';
 		largeur = "600";
 		hauteur = "440";
 		SP_openWindow(chemin,"",largeur,hauteur,"resizable=yes,scrollbars=yes");
