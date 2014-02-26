@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.control.dao;
 
 import java.sql.Connection;
@@ -28,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +44,8 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the Node Data Access Object.
@@ -70,8 +70,8 @@ public class NodeDAO {
       + "nodeid = ? AND instanceid = ?";
   private static final String SELECT_DESCENDANTS_ID_BY_PATH = "SELECT nodeid FROM sb_node_node "
       + "WHERE nodePath LIKE ? AND instanceid = ? ORDER BY nodeid";
-  private static Hashtable<String, ArrayList<NodeDetail>> alltrees
-      = new Hashtable<String, ArrayList<NodeDetail>>();
+  private static final Map<String, ArrayList<NodeDetail>> alltrees
+      = new ConcurrentHashMap<String, ArrayList<NodeDetail>>();
 
   /**
    * This class must not be instanciated
@@ -250,7 +250,7 @@ public class NodeDAO {
         prepStmt.setString(1, path);
         prepStmt.setString(2, nodePK.getComponentName());
         rs = prepStmt.executeQuery();
-        String nodeId = "";
+        String nodeId;
         while (rs.next()) {
           nodeId = String.valueOf(rs.getInt("nodeid"));
           NodePK n = new NodePK(nodeId, nodePK);
@@ -285,7 +285,7 @@ public class NodeDAO {
       throws SQLException {
 
     String path = null;
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("SELECT nodePath from ").append(nodePK.getTableName()).append(
         " where nodeId = ? and instanceId = ?");
     List<NodeDetail> a = new ArrayList<NodeDetail>();
@@ -314,7 +314,7 @@ public class NodeDAO {
     if (path != null) {
       // path = path + "/%";
       path = path + nodePK.getId() + "/%";
-      selectQuery = new StringBuffer();
+      selectQuery = new StringBuilder();
       selectQuery.append("select * from ").append(nodePK.getTableName());
       selectQuery.append(" where nodePath like '").append(path).append("'");
       selectQuery.append(" and instanceId = ? order by nodePath");
@@ -354,7 +354,7 @@ public class NodeDAO {
       throws SQLException {
     String path = node.getPath() + node.getNodePK().getId() + "/%";
 
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select * from ").append(node.getNodePK().getTableName());
     selectQuery.append(" where nodePath like '").append(path).append("'");
     selectQuery.append(" and instanceId = ? order by nodePath");
@@ -399,7 +399,7 @@ public class NodeDAO {
 
     List<NodeDetail> headers = new ArrayList<NodeDetail>();
 
-    StringBuffer nodeStatement = new StringBuffer();
+    StringBuilder nodeStatement = new StringBuilder();
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeLevelNumber=").append(level);
     nodeStatement.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
@@ -481,7 +481,7 @@ public class NodeDAO {
       String sorting, int level) throws SQLException {
 
     List<NodeDetail> headers = new ArrayList<NodeDetail>();
-    StringBuffer nodeStatement = new StringBuffer();
+    StringBuilder nodeStatement = new StringBuilder();
 
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where instanceId ='").append(
@@ -654,7 +654,7 @@ public class NodeDAO {
 
     String nodeId = nodePK.getId();
 
-    StringBuffer nodeStatement = new StringBuffer();
+    StringBuilder nodeStatement = new StringBuilder();
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeId = ").append(nodeId);
     nodeStatement.append(" and instanceId = '").append(
@@ -746,7 +746,7 @@ public class NodeDAO {
 
     int nbChildren = 0;
 
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select count(*) from ").append(nodePK.getTableName()).append(
         " where nodeFatherId = ? and instanceId = ?");
 
@@ -826,7 +826,7 @@ public class NodeDAO {
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
     }
 
-    StringBuffer insertQuery = new StringBuffer();
+    StringBuilder insertQuery = new StringBuilder();
     insertQuery.append("insert into ").append(nd.getNodePK().getTableName()).append(
         " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)");
     PreparedStatement prepStmt = null;
@@ -871,7 +871,7 @@ public class NodeDAO {
   public static void deleteRow(Connection con, NodePK nodePK)
       throws SQLException {
 
-    StringBuffer deleteQuery = new StringBuffer();
+    StringBuilder deleteQuery = new StringBuilder();
     deleteQuery.append("delete from ").append(nodePK.getTableName());
     deleteQuery.append(" where nodeId=").append(nodePK.getId());
     deleteQuery.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
@@ -949,8 +949,8 @@ public class NodeDAO {
 
     Collection<NodeDetail> children = getChildrenDetails(con, pk);
     List<NodePK> result = new ArrayList<NodePK>();
-    NodeDetail detail = null;
-    NodePK primary = null;
+    NodeDetail detail;
+    NodePK primary;
 
     for (Iterator<NodeDetail> i = children.iterator(); i.hasNext();) {
       detail = i.next();
@@ -1073,13 +1073,13 @@ public class NodeDAO {
   public static void storeRow(Connection con, NodeDetail nodeDetail) throws SQLException {
 
     int rowCount = 0;
-    StringBuffer updateStatement = new StringBuffer();
+    StringBuilder updateStatement = new StringBuilder();
     updateStatement.append("update ").append(
         nodeDetail.getNodePK().getTableName());
     updateStatement.append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
     updateStatement
         .append(
-        " nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, rightsDependsOn = ? ");
+            " nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? and instanceId = ?");
     PreparedStatement prepStmt = null;
 
@@ -1115,13 +1115,13 @@ public class NodeDAO {
   public static void moveNode(Connection con, NodeDetail nodeDetail)
       throws SQLException {
     int rowCount = 0;
-    StringBuffer updateStatement = new StringBuffer();
+    StringBuilder updateStatement = new StringBuilder();
     updateStatement.append("update ").append(
         nodeDetail.getNodePK().getTableName());
     updateStatement.append(" set nodePath = ? , ");
     updateStatement
         .append(
-        " nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, rightsDependsOn = ? ");
+            " nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? ");
     PreparedStatement prepStmt = null;
 

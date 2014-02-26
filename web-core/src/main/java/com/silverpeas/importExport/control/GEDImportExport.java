@@ -275,8 +275,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
           // creating new publication in first topic
           NodePositionType node_Type = itListNode_Type.next();
           try {
-            NodePK topicPK =
-                new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.getPK());
+            NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.
+                getPK());
             pubId = createPublicationIntoTopic(pubDet_temp, topicPK, settings.getUser());
             pubDet_temp.getPK().setId(pubId);
           } catch (Exception e) {
@@ -359,8 +359,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
     // Is it the creation of the content or an update ?
     String infoId = pubDetail.getInfoId();
-    PublicationTemplateManager publicationTemplateManager =
-        PublicationTemplateManager.getInstance();
+    PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
     if (infoId == null || "0".equals(infoId)) {
       String xmlFormShortName = xmlModel.getName();
 
@@ -371,7 +370,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       getPublicationBm().setDetail(pubDetail);
       publicationTemplateManager
           .addDynamicPublicationTemplate(getCurrentComponentId() + ':' + xmlFormShortName,
-          xmlFormShortName + ".xml");
+              xmlFormShortName + ".xml");
     }
 
     PublicationTemplate pub = publicationTemplateManager
@@ -513,7 +512,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
           try {
             attDetail = attachmentIE
                 .importWysiwygAttachment(String.valueOf(pubId), getCurrentComponentId(), attDetail,
-                imageContext);
+                    imageContext);
             reportManager.addNumberOfFilesProcessed(1);
             if (attDetail == null || attDetail.getSize() == 0) {
               unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
@@ -539,8 +538,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   private String replaceWysiwygStringsForImport(String wysiwygText) {
-    ResourceLocator mapping =
-        new ResourceLocator("com.silverpeas.importExport.settings.stringsMapping", "");
+    ResourceLocator mapping = new ResourceLocator(
+        "com.silverpeas.importExport.settings.stringsMapping", "");
     String newWysiwygText = wysiwygText;
 
     Enumeration<String> classes = mapping.getKeys();
@@ -570,8 +569,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private String removeWysiwygStringsForImport(String wysiwygText) {
     String currentWysiwygText = wysiwygText;
-    ResourceLocator resource =
-        new ResourceLocator("com.silverpeas.importExport.settings.mapping", "");
+    ResourceLocator resource = new ResourceLocator("com.silverpeas.importExport.settings.mapping",
+        "");
     String dir = resource.getString("mappingDir");
     if (StringUtil.isDefined(dir)) {
       BufferedReader reader = null;
@@ -691,8 +690,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         for (String name : path) {
           NodeDetail existingNode = null;
           try {
-            existingNode =
-                getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
+            existingNode = getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(
+                parentId));
           } catch (Exception e) {
             SilverTrace.info("importExport", "GEDImportExport.getExistingTopics",
                 "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" + node.
@@ -846,8 +845,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       throws ImportExportException {
     try {
       String directoryName = directory.getName();
-      NodeDetail nodeDetail =
-          new NodeDetail("unknow", directoryName, directoryName, null, null, null, "0", "useless");
+      NodeDetail nodeDetail = new NodeDetail("unknow", directoryName, directoryName, null, null,
+          null, "0", "useless");
       nodeDetail.setNodePK(addSubTopicToTopic(nodeDetail, topicId, massiveReport));
       return nodeDetail;
     } catch (Exception ex) {
@@ -877,8 +876,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       throws ImportExportException {
     PublicationType publicationType = new PublicationType();
     try {
-      CompletePublication pubComplete =
-          getCompletePublication(new PublicationPK(pubId, getCurrentComponentId()));
+      CompletePublication pubComplete = getCompletePublication(new PublicationPK(pubId,
+          getCurrentComponentId()));
 
       // Recuperation de l'objet PublicationDetail
       PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
@@ -907,8 +906,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         if (listInfoImage != null && !listInfoImage.isEmpty()) {
           ArrayList<String> listImageParts = new ArrayList<String>();
           for (InfoImageDetail imageDetail : listInfoImage) {
-            String path =
-                FileRepositoryManager.getAbsolutePath(componentId) + File.separator + "images";
+            String path = FileRepositoryManager.getAbsolutePath(componentId) + File.separator
+                + "images";
             listImageParts.add(path + File.separator + imageDetail.getPhysicalName());
           }
           dbModel.setListImageParts(listImageParts);
@@ -927,8 +926,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(
-          publicationDetail.getLanguage()))) {
+      } else if (WysiwygController.haveGotWysiwyg(publicationDetail.getPK().getInstanceId(), pubId,
+          I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
         String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper
@@ -942,8 +941,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setComponentId(componentId);
 
       // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      UserDetail userDetail =
-          organizationController.getUserDetail(publicationDetail.getCreatorId());
+      UserDetail userDetail = organizationController.getUserDetail(publicationDetail.getCreatorId());
       if (userDetail != null) {
         String nomPrenomCreator = userDetail.getDisplayedName().trim();
         publicationDetail.setCreatorName(nomPrenomCreator);
@@ -966,7 +964,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     Collection<NodePK> listNodePk = getPublicationBm().getAllFatherPK(pubPK);
     return new ArrayList<NodePK>(listNodePk);
   }
-  
+
   public List<NodePK> getAliases(PublicationPK pubPK) throws ImportExportException {
     List<NodePK> pks = new ArrayList<NodePK>();
     Collection<Alias> aliases = getPublicationBm().getAlias(pubPK);
@@ -1028,15 +1026,15 @@ public abstract class GEDImportExport extends ComponentImportExport {
     String mimeType = FileUtil.getMimeType(logicalName);
     String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
     if (FileUtil.isImage(logicalName)) {
-      String dest =
-          FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId()) + "images"
+      String dest = FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId())
+          + "images"
           + File.separator + physicalName;
       try {
         FileRepositoryManager.copyFile(filePath, dest);
       } catch (Exception e) {
         SilverTrace
             .error("importExport", "GEDImportExport.processThumbnail()", "root.MSG_GEN_PARAM_VALUE",
-            "filePath = " + filePath, e);
+                "filePath = " + filePath, e);
       }
       ThumbnailDetail thumbnailDetail = new ThumbnailDetail(pubDetail.getPK().getComponentName(),
           Integer.valueOf(pubDetail.getPK().getId()),
