@@ -200,7 +200,8 @@
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
             <c:choose>
               <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
-                <span><fmt:message key="authentication.logon.${param.ErrorCode}"/></span>
+                <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
+                <span><c:out value="${errorMessage}"/></span>
               </c:when>
               <c:otherwise>
                 <fmt:message key="authentication.logon.subtitle"/>
