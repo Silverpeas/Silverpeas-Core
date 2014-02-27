@@ -116,10 +116,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private boolean updateDateMustBeSet = true;
   // ajoutÃ© pour les statistiques
   private int nbAccess = 0;
-  private boolean notYetVisible = false;
-  private boolean noMoreVisible = false;
-  private Date beginDateAndHour = null;
-  private Date endDateAndHour = null;
+  private Visibility visibility = null;
   // added for export component
   public static final String DRAFT = "Draft";
   public static final String VALID = "Valid";
@@ -1166,54 +1163,31 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.nbAccess = nbAccess;
   }
 
-  public boolean isNoMoreVisible() {
-    return noMoreVisible;
-  }
-
-  public void setNoMoreVisible(boolean noMoreVisible) {
-    this.noMoreVisible = noMoreVisible;
-  }
-
-  public boolean isNotYetVisible() {
-    return notYetVisible;
-  }
-
-  public void setNotYetVisible(boolean notYetVisible) {
-    this.notYetVisible = notYetVisible;
-  }
-
   public boolean isVisible() {
-    return !(notYetVisible || noMoreVisible);
+    return getVisibility().isVisible();
   }
-
+  
+  public boolean isNoMoreVisible() {
+    return getVisibility().isNoMoreVisible();
+  }
+  
+  public boolean isNotYetVisible() {
+    return getVisibility().isNotYetVisible();
+  }
+  
   public Date getBeginDateAndHour() {
-    if (beginDateAndHour != null) {
-      return (Date) beginDateAndHour.clone();
-    }
-    return null;
-  }
-
-  public void setBeginDateAndHour(Date beginDateAndHour) {
-    if (beginDateAndHour != null) {
-      this.beginDateAndHour = (Date) beginDateAndHour.clone();
-    } else {
-      this.beginDateAndHour = null;
-    }
+    return getVisibility().getBeginDateAndHour();
   }
 
   public Date getEndDateAndHour() {
-    if (endDateAndHour != null) {
-      return (Date) endDateAndHour.clone();
-    }
-    return null;
+    return getVisibility().getEndDateAndHour();
   }
-
-  public void setEndDateAndHour(Date endDateAndHour) {
-    if (endDateAndHour != null) {
-      this.endDateAndHour = (Date) endDateAndHour.clone();
-    } else {
-      this.endDateAndHour = null;
+  
+  private Visibility getVisibility() {
+    if (visibility == null) {
+      visibility = new Visibility(beginDate, beginHour, endDate, endHour);
     }
+    return visibility;
   }
 
   public Date getDraftOutDate() {
