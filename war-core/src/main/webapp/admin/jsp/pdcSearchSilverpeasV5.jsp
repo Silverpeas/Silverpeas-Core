@@ -230,7 +230,7 @@ function init() {
   <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_OnlyPDC %>"/>
   <input type="hidden" name="ResultPage" value=""/>
   <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
-  <input type="hidden" name="spaces" value="<%=parameters.getSpaceId()%>"/>
+  <input type="hidden" name="spaces" value="<%=EncodeHelper.javaStringToHtmlString(parameters.getSpaceId())%>"/>
   <input type="hidden" name="componentSearch" value="<%=parameters.getInstanceId()%>"/>
   
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
