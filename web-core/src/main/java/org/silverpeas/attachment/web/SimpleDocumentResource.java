@@ -238,6 +238,9 @@ public class SimpleDocumentResource extends RESTWebService {
         File content = new File(document.getAttachmentPath());
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), getUserDetail()
             .getId(), document.getLanguage());
+        if (!StringUtil.isDefined(document.getEditedBy())) {
+          document.edit(getUserDetail().getId());
+        }
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
             true);
       } else {

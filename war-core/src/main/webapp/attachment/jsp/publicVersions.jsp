@@ -53,6 +53,7 @@
 <%@page import="org.silverpeas.attachment.web.VersioningSessionController" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 
 <%
   GraphicElementFactory gef =
@@ -167,9 +168,14 @@
       } else {
         arrayLine.addArrayCellText("");
       }
-      if (StringUtil.isDefined(publicVersion.getCreatedBy())) {
-        arrayLine.addArrayCellText(
-            versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
+      UserDetail lastModifier = null;
+      if (StringUtil.isDefined(publicVersion.getUpdatedBy())) {
+        lastModifier = UserDetail.getById(publicVersion.getUpdatedBy());
+      } else if (StringUtil.isDefined(publicVersion.getCreatedBy())) {
+        lastModifier = UserDetail.getById(publicVersion.getCreatedBy());
+      }
+      if (lastModifier != null) {
+        arrayLine.addArrayCellText(lastModifier.getDisplayedName());
       } else {
         arrayLine.addArrayCellText("????");
       }
