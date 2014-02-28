@@ -646,7 +646,7 @@ public class DocumentRepository {
    *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param type the type of document.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */

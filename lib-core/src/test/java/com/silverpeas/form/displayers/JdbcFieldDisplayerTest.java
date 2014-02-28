@@ -49,6 +49,7 @@ import static org.mockito.Mockito.*;
 public class JdbcFieldDisplayerTest {
 
   String lineSeparator = System.getProperty("line.separator");
+  String unixLineSeparator = "\n";
 
   public JdbcFieldDisplayerTest() {
   }
@@ -166,12 +167,12 @@ public class JdbcFieldDisplayerTest {
     assertThat(display.length(), is(299));
 
     assertThat(display, is(
-        "<select name=\"monChamps\" >" + lineSeparator
-        + "<option></option><option value=\"0\">0</option>" + lineSeparator
-        + "<option value=\"1\">1</option>" + lineSeparator + "<option value=\"2\">2</option>"
-        + lineSeparator + "<option value=\"3\">3</option>" + lineSeparator
-        + "<option value=\"4\">4</option>" + lineSeparator
-        + "</select>" + lineSeparator
+        "<select name=\"monChamps\" >" + unixLineSeparator
+        + "<option></option><option value=\"0\">0</option>" + unixLineSeparator
+        + "<option value=\"1\">1</option>" + unixLineSeparator + "<option value=\"2\">2</option>"
+        + unixLineSeparator + "<option value=\"3\">3</option>" + unixLineSeparator
+        + "<option value=\"4\">4</option>" + unixLineSeparator
+        + "</select>" + unixLineSeparator
         + "&nbsp;<img src=\"/silverpeas//util/icons/mandatoryField.gif\" "
         + "width=\"5\" height=\"5\" alt=\"Obligatoire\"/>"));
   }
