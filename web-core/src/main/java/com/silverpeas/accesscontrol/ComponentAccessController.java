@@ -36,7 +36,6 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -97,41 +96,34 @@ public class ComponentAccessController extends AbstractAccessController<String> 
   }
 
 
-  /**
-   * Computes a set of user roles according to the given user and component identifiers.
-   * @param context
-   * @param userId
-   * @param componentId
-   * @return
-   */
-  public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId,
-      String componentId) {
-    EnumSet<SilverpeasRole> userRoles = EnumSet.noneOf(SilverpeasRole.class);
+  @Override
+  protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
+      String userId, String componentId) {
     // Personal space or user tool
     if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
       userRoles.add(SilverpeasRole.admin);
-      return userRoles;
+      return;
     }
     if (Admin.ADMIN_COMPONENT_ID.equals(componentId)) {
       if (getOrganisationController().getUserDetail(userId).isAccessAdmin()) {
         userRoles.add(SilverpeasRole.admin);
       }
-      return userRoles;
+      return;
     }
 
     ComponentInst componentInst = getOrganisationController().getComponentInst(componentId);
     if (componentInst == null) {
-      return EnumSet.noneOf(SilverpeasRole.class);
+      return;
     }
 
     if (componentInst.isPublic() || StringUtil.getBooleanValue(
         getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
       userRoles.add(SilverpeasRole.user);
-      if (CollectionUtils
-          .intersection(AccessControlOperation.PERSIST_ACTIONS, context.getOperations())
-          .isEmpty() && !context.getOperations().contains(AccessControlOperation.download)) {
+      if (!CollectionUtils
+          .containsAny(AccessControlOperation.PERSIST_ACTIONS, context.getOperations()) &&
+          !context.getOperations().contains(AccessControlOperation.download)) {
         // In that case, it is not necessary to check deeper the user rights
-        return userRoles;
+        return;
       }
     }
 
@@ -145,7 +137,6 @@ public class ComponentAccessController extends AbstractAccessController<String> 
         userRoles.addAll(roles);
       }
     }
-    return userRoles;
   }
 
   /**
