@@ -372,8 +372,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       // Remove the current user
       SessionManagementFactory factory = SessionManagementFactory.getFactory();
       SessionManagement sessionManagement = factory.getSessionManagement();
-      nbConnectedUsers =
-          sessionManagement.getNbConnectedUsersList(getMainSessionController().
+      nbConnectedUsers = sessionManagement.getNbConnectedUsersList(getMainSessionController().
           getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
@@ -445,8 +444,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer =
-          new StringTokenizer(resources.getString("componentsTop", ""), ",");
+      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
         String itemId = tokenizer.nextToken();
 
@@ -650,7 +648,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-          "UTF-8"));
+              "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
