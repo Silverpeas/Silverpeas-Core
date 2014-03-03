@@ -23,8 +23,15 @@
  */
 package com.silverpeas.profile.web;
 
-import java.net.URI;
-import java.util.List;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.owasp.encoder.Encode;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,19 +39,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.web.Exposable;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.owasp.encoder.Encode;
-
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
 import static com.silverpeas.util.StringUtil.isDefined;
