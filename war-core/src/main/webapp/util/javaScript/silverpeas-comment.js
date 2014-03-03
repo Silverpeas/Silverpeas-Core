@@ -253,7 +253,7 @@
       $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
     else
       $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").append($('<span>').text(comment.author.fullName).userZoom(comment.author)).appendTo(commentBox));
-    $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
+    $("<pre>").addClass("text").append(comment.textForHtml.replace(/\n/g, '<br/>')).appendTo(commentBox);
 
     if (update['activated']( comment )) {
       $("<img>").attr("src", update.icon).attr("alt", update.altText).click(function() {
@@ -286,6 +286,7 @@
 
             var commentToSend = comment;
             commentToSend.text = text;
+            commentToSend.textForHtml = text;
             $.ajax({
               url: settings.uri + "/" + commentId,
               type: "PUT",
@@ -295,7 +296,8 @@
               cache: false,
               success: function(data) {
                 comment.text = data.text;
-                $("#comment" + commentId).find('pre.text').text('').append(data.text.replace(/\n/g, '<br/>'));
+                comment.textForHtml = data.textForHtml;
+                $("#comment" + commentId).find('pre.text').text('').append(data.textForHtml.replace(/\n/g, '<br/>'));
                 comments.commentsById[commentId] = data;
                 settings.callback( {
                   type: 'update', 
@@ -347,6 +349,7 @@
     var comments = $this.data('comments');
     var comment = commentCreation();
     comment.text = $("#edition-box").find("textarea").val();
+    comment.textForHtml = comment.text;
     if (settings.validate(comment.text)) {
       $.ajax({
         url: settings.uri,
