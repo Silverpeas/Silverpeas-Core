@@ -149,11 +149,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       // It is important to load user data the most later possible because of potential updates
       // of user data by password management services
       UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
-      theModifiedUser.setLastName(Encode.forHtml(userLastName));
-      theModifiedUser.setFirstName(Encode.forHtml(userFirstName));
-      theModifiedUser.seteMail(Encode.forHtml(userEMail));
-      theModifiedUser.setLoginQuestion(Encode.forHtml(userLoginQuestion));
-      theModifiedUser.setLoginAnswer(Encode.forHtml(userLoginAnswer));
+      theModifiedUser.setLastName(userLastName);
+      theModifiedUser.setFirstName(userFirstName);
+      theModifiedUser.seteMail(userEMail);
+      theModifiedUser.setLoginQuestion(userLoginQuestion);
+      theModifiedUser.setLoginAnswer(userLoginAnswer);
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
         theModifiedUser.setPassword(newPassword);
@@ -197,8 +197,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    */
   public List<InvitationUser> getAllMyInvitationsSent() {
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
-    List<Invitation> invitations =
-        invitationService.getAllMyInvitationsSent(Integer.parseInt(getUserId()));
+    List<Invitation> invitations = invitationService.getAllMyInvitationsSent(Integer.parseInt(
+        getUserId()));
     for (Invitation varI : invitations) {
       invitationUsers.add(new InvitationUser(varI,
           getUserDetail(Integer.toString(varI.getReceiverId()))));
@@ -213,8 +213,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    */
   public List<InvitationUser> getAllMyInvitationsReceived() {
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
-    List<Invitation> invitations =
-        invitationService.getAllMyInvitationsReceive(Integer.parseInt(getUserId()));
+    List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(Integer.parseInt(
+        getUserId()));
     for (Invitation varI : invitations) {
       invitationUsers.add(new InvitationUser(varI, getUserDetail(
           Integer.toString(varI.getSenderId()))));
@@ -224,8 +224,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public void sendInvitation(String receiverId, String message) {
     String safeMessage = Encode.forHtml(message);
-    Invitation invitation =
-        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), safeMessage,
+    Invitation invitation = new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(
+        receiverId), safeMessage,
         new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);
@@ -245,8 +245,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName()
           + ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+      NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+          subject, templates,
           "sendInvitation");
 
       UserDetail senderUser = getUserDetail();
@@ -323,8 +323,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName()
           + ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+      NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+          subject, templates,
           "acceptInvitation");
 
       notifMetaData.setSource(displayedName);
@@ -372,8 +372,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
     Map<SocialNetworkID, ExternalAccount> networks = new HashMap<SocialNetworkID, ExternalAccount>();
 
-    List<ExternalAccount> externalAccounts =
-        SocialNetworkService.getInstance().getUserExternalAccounts(getUserId());
+    List<ExternalAccount> externalAccounts = SocialNetworkService.getInstance().
+        getUserExternalAccounts(getUserId());
     for (ExternalAccount account : externalAccounts) {
       networks.put(account.getNetworkId(), account);
     }

@@ -24,11 +24,11 @@
 
 --%>
 
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkICenter.jsp" %>
 <%
-//R�cup�ration des param�tres
 String action	= (String) request.getAttribute("action");
 String icName	= (String)request.getAttribute("icName"); //End View
 icName=(icName==null)?"":icName;
@@ -74,7 +74,7 @@ Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "jav
      // closes current window and submits AdvancedSearch form on parent window
       function closeAndReplace() {
         window.opener.document.AdvancedSearch.mode.value = "SaveRequest";
-        window.opener.document.AdvancedSearch.requestName.value = "<%=Encode.javaStringToHtmlString(icName)%>";
+        window.opener.document.AdvancedSearch.requestName.value = "<%=EncodeHelper.javaStringToHtmlString(icName)%>";
         window.opener.document.AdvancedSearch.submit();
         window.close();
       }
@@ -99,7 +99,7 @@ Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "jav
 	<FORM NAME="icForm" action="<%=m_context%><%=URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)%>newICenter.jsp">
 	 <tr>
 		<td nowrap align="left" class="txtlibform"><%=resource.getString("RequestName")%> :</td>
-		<td align="left"><input type="text" name="icName" size="60" value="<%=icName%>"><input type="hidden" name="action"></td>
+    <td align="left"><input type="text" name="icName" size="60" value="<%=EncodeHelper.javaStringToHtmlString(icName)%>"><input type="hidden" name="action"></td>
 	 </tr>
 	 </FORM>
 	 </TABLE>

@@ -242,8 +242,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    */
   private List<UserDetail> getContactsToDisplay(List<String> contactIds,
       MyProfilSessionController sc) {
-    int numberOfContactsTodisplay =
-        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
+    int numberOfContactsTodisplay = sc.getSettings().getInteger("numberOfContactsTodisplay",
+        NUMBER_CONTACTS_TO_DISPLAY);
     List<UserDetail> contacts = new ArrayList<UserDetail>();
     if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String userId : contactIds) {
@@ -264,8 +264,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
         "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-    ResourceLocator authenticationSettings =
-        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+    ResourceLocator authenticationSettings = new ResourceLocator(
+        "org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {

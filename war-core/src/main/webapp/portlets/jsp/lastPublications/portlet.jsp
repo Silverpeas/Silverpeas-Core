@@ -75,7 +75,7 @@ for (PublicationDetail pub : publications) {
 <% } else {
     first = false;
   }%>
-<a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=pub.getName(language)%></b></a>
+  <a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=EncodeHelper.javaStringToHtmlString(pub.getName(language))%></b></a>
     <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil.getOutputDate(pub.getUpdateDate(), language)%>
     <% } else if (pubUpdater != null && pub.getUpdateDate() == null) { %>
@@ -85,7 +85,7 @@ for (PublicationDetail pub : publications) {
       <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>
     <% } %>
     <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil.isDefined(pub.getDescription(language))) { %>
-      <br/><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(pub.getDescription(language)) %>
+      <br/><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(EncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
     <% } %>
 <% } %>
 <br/>

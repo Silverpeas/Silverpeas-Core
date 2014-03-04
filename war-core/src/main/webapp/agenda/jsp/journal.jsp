@@ -82,13 +82,13 @@ var category = window ;
 
 function gotoAgenda()
 {
-  if (freeBusyWin == "Free_Busy_Win" )
+  if (freeBusyWin === "Free_Busy_Win" )
     freeBusyWin.close();
-  if (dayWin == "calendrier_agenda" )
+  if (dayWin === "calendrier_agenda" )
     dayWin.close();
-  if ( diffusion == "diffusion" )
+  if ( diffusion === "diffusion" )
     diffusion.close();
-  if ( category == "category" )
+  if ( category === "category" )
     category.close();
   window.location.replace("agenda.jsp");
 }

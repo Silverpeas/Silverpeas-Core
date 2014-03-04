@@ -41,6 +41,7 @@ import com.silverpeas.web.Exposable;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.owasp.encoder.Encode;
 
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -121,7 +122,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     } else {
       this.domainName = user.getDomain().getName();
     }
-    this.fullName = user.getDisplayedName();
+    this.fullName = Encode.forHtml(user.getDisplayedName());
     this.avatar = getAvatarURI();
     this.connected = this.user.isConnected();
     this.webPage = getUserProfileWebPageURI();
@@ -150,19 +151,19 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @Override
   @XmlElement(required = true)
   public String getFirstName() {
-    return this.user.getFirstName();
+    return Encode.forHtml(this.user.getFirstName());
   }
 
   @Override
   @XmlElement(required = true)
   public String getLastName() {
-    return this.user.getLastName();
+    return Encode.forHtml(this.user.getLastName());
   }
 
   @Override
   @XmlElement
   public String geteMail() {
-    return this.user.geteMail();
+    return Encode.forHtml(this.user.geteMail());
   }
 
   /**
