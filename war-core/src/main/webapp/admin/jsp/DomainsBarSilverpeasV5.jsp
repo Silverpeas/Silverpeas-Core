@@ -35,7 +35,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 
-<%@ page import="com.stratelia.silverpeas.authentication.*"%>
 <%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 
@@ -117,7 +116,7 @@ out.println(gef.getLookStyleSheet());
     function checkSubmitToSearch(ev)
   {
     var touche = ev.keyCode;
-    if (touche == 13)
+    if (touche === 13)
       searchEngine();
   }
 
@@ -132,7 +131,7 @@ out.println(gef.getLookStyleSheet());
   }
 
   function searchEngine() {
-        if (document.searchForm.query.value != "")
+        if (document.searchForm.query.value !== "")
         {
         document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch";
           document.searchForm.submit();
@@ -180,7 +179,7 @@ out.println(gef.getLookStyleSheet());
 
     function getSpaceIdToInit()
     {
-      return "<%=spaceId%>";
+      return "<%=EncodeHelper.javaStringToHtmlString(spaceId)%>";
     }
 
     function getComponentIdToInit()
@@ -245,7 +244,7 @@ out.println(gef.getLookStyleSheet());
 
     function toForgottenPassword() {
     	var form = document.getElementById("authForm");
-        if (form.elements["Login"].value.length == 0) {
+        if (form.elements["Login"].value.length === 0) {
             alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
         } else {
         	form.action = "<%=urlToForgottenPwd%>";
