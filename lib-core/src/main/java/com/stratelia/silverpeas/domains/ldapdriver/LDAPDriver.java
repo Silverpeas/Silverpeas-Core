@@ -1,33 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPModification;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -40,18 +32,26 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPModification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
  * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or
  * remove an user. However, it is possible to update an user...
+ *
  * @author tleroi
  */
 public class LDAPDriver extends AbstractDomainDriver {
+
   LDAPSettings driverSettings = new LDAPSettings();
   LDAPSynchroCache synchroCache = new LDAPSynchroCache();
   LDAPUser userTranslator = null;
@@ -61,6 +61,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the
    * class who need it.
+   *
    * @param rs name of resource file
    * @throws AdminException
    */
@@ -100,6 +101,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Called when Admin starts the synchronization
+   *
    * @return
    */
   @Override
@@ -206,7 +208,7 @@ public class LDAPDriver extends AbstractDomainDriver {
         usersReturned = userTranslator.getAllUsers(ld, "(|(&("
             + driverSettings.getTimeStampVar() + ">=" + fromTimeStamp + ")("
             + driverSettings.getTimeStampVar() + "<=" + toTimeStamp + "))"
-            + "(!("+driverSettings.getTimeStampVar()+"=*)))");
+            + "(!(" + driverSettings.getTimeStampVar() + "=*)))");
       } else {
         usersReturned = userTranslator.getAllUsers(ld, "");
       }
@@ -268,6 +270,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given user in Database from the reference
+   *
    * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
@@ -286,6 +289,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given user from database
+   *
    * @param userId The user id To remove synchro
    */
   @Override
@@ -295,6 +299,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update user information in database
+   *
    * @param userId The User Id to synchronize
    * @return The User object that contain new user information
    */
@@ -340,8 +345,8 @@ public class LDAPDriver extends AbstractDomainDriver {
       List<LDAPModification> modifications = new ArrayList<LDAPModification>();
 
       // update basic informations (first name, last name and email)
-      LDAPAttribute attribute =
-          new LDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
+      LDAPAttribute attribute = new LDAPAttribute(driverSettings.getUsersFirstNameField(), user.
+          getFirstName());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
       attribute = new LDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
@@ -364,9 +369,9 @@ public class LDAPDriver extends AbstractDomainDriver {
       connection
           .modify(userFullDN, modifications.toArray(new LDAPModification[modifications.size()]));
     } catch (Exception ex) {
-      throw new AdminException(
-          "LDAPDriver.updateUserFull()",
-          SilverpeasException.ERROR, "admin.EX_LDAP_ACCESS_ERROR", ex);
+      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+      throw new AdminException("LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
+          "admin.EX_LDAP_ACCESS_ERROR", ex);
     } finally {
       try {
         if (ld != null) {
@@ -389,6 +394,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
+   *
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
@@ -407,6 +413,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
+   *
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
@@ -425,6 +432,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all users from the database
+   *
    * @return User[] An array of User Objects that contain users information
    */
   @Override
@@ -476,6 +484,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user's groups
+   *
    * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
@@ -494,6 +503,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given group in Database from the reference
+   *
    * @param groupName The group name to import
    * @return The group object that contain new group information
    */
@@ -511,6 +521,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given group from database
+   *
    * @param groupId The group id To remove synchro
    */
   @Override
@@ -520,6 +531,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update group information in database
+   *
    * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
@@ -547,6 +559,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve group information from database
+   *
    * @param groupId The group id as stored in the database
    * @return The Group object that contains user information
    */
@@ -570,6 +583,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups contained in the given group
+   *
    * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
@@ -588,6 +602,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups from the database
+   *
    * @return Group[] An array of Group Objects that contain groups information
    */
   @Override
@@ -605,6 +620,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all root groups from the database
+   *
    * @return Group[] An array of Group Objects that contain root groups information
    */
   @Override
@@ -635,6 +651,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Start a new transaction
+   *
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
    * 'commit' statement)
    */
@@ -673,7 +690,5 @@ public class LDAPDriver extends AbstractDomainDriver {
   public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
     // Access in read only
   }
-
-
 
 }
