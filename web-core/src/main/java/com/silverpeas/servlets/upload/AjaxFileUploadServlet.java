@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 
 /**
  * Sample servlet to upload file in an ajax way.
+ *
  * @author ehugonnet
  */
 public class AjaxFileUploadServlet extends HttpServlet {
@@ -88,6 +89,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
 
   /**
    * Do the effective upload of files.
+   *
    * @param session the HttpSession
    * @param request the multpart request
    * @throws IOException
@@ -118,9 +120,9 @@ public class AjaxFileUploadServlet extends HttpServlet {
             }
             if (!isInWhiteList(filename)) {
               errorMessage += "The file " + filename + " is not uploaded!";
-              errorMessage += (StringUtil.isDefined(whiteList) ?
-                  " Only " + whiteList.replaceAll(" ", ", ") + " file types can be uploaded<br/>" :
-                  " No allowed file format has been defined for upload<br/>");
+              errorMessage += (StringUtil.isDefined(whiteList) ? " Only " + whiteList.
+                  replaceAll(" ", ", ") + " file types can be uploaded<br/>"
+                  : " No allowed file format has been defined for upload<br/>");
               session.setAttribute(UPLOAD_ERRORS, errorMessage);
             } else {
               filename = System.currentTimeMillis() + "-" + filename;
@@ -164,6 +166,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
 
   /**
    * Return the current status of the upload.
+   *
    * @param session the HttpSession.
    * @param response where the status is to be written.
    * @throws IOException
@@ -172,8 +175,8 @@ public class AjaxFileUploadServlet extends HttpServlet {
     boolean isSavingUploadedFiles = isSavingUploadedFile(session);
     Long bytesProcessed = null;
     Long totalSize = null;
-    FileUploadListener.FileUploadStats fileUploadStats =
-        (FileUploadListener.FileUploadStats) session.getAttribute(FILE_UPLOAD_STATS);
+    FileUploadListener.FileUploadStats fileUploadStats
+        = (FileUploadListener.FileUploadStats) session.getAttribute(FILE_UPLOAD_STATS);
     if (fileUploadStats != null) {
       bytesProcessed = fileUploadStats.getBytesRead();
       totalSize = fileUploadStats.getTotalSize();
@@ -191,25 +194,25 @@ public class AjaxFileUploadServlet extends HttpServlet {
       String uploadedFilePaths = getUploadedFilePaths(paths);
       response.getWriter().println("<b>Upload uncomplete.</b>");
       response.getWriter()
-          .println("<script type='text/javascript'>window.parent.stop('" + fatalError + "', " +
-              uploadedFilePaths +
-              "); stop('', " + uploadedFilePaths + ");</script>");
+          .println("<script type='text/javascript'>window.parent.stop('" + fatalError + "', "
+              + uploadedFilePaths + "); stop('" + fatalError + "', " + uploadedFilePaths
+              + ");</script>");
       return;
     }
 
     if (bytesProcessed != null) {
-      long percentComplete =
-          (long) Math.floor((bytesProcessed.doubleValue() / totalSize.doubleValue()) * 100.0);
+      long percentComplete = (long) Math.floor((bytesProcessed.doubleValue() / totalSize.
+          doubleValue()) * 100.0);
       response.getWriter().println("<b>Upload Status:</b><br/>");
 
       if (!bytesProcessed.equals(totalSize)) {
         response.getWriter().println(
-            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete +
-                "%;\"></div></div>");
+            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete
+            + "%;\"></div></div>");
       } else {
         response.getWriter().println(
-            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: 100%;" +
-                "\"></div></div>");
+            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: 100%;"
+            + "\"></div></div>");
 
         if (!isSavingUploadedFiles) {
           List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
@@ -222,8 +225,9 @@ public class AjaxFileUploadServlet extends HttpServlet {
             errors = "";
           }
           response.getWriter()
-              .println("<script type='text/javascript'>window.parent.stop('" + errors + "', " +
-                  uploadedFilePaths + ");</script>");
+              .println("<script type='text/javascript'>window.parent.stop('" + errors + "', "
+                  + uploadedFilePaths + "); stop('" + errors + "', " + uploadedFilePaths
+                  + ");</script>");
         }
       }
     }
@@ -231,6 +235,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
 
   /**
    * Compute a javascript array from the uploaded file paths
+   *
    * @param paths les fichiers traités.
    */
   @SuppressWarnings("unchecked")
