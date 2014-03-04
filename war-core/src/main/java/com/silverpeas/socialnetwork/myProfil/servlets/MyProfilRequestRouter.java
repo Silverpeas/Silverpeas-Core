@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.crypto.CryptMD5;
 
@@ -306,7 +305,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
       // process extra properties
       Map<String, String> properties = new HashMap<String, String>();
-      @SuppressWarnings("unchecked")
       Enumeration<String> parameters = request.getParameterNames();
       String parameterName;
       String property;
@@ -332,7 +330,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));
-    } catch (AuthenticationException e) {
+    } catch (Exception e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_unknown"));
     }
   }

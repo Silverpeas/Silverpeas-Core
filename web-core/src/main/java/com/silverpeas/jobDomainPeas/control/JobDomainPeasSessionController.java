@@ -51,6 +51,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
@@ -268,10 +269,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         uf.setValue(entry.getKey(), entry.getValue());
       }
 
-      idRet = m_AdminCtrl.updateUserFull(uf);
-      if (!StringUtil.isDefined(idRet)) {
+      try {
+        idRet = m_AdminCtrl.updateUserFull(uf);
+      } catch (AdminException e) {
         throw new JobDomainPeasException("JobDomainPeasSessionController.createUser()",
-            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER");
+            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", e);
       }
     }
     // regroupement de l'utilisateur dans un groupe
@@ -893,10 +895,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       theModifiedUser.setValue(entry.getKey(), entry.getValue());
     }
 
-    String idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
-    if (!StringUtil.isDefined(idRet)) {
+    String idRet = null;
+    try {
+      idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
+    } catch (AdminException e) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId=" + idUser);
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId=" + idUser, e);
     }
     refresh();
     setTargetUser(idRet);
@@ -950,12 +954,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       theModifiedUser.setValue(entry.getKey(), entry.getValue());
     }
 
-    String idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
-    if (!StringUtil.isDefined(idRet)) {
+    String idRet;
+    try {
+      idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
+    } catch (AdminException e) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUserFull()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
+          + idUser, e);
     }
     refresh();
     setTargetUser(idRet);
