@@ -36,28 +36,15 @@
 <portlet:defineObjects/>
 
 <%
-    RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-	Collection<ComponentInstLight> applications = (Collection<ComponentInstLight>) pReq.getAttribute("Applications");
-%>
-<%
+RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
+Collection<ComponentInstLight> applications = (Collection<ComponentInstLight>) pReq.getAttribute("Applications");
 
 if (applications.isEmpty()) { %>
 	<%=portletsBundle.getString("portlets.portlet.myLastAccessedAppli.none") %>
-<%
-} else {
-%>
+<% } else { %>
 	<ul class="listing-portlet-lastApplication">
 <% 
-	for (ComponentInstLight appli : applications) {
-	
-		String pathIconAppli = m_sContext + "/util/icons/component/";
-		if(appli.isWorkflow()) {
-		  pathIconAppli += "processManager";
-		} else {
-		  pathIconAppli += appli.getName();
-		}
-		pathIconAppli += "Small.gif";
-		
+	for (ComponentInstLight appli : applications) {		
 		String url = "";
 		String target = "";
 		if (URLManager.displayUniversalLinks()) {
@@ -71,7 +58,7 @@ if (applications.isEmpty()) { %>
 		<li class="lineResult">
 			<div class="content">
 				<div class="applicationTitle">
-					<img src="<%=pathIconAppli%>" class="iconComponent" />
+					<img src="<%=appli.getIcon(false)%>" class="iconComponent" />
 					<a class="" href="<%=url%>" target="<%=target%>">
 						<span class="" id="readSpanId_0"><%=EncodeHelper.convertHTMLEntities(appli.getLabel(language))%></span>
 					</a>
@@ -79,10 +66,6 @@ if (applications.isEmpty()) { %>
 				<div class="location"><%=appli.getPath(" > ")%></div>
 			</div>
 		</li>
-<%  
-  	}
-%>
+<% } %>
 	</ul>
-<%
-  }
-%>
+<% } %>
