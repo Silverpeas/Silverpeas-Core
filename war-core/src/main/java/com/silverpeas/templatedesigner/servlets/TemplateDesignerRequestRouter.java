@@ -118,7 +118,7 @@ public class TemplateDesignerRequestRouter extends
         } else {
           template = templateDesignerSC.setTemplate(fileName);
         }
-        Form formUpdate = template.getUpdateForm();
+        Form formUpdate = template.getUpdateFormAsXMLOne();
         DataRecord data = template.getRecordSet().getEmptyRecord();
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);

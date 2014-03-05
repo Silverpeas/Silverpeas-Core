@@ -29,6 +29,7 @@ import java.util.List;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.form.XmlForm;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A
@@ -60,6 +61,14 @@ public interface PublicationTemplate {
    * Returns the Form used to create and update the records built from this template.
    */
   public Form getUpdateForm() throws PublicationTemplateException;
+
+  /**
+   * Returns the XML Form used to create and update the records built from this template.
+   * Even if an HTML layer exists (HTMLForm), the XML one is returned.
+   * @return the XMLForm
+   * @throws PublicationTemplateException
+   */
+  public XmlForm getUpdateFormAsXMLOne() throws PublicationTemplateException;
 
   /**
    * Returns the Form used to view the records built from this template.
