@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
+import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
@@ -97,10 +98,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    * @return true if the the token has to be renewed
    */
   protected final boolean hasTheSessionSecurityTokenToBeRenewed(String function) {
-    SynchronizerTokenService tokenService =
-        SynchronizerTokenServiceFactory.getSynchronizerTokenService();
-    boolean hasToBeRenewed =
-        tokenService.isWebSecurityByTokensEnabled() && tokenService.isSessionTokenRenewEnabled();
+    boolean hasToBeRenewed = SecuritySettings.isSessionTokenRenewEnabled();
     if (hasToBeRenewed) {
       for (Pattern sessionSecurityTokenPattern : SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS) {
         hasToBeRenewed = sessionSecurityTokenPattern.matcher(function).matches();

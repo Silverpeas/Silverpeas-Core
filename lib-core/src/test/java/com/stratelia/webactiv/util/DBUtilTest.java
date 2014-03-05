@@ -23,15 +23,7 @@
  */
 package com.stratelia.webactiv.util;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -45,6 +37,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -259,4 +257,8 @@ public class DBUtilTest {
     }
   }
 
+  @Test
+  public void testGetAllTableNames() {
+    assertThat(29, is(DBUtil.getAllTableNames().size()));
+  }
 }

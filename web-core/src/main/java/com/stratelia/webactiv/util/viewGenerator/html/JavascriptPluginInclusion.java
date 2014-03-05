@@ -27,12 +27,13 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.security.SecuritySettings;
+
+import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -298,7 +299,9 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
+    if (SecuritySettings.isWebSecurityByTokensEnabled()) {
+      xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
+    }
     return xhtml;
   }
 }
