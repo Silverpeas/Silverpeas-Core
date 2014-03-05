@@ -15,6 +15,7 @@ CKEDITOR.editorConfig = function( config )
 	config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.extraPlugins = 'allmedias';
+	config.toolbarCanCollapse = true;
 	//config.forcePasteAsPlainText = true;
 	
 	config.stylesSet = [
