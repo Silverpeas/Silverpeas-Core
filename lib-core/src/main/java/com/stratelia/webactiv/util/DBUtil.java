@@ -25,13 +25,21 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.MultilangMessage;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class DBUtil {
 
@@ -364,5 +372,46 @@ public class DBUtil {
         SilverTrace.error("util", "DBUtil.close", "util.CAN_T_ROLLBACK_CONNECTION", e);
       }
     }
+  }
+
+  private final static String TABLE_NAME = "TABLE_NAME";
+
+  /**
+   * Gets all table names.
+   * @return
+   */
+  public static Set<String> getAllTableNames() {
+    Connection privateConnection = null;
+    ResultSet tables_rs = null;
+    boolean testingMode = false;
+    Set<String> tableNames = new LinkedHashSet<String>();
+    try {
+      // On ne peux pas utiliser une simple connection du pool
+      // on utilise une connection extérieure au contexte transactionnel des ejb
+      synchronized (DBUtil.class) {
+        if (getInstance().connectionForTest != null) {
+          privateConnection = getInstance().connectionForTest;
+          testingMode = true;
+        } else {
+          privateConnection = ConnectionPool.getConnection();
+        }
+      }
+
+      DatabaseMetaData dbMetaData = privateConnection.getMetaData();
+      tables_rs = dbMetaData.getTables(null, null, null, null);
+      tables_rs.getMetaData();
+
+      while (tables_rs.next()) {
+        tableNames.add(tables_rs.getString(TABLE_NAME));
+      }
+    } catch (Exception e) {
+      SilverTrace.debug("util", "DBUtil.getAllTableNames", "database error ...", e);
+    } finally {
+      close(tables_rs);
+      if (privateConnection != null && !testingMode) {
+        close(privateConnection);
+      }
+    }
+    return tableNames;
   }
 }

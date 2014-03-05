@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.token.exception.TokenValidationException;
+import org.silverpeas.util.security.SecuritySettings;
 
 /**
  * A validator of a session token for each incoming request. For each protected web resources, the
@@ -83,7 +84,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
     HttpServletRequest httpRequest = (HttpServletRequest) request;
-    if (service.isWebSecurityByTokensEnabled() && isProtectedResource(httpRequest)) {
+    if (SecuritySettings.isWebSecurityByTokensEnabled() && isProtectedResource(httpRequest)) {
       try {
         checkAuthenticatedRequest(httpRequest);
         service.validate(httpRequest);
