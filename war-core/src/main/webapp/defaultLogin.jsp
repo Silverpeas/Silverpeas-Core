@@ -27,6 +27,7 @@
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <fmt:setLocale value="${pageContext.request.locale.language}"/>
 <%@ include file="headLog.jsp" %>
@@ -202,7 +203,7 @@
             <c:choose>
               <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
                 <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
-                <span><c:out value="${errorMessage}"/></span>
+                <span><c:out value="${errorMessage}" escapeXml="${fn:contains(errorMessage, 'script') ? 'true' : 'false'}"/></span>
               </c:when>
               <c:otherwise>
                 <fmt:message key="authentication.logon.subtitle"/>
