@@ -36,13 +36,13 @@
 	String pdcUtilizationContext = m_context + "/RpdcUtilization/jsp/";
 	String language = resource.getLanguage();
 	ResourcesWrapper pdcResource = new ResourcesWrapper(
-		new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language),
-		new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", language),
+		new ResourceLocator("org.silverpeas.pdcPeas.multilang.pdcBundle", language),
+		new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasIcons", language),
 		language);
 	
 	String pdcAxis = "";
 	if (parameters != null && parameters.containsKey("pdcAxis")) {
-		pdcAxis = (String) parameters.get("pdcAxis");
+		pdcAxis = parameters.get("pdcAxis");
 	}
 	
 	browseBar.setPath(pdcResource.getString("pdcPeas.paramUsedAxis"));

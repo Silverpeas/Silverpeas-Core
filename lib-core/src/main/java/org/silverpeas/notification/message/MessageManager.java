@@ -23,8 +23,10 @@
  */
 package org.silverpeas.notification.message;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 /**
@@ -67,7 +69,7 @@ public class MessageManager {
   public static String initialize() {
     String registredKey =
         CacheServiceFactory.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceFactory.getThreadCacheService().put(MessageManager.class, registredKey);
+    CacheServiceFactory.getRequestCacheService().put(MessageManager.class, registredKey);
     return registredKey;
   }
 
@@ -75,7 +77,7 @@ public class MessageManager {
    * Clear out the thread cache the registred key referenced.
    */
   public static void destroy() {
-    CacheServiceFactory.getThreadCacheService().remove(MessageManager.class);
+    CacheServiceFactory.getRequestCacheService().remove(MessageManager.class);
   }
 
   /**
@@ -147,8 +149,40 @@ public class MessageManager {
    * Get the key that permits to get the MessageContainer registred for the thread.
    */
   public static String getRegistredKey() {
-    return CacheServiceFactory.getThreadCacheService().get(MessageManager.class, String.class);
+    return CacheServiceFactory.getRequestCacheService().get(MessageManager.class, String.class);
   }
+
+  /**
+   * Gets the resource locator from the given property file and by taking into account of the
+   * current known language.
+   * @param propertyFileBaseName
+   * @return
+   */
+  public static ResourceLocator getResourceLocator(String propertyFileBaseName) {
+    return getResourceLocator(getRegistredKey(), propertyFileBaseName, null);
+  }
+
+  /**
+   * Gets the resource locator from the given property file and given language.
+   * @param propertyFileBaseName
+   * @param language
+   * @return
+   */
+  protected static ResourceLocator getResourceLocator(String registredKey,
+      String propertyFileBaseName, String language) {
+    MessageContainer container = getMessageContainer(registredKey);
+
+    // If null, manager has not been initialized -> ERROR is traced
+    if (container == null) {
+      SilverTrace.error("notification", "MessageManager.getResourceLocator",
+          "MESSAGE_MANAGER.NOT_INITIALIZED", "ResourceLocator : " + propertyFileBaseName);
+      return null;
+    }
+
+    return container.getResourceLocator(propertyFileBaseName,
+        StringUtil.isDefined(language) ? language : container.getLanguage());
+  }
+
 
   /**
    * Gets the message container.

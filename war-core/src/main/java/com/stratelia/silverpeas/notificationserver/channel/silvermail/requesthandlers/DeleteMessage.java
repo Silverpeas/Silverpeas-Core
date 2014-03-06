@@ -53,7 +53,7 @@ public class DeleteMessage implements SILVERMAILRequestHandler {
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
     try {
-      String sId = (String) request.getParameter("ID");
+      String sId = request.getParameter("ID");
       long ID = Long.parseLong(sId);
 
       SILVERMAILPersistence.deleteMessage(ID);

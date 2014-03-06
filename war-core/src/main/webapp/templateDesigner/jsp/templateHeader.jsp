@@ -177,12 +177,9 @@ browseBar.setPath(resource.getString("templateDesigner.template"));
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 if (template != null) {
-	tabbedPane.addTab(resource.getString("templateDesigner.preview"), "ViewTemplate", false);
+	tabbedPane.addTab(resource.getString("templateDesigner.fields"), "ViewTemplate", false);
 }
-tabbedPane.addTab(resource.getString("templateDesigner.template"), "#", true);
-if (template != null) {
-	tabbedPane.addTab(resource.getString("templateDesigner.fields"), "ViewFields", false);
-}
+tabbedPane.addTab(resource.getString("templateDesigner.template.specifications"), "#", true);
 
 out.println(window.printBefore());
 

@@ -29,8 +29,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -71,6 +71,7 @@ public class CommunicationUserRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param commUserSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -79,7 +80,7 @@ public class CommunicationUserRequestRouter extends
    */
   @Override
   public String getDestination(String function, CommunicationUserSessionController commUserSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("communicationUser", "CommunicationUserRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);

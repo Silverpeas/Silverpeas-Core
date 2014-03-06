@@ -24,15 +24,16 @@
 
 package com.silverpeas.web.mock;
 
-import javax.inject.Named;
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
 
-import com.silverpeas.accesscontrol.AccessController;
+import javax.inject.Named;
 
 /**
  * A mock of an user access controller for testing purpose.
  */
 @Named("componentAccessController")
-public class AccessControllerMock implements AccessController<String> {
+public class AccessControllerMock extends AbstractAccessController<String> {
 
   private boolean authorization = true;
 
@@ -41,7 +42,8 @@ public class AccessControllerMock implements AccessController<String> {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, String object) {
+  public boolean isUserAuthorized(String userId, String object,
+      final AccessControlContext context) {
     return authorization;
   }
 

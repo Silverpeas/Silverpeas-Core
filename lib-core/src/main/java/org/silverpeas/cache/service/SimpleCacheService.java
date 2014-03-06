@@ -30,6 +30,11 @@ package org.silverpeas.cache.service;
 public interface SimpleCacheService {
 
   /**
+   * Clear the content of the cache.
+   */
+  void clear();
+
+  /**
    * Gets an element from the cache.
    * @param key
    * @return

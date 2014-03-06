@@ -149,7 +149,7 @@ public class NodeI18NDAO {
   /**
    * Delete into the database a translation
    *
-   * @param the translationId
+   * @param id translationId
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
    * @exception java.sql.SQLException
    * @since 1.0
@@ -196,12 +196,12 @@ public class NodeI18NDAO {
    * @return
    * @throws SQLException
    */
-  public static List<Translation> getTranslations(Connection con, int nodeId) throws SQLException {
+  public static List<NodeI18NDetail> getTranslations(Connection con, int nodeId) throws SQLException {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
     SilverTrace.debug("node", "NodeI18NDAO.getTranslations", "root.MSG_QUERY",
         SELECT_TRANSLATIONS + "  nodeId: " + nodeId);
-    List<Translation> result = new ArrayList<Translation>();
+    List<NodeI18NDetail> result = new ArrayList<NodeI18NDetail>();
     try {
       prepStmt = con.prepareStatement(SELECT_TRANSLATIONS);
       prepStmt.setInt(1, nodeId);

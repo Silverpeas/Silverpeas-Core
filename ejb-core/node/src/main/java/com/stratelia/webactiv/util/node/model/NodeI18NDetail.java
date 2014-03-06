@@ -29,46 +29,18 @@ import com.silverpeas.util.i18n.Translation;
 public class NodeI18NDetail extends Translation implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
-  private String nodeName = null;
-  private String nodeDescription = null;
-
-  public NodeI18NDetail() {
-  }
 
   public NodeI18NDetail(String lang, String nodeName, String nodeDescription) {
-    if (lang != null)
-      super.setLanguage(lang);
-    this.nodeName = nodeName;
-    this.nodeDescription = nodeDescription;
+    super(lang, nodeName, nodeDescription);
   }
 
   public NodeI18NDetail(int id, String lang, String nodeName,
       String nodeDescription) {
-    super.setId(id);
-    if (lang != null)
-      super.setLanguage(lang);
-    this.nodeName = nodeName;
-    this.nodeDescription = nodeDescription;
-  }
-
-  public String getDescription() {
-    return nodeDescription;
-  }
-
-  public void setDescription(String nodeDescription) {
-    this.nodeDescription = nodeDescription;
-  }
-
-  public String getName() {
-    return nodeName;
-  }
-
-  public void setName(String nodeName) {
-    this.nodeName = nodeName;
+    super(id, lang, nodeName, nodeDescription);
   }
 
   public int getNodeId() {
-    return new Integer(super.getObjectId()).intValue();
+    return new Integer(super.getObjectId());
   }
 
   public void setNodeId(String id) {

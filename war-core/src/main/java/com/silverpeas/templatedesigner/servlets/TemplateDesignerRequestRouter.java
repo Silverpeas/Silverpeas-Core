@@ -24,11 +24,23 @@
 
 package com.silverpeas.templatedesigner.servlets;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.crypto.CryptoException;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.fieldType.PdcField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Label;
 import com.silverpeas.form.record.Parameter;
@@ -37,23 +49,14 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.crypto.CryptoException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
 
 public class TemplateDesignerRequestRouter extends
     ComponentRequestRouter<TemplateDesignerSessionController> {
@@ -86,15 +89,17 @@ public class TemplateDesignerRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param templateDesignerSC The component Session Control, build and initialized.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function,
       TemplateDesignerSessionController templateDesignerSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     String root = "/templateDesigner/jsp/";
     SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()",
@@ -120,6 +125,7 @@ public class TemplateDesignerRequestRouter extends
         PagesContext context = new PagesContext("myForm", "2", templateDesignerSC.getLanguage(),
             false, "useless", templateDesignerSC.getUserId());
         context.setBorderPrinted(false);
+        context.setDesignMode(true);
         request.setAttribute("context", context);
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
@@ -142,7 +148,7 @@ public class TemplateDesignerRequestRouter extends
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
         templateDesignerSC.createTemplate(template);
-        destination = getDestination("ViewFields", templateDesignerSC, request);
+        destination = getDestination("ViewTemplate", templateDesignerSC, request);
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
         try {
@@ -152,11 +158,6 @@ public class TemplateDesignerRequestRouter extends
           request.setAttribute("CryptoException", e);
           destination = getDestination("EditTemplate", templateDesignerSC, request);
         }
-      } else if ("ViewFields".equals(function)) {
-        request.setAttribute("Fields", templateDesignerSC.getFields());
-        request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
-
-        destination = root + "fields.jsp";
       } else if (function.equals("NewField")) {
         String displayer = request.getParameter("Displayer");
 
@@ -178,8 +179,12 @@ public class TemplateDesignerRequestRouter extends
 
         templateDesignerSC.addField(field);
 
-        request.setAttribute("UrlToReload", "ViewFields");
-        destination = root + "closeWindow.jsp";
+        if (PdcField.TYPE.equals(field.getTypeName())) {
+          request.setAttribute("UrlToReload", "ViewTemplate");
+          destination = root + "closeWindow.jsp";
+        } else {
+          destination = getDestination("ViewTemplate", templateDesignerSC, request);
+        }
       } else if (function.equals("EditField")) {
         String fieldName = request.getParameter("FieldName");
 
@@ -193,22 +198,19 @@ public class TemplateDesignerRequestRouter extends
         GenericFieldTemplate field = request2Field(request);
 
         templateDesignerSC.updateField(field);
-
-        request.setAttribute("UrlToReload", "ViewFields");
-        destination = root + "closeWindow.jsp";
+        
+        if (PdcField.TYPE.equals(field.getTypeName())) {
+          request.setAttribute("UrlToReload", "ViewTemplate");
+          destination = root + "closeWindow.jsp";
+        } else {
+          destination = getDestination("ViewTemplate", templateDesignerSC, request);
+        }
       } else if (function.equals("DeleteField")) {
         String fieldName = request.getParameter("FieldName");
 
         templateDesignerSC.removeField(fieldName);
 
-        destination = getDestination("ViewFields", templateDesignerSC, request);
-      } else if (function.equals("MoveField")) {
-        String fieldName = request.getParameter("FieldName");
-        int direction = Integer.parseInt(request.getParameter("Direction"));
-
-        templateDesignerSC.moveField(fieldName, direction);
-
-        destination = getDestination("ViewFields", templateDesignerSC, request);
+        destination = getDestination("ViewTemplate", templateDesignerSC, request);
       } else if (function.equals("SaveTemplate")) {
         templateDesignerSC.saveTemplate();
 
@@ -287,13 +289,18 @@ public class TemplateDesignerRequestRouter extends
     }
     if (displayer.equals("explorer")) {
       return "fieldExplorer.jsp";
-    } else {
-      return "fieldText.jsp";
     }
+    if (displayer.equals("map")) {
+      return "fieldMap.jsp";
+    }
+    if (displayer.equals("email")) {
+      return "fieldEmail.jsp";
+    }
+    return "fieldText.jsp";
   }
 
-  private PublicationTemplate request2Template(HttpServletRequest request) throws IOException {
-    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+  private PublicationTemplate request2Template(HttpRequest request) throws IOException {
+    List<FileItem> parameters = request.getFileItems();
     String name = FileUploadUtil.getParameter(parameters, "Name");
     String description = FileUploadUtil.getParameter(parameters, "Description");
     boolean visible = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Visible"));
@@ -386,7 +393,7 @@ public class TemplateDesignerRequestRouter extends
     } else if (displayer.equals("jdbc")) {
       fieldType = "jdbc";
     } else if (displayer.equals("pdc")) {
-      fieldType = "pdc";
+      fieldType = PdcField.TYPE;
     } else if (displayer.equals("group")) {
       fieldType = "group";
     } else if (displayer.equals("sequence")) {
@@ -405,6 +412,11 @@ public class TemplateDesignerRequestRouter extends
     field.setTypeName(fieldType);
     field.setSearchable(searchable);
     field.setUsedAsFacet(usedAsFacet);
+    
+    String nbMaxValues = request.getParameter("NbMaxValues");
+    if (StringUtil.isInteger(nbMaxValues)) {
+      field.setMaximumNumberOfOccurrences(Integer.parseInt(nbMaxValues));
+    }
 
     Enumeration<String> paramNames = request.getParameterNames();
     while (paramNames.hasMoreElements()) {

@@ -26,10 +26,21 @@ package com.silverpeas.form.record;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+@XmlRootElement(name = "value")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ParameterValue implements Serializable {
 
   private static final long serialVersionUID = 1L;
+  
+  @XmlAttribute
   private String lang = "fr";
+  @XmlValue
   private String value = "";
 
   public ParameterValue() {

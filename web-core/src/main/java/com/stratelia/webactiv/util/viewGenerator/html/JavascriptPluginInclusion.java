@@ -23,16 +23,16 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.text.MessageFormat;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
+import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.notification.message.MessageManager;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -87,7 +87,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
-  private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
+  private static String JAVASCRIPT_CKEDITOR;
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -95,6 +95,16 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_SVG = "raphael.min.js";
   private static final String JQUERY_GAUGE = "justgage.min.js";
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
+  private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
+  private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
+  private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
+  private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
+  private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
+  
+  static {
+    ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+    JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor")+"/ckeditor.js";
+  }
 
   /**
    * Centralization of script instantiation.
@@ -136,6 +146,12 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePdc(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
+    return xhtml;
+  }
+  
+  public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
+    xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
     return xhtml;
   }
 
@@ -260,6 +276,12 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static ElementContainer includeComment(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + JQUERY_AUTORESIZE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_COMMENT));
+    return xhtml;
+  }
+
   public static ElementContainer includeJQuery(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryCssPath + GraphicElementFactory.JQUERYUI_CSS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
@@ -272,6 +294,11 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeTags(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + STYLESHEET_TAGS));
     xhtml.addElement(script(jqueryPath + JQUERY_TAGS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
     return xhtml;
   }
 }

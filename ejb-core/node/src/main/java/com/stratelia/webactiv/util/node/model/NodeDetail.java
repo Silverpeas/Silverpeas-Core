@@ -36,7 +36,7 @@ import java.util.Collection;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class NodeDetail extends AbstractI18NBean implements Serializable {
+public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable {
 
   private static final long serialVersionUID = -1401884517616404337L;
   public final static String DEFAULT_TYPE = "default";
@@ -44,8 +44,6 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   public final static String STATUS_VISIBLE = "Visible";
   public final static String STATUS_INVISIBLE = "Invisible";
   private NodePK nodePK;
-  private String name;
-  private String description;
   private String creationDate;
   private String creatorId;
   private String path;
@@ -66,7 +64,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
 
 
   public NodeDetail(NodeDetail detail) {
-    new NodeDetail(detail.nodePK, detail.name, detail.description, detail.creationDate,
+    new NodeDetail(detail.nodePK, detail.getName(), detail.getDescription(), detail.creationDate,
         detail.creatorId, detail.path, detail.level, detail.fatherPK, detail.modelId, detail.status,
         null, detail.type);
     setOrder(detail.order);
@@ -91,13 +89,13 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       String creationDate, String creatorId, String path, String level,
       String fatherId) {
     this.nodePK = new NodePK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
     this.fullPath = path + id + "/";
-    this.level = new Integer(level).intValue();
+    this.level = new Integer(level);
     this.fatherPK = new NodePK(fatherId);
     this.childrenDetails = null;
   }
@@ -106,13 +104,13 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       String creationDate, String creatorId, String path, String level,
       String fatherId, String type) {
     this.nodePK = new NodePK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
     this.fullPath = path + id + "/";
-    this.level = new Integer(level).intValue();
+    this.level = new Integer(level);
     this.fatherPK = new NodePK(fatherId);
     this.childrenDetails = null;
     this.type = type;
@@ -138,8 +136,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       String creatorId, String path, int level, NodePK fatherPK,
       Collection<NodeDetail> childrenDetails) {
     this.nodePK = nodePK;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
@@ -179,8 +177,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       NodePK fatherPK, String modelId, String status,
       Collection<NodeDetail> childrenDetails, String type) {
     this.nodePK = nodePK;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
@@ -198,13 +196,13 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       String fatherId, String modelId, String status,
       Collection<NodeDetail> childrenDetails, String type) {
     this.nodePK = new NodePK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
     this.fullPath = path + id + "/";
-    this.level = new Integer(level).intValue();
+    this.level = level;
     this.fatherPK = new NodePK(fatherId);
     this.modelId = modelId;
     this.status = status;
@@ -216,8 +214,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       String creationDate, String creatorId, String path, int level,
       NodePK fatherPK, String modelId, String status, Collection<NodeDetail> childrenDetails) {
     this.nodePK = nodePK;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
@@ -233,13 +231,13 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       String creationDate, String creatorId, String path, int level,
       String fatherId, String modelId, String status, Collection<NodeDetail> childrenDetails) {
     this.nodePK = new NodePK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.creatorId = creatorId;
     this.path = path;
     this.fullPath = path + id + "/";
-    this.level = new Integer(level).intValue();
+    this.level = level;
     this.fatherPK = new NodePK(fatherId);
     this.modelId = modelId;
     this.status = status;
@@ -257,54 +255,6 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
 
   public void setNodePK(NodePK nodePK) {
     this.nodePK = nodePK;
-  }
-
-  /**
-   * Get the name
-   * @return The node name
-   * @since 1.0
-   */
-  public String getName() {
-    return name;
-  }
-
-  public String getName(String language) {
-    if (!I18NHelper.isI18N || !StringUtil.isDefined(language)) {
-      return getName();
-    }
-
-    NodeI18NDetail s = (NodeI18NDetail) getTranslations().get(language);
-    if (s == null) {
-      s = (NodeI18NDetail) getNextTranslation();
-    }
-    if (s == null) {
-      return getName();
-    }
-    return s.getName();
-  }
-
-  /**
-   * Get the description
-   * @return The node description
-   * @since 1.0
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  public String getDescription(String language) {
-    if (!I18NHelper.isI18N || !StringUtil.isDefined(language)) {
-      return getDescription();
-    }
-
-    NodeI18NDetail s = (NodeI18NDetail) getTranslations().get(language);
-    if (s == null) {
-      s = (NodeI18NDetail) getNextTranslation();
-    }
-    if (s == null) {
-      return getDescription();
-    }
-    return s.getDescription();
   }
 
   /**
@@ -515,14 +465,6 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   @Override
   public int hashCode() {
     return toString().hashCode();
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public String getDefaultUrl(String componentName) {

@@ -26,6 +26,7 @@ package com.silverpeas.form.dummy;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.form.record.Parameter;
 import com.silverpeas.util.ArrayUtil;
@@ -165,4 +166,20 @@ public class DummyFieldTemplate implements FieldTemplate {
   public boolean isUsedAsFacet() {
     return false;
   }
+
+  @Override
+  public int getMaximumNumberOfOccurrences() {
+    return 1;
+  }
+  
+  @Override
+  public boolean isRepeatable() {
+    return false;
+  }
+
+  @Override
+  public Field getEmptyField(int occurrence) throws FormException {
+    return field;
+  }
+  
 }

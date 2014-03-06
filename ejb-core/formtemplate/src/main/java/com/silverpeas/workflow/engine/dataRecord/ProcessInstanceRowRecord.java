@@ -24,10 +24,6 @@
 
 package com.silverpeas.workflow.engine.dataRecord;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.workflow.api.WorkflowException;
@@ -38,7 +34,7 @@ import com.silverpeas.workflow.api.user.User;
 /**
  * ProcessInstanceDataRecord
  */
-public class ProcessInstanceRowRecord implements DataRecord {
+public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord {
 
   private static final long serialVersionUID = 5258805262791365104L;
 
@@ -58,13 +54,6 @@ public class ProcessInstanceRowRecord implements DataRecord {
    */
   public String getId() {
     return instance.getInstanceId();
-  }
-
-  /**
-   * The id of an instance is immutable.
-   */
-  public void setId(String externalId) {
-    // do nothing
   }
 
   /**
@@ -110,13 +99,6 @@ public class ProcessInstanceRowRecord implements DataRecord {
   }
 
   /**
-   * An instance is always registred.
-   */
-  public boolean isNew() {
-    return true;
-  }
-
-  /**
    * Returns the named field.
    * @throw FormException when the fieldName is unknown.
    */
@@ -141,20 +123,6 @@ public class ProcessInstanceRowRecord implements DataRecord {
 
   public String[] getFieldNames() {
     return template.getFieldNames();
-  }
-
-  public String getLanguage() {
-    return null;
-  }
-
-  public void setLanguage(String lang) {
-    // do nothing
-  }
-  
-  @Override
-  public Map<String, String> getValues(String language) {
-    // no implemented yet !
-    return new HashMap<String, String>();
   }
 
   public ProcessInstance getFullProcessInstance() {

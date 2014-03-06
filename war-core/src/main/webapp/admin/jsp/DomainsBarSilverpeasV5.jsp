@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
+<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -35,7 +37,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 
-<%@ page import="com.stratelia.silverpeas.authentication.*"%>
 <%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 
@@ -105,7 +106,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/personalSpace.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
 
-
 <script type="text/javascript">
 
   function reloadTopBar(reload)
@@ -117,7 +117,7 @@ out.println(gef.getLookStyleSheet());
     function checkSubmitToSearch(ev)
   {
     var touche = ev.keyCode;
-    if (touche == 13)
+    if (touche === 13)
       searchEngine();
   }
 
@@ -132,7 +132,7 @@ out.println(gef.getLookStyleSheet());
   }
 
   function searchEngine() {
-        if (document.searchForm.query.value != "")
+        if (document.searchForm.query.value !== "")
         {
         document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch";
           document.searchForm.submit();
@@ -180,7 +180,7 @@ out.println(gef.getLookStyleSheet());
 
     function getSpaceIdToInit()
     {
-      return "<%=spaceId%>";
+      return "<%=EncodeHelper.javaStringToHtmlString(spaceId)%>";
     }
 
     function getComponentIdToInit()
@@ -224,7 +224,7 @@ out.println(gef.getLookStyleSheet());
 
     function getFooterPage()
     {
-    	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
+	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     }
 
     /**
@@ -245,7 +245,7 @@ out.println(gef.getLookStyleSheet());
 
     function toForgottenPassword() {
     	var form = document.getElementById("authForm");
-        if (form.elements["Login"].value.length == 0) {
+        if (form.elements["Login"].value.length === 0) {
             alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
         } else {
         	form.action = "<%=urlToForgottenPwd%>";
@@ -419,7 +419,7 @@ out.println(gef.getLookStyleSheet());
 <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
 </form>
 <!-- Form below is used only to refresh this page according to external link (ie search engine, homepage,...) -->
-<form name="privateDomainsForm" action="DomainsBarSilverpeasV5.jsp" method="post">
+<form name="privateDomainsForm" action="DomainsBarSilverpeasV5.jsp" method="get">
 <input type="hidden" name ="component_id"/>
 <input type="hidden" name ="privateDomain"/>
 <input type="hidden" name ="privateSubDomain"/>

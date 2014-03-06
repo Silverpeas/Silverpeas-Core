@@ -786,6 +786,7 @@ public class PublicationDAO {
     pub.setLanguage(lang);
     pub.setDraftOutDate(draftOutDate);
     pub.setExplicitRank(order);
+    
     return pub;
   }
 

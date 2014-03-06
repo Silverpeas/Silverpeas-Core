@@ -60,6 +60,15 @@ public interface QuotaService<T extends QuotaKey> {
   Quota initialize(T key, long minCount, long maxCount) throws QuotaException;
 
   /**
+   * Initializes the quota of the resource for the given quota key and from an existing quota.
+   * @param key
+   * @param quota
+   * @return
+   * @throws QuotaException
+   */
+  Quota initialize(T key, Quota quota) throws QuotaException;
+
+  /**
    * Gets the quota of the resource from a given quota key.
    * A save operation is done if the current count has changed.
    * @param key

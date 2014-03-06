@@ -98,8 +98,8 @@ public class UserGroupProfileResource extends RESTWebService {
   public Response getAllRootGroups(@QueryParam("ids") Set<String> groupIds,
       @QueryParam("name") String name, @QueryParam("page") String page,
       @QueryParam("domain") String domain) {
-    UserGroupsSearchCriteriaBuilder criteriaBuilder =
-        UserGroupsSearchCriteriaBuilder.aSearchCriteria();
+    UserGroupsSearchCriteriaBuilder criteriaBuilder = UserGroupsSearchCriteriaBuilder.
+        aSearchCriteria();
 
     // Ids or not ids ?
     if (CollectionUtil.isNotEmpty(groupIds)) {
@@ -120,8 +120,8 @@ public class UserGroupProfileResource extends RESTWebService {
     criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
 
     ListSlice<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
-    UserGroupProfileEntity[] entities =
-        asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
+    UserGroupProfileEntity[] entities = asWebEntity(allGroups, locatedAt(getUriInfo().
+        getAbsolutePath()));
     return Response.ok(entities).
         header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, allGroups.getOriginalListSize()).build();
@@ -275,9 +275,14 @@ public class UserGroupProfileResource extends RESTWebService {
     PaginationPage paginationPage = null;
     if (page != null && !page.isEmpty()) {
       String[] pageAttributes = page.split(";");
-      int nth = Integer.valueOf(pageAttributes[0]);
-      int count = Integer.valueOf(pageAttributes[1]);
-      paginationPage = new PaginationPage(nth, count);
+      try {
+        int nth = Integer.valueOf(pageAttributes[0]);
+        int count = Integer.valueOf(pageAttributes[1]);
+        if (count > 0) {
+          paginationPage = new PaginationPage(nth, count);
+        }
+      } catch (NumberFormatException ex) {
+      }
     }
     return paginationPage;
   }

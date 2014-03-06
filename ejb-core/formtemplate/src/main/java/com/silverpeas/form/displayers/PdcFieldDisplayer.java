@@ -47,7 +47,6 @@ import org.apache.ecs.html.TR;
 import org.apache.ecs.html.Table;
 import org.apache.ecs.html.UL;
 
-import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;

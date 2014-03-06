@@ -20,18 +20,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
@@ -39,14 +27,23 @@ import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.apache.commons.beanutils.BeanUtils;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;

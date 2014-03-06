@@ -28,9 +28,10 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
@@ -69,6 +70,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param nuSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -77,7 +79,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
    */
   @Override
   public String getDestination(String function, NotificationUserSessionController nuSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
     // le UserPanel étant unique par session, il est impératif de récupérér

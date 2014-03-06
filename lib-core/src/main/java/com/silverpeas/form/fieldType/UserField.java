@@ -20,12 +20,14 @@
  */
 package com.silverpeas.form.fieldType;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A UserField stores a user reference.
@@ -33,7 +35,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
-public class UserField implements Field {
+public class UserField extends AbstractField {
 
   private static final long serialVersionUID = -861888647155176647L;
   /**

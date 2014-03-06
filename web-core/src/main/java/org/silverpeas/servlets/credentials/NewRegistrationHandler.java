@@ -27,11 +27,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class NewRegistrationHandler extends FunctionHandler {
 
-  private RegistrationSettings settings = RegistrationSettings.getSettings();
+  private final RegistrationSettings settings = RegistrationSettings.getSettings();
 
   @Override
   public String doAction(HttpServletRequest request) {
     String destination = "";
+    renewSecurityToken(request);
     if (settings.isUserSelfRegistrationEnabled()) {
       destination = "/admin/jsp/newRegistration.jsp";
     }

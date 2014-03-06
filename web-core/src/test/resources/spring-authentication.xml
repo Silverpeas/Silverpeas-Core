@@ -38,5 +38,6 @@
 
   <bean id="sessionManagementFactory" class="com.silverpeas.session.SessionManagementFactory"
         factory-method="getFactory"/>
+
 </beans>
 

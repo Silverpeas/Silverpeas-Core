@@ -41,7 +41,6 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	color:#222222;
 }
 
-
 #ticker {
 	color:#666666;
 	left: 140px;
@@ -800,3 +799,167 @@ div#vakata-contextmenu.jstree-default-context li.vakata-separator {
 	}
 .txtnav {
 	font-size:12px;}
+
+	
+/*** HOMESPACE ***/
+
+.spaceHome .spaceName {
+     background-color: #444;
+     color: #FFFFFF;
+     display: inline;
+     font-size: 22px;
+     font-weight: 100;
+     padding: 0px 10px;
+}
+
+.spaceHome .spaceDescription {
+     border-left: 6px solid #E4E4E4;
+     color: #666666;
+     padding: 8px;
+	font-size:120%;
+}
+
+.spaceHome .spaceNavigation li a {
+     font-size: 150%;
+	 color:#444;
+}
+
+.spaceHome .spaceNavigation li.browse-space a {
+     background:url("/silverpeas/admin/jsp/icons/silverpeas_light/mini-puceSpace.png") no-repeat scroll  11px 0 transparent;
+     padding-left: 38px;
+	 font-size:150%;
+}
+
+.spaceHome .spaceNavigation li p {
+     padding-left: 38px;
+}
+
+.spaceHome #spaceManager h2.portlet-title {
+     color: #7EB73B;
+}
+
+.spaceHome #spaceManager ul {
+     list-style: none outside none;
+     padding: 0px;
+}
+
+.spaceHome #spaceManager .intfdcolor {
+     background-color: transparent;
+}
+
+.portlet #calendar li.events {
+     background: none repeat scroll 0% 0% #F0F0F0;
+	 border-bottom: 1px solid #F0F0F0;
+	 margin:0;
+}
+
+.portlet #calendar  .eventInfo {
+     background-color: #FFFFFF;
+}
+
+.spaceHome #spaceEvent h2.portlet-title, .spaceHome #spaceQuiskInfo h2.portlet-title {
+     color: #777777;
+}
+
+.spaceHome #spaceQuiskInfo li.slide {
+     min-height: 135px;
+}
+
+.spaceHome #spaceQuiskInfo li.slide > h4 {
+     color: #000;
+     font-size: 13px;
+     font-weight: 100;
+     line-height: 120%;
+}
+
+.spaceHome #spaceQuiskInfo li.slide p {
+     line-height: 110%;
+	font-size:120%;
+}
+.spaceHome .spaceNavigation li p {
+    font-size: 110%;
+	}
+
+.spaceHome #spaceQuiskInfo .slideshow a:hover, .spaceHome #spaceQuiskInfo .slideshow .selected a {
+     background-color: #000;
+}
+.spaceHome #spaceQuiskInfo li.slide > h4 {
+	font-size:140%;
+	font-weight:bold;
+}
+.spaceHome .list-responsible-user li {
+     width: auto;
+}
+
+.spaceHome .list-responsible-user .userName {
+     font-size: 14px;
+}
+.spaceHome #portletPages .portlet-content {
+	background-color:#F0f0f0;
+}
+
+.spaceHome #portletPages  #spaceQuiskInfo .header h2.portlet-title {
+	background-color:#ec9c01;
+	}
+.spaceHome #portletPages  #spaceEvent .header h2.portlet-title {
+	background-color:#2f4d96;
+	}
+.spaceHome #portletPages  .header h2.portlet-title {
+	background-color:#333333;
+	color:#FFF;
+	font-variant:normal;
+	letter-spacing:0;
+	text-transform:none;
+	font-size:140%;
+	line-height;:120%;
+	float:none;
+	margin:10px 0 0;
+	padding:4px;
+	display:block;
+	color:#FFF;
+	font-weight:100;
+}
+
+.spaceHome #publication .bgDegradeGris, .spaceHome #publication.bgDegradeGris {
+     background: none repeat scroll 0% 0% transparent;
+     border: 0px none;
+     margin: 0px;
+     padding: 0px;
+}
+
+.spaceHome #publication.bgDegradeGris {
+     border-radius: 0px;
+     border-top: 2px dotted #E4E4E4;
+     margin-top: 2em;
+     padding-top: 1em;
+}
+
+.spaceHome #publication .header h4 {
+     color: #777777;
+     font-size: 16px;
+     font-weight: 100;
+     margin: 0px;
+     padding: 0px;
+}
+
+.spaceHome #publication li {
+     font-size: 12px;
+     list-style-image: url("/weblib/skinBigAndAngular/imgDesign/puce.png");
+}
+.spaceHome #publication li a:hover {
+    background-color:#F0F0F0;
+}
+
+.spaceHome #publication li a b {
+     color: #333333;
+     font-size: 15px;
+     font-weight: 100;
+}
+
+.spaceHome #publication li a:hover b {
+	color:#1C94D4;
+}
+
+.spaceHome #publication li .userToZoom {
+     color: #1C94D4;
+}

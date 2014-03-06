@@ -56,15 +56,17 @@ function readMessage(id){
 	SP_openWindow("ReadSendedNotification.jsp?NotifId=" + id,"ReadSendedNotification","600","380","scrollable=yes,scrollbars=yes");
 }
 
-function deleteMessage(id) {
-    if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
-		window.location = "DeleteSendedNotification.jsp?NotifId="+id;
+function deleteMessage(id, skipConfirmation) {
+    if(skipConfirmation || window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
+      var $form = jQuery('#genericForm');
+      jQuery('#NotifId', $form).val(id);
+      $form.attr('action', "DeleteSendedNotification.jsp").submit();
     }
 }
 
 function deleteAllMessages() {
     if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteAllSendedNotif")%>")){
-		window.location = "DeleteAllSendedNotifications.jsp?";
+      jQuery('#genericForm').attr('action', "DeleteAllSendedNotifications.jsp").submit();
     }
 }
 </script>
@@ -124,5 +126,8 @@ function deleteAllMessages() {
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
+<form id="genericForm" action="" method="POST">
+  <input id="NotifId" name="NotifId" type="hidden"/>
+</form>
 </body>
 </html>

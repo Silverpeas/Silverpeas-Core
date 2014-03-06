@@ -3,6 +3,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.wysiwyg;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class Wysiwyg {
 
@@ -14,6 +15,7 @@ public class Wysiwyg {
   private boolean toolbarStartExpanded = true;
   private String imageBrowserURL;
   private String serverURL;
+  private String css;
 
   ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
 
@@ -22,7 +24,9 @@ public class Wysiwyg {
   }
 
   public String print() {
-    String configFile = wysiwygSettings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/ckeditor/silverconfig.js");
+    String baseDir = wysiwygSettings.getString("baseDir", "ckeditor");
+    String configFile = wysiwygSettings.getString("configFile",
+        URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
 
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
@@ -36,7 +40,20 @@ public class Wysiwyg {
     }
     builder.append("toolbarStartupExpanded : ").append(isToolbarStartExpanded()).append(",\n");
     builder.append("customConfig : '").append(configFile).append("',\n");
-    builder.append("toolbar : '").append(getToolbar()).append("'\n");
+    builder.append("toolbar : '").append(getToolbar()).append("',\n");
+  
+    String skin = wysiwygSettings.getString("skin");
+    if (StringUtil.isDefined(skin)) {
+      builder.append("skin : '").append(skin).append("',\n");
+    }
+
+    String standardCSS = URLManager.getApplicationURL()+GraphicElementFactory.STANDARD_CSS;
+    if (StringUtil.isDefined(css)) {
+      builder.append("contentsCss : ['").append(standardCSS).append("', '").append(css).append("']\n");
+    } else {
+      builder.append("contentsCss : '").append(standardCSS).append("'\n");
+    }
+
     builder.append("});");
 
     return builder.toString();
@@ -104,6 +121,10 @@ public class Wysiwyg {
 
   public String getServerURL() {
     return serverURL;
+  }
+  
+  public void setCustomCSS(String css) {
+    this.css = css;
   }
 
 }

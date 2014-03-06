@@ -20,24 +20,20 @@
  */
 package org.silverpeas.attachment.tag;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static com.silverpeas.util.StringUtil.newline;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
@@ -131,7 +127,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     String language = I18NHelper.checkLanguage(lang);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
-    StringBuilder builder = new StringBuilder(1024);
+    StringBuilder builder = new StringBuilder(2048);
     builder.append("<div id=\"basicmenu").append(attachmentId).append("\" class=\"yuimenu\">").
         append(newline);
     builder.append("<div class=\"bd\">").append(newline);
@@ -159,6 +155,13 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + ");", message);
     prepareMenuItem(builder, "deleteAttachment('" + attachment.getId() + "','" + StringEscapeUtils
         .escapeEcmaScript(attachment.getFilename()) + "');", resources.getString("GML.delete"));
+    message = resources.getString("attachment.download.allowReaders");
+    boolean isDownloadAllowedForReaders = attachment.isDownloadAllowedForReaders();
+    if (isDownloadAllowedForReaders) {
+      message = resources.getString("attachment.download.forbidReaders");
+    }
+    prepareMenuItem(builder, "switchDownloadAllowedForReaders('" + attachment.getId() + "', " +
+        !isDownloadAllowedForReaders + ");", message);
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(
@@ -194,12 +197,13 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     if (attachment.isReadOnly()) {
       configureCheckout(builder, attachmentId, true);
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
-      builder.append(configureCheckoutAndEdit(attachmentId, !isEditable(userId, attachment,
-          useWebDAV)));
-      builder.append(configureCheckin(attachmentId, !isWorker(userId, attachment)
-          && !isAdmin(userId)));
+      builder.append(configureCheckoutAndEdit(attachmentId,
+          !isEditable(userId, attachment, useWebDAV)));
+      builder.append(configureCheckin(attachmentId,
+          !isWorker(userId, attachment) && !isAdmin(userId)));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureDelete(attachmentId, true));
+      builder.append(configureForbidDownloadForReaders(attachmentId, true));
       if (!userId.equals(attachment.getEditedBy())) {
         builder.append(configureXmlForm(attachmentId, true));
       }
@@ -258,6 +262,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   String configureDelete(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "3, 1", disable);
+  }
+
+  String configureForbidDownloadForReaders(String attachmentId, boolean disable) {
+    return String.format(template, attachmentId, "4, 1", disable);
   }
 
   String configureXmlForm(String attachmentId, boolean disable) {

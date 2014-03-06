@@ -1373,22 +1373,15 @@ public class AdminController implements java.io.Serializable {
   }
 
   /** Update the given user */
-  public String updateUserFull(UserFull userFull) {
-    SilverTrace.info("admin", "AdminController.updateUserFull",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      return getAdminService().updateUserFull(userFull);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateUserFull",
-          "admin.EX_ERR_UPDATE_USER", e);
-      return "";
-    }
+  public String updateUserFull(UserFull userFull) throws AdminException {
+    SilverTrace.info("admin", "AdminController.updateUserFull", "root.MSG_GEN_ENTER_METHOD");
+    return getAdminService().updateUserFull(userFull);
   }
 
   public String authenticate(String sKey, String sSessionId,
       boolean isAppInMaintenance) {
     try {
-      return getAdminService().authenticate(sKey, sSessionId, isAppInMaintenance);
+      return getAdminService().identify(sKey, sSessionId, isAppInMaintenance);
     } catch (Exception e) {
       return "-1";
     }

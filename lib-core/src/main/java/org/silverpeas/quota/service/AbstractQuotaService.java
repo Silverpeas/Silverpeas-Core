@@ -63,11 +63,16 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     return initialize(key, 0, maxCount);
   }
 
+  @Override
+  public Quota initialize(final T key, final Quota quota) throws QuotaException {
+    return initialize(key, quota.getMinCount(), quota.getMaxCount());
+  }
+
   /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, int,
-   * int)
-   */
+     * (non-Javadoc)
+     * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, int,
+     * int)
+     */
   @Transactional(propagation = Propagation.REQUIRED)
   @Override
   public Quota initialize(final T key, final long minCount, final long maxCount)

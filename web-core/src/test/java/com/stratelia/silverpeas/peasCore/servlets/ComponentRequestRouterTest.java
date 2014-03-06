@@ -32,8 +32,8 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import javax.servlet.http.HttpServletRequest;
 import junit.framework.TestCase;
+import org.silverpeas.servlet.HttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
@@ -48,7 +48,7 @@ public class ComponentRequestRouterTest extends TestCase {
     router = new ComponentRequestRouter() {
 
       @Override
-      public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request) {
+      public String getDestination(String function, ComponentSessionController componentSC, HttpRequest request) {
         return "destination";
       }
 

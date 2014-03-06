@@ -26,13 +26,13 @@ package com.silverpeas.util.i18n;
 
 import java.util.Map;
 
-public interface I18NBean {
+public interface I18NBean<T extends Translation> {
 
-  public Map<String, Translation> getTranslations();
+  public Map<String, T> getTranslations();
 
-  public Translation getTranslation(String language);
+  public T getTranslation(String language);
 
-  public Translation getNextTranslation();
+  public T getNextTranslation();
 
   public void setLanguage(String language);
 

@@ -23,6 +23,39 @@
  */
 package org.silverpeas.attachment.repository;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -32,42 +65,6 @@ import java.io.Reader;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -149,8 +146,8 @@ public class HistorisedDocumentRepositoryTest {
     repository.shutdown();
     context.close();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
-    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
-        + "temp_jackrabbit"));
+    FileUtils.deleteQuietly(
+        new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar + "temp_jackrabbit"));
   }
 
   /**
@@ -1138,6 +1135,275 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, contains(warningDoc1, warningDoc3));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of saveForbiddenDownloadForRoles method, of class DocumentRepository.
+   * Testing also history, functional history, repository path and version index.
+   */
+  @Test
+  public void testSaveForbiddenDownloadForRoles() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+
+      /*
+      Context of this test
+       */
+
+      // Create a versioned work document
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
+      document.setPublicDocument(false);
+      SimpleDocumentPK result = createVersionedDocument(session, document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      HistorisedDocument docCreated =
+          (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(docCreated, is(notNullValue()));
+      assertThat(docCreated.getOrder(), is(10));
+      assertThat(docCreated.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(docCreated.getSize(), is(14L));
+      assertThat(docCreated.getHistory(), is(notNullValue()));
+      assertThat(docCreated.getHistory(), hasSize(0));
+      assertThat(docCreated.getFunctionalHistory(), is(notNullValue()));
+      assertThat(docCreated.getFunctionalHistory(), hasSize(0));
+      assertThat(docCreated.getMajorVersion(), is(0));
+      assertThat(docCreated.getMinorVersion(), is(1));
+      assertThat(docCreated.getVersionIndex(), is(0));
+      assertThat(docCreated.getVersionIndex(), is(docCreated.getVersionMaster().getVersionIndex()));
+
+      // Verifying data are ok
+      String masterUuid = docCreated.getVersionMaster().getId();
+      String masterPath = docCreated.getVersionMaster().getRepositoryPath();
+      assertThat(masterUuid, is(docCreated.getId()));
+      assertThat(masterPath, is("/kmelia73/attachments/" + docCreated.getNodeName()));
+
+      // Update the versioned document to a public one
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(true);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      HistorisedDocument doc =
+          (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(1));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(1));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(0));
+      assertThat(doc.getVersionIndex(), is(1));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+
+      // Update the versioned document to a working one
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(2));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(2));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(2));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+
+      /*
+      Test starts here
+       */
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer, SilverpeasRole.admin);
+      documentRepository.saveForbiddenDownloadForRoles(session, document);
+
+      doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(3));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(2));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(3));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+      assertThat(doc.getForbiddenDownloadForRoles(),
+          contains(SilverpeasRole.admin, SilverpeasRole.writer));
+
+      document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer, SilverpeasRole.admin);
+      documentRepository.saveForbiddenDownloadForRoles(session, document);
+
+      doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(4));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(2));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(4));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+      assertThat(doc.getForbiddenDownloadForRoles(), nullValue());
+
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Testing history, functional history, repository path and version index.
+   */
+  @Test
+  public void testHistoryAndVersions() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+
+      /*
+      Context of this test
+       */
+
+      // Create a versioned work document
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
+      document.setPublicDocument(false);
+      SimpleDocumentPK result = createVersionedDocument(session, document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      HistorisedDocument docCreated =
+          (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(docCreated, is(notNullValue()));
+      assertThat(docCreated.getOrder(), is(10));
+      assertThat(docCreated.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(docCreated.getSize(), is(14L));
+      assertThat(docCreated.getHistory(), is(notNullValue()));
+      assertThat(docCreated.getHistory(), hasSize(0));
+      assertThat(docCreated.getFunctionalHistory(), is(notNullValue()));
+      assertThat(docCreated.getFunctionalHistory(), hasSize(0));
+      assertThat(docCreated.getMajorVersion(), is(0));
+      assertThat(docCreated.getMinorVersion(), is(1));
+      assertThat(docCreated.getVersionIndex(), is(0));
+      assertThat(docCreated.getVersionIndex(), is(docCreated.getVersionMaster().getVersionIndex()));
+
+      // Verifying data are ok
+      String masterUuid = docCreated.getVersionMaster().getId();
+      String masterPath = docCreated.getVersionMaster().getRepositoryPath();
+      assertThat(masterUuid, is(docCreated.getId()));
+      assertThat(masterPath, is("/kmelia73/attachments/" + docCreated.getNodeName()));
+
+      // Version path pattern
+      String versionPathPattern =
+          "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+              masterUuid.substring(2, 4) + "/" +
+              masterUuid.substring(4, 6) + "/" + masterUuid + "/%s/jcr:frozenNode";
+
+      // Massive data
+      int minor = 0;
+      for (int i = 0; i < 1100; i++) {
+        if (i % 50 == 0) {
+          // Functional version number is incremented (and the technical too)
+          attachment = createFrenchVersionnedAttachment();
+          document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+          if (minor >= 4) {
+            document.setPublicDocument(true);
+            minor = 0;
+          } else {
+            document.setPublicDocument(false);
+            minor++;
+          }
+          documentRepository.lock(session, document, document.getEditedBy());
+          documentRepository.updateDocument(session, document);
+          session.save();
+          documentRepository.unlock(session, document, false);
+        }
+
+        // Functional version number is not incremented (but still the technical)
+        if (i % 2 == 0) {
+          document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer, SilverpeasRole.admin);
+        } else {
+          document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer, SilverpeasRole.admin);
+        }
+        documentRepository.saveForbiddenDownloadForRoles(session, document);
+      }
+
+      HistorisedDocument doc =
+          (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(1122));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(22));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(4));
+      assertThat(doc.getMinorVersion(), is(2));
+      assertThat(doc.getVersionIndex(), is(1122));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+
+      int versionIndexExpected = doc.getVersionIndex();
+      for (SimpleDocument documentInHistory : doc.getHistory()) {
+        assertThat(documentInHistory.getVersionMaster(), sameInstance(doc.getVersionMaster()));
+        assertThat(documentInHistory.getVersionIndex(), is(--versionIndexExpected));
+        assertThat(documentInHistory.getRepositoryPath(),
+            is(String.format(versionPathPattern, "1." + (versionIndexExpected))));
+      }
+
+      versionIndexExpected = 1071;
+      int expectedMajorVersion = 4;
+      int expectedMinorVersion = 1;
+      for (SimpleDocument documentInFunctionalHistory : doc.getFunctionalHistory()) {
+        assertThat(documentInFunctionalHistory.getVersionMaster(),
+            sameInstance(doc.getVersionMaster()));
+        assertThat(documentInFunctionalHistory.getVersion(),
+            is(expectedMajorVersion + "." + expectedMinorVersion));
+        assertThat(documentInFunctionalHistory.getMajorVersion(), is(expectedMajorVersion));
+        assertThat(documentInFunctionalHistory.getMinorVersion(), is(expectedMinorVersion--));
+        if (expectedMinorVersion < 0) {
+          expectedMajorVersion--;
+          expectedMinorVersion = (expectedMajorVersion == 0) ? 5 : 4;
+        }
+        assertThat(documentInFunctionalHistory.getVersionIndex(), is(versionIndexExpected));
+        assertThat(documentInFunctionalHistory.getRepositoryPath(),
+            is(String.format(versionPathPattern, "1." + versionIndexExpected)));
+        versionIndexExpected -= 51;
+      }
+
     } finally {
       BasicDaoFactory.logout(session);
     }

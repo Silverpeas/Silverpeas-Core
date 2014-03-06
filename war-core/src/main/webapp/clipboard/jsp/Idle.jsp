@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -40,6 +41,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementFactory" %>
+<%@ page import="com.silverpeas.util.StringUtil" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -47,8 +49,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String m_context = URLManager.getApplicationURL();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
+    String javascripTask = "";
     if (clipboardSC != null) {
       clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+      javascripTask = clipboardSC.getHF_JavaScriptTask(request);
     }
 
     int nbConnectedUsers = 0;
@@ -68,6 +72,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <html>
 <HEAD>
+  <%if(StringUtil.isDefined(javascripTask)){%>
+  <view:includePlugin name="jquery"/>
+  <view:includePlugin name="tkn"/>
+  <%}%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 var counter = 0;
@@ -127,7 +135,7 @@ function DoTask() {
 		String MessageError = clipboardSC.getMessageError();
 		if (MessageError != null)
 				out.println ("alert ('" + MessageError + "')");
-		out.println (clipboardSC.getHF_JavaScriptTask(request));
+		out.println(javascripTask);
 	}
 	%>
 }

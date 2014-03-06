@@ -41,6 +41,13 @@ public class HistoryDocumentSorter implements Serializable{
     @Override
     public int compare(SimpleDocument doc1, SimpleDocument doc2) {
       if (doc1.getMajorVersion() == doc2.getMajorVersion()) {
+        if (doc1.getMinorVersion() == doc2.getMinorVersion()) {
+          // This comparison is mandatory because it could exist several history document with
+          // the same major and minor version. Indeed, some of property updates doesn't affect
+          // the version, but they add still a new version in version history. For exemple,
+          // updating the order of display of attachments ...
+          return doc2.getVersionIndex() - doc1.getVersionIndex();
+        }
         return doc2.getMinorVersion() - doc1.getMinorVersion();
       }
       return doc2.getMajorVersion() - doc1.getMajorVersion();

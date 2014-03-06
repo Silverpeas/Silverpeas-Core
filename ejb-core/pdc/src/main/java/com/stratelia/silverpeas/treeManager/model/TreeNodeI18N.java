@@ -28,12 +28,11 @@
 package com.stratelia.silverpeas.treeManager.model;
 
 import com.silverpeas.util.i18n.Translation;
+import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 
 public class TreeNodeI18N extends Translation implements java.io.Serializable {
 
   private static final long serialVersionUID = 7977604222849839444L;
-  private String name;
-  private String description;
 
   /**
    * Constructor declaration
@@ -43,26 +42,11 @@ public class TreeNodeI18N extends Translation implements java.io.Serializable {
   }
 
   public TreeNodeI18N(int nodeId, String lang, String name, String description) {
-    if (lang != null)
-      super.setLanguage(lang);
+    super(lang, name, description);
     setObjectId(Integer.toString(nodeId));
-    this.name = name;
-    this.description = description;
   }
 
-  public String getName() {
-    return this.name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
+  public TreeNodeI18N(final AxisHeaderI18N otherTranslation) {
+    super(otherTranslation);
   }
 }

@@ -130,8 +130,8 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println(
         "\t\t<description>A simple Java webstart application to launch Online Document Edition</description>");
     out.println("\t\t<description kind=\"short\">Online Document Editor</description>");
-    out.println("\t\t<icon href=\"logo.PNG\" kind=\"default\"/>");
-    out.println("\t\t<icon href=\"logo.PNG\" kind=\"splash\"/>");
+    out.println("\t\t<icon href=\"logo.png\" kind=\"default\"/>");
+    out.println("\t\t<icon href=\"logo.png\" kind=\"splash\"/>");
     out.println("\t\t<offline-allowed/>");
     out.println("\t</information>");
     out.println("\t<security>");

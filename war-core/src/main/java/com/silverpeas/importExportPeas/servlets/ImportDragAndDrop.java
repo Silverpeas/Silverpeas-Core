@@ -1,30 +1,28 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.importExportPeas.servlets;
 
 import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
+import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ComponentReport;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.MassiveReport;
@@ -32,36 +30,36 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
-
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class ImportDragAndDrop extends HttpServlet {
@@ -85,16 +83,16 @@ public class ImportDragAndDrop extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse res)
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+    HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding("UTF-8");
-    if (!FileUploadUtil.isRequestMultipart(request)) {
+    if (!request.isContentInMultipart()) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
 
-    String userId = null;
     String userLanguage = null;
     StringBuilder result = new StringBuilder();
     try {
@@ -104,13 +102,12 @@ public class ImportDragAndDrop extends HttpServlet {
         String sessionId = request.getParameter("SessionId");
         SessionManagementFactory factory = SessionManagementFactory.getFactory();
         SessionManagement sessionManagement = factory.getSessionManagement();
-        HttpSession session =
-            ((HTTPSessionInfo)sessionManagement.getSessionInfo(sessionId)).getHttpSession();
-        topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
+        SessionInfo session = sessionManagement.getSessionInfo(sessionId);
+        topicId = session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
-      userId = request.getParameter("UserId");
-      userLanguage = StringUtil.isNotDefined(userId) ? I18NHelper.defaultLanguage :
-          UserDetail.getById(userId).getUserPreferences().getLanguage();
+      String userId = request.getParameter("UserId");
+      userLanguage = StringUtil.isNotDefined(userId) ? I18NHelper.defaultLanguage
+          : UserDetail.getById(userId).getUserPreferences().getLanguage();
       boolean ignoreFolders = StringUtil.getBooleanValue(request.getParameter("IgnoreFolders"));
       boolean draftUsed = StringUtil.getBooleanValue(request.getParameter("Draft"));
 
@@ -122,7 +119,7 @@ public class ImportDragAndDrop extends HttpServlet {
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
           + File.separator + topicId + System.currentTimeMillis() + File.separator;
 
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
@@ -170,10 +167,9 @@ public class ImportDragAndDrop extends HttpServlet {
 
       try {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
-        ImportSettings settings =
-            new ImportSettings(savePath, userDetail, componentId, topicId, draftUsed, true, ImportSettings.FROM_DRAGNDROP);
-        ImportReport importReport =
-            massiveImporter.importDocuments(settings, massiveReport);
+        ImportSettings settings = new ImportSettings(savePath, userDetail, componentId, topicId,
+            draftUsed, true, ImportSettings.FROM_DRAGNDROP);
+        ImportReport importReport = massiveImporter.importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
           ComponentReport componentReport = importReport.getListComponentReport().get(0);
@@ -181,13 +177,13 @@ public class ImportDragAndDrop extends HttpServlet {
           for (MassiveReport theMassiveReport : listMassiveReport) {
             List<UnitReport> listMassiveUnitReport = theMassiveReport.getListUnitReports();
             for (UnitReport unitReport : listMassiveUnitReport) {
-              if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+              if (unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
                 result.append("pubid=").append(unitReport.getLabel()).append("&");
               }
             }
           }
         }
-      } catch (Exception ex) {
+      } catch (ImportExportException ex) {
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
         SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, userLanguage);
         res.getOutputStream().println("ERROR");
@@ -196,8 +192,8 @@ public class ImportDragAndDrop extends HttpServlet {
     } catch (Exception e) {
       SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       final StringBuilder sb = new StringBuilder("ERROR: ");
-      String transverseMessage =
-          SilverpeasTransverseWebErrorUtil.performAppletAlertExceptionMessage(e, userLanguage);
+      String transverseMessage = SilverpeasTransverseWebErrorUtil.
+          performAppletAlertExceptionMessage(e, userLanguage);
       if (isDefined(transverseMessage)) {
         sb.append(transverseMessage);
       } else {
@@ -219,6 +215,7 @@ public class ImportDragAndDrop extends HttpServlet {
    * specified topic of the specified component instance can be modified during the
    * multi-publications import process? If no default classification is defined for the specified
    * topic (and for any of its parent topics), then false is returned.
+   *
    * @param topicId the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
    * @return true if the default classification can be modified during the automatical

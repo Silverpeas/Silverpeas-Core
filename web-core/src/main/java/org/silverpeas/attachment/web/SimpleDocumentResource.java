@@ -20,31 +20,11 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.UserPriviledgeValidation;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.WebdavServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
+import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,8 +37,42 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
+
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 
 @Service
 @RequestScoped
@@ -199,10 +213,13 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         if (!StringUtil.isDefined(document.getEditedBy())) {
           document.edit(getUserDetail().getId());
         }
+
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
             true);
         content.close();
         FileUtils.deleteQuietly(tempFile);
+        // in the case the document is a CAD one, process it for Actify
+        ActifyDocumentProcessor.getProcessor().process(document);
       } else {
         isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
         if (document.isVersioned()) {
@@ -281,8 +298,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Override
   public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
       WebApplicationException {
-    super.validateUserAuthorization(validation);
-    validation.validateUserAuthorizationOnAttachment(getUserDetail(), getSimpleDocument(null));
+    validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUserDetail(),
+        getSimpleDocument(null));
   }
 
   /**
@@ -313,7 +330,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     };
     return Response.ok(stream).type(document.getContentType()).header(HttpHeaders.CONTENT_LENGTH,
         document.getSize()).header("content-disposition", "attachment;filename=" + document.
-        getFilename()).build();
+            getFilename()).build();
   }
 
   /**
@@ -351,9 +368,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
-    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), getComponentId()),
-            defaultLanguage);
+    List<SimpleDocument> docs =
+        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+            new ForeignPK(document.getForeignId(), getComponentId()), defaultLanguage);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position - 1);
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
@@ -449,6 +466,26 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
+  }
+
+  /**
+   * Forbid or allow the download of the document for readers.
+   * @return JSON download state for readers. allowedDownloadForReaders = true or false.
+   */
+  @POST
+  @Path("switchDownloadAllowedForReaders")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String switchDownloadAllowedForReaders(@FormParam("allowed") final boolean allowed) {
+
+    // Performing the request
+    SimpleDocument document = getSimpleDocument(null);
+    AttachmentServiceFactory.getAttachmentService()
+        .switchAllowingDownloadForReaders(document.getPk(), allowed);
+
+    // JSON Response.
+    return MessageFormat.format(
+        "'{'\"allowedDownloadForReaders\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
+        allowed, document.getOldSilverpeasId(), document.getId());
   }
 
   SimpleDocument getSimpleDocument(String lang) {

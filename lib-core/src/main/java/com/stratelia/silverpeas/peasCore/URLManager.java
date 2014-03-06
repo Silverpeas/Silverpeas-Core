@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
@@ -38,9 +34,11 @@ import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
+ *
  * @author t.leroi
  */
 public class URLManager {
+
   public final static String CMP_ADMIN = "admin";
   public final static String CMP_AGENDA = "agenda";
   public final static String CMP_ATTACHMENT = "attachment";
@@ -97,8 +95,8 @@ public class URLManager {
   public final static int URL_MESSAGE = 7;
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
-  private static final String applicationURL =
-      GeneralPropertiesManager.getString("ApplicationURL", "/silverpeas");
+  private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL",
+      "/silverpeas");
   static Properties specialsURL = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
@@ -131,7 +129,8 @@ public class URLManager {
       return specialString;
     }
     // Build the standard path : /RcompName/CompId/
-    return buildStandardURL(sureCompName, sComponentId);
+    String url = buildStandardURL(sureCompName, sComponentId);
+    return url;
   }
 
   @Deprecated
@@ -145,6 +144,7 @@ public class URLManager {
 
   /**
    * Retourne l'URL pour les nouveaux composants lors de la recherche globale
+   *
    * @param spaceId - l'id de l'espace (WA151)
    * @param componentId - l'id de l'instance de composant (trucsAstuces1042)
    * @return la nouvelle URL
@@ -156,17 +156,19 @@ public class URLManager {
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
+   *
    * @param componentName - le nom du jobPeas
    * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
    * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
   private static String buildStandardURL(String componentName, String sComponentId) {
-    return '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/' +
-        sComponentId + '/';
+    return '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/'
+        + sComponentId + '/';
   }
 
   /**
    * Returns kmelia for parameter kmelia23
+   *
    * @param sClientComponentId
    * @return
    */
@@ -176,6 +178,7 @@ public class URLManager {
 
   /**
    * Returns The Application web context.
+   *
    * @return The Application web context.
    */
   public static String getApplicationURL() {
@@ -289,8 +292,8 @@ public class URLManager {
       url = ((SilverpeasToolContent) content).getURL();
     }
     if (!isDefined(url)) {
-      url = getURL(null, null, content.getComponentInstanceId()) + "searchResult?Type=" +
-          content.getContributionType() + "&Id=" + content.getId();
+      url = getURL(null, null, content.getComponentInstanceId()) + "searchResult?Type=" + content.
+          getContributionType() + "&Id=" + content.getId();
     }
     return url;
   }

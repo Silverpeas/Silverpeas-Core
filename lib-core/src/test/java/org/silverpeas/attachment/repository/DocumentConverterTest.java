@@ -23,22 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.io.File;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
-
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.Charsets;
-
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
@@ -46,7 +30,7 @@ import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
-
+import com.stratelia.webactiv.SilverpeasRole;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -56,10 +40,23 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Calendar;
+import java.util.Date;
+
 import static com.silverpeas.jcrutil.JcrConstants.*;
-import static javax.jcr.Property.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -203,6 +200,15 @@ public class DocumentConverterTest {
       attachNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
       attachNode.setProperty(SLV_PROPERTY_SIZE, "my test content".getBytes("UTF-8").length);
       SimpleDocument result = instance.convertNode(documentNode, language);
+      expectedResult.setId(result.getId());
+      assertThat(result, SimpleDocumentMatcher.matches(expectedResult));
+
+      // Adding forbidden download for some roles
+      expectedResult.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer,
+          SilverpeasRole.reader);
+      documentNode.addMixin(SLV_DOWNLOADABLE_MIXIN);
+      documentNode.setProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES, "writer,reader");
+      result = instance.convertNode(documentNode, language);
       expectedResult.setId(result.getId());
       assertThat(result, SimpleDocumentMatcher.matches(expectedResult));
     } finally {
@@ -371,6 +377,7 @@ public class DocumentConverterTest {
           is(expiry.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
           is(reservation.getTimeInMillis()));
+      assertThat(documentNode.hasProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES), is(false));
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
       assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
@@ -385,6 +392,13 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED).getDate().getTimeInMillis(),
           is(updateDate.getTime()));
       assertThat(attachNode.hasNode(JCR_CONTENT), is(false));
+
+      // Adding forbidden download for some roles
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.privilegedUser,
+          SilverpeasRole.privilegedUser, SilverpeasRole.publisher);
+      instance.fillNode(document, documentNode);
+      assertThat(documentNode.getProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES).getString(),
+          is("publisher,privilegedUser"));
     } finally {
       BasicDaoFactory.logout(session);
     }

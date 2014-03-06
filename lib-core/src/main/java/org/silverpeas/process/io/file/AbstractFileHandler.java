@@ -574,6 +574,11 @@ public abstract class AbstractFileHandler {
    * @return
    */
   public Set<DummyHandledFile> getDummyHandledFiles(String componentInstanceId) {
-    return dummyHandledFiles.get(componentInstanceId);
+    Set<DummyHandledFile> result = dummyHandledFiles.get(componentInstanceId);
+    if (result == null) {
+      //noinspection unchecked
+      result = Collections.EMPTY_SET;
+    }
+    return result;
   }
 }

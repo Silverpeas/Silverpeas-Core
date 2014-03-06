@@ -83,7 +83,7 @@ function save()
 function Deletes()
 {
 	if (window.confirm("<%=resource.getString("thesaurus.MessageSuppressionVoca")%>")) 
-		self.location = "DeleteVoca";
+    jQuery('#genericForm').attr('action', "DeleteVoca").submit();
 
 }
 //-->
@@ -156,6 +156,6 @@ function Deletes()
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-
+<form id="genericForm" action="" method="POST"></form>
 </BODY>
 </HTML>

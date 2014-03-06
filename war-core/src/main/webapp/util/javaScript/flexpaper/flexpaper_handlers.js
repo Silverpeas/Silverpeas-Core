@@ -68,6 +68,21 @@ $(function() {
      */
     jQuery('#documentViewer').bind('onCurrentPageChanged',function(e,pagenum){
 
+        // if GANumber is supplied then lets track this as a Google Analytics event.
+        if(jQuery(this).data('TrackingNumber')){
+            var _gaq = window._gaq || [];window._gaq=_gaq;
+            var trackingDoc = jQuery(this).data('TrackingDocument');
+            var pdfFileName = trackingDoc.substr(0,trackingDoc.indexOf(".pdf")+4);
+
+            _gaq.push(['_setAccount', jQuery(this).data('TrackingNumber')]);
+            _gaq.push(['_trackEvent', 'PDF Documents', 'Page View', pdfFileName + ' - page ' + pagenum]);
+
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        }
     });
 
     /**

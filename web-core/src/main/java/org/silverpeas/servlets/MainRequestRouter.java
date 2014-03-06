@@ -20,22 +20,21 @@
  */
 package org.silverpeas.servlets;
 
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
 public class MainRequestRouter extends HttpServlet {
 
   private static final long serialVersionUID = 5131039058584808582L;
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
+      ServletException {
     // Get the session
     HttpSession session = request.getSession(false);
     // Get the context

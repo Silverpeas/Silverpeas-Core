@@ -24,27 +24,36 @@
 
 package com.silverpeas.form.record;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map (FieldName ->
  * (index,GenericFieldTemplate))
  */
+@XmlRootElement(name = "recordTemplate")
+@XmlAccessorType(XmlAccessType.NONE)
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
   private static final long serialVersionUID = 5454875955919676819L;
 
   private Map<String, IndexedFieldTemplate> fields =
       new LinkedHashMap<String, IndexedFieldTemplate>();
+  
+  @XmlElement(name = "fieldTemplate", type=com.silverpeas.form.record.GenericFieldTemplate.class)
   private List<FieldTemplate> fieldList = new ArrayList<FieldTemplate>();
   private String templateName;
 

@@ -28,8 +28,10 @@ import java.util.List;
  * @author ehugonnet
  */
 public class HistorisedDocument extends SimpleDocument {
+  private static final long serialVersionUID = -5850838926035340609L;
 
   private List<SimpleDocument> history;
+  private List<SimpleDocument> functionalHistory;
 
   public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order, SimpleAttachment file) {
     super(pk, foreignId, order, true, file);
@@ -47,6 +49,9 @@ public class HistorisedDocument extends SimpleDocument {
   public HistorisedDocument(SimpleDocument doc) {
     super(doc.getPk(), doc.getForeignId(), doc.getOrder(), true, doc.getEditedBy(), doc.
         getReservation(), doc.getAlert(), doc.getExpiry(), doc.getComment(), doc.getFile());
+    setRepositoryPath(doc.getRepositoryPath());
+    setVersionIndex(doc.getVersionIndex());
+    setVersionMaster(doc.getVersionMaster());
     setMajorVersion(doc.getMajorVersion());
     setMinorVersion(doc.getMinorVersion());
     setStatus(doc.getStatus());
@@ -59,8 +64,32 @@ public class HistorisedDocument extends SimpleDocument {
     return true;
   }
 
+  /**
+   * Returns technical history (as the JCR)
+   * @return
+   */
   public List<SimpleDocument> getHistory() {
     return history;
+  }
+
+  /**
+   * Returns functional history based on versions and indexes.
+   * @return
+   */
+  public List<SimpleDocument> getFunctionalHistory() {
+    if (functionalHistory == null && history != null) {
+      functionalHistory = new ArrayList<SimpleDocument>(history.size());
+      String lastVersion = getVersionMaster().getVersion();
+      for (SimpleDocument currentDocumentVersion : history) {
+        String currentVersion = currentDocumentVersion.getVersion();
+        if (!currentVersion.equals(lastVersion) &&
+            currentDocumentVersion.getVersionIndex() < getVersionIndex()) {
+          functionalHistory.add(currentDocumentVersion);
+        }
+        lastVersion = currentVersion;
+      }
+    }
+    return functionalHistory;
   }
 
   public void setHistory(List<SimpleDocument> history) {
@@ -68,8 +97,9 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   public List<SimpleDocument> getPublicVersions() {
-    List<SimpleDocument> publicVersions = new ArrayList<SimpleDocument>(history.size());
-    for (SimpleDocument document : history) {
+    List<SimpleDocument> publicVersions =
+        new ArrayList<SimpleDocument>(getFunctionalHistory().size());
+    for (SimpleDocument document : getFunctionalHistory()) {
       if (document.isPublic()) {
         publicVersions.add(document);
       }
@@ -87,7 +117,7 @@ public class HistorisedDocument extends SimpleDocument {
     if (this.isPublic()) {
       return this;
     }
-    for (SimpleDocument document : history) {
+    for (SimpleDocument document : getFunctionalHistory()) {
       if (document.isPublic()) {
         HistorisedDocument historisedDocument = new HistorisedDocument(document);
         historisedDocument.setHistory(history);

@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
@@ -81,14 +82,16 @@ public class SelectionPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param selectionPeasSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, SelectionPeasSessionController selectionPeasSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination;
     SilverTrace.info("selectionPeas", "getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
@@ -275,7 +278,7 @@ public class SelectionPeasRequestRouter extends
   }
 
   protected String doCartOperation(String op, SelectionPeasSessionController selectionPeasSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     selectionPeasSC.setCartSelected(CacheType.CM_SET, getValues(request.getParameter(
         "SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
     selectionPeasSC.setCartSelected(CacheType.CM_ELEMENT, getValues(request.getParameter(
@@ -307,7 +310,7 @@ public class SelectionPeasRequestRouter extends
   }
 
   protected String doBrowseOperation(String op, SelectionPeasSessionController selectionPeasSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     if (selectionPeasSC.isMultiSelect()) {
       selectionPeasSC.setSelected(CacheType.CM_SET,
           getValues(request.getParameter("SelectedSets")),

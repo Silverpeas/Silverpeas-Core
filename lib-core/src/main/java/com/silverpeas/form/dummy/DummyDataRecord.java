@@ -83,6 +83,11 @@ public class DummyDataRecord implements DataRecord {
   public Field getField(String fieldName) {
     return field;
   }
+  
+  @Override
+  public Field getField(String fieldName, int occurrence) {
+    return field;
+  }
 
   /**
    * Returns the field at the index position in the record.

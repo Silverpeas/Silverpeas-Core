@@ -34,14 +34,12 @@
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%
 	String defaultValue = "";
 	
 	if (field != null) {
 		if (parameters.containsKey("default")) {
-			defaultValue = (String) parameters.get("default");
+			defaultValue = parameters.get("default");
 		}
 	}
 %>

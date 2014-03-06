@@ -60,6 +60,8 @@ public interface DataRecord extends Serializable {
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException;
+  
+  public Field getField(String fieldName, int occurrence);
 
   /**
    * Returns the field at the index position in the record.

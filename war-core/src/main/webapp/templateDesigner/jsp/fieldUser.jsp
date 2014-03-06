@@ -34,12 +34,12 @@
 	String usersOfInstanceOnlyChecked = "";
 	
 	if (field != null) {
-	  	roles = (String) parameters.get("roles");
+	  	roles = parameters.get("roles");
 		if (!StringUtil.isDefined(roles)) {
 			roles = "";
 		}
 		
-	  	String usersOfInstanceOnly = (String) parameters.get("usersOfInstanceOnly");
+	  	String usersOfInstanceOnly = parameters.get("usersOfInstanceOnly");
 	  	if (StringUtil.getBooleanValue(usersOfInstanceOnly)) {
 	  		usersOfInstanceOnlyChecked = "checked";
 	  	}
@@ -47,14 +47,11 @@
 %>
 
 <script type="text/javascript">
-	function isCorrectForm() 
-	{
+	function isCorrectForm() {
      	checkFieldName();
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%@ include file="includeTopField.jsp.inc" %>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.usedInstanceOnly")%> :</td><td><input type="checkbox" name="Param_usersOfInstanceOnly" value="true" <%=usersOfInstanceOnlyChecked%>/></td>

@@ -23,73 +23,62 @@
  */
 package com.silverpeas.web.mock;
 
-import static org.mockito.Mockito.mock;
-
 import javax.inject.Named;
-
-import org.silverpeas.token.TokenKey;
+import org.silverpeas.EntityReference;
 import org.silverpeas.token.exception.TokenException;
-import org.silverpeas.token.model.Token;
-import org.silverpeas.token.service.TokenService;
+import org.silverpeas.token.persistent.PersistentResourceToken;
+import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("tokenService")
-public class TokenServiceMockWrapper implements TokenService {
+@Named("persistentResourceTokenService")
+public class TokenServiceMockWrapper implements PersistentResourceTokenService {
 
-  private final TokenService mock;
+  private final PersistentResourceTokenService mock;
 
   /**
    * Default constructor into which mock is initialized
    */
   public TokenServiceMockWrapper() {
-    mock = mock(TokenService.class);
+    mock = mock(PersistentResourceTokenService.class);
   }
 
   /**
    * Gets the mock
+   *
    * @return
    */
-  public TokenService getTokenServiceMock() {
+  public PersistentResourceTokenService getTokenServiceMock() {
     return mock;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.service.TokenService#initialize(org.silverpeas.token.TokenKey)
-   */
   @Override
-  public Token initialize(final TokenKey key) throws TokenException {
-    return mock.initialize(key);
+  public PersistentResourceToken initialize(final EntityReference ref) throws TokenException {
+    return mock.initialize(ref);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.service.TokenService#get(org.silverpeas.token.TokenKey)
-   */
   @Override
-  public Token get(final TokenKey key) {
-    final Token token = mock.get(key);
-    return (token == null) ? new Token() : token;
+  public PersistentResourceToken get(final EntityReference ref) {
+    final PersistentResourceToken token = mock.get(ref);
+    return (token == null) ? PersistentResourceToken.NoneToken : token;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.service.TokenService#getInitialized(org.silverpeas.token.TokenKey)
-   */
   @Override
-  public Token getInitialized(final TokenKey key) throws TokenException {
-    final Token token = mock.getInitialized(key);
-    return (token == null) ? new Token() : token;
+  public PersistentResourceToken get(String tokenValue) {
+    final PersistentResourceToken token = mock.get(tokenValue);
+    return (token == null) ? PersistentResourceToken.NoneToken : token;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.token.service.TokenService#remove(org.silverpeas.token.TokenKey)
-   */
   @Override
-  public void remove(final TokenKey key) {
-    mock.remove(key);
+  public void remove(final EntityReference ref) {
+    mock.remove(ref);
+  }
+
+  @Override
+  public void remove(String tokenValue) {
+    mock.remove(tokenValue);
   }
 }

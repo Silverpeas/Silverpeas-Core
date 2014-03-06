@@ -34,33 +34,12 @@ public class AxisHeaderI18N extends Translation implements java.io.Serializable 
 
   // Class version identifier
   private static final long serialVersionUID = -1418233065462620219L;
-  private String name = null;
-  private String description = null;
 
   public AxisHeaderI18N() {
   }
 
   public AxisHeaderI18N(int axisId, String lang, String name, String description) {
-    if (lang != null)
-      super.setLanguage(lang);
+    super(lang, name, description);
     setObjectId(Integer.toString(axisId));
-    this.name = name;
-    this.description = description;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 }

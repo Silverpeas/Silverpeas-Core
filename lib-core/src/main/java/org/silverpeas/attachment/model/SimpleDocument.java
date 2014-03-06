@@ -23,23 +23,34 @@
  */
 package org.silverpeas.attachment.model;
 
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
@@ -58,6 +69,9 @@ public class SimpleDocument implements Serializable {
   public final static String VERSION_PREFIX = "version_";
   public final static String FILE_PREFIX = "file_";
   public final static String DOCUMENT_PREFIX = "simpledoc_";
+  private String repositoryPath;
+  private SimpleDocument versionMaster = this;
+  private int versionIndex = 0;
   private SimpleDocumentPK pk;
   private String foreignId;
   private int order;
@@ -74,6 +88,7 @@ public class SimpleDocument implements Serializable {
   private String nodeName;
   private String comment;
   private DocumentType documentType = DocumentType.attachment;
+  private Set<SilverpeasRole> forbiddenDownloadForRoles = null;
 
   public void setDocumentType(DocumentType documentType) {
     this.documentType = documentType;
@@ -293,6 +308,16 @@ public class SimpleDocument implements Serializable {
     this.majorVersion = majorVersion;
   }
 
+  /**
+   * Gets a version number as String.
+   * For now, this is the concatenation of major and minor version data that are separated by a
+   * point.
+   * @return
+   */
+  public String getVersion() {
+    return majorVersion + "." + minorVersion;
+  }
+
   public String getComment() {
     return comment;
   }
@@ -308,7 +333,6 @@ public class SimpleDocument implements Serializable {
   public void edit(String currentEditor) {
     this.editedBy = currentEditor;
     this.reservation = new Date();
-    OrganisationControllerFactory.getFactory();
     String day =
         OrganisationControllerFactory.getOrganisationController()
             .getComponentParameterValue(getInstanceId(), "nbDayForReservation");
@@ -528,6 +552,7 @@ public class SimpleDocument implements Serializable {
     hash = 31 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     hash = 31 * hash + this.minorVersion;
     hash = 31 * hash + this.majorVersion;
+    hash = 31 * hash + this.versionIndex;
     return hash;
   }
 
@@ -547,6 +572,9 @@ public class SimpleDocument implements Serializable {
       return false;
     }
     if (this.majorVersion != other.majorVersion) {
+      return false;
+    }
+    if (this.versionIndex != other.versionIndex) {
       return false;
     }
     return true;
@@ -634,6 +662,46 @@ public class SimpleDocument implements Serializable {
   }
 
   /**
+   * Returns the master of versioned document.
+   * If not versionned, it returns itself.
+   * If versioned, it returns the master of versioned document (the last created or updated in
+   * other words).
+   * @return
+   */
+  public SimpleDocument getVersionMaster() {
+    return versionMaster;
+  }
+
+  public void setVersionMaster(final SimpleDocument versionMaster) {
+    this.versionMaster = versionMaster;
+  }
+
+  /**
+   * Returns the path into the repository.
+   * @return
+   */
+  public String getRepositoryPath() {
+    return repositoryPath;
+  }
+
+  public void setRepositoryPath(final String repositoryPath) {
+    this.repositoryPath = repositoryPath;
+  }
+
+  /**
+   * Returns the index of document into the history if any and if the document is a versioned one.
+   * In other cases, it returns 0 (the start index).
+   * @return
+   */
+  public int getVersionIndex() {
+    return versionIndex;
+  }
+
+  public void setVersionIndex(final int versionIndex) {
+    this.versionIndex = versionIndex;
+  }
+
+  /**
    * Returns the more recent public version of this document - null if none exists.
    *
    * @return the more recent public version of this document - null if none exists.
@@ -644,5 +712,123 @@ public class SimpleDocument implements Serializable {
 
   public String getFolder() {
     return documentType.getFolderName();
+  }
+
+  /**
+   * Indicates if the download of the document is allowed for the given user in relation to its
+   * roles.
+   * DON'T USE THIS METHOD IN CASE OF LARGE NUMBER OF ATTACHMENT TO PERFORM.
+   * @param user
+   * @return true if download is allowed.
+   */
+  public boolean isDownloadAllowedForRolesFrom(final UserDetail user) {
+    if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
+      // In that case, from point of security view if no user data exists,
+      // then download is forbidden.
+      return false;
+    }
+
+    if (CollectionUtil.isEmpty(getVersionMaster().forbiddenDownloadForRoles)) {
+      // In that case, there is no reason to verify user role informations because it doesn't
+      // exists any restriction for downloading.
+      return true;
+    }
+
+    // Otherwise access is verified for download context
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+  }
+
+  /**
+   * Indicates if the download of the document is allowed for the given roles.
+   * @param roles
+   * @return true if download is allowed.
+   */
+  public boolean isDownloadAllowedForRoles(final Set<SilverpeasRole> roles) {
+    if (CollectionUtil.isEmpty(roles)) {
+      return false;
+    }
+
+    if (CollectionUtil.isEmpty(getVersionMaster().forbiddenDownloadForRoles)) {
+      // In that case, there is no reason to verify user role informations because it doesn't
+      // exists any restriction for downloading.
+      return true;
+    }
+
+    // If the intersection of the allowed roles compared to the given ones is empty,
+    // then the download is allowed.
+    return SilverpeasRole.getGreaterFrom(roles)
+        .isGreaterThan(SilverpeasRole.getGreaterFrom(getVersionMaster().forbiddenDownloadForRoles));
+  }
+
+  /**
+   * Indicates if the download is allowed for readers.
+   */
+  public boolean isDownloadAllowedForReaders() {
+    return isDownloadAllowedForRoles(SilverpeasRole.READER_ROLES);
+  }
+
+  /**
+   * Forbids the download for the given roles.
+   * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
+   * services during the conversion from JCR data to SimpleDocument data.
+   * @param forbiddenRoles
+   * @return true if roles were not forbidden before the call of this method.
+   */
+  public boolean addRolesForWhichDownloadIsForbidden(final SilverpeasRole... forbiddenRoles) {
+    return addRolesForWhichDownloadIsForbidden(Arrays.asList(forbiddenRoles));
+  }
+
+  /**
+   * Forbids the download for the given roles.
+   * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
+   * services during the conversion from JCR data to SimpleDocument data.
+   * @param forbiddenRoles
+   * @return true if roles were not forbidden before the call of this method.
+   */
+  public boolean addRolesForWhichDownloadIsForbidden(
+      final Collection<SilverpeasRole> forbiddenRoles) {
+    if (CollectionUtil.isNotEmpty(forbiddenRoles)) {
+      if (getVersionMaster().forbiddenDownloadForRoles == null) {
+        getVersionMaster().forbiddenDownloadForRoles = EnumSet.noneOf(SilverpeasRole.class);
+      }
+      return getVersionMaster().forbiddenDownloadForRoles.addAll(forbiddenRoles);
+    }
+    return false;
+  }
+
+  /**
+   * Allows the download for the given roles.
+   * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
+   * services during the conversion from JCR data to SimpleDocument data.
+   * @param allowedRoles
+   * @return true if roles were not allowed before the call of this method.
+   */
+  public boolean addRolesForWhichDownloadIsAllowed(final SilverpeasRole... allowedRoles) {
+    return addRolesForWhichDownloadIsAllowed(Arrays.asList(allowedRoles));
+  }
+
+  /**
+   * Allows the download for the given roles.
+   * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
+   * services during the conversion from JCR data to SimpleDocument data.
+   * @param allowedRoles
+   * @return true if roles were not allowed before the call of this method.
+   */
+  public boolean addRolesForWhichDownloadIsAllowed(final Collection<SilverpeasRole> allowedRoles) {
+    return CollectionUtil.isNotEmpty(allowedRoles) &&
+        CollectionUtil.isNotEmpty(getVersionMaster().forbiddenDownloadForRoles) &&
+        getVersionMaster().forbiddenDownloadForRoles.removeAll(allowedRoles);
+  }
+
+  /**
+   * Gets roles for which download is not allowed.
+   * @return
+   */
+  public Set<SilverpeasRole> getForbiddenDownloadForRoles() {
+    return (getVersionMaster().forbiddenDownloadForRoles != null) ?
+        Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles) : null;
   }
 }

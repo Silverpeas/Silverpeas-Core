@@ -1586,6 +1586,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     gsr.setViewable(viewable);
     gsr.setAttachmentId(id);
     gsr.setVersioned(false);
+    gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
+    gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
 
     String urlAttachment = document.getAttachmentURL();
 
@@ -1630,6 +1632,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       gsr.setViewable(viewable);
       gsr.setAttachmentId(documentId);
       gsr.setVersioned(true);
+      gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
+      gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
 
       // process download link
       return FileServerUtils.getApplicationContext() + document.getAttachmentURL();

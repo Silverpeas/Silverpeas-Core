@@ -32,7 +32,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.containerManager.ContainerInterface;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
@@ -83,6 +82,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.ScoreComparator;
+import org.silverpeas.servlet.HttpRequest;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
@@ -119,6 +119,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -127,7 +128,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    */
   @Override
   public String getDestination(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
     String destination = "";
@@ -953,7 +954,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   }
 
   private List<FileItem> getRequestItems(HttpServletRequest request) throws UtilException {
-    return FileUploadUtil.parseRequest(request);
+    return HttpRequest.decorate(request).getFileItems();
   }
 
   private String getParameterValue(List<FileItem> items, String parameterName) {

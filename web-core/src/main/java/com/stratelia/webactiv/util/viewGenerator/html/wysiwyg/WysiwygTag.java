@@ -3,10 +3,13 @@ package com.stratelia.webactiv.util.viewGenerator.html.wysiwyg;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class WysiwygTag extends TagSupport {
 
@@ -67,6 +70,13 @@ public class WysiwygTag extends TagSupport {
     wysiwyg.setLanguage(getLanguage());
     wysiwyg.setToolbar(getToolbar());
     wysiwyg.setServerURL(URLManager.getServerURL((HttpServletRequest) pageContext.getRequest()));
+    
+    HttpSession session = pageContext.getSession();
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    ResourceLocator settings = gef.getFavoriteLookSettings();
+    if (settings != null) {
+      wysiwyg.setCustomCSS(settings.getString("StyleSheet"));
+    }
     
     try {     
       pageContext.getOut().println(wysiwyg.print());

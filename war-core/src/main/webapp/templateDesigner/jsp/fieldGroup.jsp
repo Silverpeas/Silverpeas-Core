@@ -33,26 +33,23 @@
 	String groupsOfInstanceOnlyChecked = "";
 	
 	if (field != null) {
-	  	roles = (String) parameters.get("roles");
+	  	roles = parameters.get("roles");
 		if (!StringUtil.isDefined(roles)) {
 			roles = "";
 		}
 		
-	  	String groupsOfInstanceOnly = (String) parameters.get("groupsOfInstanceOnly");
+	  	String groupsOfInstanceOnly = parameters.get("groupsOfInstanceOnly");
 	  	if (StringUtil.getBooleanValue(groupsOfInstanceOnly)) {
 	  	  groupsOfInstanceOnlyChecked = "checked";
 	  	}
 	}
 %>
 <script type="text/javascript">
-	function isCorrectForm() 
-	{
+	function isCorrectForm() {
      	checkFieldName();
      	return checkErrors();
 	}
 </script>
-</head>
-<body>
 <%@ include file="includeTopField.jsp.inc" %>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.usedInstanceOnly")%> :</td><td><input type="checkbox" name="Param_groupsOfInstanceOnly" value="true" <%=groupsOfInstanceOnlyChecked%>/></td>

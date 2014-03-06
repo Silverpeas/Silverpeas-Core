@@ -22,21 +22,39 @@ package org.silverpeas.servlets;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.servlets.credentials.*;
-
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.servlets.credentials.ChangeExpiredPasswordHandler;
+import org.silverpeas.servlets.credentials.ChangePasswordFromLoginHandler;
+import org.silverpeas.servlets.credentials.ChangePasswordHandler;
+import org.silverpeas.servlets.credentials.ChangeQuestionHandler;
+import org.silverpeas.servlets.credentials.EffectiveChangePasswordBeforeExpirationHandler;
+import org.silverpeas.servlets.credentials.EffectiveChangePasswordFromLoginHandler;
+import org.silverpeas.servlets.credentials.EffectiveChangePasswordHandler;
+import org.silverpeas.servlets.credentials.ForcePasswordChangeHandler;
+import org.silverpeas.servlets.credentials.ForgotPasswordHandler;
+import org.silverpeas.servlets.credentials.FunctionHandler;
+import org.silverpeas.servlets.credentials.LoginQuestionHandler;
+import org.silverpeas.servlets.credentials.NewRegistrationHandler;
+import org.silverpeas.servlets.credentials.RegisterHandler;
+import org.silverpeas.servlets.credentials.ResetLoginPasswordHandler;
+import org.silverpeas.servlets.credentials.ResetPasswordHandler;
+import org.silverpeas.servlets.credentials.SendMessageHandler;
+import org.silverpeas.servlets.credentials.TermsOfServiceRequestHandler;
+import org.silverpeas.servlets.credentials.TermsOfServiceResponseHandler;
+import org.silverpeas.servlets.credentials.ValidationAnswerHandler;
+import org.silverpeas.servlets.credentials.ValidationQuestionHandler;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)
@@ -46,8 +64,8 @@ import java.util.Map;
 public class CredentialsServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7586840606648226466L;
-  private static final Map<String, FunctionHandler> handlers =
-      new HashMap<String, FunctionHandler>(20);
+  private static final Map<String, FunctionHandler> handlers = new HashMap<String, FunctionHandler>(
+      20);
 
   static {
     initHandlers();
@@ -104,7 +122,7 @@ public class CredentialsServlet extends HttpServlet {
         // Verify that the user can login
         UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
             .getUserCanLoginVerifier(AuthenticationCredential.newWithAsLogin(login).withAsDomainId(
-            domainId));
+                    domainId));
         try {
           user = userStateVerifier.getUser();
           userStateVerifier.verify();
@@ -117,6 +135,9 @@ public class CredentialsServlet extends HttpServlet {
         destinationPage = handler.doAction(request);
       }
 
+      /*if (!destinationPage.contains("Login.jsp")) {
+       renewSecurityToken(request);
+       }*/
       if (destinationPage.startsWith("http")) {
         AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());

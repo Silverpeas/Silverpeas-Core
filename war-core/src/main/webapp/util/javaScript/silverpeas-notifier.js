@@ -30,8 +30,8 @@
  */
 function notyInfo(text, customOptions) {
   var options = {
-    text : text,
-    type : 'information'
+    text: text,
+    type: 'information'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -45,8 +45,8 @@ function notyInfo(text, customOptions) {
  */
 function notySuccess(text, customOptions) {
   var options = {
-    text : text,
-    type : 'success'
+    text: text,
+    type: 'success'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -60,10 +60,10 @@ function notySuccess(text, customOptions) {
  */
 function notyWarning(text, customOptions) {
   var options = {
-    text : text,
-    timeout : false,
-    closeWith : ['button'], // ['click', 'button', 'hover']
-    type : 'warning'
+    text: text,
+    timeout: false,
+    closeWith: ['button'], // ['click', 'button', 'hover']
+    type: 'warning'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -77,10 +77,10 @@ function notyWarning(text, customOptions) {
  */
 function notyError(text, customOptions) {
   var options = {
-    text : text,
-    timeout : false,
-    closeWith : ['button'], // ['click', 'button', 'hover']
-    type : 'error'
+    text: text,
+    timeout: false,
+    closeWith: ['button'], // ['click', 'button', 'hover']
+    type: 'error'
   };
   if (customOptions) {
     $.extend(options, customOptions);
@@ -94,10 +94,10 @@ function notyError(text, customOptions) {
  */
 function __noty(customOptions) {
   var options = $.extend({
-    layout : 'topCenter',
-    theme : 'silverpeas',
-    timeout : 5000,
-    dismissQueue : true
+    layout: 'topCenter',
+    theme: 'silverpeas',
+    timeout: 5000,
+    dismissQueue: true
   }, customOptions);
   if (options.text) {
     noty(options);
@@ -114,21 +114,21 @@ function notyRegistredMessages(registredKey) {
 
     // Ajax request
     jQuery.ajax({
-      url : url,
-      type : 'GET',
-      dataType : 'json',
-      cache : false,
-      async : true,
-      success : function(result) {
+      url: url,
+      type: 'GET',
+      dataType: 'json',
+      cache: false,
+      async: true,
+      success: function(result) {
         if (result && result.messages) {
           jQuery.each(result.messages, function(index, message) {
 
             // Default options
             var messageOptions = {
-              text : message.content,
-              type : message.type,
-              timeout : false,
-              layout : 'topCenter'
+              text: message.content,
+              type: message.type,
+              timeout: false,
+              layout: 'topCenter'
             };
             if (jQuery.isNumeric(message.displayLiveTime) && message.displayLiveTime > 0) {
               messageOptions.timeout = message.displayLiveTime;
@@ -152,8 +152,8 @@ function notyRegistredMessages(registredKey) {
               default :
                 // Message is not supported
                 window.console &&
-                window.console.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
-                    messageOptions.type + ', message : ' + messageOptions.content);
+                        window.console.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
+                                messageOptions.type + ', message : ' + messageOptions.content);
                 return;
             }
 
@@ -172,7 +172,7 @@ function notyRegistredMessages(registredKey) {
 function notySetupAjaxMessages() {
   var error = function(jqXHR, errorThrown) {
     var errorMsg = jqXHR.responseText;
-    if (!$.trim(errorMsg)) {
+    if (!jQuery.trim(errorMsg)) {
       errorMsg = errorThrown;
     }
     window.console && window.console.log('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
@@ -187,10 +187,10 @@ function notySetupAjaxMessages() {
     }
   };
   jQuery.ajaxSetup({
-    error : function(jqXHR, textStatus, errorThrown) {
+    error: function(jqXHR, textStatus, errorThrown) {
       error.call(this, jqXHR, errorThrown);
     },
-    complete : function(jqXHR, textStatus) {
+    complete: function(jqXHR, textStatus) {
       complete.call(this, jqXHR);
     }
   });

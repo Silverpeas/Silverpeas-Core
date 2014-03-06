@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
+<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -109,7 +111,7 @@ if (m_MainSessionCtrl == null) {
       topLocation = "/admin/jsp/" + topLocation;
     }
 		%>
-   			<c:set var="topLocation"><%=topLocation%></c:set>
+			<c:set var="topLocation"><%=topLocation%></c:set>
 			<script type="text/javascript">
 				top.location="<c:url value="${topLocation}" />";
 			</script>

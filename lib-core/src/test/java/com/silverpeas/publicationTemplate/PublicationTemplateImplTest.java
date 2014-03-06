@@ -25,8 +25,6 @@ package com.silverpeas.publicationTemplate;
 
 import java.io.FileInputStream;
 
-import javax.validation.constraints.AssertTrue;
-
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.BeforeClass;
@@ -34,6 +32,8 @@ import org.junit.Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
 
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
 
@@ -58,8 +58,6 @@ public class PublicationTemplateImplTest {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-        PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH +
-            SEPARATOR + "templateMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 
@@ -71,6 +69,9 @@ public class PublicationTemplateImplTest {
     instance.setDataFileName(xmlFileName);
     instance.setFileName("personne.xml");
     RecordTemplate result = instance.getRecordTemplate();
+    FieldTemplate fieldTemplate = result.getFieldTemplate("civilite");
+    Field field = fieldTemplate.getEmptyField();
+    assertThat(field, is(notNullValue()));
     assertEquals(expectedTemplate, result);
   }
 

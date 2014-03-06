@@ -42,7 +42,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -218,8 +218,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   private String getShortSpaceId(String spaceId) {
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.getShortSpaceId()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
-    if ((spaceId != null) && (spaceId.startsWith("WA"))) {
-      return spaceId.substring(2);
+    if (spaceId != null && spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      return spaceId.substring(Admin.SPACE_KEY_PREFIX.length());
     }
     return (spaceId == null) ? "" : spaceId;
   }
@@ -711,7 +711,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       // admin can always remove space
       return true;
     } else {
-      List<String> spaceIds = Arrays.asList(getUserManageableSpaceIds());
+      List<String> spaceIds = Arrays.asList(adminController.getUserManageableSpaceIds(getUserId()));
       if (spaceIds == null || spaceIds.isEmpty()) {
         // user is not a space manager
         return false;
@@ -719,7 +719,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         // Check if user manages this space or one of its parent
         List<SpaceInst> spaces = getOrganisationController().getSpacePath(spaceId);
         for (SpaceInst spaceInPath : spaces) {
-          if (spaceIds.contains(spaceInPath.getId())) {
+          if (spaceIds.contains(getShortSpaceId(spaceInPath.getId()))) {
             return true;
           }
         }

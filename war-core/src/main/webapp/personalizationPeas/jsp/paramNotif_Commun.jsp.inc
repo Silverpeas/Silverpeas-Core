@@ -9,7 +9,10 @@
   }
   function deleteRegle(id){
 	if (window.confirm("<%=resource.getString("MessageSuppressionRegle")%>")) {
-	   location.href = "paramNotif.jsp?id=" + id + "&Action=delete";
+     var $form = jQuery('#genericFormParamNotif');
+     jQuery('#id', $form).val(id);
+     jQuery('#Action', $form).val('delete');
+     $form.attr('action', "paramNotif.jsp").submit();
 	}
   }
 </script>
@@ -82,5 +85,10 @@
 	  arrayLine.addArrayCellIconPane(actions);
 	}
 %>
+
+<form id="genericFormParamNotif" action="" method="POST">
+  <input id="id" name="id" type="hidden"/>
+  <input id="Action" name="Action" type="hidden"/>
+</form>
 
 <%out.println(notif.print());%>

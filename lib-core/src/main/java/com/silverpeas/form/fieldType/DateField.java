@@ -20,6 +20,7 @@
  */
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
@@ -33,7 +34,7 @@ import java.text.ParseException;
  * @see Field
  * @see FieldDisplayer
  */
-public abstract class DateField implements Field {
+public abstract class DateField extends AbstractField {
 
   private static final long serialVersionUID = -885405651541562611L;
   /**

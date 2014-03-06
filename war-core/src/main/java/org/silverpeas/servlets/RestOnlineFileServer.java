@@ -21,8 +21,11 @@
  */
 package org.silverpeas.servlets;
 
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.accesscontrol.ComponentAccessController;
-import com.silverpeas.accesscontrol.SimpleDocumentAccessController;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -71,6 +74,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
       }
     } catch (IllegalAccessException ex) {
       res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      res.sendError(res.getStatus());
       return;
     } catch (Exception ex) {
       throw new ServletException(ex);
@@ -127,29 +131,34 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return file;
   }
 
-
   private boolean isUserAuthorized(RestRequest request, String componentId, Object object)
       throws Exception {
     SilverpeasWebUtil util = new SilverpeasWebUtil();
     MainSessionController controller = util.getMainSessionController(request.getWebRequest());
     ComponentAccessController componentAccessController = new ComponentAccessController();
-    if (controller != null &&
-        componentAccessController.isUserAuthorized(controller.getUserId(), componentId)) {
-      if (componentAccessController.isRightOnTopicsEnabled(controller.getUserId(), componentId)) {
-        if (object instanceof SimpleDocument) {
-          return isSimpleDocumentAuthorized(controller.getUserId(), (SimpleDocument) object);
-        }
+    if (controller != null) {
+
+      if (object instanceof SimpleDocument) {
+        return isSimpleDocumentAuthorized(controller.getUserId(), (SimpleDocument) object);
+      }
+
+      // If rights on directories are enabled, there is a problem
+      if (componentAccessController.isRightOnTopicsEnabled(componentId)) {
         return false;
       }
-      return true;
+
+      // Verification on the component instance
+      return componentAccessController.isUserAuthorized(controller.getUserId(), componentId);
     }
     return false;
   }
 
   private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment)
       throws Exception {
-    SimpleDocumentAccessController accessController = new SimpleDocumentAccessController();
-    return accessController.isUserAuthorized(userId, attachment);
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(userId, attachment,
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }
 
   @Override

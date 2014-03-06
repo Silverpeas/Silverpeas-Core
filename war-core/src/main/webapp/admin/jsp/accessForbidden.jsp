@@ -32,37 +32,27 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ include file="import.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<HTML>
-<HEAD>
-<TITLE><%= generalMessage.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-</HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-
-<%
-	Window window = gef.getWindow();
-	Frame frame = gef.getFrame();
-	Board board = gef.getBoard();
-	
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
-%>
-	<br/>
-	<center>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%= generalMessage.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+</head>
+<body>
+<view:window>
+<view:frame>
+<br/>
+	<div class="inlineMessage-nok">
 		<h3><%=generalMessage.getString("GML.ForbiddenAccessContent")%></h3>
-	</center>
+	</div>
 <%
-	out.println(board.printAfter());
-	
-	Button back = (Button) gef.getFormButton(generalMessage.getString("GML.back"), "javascript:onClick=history.go(-1);", false);
-	out.println("<br/><center>"+back.print()+"</center><br/>");
-	
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
+	ButtonPane buttons = gef.getButtonPane();
+	buttons.addButton(gef.getFormButton(generalMessage.getString("GML.back"), "javascript:onClick=history.go(-1);", false));
+	out.println(buttons.print());
 %>
-</BODY> 
+</view:frame>
+</view:window>
+</body>
 </html>

@@ -85,18 +85,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to get user name for given user id
-   *
-   * @param user_id
-   * @return the user name for given user id
-   */
-  public String getUserNameByID(int user_id) {
-    UserDetail user = getOrganisationController().getUserDetail(String.valueOf(user_id));
-    String name = user.getFirstName() + " " + user.getLastName();
-    return name.trim();
-  }
-
-  /**
    * Constructor
    *
    * @param mainSessionCtrl
@@ -127,7 +115,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
     return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
-        .searchDocumentById(documentPK, null)).getHistory();
+        .searchDocumentById(documentPK, null)).getFunctionalHistory();
   }
 
   /**

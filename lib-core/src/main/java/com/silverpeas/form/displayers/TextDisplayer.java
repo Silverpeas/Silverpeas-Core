@@ -20,6 +20,12 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -33,11 +39,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -62,9 +63,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
    * @return
    */
   public String[] getManagedTypes() {
-    String[] s = new String[2];
-    s[0] = TextField.TYPE;
-    s[1] = DateField.TYPE;
+    String[] s = {TextField.TYPE, DateField.TYPE};
     return s;
   }
 
@@ -110,22 +109,23 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     Map<String, String> parameters = template.getParameters(language);
     String value = "";
     if (!field.isNull()) {
-      value = field.getValue(language);
-    }
-
-    if (field.getTypeName().equals(DateField.TYPE)) {
-      try {
-        value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
-      } catch (Exception e) {
-        SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-            "value = " + field.getValue(), e);
+      if (field.getTypeName().equals(DateField.TYPE)) {
+        try {
+          value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
+        } catch (Exception e) {
+          SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+              "value = " + field.getValue(), e);
+        }
+      } else {
+        value = EncodeHelper.convertWhiteSpacesForHTMLDisplay(field.getValue(language));
       }
     }
+
     String classe = null;
     if (parameters.containsKey("class")) {
       classe = parameters.get("class");
       if (classe != null) {
-        classe = "class=" + classe;
+        classe = "class=\"" + classe + "\"";
       }
     }
 
@@ -190,7 +190,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
         html.append("<b>");
       }
     }
-    html.append(EncodeHelper.javaStringToHtmlParagraphe(value));
+    html.append(value);
 
     if (StringUtil.isDefined(bold)) {
       html.append("</b>");

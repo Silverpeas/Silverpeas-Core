@@ -25,25 +25,25 @@ package com.silverpeas.comment.web;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.model.Comment;
-
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.net.URI;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.owasp.encoder.Encode;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.owasp.encoder.Encode;
+import java.net.URI;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -76,6 +76,9 @@ public class CommentEntity implements Exposable {
   @XmlElement(required = true)
   @NotNull
   private String text;
+  @XmlElement(required = true)
+  @NotNull
+  private String textForHtml;
   @XmlElement(required = true)
   @NotNull
   private UserProfileEntity author;
@@ -126,10 +129,8 @@ public class CommentEntity implements Exposable {
    * @return a comment instance.
    */
   public Comment toComment() {
-    String safeText = Encode.forHtml(text);
-    Comment comment =
-        new Comment(new CommentPK(id, componentId), resourceType, new PublicationPK(resourceId,
-        componentId), Integer.valueOf(author.getId()), author.getFullName(), safeText,
+    Comment comment = new Comment(new CommentPK(id, componentId), resourceType, new PublicationPK(
+        resourceId, componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
         decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
         decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
     comment.setOwnerDetail(getAuthor().toUserDetail());
@@ -217,6 +218,15 @@ public class CommentEntity implements Exposable {
   }
 
   /**
+   * Gets the text encoded for HTLML of the comment.
+   *
+   * @return the text encoded for HTML of the comment.
+   */
+  public String getTextForHtml() {
+    return textForHtml;
+  }
+
+  /**
    * Gets the date at which the comment was created.
    *
    * @return the creation date of the comment.
@@ -237,7 +247,7 @@ public class CommentEntity implements Exposable {
   /**
    * Is this comment indexed? By default, the comment isn't indexed by the system.
    *
-* @return true if the comment is indexed, false otherwise.
+   * @return true if the comment is indexed, false otherwise.
    */
   public boolean isIndexed() {
     return indexed;
@@ -251,6 +261,7 @@ public class CommentEntity implements Exposable {
    */
   public CommentEntity newText(final String aText) {
     this.text = aText;
+    this.textForHtml = Encode.forHtml(aText);
     return this;
   }
 
@@ -260,6 +271,7 @@ public class CommentEntity implements Exposable {
     this.resourceType = comment.getResourceType();
     this.resourceId = comment.getForeignKey().getId();
     this.text = comment.getMessage();
+    this.textForHtml = Encode.forHtml(comment.getMessage());
     this.author = UserProfileEntity.fromUser(comment.getCreator());
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
     this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
@@ -314,7 +326,7 @@ public class CommentEntity implements Exposable {
    * language. If the specified date isn't defined, then a display date of today is returned.
    *
    * @param date the date to encode.
-   * @param the language to use to encode the display date.
+   * @param language the language to use to encode the display date.
    * @return the resulting display date.
    */
   private static String encodeToDisplayDate(java.util.Date date, String language) {

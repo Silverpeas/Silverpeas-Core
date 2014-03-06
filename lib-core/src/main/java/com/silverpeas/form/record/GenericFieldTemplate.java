@@ -24,13 +24,6 @@
 
 package com.silverpeas.form.record;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.FormFatalException;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.util.ArrayUtil;
-
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -39,28 +32,58 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.FormFatalException;
+import com.silverpeas.form.TypeManager;
+import com.silverpeas.util.ArrayUtil;
+
 /**
  * A generic FieldTemplate implementation.
  */
+@XmlRootElement(name = "fieldTemplate")
+@XmlAccessorType(XmlAccessType.NONE)
 public class GenericFieldTemplate implements FieldTemplate, Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
+  @XmlElement(required = true)
   private String fieldName = null;
   private Class fieldImpl = null;
   private String typeName = null;
+  @XmlElement(required = true)
   private String displayerName = "";
+  @XmlElement(name = "isMandatory", required = true, defaultValue = "false")
   private boolean mandatory = false;
+  @XmlElement(name = "isReadOnly", required = true, defaultValue = "false")
   private boolean readOnly = false;
+  @XmlElement(name = "isDisabled", required = true, defaultValue = "false")
   private boolean disabled = false;
+  @XmlElement(name = "isHidden", required = true, defaultValue = "false")
   private boolean hidden = false;
+  
   private String defaultLabel = null;
   private Map<String, String> labels = new HashMap<String, String>();
   private Map<String, String> parameters = new HashMap<String, String>();
+  
+  @XmlElement(name = "label")
   private List<Label> labelsObj = new ArrayList<Label>();
+  @XmlElement(name = "parameter")
   private List<Parameter> parametersObj = new ArrayList<Parameter>();
+  @XmlElement(name = "isSearchable", required = true, defaultValue = "false")
   private boolean searchable = false;
   private String templateName = null;
+  
+  @XmlElement(name = "isFacet", required = true, defaultValue = "false")
   private boolean usedAsFacet = false;
+  
+  @XmlElement(defaultValue = "1")
+  private int maximumNumberOfOccurrences = 1;
 
   /**
    * Builds a GenericFieldTemplate
@@ -126,6 +149,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Returns the type name of the described field.
    */
   @Override
+  @XmlElement(required = true)
   public String getTypeName() {
     return typeName;
   }
@@ -321,13 +345,13 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
         String value = vTokenizer.nextToken();
         keyValuePairs.put(key, value);
       }
-    } else if (keys != null && values == null) {
+    } else if (keys != null) {
       StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
       while (kTokenizer.hasMoreTokens()) {
         String key = kTokenizer.nextToken();
         keyValuePairs.put(key, key);
       }
-    } else if (keys == null && values != null) {
+    } else if (values != null) {
       StringTokenizer vTokenizer = new StringTokenizer(values, "##");
       while (vTokenizer.hasMoreTokens()) {
         String value = vTokenizer.nextToken();
@@ -349,15 +373,21 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   /**
    * Returns an empty Field built on this template.
    */
-  @SuppressWarnings("unchecked")
   @Override
   public Field getEmptyField() throws FormException {
+    return getEmptyField(0);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public Field getEmptyField(int occurrence) throws FormException {
     try {
       Class[] noParameterClass = ArrayUtil.EMPTY_CLASS_ARRAY;
       Constructor constructor = fieldImpl.getConstructor(noParameterClass);
       Object[] noParameter = ArrayUtil.EMPTY_OBJECT_ARRAY;
       Field field = (Field) constructor.newInstance(noParameter);
-
+      field.setName(fieldName);
+      field.setOccurrence(occurrence);
       return field;
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
@@ -379,9 +409,8 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       } else if (obj instanceof GenericFieldTemplate) {
         return ((GenericFieldTemplate) obj).getFieldName().equals(
             this.getFieldName());
-      } else {
-        return false;
       }
+      return false;
     } catch (Exception e) {
       return false;
     }
@@ -423,6 +452,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   /**
    * Used by the castor xml mapping.
    */
+  @Override
   public List<Parameter> getParametersObj() {
     return parametersObj;
   }
@@ -452,6 +482,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     this.templateName = templateName;
   }
 
+  @Override
   public boolean isUsedAsFacet() {
     return usedAsFacet;
   }
@@ -460,9 +491,10 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     this.usedAsFacet = usedAsFacet;
   }
 
+  @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "CloneDoesntCallSuperClone"})
   @Override
   public GenericFieldTemplate clone() {
-    GenericFieldTemplate clone = null;
+    GenericFieldTemplate clone;
     try {
       clone = new GenericFieldTemplate();
       clone.setDisabled(this.isDisabled());
@@ -478,10 +510,31 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       clone.setTemplateName(this.getTemplateName());
       clone.setTypeName(this.getTypeName());
       clone.setUsedAsFacet(isUsedAsFacet());
+      clone.setMaximumNumberOfOccurrences(getMaximumNumberOfOccurrences());
     } catch (FormException e) {
       throw new RuntimeException(e);
     }
     return clone;
+  }
+
+  @Override
+  public int getMaximumNumberOfOccurrences() {
+    return maximumNumberOfOccurrences;
+  }
+  
+  public void setMaximumNumberOfOccurrences(int nb) {
+    // If the occurrence number is stricly lower than 1, the value is forced to 1.
+    // This avoids potential technical errors in different uses of the formular.
+    if (nb > 1) {
+      maximumNumberOfOccurrences = nb;
+    } else {
+      maximumNumberOfOccurrences = 1;
+    }
+  }
+  
+  @Override
+  public boolean isRepeatable() {
+    return maximumNumberOfOccurrences > 1;
   }
 
 }
