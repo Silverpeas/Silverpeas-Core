@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.owasp.encoder.Encode"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -122,7 +123,7 @@ else
       sb.append("</a> : <a href=\"");
       sb.append(taskEventURL);
       sb.append("\">");
-      sb.append(taskname);
+      sb.append(Encode.forHtml(taskname));
       sb.append("</a>");
       out.println(sb.toString());
 

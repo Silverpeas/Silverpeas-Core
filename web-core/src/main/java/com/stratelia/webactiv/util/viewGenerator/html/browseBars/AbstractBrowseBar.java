@@ -357,6 +357,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return ignoreComponentLink;
   }
 
+  @Override
   public void setLook(LookHelper look) {
     this.look = look;
   }
