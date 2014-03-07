@@ -203,7 +203,9 @@
             <c:choose>
               <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
                 <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
+
                 <span><c:out value="${errorMessage}" escapeXml="${fn:containsIgnoreCase(errorMessage, 'script') ? 'true' : 'false'}"/></span>
+
               </c:when>
               <c:otherwise>
                 <fmt:message key="authentication.logon.subtitle"/>
