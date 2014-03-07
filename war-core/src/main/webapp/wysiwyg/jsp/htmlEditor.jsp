@@ -402,14 +402,11 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 	</script>
 <% } else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) { %>
 	<form method="post" name="recupHtml" action="<%=context%>/wysiwyg/jsp/htmlEditor.jsp">
-    <table border="0" cellpadding="0" cellspacing="0">
+    
       <% if (I18NHelper.isI18N && StringUtil.isDefined(contentLanguage)) { %>
-      <tr class="TB_Expand">
-        <td class="TB_Expand" align="center"><%=I18NHelper.getLanguageLabel(contentLanguage, language)%></td>
-      </tr>
+     <div class="container-wysiwyg wysiwyg-language"><%=I18NHelper.getLanguageLabel(contentLanguage, language)%></div>
       <% } %>
-      <tr class="TB_Expand">
-			<td class="TB_Expand" align="center">
+      <div class="container-wysiwyg wysiwyg-fileStorage">
 
 		<% List fileStorage = WysiwygController.getStorageFile(userId);
  		   request.setAttribute("fileStorage",fileStorage);
@@ -457,11 +454,11 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 						<% } %>
 					</select>
 				<% } %>
-			</td></tr>
-			<tr><td>
+			</div>
+			<div class="container-wysiwyg wysiwyg-area">
 				<textarea id="editor1" name="editor1" cols="10" rows="10"><%=wysiwygTextValue%></textarea>
-			</td></tr>
-		</table>
+			</div>
+	
 		<input name="actionWysiwyg" type="hidden" value="SaveHtml"/>
 		<input name="origin" type="hidden" value="<%=componentId%>"/>
 		<input name="Exit" type="hidden" value="0"/>
