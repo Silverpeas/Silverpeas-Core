@@ -195,6 +195,15 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return updateForm;
   }
 
+
+  /* (non-Javadoc)
+   * @see com.silverpeas.publicationTemplate.PublicationTemplate#getUpdateFormAsXMLOne()
+   */
+  @Override
+  public XmlForm getUpdateFormAsXMLOne() throws PublicationTemplateException {
+    return (XmlForm) getForm(updateFileName.replaceAll(".html", ".xml"), "xml");
+  }
+
   /**
    * Returns the Form used to view the records built from this template.
    */
