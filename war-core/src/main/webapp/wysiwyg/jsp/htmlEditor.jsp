@@ -292,13 +292,6 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 <head>
 <title>Silverpeas Wysiwyg Editor</title>
 <view:looknfeel/>
-<style type="text/css">
-	.TB_Expand {
-		background-color: #efefde;
-		padding: 2px 2px 2px 2px;
-		border: #efefde 1px outset;
-	}
-</style>
 <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />'></script>
 <view:includePlugin name="wysiwyg"/>
 </head>
