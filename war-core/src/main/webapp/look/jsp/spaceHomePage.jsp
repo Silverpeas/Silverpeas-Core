@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.owasp.encoder.Encode"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
@@ -207,13 +208,13 @@ function goToSpaceItem(url) {
 }
 $(document).ready(function() {
 	// if at least one item have got a description
-	if ($.trim($(".spaceNavigation li p").text()).length!=0){
+	if ($.trim($(".spaceNavigation li p").text()).length!==0){
 		$(".spaceNavigation li").css("min-height", "43px");
 		$(".spaceNavigation li").css("line-height", "40px");
     }
 		
 	// if right column is empty
-	if ($.trim($(".rightContent").text()).length==0){
+	if ($.trim($(".rightContent").text()).length===0){
 		$(".rightContent").css("display", "none");
 		$(".principalContent").css("margin-right", "0");
 	}
@@ -258,7 +259,7 @@ $(document).ready(function() {
 								<ul class="carousel">
 									<% for (PublicationDetail aNews : news) { %>
 										<li class="slide">
-										<h4 class="title-quickInfo"><%=aNews.getName(helper.getLanguage()) %></h4>
+                      <h4 class="title-quickInfo"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></h4>
 										<div class="content-quickInfo">
 											<p><%=aNews.getWysiwyg() %></p>
 										</div>
@@ -284,10 +285,10 @@ $(document).ready(function() {
 						  <% } %>
                         </div>
                         <div class="principalContent">
-                          <h1 class="spaceName"><%=space.getName(helper.getLanguage()) %></h1>
+                          <h1 class="spaceName"><%=Encode.forHtml(space.getName(helper.getLanguage())) %></h1>
                         
                         	<% if (StringUtil.isDefined(space.getDescription(helper.getLanguage()))) { %>
-                            	<p class="spaceDescription"><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(space.getDescription(helper.getLanguage())) %></p>
+                          <p class="spaceDescription"><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(space.getDescription(helper.getLanguage()))) %></p>
                             <% } else { %>
                             	<p></p>
                             <% } %>
@@ -298,9 +299,9 @@ $(document).ready(function() {
 								<% for (SpaceInstLight subspace : subspaces) { %>
 								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>')">
 									<div>
-										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>"><%=subspace.getName(helper.getLanguage()) %></a>
+										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>"><%=Encode.forHtml(subspace.getName(helper.getLanguage())) %></a>
 										<% if (StringUtil.isDefined(subspace.getDescription(helper.getLanguage()))) { %>
-											<p><%=subspace.getDescription(helper.getLanguage()) %></p>
+											<p><%=Encode.forHtml(subspace.getDescription(helper.getLanguage())) %></p>
 										<% } %>
 									</div>
 								</li>
@@ -309,9 +310,9 @@ $(document).ready(function() {
 								<li class="browse-component bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>')">
 									<div>
 										<img src="<%=app.getIcon(true) %>" /> 
-										<a href="<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>"><%=app.getLabel(helper.getLanguage()) %></a>
+										<a href="<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>"><%=Encode.forHtml(app.getLabel(helper.getLanguage())) %></a>
 										<% if (StringUtil.isDefined(app.getDescription(helper.getLanguage()))) { %>
-											<p><%=app.getDescription(helper.getLanguage()) %></p>
+											<p><%=Encode.forHtml(app.getDescription(helper.getLanguage())) %></p>
 										<% } %>
 									</div>
 								</li>
@@ -329,9 +330,9 @@ $(document).ready(function() {
 							<ul id="publicationList">
 								<% for (PublicationDetail publication : publications) { %>
 								<li>
-									<a href="<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getId())%>"><b><%=publication.getName(helper.getLanguage()) %></b></a> 
+									<a href="<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getId())%>"><b><%=Encode.forHtml(publication.getName(helper.getLanguage())) %></b></a> 
 									<view:username userId="<%=publication.getUpdaterId() %>" /> - <%=DateUtil.getOutputDate(publication.getUpdateDate(), helper.getLanguage()) %> <br/>
-									<%= publication.getDescription(helper.getLanguage()) %> 
+									<%= Encode.forHtml(publication.getDescription(helper.getLanguage())) %> 
 								</li>
 								<% } %>
                              </ul>

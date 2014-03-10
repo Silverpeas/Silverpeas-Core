@@ -1069,15 +1069,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <welcome-file>Login.jsp</welcome-file>
   </welcome-file-list>
   <error-page>
-    <exception-type>net.sourceforge.spnego.SpnegoGSSException</exception-type>
+    <exception-type>org.silverpeas.spnego.SpnegoGSSException</exception-type>
     <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>
-    <exception-type>net.sourceforge.spnego.SpnegoUnsupportedOperationException</exception-type>
+    <exception-type>org.silverpeas.spnego.SpnegoUnsupportedOperationException</exception-type>
     <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>
-    <exception-type>net.sourceforge.spnego.SpnegoUnauthenticatedException</exception-type>
+    <exception-type>org.silverpeas.spnego.SpnegoUnauthenticatedException</exception-type>
     <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>

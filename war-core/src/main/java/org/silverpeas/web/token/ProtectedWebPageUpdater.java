@@ -59,6 +59,9 @@ public class ProtectedWebPageUpdater extends HttpServlet {
    */
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+    response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+    response.setDateHeader("Expires", -1); //prevents caching at the proxy server
     response.setContentType("application/javascript");
     PrintWriter out = response.getWriter();
     try {

@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.*;
@@ -39,6 +35,7 @@ import java.util.Map;
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
  * retrieve via HTTP any updated values.
+ *
  * @see DataRecord
  * @see RecordTemplate
  * @see FieldDisplayer
@@ -57,6 +54,7 @@ public class XmlForm extends AbstractForm {
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
    * </ul>
+   *
    * @param pagesContext
    * @param record
    * @return
@@ -67,7 +65,7 @@ public class XmlForm extends AbstractForm {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw, true);
     display(pw, pagesContext, record);
-    return pw.toString();
+    return sw.toString();
   }
 
   /**
@@ -78,12 +76,13 @@ public class XmlForm extends AbstractForm {
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
    * </ul>
+   *
    * @param out
    */
   private void display(PrintWriter out, PagesContext pageContext, DataRecord record) {
     SilverTrace.info("form", "XmlForm.display", "root.MSG_GEN_ENTER_METHOD");
     String language = pageContext.getLanguage();
-    
+
     String mode = "";
     if (pageContext.isDesignMode()) {
       mode = "mode-design";
@@ -170,10 +169,10 @@ public class XmlForm extends AbstractForm {
               technicalNameHelp = " title=\"" + fieldName + "\"";
             }
 
-            out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName +
-                "\">");
-            out.println("<label for=\"" + fieldName + "\" " + aClass + technicalNameHelp + ">" +
-                fieldLabel + "</label>");
+            out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName
+                + "\">");
+            out.println("<label for=\"" + fieldName + "\" " + aClass + technicalNameHelp + ">"
+                + fieldLabel + "</label>");
             out.println("<div class=\"fieldInput\">");
             if (!fieldTemplate.isRepeatable()) {
               field = getSureField(fieldTemplate, record, 0);
@@ -183,8 +182,8 @@ public class XmlForm extends AbstractForm {
                 SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
               }
             } else {
-              boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName()) &&
-                  !fieldTemplate.isReadOnly();
+              boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName())
+                  && !fieldTemplate.isReadOnly();
               String currentVisibility = AbstractForm.REPEATED_FIELD_CSS_SHOW;
               int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
               Field lastNotEmptyField = getLastNotEmptyField(record, fieldName, maxOccurrences);
@@ -194,16 +193,16 @@ public class XmlForm extends AbstractForm {
                 if (occ > 0) {
                   ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
                   if (!isWriting) {
-                    currentVisibility = field.isNull() ? AbstractForm.REPEATED_FIELD_CSS_HIDE :
-                        AbstractForm.REPEATED_FIELD_CSS_SHOW;
+                    currentVisibility = field.isNull() ? AbstractForm.REPEATED_FIELD_CSS_HIDE
+                        : AbstractForm.REPEATED_FIELD_CSS_SHOW;
                   } else {
-                    currentVisibility =
-                        (lastNotEmptyField == null || (occ > lastNotEmptyField.getOccurrence())) ?
-                            AbstractForm.REPEATED_FIELD_CSS_HIDE :
-                            AbstractForm.REPEATED_FIELD_CSS_SHOW;
+                    currentVisibility = (lastNotEmptyField == null || (occ > lastNotEmptyField.
+                        getOccurrence())) ? AbstractForm.REPEATED_FIELD_CSS_HIDE
+                        : AbstractForm.REPEATED_FIELD_CSS_SHOW;
                   }
                 }
-                out.println("<li class=\"" + currentVisibility + " repeatable-field-list-element"+occ+"\">");
+                out.println("<li class=\"" + currentVisibility + " repeatable-field-list-element"
+                    + occ + "\">");
                 try {
                   fieldDisplayer.display(out, field, fieldTemplate, pc);
                 } catch (FormException fe) {
@@ -212,23 +211,21 @@ public class XmlForm extends AbstractForm {
                 out.println("</li>");
               }
               out.println("</ul>");
-              if (isWriting && (lastNotEmptyField == null ||
-                  (lastNotEmptyField.getOccurrence() < maxOccurrences - 1))) {
+              if (isWriting && (lastNotEmptyField == null || (lastNotEmptyField.getOccurrence()
+                  < maxOccurrences - 1))) {
                 Util.printOneMoreInputSnippet(fieldName, pc, out);
               }
             }
             if (pageContext.isDesignMode()) {
               out.println("<span class=\"actions\">");
-              out.println("<a title=\"" + Util.getString("GML.modify", language) +
-                    "\" href=\"#\" onclick=\"editField('" + fieldName + "','" +
-                  fieldDisplayerName +
-                    "');return false;\"><img alt=\"" + Util.getString("GML.modify", language) +
-                    "\" src=\"/silverpeas/util/icons/update.gif\"/></a>");
-              out.println("<a title=\"" + Util.getString("GML.delete", language) +
-                    "\" href=\"#\" onclick=\"deleteField('" + fieldName +
-                  "');return false;\"><img alt=\"" +
-                    Util.getString("GML.delete", language) +
-                    "\" src=\"/silverpeas/util/icons/delete.gif\"/></a>");
+              out.println("<a title=\"" + Util.getString("GML.modify", language)
+                  + "\" href=\"#\" onclick=\"editField('" + fieldName + "','" + fieldDisplayerName
+                  + "');return false;\"><img alt=\"" + Util.getString("GML.modify", language)
+                  + "\" src=\"/silverpeas/util/icons/update.gif\"/></a>");
+              out.println("<a title=\"" + Util.getString("GML.delete", language)
+                  + "\" href=\"#\" onclick=\"deleteField('" + fieldName
+                  + "');return false;\"><img alt=\"" + Util.getString("GML.delete", language)
+                  + "\" src=\"/silverpeas/util/icons/delete.gif\"/></a>");
               out.println("</span>");
             }
             out.println("</div>");
@@ -236,8 +233,8 @@ public class XmlForm extends AbstractForm {
           }
 
           if (isMandatory && !isDisabled && !isHidden
-                && fieldDisplayer.isDisplayedMandatory()
-                && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
+              && fieldDisplayer.isDisplayedMandatory()
+              && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
             mandatory = true;
           }
           out.flush();
@@ -248,20 +245,20 @@ public class XmlForm extends AbstractForm {
     out.println("</ul>");
     if (mandatory) {
       out.println("<div class=\"legend\">");
-      out.println(Util.getMandatorySnippet() + "&nbsp;:&nbsp;" +
-          Util.getString("GML.requiredField", language));
+      out.println(Util.getMandatorySnippet() + "&nbsp;:&nbsp;" + Util.getString("GML.requiredField",
+          language));
       out.println("</div>");
     }
     out.println("</div>");
     out.flush();
   }
-  
+
   @Override
   public void display(JspWriter jw, PagesContext pageContext, DataRecord record) {
     PrintWriter out = new PrintWriter(jw, true);
     display(out, pageContext, record);
   }
-  
+
   private int getLastFieldIndex(PagesContext pc, DataRecord record, List<FieldTemplate> listFields) {
     int lastFieldIndex = -1;
     lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
@@ -286,8 +283,8 @@ public class XmlForm extends AbstractForm {
               fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
             }
 
-            FieldDisplayer fieldDisplayer =
-                getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+            FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType,
+                fieldDisplayerName);
             if (fieldDisplayer != null) {
               lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
             }
@@ -300,10 +297,10 @@ public class XmlForm extends AbstractForm {
     }
     return lastFieldIndex;
   }
-  
+
   private Field getLastNotEmptyField(DataRecord record, String fieldName, int nbOccurrences) {
     Field lastNotEmptyField = null;
-    for (int occ=0; occ<nbOccurrences; occ++) {
+    for (int occ = 0; occ < nbOccurrences; occ++) {
       Field field = record.getField(fieldName, occ);
       if (field != null && !field.isNull()) {
         lastNotEmptyField = field;

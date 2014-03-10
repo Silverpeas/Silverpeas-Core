@@ -43,7 +43,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
 /**
  *
  * @author ehugonnet
@@ -176,8 +175,8 @@ public class PublicationDAOTest extends AbstractTestDao {
       Connection con = connection.getConnection();
       String name = "Publication 1";
       PublicationPK primaryKey = new PublicationPK(null, "kmelia200");
-      PublicationDetail result =
-          PublicationDAO.selectByPublicationName(con, primaryKey, name).pubDetail;
+      PublicationDetail result
+          = PublicationDAO.selectByPublicationName(con, primaryKey, name).pubDetail;
       primaryKey = new PublicationPK("100", "kmelia200");
       assertEquals(primaryKey, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
@@ -215,7 +214,7 @@ public class PublicationDAOTest extends AbstractTestDao {
       int nodeId = 110;
       PublicationDetail result = PublicationDAO.
           selectByPublicationNameAndNodeId(con, primaryKey, name,
-          nodeId).pubDetail;
+              nodeId).pubDetail;
       primaryKey = new PublicationPK("100", "kmelia200");
       assertEquals(primaryKey, result.getPK());
       assertEquals("Homer Simpson", result.getAuthor());
@@ -626,8 +625,8 @@ public class PublicationDAOTest extends AbstractTestDao {
       detail.setName(name);
       detail.setDescription(description);
       detail.setCreationDate(now.getTime());
-      detail.setBeginDateAndHour(beginDate.getTime());
-      detail.setEndDateAndHour(endDate.getTime());
+      detail.setBeginDate(beginDate.getTime());
+      detail.setEndDate(endDate.getTime());
       detail.setCreatorId(creatorId);
       detail.setImportance(importance);
       detail.setVersion(version);
@@ -780,11 +779,11 @@ public class PublicationDAOTest extends AbstractTestDao {
       end = DateUtil.parse("2009/11/30");
       SocialInformationPublication sp1User200 = new SocialInformationPublication(
           new PublicationWithStatus(
-          (detail1), true));
+              (detail1), true));
       assertNotNull("SocialInformationPublication2 must be not null", sp1User200);
       SocialInformationPublication sp2User200 = new SocialInformationPublication(
           new PublicationWithStatus(
-          (detail2), true));
+              (detail2), true));
       assertNotNull("SocialInformationPublication2 must be not null", sp2User200);
       List<SocialInformation> list200 = new ArrayList<SocialInformation>();
       list200.add(sp2User200);

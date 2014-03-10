@@ -20,24 +20,6 @@
  */
 package com.silverpeas.look;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.date.Period;
-
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionManagement;
@@ -61,6 +43,22 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.date.Period;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
@@ -378,8 +376,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       // Remove the current user
       SessionManagementFactory factory = SessionManagementFactory.getFactory();
       SessionManagement sessionManagement = factory.getSessionManagement();
-      nbConnectedUsers =
-          sessionManagement.getNbConnectedUsersList(getMainSessionController().
+      nbConnectedUsers = sessionManagement.getNbConnectedUsersList(getMainSessionController().
           getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
@@ -456,8 +453,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer =
-          new StringTokenizer(resources.getString("componentsTop", ""), ",");
+      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
         String itemId = tokenizer.nextToken();
 
@@ -661,7 +657,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-          "UTF-8"));
+              "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",

@@ -23,6 +23,38 @@
  */
 package org.silverpeas.attachment.web;
 
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -34,33 +66,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  *
@@ -221,6 +226,10 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         }
         content.close();
         FileUtils.deleteQuietly(tempFile);
+        
+        // in the case the document is a CAD one, process it for Actify
+        ActifyDocumentProcessor.getProcessor().process(document);
+        
         URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
             getLanguage()).build();
         return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);

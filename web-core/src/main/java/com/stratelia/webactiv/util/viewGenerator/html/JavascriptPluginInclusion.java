@@ -26,6 +26,8 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
@@ -85,7 +87,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
-  private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
+  private static String JAVASCRIPT_CKEDITOR;
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -98,6 +100,11 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
+  
+  static {
+    ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+    JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor")+"/ckeditor.js";
+  }
 
   /**
    * Centralization of script instantiation.

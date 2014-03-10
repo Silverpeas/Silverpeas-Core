@@ -117,7 +117,7 @@ out.println(gef.getLookStyleSheet());
     function checkSubmitToSearch(ev)
   {
     var touche = ev.keyCode;
-    if (touche == 13)
+    if (touche === 13)
       searchEngine();
   }
 
@@ -132,7 +132,7 @@ out.println(gef.getLookStyleSheet());
   }
 
   function searchEngine() {
-        if (document.searchForm.query.value != "")
+        if (document.searchForm.query.value !== "")
         {
         document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch";
           document.searchForm.submit();
@@ -180,7 +180,7 @@ out.println(gef.getLookStyleSheet());
 
     function getSpaceIdToInit()
     {
-      return "<%=spaceId%>";
+      return "<%=EncodeHelper.javaStringToHtmlString(spaceId)%>";
     }
 
     function getComponentIdToInit()

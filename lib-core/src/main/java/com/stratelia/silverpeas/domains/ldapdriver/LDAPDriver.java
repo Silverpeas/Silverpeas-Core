@@ -41,6 +41,8 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
@@ -364,6 +366,7 @@ public class LDAPDriver extends AbstractDomainDriver {
       connection.modify(userFullDN, modifications.toArray(
           new LDAPModification[modifications.size()]));
     } catch (Exception ex) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
       throw new AdminException("LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
           "admin.EX_LDAP_ACCESS_ERROR", ex);
     } finally {

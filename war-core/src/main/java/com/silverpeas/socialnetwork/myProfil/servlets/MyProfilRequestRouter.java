@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.crypto.CryptMD5;
 
@@ -244,8 +243,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    */
   private List<UserDetail> getContactsToDisplay(List<String> contactIds,
       MyProfilSessionController sc) {
-    int numberOfContactsTodisplay =
-        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
+    int numberOfContactsTodisplay = sc.getSettings().getInteger("numberOfContactsTodisplay",
+        NUMBER_CONTACTS_TO_DISPLAY);
     List<UserDetail> contacts = new ArrayList<UserDetail>();
     if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String userId : contactIds) {
@@ -266,8 +265,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
         "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-    ResourceLocator authenticationSettings =
-        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+    ResourceLocator authenticationSettings = new ResourceLocator(
+        "org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
@@ -306,7 +305,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
       // process extra properties
       Map<String, String> properties = new HashMap<String, String>();
-      @SuppressWarnings("unchecked")
       Enumeration<String> parameters = request.getParameterNames();
       String parameterName;
       String property;
@@ -332,7 +330,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));
-    } catch (AuthenticationException e) {
+    } catch (Exception e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_unknown"));
     }
   }
