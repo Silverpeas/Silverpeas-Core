@@ -25,6 +25,7 @@ package org.silverpeas.persistence.model;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -41,7 +42,8 @@ import java.util.Date;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE> {
+public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
+    extends Serializable {
 
   /**
    * Gets the id of the entity.
