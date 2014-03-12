@@ -575,7 +575,7 @@ if (!activeSelection.booleanValue())
 						selected = " selected=\"selected\"";
 					}
 
-					out.println("<option value=\""+space.getFullId()+"\""+selected+">"+incr+space.getName(language)+"</option>");
+					out.println("<option value=\""+space.getFullId()+"\""+selected+">"+incr+EncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
 				}
              %>
              </select></td>
@@ -593,7 +593,7 @@ if (!activeSelection.booleanValue())
 							if (component.getId().equals(componentSelected)){
 								selected = " selected=\"selected\"";
 							}
-							out.println("<option value=\""+component.getId()+"\""+selected+">"+component.getLabel(language)+"</option>");
+							out.println("<option value=\""+component.getId()+"\""+selected+">"+EncodeHelper.javaStringToHtmlString(component.getLabel(language)) +"</option>");
 					}
 				}
 				out.println("</select>");

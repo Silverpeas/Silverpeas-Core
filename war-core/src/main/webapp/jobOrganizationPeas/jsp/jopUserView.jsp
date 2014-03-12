@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
@@ -335,7 +336,7 @@
             for (int i = 0; i < spaces.length; i++) {
               //création des ligne de l'arrayPane
               ArrayLine arrayLine = arrayPane.addArrayLine();
-              arrayLine.addArrayCellText(spaces[i]);
+              arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(spaces[i]));
             }
             if (arrayPane.getColumnToSort() == 0) {
               arrayPane.setColumnToSort(1);
@@ -363,10 +364,10 @@
 
               //création des ligne de l'arrayPane
               ArrayLine arrayLine = arrayPane.addArrayLine();
-              arrayLine.addArrayCellText(profile[0]);
+              arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(profile[0]));
               arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openComponent('" + profile[2] + profile[1]
                   + "')\" rel=\"/silverpeas/JobDomainPeasComponentPathServlet?ComponentId=" + profile[1]
-                  + "\">" + profile[3] + "</a>");
+                  + "\">" + EncodeHelper.javaStringToHtmlString(profile[3]) + "</a>");
               arrayLine.addArrayCellText(profile[4]);
               arrayLine.addArrayCellText(profile[5]);
             }

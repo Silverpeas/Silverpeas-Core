@@ -36,6 +36,7 @@ import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.synchronizer.SynchronizerToken;
+import org.silverpeas.util.security.SecuritySettings;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -64,12 +65,7 @@ public class SynchronizerTokenService {
       "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
-  private static final String SECURITY_ACTIVATION_KEY = "security.web.protection";
-  private static final String SECURITY_SESSION_TOKEN_RENEW_KEY =
-      "security.web.protection.sessiontoken.renew";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
-  private static final ResourceLocator settings
-      = new ResourceLocator("org.silverpeas.util.security", "");
   private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList(new String[]{"POST",
     "PUT", "DELETE"});
 
@@ -89,7 +85,7 @@ public class SynchronizerTokenService {
    * @param session the user session to protect with a synchronizer token.
    */
   public void setUpSessionTokens(SessionInfo session) {
-    if (isWebSecurityByTokensEnabled()) {
+    if (SecuritySettings.isWebSecurityByTokensEnabled()) {
       UserDetail user = session.getUserDetail();
       Token token = session.getAttribute(SESSION_TOKEN_KEY);
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
@@ -116,7 +112,7 @@ public class SynchronizerTokenService {
    * @param request an HTTP request from which the navigation to protect is identified.
    */
   public void setUpNavigationTokens(HttpServletRequest request) {
-    if (isWebSecurityByTokensEnabled()) {
+    if (SecuritySettings.isWebSecurityByTokensEnabled()) {
       logger.log(Level.INFO, "Create a navigation token for path {0}", getRequestPath(request));
       HttpSession session = request.getSession();
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
@@ -139,7 +135,7 @@ public class SynchronizerTokenService {
    * @throws TokenValidationException if the specified request cannot be trusted.
    */
   public void validate(HttpServletRequest request) throws TokenValidationException {
-    if (isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
+    if (SecuritySettings.isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
       logger.log(Level.FINE, "Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
       // is there a user session opened?
@@ -157,24 +153,6 @@ public class SynchronizerTokenService {
         validate(actualToken, expectedToken);
       }
     }
-  }
-
-  /**
-   * Is the security mechanism based on the synchronizer token pattern enabled?
-   *
-   * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
-   */
-  public boolean isWebSecurityByTokensEnabled() {
-    return settings.getBoolean(SECURITY_ACTIVATION_KEY, false);
-  }
-
-  /**
-   * Is the renew of the synchronizer tokens used to protect a user session enabled?
-   *
-   * @return true if the renew of session tokens is enabled in Silverpeas, false otherwise.
-   */
-  public boolean isSessionTokenRenewEnabled() {
-    return settings.getBoolean(SECURITY_SESSION_TOKEN_RENEW_KEY, false);
   }
 
   /**

@@ -5968,6 +5968,10 @@ blockquote {
     color:#666;
 }
 
+.container-wysiwyg {
+	width:95%;
+}
+
 /*responsive design */
 @media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
   .rightContent {
