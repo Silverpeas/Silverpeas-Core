@@ -31,8 +31,13 @@ import org.silverpeas.persistence.model.Entity;
 /**
  * This class permits to give details about operation actions (save action for now), especially the
  * user who is the author of the operation.
- * User: Yohann Chastagnier
- * Date: 12/12/13
+ * It is usually used from service method implementation. It is used by JPA Silverpeas API to set
+ * the technical entity informations on:
+ * <ul>
+ *   <li>entity create</li>
+ *   <li>entity update</li>
+ * </ul>
+ * @author Yohann Chastagnier
  */
 public class OperationContext {
 

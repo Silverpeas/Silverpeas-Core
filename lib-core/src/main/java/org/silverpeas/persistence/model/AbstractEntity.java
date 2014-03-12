@@ -41,8 +41,11 @@ import java.util.Date;
  * The entity extensions must handle {@link #performBeforePersist()} and {@link
  * #performBeforeUpdate()} methods.
  * <p/>
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
+ * manager.
+ * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
+ * definition.
+ * @author Yohann Chastagnier
  */
 public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
     IDENTIFIER_TYPE>
@@ -147,7 +150,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   @Override
   public final int hashCode() {
     HashCodeBuilder hash = new HashCodeBuilder();
-    hash.append(getId());
+    hash.append(getId() != null ? getId() : super.hashCode());
     return hash.toHashCode();
   }
 
@@ -157,13 +160,19 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
     if (obj == null) {
       return false;
     }
+    if (super.equals(obj)) {
+      return true;
+    }
     if (getClass() != obj.getClass()) {
       return false;
     }
     final ENTITY other = (ENTITY) obj;
-    EqualsBuilder matcher = new EqualsBuilder();
-    matcher.append(getId(), other.getId());
-    return matcher.isEquals();
+    if (getId() != null && other.getId() != null) {
+      EqualsBuilder matcher = new EqualsBuilder();
+      matcher.append(getId(), other.getId());
+      return matcher.isEquals();
+    }
+    return false;
   }
 
   /*

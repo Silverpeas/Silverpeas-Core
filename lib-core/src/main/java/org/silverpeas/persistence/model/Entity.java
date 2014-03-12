@@ -32,15 +32,20 @@ import java.util.Date;
  * This interface must be implemented by all Silverpeas entity definitions that have to be
  * persisted.
  * It provides signatures for the following technical data :
- * - entity identifier
- * - entity "created by" (a free string)
- * - entity user creator (if "created by" is a known user id)
- * - entity create date
- * - entity "last updated by" (a free string)
- * - entity last user updater (if "last updated by" is a known user id)
- * - entity last update date
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * <ul>
+ * <li>entity identifier</li>
+ * <li>entity "created by" (a free string)</li>
+ * <li>entity user creator (if "created by" is a known user id)</li>
+ * <li>entity create date</li>
+ * <li>entity "last updated by" (a free string)</li>
+ * <li>entity last user updater (if "last updated by" is a known user id)</li>
+ * <li>entity last update date</li>
+ * </ul>
+ * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
+ * manager.
+ * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
+ * definition.
+ * @author Yohann Chastagnier
  */
 public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
     extends Serializable {

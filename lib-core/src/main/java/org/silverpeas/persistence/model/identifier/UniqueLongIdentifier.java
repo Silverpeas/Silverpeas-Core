@@ -32,8 +32,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
- * User: Yohann Chastagnier
- * Date: 25/11/13
+ * @author Yohann Chastagnier
  */
 @Embeddable
 public class UniqueLongIdentifier implements EntityIdentifier {
