@@ -45,8 +45,11 @@ import java.util.Date;
  * AbstractEntity#performBeforePersist} or {@link AbstractEntity#performBeforeUpdate} methods
  * without forgetting to play the super call.
  * <p/>
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
+ * manager.
+ * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
+ * definition.
+ * @author Yohann Chastagnier
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

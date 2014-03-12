@@ -28,14 +28,16 @@ import org.silverpeas.persistence.model.Entity;
 import java.util.Collection;
 import java.util.List;
 
-/*
+/**
  * This interface must be implemented by all repositories handling Silverpeas entities that have
  * to be persisted.
- *
+ * <p/>
  * It provides common entity query methods.
- *
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * @param <ENTITY> specify the class name of the entity which is handled by the repository
+ * manager.
+ * @param <ENTITY_IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary
+ * key definition.
+ * @author Yohann Chastagnier
  */
 public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
     ENTITY_IDENTIFIER_TYPE> {

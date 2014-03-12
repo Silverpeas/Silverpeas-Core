@@ -32,8 +32,7 @@ import javax.persistence.Embeddable;
 import java.util.UUID;
 
 /**
- * User: Yohann Chastagnier
- * Date: 25/11/13
+ * @author Yohann Chastagnier
  */
 @Embeddable
 public class UuidIdentifier implements EntityIdentifier {

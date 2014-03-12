@@ -26,7 +26,6 @@ package org.silverpeas.persistence.repository.jpa;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
 import org.hibernate.ejb.QueryImpl;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.repository.EntityRepository;
@@ -57,8 +56,11 @@ import java.util.regex.Pattern;
  * Take a look into this class to analyse how query parameters are performed ({@link
  * NamedParameters}).
  * <p/>
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * @param <ENTITY> specify the class name of the entity which is handled by the repository
+ * manager.
+ * @param <ENTITY_IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its
+ * primary key definition.
+ * @author Yohann Chastagnier
  */
 public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
     ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>

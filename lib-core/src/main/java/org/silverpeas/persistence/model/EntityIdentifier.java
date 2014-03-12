@@ -28,8 +28,7 @@ import java.io.Serializable;
 /**
  * All Silverpeas entities must use this interface for their identifier.
  * By this way, all entities have a typed identifier that only the entity knows.
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * @author Yohann Chastagnier
  */
 public interface EntityIdentifier extends Serializable {
 

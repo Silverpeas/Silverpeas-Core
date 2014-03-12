@@ -39,8 +39,11 @@ import java.util.Date;
  * These two dates are represented by a period object.
  * Persist dates as long values can improve significantly treatment loads, on a technical side.
  * <p/>
- * User: Yohann Chastagnier
- * Date: 02/12/13
+ * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
+ * manager.
+ * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
+ * definition.
+ * @author Yohann Chastagnier
  */
 @MappedSuperclass
 public abstract class AbstractPeriodDateAsLongJpaEntity<ENTITY extends Entity<ENTITY,
