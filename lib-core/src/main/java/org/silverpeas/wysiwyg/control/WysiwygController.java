@@ -549,7 +549,7 @@ public class WysiwygController {
   }
 
   /**
-   * Method declaration remove the file attached. *
+   * Method declaration remove the file attached.
    *
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.

@@ -43,8 +43,8 @@ public class AnimalRepository extends AbstractJpaEntityRepository<Animal, Unique
     return listFromNamedQuery("getAnimalsByType", initializeNamedParameters().add("type", type));
   }
 
-  public List<Animal> getByName(String name) {
-    return listFromNamedQuery("getAnimalsByName", initializeNamedParameters().add("name", name));
+  public Animal getByName(String name) {
+    return getFromNamedQuery("getAnimalsByName", initializeNamedParameters().add("name", name));
   }
 
   public List<Person> getPersonsHaveTypeOfAnimal(AnimalType type) {

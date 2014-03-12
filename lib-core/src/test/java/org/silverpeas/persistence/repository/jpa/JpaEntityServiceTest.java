@@ -134,7 +134,7 @@ public class JpaEntityServiceTest {
     return animalRepository.deleteById(animalIds);
   }
 
-  public List<Person> getPersonsByFirstName(String name) {
+  public Person getPersonsByFirstName(String name) {
     return personRepository.getByFirstName(name);
   }
 
@@ -150,7 +150,7 @@ public class JpaEntityServiceTest {
     return animalRepository.getByType(type);
   }
 
-  public List<Animal> getAnimalsByName(String name) {
+  public Animal getAnimalsByName(String name) {
     return animalRepository.getByName(name);
   }
 

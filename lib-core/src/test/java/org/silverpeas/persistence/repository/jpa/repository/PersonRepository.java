@@ -38,9 +38,9 @@ import java.util.List;
 @Named
 public class PersonRepository extends AbstractJpaEntityRepository<Person, UuidIdentifier> {
 
-  public List<Person> getByFirstName(String firstName) {
+  public Person getByFirstName(String firstName) {
     String jpqlQuery = "from Person p where p.firstName = :firstName";
-    return listFromJpqlString(jpqlQuery, initializeNamedParameters().add("firstName", firstName));
+    return getFromJpqlString(jpqlQuery, initializeNamedParameters().add("firstName", firstName));
   }
 
   public List<Person> getByLastName(String lastName) {

@@ -100,9 +100,9 @@ public class AbstractJpaEntityRepositoryTest {
   @Test
   public void getAll() {
     List<Person> persons = jpaEntityServiceTest.getAllPersons();
-    assertThat(persons, hasSize(3));
+    assertThat(persons, hasSize(5));
     List<Animal> animals = jpaEntityServiceTest.getAllAnimals();
-    assertThat(animals, hasSize(3));
+    assertThat(animals, hasSize(5));
     List<Equipment> equipments = jpaEntityServiceTest.getAllEquiments();
     assertThat(equipments, hasSize(1));
   }
@@ -290,7 +290,7 @@ public class AbstractJpaEntityRepositoryTest {
 
   @Test
   public void entityGetUpdateCloneBehaviour() {
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
 
     // Get
     Person person = jpaEntityServiceTest.getPersonById("person_1");
@@ -311,7 +311,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(personUpdated.getLastUpdatedBy(), is("26"));
     assertThat(personUpdated.getLastUpdateDate(), notNullValue());
     assertThat(personUpdated.getVersion(), is(1L));
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
 
     // Clone
     Person personCloned = personUpdated.clone();
@@ -323,7 +323,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(personCloned.getLastUpdatedBy(), nullValue());
     assertThat(personCloned.getLastUpdateDate(), nullValue());
     assertThat(personCloned.getVersion(), is(0L));
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
 
     // Save clone
     personCloned.setCreatedBy("26");
@@ -339,7 +339,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(personClonedReloaded.getLastUpdatedBy(), nullValue());
     assertThat(personClonedReloaded.getLastUpdateDate(), nullValue());
     assertThat(personClonedReloaded.getVersion(), is(0L));
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(4));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
   }
 
   @Test
@@ -360,7 +360,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(personCreated.getLastUpdatedBy(), nullValue());
     assertThat(personCreated.getLastUpdateDate(), nullValue());
     assertThat(personCreated.getVersion(), is(0L));
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(4));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
 
     for (int i = 0; i < 50; i++) {
       jpaEntityServiceTest.save(createOperationContext("26"),
@@ -369,7 +369,7 @@ public class AbstractJpaEntityRepositoryTest {
           new Person().setFirstName("FirstName#" + i).setLastName("LastName#" + i)
               .setCreatedBy("69").setLastUpdatedBy("not_registred_I_hope"));
     }
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(104));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(106));
   }
 
   @Test
@@ -394,7 +394,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animalCreated.getLastUpdatedBy(), nullValue());
     assertThat(animalCreated.getLastUpdateDate(), nullValue());
     assertThat(animalCreated.getVersion(), is(0L));
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(4));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(6));
 
     for (long i = 0; i < 50; i++) {
       Animal animal1 = new Animal().setType(AnimalType.bird).setName("Name_" + i).setCreatedBy("38")
@@ -409,7 +409,7 @@ public class AbstractJpaEntityRepositoryTest {
       assertThat(animal2.getId(), is(String.valueOf(12 + (i * 3))));
       assertThat(animal3.getId(), is(String.valueOf(13 + (i * 3))));
     }
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(154));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(156));
   }
 
   @Test
@@ -417,25 +417,25 @@ public class AbstractJpaEntityRepositoryTest {
 
     // Animals (animals are dependents to persons, so they have to be deleted before)
     assertThat(jpaEntityServiceTest.getAllEquiments(), hasSize(1));
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(5));
     jpaEntityServiceTest.delete(jpaEntityServiceTest.getAnimalById("1"));
     assertThat(jpaEntityServiceTest.getAnimalById("1"), nullValue());
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(2));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(4));
     jpaEntityServiceTest
         .delete(jpaEntityServiceTest.getAnimalById("3"), jpaEntityServiceTest.getAnimalById("2"),
             new Animal());
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(0));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(2));
     // Verifying here that cascade process has been performed ...
     assertThat(jpaEntityServiceTest.getAllEquiments(), hasSize(0));
 
     // Persons
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
     jpaEntityServiceTest.delete(jpaEntityServiceTest.getPersonById("person_1"));
     assertThat(jpaEntityServiceTest.getPersonById("person_1"), nullValue());
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(2));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(4));
     jpaEntityServiceTest.delete(jpaEntityServiceTest.getPersonById("person_3"),
         jpaEntityServiceTest.getPersonById("person_2"), new Person());
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(0));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(2));
   }
 
   @Test
@@ -443,27 +443,27 @@ public class AbstractJpaEntityRepositoryTest {
 
     // Animals (animals are dependents to persons, so they have to be deleted before)
     assertThat(jpaEntityServiceTest.getAllEquiments(), hasSize(1));
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(5));
     long nbDeleted = jpaEntityServiceTest.deleteAnimalById("1");
     assertThat(jpaEntityServiceTest.getAnimalById("1"), nullValue());
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(2));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(4));
     assertThat(nbDeleted, is(1L));
     nbDeleted = jpaEntityServiceTest.deleteAnimalById("38", "26", "3", "27", "38", "2", "36", "22");
-    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(0));
+    assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(2));
     assertThat(nbDeleted, is(2L));
     // Verifying here that cascade process is not performed in this deletion way ...
     assertThat(jpaEntityServiceTest.getAllEquiments(), hasSize(1));
 
     // Persons
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(3));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
     nbDeleted = jpaEntityServiceTest.deletePersonById("person_1");
     assertThat(jpaEntityServiceTest.getPersonById("person_1"), nullValue());
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(2));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(4));
     assertThat(nbDeleted, is(1L));
     nbDeleted = jpaEntityServiceTest
         .deletePersonById("person_38", "person_26", "person_3", "person_27", "person_38",
             "person_2", "person_36", "person_22");
-    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(0));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(2));
     assertThat(nbDeleted, is(2L));
   }
 
@@ -471,8 +471,17 @@ public class AbstractJpaEntityRepositoryTest {
   public void getPersonsByLastName() {
     assertThat(jpaEntityServiceTest.getPersonsByLastName("Eysseric"), hasSize(1));
     assertThat(jpaEntityServiceTest.getPersonsByLastName("Nicolas"), hasSize(0));
-    assertThat(jpaEntityServiceTest.getPersonsByFirstName("Nicolas"), hasSize(1));
-    assertThat(jpaEntityServiceTest.getPersonsByFirstName("Eysseric"), hasSize(0));
+  }
+
+  @Test
+  public void getPersonsByFirstName() {
+    assertThat(jpaEntityServiceTest.getPersonsByFirstName("Nicolas"), notNullValue());
+    assertThat(jpaEntityServiceTest.getPersonsByFirstName("Eysseric"), nullValue());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void getPersonsByFirstNameNotUnique() {
+    jpaEntityServiceTest.getPersonsByFirstName("firstName");
   }
 
   @Test
@@ -485,8 +494,13 @@ public class AbstractJpaEntityRepositoryTest {
 
   @Test
   public void getAnimalsByName() {
-    assertThat(jpaEntityServiceTest.getAnimalsByName("Titi"), hasSize(1));
-    assertThat(jpaEntityServiceTest.getAnimalsByName("titi"), hasSize(0));
+    assertThat(jpaEntityServiceTest.getAnimalsByName("Titi"), notNullValue());
+    assertThat(jpaEntityServiceTest.getAnimalsByName("titi"), nullValue());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void getAnimalsByNameNotUnique() {
+    jpaEntityServiceTest.getAnimalsByName("name");
   }
 
   @Test
@@ -565,7 +579,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(person1.getVersion(), is(0L));
     assertThat(person2, notNullValue());
     assertThat(person3, notNullValue());
-    assertThat(jpaEntityServiceTest.updatePersonFirstNamesHavingAtLeastOneAnimal(), is(2L));
+    assertThat(jpaEntityServiceTest.updatePersonFirstNamesHavingAtLeastOneAnimal(), is(4L));
     Person person1Reloaded = jpaEntityServiceTest.getPersonById("person_1");
     Person person2Reloaded = jpaEntityServiceTest.getPersonById("person_2");
     Person person3Reloaded = jpaEntityServiceTest.getPersonById("person_3");
@@ -589,7 +603,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(person1, notNullValue());
     assertThat(person2, notNullValue());
     assertThat(person3, notNullValue());
-    assertThat(jpaEntityServiceTest.deletePersonFirstNamesHavingAtLeastOneAnimal(), is(2L));
+    assertThat(jpaEntityServiceTest.deletePersonFirstNamesHavingAtLeastOneAnimal(), is(4L));
     assertThat(jpaEntityServiceTest.deletePersonFirstNamesHavingAtLeastOneAnimal(), is(0L));
     person1 = jpaEntityServiceTest.getPersonById("person_1");
     person2 = jpaEntityServiceTest.getPersonById("person_2");
