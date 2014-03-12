@@ -35,6 +35,7 @@ import org.silverpeas.persistence.model.Entity;
  * Date: 12/12/13
  */
 public class OperationContext {
+
   private static final String CACHE_KEY = OperationContext.class.getName();
 
   // The user
@@ -96,14 +97,14 @@ public class OperationContext {
   /**
    * Put the current instance into a cache (thread cache (request cache exactly)) to be retrieved
    * from @PrePersist or @PreUpdate operations.
-   * The call of this method is automatically done by tachnical JPA tools.
+   * The call of this method is automatically done by technical JPA tools.
    */
   public void putIntoCache() {
     CacheServiceFactory.getRequestCacheService().put(CACHE_KEY, this);
   }
 
   /**
-   * Applaying informations of the context to the given entity on a persist opearation.
+   * Applying informations of the context to the given entity on a persist operation.
    * @param entity
    */
   public void applyToPersistOperation(Entity entity) {
@@ -114,7 +115,7 @@ public class OperationContext {
   }
 
   /**
-   * Applaying informations of the context to the given entity on a update opearation.
+   * Applying informations of the context to the given entity on a update opearation.
    * @param entity
    */
   public void applyToUpdateOperation(Entity entity) {
