@@ -290,6 +290,31 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
   }
 
   /**
+   * Gets an entity from a jpql query.
+   * @param jpqlQuery
+   * @param parameters
+   * @return the required entity if exists, null otherwise
+   * @throws IllegalArgumentException if it exists more than one entity from the query result.
+   */
+  protected ENTITY getFromJpqlString(String jpqlQuery, NamedParameters parameters) {
+    return getFromJpqlString(jpqlQuery, parameters, getEntityClass());
+  }
+
+  /**
+   * Gets an entity from a jpql query.
+   * If the result
+   * @param jpqlQuery
+   * @param parameters
+   * @return the required entity if exists, null otherwise
+   * @throws IllegalArgumentException if it exists more than one entity from the query result.
+   */
+  protected <AN_ENTITY> AN_ENTITY getFromJpqlString(String jpqlQuery, NamedParameters parameters,
+      Class<AN_ENTITY> returnEntityType) {
+    return unique(
+        listFromQuery(getEntityManager().createQuery(jpqlQuery, returnEntityType), parameters));
+  }
+
+  /**
    * Lists entities from a jpql query.
    * @param jpqlQuery
    * @param parameters
@@ -308,6 +333,25 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
   protected <AN_ENTITY> List<AN_ENTITY> listFromJpqlString(String jpqlQuery,
       NamedParameters parameters, Class<AN_ENTITY> returnEntityType) {
     return listFromQuery(getEntityManager().createQuery(jpqlQuery, returnEntityType), parameters);
+  }
+
+  /**
+   * Gets from an entity list result the unique entity expected.
+   * @param entities entity list result from a query.
+   * @param <AN_ENTITY>
+   * @return the unique entity result.
+   * @throws IllegalArgumentException if it exists more than one entity in the specified entity
+   * result list.
+   */
+  private <AN_ENTITY> AN_ENTITY unique(List<AN_ENTITY> entities) {
+    if (entities.isEmpty()) {
+      return null;
+    }
+    if (entities.size() == 1) {
+      return entities.get(0);
+    }
+    throw new IllegalArgumentException(
+        "wanted to get a unique entity from a list that contains more than one entity ...");
   }
 
   /**
@@ -334,6 +378,30 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
    */
   protected long deleteFromJpqlQuery(String jpqlQuery, NamedParameters parameters) {
     return deleteFromQuery(getEntityManager().createQuery(jpqlQuery), parameters);
+  }
+
+  /**
+   * Gets an entity from a named query.
+   * @param namedQuery
+   * @param parameters
+   * @return the required entity if exists, null otherwise
+   * @throws IllegalArgumentException if it exists more than one entity from the query result.
+   */
+  protected ENTITY getFromNamedQuery(String namedQuery, NamedParameters parameters) {
+    return getFromNamedQuery(namedQuery, parameters, getEntityClass());
+  }
+
+  /**
+   * Gets an entity from a named query.
+   * @param namedQuery
+   * @param parameters
+   * @return the required entity if exists, null otherwise
+   * @throws IllegalArgumentException if it exists more than one entity from the query result.
+   */
+  protected <AN_ENTITY> AN_ENTITY getFromNamedQuery(String namedQuery, NamedParameters parameters,
+      Class<AN_ENTITY> returnEntityType) {
+    return unique(listFromQuery(getEntityManager().createNamedQuery(namedQuery, returnEntityType),
+        parameters));
   }
 
   /**
