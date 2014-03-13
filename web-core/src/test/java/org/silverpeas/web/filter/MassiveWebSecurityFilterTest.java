@@ -38,6 +38,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.FilterChain;
@@ -67,7 +68,7 @@ public class MassiveWebSecurityFilterTest {
   private final static String[] SQL_PRIVILEGES =
       {"seLect", "insert", "upDate", "Delete", "references", "alter", "index", "all"};
 
-  private HttpServletRequest httpRequest = Mockito.mock(HttpServletRequest.class);
+  private HttpRequest httpRequest = Mockito.mock(HttpRequest.class);
   private HttpServletResponse httpResponse = Mockito.mock(HttpServletResponse.class);
 
   @BeforeClass
