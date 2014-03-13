@@ -23,9 +23,11 @@
  */
 package org.silverpeas.web.filter;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DBUtil;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.filter.exception.WebSecurityException;
 import org.silverpeas.web.filter.exception.WebSqlInjectionSecurityException;
@@ -39,6 +41,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +60,9 @@ public class MassiveWebSecurityFilter implements Filter {
 
   private static final Logger logger = Logger.getLogger(MassiveWebSecurityFilter.class.
       getSimpleName());
+
+  private final static String WEB_SERVICES_URI_PREFIX =
+      UriBuilder.fromUri(URLManager.getApplicationURL()).path("services").build().toString();
 
   private final static List<Pattern> SKIPED_PARAMETER_PATTERNS;
 
@@ -98,18 +104,24 @@ public class MassiveWebSecurityFilter implements Filter {
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
       final FilterChain chain) throws IOException, ServletException {
-    final HttpServletRequest httpRequest = (HttpServletRequest) request;
+    final HttpRequest httpRequest = (HttpRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
     try {
 
+      boolean isWebServiceMultipart =
+          httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
+              httpRequest.isContentInMultipart();
       boolean isWebSqlInjectionSecurityEnabled =
           SecuritySettings.isWebSqlInjectionSecurityEnabled();
       boolean isWebXssInjectionSecurityEnabled =
           SecuritySettings.isWebXssInjectionSecurityEnabled();
 
-      // Verifying security only if one is at least enabled
-      if (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled) {
+      // Verifying security only if following rules are verified:
+      // - request must not be a REST Web Service multipart one
+      // - one web security mechanism is at least enabled
+      if (!isWebServiceMultipart &&
+          (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled)) {
 
         long start = System.currentTimeMillis();
         try {
