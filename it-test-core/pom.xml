@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.12.8</version>
+    <version>5.12.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>it-test-core</artifactId>
-  <version>5.12.8</version>
+  <version>5.12</version>
   <packaging>jar</packaging>
   <name>Integration Test Core - ${project.version}</name>
   <description>
@@ -21,13 +21,13 @@
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
-      <version>5.12.8</version>
+      <version>5.12.9-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
-      <version>5.12.8</version>
+      <version>5.12.9-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
