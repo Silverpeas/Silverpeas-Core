@@ -52,7 +52,7 @@
           <a href="http://www.silverpeas.org/files/Silverpeas-${installer_stable_version}-installer.jar">installer</a> (~ 253 Mo)
         </li>
         <li>Run the following command (or double click on the jar file)
-          <code>java -jar Silverpeas-${installer_izpack_version}-installer.jar</code>
+          <code>java -jar Silverpeas-${installer_stable_version}-installer.jar</code>
         </li>
         <li>When all has been installed, go to the
           <code>bin</code> directory under the installation directory and run the following scripts in that order
