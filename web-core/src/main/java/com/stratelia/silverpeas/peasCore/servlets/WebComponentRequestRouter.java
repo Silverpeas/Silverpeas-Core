@@ -23,10 +23,12 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,47 +43,90 @@ import java.io.IOException;
  * requests on the server, especially by annoting methods that must be invoked.
  * @param <T> the type of the Component Session Controller that provides a lot of stuff around
  * the component, the user, etc.
- * @param <WEB_COMPONENT_CONTEXT> the type of the web component context.
+ * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
  */
-public abstract class WebComponentRequestRouter<T extends ComponentSessionController,
-    WEB_COMPONENT_CONTEXT extends WebComponentContext<T>>
+public final class WebComponentRequestRouter<
+    T extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+    WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<T>>
     extends ComponentRequestRouter<T> {
   private static final long serialVersionUID = -3344222078427488724L;
+
+  private final static String WEB_COMPONENT_CONTROLLER_CLASS_NAME_PARAM =
+      com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController.class
+          .getSimpleName();
+
+  private Class<T> webComponentControllerClass;
+  private String webComponentControllerBeanName;
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void init(ServletConfig servletConfig) throws ServletException {
+    super.init(servletConfig);
+    String webComponentClassName =
+        servletConfig.getInitParameter(WEB_COMPONENT_CONTROLLER_CLASS_NAME_PARAM);
+    try {
+      webComponentControllerClass = (Class) Class.forName(webComponentClassName);
+      com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController
+          webComponentControllerAnnotation = webComponentControllerClass.getAnnotation(
+          com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController.class);
+      if (webComponentControllerAnnotation == null) {
+        throw new IllegalArgumentException(webComponentClassName +
+            " must specify one, and only one, @WebComponentController annotation.");
+      }
+      webComponentControllerBeanName = webComponentControllerAnnotation.value();
+    } catch (ClassNotFoundException e) {
+      throw new ServletException(e);
+    }
+  }
+
+  @Override
+  public String getSessionControlBeanName() {
+    return webComponentControllerBeanName;
+  }
+
+  @Override
+  public T createComponentSessionController(final MainSessionController mainSessionCtrl,
+      final ComponentContext componentContext) {
+    try {
+      return webComponentControllerClass
+          .getConstructor(MainSessionController.class, ComponentContext.class)
+          .newInstance(mainSessionCtrl, componentContext);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(webComponentControllerClass +
+          " must specify one, and only one, @WebComponentController annotation.", e);
+    }
+  }
 
   @Override
   protected void doPut(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
-    WebRouteManager.manageRequestOf(this, PUT.class, (HttpRequest) request, response);
+    WebComponentManager
+        .manageRequestFor(webComponentControllerClass, PUT.class, (HttpRequest) request, response);
     super.doPost(request, response);
   }
 
   @Override
   protected void doDelete(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
-    WebRouteManager.manageRequestOf(this, DELETE.class, (HttpRequest) request, response);
+    WebComponentManager
+        .manageRequestFor(webComponentControllerClass, DELETE.class, (HttpRequest) request,
+            response);
     super.doPost(request, response);
   }
 
   @Override
   public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
-    WebRouteManager.manageRequestOf(this, POST.class, (HttpRequest) request, response);
+    WebComponentManager
+        .manageRequestFor(webComponentControllerClass, POST.class, (HttpRequest) request, response);
     super.doPost(request, response);
   }
 
   @Override
   public void doGet(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException {
-    WebRouteManager.manageRequestOf(this, GET.class, (HttpRequest) request, response);
+    WebComponentManager
+        .manageRequestFor(webComponentControllerClass, GET.class, (HttpRequest) request, response);
     super.doGet(request, response);
-  }
-
-  /**
-   * Permits to perform some common initializations. The method is called just before the method
-   * behing the identified path is invoked.
-   * @param context the context of the request in relation with the web controller
-   */
-  protected void commonContextInitialization(WEB_COMPONENT_CONTEXT context) {
-    context.getRequest().setAttribute("greaterUserRole", context.getGreaterUserRole());
   }
 
   @Override
@@ -95,7 +140,7 @@ public abstract class WebComponentRequestRouter<T extends ComponentSessionContro
     try {
 
       // Performing the request.
-      destination = WebRouteManager.perform(this, componentSC, path).getDestination();
+      destination = WebComponentManager.perform(componentSC, path).getDestination();
 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
