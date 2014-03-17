@@ -23,8 +23,12 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.webactiv.SilverpeasRole;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -37,17 +41,28 @@ class Path {
   private final String path;
   private final Method resourceMethod;
   private final SilverpeasRole lowestRoleAccess;
+  private final Annotation redirectTo;
+  private final String[] invokeBeforeIdentifiers;
+  private final String[] invokeAfterIdentifiers;
 
   /**
    * Default and unique constructor.
    * @param path the path.
    * @param lowestRoleAccess the lowest role that permits the access to resourceMethod.
    * @param resourceMethod the method that has to be called for the path.
+   * @param redirectTo the redirection to be performed after the end of the treatment.
+   * @param invokeBefore the list of identifiers of methods to invoke before the treatment of
+   * HTTP method.
+   * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
    */
-  Path(final String path, final SilverpeasRole lowestRoleAccess, final Method resourceMethod) {
+  Path(final String path, final SilverpeasRole lowestRoleAccess, final Method resourceMethod,
+      final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     this.path = path;
     this.resourceMethod = resourceMethod;
     this.lowestRoleAccess = lowestRoleAccess;
+    this.redirectTo = redirectTo;
+    this.invokeBeforeIdentifiers = invokeBefore != null ? invokeBefore.value() : new String[0];
+    this.invokeAfterIdentifiers = invokeAfter != null ? invokeAfter.value() : new String[0];
   }
 
   /**
@@ -72,5 +87,29 @@ class Path {
    */
   public Method getResourceMethod() {
     return resourceMethod;
+  }
+
+  /**
+   * Gets the redirection.
+   * @return
+   */
+  public Annotation getRedirectTo() {
+    return redirectTo;
+  }
+
+  /**
+   * Gets the list of identifiers of methods to invoke before the treatment of HTTP method.
+   * @return
+   */
+  public String[] getInvokeBeforeIdentifiers() {
+    return invokeBeforeIdentifiers;
+  }
+
+  /**
+   * Gets the list of identifiers of methods to invoke after the treatment of HTTP method.
+   * @return
+   */
+  public String[] getInvokeAfterIdentifiers() {
+    return invokeAfterIdentifiers;
   }
 }

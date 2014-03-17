@@ -23,46 +23,51 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.net.URLEncoder;
 import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class WebComponentContext<T extends ComponentSessionController> {
+public abstract class WebComponentRequestContext<T extends WebComponentController> {
 
-  private final Class<? extends Annotation> httpMethodClass;
-  private final HttpRequest request;
-  private final HttpServletResponse response;
+  private Class<? extends Annotation> httpMethodClass;
+  private HttpRequest request;
+  private HttpServletResponse response;
   private T controller = null;
 
   private Set<SilverpeasRole> userRoles;
   private SilverpeasRole greaterUserRole;
 
   /**
-   * Default hidden constructor.
-   * @param httpMethodClass
-   * @param request
-   * @param response
-   */
-  public WebComponentContext(final Class<? extends Annotation> httpMethodClass,
-      final HttpRequest request, final HttpServletResponse response) {
-    this.httpMethodClass = httpMethodClass;
-    this.request = request;
-    this.response = response;
-  }
-
-  /**
    * This methods permits to perform specific initializations.
    */
-  public abstract void initialize();
+  public abstract void beforeRequestInitialize();
+
+  void setHttpMethodClass(final Class<? extends Annotation> httpMethodClass) {
+    this.httpMethodClass = httpMethodClass;
+  }
+
+  void setRequest(final HttpRequest request) {
+    this.request = request;
+  }
+
+  void setResponse(final HttpServletResponse response) {
+    this.response = response;
+  }
 
   public Class<? extends Annotation> getHttpMethodClass() {
     return httpMethodClass;
@@ -122,13 +127,51 @@ public abstract class WebComponentContext<T extends ComponentSessionController> 
     return greaterUserRole;
   }
 
-  public Navigation navigateToInternalJsp(String jspPathname) {
+  Navigation redirectTo(Annotation redirectTo) {
+    if (redirectTo instanceof RedirectToInternalJsp) {
+      return navigateToInternalJsp(((RedirectToInternalJsp) redirectTo).value());
+    } else if (redirectTo instanceof RedirectToInternal) {
+      return navigateToInternal(((RedirectToInternal) redirectTo).value());
+    }
+    return navigateTo(((RedirectTo) redirectTo).value());
+  }
+
+  private Navigation navigateToInternal(String internalPath) {
+    return navigateTo(
+        UriBuilder.fromUri("/").path(getComponentName()).path(internalPath).build().toString());
+  }
+
+  private Navigation navigateToInternalJsp(String jspPathname) {
     return navigateTo(
         UriBuilder.fromUri("/").path(getComponentName()).path("jsp").path(jspPathname).build()
             .toString());
   }
 
-  public Navigation navigateTo(String path) {
+  private Navigation navigateTo(String path) {
     return new Navigation(path);
+  }
+
+  /**
+   * Handled the navigation to the html editor.
+   * @param objectId
+   * @param returnPath
+   * @param indexIt
+   * @return
+   * @throws UnsupportedEncodingException
+   */
+  public Navigation redirectToHtmlEditor(String objectId, String returnPath, boolean indexIt)
+      throws UnsupportedEncodingException {
+    getRequest().setAttribute("SpaceId", getSpaceId());
+    getRequest().setAttribute("SpaceName", URLEncoder.encode(getSpaceLabel(), CharEncoding.UTF_8));
+    getRequest().setAttribute("ComponentId", getComponentInstanceId());
+    getRequest().setAttribute("ComponentName",
+        URLEncoder.encode(getComponentInstanceLabel(), CharEncoding.UTF_8));
+    getRequest().setAttribute("ObjectId", objectId);
+    getRequest().setAttribute("Language", null);
+    getRequest().setAttribute("ReturnUrl", URLManager.getApplicationURL() +
+        URLManager.getURL(getComponentName(), "useless", getComponentInstanceId()) +
+        returnPath);
+    getRequest().setAttribute("UserId", String.valueOf(indexIt));
+    return navigateTo("/wysiwyg/jsp/htmlEditor.jsp");
   }
 }
