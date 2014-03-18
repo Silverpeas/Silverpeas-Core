@@ -32,7 +32,9 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify the greater Silverpeas role.
+ * Annotation to specify to which resource, in the current component, the control will be passed
+ * once the treatment of the annotated method succeeded. For example:
+ * {@code  @RedirectToInternal("Main")} will redirect to the component's home page.
  * <p/>
  * @author Yohann Chastagnier
  */
@@ -43,9 +45,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface RedirectToInternal {
 
   /**
-   * The internal destination path.
-   * Prefix of path is automatically handled by the router.
-   * @return
+   * The destination path of the resource internal to the current Silverpeas component.
+   * Prefix of the path is automatically handled by the router.
+   * @return the destination path.
    */
   String value();
 }

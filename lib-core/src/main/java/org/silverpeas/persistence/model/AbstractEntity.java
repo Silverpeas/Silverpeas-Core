@@ -47,8 +47,7 @@ import java.util.Date;
  * definition.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
-    IDENTIFIER_TYPE>
+public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
     implements Cloneable, Entity<ENTITY, IDENTIFIER_TYPE> {
 
   @Transient
@@ -124,7 +123,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
         lastUpdatedByUser = UserDetail.getById(getLastUpdatedBy());
       }
     } else {
-      createdByUser = null;
+      lastUpdatedByUser = getCreator();
     }
     return lastUpdatedByUser;
   }
@@ -142,9 +141,9 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
 
   @Override
   public boolean hasBeenModified() {
-    return isPersisted() && StringUtil.isDefined(getLastUpdatedBy()) &&
-        getLastUpdateDate() != null && (!getCreatedBy().equals(getLastUpdatedBy()) ||
-        getCreateDate().compareTo(getLastUpdateDate()) != 0);
+    return isPersisted() && StringUtil.isDefined(getLastUpdatedBy()) && getLastUpdateDate() != null
+        && (!getCreatedBy().equals(getLastUpdatedBy()) || getCreateDate().compareTo(
+            getLastUpdateDate()) != 0);
   }
 
   @Override

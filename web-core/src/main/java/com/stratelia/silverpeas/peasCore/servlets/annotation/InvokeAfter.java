@@ -44,7 +44,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface InvokeAfter {
 
   /**
-   * The list of {@link com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable} annoted
+   * The list of {@link com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable} annotated
    * methods.
    * @return
    */

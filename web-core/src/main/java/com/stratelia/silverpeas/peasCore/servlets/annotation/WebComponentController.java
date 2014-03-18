@@ -32,7 +32,9 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify a Web Controller.
+ * Annotation to identify a class as a web component controller. A web component controller is the
+ * main entry of the Silverpeas component's Web GUI and it takes in charge of the Web requests and
+ * of the Web navigation.
  * @author Yohann Chastagnier
  */
 @Inherited
@@ -42,9 +44,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface WebComponentController {
 
   /**
-   * This method has to return the web component controller bean name to be put in the request
-   * object.
-   * ex : for almanach, returns "almanach"
+   * Gets the web component controller bean identifier. This identifier will be put into each
+   * requests to a resource managed by the component.
+   * object. For example: for almanach, returns "almanach".
+   * @return the web component identifier.
    */
   String value();
 }
