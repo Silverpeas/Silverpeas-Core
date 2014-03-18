@@ -23,40 +23,43 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.control;
 
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 /**
  * @author: Yohann Chastagnier
  */
-public class TestWebComponentRequestContext
-    extends WebComponentRequestContext<TestWebComponentController> {
+@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
+    "TestWebComponentControllerIdentifier")
+public class TwoHomepagesController extends WebComponentController<TestWebComponentRequestContext> {
 
-  private int nbBeforeRequestInitializeCalls = 0;
-  private int nbInvokationsBeforeCall = 0;
-  private int nbInvokationsAfterCall = 0;
-
-  @Override
-  public void beforeRequestInitialize() {
-    nbBeforeRequestInitializeCalls++;
+  /**
+   * Standard Session Controller Constructor
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
+   * @see
+   */
+  public TwoHomepagesController(MainSessionController mainSessionCtrl,
+      ComponentContext componentContext) {
+    super(mainSessionCtrl, componentContext);
   }
 
-  public int getNbBeforeRequestInitializeCalls() {
-    return nbBeforeRequestInitializeCalls;
+  @GET
+  @Homepage
+  @RedirectToInternalJsp("/homepage.jsp")
+  public void home(TestWebComponentRequestContext context) {
   }
 
-  public void addInvokationBeforeCall() {
-    nbInvokationsBeforeCall++;
-  }
-
-  public int getNbInvokationsBeforeCall() {
-    return nbInvokationsBeforeCall;
-  }
-
-  public void addInvokationAfterCall() {
-    nbInvokationsAfterCall++;
-  }
-
-  public int getNbInvokationsAfterCall() {
-    return nbInvokationsAfterCall;
+  @GET
+  @Path("notSamePathAsOtherHomePage")
+  @Homepage
+  @RedirectToInternalJsp("/homepage.jsp")
+  public void otherHome(TestWebComponentRequestContext context) {
   }
 }

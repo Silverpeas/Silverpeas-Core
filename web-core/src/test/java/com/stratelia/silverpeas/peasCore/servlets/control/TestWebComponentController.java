@@ -25,11 +25,23 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.Navigation;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import com.stratelia.webactiv.SilverpeasRole;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 
 /**
  * @author: Yohann Chastagnier
@@ -52,8 +64,150 @@ public class TestWebComponentController
 
   @GET
   @Homepage
-  @RedirectToInternalJsp("home.jsp")
-  public void home(TestWebComponentRequestContext context) {
+  @RedirectToInternalJsp("/homepage.jsp")
+  public void homeMethodNotWired(String aParam) {
+  }
 
+  @GET
+  @Homepage
+  @RedirectToInternalJsp("homepage.jsp")
+  public void homeMethod(TestWebComponentRequestContext context) {
+  }
+
+  @POST
+  @Path("create")
+  @RedirectToInternal("/created")
+  public void createMethod(TestWebComponentRequestContext context) {
+  }
+
+  @PUT
+  @Path("update")
+  @RedirectToInternal("updated")
+  public void updateMethod(TestWebComponentRequestContext context) {
+  }
+
+  @DELETE
+  @Path("delete")
+  @RedirectTo("/common/deleted.jsp")
+  public void deleteMethod(TestWebComponentRequestContext context) {
+  }
+
+  @POST
+  @Path("lowerRoleAccess")
+  @RedirectToInternal("/lowerRoleAccessOk")
+  @LowestRoleAccess(SilverpeasRole.publisher)
+  public void lowerRoleAccessMethod(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/invokation/oneBefore")
+  @RedirectTo("invokation/oneBefore/ok")
+  @InvokeBefore("invoke_before_1")
+  public void oneInvokationBefore(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/invokation/2Before")
+  @RedirectToInternal("invokation/2Before/ok")
+  @InvokeBefore({"invoke_before_1", "invoke_before_3"})
+  public void twoInvokationsBefore(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/invokation/oneAfter")
+  @RedirectToInternal("invokation/oneAfter/ok")
+  @InvokeAfter("invoke_after_4")
+  public void oneInvokationAfter(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/invokation/3After")
+  @RedirectToInternal("invokation/3After/ok")
+  @InvokeAfter({"invoke_after_3", "invoke_after_2", "invoke_after_1"})
+  public void threeInvokationsAfter(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/invokation/3Before4After")
+  @RedirectToInternal("invokation/3Before4After/ok")
+  @InvokeBefore({"invoke_before_3", "invoke_before_1", "invoke_before_2"})
+  @InvokeAfter({"invoke_after_3", "invoke_after_2", "invoke_after_4", "invoke_after_1"})
+  public void threeInvokationsBeforeAndFourAfter(TestWebComponentRequestContext context) {
+  }
+
+  @Invokable("invoke_before_1")
+  public void invokable_before_1(TestWebComponentRequestContext context) {
+    context.addInvokationBeforeCall();
+  }
+
+  @Invokable("invoke_before_2")
+  public void invokable_before_2(TestWebComponentRequestContext context) {
+    context.addInvokationBeforeCall();
+  }
+
+  @Invokable("invoke_before_3")
+  public void invokable_before_3(TestWebComponentRequestContext context) {
+    context.addInvokationBeforeCall();
+  }
+
+  @Invokable("invoke_before_4")
+  public void invokable_before_4(TestWebComponentRequestContext context) {
+    context.addInvokationBeforeCall();
+  }
+
+  @Invokable("invoke_after_1")
+  public void invokable_after_1(TestWebComponentRequestContext context) {
+    context.addInvokationAfterCall();
+  }
+
+  @Invokable("invoke_after_2")
+  public void invokable_after_2(TestWebComponentRequestContext context) {
+    context.addInvokationAfterCall();
+  }
+
+  @Invokable("invoke_after_3")
+  public void invokable_after_3(TestWebComponentRequestContext context) {
+    context.addInvokationAfterCall();
+  }
+
+  @Invokable("invoke_after_4")
+  public void invokable_after_4(TestWebComponentRequestContext context) {
+    context.addInvokationAfterCall();
+  }
+
+  @GET
+  @Path("/wysiwyg/modify")
+  public Navigation modifyWysiwyg(TestWebComponentRequestContext context) {
+    return context.redirectToHtmlEditor("objectId", "resturnPath", false);
+  }
+
+  @GET
+  @Path("/wysiwyg/{anResourceId}/view")
+  @RedirectToInternal("view/resource/1")
+  public void viewResource(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/wysiwyg/resourceId-{anResourceId}-test")
+  @RedirectToInternal("view/resource/2")
+  public void viewResource2(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/wysiwyg/resourceId-{anResourceId:[0-9]+}-otherTest")
+  @RedirectToInternal("view/resource/3")
+  public void viewOtherResource(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/wysiwyg/resourceId-{anResourceId  :  [0-9]+ }-test/{otherId}/view")
+  @RedirectToInternal("view/resource/4")
+  public void viewOtherResource2(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/wysiwyg/{anResourceId}/{anResourceId}/review")
+  @RedirectToInternal("view/resource/5")
+  public void sameVariableName(TestWebComponentRequestContext context) {
   }
 }

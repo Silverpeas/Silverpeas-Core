@@ -26,15 +26,19 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 /**
  * @author: Yohann Chastagnier
  */
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class HomePageIsNotSpecifiedController
-    extends WebComponentController<WebComponentRequestContext> {
+public class SamePathsWithoutVariableController
+    extends WebComponentController<TestWebComponentRequestContext> {
 
   /**
    * Standard Session Controller Constructor
@@ -42,8 +46,26 @@ public class HomePageIsNotSpecifiedController
    * @param componentContext The component's profile
    * @see
    */
-  public HomePageIsNotSpecifiedController(MainSessionController mainSessionCtrl,
+  public SamePathsWithoutVariableController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
+  }
+
+  @GET
+  @Homepage
+  @RedirectToInternalJsp("/homepage.jsp")
+  public void home(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("a/b/c/d")
+  @RedirectToInternalJsp("/homepage.jsp")
+  public void method1(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/a/b/c/d/")
+  @RedirectToInternalJsp("/homepage.jsp")
+  public void method2(TestWebComponentRequestContext context) {
   }
 }

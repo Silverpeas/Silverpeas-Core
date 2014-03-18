@@ -25,103 +25,409 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.control.BadTestWebComponentController;
-import com.stratelia.silverpeas.peasCore.servlets.control.HomePageIsNotSpecifiedController;
-import com.stratelia.silverpeas.peasCore.servlets.control.TestWebComponentController;
-import com.stratelia.silverpeas.peasCore.servlets.control.TestWebComponentRequestContext;
-import org.junit.Before;
-import org.junit.Ignore;
+import com.stratelia.silverpeas.peasCore.servlets.control.*;
+import com.stratelia.webactiv.SilverpeasRole;
+import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author: Yohann Chastagnier
  */
-public class WebComponentManagerTest {
-
-  @Before
-  public void setUp() throws ServletException {
-    CacheServiceFactory.getRequestCacheService().clear();
-  }
+public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test(expected = IllegalArgumentException.class)
-  public void webComponentControllerIsNotAnnoted() throws ServletException {
-    initRequestRouterWith(BadTestWebComponentController.class);
+  public void webComponentControllerIsNotAnnoted() throws Exception {
+    try {
+      onController(BadTestWebComponentController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), Matchers.endsWith(
+          "BadTestWebComponentController must specify one, and only one, " +
+              "@WebComponentController annotation"));
+      throw e;
+    }
   }
 
   @Test
-  public void veryfingWebComponentControllerInitialize() {
-    WebComponentRequestRouter routerInstance =
-        initRequestRouterWith(TestWebComponentController.class);
-    assertThat(routerInstance.getSessionControlBeanName(),
+  public void veryfingWebComponentControllerInitialize() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest().perform();
+    assertThat(testResult.router.getSessionControlBeanName(),
         is("TestWebComponentControllerIdentifier"));
-    assertThat(routerInstance.createComponentSessionController(mock(MainSessionController.class),
+    assertThat(testResult.router.createComponentSessionController(mock(MainSessionController.class),
         mock(ComponentContext.class)), instanceOf(TestWebComponentController.class));
   }
 
   @Test
-  @Ignore
-  public void doGetOnRequestRouter() throws ServletException {
-    WebComponentRequestRouter routerInstance =
-        initRequestRouterWith(TestWebComponentController.class);
-    routerInstance.doGet(mockRequest(), null);
-    TestWebComponentRequestContext requestContext = CacheServiceFactory.getRequestCacheService()
-        .get(WebComponentRequestContext.class.getName(), TestWebComponentRequestContext.class);
+  public void doGetOnRequestRouterWithRedirectToInternalJsp() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest().perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
+  }
+
+  @Test
+  public void doPostOnRequestRouterWithRedirectToInternal() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.POST)
+            .changeSuffixPathWith("create").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/created");
+  }
+
+  @Test
+  public void doPutOnRequestRouterWithRedirectToInternalWithRedirectTo() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.PUT)
+            .changeSuffixPathWith("update").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/updated");
+  }
+
+  @Test
+  public void doDeleteOnRequestRouter() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.DELETE)
+            .changeSuffixPathWith("delete").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/common/deleted.jsp");
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void homepageIsNotSpecified() throws ServletException {
-    WebComponentRequestRouter routerInstance =
-        initRequestRouterWith(HomePageIsNotSpecifiedController.class);
-    routerInstance.doGet(null, null);
-  }
-
-  private HttpRequest mockRequest() {
-    HttpRequest request = mock(HttpRequest.class);
-    HttpSession session = mock(HttpSession.class);
-    MainSessionController mainSessionController = mock(MainSessionController.class);
-    OrganisationController organisationController = mock(OrganisationController.class);
-    when(organisationController.isComponentAvailable(anyString(), anyString()))
-        .then(new Returns(true));
-    when(mainSessionController.getOrganisationController()).thenReturn(organisationController);
-    when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT))
-        .thenReturn(mainSessionController);
-    when(request.getSession()).thenReturn(session);
-    when(request.getSession(anyBoolean())).then(new Returns(session));
-    return request;
-  }
-
-  /**
-   * Initialization of a WebComponentController.
-   * @param controller
-   */
-  private WebComponentRequestRouter initRequestRouterWith(
-      Class<? extends WebComponentController> controller) {
-    WebComponentRequestRouter routerInstance = new WebComponentRequestRouter();
-    ServletConfig servletConfig = mock(ServletConfig.class);
-    when(servletConfig.getInitParameter(
-        com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController.class
-            .getSimpleName())).thenReturn(controller.getName());
+  public void homepageIsNotSpecified() throws Exception {
     try {
-      routerInstance.init(servletConfig);
-    } catch (ServletException e) {
-      throw new RuntimeException(e);
+      onController(HomePageIsNotSpecifiedController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), is("The homepage method must be specified with @Homepage"));
+      throw e;
     }
-    return routerInstance;
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void twoHomepageIsSpecified() throws Exception {
+    try {
+      onController(TwoHomepagesController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("@Homepage is specified on otherHome method, but @Homepage has already been defined " +
+              "one another one"));
+      throw e;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void lowerAccessRoleSuccess() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().setGreaterUserRole(SilverpeasRole.publisher).defaultRequest()
+            .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/lowerRoleAccessOk");
+    assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(0));
+    assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(0));
+  }
+
+  @Test
+  public void lowerAccessRoleWithUserThatHasNotEnoughRights() throws Exception {
+    TestResult testResult =
+        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+            .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(1))
+        .sendError(HttpServletResponse.SC_FORBIDDEN);
+    verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
+  }
+
+  @Test
+  public void lowerAccessRoleButWrongHttpMethod() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.GET)
+            .changeSuffixPathWith("lowerRoleAccess").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void httpMethodWithInvokableAnnotation() throws Exception {
+    try {
+      onController(HttpMethodWithInvokableAnnotationController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), is("Http Method homeMethod can not be annoted with @Invokable"));
+      throw e;
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void referenceInvokableBeforeThatDoesNotExist() throws Exception {
+    try {
+      onController(InvokeBeforeNoReferenceController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("method behind 'invokable_2' invokable identifier must be performed before the " +
+              "execution of HTTP method homeMethod, but it is not registred"));
+      throw e;
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void referenceInvokableAfterThatDoesNotExist() throws Exception {
+    try {
+      onController(InvokeAfterNoReferenceController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("method behind 'invokable_1' invokable identifier must be performed after the " +
+              "execution of HTTP method homeMethod, but it is not registred"));
+      throw e;
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void invokableIdentifierAlreadyExists() throws Exception {
+    try {
+      onController(InvokableIdentifierAlreadyExistsController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), is("invokable_1 invokable identifier has already been set"));
+      throw e;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneIvokationBefore() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("invokation/oneBefore")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/invokation/oneBefore/ok");
+    assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(0));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void twoIvokationsBefore() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/2Before")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/invokation/2Before/ok");
+    assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(2));
+    assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(0));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneIvokationAfter() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/oneAfter")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/invokation/oneAfter/ok");
+    assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(0));
+    assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(1));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void threeIvokationsAfter() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3After").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/invokation/3After/ok");
+    assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(0));
+    assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(3));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void threeIvokationsBeforeAndFourAfter() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3Before4After")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/invokation/3Before4After/ok");
+    assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
+    assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(3));
+    assertThat(testResult.requestContext.getNbInvokationsAfterCall(), is(4));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void navigateToHtmlEditor() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("wysiwyg/modify").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/wysiwyg/jsp/htmlEditor.jsp");
+  }
+
+
+  @Test(expected = IllegalArgumentException.class)
+  public void missingNavigationOnHttpMethod() throws Exception {
+    try {
+      onController(MissingNavigationController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("home method must return a Navigation instance or be annoted by one of @RedirectTo.." +
+              ". annotations"));
+      throw e;
+    }
+  }
+
+
+  @Test(expected = IllegalArgumentException.class)
+  public void twoNavigationsSpecifiedOnHttpMethod() throws Exception {
+    try {
+      onController(TwoNavigationsSpecifiedController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("home method must, either return a Navigation instance, either be annoted by one of " +
+              "@RedirectTo... annotation"));
+      throw e;
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void samePathsWithoutVariable() throws Exception {
+    try {
+      onController(SamePathsWithoutVariableController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("specified path for method method2 already exists for method method1 -> /a/b/c/d/"));
+      throw e;
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void samePathsWithVariables() throws Exception {
+    try {
+      onController(SamePathsWithVariablesController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("specified path for method method2 already exists for method method1 -> " +
+              "a/b/c/d/resourceId-{anResourceId  :  [0-9]+  }-test"));
+      throw e;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneVariableSimple() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/wysiwyg/myVariableValue_123/view").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/1");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("anResourceId", "myVariableValue_123"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneVariableComplex() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/wysiwyg/resourceId-myVariableValue_123-test/").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/2");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("anResourceId", "myVariableValue_123"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneVariableComplex2() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/2");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("anResourceId", "_123"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneVariableRegexpCheckOk() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/wysiwyg/resourceId-123-otherTest").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/3");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("anResourceId", "123"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void oneVariableRegexpCheckOk2() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/2");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("anResourceId", "_123"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void twoVariablesRegexpCheckOk() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/wysiwyg/resourceId-123-test/id26/view").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/4");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(2));
+    assertThat(variables, hasEntry("anResourceId", "123"));
+    assertThat(variables, hasEntry("otherId", "id26"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void sameVariableName() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_123/review").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/view/resource/5");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("anResourceId", "myVariableValue_123"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void sameVariableNameButNotSameValues() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_124/review").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(0));
+  }
+
+  private ControllerTest<TestWebComponentController, TestWebComponentRequestContext>
+  onDefaultController() {
+    return onController(TestWebComponentController.class);
   }
 }

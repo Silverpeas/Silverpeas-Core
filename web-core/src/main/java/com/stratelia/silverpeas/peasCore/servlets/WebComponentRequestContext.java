@@ -37,25 +37,33 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
+ * @param <CONTROLLER>
  * @author Yohann Chastagnier
  */
-public abstract class WebComponentRequestContext<T extends WebComponentController> {
+public class WebComponentRequestContext<CONTROLLER extends WebComponentController> {
 
   private Class<? extends Annotation> httpMethodClass;
   private HttpRequest request;
   private HttpServletResponse response;
-  private T controller = null;
+  private CONTROLLER controller = null;
 
+  private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
   private Set<SilverpeasRole> userRoles;
   private SilverpeasRole greaterUserRole;
 
   /**
-   * This methods permits to perform specific initializations.
+   * This methods permits to perform initializations before the HTTP method (and associated
+   * method invokation) aimed is performed.
    */
-  public abstract void beforeRequestInitialize();
+  public void beforeRequestInitialize() {
+    // Nothing to do by default.
+  }
 
   void setHttpMethodClass(final Class<? extends Annotation> httpMethodClass) {
     this.httpMethodClass = httpMethodClass;
@@ -81,12 +89,26 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
     return response;
   }
 
-  public T getController() {
+  public CONTROLLER getController() {
     return controller;
   }
 
-  void setController(final T controller) {
+  void setController(final CONTROLLER controller) {
     this.controller = controller;
+  }
+
+  public Map<String, String> getPathVariables() {
+    return Collections.unmodifiableMap(pathVariables);
+  }
+
+  public void addPathVariables(final String variableName, final String variableValue) {
+    if (pathVariables.containsKey(variableName) &&
+        !pathVariables.get(variableName).equals(variableValue)) {
+      pathVariables.clear();
+      throw new IllegalArgumentException(
+          "trying to set different values for the same variable: " + variableName);
+    }
+    pathVariables.put(variableName, variableValue);
   }
 
   public String getComponentInstanceId() {
@@ -129,25 +151,26 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
 
   Navigation redirectTo(Annotation redirectTo) {
     if (redirectTo instanceof RedirectToInternalJsp) {
-      return navigateToInternalJsp(((RedirectToInternalJsp) redirectTo).value());
+      return redirectToInternalJsp(((RedirectToInternalJsp) redirectTo).value());
     } else if (redirectTo instanceof RedirectToInternal) {
-      return navigateToInternal(((RedirectToInternal) redirectTo).value());
+      return redirectToInternal(((RedirectToInternal) redirectTo).value());
     }
-    return navigateTo(((RedirectTo) redirectTo).value());
+    return redirectTo(
+        UriBuilder.fromUri("/").path(((RedirectTo) redirectTo).value()).build().toString());
   }
 
-  private Navigation navigateToInternal(String internalPath) {
-    return navigateTo(
+  private Navigation redirectToInternal(String internalPath) {
+    return redirectTo(
         UriBuilder.fromUri("/").path(getComponentName()).path(internalPath).build().toString());
   }
 
-  private Navigation navigateToInternalJsp(String jspPathname) {
-    return navigateTo(
+  private Navigation redirectToInternalJsp(String jspPathname) {
+    return redirectTo(
         UriBuilder.fromUri("/").path(getComponentName()).path("jsp").path(jspPathname).build()
             .toString());
   }
 
-  private Navigation navigateTo(String path) {
+  private Navigation redirectTo(String path) {
     return new Navigation(path);
   }
 
@@ -157,21 +180,24 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
    * @param returnPath
    * @param indexIt
    * @return
-   * @throws UnsupportedEncodingException
    */
-  public Navigation redirectToHtmlEditor(String objectId, String returnPath, boolean indexIt)
-      throws UnsupportedEncodingException {
-    getRequest().setAttribute("SpaceId", getSpaceId());
-    getRequest().setAttribute("SpaceName", URLEncoder.encode(getSpaceLabel(), CharEncoding.UTF_8));
-    getRequest().setAttribute("ComponentId", getComponentInstanceId());
-    getRequest().setAttribute("ComponentName",
-        URLEncoder.encode(getComponentInstanceLabel(), CharEncoding.UTF_8));
-    getRequest().setAttribute("ObjectId", objectId);
-    getRequest().setAttribute("Language", null);
-    getRequest().setAttribute("ReturnUrl", URLManager.getApplicationURL() +
-        URLManager.getURL(getComponentName(), "useless", getComponentInstanceId()) +
-        returnPath);
-    getRequest().setAttribute("UserId", String.valueOf(indexIt));
-    return navigateTo("/wysiwyg/jsp/htmlEditor.jsp");
+  public Navigation redirectToHtmlEditor(String objectId, String returnPath, boolean indexIt) {
+    try {
+      getRequest().setAttribute("SpaceId", getSpaceId());
+      getRequest()
+          .setAttribute("SpaceName", URLEncoder.encode(getSpaceLabel(), CharEncoding.UTF_8));
+      getRequest().setAttribute("ComponentId", getComponentInstanceId());
+      getRequest().setAttribute("ComponentName",
+          URLEncoder.encode(getComponentInstanceLabel(), CharEncoding.UTF_8));
+      getRequest().setAttribute("ObjectId", objectId);
+      getRequest().setAttribute("Language", null);
+      getRequest().setAttribute("ReturnUrl", URLManager.getApplicationURL() +
+          URLManager.getURL(getComponentName(), "useless", getComponentInstanceId()) +
+          returnPath);
+      getRequest().setAttribute("UserId", String.valueOf(indexIt));
+      return redirectTo("/wysiwyg/jsp/htmlEditor.jsp");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -65,7 +65,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WebComponentManager {
 
-  private static final Map<String, WebComponentManager> managedWebComponentRouters =
+  static final Map<String, WebComponentManager> managedWebComponentRouters =
       new ConcurrentHashMap<String, WebComponentManager>();
 
   private com.stratelia.silverpeas.peasCore.servlets.Path defaultPath = null;
@@ -81,15 +81,16 @@ public class WebComponentManager {
    * request.
    * @param request the request itself.
    * @param response the response itself.
-   * @param <C> the type of the Web Component Controller that provides a lot of stuff around
+   * @param <CONTROLLER> the type of the Web Component Controller that provides a lot of stuff
+   * around
    * the component, the user, etc.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component request context.
    * @return
    */
   @SuppressWarnings("unchecked")
-  public static <C extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<C>> void manageRequestFor(
-      Class<C> webComponentControllerClass, Class<? extends Annotation> httpMethodClass,
+  public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> void manageRequestFor(
+      Class<CONTROLLER> webComponentControllerClass, Class<? extends Annotation> httpMethodClass,
       HttpRequest request, HttpServletResponse response) {
 
     // If the request is already managed, then bypassing the treatment of this method. This
@@ -130,7 +131,8 @@ public class WebComponentManager {
   /**
    * Initializes all the route paths from the method analizing of the given
    * webComponentControllerClass instance.
-   * The webComponentControllerClass must provide methods with only one parameter : WebRouteContext.
+   * The webComponentControllerClass must provide methods with only one parameter :
+   * WebRouteContext.
    * This methods can be annoted by :
    * <ul>
    * <li>{@link javax.ws.rs.GET}</li>
@@ -232,7 +234,7 @@ public class WebComponentManager {
         if (!httpMethods.isEmpty()) {
           if (invokable != null) {
             throw new IllegalArgumentException(
-                "Http Method must be specified for method: " + resourceMethod.getName());
+                "Http Method " + resourceMethod.getName() + " can not be annoted with @Invokable");
           }
 
           if (redirectTo == null &&
@@ -245,7 +247,7 @@ public class WebComponentManager {
           if (redirectTo != null &&
               resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
             throw new IllegalArgumentException(resourceMethod.getName() +
-                " method must return, either a Navigation instance, either be annoted by one of " +
+                " method must, either return a Navigation instance, either be annoted by one of " +
                 "@RedirectTo... annotation");
           }
 
@@ -260,6 +262,11 @@ public class WebComponentManager {
                 .addPaths(paths, lowestRoleAccess, resourceMethod, redirectTo, invokeBefore,
                     invokeAfter);
             if (isDefaultPaths) {
+              if (webComponentManager.defaultPath != null) {
+                throw new IllegalArgumentException(
+                    "@Homepage is specified on " + resourceMethod.getName() +
+                        " method, but @Homepage has already been defined one another one");
+              }
               webComponentManager.defaultPath = registredPaths.get(0);
             }
             allRegistredPaths.addAll(registredPaths);
@@ -269,7 +276,7 @@ public class WebComponentManager {
         if (invokable != null) {
           if (webComponentManager.invokables.containsKey(invokable.value())) {
             throw new IllegalArgumentException(
-                invokable.value() + " invokable identifier has already been set...");
+                invokable.value() + " invokable identifier has already been set");
           }
           webComponentManager.invokables.put(invokable.value(), resourceMethod);
         }
@@ -277,7 +284,7 @@ public class WebComponentManager {
     }
 
     if (webComponentManager.defaultPath == null) {
-      throw new IllegalArgumentException("The homepage method must be specified");
+      throw new IllegalArgumentException("The homepage method must be specified with @Homepage");
     }
 
     // Verifying method identifier invokation
@@ -306,7 +313,7 @@ public class WebComponentManager {
    * object instance.
    * @param webComponentController the handled component controller.
    * @param path the path that must be matched in finding of the method to invoke.
-   * @param <R> the type of the resource which hosts the method that must be invoked.
+   * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
    * @return
    * @throws AccessForbiddenException
@@ -315,9 +322,10 @@ public class WebComponentManager {
    * @throws IllegalAccessException
    */
   @SuppressWarnings("unchecked")
-  public static <R extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<R>> Navigation perform(
-      R webComponentController, String path) throws AccessForbiddenException, IOException, InvocationTargetException,
+  public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation perform(
+      CONTROLLER webComponentController, String path)
+      throws AccessForbiddenException, IOException, InvocationTargetException,
       IllegalAccessException {
 
     // Retrieving the web component request context
@@ -344,7 +352,7 @@ public class WebComponentManager {
    * @param webComponentController the resource which exposes the method that will be invoked.
    * @param path the path that must be matched in finding of the method to invoke.
    * @param webComponentContext the context of the web component routing.
-   * @param <R> the type of the resource which hosts the method that must be invoked.
+   * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
    * @return the {@link com.stratelia.silverpeas.peasCore.servlets.Navigation} instance that
    * contains the destination.
@@ -353,9 +361,10 @@ public class WebComponentManager {
    * @throws InvocationTargetException
    * @throws IllegalAccessException
    */
-  private <R extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<R>> Navigation exucutePath(
-      R webComponentController, String path, WEB_COMPONENT_REQUEST_CONTEXT webComponentContext)
+  private <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation exucutePath(
+      CONTROLLER webComponentController, String path,
+      WEB_COMPONENT_REQUEST_CONTEXT webComponentContext)
       throws AccessForbiddenException, IOException, InvocationTargetException,
       IllegalAccessException {
     com.stratelia.silverpeas.peasCore.servlets.Path pathToPerform = null;
@@ -364,7 +373,7 @@ public class WebComponentManager {
     HttpMethodPaths methodPaths =
         httpMethodPaths.get(webComponentContext.getHttpMethodClass().getName());
     if (methodPaths != null) {
-      pathToPerform = methodPaths.findPath(path);
+      pathToPerform = methodPaths.findPath(path, webComponentContext);
     }
 
     // If no path is found, then the default one is selected.
@@ -373,8 +382,10 @@ public class WebComponentManager {
     }
 
     // Has the user enough rights to access the aimed treatment?
-    if (pathToPerform.getLowestRoleAccess() != null && !webComponentContext.getGreaterUserRole()
-        .isGreaterThanOrEquals(pathToPerform.getLowestRoleAccess())) {
+    if (pathToPerform.getLowestRoleAccess() != null &&
+        (webComponentContext.getGreaterUserRole() == null ||
+            !webComponentContext.getGreaterUserRole()
+                .isGreaterThanOrEquals(pathToPerform.getLowestRoleAccess()))) {
       webComponentContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
       throw new AccessForbiddenException("WebRouteManager.executePath", SilverpeasException.ERROR,
           "User id " + webComponentContext.getUser().getId() + " has not right access to " +

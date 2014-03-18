@@ -47,7 +47,8 @@ import java.io.IOException;
  */
 public final class WebComponentRequestRouter<
     T extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-    WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<T>>
+    WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
+        WebComponentController>>
     extends ComponentRequestRouter<T> {
   private static final long serialVersionUID = -3344222078427488724L;
 
@@ -71,7 +72,7 @@ public final class WebComponentRequestRouter<
           com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController.class);
       if (webComponentControllerAnnotation == null) {
         throw new IllegalArgumentException(webComponentClassName +
-            " must specify one, and only one, @WebComponentController annotation.");
+            " must specify one, and only one, @WebComponentController annotation");
       }
       webComponentControllerBeanName = webComponentControllerAnnotation.value();
     } catch (ClassNotFoundException e) {
@@ -92,8 +93,8 @@ public final class WebComponentRequestRouter<
           .getConstructor(MainSessionController.class, ComponentContext.class)
           .newInstance(mainSessionCtrl, componentContext);
     } catch (Exception e) {
-      throw new IllegalArgumentException(webComponentControllerClass +
-          " must specify one, and only one, @WebComponentController annotation.", e);
+      throw new IllegalArgumentException(
+          webComponentControllerClass + " does not expose the required constructor.", e);
     }
   }
 
