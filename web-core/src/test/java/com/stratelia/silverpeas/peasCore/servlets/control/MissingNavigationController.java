@@ -23,40 +23,34 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.control;
 
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+
+import javax.ws.rs.GET;
 
 /**
  * @author: Yohann Chastagnier
  */
-public class TestWebComponentRequestContext
-    extends WebComponentRequestContext<TestWebComponentController> {
+@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
+    "TestWebComponentControllerIdentifier")
+public class MissingNavigationController
+    extends WebComponentController<TestWebComponentRequestContext> {
 
-  private int nbBeforeRequestInitializeCalls = 0;
-  private int nbInvokationsBeforeCall = 0;
-  private int nbInvokationsAfterCall = 0;
-
-  @Override
-  public void beforeRequestInitialize() {
-    nbBeforeRequestInitializeCalls++;
+  /**
+   * Standard Session Controller Constructor
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
+   * @see
+   */
+  public MissingNavigationController(MainSessionController mainSessionCtrl,
+      ComponentContext componentContext) {
+    super(mainSessionCtrl, componentContext);
   }
 
-  public int getNbBeforeRequestInitializeCalls() {
-    return nbBeforeRequestInitializeCalls;
-  }
-
-  public void addInvokationBeforeCall() {
-    nbInvokationsBeforeCall++;
-  }
-
-  public int getNbInvokationsBeforeCall() {
-    return nbInvokationsBeforeCall;
-  }
-
-  public void addInvokationAfterCall() {
-    nbInvokationsAfterCall++;
-  }
-
-  public int getNbInvokationsAfterCall() {
-    return nbInvokationsAfterCall;
+  @GET
+  @Homepage
+  public void home(TestWebComponentRequestContext context) {
   }
 }

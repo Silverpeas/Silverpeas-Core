@@ -26,15 +26,21 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+
+import javax.ws.rs.GET;
 
 /**
  * @author: Yohann Chastagnier
  */
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class HomePageIsNotSpecifiedController
-    extends WebComponentController<WebComponentRequestContext> {
+public class InvokeAfterNoReferenceController
+    extends WebComponentController<TestWebComponentRequestContext> {
 
   /**
    * Standard Session Controller Constructor
@@ -42,8 +48,19 @@ public class HomePageIsNotSpecifiedController
    * @param componentContext The component's profile
    * @see
    */
-  public HomePageIsNotSpecifiedController(MainSessionController mainSessionCtrl,
+  public InvokeAfterNoReferenceController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
+  }
+
+  @GET
+  @Homepage
+  @RedirectToInternalJsp("homepage.jsp")
+  @InvokeAfter({"invokable_1", "invokable_2"})
+  public void homeMethod(TestWebComponentRequestContext context) {
+  }
+
+  @Invokable("invokable_2")
+  public void invokable2Method(TestWebComponentRequestContext context) {
   }
 }

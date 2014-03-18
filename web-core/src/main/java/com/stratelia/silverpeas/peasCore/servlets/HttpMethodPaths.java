@@ -25,7 +25,6 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import java.lang.annotation.Annotation;
@@ -35,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * Class that registers for an http method all the paths.
@@ -109,45 +107,30 @@ class HttpMethodPaths {
    */
   private Path addPath(String path, SilverpeasRole lowestRoleAccess, Method resourceMethod,
       final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
-    path = path.replaceFirst("^/", "");
-    Path pathRoute = pathRoutes.get(path);
+    Path pathToRegister =
+        new Path(path.replaceFirst("^/", ""), lowestRoleAccess, resourceMethod, redirectTo,
+            invokeBefore, invokeAfter);
+    Path pathRoute = pathRoutes.get(pathToRegister.getPath());
     if (pathRoute != null) {
       throw new IllegalArgumentException(
-          "Specified path for method " + resourceMethod.getName() + " already exists for method " +
-              pathRoute.getResourceMethod().getName());
+          "specified path for method " + resourceMethod.getName() + " already exists for method " +
+              pathRoute.getResourceMethod().getName() + " -> " + path);
     }
-    Path pathToRegister =
-        new Path(path, lowestRoleAccess, resourceMethod, redirectTo, invokeBefore, invokeAfter);
-    pathRoutes.put(path, pathToRegister);
+    pathRoutes.put(pathToRegister.getPath(), pathToRegister);
     return pathToRegister;
   }
 
   /**
    * Finds the right paths
    * @param path
+   * @param requestContext
    * @return
    */
-  public Path findPath(String path) {
+  public Path findPath(String path, final WebComponentRequestContext requestContext) {
     Path foundPath = null;
     for (Map.Entry<String, Path> entry : pathRoutes.entrySet()) {
-      StringTokenizer pathTokenizer = new StringTokenizer(path, "/");
-      StringTokenizer registredPathTokenizer = new StringTokenizer(entry.getKey(), "/");
-
-      if (pathTokenizer.countTokens() != registredPathTokenizer.countTokens()) {
-        continue;
-      }
-
-      foundPath = entry.getValue();
-
-      for (; pathTokenizer.hasMoreTokens(); ) {
-        String pathPart = pathTokenizer.nextToken();
-        String resgistredPathPart = registredPathTokenizer.nextToken();
-        if (!pathPart.equals(resgistredPathPart)) {
-          foundPath = null;
-          break;
-        }
-      }
-      if (foundPath != null) {
+      if (entry.getValue().matches(path, requestContext)) {
+        foundPath = entry.getValue();
         break;
       }
     }

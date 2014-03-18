@@ -25,17 +25,17 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
  * Base class for all web component controller.
  * Each implementation must be specified in web component servlet declaration into the linked
  * web.xml.
- * @author: Yohann Chastagnier
+ * @param <WEB_COMPONENT_REQUEST_CONTEXT>
+ * @author Yohann Chastagnier
  */
 public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT extends
-    WebComponentRequestContext<? extends WebComponentController>>
+    WebComponentRequestContext>
     extends AbstractComponentSessionController {
 
   public WebComponentController(final MainSessionController controller, final String spaceId,
