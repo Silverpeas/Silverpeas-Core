@@ -29,11 +29,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify the greater Silverpeas role.
+ * Annotation to specify to which resource, out of the current component, the control will be passed
+ * once the treatment of the annotated method succeeded. For example:
+ * {@code  @RedirectToInternal("Ralmanach/Main")} will redirect the web navigation to the home page
+ * of the Almanach component.
  * <p/>
  * @author Yohann Chastagnier
  */

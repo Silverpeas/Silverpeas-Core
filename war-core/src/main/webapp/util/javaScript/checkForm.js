@@ -27,7 +27,7 @@ var whitespace = " \t\n\r";
 
 // Check whether string s is empty.
 function isEmpty(s) {
-	return ((s == null) || (s.length == 0))
+	return ((s === null) || (s === undefined) || (s.length === 0));
 }
 
 // Returns true if string s is empty or
@@ -45,7 +45,7 @@ function isWhitespace (s) {
     for (i = 0; i < s.length; i++) {
         // Check that current character isn't whitespace.
         var c = s.charAt(i);
-        if (whitespace.indexOf(c) == -1) return false;
+        if (whitespace.indexOf(c) < 0) return false;
     }
 
     // All characters are whitespace.
@@ -63,7 +63,7 @@ function stripCharsInBag (s, bag) {
     for (i = 0; i < s.length; i++) {
         // Check that current character isn't whitespace.
         var c = s.charAt(i);
-        if (bag.indexOf(c) == -1) returnString += c;
+        if (bag.indexOf(c) < 0) returnString += c;
     }
 
     return returnString;
@@ -84,7 +84,7 @@ function stripCharsNotInBag (s, bag) {
     {
         // Check that current character isn't whitespace.
         var c = s.charAt(i);
-        if (bag.indexOf(c) != -1) returnString += c;
+        if (bag.indexOf(c) >= 0) returnString += c;
     }
 
     return returnString;
@@ -97,7 +97,7 @@ function stripCharsNotInBag (s, bag) {
 // defines which characters are considered whitespace.
 
 function stripWhitespace (s) {
-	return stripCharsInBag (s, whitespace)
+	return stripCharsInBag (s, whitespace);
 }
 
 
@@ -124,9 +124,9 @@ function stripWhitespace (s) {
 // is contained within string s.
 function charInString (c, s) {
 	for (i = 0; i < s.length; i++) {
-		if (s.charAt(i) == c) return true;
+		if (s.charAt(i) === c) return true;
     }
-    return false
+    return false;
 }
 
 
@@ -145,7 +145,7 @@ function stripInitialWhitespace (s) {
 //return true if length of s is < textFieldLength
 function isValidText(input, textFieldLength) {
 	var s = input.value;
-	if (typeof s != 'undefined') {
+	if (typeof s !== 'undefined') {
 		return s.length <= Number(textFieldLength);
 	}
 	return true;
@@ -154,14 +154,14 @@ function isValidText(input, textFieldLength) {
 //return true if length of s is < textFieldLength
 function isValidTextField(input) {
 	var textFieldLength = 1000;
-	return isValidText(input, textFieldLength)
+	return isValidText(input, textFieldLength);
 }
 
 //return true if length of s is < textAreaLength
 function isValidTextArea(input) {
 	var textAreaLength = 2000;
 	var s = input.value;
-    if (s == null) {
+    if (s === null || s === undefined) {
       s = input;
     }
 //	input.select();
@@ -172,7 +172,7 @@ function isValidTextArea(input) {
 function isValidTextMaxi(input) {
 	var textMaxiLength = 4000;
 	var s = input.value;
-	if (typeof s != 'undefined') {
+	if (typeof s !== 'undefined') {
 		return (s.length <= textMaxiLength);
 	}
 	return true;
@@ -183,9 +183,9 @@ function isValidTextMaxi(input) {
 // Put focus in theField and return false.
 
 function warnEmpty (theField, s)
-{   theField.focus()
-    alert(s)
-    return false
+{   theField.focus();
+    alert(s);
+    return false;
 }
 
 // checkString (TEXTFIELD theField, STRING s, [, BOOLEAN emptyOK==false])
@@ -208,7 +208,7 @@ function isNumericField(field)
 {
     validChars = "0123456789.,";
     for( var i=0; i<field.length; i++ )
-		if (validChars.indexOf(field.charAt(i)) == -1)
+		if (validChars.indexOf(field.charAt(i)) < 0)
 			return false;
 	return true;
 }
@@ -224,7 +224,7 @@ function isInteger(field)
 {
     validChars = "0123456789";
     for( var i=0; i<field.length; i++ )
-	if (validChars.indexOf(field.charAt(i)) == -1)
+	if (validChars.indexOf(field.charAt(i)) < 0)
 		return false;
     return true;
 }
@@ -241,8 +241,8 @@ function checkHour(hour)
 }
 
 function checkemail(email) {
-	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-	if (email == '' || !re.test(email)) {
+	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if (email === '' || !re.test(email)) {
 	    return false;
 	}
 	return true;

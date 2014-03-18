@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.annotation;
 
-import com.stratelia.webactiv.SilverpeasRole;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
@@ -34,7 +33,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify the method to go to home page.
+ * Annotation to identify the method that takes in charge of the requests for the home page.
  * <p/>
  * @author Yohann Chastagnier
  */

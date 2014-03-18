@@ -32,7 +32,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify the greater Silverpeas role.
+ * Annotation to specify which JSP page, the current component, the control will be passed once
+ * the treatment of the annotated method succeeded.
  * <p/>
  * @author Yohann Chastagnier
  */
@@ -43,9 +44,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface RedirectToInternalJsp {
 
   /**
-   * The internal jsp destination path.
-   * Prefix of path is automatically handled by the router.
-   * @return
+   * The destination path of the JSP page internal to the current Silverpeas component.
+   * Prefix of the path is automatically handled by the router.
+   * @return the destination path.
    */
   String value();
 }

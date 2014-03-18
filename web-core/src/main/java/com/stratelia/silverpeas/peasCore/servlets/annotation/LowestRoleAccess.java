@@ -34,7 +34,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify the greater Silverpeas role.
+ * Annotation to specify the lower Silverpeas role the user should play in order to invoke the
+ * annotated method.
  * <p/>
  * @author Yohann Chastagnier
  */
@@ -43,6 +44,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(METHOD)
 @Retention(RUNTIME)
 public @interface LowestRoleAccess {
+
   SilverpeasRole value();
 
   String pathOnAccessError() default "/";
