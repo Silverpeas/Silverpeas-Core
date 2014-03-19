@@ -123,7 +123,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void lowerAccessRoleSuccess() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setGreaterUserRole(SilverpeasRole.publisher).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
@@ -157,7 +157,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalJspOnError").perform();
@@ -168,7 +168,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void lowerRoleAccessRedirectToInternalOnError() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalOnError").perform();
@@ -179,7 +179,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void lowerRoleAccessRedirectToOnError() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToOnError").perform();
@@ -234,7 +234,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void oneIvokationBefore() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("invokation/oneBefore")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -247,7 +247,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void twoIvokationsBefore() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/2Before")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -260,7 +260,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void oneIvokationAfter() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/oneAfter")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -273,7 +273,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void threeIvokationsAfter() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3After").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/invokation/3After/ok");
@@ -285,7 +285,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void threeIvokationsBeforeAndFourAfter() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3Before4After")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -298,7 +298,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @SuppressWarnings("unchecked")
   @Test
   public void navigateToHtmlEditor() throws Exception {
-    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+    TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("wysiwyg/modify").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/wysiwyg/jsp/htmlEditor.jsp");
