@@ -131,8 +131,8 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     redirectVariables.put(variableName, variableValue);
   }
 
-  public MessageContainer getMessageManager() {
-    return MessageManager.getMessageContainer(MessageManager.getRegistredKey());
+  public WebMessager getMessager() {
+    return WebMessager.getInstance();
   }
 
   public String getComponentInstanceId() {
