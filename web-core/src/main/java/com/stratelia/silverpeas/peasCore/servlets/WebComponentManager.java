@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
@@ -170,7 +171,7 @@ public class WebComponentManager {
         Set<Class<? extends Annotation>> httpMethods =
             new LinkedHashSet<Class<? extends Annotation>>();
         Set<Path> paths = new LinkedHashSet<Path>();
-        SilverpeasRole lowestRoleAccess = null;
+        LowestRoleAccess lowestRoleAccess = null;
         boolean isDefaultPaths = false;
         Annotation redirectTo = null;
         Invokable invokable = null;
@@ -193,7 +194,7 @@ public class WebComponentManager {
                   "Only one greatest Silverpeas Role must be specified for method: " +
                       resourceMethod.getName());
             }
-            lowestRoleAccess = ((LowestRoleAccess) annotation).value();
+            lowestRoleAccess = (LowestRoleAccess) annotation;
           } else if (annotation instanceof Homepage) {
             if (isDefaultPaths) {
               throw new IllegalArgumentException(
@@ -385,11 +386,17 @@ public class WebComponentManager {
     if (pathToPerform.getLowestRoleAccess() != null &&
         (webComponentContext.getGreaterUserRole() == null ||
             !webComponentContext.getGreaterUserRole()
-                .isGreaterThanOrEquals(pathToPerform.getLowestRoleAccess()))) {
-      webComponentContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
-      throw new AccessForbiddenException("WebRouteManager.executePath", SilverpeasException.ERROR,
-          "User id " + webComponentContext.getUser().getId() + " has not right access to " +
-              webComponentContext.getRequest().getRequestURI());
+                .isGreaterThanOrEquals(pathToPerform.getLowestRoleAccess().value()))) {
+      RedirectTo redirectTo = pathToPerform.getLowestRoleAccess().onError();
+      if (StringUtil.isNotDefined(redirectTo.value())) {
+        // No redirection on access error
+        webComponentContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
+        throw new AccessForbiddenException("WebRouteManager.executePath", SilverpeasException.ERROR,
+            "User id " + webComponentContext.getUser().getId() + " has not right access to " +
+                webComponentContext.getRequest().getRequestURI());
+      }
+      // A redirection is asked on an error
+      return webComponentContext.redirectTo(redirectTo);
     }
 
     // Invoking all methods before the execution of the HTTP method.

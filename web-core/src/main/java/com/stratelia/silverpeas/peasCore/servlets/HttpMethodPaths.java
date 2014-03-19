@@ -25,6 +25,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import java.lang.annotation.Annotation;
@@ -75,7 +76,7 @@ class HttpMethodPaths {
    * method.
    * @return registred paths.
    */
-  List<Path> addPaths(Set<javax.ws.rs.Path> paths, SilverpeasRole lowestRoleAccess,
+  List<Path> addPaths(Set<javax.ws.rs.Path> paths, LowestRoleAccess lowestRoleAccess,
       Method resourceMethod, final Annotation redirectTo, final InvokeBefore invokeBefore,
       final InvokeAfter invokeAfter) {
     List<Path> registredPaths = new ArrayList<Path>();
@@ -105,7 +106,7 @@ class HttpMethodPaths {
    * method.
    * @return the registred path.
    */
-  private Path addPath(String path, SilverpeasRole lowestRoleAccess, Method resourceMethod,
+  private Path addPath(String path, LowestRoleAccess lowestRoleAccess, Method resourceMethod,
       final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     Path pathToRegister =
         new Path(path.replaceFirst("^/", ""), lowestRoleAccess, resourceMethod, redirectTo,

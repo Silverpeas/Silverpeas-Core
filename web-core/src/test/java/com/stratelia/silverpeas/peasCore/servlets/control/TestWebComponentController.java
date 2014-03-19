@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToType;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import javax.ws.rs.DELETE;
@@ -97,6 +98,31 @@ public class TestWebComponentController
   @RedirectToInternal("/lowerRoleAccessOk")
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void lowerRoleAccessMethod(TestWebComponentRequestContext context) {
+  }
+
+  @POST
+  @Path("lowerRoleAccessRedirectToInternalJspOnError")
+  @RedirectToInternal("/lowerRoleAccessOk")
+  @LowestRoleAccess(value = SilverpeasRole.publisher,
+      onError = @RedirectTo(value = "error.jsp", type = RedirectToType.INTERNAL_JSP))
+  public void lowerRoleAccessRedirectToInternalJspOnErrorMethod(
+      TestWebComponentRequestContext context) {
+  }
+
+  @POST
+  @Path("lowerRoleAccessRedirectToInternalOnError")
+  @RedirectToInternal("/lowerRoleAccessOk")
+  @LowestRoleAccess(value = SilverpeasRole.publisher,
+      onError = @RedirectTo(value = "error", type = RedirectToType.INTERNAL))
+  public void lowerRoleAccessRedirectToInternalOnErrorMethod(
+      TestWebComponentRequestContext context) {
+  }
+
+  @POST
+  @Path("lowerRoleAccessRedirectToOnError")
+  @RedirectToInternal("/lowerRoleAccessOk")
+  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("error"))
+  public void lowerRoleAccessRedirectToOnErrorMethod(TestWebComponentRequestContext context) {
   }
 
   @GET
@@ -209,5 +235,34 @@ public class TestWebComponentController
   @Path("/wysiwyg/{anResourceId}/{anResourceId}/review")
   @RedirectToInternal("view/resource/5")
   public void sameVariableName(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/redirect/report")
+  @RedirectToInternalJsp("pushed.jsp?action={action}&otherId={otherId}")
+  public void redirectToInternalJspWithVariable(TestWebComponentRequestContext context) {
+    context.addRedirectVariable("action", "anAction");
+    context.addRedirectVariable("otherId", "id26");
+  }
+
+  @GET
+  @Path("/redirect/{anResourceId}/push/{otherId}/report")
+  @RedirectToInternal("{anResourceId}/pushed/?action={action}&otherId={otherId}")
+  public void redirectToInternalWithVariable(TestWebComponentRequestContext context) {
+    context.addRedirectVariable("action", "anAction");
+  }
+
+  @GET
+  @Path("/redirect/report/{anResourceId}/push/{otherId}/")
+  @RedirectTo("{anResourceId}/pushed?action={action}&otherId={otherId}")
+  public void redirectToWithVariable(TestWebComponentRequestContext context) {
+    context.addRedirectVariable("action", "anAction");
+  }
+
+  @GET
+  @Path("/redirect/report/{anResourceId}/push/{otherId}/SameVariableSevralValues")
+  @RedirectTo("{anResourceId}/pushed?action={action}&otherId={otherId}")
+  public void redirectToWithVariableButSeveralValuesForSameVariable(TestWebComponentRequestContext context) {
+    context.addRedirectVariable("anResourceId", "anAction");
   }
 }

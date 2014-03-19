@@ -35,7 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Annotation to specify a web controller method that can be invoked by {@link
  * com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore} and {@link
  * com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter} method annotations.
- * For now, a invokable method can not be a HTTP Method.
+ * For now, an invokable method can not be a HTTP Method.
  * <p/>
  * @author Yohann Chastagnier
  */
