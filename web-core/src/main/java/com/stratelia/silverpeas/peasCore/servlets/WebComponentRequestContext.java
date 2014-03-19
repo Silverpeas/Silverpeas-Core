@@ -30,8 +30,6 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJ
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.notification.message.MessageContainer;
-import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletResponse;
@@ -135,6 +133,10 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return WebMessager.getInstance();
   }
 
+  public String getComponentUriBase() {
+    return controller.getComponentUrl();
+  }
+
   public String getComponentInstanceId() {
     return controller.getComponentId();
   }
@@ -193,8 +195,8 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
 
   private Navigation redirectToInternal(String internalPath) {
     return redirectTo(
-        normalizeRedirectPath(UriBuilder.fromUri("/").path(getComponentName()), internalPath)
-            .build().toString());
+        normalizeRedirectPath(UriBuilder.fromUri(getComponentUriBase()).path(getComponentName()),
+            internalPath).build().toString());
   }
 
   private Navigation redirectToInternalJsp(String jspPathname) {
