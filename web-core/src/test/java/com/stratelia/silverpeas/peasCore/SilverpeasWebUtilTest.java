@@ -28,17 +28,24 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
+import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import static org.mockito.Mockito.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -46,7 +53,28 @@ import static org.junit.Assert.*;
  */
 public class SilverpeasWebUtilTest {
 
-  public SilverpeasWebUtilTest() {
+  // Spring context
+  private ClassPathXmlApplicationContext context;
+
+  @Before
+  public void setUp() throws Exception {
+    OrganisationControllerFactory.getFactory().clearFactory();
+
+    // Spring
+    context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
+    SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
+    reset(getOrganisationController());
+  }
+
+  @After
+  public void tearDown() {
+    OrganisationControllerFactory.getFactory().clearFactory();
+    SilverStatisticsManager.setInstanceForTest(null);
+    context.close();
+  }
+
+  private OrganisationController getOrganisationController() {
+    return context.getBean(OrganizationControllerMockWrapper.class).getOrganizationControllerMock();
   }
 
   /**
@@ -92,12 +120,12 @@ public class SilverpeasWebUtilTest {
     MockHttpServletRequest request = new MockHttpServletRequest("GET",
         "http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
     request.setPathInfo("/toolbox8/Main");
-    OrganisationController controller = mock(OrganizationController.class);
+    OrganisationController controller = getOrganisationController();
     ComponentInstLight component = mock(ComponentInstLight.class);
     String spaceId = "12";
     when(component.getDomainFatherId()).thenReturn(spaceId);
     when(controller.getComponentInstLight("toolbox8")).thenReturn(component);
-    SilverpeasWebUtil util = new SilverpeasWebUtil(controller);
+    SilverpeasWebUtil util = new SilverpeasWebUtil();
     String[] result = util.getComponentId(request);
     String[] expResult = new String[]{"12", "toolbox8", "Main"};
     assertArrayEquals(expResult, result);
@@ -137,10 +165,8 @@ public class SilverpeasWebUtilTest {
     when(request.getSession()).thenReturn(session);
     when(request.getPathInfo()).thenReturn("/toolbox8/ViewAttachments");
 
-    OrganisationController oc = mock(OrganizationController.class);
-    SilverpeasWebUtil util = new SilverpeasWebUtil(oc);
+    SilverpeasWebUtil util = new SilverpeasWebUtil();
     util.getRoles(request);
-    verify(oc).getUserProfiles("18", "toolbox8");
-
+    verify(getOrganisationController()).getUserProfiles("18", "toolbox8");
   }
 }

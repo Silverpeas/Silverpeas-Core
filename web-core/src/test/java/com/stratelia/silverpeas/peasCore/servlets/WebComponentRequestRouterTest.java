@@ -33,12 +33,11 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -66,6 +65,7 @@ public class WebComponentRequestRouterTest {
 
   @Before
   public void setUp() throws Exception {
+    OrganisationControllerFactory.getFactory().clearFactory();
 
     // Spring
     context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
@@ -78,6 +78,7 @@ public class WebComponentRequestRouterTest {
 
   @After
   public void tearDown() {
+    OrganisationControllerFactory.getFactory().clearFactory();
     SilverStatisticsManager.setInstanceForTest(null);
     context.close();
   }
@@ -145,7 +146,8 @@ public class WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   protected <
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
+      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
       WebComponentController>> ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT>
   onController(
       Class<CONTROLLER> controllerClass) {
@@ -153,14 +155,15 @@ public class WebComponentRequestRouterTest {
   }
 
   protected class TestResult<
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
       WebComponentController>> {
     public WebComponentRequestRouter router = null;
     public WEB_COMPONENT_REQUEST_CONTEXT requestContext = null;
   }
 
   protected class ControllerTest<
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
+      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
       WebComponentController>> {
     private Class<CONTROLLER> controllerClass = null;
     private SilverpeasRole greaterUserRole = null;
@@ -182,7 +185,8 @@ public class WebComponentRequestRouterTest {
   }
 
   protected class RequestTest<
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
+      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
       WebComponentController>> {
     private ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> controller;
     private String httpMethod = HttpMethod.GET;
@@ -203,7 +207,7 @@ public class WebComponentRequestRouterTest {
     }
 
     @SuppressWarnings("unchecked")
-    public TestResult<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
+    public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
       if (HttpMethod.GET.equals(httpMethod)) {
@@ -229,8 +233,8 @@ public class WebComponentRequestRouterTest {
       assertThat(requestContext, notNullValue());
       assertThat(requestContext.getHttpMethodClass().getName(), Matchers.endsWith(httpMethod));
       assertThat(requestContext.getController(), instanceOf(controller.controllerClass));
-      TestResult<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> testResult =
-          new TestResult<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT>();
+      TestResult<WEB_COMPONENT_REQUEST_CONTEXT> testResult =
+          new TestResult<WEB_COMPONENT_REQUEST_CONTEXT>();
       testResult.router = routerInstance;
       testResult.requestContext = requestContext;
       return testResult;
