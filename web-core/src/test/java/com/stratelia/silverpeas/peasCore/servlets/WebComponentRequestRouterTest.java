@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -61,26 +62,24 @@ import static org.mockito.Mockito.*;
 public class WebComponentRequestRouterTest {
 
   // Spring context
-  private static ClassPathXmlApplicationContext context;
-
-  @BeforeClass
-  public static void beforeClass() {
-    // Spring
-    context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
-    SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
-  }
-
-  @AfterClass
-  public static void afterClass() throws Exception {
-    context.close();
-    SilverStatisticsManager.setInstanceForTest(null);
-  }
+  private ClassPathXmlApplicationContext context;
 
   @Before
   public void setUp() throws Exception {
+
+    // Spring
+    context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
+    SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
+
     WebComponentManager.managedWebComponentRouters.clear();
     CacheServiceFactory.getRequestCacheService().clear();
     reset(getOrganisationController());
+  }
+
+  @After
+  public void tearDown() {
+    SilverStatisticsManager.setInstanceForTest(null);
+    context.close();
   }
 
   private OrganisationController getOrganisationController() {

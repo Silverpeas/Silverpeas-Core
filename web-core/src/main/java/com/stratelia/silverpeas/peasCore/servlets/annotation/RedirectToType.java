@@ -23,33 +23,27 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.annotation;
 
-import com.stratelia.webactiv.SilverpeasRole;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * Annotation to specify the lower Silverpeas role the user should play in order to invoke the
- * annotated method.
- * <p/>
- * @author Yohann Chastagnier
+ * Enumeration to define different types of redirection that can be set to {@link com.stratelia
+ * .silverpeas.peasCore.servlets.annotation.RedirectTo} annotation.
+ * @author: Yohann Chastagnier
  */
-@Inherited
-@Documented
-@Target(METHOD)
-@Retention(RUNTIME)
-public @interface LowestRoleAccess {
-
-  SilverpeasRole value();
+public enum RedirectToType {
 
   /**
-   * Permits to indicate a redirection on error in relation to access control.
-   * @return
+   * See {@link com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo} definition.
    */
-  RedirectTo onError() default @RedirectTo("");
+  NORMAL,
+
+  /**
+   * See {@link com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal}
+   * definition.
+   */
+  INTERNAL,
+
+  /**
+   * See {@link com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp}
+   * definition.
+   */
+  INTERNAL_JSP
 }

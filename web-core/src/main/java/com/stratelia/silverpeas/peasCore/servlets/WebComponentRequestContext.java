@@ -41,12 +41,16 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @param <CONTROLLER>
  * @author Yohann Chastagnier
  */
 public class WebComponentRequestContext<CONTROLLER extends WebComponentController> {
+  private final static Pattern REDIRECT_VARIABLE_MATCHER = Pattern.compile("(\\{[\\w_]+\\})+");
 
   private Class<? extends Annotation> httpMethodClass;
   private HttpRequest request;
@@ -54,6 +58,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   private CONTROLLER controller = null;
 
   private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
+  private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
   private Set<SilverpeasRole> userRoles;
   private SilverpeasRole greaterUserRole;
 
@@ -101,7 +106,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return Collections.unmodifiableMap(pathVariables);
   }
 
-  public void addPathVariables(final String variableName, final String variableValue) {
+  void addPathVariable(final String variableName, final String variableValue) {
     if (pathVariables.containsKey(variableName) &&
         !pathVariables.get(variableName).equals(variableValue)) {
       pathVariables.clear();
@@ -109,6 +114,19 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
           "trying to set different values for the same variable: " + variableName);
     }
     pathVariables.put(variableName, variableValue);
+  }
+
+  public void addRedirectVariable(final String variableName, final String variableValue) {
+    if ((pathVariables.containsKey(variableName) &&
+        !pathVariables.get(variableName).equals(variableValue)) ||
+        (redirectVariables.containsKey(variableName) &&
+            !redirectVariables.get(variableName).equals(variableValue))) {
+      pathVariables.clear();
+      redirectVariables.clear();
+      throw new IllegalArgumentException(
+          "trying to set different values for the same variable: " + variableName);
+    }
+    redirectVariables.put(variableName, variableValue);
   }
 
   public String getComponentInstanceId() {
@@ -149,29 +167,87 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return greaterUserRole;
   }
 
-  Navigation redirectTo(Annotation redirectTo) {
-    if (redirectTo instanceof RedirectToInternalJsp) {
-      return redirectToInternalJsp(((RedirectToInternalJsp) redirectTo).value());
-    } else if (redirectTo instanceof RedirectToInternal) {
-      return redirectToInternal(((RedirectToInternal) redirectTo).value());
+  Navigation redirectTo(Annotation redirectToAnnotation) {
+    if (redirectToAnnotation instanceof RedirectToInternalJsp) {
+      return redirectToInternalJsp(((RedirectToInternalJsp) redirectToAnnotation).value());
+    } else if (redirectToAnnotation instanceof RedirectToInternal) {
+      return redirectToInternal(((RedirectToInternal) redirectToAnnotation).value());
     }
-    return redirectTo(
-        UriBuilder.fromUri("/").path(((RedirectTo) redirectTo).value()).build().toString());
+    RedirectTo redirectTo = (RedirectTo) redirectToAnnotation;
+    switch (redirectTo.type()) {
+      case INTERNAL_JSP:
+        return redirectToInternalJsp(redirectTo.value());
+      case INTERNAL:
+        return redirectToInternal(redirectTo.value());
+      default:
+        return redirectTo(normalizeRedirectPath(UriBuilder.fromUri("/"),
+            ((RedirectTo) redirectToAnnotation).value()).build().toString());
+    }
   }
 
   private Navigation redirectToInternal(String internalPath) {
     return redirectTo(
-        UriBuilder.fromUri("/").path(getComponentName()).path(internalPath).build().toString());
+        normalizeRedirectPath(UriBuilder.fromUri("/").path(getComponentName()), internalPath)
+            .build().toString());
   }
 
   private Navigation redirectToInternalJsp(String jspPathname) {
     return redirectTo(
-        UriBuilder.fromUri("/").path(getComponentName()).path("jsp").path(jspPathname).build()
-            .toString());
+        normalizeRedirectPath(UriBuilder.fromUri("/").path(getComponentName()).path("jsp"),
+            jspPathname).build().toString());
   }
 
   private Navigation redirectTo(String path) {
     return new Navigation(path);
+  }
+
+  private UriBuilder normalizeRedirectPath(UriBuilder uriBuilder, String path) {
+    int indexOfUriParamSplit = path.indexOf('?');
+    if (indexOfUriParamSplit >= 0) {
+
+      // URI part
+      String uriPart = path.substring(0, indexOfUriParamSplit);
+      uriBuilder.path(replaceRedirectVariables(uriPart.replaceAll("/\\s*$", "")));
+
+      // Params part
+      String paramPart = path.substring(indexOfUriParamSplit + 1);
+      StringTokenizer paramPartTokenizer = new StringTokenizer(paramPart, "&");
+      while (paramPartTokenizer.hasMoreTokens()) {
+        String param = paramPartTokenizer.nextToken();
+        int indexOfEqual = param.indexOf('=');
+        if (indexOfEqual > 0) {
+          String paramName = param.substring(0, indexOfEqual);
+          String paramValue = param.substring(indexOfEqual + 1);
+          uriBuilder.queryParam(paramName, replaceRedirectVariables(paramValue));
+        } else {
+          uriBuilder.queryParam(replaceRedirectVariables(param));
+        }
+      }
+    } else {
+      uriBuilder.path(replaceRedirectVariables(path.replaceAll("/\\s*$", "")));
+    }
+    return uriBuilder;
+  }
+
+  /**
+   * @param redirectPath
+   * @return
+   */
+  private String replaceRedirectVariables(String redirectPath) {
+    String newPath = redirectPath;
+
+    Matcher variableMatcher = REDIRECT_VARIABLE_MATCHER.matcher(redirectPath);
+    while (variableMatcher.find()) {
+      String variableName = variableMatcher.group(1).replaceAll("[\\{\\}]", "");
+      String variableValue =
+          pathVariables.containsKey(variableName) ? pathVariables.get(variableName) :
+              redirectVariables.get(variableName);
+      if (variableValue != null) {
+        newPath = newPath.replace(variableMatcher.group(1), variableValue);
+      }
+    }
+
+    return newPath;
   }
 
   /**

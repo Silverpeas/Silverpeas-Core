@@ -154,6 +154,39 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
+  @SuppressWarnings("unchecked")
+  @Test
+  public void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+            .changeHttpMethodWith(HttpMethod.POST)
+            .changeSuffixPathWith("lowerRoleAccessRedirectToInternalJspOnError").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/jsp/error.jsp");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void lowerRoleAccessRedirectToInternalOnError() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+            .changeHttpMethodWith(HttpMethod.POST)
+            .changeSuffixPathWith("lowerRoleAccessRedirectToInternalOnError").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/error");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void lowerRoleAccessRedirectToOnError() throws Exception {
+    TestResult<TestWebComponentController, TestWebComponentRequestContext> testResult =
+        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+            .changeHttpMethodWith(HttpMethod.POST)
+            .changeSuffixPathWith("lowerRoleAccessRedirectToOnError").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/error");
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void httpMethodWithInvokableAnnotation() throws Exception {
     try {
@@ -419,6 +452,48 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   public void sameVariableNameButNotSameValues() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_124/review").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(0));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void redirectToInternalJspWithVariable() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router,
+        "/componentName/jsp/pushed.jsp?action=anAction&otherId=id26");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void redirectToInternalWithVariable() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/123/push/26/report")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/123/pushed?action=anAction&otherId=26");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void redirectToWithVariable() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report/123/push/26")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/123/pushed?action=anAction&otherId=26");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void redirectToWithVariableButSeveralValuesForSameVariable() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/redirect/report/123/push/26/SameVariableSevralValues").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
     Map<String, String> variables = testResult.requestContext.getPathVariables();

@@ -23,15 +23,19 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
-import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +54,7 @@ class Path {
   private final String path;
   private List<String> pathVariables = null;
   private final Method resourceMethod;
-  private final SilverpeasRole lowestRoleAccess;
+  private final LowestRoleAccess lowestRoleAccess;
   private final Annotation redirectTo;
   private final String[] invokeBeforeIdentifiers;
   private final String[] invokeAfterIdentifiers;
@@ -65,7 +69,7 @@ class Path {
    * HTTP method.
    * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
    */
-  Path(final String path, final SilverpeasRole lowestRoleAccess, final Method resourceMethod,
+  Path(final String path, final LowestRoleAccess lowestRoleAccess, final Method resourceMethod,
       final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     this.resourceMethod = resourceMethod;
     this.lowestRoleAccess = lowestRoleAccess;
@@ -137,6 +141,7 @@ class Path {
       return false;
     }
 
+    Map<String, Set<String>> matchedPathVariables = new LinkedHashMap<String, Set<String>>();
     for (; pathTokenizer.hasMoreTokens(); ) {
       String pathPart = pathTokenizer.nextToken();
       String registredPathPart = registredPathTokenizer.nextToken();
@@ -149,7 +154,12 @@ class Path {
         if (!matcher.find()) {
           return false;
         }
-        requestContext.addPathVariables(pathVariablesIt.next(), matcher.group(1));
+        MapUtil.putAddSet(matchedPathVariables, pathVariablesIt.next(), matcher.group(1));
+      }
+    }
+    for (Map.Entry<String, Set<String>> entry : matchedPathVariables.entrySet()) {
+      for (String value : entry.getValue()) {
+        requestContext.addPathVariable(entry.getKey(), value);
       }
     }
 
@@ -168,7 +178,7 @@ class Path {
    * Gets the lowest role that permits the access to the method.
    * @return the lowest role that permits the access to the aimed method.
    */
-  public SilverpeasRole getLowestRoleAccess() {
+  public LowestRoleAccess getLowestRoleAccess() {
     return lowestRoleAccess;
   }
 

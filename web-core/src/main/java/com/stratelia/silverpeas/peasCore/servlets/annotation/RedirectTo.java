@@ -50,4 +50,11 @@ public @interface RedirectTo {
    * @return
    */
   String value();
+
+  /**
+   * Indicates if the type of the redirection.
+   * @see com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToType
+   * @return the type of the redirection.
+   */
+  RedirectToType type() default RedirectToType.NORMAL;
 }
