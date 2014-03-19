@@ -40,6 +40,11 @@ public class TestWebComponentRequestContext
     nbBeforeRequestInitializeCalls++;
   }
 
+  @Override
+  public String getComponentUriBase() {
+    return "/";
+  }
+
   public int getNbBeforeRequestInitializeCalls() {
     return nbBeforeRequestInitializeCalls;
   }

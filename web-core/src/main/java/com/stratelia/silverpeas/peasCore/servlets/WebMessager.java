@@ -30,8 +30,7 @@ import org.silverpeas.util.NotifierUtil;
  * This utility class provides tools to display easily some dynamic notifications using the
  * notifier
  * plugin.
- * User: Yohann Chastagnier
- * Date: 23/07/13
+ * @author Yohann Chastagnier
  */
 public final class WebMessager {
   private final static WebMessager webMessager = new WebMessager();
