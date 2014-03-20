@@ -50,7 +50,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(), Matchers.endsWith(
           "BadTestWebComponentController must specify one, and only one, " +
-              "@WebComponentController annotation"));
+              "@WebComponentController annotation"
+      ));
       throw e;
     }
   }
@@ -68,6 +69,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   public void doGetOnRequestRouterWithRedirectToInternalJsp() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest().perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(1))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
@@ -77,6 +80,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("create").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/created");
   }
 
@@ -86,6 +91,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.PUT)
             .changeSuffixPathWith("update").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/updated");
   }
 
@@ -95,6 +102,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.DELETE)
             .changeSuffixPathWith("delete").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/common/deleted.jsp");
   }
 
@@ -115,7 +124,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("@Homepage is specified on otherHome method, but @Homepage has already been defined " +
-              "one another one"));
+              "one another one")
+      );
       throw e;
     }
   }
@@ -128,6 +138,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/lowerRoleAccessOk");
     assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
     assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(0));
@@ -142,6 +154,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
             .perform();
     verify(testResult.requestContext.getResponse(), times(1))
         .sendError(HttpServletResponse.SC_FORBIDDEN);
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
   }
 
@@ -151,6 +165,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.GET)
             .changeSuffixPathWith("lowerRoleAccess").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(1))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
@@ -162,6 +178,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalJspOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/jsp/error.jsp");
   }
 
@@ -173,6 +191,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/error");
   }
 
@@ -184,6 +204,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/error");
   }
 
@@ -204,7 +226,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("method behind 'invokable_2' invokable identifier must be performed before the " +
-              "execution of HTTP method homeMethod, but it is not registred"));
+              "execution of HTTP method homeMethod, but it is not registred")
+      );
       throw e;
     }
   }
@@ -216,7 +239,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("method behind 'invokable_1' invokable identifier must be performed after the " +
-              "execution of HTTP method homeMethod, but it is not registred"));
+              "execution of HTTP method homeMethod, but it is not registred")
+      );
       throw e;
     }
   }
@@ -238,6 +262,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("invokation/oneBefore")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/invokation/oneBefore/ok");
     assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
     assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(1));
@@ -251,6 +277,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/2Before")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/invokation/2Before/ok");
     assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
     assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(2));
@@ -264,6 +292,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/oneAfter")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/invokation/oneAfter/ok");
     assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
     assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(0));
@@ -276,6 +306,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3After").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/invokation/3After/ok");
     assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
     assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(0));
@@ -289,6 +321,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3Before4After")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/invokation/3Before4After/ok");
     assertThat(testResult.requestContext.getNbBeforeRequestInitializeCalls(), is(1));
     assertThat(testResult.requestContext.getNbInvokationsBeforeCall(), is(3));
@@ -301,6 +335,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("wysiwyg/modify").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/wysiwyg/jsp/htmlEditor.jsp");
   }
 
@@ -312,7 +348,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("home method must return a Navigation instance or be annoted by one of @RedirectTo.." +
-              ". annotations"));
+              ". annotations")
+      );
       throw e;
     }
   }
@@ -325,7 +362,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("home method must, either return a Navigation instance, either be annoted by one of " +
-              "@RedirectTo... annotation"));
+              "@RedirectTo... annotation")
+      );
       throw e;
     }
   }
@@ -348,7 +386,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("specified path for method method2 already exists for method method1 -> " +
-              "a/b/c/d/resourceId-{anResourceId  :  [0-9]+  }-test"));
+              "a/b/c/d/resourceId-{anResourceId  :  [0-9]+  }-test")
+      );
       throw e;
     }
   }
@@ -359,6 +398,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/view").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/1");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -372,6 +413,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-myVariableValue_123-test/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/2");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -386,6 +429,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/2");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -399,6 +444,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-123-otherTest").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/3");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -413,6 +460,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/2");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -426,6 +475,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-123-test/id26/view").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/4");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -440,6 +491,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_123/review").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/view/resource/5");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -453,6 +506,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_124/review").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
@@ -465,6 +520,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router,
         "/componentName/jsp/pushed.jsp?action=anAction&otherId=id26");
   }
@@ -476,6 +533,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/123/push/26/report")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/123/pushed?action=anAction&otherId=26");
   }
 
@@ -486,6 +545,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report/123/push/26")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/123/pushed?action=anAction&otherId=26");
   }
 
@@ -495,10 +556,36 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/redirect/report/123/push/26/SameVariableSevralValues").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
     assertThat(variables.size(), is(0));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void webApplicationException412() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("webApplicationException412")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(1))
+        .sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+    verify(testResult.requestContext.getMultilang(), times(0))
+        .getString("GML.action.user.forbidden");
+    verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void specialControllerInheritance() throws Exception {
+    TestResult testResult =
+        onController(TestWebComponentSpecialInheritanceController.class).defaultRequest().perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(1))
+        .getString("GML.action.user.forbidden");
+    verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
   private ControllerTest<TestWebComponentController, TestWebComponentRequestContext>

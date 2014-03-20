@@ -21,38 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.peasCore.servlets.control;
+package org.silverpeas.contribution;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.Navigation;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
-
-import javax.ws.rs.GET;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
 
 /**
  * @author: Yohann Chastagnier
  */
-@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
-    "TestWebComponentControllerIdentifier")
-public class TwoNavigationsSpecifiedController extends ParentTestWebComponentController {
+public enum ContributionStatus {
+  UNKNOWN,
+  DRAFT,
+  PENDING_VALIDATION,
+  REFUSED,
+  VALIDATED;
 
-  /**
-   * Standard Session Controller Constructor
-   * @param mainSessionCtrl The user's profile
-   * @param componentContext The component's profile
-   * @see
-   */
-  public TwoNavigationsSpecifiedController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext);
+  @JsonValue
+  public String getName() {
+    return name();
   }
 
-  @GET
-  @Homepage
-  @RedirectToInternal("Main")
-  public Navigation home(TestWebComponentRequestContext context) {
-    return null;
+  @JsonCreator
+  public static ContributionStatus from(String name) {
+    try {
+      return valueOf(name);
+    } catch (Exception e) {
+      return UNKNOWN;
+    }
   }
 }

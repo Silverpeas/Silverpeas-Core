@@ -23,42 +23,6 @@
  */
 package org.silverpeas.attachment;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-import org.silverpeas.process.annotation.SimulationActionProcess;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.annotation.Service;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -81,6 +45,40 @@ import com.stratelia.webactiv.util.annotation.TargetObject;
 import com.stratelia.webactiv.util.annotation.TargetPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.webdav.WebdavRepository;
+import org.silverpeas.process.annotation.SimulationActionProcess;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -98,6 +96,25 @@ public class SimpleDocumentService implements AttachmentService {
   private DocumentRepository repository;
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
+
+  @Override
+  public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      List<SimpleDocument> documentsToDelete =
+          repository.listAllDocumentsByComponentId(session, componentInstanceId, null);
+      for (SimpleDocument documentToDelete : documentsToDelete) {
+        deleteAttachment(session, documentToDelete, true);
+      }
+      session.getNode('/' + componentInstanceId).remove();
+      session.save();
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
 
   @Override
   public void createIndex(SimpleDocument document) {
@@ -1048,8 +1065,9 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       // On part des fichiers d'origine
-      List<SimpleDocument> attachments = repository.listDocumentsByComponentdAndType(session,
-          componentId, DocumentType.attachment, I18NHelper.defaultLanguage);
+      List<SimpleDocument> attachments = repository
+          .listDocumentsByComponentIdAndType(session, componentId, DocumentType.attachment,
+              I18NHelper.defaultLanguage);
       for (SimpleDocument attachment : attachments) {
         if (attachment.isVersioned() != toVersionning) {
           repository.changeVersionState(session, attachment.getPk(), "");

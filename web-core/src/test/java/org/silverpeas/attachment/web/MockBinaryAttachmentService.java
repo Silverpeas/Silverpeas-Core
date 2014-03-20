@@ -56,6 +56,11 @@ import org.apache.commons.io.IOUtils;
 public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
+  public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
   public void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt,
       boolean invokeCallback) {
     throw new UnsupportedOperationException("Not supported yet.");

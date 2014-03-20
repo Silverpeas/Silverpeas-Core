@@ -25,10 +25,8 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 
 import javax.ws.rs.GET;
@@ -38,8 +36,7 @@ import javax.ws.rs.GET;
  */
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class InvokableIdentifierAlreadyExistsController
-    extends WebComponentController<TestWebComponentRequestContext> {
+public class InvokableIdentifierAlreadyExistsController extends ParentTestWebComponentController {
 
   /**
    * Standard Session Controller Constructor

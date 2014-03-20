@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
@@ -59,7 +60,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.jcr.LoginException;
+import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
@@ -137,6 +140,22 @@ public class AttachmentServiceTest {
       }
     }
     instance = AttachmentServiceFactory.getAttachmentService();
+  }
+
+  private Node getComponentRootJcrNode() {
+    Node node = null;
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      node = session.getNode('/' + instanceId);
+    } catch (PathNotFoundException e) {
+      // Nothing to do, the root node doesn't exist. That is all.
+    } catch (RepositoryException e) {
+      throw new RuntimeException(e);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+    return node;
   }
 
   @BeforeClass
@@ -486,6 +505,24 @@ public class AttachmentServiceTest {
     SimpleDocument result = instance.createAttachment(document, file);
     assertThat(result, is(notNullValue()));
     checkFrenchFileSimpleDocument(result);
+  }
+
+  /**
+   * Test of deleteAttachment method, of class AttachmentService.
+   */
+  @Test
+  public void testDeleteAllDocuments() {
+    assertThat(getComponentRootJcrNode(), notNullValue());
+    SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
+    SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    instance.deleteAllAttachments(instanceId);
+    documentFr = instance.searchDocumentById(existingFrDoc, null);
+    documentEn = instance.searchDocumentById(existingEnDoc, null);
+    assertThat(documentFr, nullValue());
+    assertThat(documentEn, nullValue());
+    assertThat(getComponentRootJcrNode(), nullValue());
   }
 
   /**
