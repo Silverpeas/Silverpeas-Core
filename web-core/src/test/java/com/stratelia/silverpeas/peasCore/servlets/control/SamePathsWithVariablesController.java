@@ -25,7 +25,6 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 
@@ -37,8 +36,7 @@ import javax.ws.rs.Path;
  */
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class SamePathsWithVariablesController
-    extends WebComponentController<TestWebComponentRequestContext> {
+public class SamePathsWithVariablesController extends ParentTestWebComponentController {
 
   /**
    * Standard Session Controller Constructor

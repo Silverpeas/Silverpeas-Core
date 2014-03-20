@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.control.AbstractTestWebComponentGenericController;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -73,13 +74,16 @@ public class WebComponentRequestRouterTest {
 
     WebComponentManager.managedWebComponentRouters.clear();
     CacheServiceFactory.getRequestCacheService().clear();
-    reset(getOrganisationController());
+    reset(getOrganisationController(),
+        AbstractTestWebComponentGenericController.getResourceLocatorMock());
   }
 
   @After
   public void tearDown() {
     OrganisationControllerFactory.getFactory().clearFactory();
     SilverStatisticsManager.setInstanceForTest(null);
+    reset(getOrganisationController(),
+        AbstractTestWebComponentGenericController.getResourceLocatorMock());
     context.close();
   }
 

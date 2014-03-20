@@ -575,20 +575,63 @@ public class DocumentRepositoryTest {
       documentRepository.createDocument(session, docNode18_4);
       documentRepository.storeContent(docNode18_4, content);
       session.save();
-      List<SimpleDocument> docs = documentRepository.listDocumentsByComponentdAndType(session,
-          instanceId, DocumentType.attachment, "fr");
+      List<SimpleDocument> docs = documentRepository
+          .listDocumentsByComponentIdAndType(session, instanceId, DocumentType.attachment, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, containsInAnyOrder(docNode18_1, docNode18_2));
-      docs = documentRepository.listDocumentsByComponentdAndType(session, instanceId,
-          DocumentType.wysiwyg, "fr");
+      docs = documentRepository
+          .listDocumentsByComponentIdAndType(session, instanceId, DocumentType.wysiwyg, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(1));
       assertThat(docs, containsInAnyOrder(docNode18_3));
-      docs = documentRepository.listDocumentsByComponentdAndType(session, instanceId,
-          DocumentType.image, "fr");
+      docs = documentRepository
+          .listDocumentsByComponentIdAndType(session, instanceId, DocumentType.image, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(0));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of listDocumentsByForeignId method, of class DocumentRepository.
+   */
+  @Test
+  public void testListAllDocumentsByComponentId() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      documentRepository.createDocument(session, docNode18_1);
+      documentRepository.storeContent(docNode18_1, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createFrenchSimpleAttachment();
+      SimpleDocument docNode18_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      documentRepository.createDocument(session, docNode18_2);
+      documentRepository.storeContent(docNode18_2, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createEnglishSimpleAttachment();
+      SimpleDocument docNode18_3 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      docNode18_3.setDocumentType(DocumentType.wysiwyg);
+      documentRepository.createDocument(session, docNode18_3);
+      documentRepository.storeContent(docNode18_3, content);
+      emptyId = new SimpleDocumentPK("-1", "kmelia38");
+      attachment = createFrenchSimpleAttachment();
+      SimpleDocument docNode18_4 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      docNode18_4.setDocumentType(DocumentType.image);
+      documentRepository.createDocument(session, docNode18_4);
+      documentRepository.storeContent(docNode18_4, content);
+      session.save();
+      List<SimpleDocument> docs =
+          documentRepository.listAllDocumentsByComponentId(session, instanceId, "fr");
+      assertThat(docs, is(notNullValue()));
+      assertThat(docs.size(), is(3));
+      assertThat(docs, containsInAnyOrder(docNode18_1, docNode18_2, docNode18_3));
     } finally {
       BasicDaoFactory.logout(session);
     }

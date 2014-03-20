@@ -25,20 +25,11 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.webactiv.SilverpeasRole;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
 
 /**
  * @author: Yohann Chastagnier
@@ -46,7 +37,7 @@ import javax.ws.rs.Path;
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
 public class HttpMethodWithInvokableAnnotationController
-    extends WebComponentController<TestWebComponentRequestContext> {
+    extends ParentTestWebComponentController {
 
   /**
    * Standard Session Controller Constructor

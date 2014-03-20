@@ -33,7 +33,6 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.servlet.HttpRequest;
@@ -44,11 +43,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import java.io.IOException;
+import javax.ws.rs.WebApplicationException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -110,9 +110,30 @@ public class WebComponentManager {
       }
 
       // Retrieving the class of the web context associated to the given resource.
+      ParameterizedType webComponentRequestContextType = null;
+      Type superWebComponentControllerType = webComponentControllerClass;
+      while (webComponentRequestContextType == null) {
+        if (superWebComponentControllerType instanceof ParameterizedType) {
+          if (WebComponentRequestContext.class.isAssignableFrom(
+              (Class) ((ParameterizedType) superWebComponentControllerType)
+                  .getActualTypeArguments()[0]
+          )) {
+            webComponentRequestContextType = (ParameterizedType) superWebComponentControllerType;
+          } else {
+            superWebComponentControllerType =
+                ((ParameterizedType) superWebComponentControllerType).getRawType();
+          }
+        } else if (superWebComponentControllerType instanceof Class) {
+          superWebComponentControllerType =
+              ((Class) superWebComponentControllerType).getGenericSuperclass();
+        } else {
+          throw new IllegalArgumentException(
+              "Something is wrong or not handled in the specification of generic types");
+        }
+      }
       Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass =
-          ((Class<WEB_COMPONENT_REQUEST_CONTEXT>) ((ParameterizedType) webComponentControllerClass.
-              getGenericSuperclass()).getActualTypeArguments()[0]);
+          ((Class<WEB_COMPONENT_REQUEST_CONTEXT>) webComponentRequestContextType
+              .getActualTypeArguments()[0]);
       try {
 
         // Instanciating, and caching into the request, the web context.
@@ -192,14 +213,16 @@ public class WebComponentManager {
             if (lowestRoleAccess != null) {
               throw new IllegalArgumentException(
                   "Only one greatest Silverpeas Role must be specified for method: " +
-                      resourceMethod.getName());
+                      resourceMethod.getName()
+              );
             }
             lowestRoleAccess = (LowestRoleAccess) annotation;
           } else if (annotation instanceof Homepage) {
             if (isDefaultPaths) {
               throw new IllegalArgumentException(
                   "The homepage method is already specified, error on method " +
-                      resourceMethod.getName());
+                      resourceMethod.getName()
+              );
             }
             isDefaultPaths = true;
           } else if (annotation instanceof RedirectTo || annotation instanceof RedirectToInternal ||
@@ -207,7 +230,8 @@ public class WebComponentManager {
             if (redirectTo != null) {
               throw new IllegalArgumentException(
                   "One, and only one, redirection must be specified for method " +
-                      resourceMethod.getName());
+                      resourceMethod.getName()
+              );
             }
             redirectTo = annotation;
           } else if (annotation instanceof Invokable) {
@@ -266,7 +290,8 @@ public class WebComponentManager {
               if (webComponentManager.defaultPath != null) {
                 throw new IllegalArgumentException(
                     "@Homepage is specified on " + resourceMethod.getName() +
-                        " method, but @Homepage has already been defined one another one");
+                        " method, but @Homepage has already been defined one another one"
+                );
               }
               webComponentManager.defaultPath = registredPaths.get(0);
             }
@@ -317,17 +342,12 @@ public class WebComponentManager {
    * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
    * @return
-   * @throws AccessForbiddenException
-   * @throws IOException
-   * @throws InvocationTargetException
-   * @throws IllegalAccessException
+   * @throws Exception
    */
   @SuppressWarnings("unchecked")
   public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
       WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation perform(
-      CONTROLLER webComponentController, String path)
-      throws AccessForbiddenException, IOException, InvocationTargetException,
-      IllegalAccessException {
+      CONTROLLER webComponentController, String path) throws Exception {
 
     // Retrieving the web component request context
     WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext =
@@ -344,8 +364,20 @@ public class WebComponentManager {
         managedWebComponentRouters.get(webComponentController.getClass().getName());
 
     // Exucuting the treatments associated to the path
-    return webComponentManager
-        .exucutePath(webComponentController, path, webComponentRequestContext);
+    try {
+      return webComponentManager
+          .exucutePath(webComponentController, path, webComponentRequestContext);
+    } catch (Exception e) {
+      if (e instanceof WebApplicationException || (e instanceof InvocationTargetException &&
+          ((InvocationTargetException) e)
+              .getTargetException() instanceof WebApplicationException)) {
+        webComponentRequestContext.getResponse().sendError(
+            ((WebApplicationException) ((InvocationTargetException) e).getTargetException())
+                .getResponse().getStatus()
+        );
+      }
+      throw e;
+    }
   }
 
   /**
@@ -357,17 +389,12 @@ public class WebComponentManager {
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
    * @return the {@link com.stratelia.silverpeas.peasCore.servlets.Navigation} instance that
    * contains the destination.
-   * @throws AccessForbiddenException
-   * @throws IOException
-   * @throws InvocationTargetException
-   * @throws IllegalAccessException
+   * @throws Exception
    */
   private <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
       WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation exucutePath(
       CONTROLLER webComponentController, String path,
-      WEB_COMPONENT_REQUEST_CONTEXT webComponentContext)
-      throws AccessForbiddenException, IOException, InvocationTargetException,
-      IllegalAccessException {
+      WEB_COMPONENT_REQUEST_CONTEXT webComponentContext) throws Exception {
     com.stratelia.silverpeas.peasCore.servlets.Path pathToPerform = null;
 
     // Finding a registred path that matches the required path.
@@ -379,6 +406,8 @@ public class WebComponentManager {
 
     // If no path is found, then the default one is selected.
     if (pathToPerform == null) {
+      webComponentContext.getMessager()
+          .addError(webComponentContext.getMultilang().getString("GML.action.user.forbidden"));
       pathToPerform = defaultPath;
     }
 
@@ -393,7 +422,8 @@ public class WebComponentManager {
         webComponentContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
         throw new AccessForbiddenException("WebRouteManager.executePath", SilverpeasException.ERROR,
             "User id " + webComponentContext.getUser().getId() + " has not right access to " +
-                webComponentContext.getRequest().getRequestURI());
+                webComponentContext.getRequest().getRequestURI()
+        );
       }
       // A redirection is asked on an error
       return webComponentContext.redirectTo(redirectTo);

@@ -25,16 +25,13 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
 
 /**
  * @author: Yohann Chastagnier
  */
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class HomePageIsNotSpecifiedController
-    extends WebComponentController<WebComponentRequestContext> {
+public class HomePageIsNotSpecifiedController extends ParentTestWebComponentController {
 
   /**
    * Standard Session Controller Constructor

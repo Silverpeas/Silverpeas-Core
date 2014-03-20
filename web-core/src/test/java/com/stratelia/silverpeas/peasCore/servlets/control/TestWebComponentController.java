@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
@@ -43,14 +42,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 /**
  * @author: Yohann Chastagnier
  */
 @com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class TestWebComponentController
-    extends WebComponentController<TestWebComponentRequestContext> {
+public class TestWebComponentController extends ParentTestWebComponentController {
 
   /**
    * Standard Session Controller Constructor
@@ -262,7 +262,15 @@ public class TestWebComponentController
   @GET
   @Path("/redirect/report/{anResourceId}/push/{otherId}/SameVariableSevralValues")
   @RedirectTo("{anResourceId}/pushed?action={action}&otherId={otherId}")
-  public void redirectToWithVariableButSeveralValuesForSameVariable(TestWebComponentRequestContext context) {
+  public void redirectToWithVariableButSeveralValuesForSameVariable(
+      TestWebComponentRequestContext context) {
     context.addRedirectVariable("anResourceId", "anAction");
+  }
+
+  @GET
+  @Path("/webApplicationException412")
+  @RedirectTo("webApplicationException412")
+  public void webApplicationException412(TestWebComponentRequestContext context) {
+    throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED).build());
   }
 }

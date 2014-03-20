@@ -56,6 +56,11 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
+  public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
+    mock.deleteAllAttachments(componentInstanceId);
+  }
+
+  @Override
   public void getBinaryContent(File file, SimpleDocumentPK pk, String lang) {
     mock.getBinaryContent(file, pk, lang);
   }

@@ -25,19 +25,23 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-
-import javax.ws.rs.GET;
+import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
+import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.mockito.Mockito;
 
 /**
  * @author: Yohann Chastagnier
  */
-@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
-    "TestWebComponentControllerIdentifier")
-public class InvokeAfterNoReferenceController extends ParentTestWebComponentController {
+public abstract class AbstractTestWebComponentGenericController<WEB_COMPONENT_REQUEST_CONTEXT
+    extends WebComponentRequestContext>
+    extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT> {
+
+  private static ResourceLocator resourceLocatorMock = Mockito.mock(ResourceLocator.class);
+
+  public static ResourceLocator getResourceLocatorMock() {
+    return resourceLocatorMock;
+  }
 
   /**
    * Standard Session Controller Constructor
@@ -45,19 +49,13 @@ public class InvokeAfterNoReferenceController extends ParentTestWebComponentCont
    * @param componentContext The component's profile
    * @see
    */
-  public InvokeAfterNoReferenceController(MainSessionController mainSessionCtrl,
+  public AbstractTestWebComponentGenericController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
   }
 
-  @GET
-  @Homepage
-  @RedirectToInternalJsp("homepage.jsp")
-  @InvokeAfter({"invokable_1", "invokable_2"})
-  public void homeMethod(TestWebComponentRequestContext context) {
-  }
-
-  @Invokable("invokable_2")
-  public void invokable2Method(TestWebComponentRequestContext context) {
+  @Override
+  public ResourceLocator getMultilang() {
+    return resourceLocatorMock;
   }
 }

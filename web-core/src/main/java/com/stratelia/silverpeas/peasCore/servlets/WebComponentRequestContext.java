@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
 
@@ -94,7 +95,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return response;
   }
 
-  public CONTROLLER getController() {
+  CONTROLLER getController() {
     return controller;
   }
 
@@ -127,6 +128,10 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
           "trying to set different values for the same variable: " + variableName);
     }
     redirectVariables.put(variableName, variableValue);
+  }
+
+  public ResourceLocator getMultilang() {
+    return controller.getMultilang();
   }
 
   public WebMessager getMessager() {
