@@ -77,7 +77,11 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
     OperationContext.getFromCache().applyToPersistOperation(this);
     AssertArgument.assertDefined(getCreatedBy(),
         "createdBy attribute of entity " + getClass().getName() + " must exists on insert");
-    setCreateDate(new Timestamp((new Date()).getTime()));
+    AssertArgument.assertDefined(getLastUpdatedBy(),
+        "lastUpdateBy attribute of entity " + getClass().getName() + " must exists on insert");
+    Timestamp timestamp = new Timestamp((new Date()).getTime());
+    setCreateDate(timestamp);
+    setLastUpdateDate(timestamp);
   }
 
   /**
@@ -141,9 +145,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
 
   @Override
   public boolean hasBeenModified() {
-    return isPersisted() && StringUtil.isDefined(getLastUpdatedBy()) && getLastUpdateDate() != null
-        && (!getCreatedBy().equals(getLastUpdatedBy()) || getCreateDate().compareTo(
-            getLastUpdateDate()) != 0);
+    return isPersisted() && getVersion() > 0;
   }
 
   @Override

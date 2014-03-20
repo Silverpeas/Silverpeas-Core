@@ -73,10 +73,10 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date createDate;
 
-  @Column(name = "lastUpdatedBy", insertable = false, updatable = true, length = 40)
+  @Column(name = "lastUpdatedBy", nullable = false, length = 40)
   private String lastUpdatedBy;
 
-  @Column(name = "lastUpdateDate", insertable = false, updatable = true)
+  @Column(name = "lastUpdateDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date lastUpdateDate;
 
