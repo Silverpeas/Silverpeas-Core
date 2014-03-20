@@ -62,8 +62,7 @@ import java.util.regex.Pattern;
  * primary key definition.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
-    ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
     implements EntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
 
   /**
@@ -115,9 +114,9 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
       try {
         entityClass = ((Class<ENTITY>) ((ParameterizedType) this.getClass().
             getGenericSuperclass()).getActualTypeArguments()[0]);
-        entityIdentifierClass =
-            ((Class<ENTITY_IDENTIFIER_TYPE>) ((ParameterizedType) this.getClass().
-                getGenericSuperclass()).getActualTypeArguments()[1]);
+        entityIdentifierClass = ((Class<ENTITY_IDENTIFIER_TYPE>) ((ParameterizedType) this.
+            getClass().
+            getGenericSuperclass()).getActualTypeArguments()[1]);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -164,6 +163,11 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
       }
     }
     return identifiers;
+  }
+
+  @Override
+  public void flush() {
+    getEntityManager().flush();
   }
 
   @Override
@@ -275,8 +279,8 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
     Query deleteQuery = getEntityManager()
         .createQuery("delete from " + getEntityClass().getName() + " a where a.id in :ids");
     for (Collection<ENTITY_IDENTIFIER_TYPE> entityIds : split(ids)) {
-      nbDeletes +=
-          initializeNamedParameters().add("ids", entityIds).applyTo(deleteQuery).executeUpdate();
+      nbDeletes += initializeNamedParameters().add("ids", entityIds).applyTo(deleteQuery).
+          executeUpdate();
     }
     return nbDeletes;
   }
@@ -490,13 +494,13 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY,
           continue;
         }
       }
-      throw new IllegalArgumentException("parameter '" + requiredParameterName +
-          "' is missing from the query '" + queryString + "' or is missing from given parameters.");
+      throw new IllegalArgumentException("parameter '" + requiredParameterName
+          + "' is missing from the query '" + queryString + "' or is missing from given parameters.");
     }
     if (!Pattern.compile("version.*=.*version[ ]*\\+[ ]*1").matcher(queryString).find()) {
       throw new IllegalArgumentException(
-          "version management is missing from the query '" + queryString +
-              "' -> expected entity.version = (entity.version + 1)");
+          "version management is missing from the query '" + queryString
+          + "' -> expected entity.version = (entity.version + 1)");
     }
   }
 

@@ -39,8 +39,20 @@ import java.util.List;
  * key definition.
  * @author Yohann Chastagnier
  */
-public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
-    ENTITY_IDENTIFIER_TYPE> {
+public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE> {
+
+
+  /**
+   * Synchronizes the persistence context to the underlying data source. Within a transactional
+   * context, the persistence context is directly put to the data source but will be effective
+   * only when the transaction will be committed. The consequence of the synchronization within
+   * a transaction context is the persistence context is then validated by the data source. Making
+   * it work, the data source has to support the transactions.
+   *
+   * Warning, the behavior of this method is implementation-dependent. According to the type of
+   * the repository or of the underlying data source, the flush can not to be working.
+   */
+  void flush();
 
   /**
    * Gets all persisted entities.
