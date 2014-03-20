@@ -117,6 +117,7 @@ public class OperationContext {
     AssertArgument.assertNotNull(user, errorMessage);
     AssertArgument.assertDefined(user.getId(), errorMessage);
     entity.setCreator(user);
+    entity.setLastUpdater(user);
   }
 
   /**

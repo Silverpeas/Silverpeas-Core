@@ -5,8 +5,8 @@ CREATE TABLE test_persons (
   lastName       VARCHAR(30) NOT NULL,
   createDate     TIMESTAMP   NOT NULL,
   createdBy      VARCHAR(40) NOT NULL,
-  lastUpdateDate TIMESTAMP,
-  lastUpdatedBy  VARCHAR(40),
+  lastUpdateDate TIMESTAMP   NOT NULL,
+  lastUpdatedBy  VARCHAR(40) NOT NULL,
   version        INT8        NOT NULL
 );
 
@@ -21,8 +21,8 @@ CREATE TABLE test_animals (
   name           VARCHAR(30) NOT NULL,
   createDate     TIMESTAMP   NOT NULL,
   createdBy      VARCHAR(40) NOT NULL,
-  lastUpdateDate TIMESTAMP,
-  lastUpdatedBy  VARCHAR(40),
+  lastUpdateDate TIMESTAMP   NOT NULL,
+  lastUpdatedBy  VARCHAR(40) NOT NULL,
   version        INT8        NOT NULL
 );
 
@@ -36,8 +36,8 @@ CREATE TABLE test_equipments (
   name           VARCHAR(30) NOT NULL,
   createDate     TIMESTAMP   NOT NULL,
   createdBy      VARCHAR(40) NOT NULL,
-  lastUpdateDate TIMESTAMP,
-  lastUpdatedBy  VARCHAR(40),
+  lastUpdateDate TIMESTAMP   NOT NULL,
+  lastUpdatedBy  VARCHAR(40) NOT NULL,
   version        INT8        NOT NULL
 );
 

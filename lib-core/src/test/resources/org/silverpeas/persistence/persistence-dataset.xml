@@ -30,11 +30,11 @@
   <!-- Persons -->
   <test_persons id="person_1" firstName="Yohann" lastName="Chastagnier"
                 createDate="2013-11-21 09:57:30.3" createdBy="1"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="1" version="0"/>
 
   <test_persons id="person_2" firstName="Nicolas" lastName="Eysseric"
                 createDate="2013-11-21 09:57:30.3" createdBy="1"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="1" version="0"/>
 
   <test_persons id="person_3" firstName="Miguel" lastName="Moquillon"
                 createDate="2013-11-21 09:57:30.3" createdBy="2"
@@ -42,11 +42,11 @@
 
   <test_persons id="person_1000" firstName="firstName" lastName="lastName"
                 createDate="2013-11-21 09:57:30.3" createdBy="1"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="1" version="0"/>
 
   <test_persons id="person_1001" firstName="firstName" lastName="lastName"
                 createDate="2013-11-21 09:57:30.3" createdBy="1"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="1" version="0"/>
 
 
   <!-- Animals -->
@@ -56,19 +56,19 @@
 
   <test_animals id="2" type="dog" name="Bagels" personId="person_2"
                 createDate="2013-11-21 09:57:30.3" createdBy="10"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="10" version="0"/>
 
   <test_animals id="3" type="bird" name="Titi" personId="person_2"
                 createDate="2013-11-21 09:57:30.3" createdBy="10"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="10" version="0"/>
 
   <test_animals id="1000" type="type" name="name" personId="person_1000"
                 createDate="2013-11-21 09:57:30.3" createdBy="10"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="10" version="0"/>
 
   <test_animals id="1001" type="type" name="name" personId="person_1001"
                 createDate="2013-11-21 09:57:30.3" createdBy="10"
-                lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="10" version="0"/>
 
   <!-- Equipments -->
   <test_equipments id="equipment_1" name="necklace" animalId="2"

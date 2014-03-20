@@ -82,7 +82,8 @@ public class AbstractJpaEntityRepositoryTest {
     final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
     dataSet = new ReplacementDataSet(builder.build(
         AbstractJpaEntityRepositoryTest.class.getClassLoader()
-            .getResourceAsStream("org/silverpeas/persistence/persistence-dataset.xml")));
+            .getResourceAsStream("org/silverpeas/persistence/persistence-dataset.xml")
+    ));
     dataSet.addReplacementObject("[NULL]", null);
   }
 
@@ -116,8 +117,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(person.getLastName(), is("Chastagnier"));
     assertThat(person.getCreatedBy(), is("1"));
     assertThat(person.getCreateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(person.getLastUpdatedBy(), nullValue());
-    assertThat(person.getLastUpdateDate(), nullValue());
+    assertThat(person.getLastUpdatedBy(), is(person.getCreatedBy()));
+    assertThat(person.getLastUpdateDate(), is(person.getCreateDate()));
     assertThat(person.getVersion(), is(0L));
     assertThat(person.getAnimals(), hasSize(1));
     Animal personAnimal = person.getAnimals().get(0);
@@ -138,8 +139,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(person.getLastName(), is("Eysseric"));
     assertThat(person.getCreatedBy(), is("1"));
     assertThat(person.getCreateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(person.getLastUpdatedBy(), nullValue());
-    assertThat(person.getLastUpdateDate(), nullValue());
+    assertThat(person.getLastUpdatedBy(), is(person.getCreatedBy()));
+    assertThat(person.getLastUpdateDate(), is(person.getCreateDate()));
     assertThat(person.getAnimals(), hasSize(2));
     assertThat(person.getVersion(), is(0L));
 
@@ -183,8 +184,9 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animal.getPerson().getCreatedBy(), is("1"));
     assertThat(animal.getPerson().getCreateDate(),
         is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(animal.getPerson().getLastUpdatedBy(), nullValue());
-    assertThat(animal.getPerson().getLastUpdateDate(), nullValue());
+    assertThat(animal.getPerson().getLastUpdatedBy(), is("1"));
+    assertThat(animal.getPerson().getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(animal.getPerson().getVersion(), is(0L));
     assertThat(animal.getPerson().getAnimals(), hasSize(1));
 
@@ -194,8 +196,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animal.getName(), is("Bagels"));
     assertThat(animal.getCreatedBy(), is("10"));
     assertThat(animal.getCreateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(animal.getLastUpdatedBy(), nullValue());
-    assertThat(animal.getLastUpdateDate(), nullValue());
+    assertThat(animal.getLastUpdatedBy(), is("10"));
+    assertThat(animal.getLastUpdateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(animal.getVersion(), is(0L));
     assertThat(animal.getPerson(), notNullValue());
     assertThat(animal.getPerson().getId(), is("person_2"));
@@ -204,8 +206,9 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animal.getPerson().getCreatedBy(), is("1"));
     assertThat(animal.getPerson().getCreateDate(),
         is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(animal.getPerson().getLastUpdatedBy(), nullValue());
-    assertThat(animal.getPerson().getLastUpdateDate(), nullValue());
+    assertThat(animal.getPerson().getLastUpdatedBy(), is("1"));
+    assertThat(animal.getPerson().getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(animal.getPerson().getVersion(), is(0L));
     assertThat(animal.getPerson().getAnimals(), hasSize(2));
 
@@ -215,8 +218,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animal.getName(), is("Titi"));
     assertThat(animal.getCreatedBy(), is("10"));
     assertThat(animal.getCreateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(animal.getLastUpdatedBy(), nullValue());
-    assertThat(animal.getLastUpdateDate(), nullValue());
+    assertThat(animal.getLastUpdatedBy(), is("10"));
+    assertThat(animal.getLastUpdateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(animal.getPerson(), notNullValue());
     assertThat(animal.getVersion(), is(0L));
     assertThat(animal.getPerson().getId(), is("person_2"));
@@ -225,8 +228,9 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animal.getPerson().getCreatedBy(), is("1"));
     assertThat(animal.getPerson().getCreateDate(),
         is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(animal.getPerson().getLastUpdatedBy(), nullValue());
-    assertThat(animal.getPerson().getLastUpdateDate(), nullValue());
+    assertThat(animal.getPerson().getLastUpdatedBy(), is("1"));
+    assertThat(animal.getPerson().getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(animal.getPerson().getVersion(), is(0L));
     assertThat(animal.getPerson().getAnimals(), hasSize(2));
 
@@ -297,8 +301,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(person.getId(), notNullValue());
     assertThat(person.getCreatedBy(), is("1"));
     assertThat(person.getCreateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
-    assertThat(person.getLastUpdatedBy(), nullValue());
-    assertThat(person.getLastUpdateDate(), nullValue());
+    assertThat(person.getLastUpdatedBy(), is("1"));
+    assertThat(person.getLastUpdateDate(), is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(person.getVersion(), is(0L));
 
     // Update
@@ -336,8 +340,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(personClonedReloaded.getLastName(), is(personCloned.getLastName()));
     assertThat(personClonedReloaded.getCreatedBy(), is(personCloned.getCreatedBy()));
     assertThat(personClonedReloaded.getCreateDate(), is(personCloned.getCreateDate()));
-    assertThat(personClonedReloaded.getLastUpdatedBy(), nullValue());
-    assertThat(personClonedReloaded.getLastUpdateDate(), nullValue());
+    assertThat(personClonedReloaded.getLastUpdatedBy(), is(personCloned.getLastUpdatedBy()));
+    assertThat(personClonedReloaded.getLastUpdateDate(), is(personCloned.getLastUpdateDate()));
     assertThat(personClonedReloaded.getVersion(), is(0L));
     assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
   }
@@ -357,8 +361,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(personCreated, is(personCreated));
     assertThat(personCreated.getCreatedBy(), is("400"));
     assertThat(personCreated.getCreateDate(), is(newPerson.getCreateDate()));
-    assertThat(personCreated.getLastUpdatedBy(), nullValue());
-    assertThat(personCreated.getLastUpdateDate(), nullValue());
+    assertThat(personCreated.getLastUpdatedBy(), is(personCreated.getCreatedBy()));
+    assertThat(personCreated.getLastUpdateDate(), is(personCreated.getCreateDate()));
     assertThat(personCreated.getVersion(), is(0L));
     assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
 
@@ -367,7 +371,8 @@ public class AbstractJpaEntityRepositoryTest {
           new Person().setFirstName("FirstName_" + i).setLastName("LastName_" + i)
               .setCreatedBy("38").setLastUpdatedBy("not_registred_I_hope"),
           new Person().setFirstName("FirstName#" + i).setLastName("LastName#" + i)
-              .setCreatedBy("69").setLastUpdatedBy("not_registred_I_hope"));
+              .setCreatedBy("69").setLastUpdatedBy("not_registred_I_hope")
+      );
     }
     assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(106));
   }
@@ -391,8 +396,8 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(animalCreated.getId(), is("10"));
     assertThat(animalCreated.getCreatedBy(), is("400"));
     assertThat(animalCreated.getCreateDate(), is(newAnimal.getCreateDate()));
-    assertThat(animalCreated.getLastUpdatedBy(), nullValue());
-    assertThat(animalCreated.getLastUpdateDate(), nullValue());
+    assertThat(animalCreated.getLastUpdatedBy(), is(animalCreated.getCreatedBy()));
+    assertThat(animalCreated.getLastUpdateDate(), is(animalCreated.getCreateDate()));
     assertThat(animalCreated.getVersion(), is(0L));
     assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(6));
 
@@ -574,8 +579,9 @@ public class AbstractJpaEntityRepositoryTest {
     Person person2 = jpaEntityServiceTest.getPersonById("person_2");
     Person person3 = jpaEntityServiceTest.getPersonById("person_3");
     assertThat(person1, notNullValue());
-    assertThat(person1.getLastUpdatedBy(), nullValue());
-    assertThat(person1.getLastUpdateDate(), nullValue());
+    assertThat(person1.getLastUpdatedBy(), is("1"));
+    assertThat(person1.getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
     assertThat(person1.getVersion(), is(0L));
     assertThat(person2, notNullValue());
     assertThat(person3, notNullValue());
@@ -587,7 +593,7 @@ public class AbstractJpaEntityRepositoryTest {
     assertThat(person1Reloaded.getFirstName(), is(person1.getFirstName() + "_updated"));
     // In that case of update, last update by, last update date and version must also be handled
     assertThat(person1Reloaded.getLastUpdatedBy(), is("dummy"));
-    assertThat(person1Reloaded.getLastUpdateDate(), notNullValue());
+    assertThat(person1Reloaded.getLastUpdateDate(), greaterThan(person1.getLastUpdateDate()));
     assertThat(person1Reloaded.getVersion(), is(1L));
     assertThat(person2Reloaded, notNullValue());
     assertThat(person2Reloaded.getFirstName(), is(person2.getFirstName() + "_updated"));
