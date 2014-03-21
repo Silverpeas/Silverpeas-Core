@@ -588,6 +588,42 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
   }
 
+  @SuppressWarnings("unchecked")
+  @Test
+  public void variableConcurrencyVariableMethodNotFound() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/variables/concurrencyWithStatics/").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verify(testResult.requestContext.getMultilang(), times(1))
+        .getString("GML.action.user.forbidden");
+    verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void variableConcurrencyVariable() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/variables/concurrencyWithStatics/dynamicPath/").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/variableWay");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(1));
+    assertThat(variables, hasEntry("variablePath", "dynamicPath"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void variableConcurrencyStatic() throws Exception {
+    TestResult testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/variables/concurrencyWithStatics/staticPath").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/staticWay");
+    Map<String, String> variables = testResult.requestContext.getPathVariables();
+    assertThat(variables, notNullValue());
+    assertThat(variables.size(), is(0));
+  }
+
   private ControllerTest<TestWebComponentController, TestWebComponentRequestContext>
   onDefaultController() {
     return onController(TestWebComponentController.class);

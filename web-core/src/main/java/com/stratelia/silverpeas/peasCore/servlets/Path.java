@@ -128,11 +128,14 @@ class Path {
   /**
    * Indicates if the path instance matches the given path.
    * @param path the path to match.
+   * @param skipPathsWithVariables indicates if registred paths containing variables must be
+   * skiped from the matching.
    * @param requestContext the request context.
    * @return true if it matches, false otherwise. If it matches, the request context if filled
    * with name/value of variables.
    */
-  public boolean matches(String path, WebComponentRequestContext requestContext) {
+  public boolean matches(String path, final boolean skipPathsWithVariables,
+      WebComponentRequestContext requestContext) {
     StringTokenizer pathTokenizer = new StringTokenizer(path, "/");
     StringTokenizer registredPathTokenizer = new StringTokenizer(this.path, "/");
     Iterator<String> pathVariablesIt = pathVariables != null ? pathVariables.iterator() : null;
@@ -146,7 +149,8 @@ class Path {
       String pathPart = pathTokenizer.nextToken();
       String registredPathPart = registredPathTokenizer.nextToken();
       if (!pathPart.equals(registredPathPart)) {
-        if (pathVariablesIt == null || !registredPathPart.contains(REGEXP_SEPARATOR)) {
+        if (pathVariablesIt == null || skipPathsWithVariables ||
+            !registredPathPart.contains(REGEXP_SEPARATOR)) {
           return false;
         }
         Matcher matcher =
