@@ -342,20 +342,6 @@ public class DocumentRepository {
   }
 
   /**
-   * Delete all the documents related to the component instance identified by the specified
-   * identifier.
-   * @param session the current JCR session.
-   * @param componentInstanceId the component id containing the documents.
-   * @throws RepositoryException
-   */
-  public void deleteAllDocuments(Session session, String componentInstanceId)
-      throws RepositoryException {
-    Node componentNode = session.getNode('/' + componentInstanceId);
-    componentNode.remove();
-    session.save();
-  }
-
-  /**
    * Change the management of versions of the document if the document is checkouted. If the
    * document is currently with version management, then all history is removed and the document
    * becomes a simple document with no more version management. If the document has no version
