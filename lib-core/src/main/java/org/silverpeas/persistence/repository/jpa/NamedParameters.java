@@ -23,9 +23,13 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
+import com.silverpeas.util.CollectionUtil;
+
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -77,12 +81,32 @@ public class NamedParameters {
    * @param temporalType
    * @return
    */
+  @SuppressWarnings("unchecked")
   public NamedParameters add(final String name, final Object value,
       final TemporalType temporalType) {
-    if (value instanceof Date && temporalType != null) {
+    if (value instanceof Object[] && ((Object[]) value)[0] instanceof Date &&
+        temporalType != null) {
+      namedParameters.put(name,
+          new DateCollectionNamedParameter(name, CollectionUtil.asSet((Date[]) value),
+              temporalType));
+    } else if (value instanceof Collection &&
+        ((Collection) value).iterator().next() instanceof Date &&
+        temporalType != null) {
+      namedParameters.put(name,
+          new DateCollectionNamedParameter(name, new HashSet<Date>((Collection) value),
+              temporalType)
+      );
+    } else if (value instanceof Date && temporalType != null) {
       namedParameters.put(name, new DateNamedParameter(name, (Date) value, temporalType));
-    } else if (value instanceof Enum<?>) {
-      namedParameters.put(name, new EnumNamedParameter(name, (Enum<?>) value));
+    } else if (value instanceof Object[] && ((Object[]) value)[0] instanceof Enum) {
+      namedParameters
+          .put(name, new EnumCollectionNamedParameter(name, CollectionUtil.asSet((Enum[]) value)));
+    } else if (value instanceof Collection &&
+        ((Collection) value).iterator().next() instanceof Enum) {
+      namedParameters
+          .put(name, new EnumCollectionNamedParameter(name, new HashSet<Enum>((Collection) value)));
+    } else if (value instanceof Enum) {
+      namedParameters.put(name, new EnumNamedParameter(name, (Enum) value));
     } else {
       namedParameters.put(name, new ObjectNamedParameter(name, value));
     }
