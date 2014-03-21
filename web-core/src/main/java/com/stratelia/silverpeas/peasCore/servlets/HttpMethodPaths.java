@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.peasCore.servlets;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.webactiv.SilverpeasRole;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -124,13 +123,16 @@ class HttpMethodPaths {
   /**
    * Finds the right paths
    * @param path
+   * @param skipPathsWithVariables indicates if registred paths containing variables must be
+   * skiped from the matching.
    * @param requestContext
    * @return
    */
-  public Path findPath(String path, final WebComponentRequestContext requestContext) {
+  public Path findPath(String path, final boolean skipPathsWithVariables,
+      final WebComponentRequestContext requestContext) {
     Path foundPath = null;
     for (Map.Entry<String, Path> entry : pathRoutes.entrySet()) {
-      if (entry.getValue().matches(path, requestContext)) {
+      if (entry.getValue().matches(path, skipPathsWithVariables, requestContext)) {
         foundPath = entry.getValue();
         break;
       }

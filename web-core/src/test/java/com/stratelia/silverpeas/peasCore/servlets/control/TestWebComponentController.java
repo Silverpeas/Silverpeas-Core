@@ -273,4 +273,16 @@ public class TestWebComponentController extends ParentTestWebComponentController
   public void webApplicationException412(TestWebComponentRequestContext context) {
     throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED).build());
   }
+
+  @GET
+  @Path("/variables/concurrencyWithStatics/{variablePath}")
+  @RedirectTo("variableWay")
+  public void variableConcurrencyVariable(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/variables/concurrencyWithStatics/staticPath")
+  @RedirectTo("staticWay")
+  public void variableConcurrencyStatic(TestWebComponentRequestContext context) {
+  }
 }

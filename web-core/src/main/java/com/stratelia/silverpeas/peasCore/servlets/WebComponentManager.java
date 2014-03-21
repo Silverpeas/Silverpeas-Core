@@ -401,7 +401,10 @@ public class WebComponentManager {
     HttpMethodPaths methodPaths =
         httpMethodPaths.get(webComponentContext.getHttpMethodClass().getName());
     if (methodPaths != null) {
-      pathToPerform = methodPaths.findPath(path, webComponentContext);
+      pathToPerform = methodPaths.findPath(path, true, webComponentContext);
+      if (pathToPerform == null) {
+        pathToPerform = methodPaths.findPath(path, false, webComponentContext);
+      }
     }
 
     // If no path is found, then the default one is selected.
