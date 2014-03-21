@@ -30,9 +30,13 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.silverpeas.look.TopItem"%>
+<%@ page import="com.silverpeas.look.Ticker"%>
+<%@ page import="com.silverpeas.look.TickerItem"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%-- Retrieve user menu display mode --%>
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
 
@@ -51,6 +55,8 @@ if (goToFavoriteSpaceOnHomeLink) {
 
 List<TopItem> topItems = helper.getTopItems();
 
+Ticker ticker = helper.getTicker();
+boolean displayTicker = ticker != null;
 boolean isAnonymousAccess 	= helper.isAnonymousAccess();
 
 String wallPaper = helper.getSpaceWallPaper();
@@ -64,12 +70,12 @@ if (wallPaper == null) {
 boolean outilDisplayed = false;
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>entete</title>
 <view:looknfeel />
+<view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {
 	bottom: 25px;
@@ -89,7 +95,6 @@ body {
 }
 </style>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/ticker.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/connectedUsers.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
@@ -122,9 +127,9 @@ function getTopBarPage() {
 	return "TopBarSilverpeasV5.jsp";
 }
 
-function loadThisPage() {
+$(function() {
   setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
-}
+});
 
 function reloadTopBar() {
 	//Silverpeas V4 compatibility
@@ -139,18 +144,16 @@ function getFooterHeight() {
 //-->
 </script>
 </head>
-<body onload="loadThisPage()">
+<body>
 <div id="topBar">
 	<div style="position: absolute; right: 0px; top: 0px; background-color: #FFFFFF; width: 100%"><img src="icons/silverpeasV5/px.gif" border="0" height="0" id="space2Expand" align="middle" alt=""/></div>
 	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="middle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
     <div id="backHome">
         <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
-        <script type="text/javascript">
-			var xmlfile="/weblib/ticker/tickercontent_<%=language%>.txt" //path to ticker txt file on your server.
-			//ajax_ticker(xmlfile, divId, divClass, delay, optionalfadeornot)
-			new ajax_ticker(xmlfile, "ticker", "someclass", 3500, "fade");
-		</script>
-        <div id="outils">
+    <div id="ticker">
+	  <viewTags:displayTicker ticker="<%=ticker%>" language="<%=language%>"/>
+	</div>
+	    <div id="outils">
         	<% if (!isAnonymousAccess) { %>
 	        	<div class="avatarName">
 				<a href="<%=m_sContext%>/RMyProfil/jsp/Main" target="MyMain" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>

@@ -116,6 +116,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
   private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
   private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
+  private static final String TICKER_JS = "ticker/jquery.ticker.js";
+  private static final String TICKER_CSS = "ticker/ticker-style.css";
 
   static {
     ResourceLocator wysiwygSettings = new ResourceLocator(
@@ -204,6 +206,12 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
     xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
+    return xhtml;
+  }
+  
+  public static ElementContainer includeTicker(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryPath + TICKER_CSS));
+    xhtml.addElement(script(jqueryPath + TICKER_JS));
     return xhtml;
   }
 

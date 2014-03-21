@@ -142,5 +142,9 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Silverpeas plugin to change user language
    */
-  lang
+  lang,
+  /**
+   * Ticker to display short text item one by one
+   */
+  ticker
 }

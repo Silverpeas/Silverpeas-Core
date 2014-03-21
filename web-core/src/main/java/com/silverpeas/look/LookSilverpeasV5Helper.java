@@ -20,6 +20,25 @@
  */
 package com.silverpeas.look;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.date.Period;
+
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionManagement;
@@ -43,22 +62,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.date.Period;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
@@ -868,6 +871,31 @@ public class LookSilverpeasV5Helper implements LookHelper {
       }
     }
     return result;
+  }
+  
+  public Ticker getTicker() {
+    String appId = getSettings("ticker.appId", "");
+    if (StringUtil.isDefined(appId)) {
+      List<PublicationDetail> pubs = getValidPublications(new NodePK(NodePK.ROOT_NODE_ID, appId));
+      if (pubs != null && !pubs.isEmpty()) {
+        Ticker ticker = new Ticker(pubs, resources);
+        String labelParam = getSettings("ticker.label", "");
+        if (labelParam.equalsIgnoreCase("appname")) {
+          ComponentInstLight app = orga.getComponentInstLight(appId);
+          if (app != null) {
+            ticker.setLabel(app.getLabel(getLanguage()));
+          }
+        } else if (labelParam.equalsIgnoreCase("default")) {
+          ticker.setLabel(getString("lookSilverpeasV5.ticker.label"));
+        }
+        
+        String[] profiles = getOrganisationController().getUserProfiles(getUserId(), appId);
+        ticker.setManager(ArrayUtils.contains(profiles, SilverpeasRole.admin.name()));
+        
+        return ticker;
+      }
+    }
+    return null;
   }
   
 }

@@ -1137,7 +1137,7 @@ td.browsebar a:hover {
   border-color: #FFFFFF;
 }
 
-#ticker {
+/*#ticker {
   position: absolute;
   right: 5px;
   height: 15px;
@@ -1147,12 +1147,23 @@ td.browsebar a:hover {
   color: #000000;
   font-family: Verdana, Arial, sans-serif;
   font-size: 10px
+}*/
+
+.ticker, .ticker-wrapper.has-js {
+  width: 950px;   
 }
 
-#ticker div {
-  /*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
-  /*background-color: #FFFFFF;*/
-  width: 500px;
+.ticker-wrapper.has-js {
+  margin-top: 2px;
+  background-color: #FFF;
+}
+
+.ticker, .ticker-title, .ticker-content {
+  background-color: #FFF;
+}
+
+.ticker-title, .ticker-content {
+  padding-top: 1px;
 }
 
 #topBar #outils div.avatarName {
