@@ -21,8 +21,6 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
- 
-
 
 @font-face {
     font-family: 'texgyreadventor';
@@ -37,15 +35,14 @@
 }
 
 
-
 body {
-background:#FFF url() fixed no-repeat;
-font-family:texgyreadventor, Arial, Helvetica, sans-serif;
-color:#082E4A;
+	background:#FFF url() fixed no-repeat;
+	font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
+	color:#082E4A;
 }
 body, td, div, a , input, select, textarea, #myProfileFiche .statut, .textePetitBold{
-font-family:texgyreadventor, Arial ;
-font-size: 12px;
+	font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
+	font-size:9pt;
 }
 
 /********************************** ELMTS HEADER *******************************/
@@ -64,7 +61,6 @@ color:#fff;
 line-height:24px;
 }
 #topBar #outils div.avatarName a {
-font-size: 16px;
     font-weight: 100;
     line-height: 25px;
 }
@@ -134,8 +130,7 @@ padding:0 15px;
 #shortcuts a , #shortcuts a:hover, #shortcuts a:focus, #shortcuts td.activeShortcut a{
 color:#FFF;
 line-height:60px;
-font-size:16px;
-font-family:texgyreadventor ,Arial,sans-serif;
+font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
 }
 #shortcuts a:hover, #shortcuts a:focus, #shortcuts td.activeShortcut a{ background-color:#7eb73b; text-decoration:underline;}
 #shortcuts td {
@@ -178,10 +173,6 @@ padding:0;
 margin:0 0 10px 0;
 }
 
-#domainsBar a {
-font-size: 12px;
-}
-
 #recherche {
 margin:0px;
 
@@ -199,12 +190,10 @@ margin-left: 15px;
 background-color:transparent;
 border:medium none;
 color: #666666;
-    font-size: 11px;
 }
 
 #recherche #bodyRecherche, #recherche #bodyRecherche a {
 color: #575757;
-font-size: 11px;
 }
 #recherche #submitRecherche a {
     display: block;
@@ -216,7 +205,7 @@ font-size: 11px;
     width: 28px;
 }
 #recherche #bodyRecherche {
-    margin-left: 36px;
+    margin-left: 19px;
     margin-top: 16px;
     text-align: left;
 }
@@ -487,7 +476,6 @@ background-image:inherit;
 /* fil ariane */
 #browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover, #browseBar #breadCrumb, #browseBar .information{
 font-weight: normal;
-font-size: 14px;
 }
 
 #browseBar {
@@ -548,7 +536,7 @@ background-color: #FFFFFF;
 
 #blog #titresTopics , #blog #titresArchives, #blog #titresLiens {
 background-image: none;
-font-family: texgyreadventor;
+font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
 }
 
 .navigationListTitle {
@@ -564,11 +552,9 @@ border:none;
 }
 
 .sousTitreFenetre {
-font-size: 14px;
 font-weight:100;}
 
 .titreFenetre {
-font-size:13px;
 color:#262827;
 text-transform:uppercase;
 }
@@ -640,21 +626,19 @@ box-shadow:5px 5px 10px #DDDDDD;
 }
 
 #portletPages h2.portlet-title {
-border-bottom: 0px solid #CCCCCC;
-    color:#ec8601;
-    font-family:texgyreadventor,Arial,sans-serif;
-font-size:16px;
-text-transform:normal;
-font-variant: normal;
-font-weight:100;
-margin-bottom: 0px;
-    padding: 2px 0 0 ;
+	border-bottom: 0px solid #CCCCCC;
+	color:#ec8601;
+	font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
+	text-transform:normal;
+	font-variant: normal;
+	font-weight:100;
+	margin-bottom: 0px;
+	padding: 2px 0 0 ;
 }
 
 #portletPages div.portlet-content {
 background-color:#F0F0F0;
 border:1px dotted #BBB;
-font-size: 12px;
 }
 
 .portlet-content ul{
@@ -668,11 +652,8 @@ line-height:20px;
 background:#FFF url();
 border:0;
 }
-#portletPages dl.sort {
-font-size:12px;
-}
+
 #portletPages dl.sort dd{
-font-size:12px;
 background-color:#FFF;
 margin-bottom:10px;
 }
@@ -706,8 +687,7 @@ border-bottom: 1px solid #cccccc;
 }
 
 #facetSearchDivId #searchGroupTitle span {
-display:block;
-    font-size: 16px;
+	display:block;
     font-weight: 100;
     height: 19px;
     line-height: 19px;
@@ -726,6 +706,11 @@ border-left: 1px solid #cccccc;
 border-right: 1px solid #cccccc;
 border-top: 1px solid #cccccc;
 }
+
+#searchGroupValues {
+	padding-left:6px;
+}
+
 #searchGroupValues ul li.selected {
 background-color:#FFF;
 }
@@ -738,7 +723,7 @@ background-color:#FFFFFF;
 }
 .ArrayNavigation {
 background-image: none;
-font-size: 12px;
+
 }
 
 /* Boutons et onglets*/
@@ -755,8 +740,7 @@ background:#7eb73b linear-gradient(#7eb73b, #6fa800) 0 0 repeat scroll;
     box-shadow: 0 0 0 #343434;
     color: #FFF !important;
     display: block;
-    font-family: texgyreadventor,"Trebuchet MS",Arial,Helvetica,sans-serif;
-    font-size: 12px;
+    font-family: "Century Gothic","Trebuchet MS",Arial, sans serif;
     padding: 5px 10px;
     text-align: center;
     text-decoration: none;
@@ -776,8 +760,7 @@ background:#7eb73b linear-gradient(#7eb73b, #6fa800) 0 0 repeat scroll;
     border-radius: 0 0 0 0;
     box-shadow: 0 0 0 #343434;
     color: #FFF !important;
-    font-family: texgyreadventor,"Trebuchet MS",Arial,Helvetica,sans-serif;
-    font-size: 13px;
+    font-family: "Century Gothic","Trebuchet MS",Arial, sans serif;
     padding: 2px 5px;
 }
 
@@ -808,8 +791,11 @@ background-image: none;
 border-bottom:none;
 background-color:transparent;
 border-right: 0px solid #fff !important;
-color:#7eb73b;
+color:#666666;
 
+}
+.milieuBoutonV5 {
+	color:#FFF;
 }
 
 .ui-widget-header {
@@ -817,7 +803,8 @@ background-color:#353535 ;
 border-color:#353535 ;
 font-weight:100;
 }
-.milieuOngletOn a,.milieuOngletOff a{
+
+.milieuOngletOn a,.milieuOngletOff a, .milieuOngletOn span,.milieuOngletOff span{
 display:block;
 margin-right:4px;
 border-radius:8px 8px 0 0;
@@ -838,7 +825,6 @@ display:table;
 padding:0 20px 0 30px;
 text-align:right;
     color: #FFF;
-    font-size: 14px;
     line-height: 25px;
 border-right:0;
 
@@ -855,7 +841,6 @@ margin-top:-3px;
 }
 
 .yuimenu a , #portletPages .yuimenu a {
-font-size:12px;
 font-weight:100;
 }
 
@@ -1049,12 +1034,10 @@ font-size:11px;
 }
 
 .ongletAdminOn .txtPetitBlanc {
-font-size:12px;
 font-weight:bold;
 color:#000;
 }
 .ongletAdminOn strong {
-font-size:12px;
 font-weight:100;
 color:#666;
 }

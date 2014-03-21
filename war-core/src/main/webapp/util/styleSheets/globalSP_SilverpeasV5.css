@@ -5972,6 +5972,15 @@ blockquote {
 	width:95%;
 }
 
+.wysiwyg-fileStorage {
+	border: 1px solid #D3D3D3;
+    border-radius: 5px;
+    padding:5px 0;
+	margin-bottom:5px;
+	background-color:#eaeaea;
+	text-align:center;
+}
+
 /*responsive design */
 @media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
   .rightContent {

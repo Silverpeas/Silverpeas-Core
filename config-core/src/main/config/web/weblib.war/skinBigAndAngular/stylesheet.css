@@ -1,3 +1,4 @@
+
 @import url("basic.css");
 
 .fondDomainsBar {
@@ -41,8 +42,7 @@ a:hover {
      background: url("imgDesign/bg-btn-admin.png") no-repeat scroll right 7px transparent;
      color: #FFFFFF;
      display: block;
-     font-family: texgyreadventor,Arial,sans-serif;
-     font-size: 14px;
+     font-family: "Century Gothic","Trebuchet MS",Arial, sans serif;
      font-weight: 100;
      height: 60px;
      line-height: 60px;
@@ -82,9 +82,8 @@ a:hover {
 
 #domainsBar .spaceLevel1 a.spaceURL, #domainsBar .spaceLevel1On a.spaceURL {
      background: url("imgDesign/bg_menu_level1.png") no-repeat scroll 0px bottom transparent;
-     color: #101010;
+     color: #555;
      display: block;
-     font-size: 19px;
      font-weight: 100;
      line-height: 19px;
      min-height: 18px;
@@ -111,7 +110,7 @@ a:hover {
 
 #domainsBar .spaceLevel1On .contentSpace .spaceOn > a {
      background: url("imgDesign/packFleche.png") no-repeat scroll 8px -153px transparent;
-     color: #7EB73B;
+     color: #72AA2F;
 }
 
 #domainsBar .spaceLevel1On .browseSpace .browseComponent a, #domainsBar .spaceLevel1On .browseSpace .browseComponentActiv a {
@@ -192,11 +191,14 @@ a:hover {
      width: 100%;
 }
 
+#contentSpacespacePerso{
+	 padding-bottom:15px;
+}
+
 #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
      background: url("imgDesign/spacePersoDeco.png") no-repeat scroll right top transparent;
      color: #FFFFFF;
      display: block;
-     font-size: 16px;
      font-weight: 100;
      height: 50px;
      line-height: 50px;
@@ -226,7 +228,7 @@ a:hover {
      color: #FFFFFF;
 }
 
-.sousOnglets, .milieuOngletOn a, .milieuOngletOff a:hover {
+.sousOnglets, .milieuOngletOn a, .milieuOngletOff a:hover, .milieuOngletOn span {
      background-color: #7EB73B;
      color: #FFFFFF;
 }
@@ -236,7 +238,8 @@ a:hover {
      font-weight: 100;
 }
 
-.milieuOngletOff a {
+.milieuOngletOff a,
+.milieuOngletOff span {
      background-color: #D6D7D9;
 }
 
@@ -265,7 +268,7 @@ a:hover {
 
 .yuimenu a, #portletPages .yuimenu a {
      background-color: #F2F2F2;
-     color: #5D5D5E;
+    
 }
 
 .yuimenuitemlabel, .yuimenuitemlabel:visited, .yuimenubaritemlabel, .yuimenubaritemlabel:visited {
@@ -298,11 +301,98 @@ a:hover {
      line-height: 12px;
 }
 
-.txtnav, .txtlibform {
-     font-size: 12px;
+
+#recherche #bodyRecherche, #recherche #bodyRecherche a ,
+#recherche #submitRecherche input ,
+.ArrayColumn, 
+#classifieds .tableFrame #categories .categoryTitle{
+	font-size:8pt;
 }
 
-.ArrayColumn, #classifieds .tableFrame #categories .categoryTitle {
+.commentaires #edition-box .title, .commentaires .oneComment p.author,
+#portletPages div.portlet-content ,
+#domainsBar a,
+.sousNavBulle, .container-filter, .sousNavBulle a,
+.txtnav, .txtlibform, 
+.txtnote,
+.txtBaseline,
+caption,
+Label, legend{
+     font-size:9pt;
+}
+
+
+.ongletAdminOn span.textePetitBold, .ongletAdminOff span.txtPetitBlanc,
+.componentNav,
+#spaces-welcome-message p,
+#spaces-welcome-message ul,
+#spaces-welcome-message a ,
+.titreForum,
+.ArrayNavigation,
+.skinFieldset legend,
+#globalResultForm,
+#globalResultQueryLabel,
+#globalResultParamDisplayLabel,
+.titreFenetre ,
+#portletPages dl.sort ,
+#portletPages dl.sort dd,
+button.ui-button.ui-widget,
+.milieuBoutonV5 a,
+.milieuOngletOn a,
+.milieuOngletOff a,
+button,
+.ongletAdminOn .txtPetitBlanc,
+.ongletAdminOn strong,
+.yuimenu a , #portletPages .yuimenu a,
+.spaceHome #publication li ,
+#menubar-creation-actions .menubar-creation-actions-item, #attachment-creation-actions .menubar-creation-actions-item{
+     font-size:10pt !important;
+}
+
+
+
+.sousTitreFenetre, 
+#menutoggle,
+#administration a,
+.spaceHome .list-responsible-user .userName,
+.spaceHome .spaceNavigation li a,
+#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover, #browseBar #breadCrumb, #browseBar .information{
+	font-size: 10.5pt;
+	font-family:"texgyreadventor","Century Gothic","Trebuchet MS",Arial, sans serif;
+}
+
+.spaceHome #spaceQuiskInfo li.slide > h4 ,
+.spaceHome #publication li a b,
+.spaceHome #publication .header h4{
+	font-size: 11.5pt;
+	font-family:"texgyreadventor","Century Gothic","Trebuchet MS",Arial, sans serif;
+}
+
+#facetSearchDivId #searchGroupTitle span ,
+#domainsBar #spaceMenuDivId #spacePerso .spaceURL,
+#topBar #outils div.avatarName a {
+    font-size: 12pt;
+	font-family:"texgyreadventor","Century Gothic","Trebuchet MS",Arial, sans serif;
+}
+
+#portletPages h2.portlet-title,
+#shortcuts a , #shortcuts a:hover, #shortcuts a:focus, #shortcuts td.activeShortcut a{
+	font-size:12pt;
+	font-family:"texgyreadventor","Century Gothic","Trebuchet MS",Arial, sans serif;
+}
+
+.spaceHome .spaceName ,
+#domainsBar .spaceLevel1 a.spaceURL, #domainsBar .spaceLevel1On a.spaceURL{
+	font-size:14pt;
+	font-family:"texgyreadventor","Century Gothic","Trebuchet MS",Arial, sans serif;
+}
+
+
+.ongletAdminOn span.textePetitBold, .ongletAdminOff span.txtPetitBlanc {
+
+	 font-weight:100;
+}
+.ArrayColumn, #classifieds .tableFrame #categories .categoryTitle, .tableArrayPane thead {
      background-color: #D6D7D9;
      color: #000000;
 }
@@ -351,10 +441,6 @@ a:hover {
      background-color: transparent;
 }
 
-#menubar-creation-actions .menubar-creation-actions-item, #attachment-creation-actions .menubar-creation-actions-item {
-     font-size: 12px;
-}
-
 #menubar-creation-actions, #attachment-creation-actions {
      background-color: #FDF4EF;
      border-bottom: 1px solid #EDBCBB;
@@ -374,7 +460,6 @@ a:hover {
      background-color: #7EB73B;
      color: #FFFFFF;
      display: inline;
-     font-size: 22px;
      font-weight: 100;
      padding: 0px 10px;
 }
@@ -385,9 +470,6 @@ a:hover {
      padding: 8px;
 }
 
-.spaceHome .spaceNavigation li a {
-     font-size: 120%;
-}
 
 .spaceHome .spaceNavigation li.browse-space a {
      background: url("/weblib/skinBigAndAngular/imgDesign/bg_menu_level1.png") no-repeat scroll 0px -10px transparent;
@@ -446,7 +528,6 @@ margin:0;
 
 .spaceHome #publication .header h4 {
      color: #777777;
-     font-size: 16px;
      font-weight: 100;
      margin: 0px;
      padding: 0px;
@@ -457,7 +538,6 @@ margin:0;
 }
 
 .spaceHome #publication li {
-     font-size: 12px;
      list-style-image: url("/weblib/skinBigAndAngular/imgDesign/puce.png");
 }
 .spaceHome #publication li a:hover {
@@ -466,7 +546,6 @@ margin:0;
 
 .spaceHome #publication li a b {
      color: #333333;
-     font-size: 15px;
      font-weight: 100;
 }
 
@@ -484,7 +563,6 @@ color:#1C94D4;
 
 .spaceHome #spaceQuiskInfo li.slide > h4 {
      color: #EC7501;
-     font-size: 15px;
      font-weight: 100;
      line-height: 120%;
 }
@@ -501,6 +579,5 @@ color:#1C94D4;
      width: auto;
 }
 
-.spaceHome .list-responsible-user .userName {
-     font-size: 14px;
-}
+.btn-deploy-all-item, #dynamicalLoad, #displaying, #displaying a {width:auto}
+#displaying {width:228px;}
