@@ -106,6 +106,11 @@
         }
         return criteria;
       };
+      RESTAdapter.prototype.delete = function(id) {
+        $http.delete(this.url + '/' + id).error(function(data, status) {
+          alert("Error: " + status + "[ " + data + " ]");
+        });
+      };
       RESTAdapter.prototype.find = function(parameters) {
         if (parameters !== null && parameters !== undefined) {
           if (typeof parameters === 'number' || typeof parameters === 'string') {
