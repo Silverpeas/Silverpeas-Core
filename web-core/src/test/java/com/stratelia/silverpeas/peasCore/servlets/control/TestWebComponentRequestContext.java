@@ -42,7 +42,7 @@ public class TestWebComponentRequestContext
 
   @Override
   public String getComponentUriBase() {
-    return "/";
+    return "/componentName";
   }
 
   public int getNbBeforeRequestInitializeCalls() {

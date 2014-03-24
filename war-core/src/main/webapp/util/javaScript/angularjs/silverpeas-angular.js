@@ -43,7 +43,7 @@
  * @example
  * var myapp = angular.module('silverpeas.myapp', ['silverpeas.services', 'silverpeas.directives']);
  */
-angular.module('silverpeas', []);
+angular.module('silverpeas', ['ngSanitize']);
 
 /**
  * Defines the context object used to share application contextual properties with the different
