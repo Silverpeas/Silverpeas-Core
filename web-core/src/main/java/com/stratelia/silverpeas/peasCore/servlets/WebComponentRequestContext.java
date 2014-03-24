@@ -34,6 +34,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
 import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
@@ -57,6 +58,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   private HttpRequest request;
   private HttpServletResponse response;
   private CONTROLLER controller = null;
+  private boolean comingFromRedirect = false;
 
   private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
   private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
@@ -180,6 +182,10 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return greaterUserRole;
   }
 
+  public boolean isComingFromRedirect() {
+    return comingFromRedirect;
+  }
+
   Navigation redirectTo(Annotation redirectToAnnotation) {
     if (redirectToAnnotation instanceof RedirectToInternalJsp) {
       return redirectToInternalJsp(((RedirectToInternalJsp) redirectToAnnotation).value());
@@ -200,8 +206,9 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
 
   private Navigation redirectToInternal(String internalPath) {
     return redirectTo(
-        normalizeRedirectPath(UriBuilder.fromUri(getComponentUriBase()).path(getComponentName()),
-            internalPath).build().toString());
+        normalizeRedirectPath(UriBuilder.fromUri(getComponentUriBase()), internalPath).build()
+            .toString()
+    );
   }
 
   private Navigation redirectToInternalJsp(String jspPathname) {
@@ -211,6 +218,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   }
 
   private Navigation redirectTo(String path) {
+    comingFromRedirect = true;
     return new Navigation(path);
   }
 
