@@ -106,11 +106,18 @@
         }
         return criteria;
       };
-      RESTAdapter.prototype.delete = function(id) {
-        $http.delete(this.url + '/' + id).error(function(data, status) {
-          alert("Error: " + status + "[ " + data + " ]");
-        });
-      };
+    RESTAdapter.prototype.delete = function(id) {
+      var deferred = $q.defer();
+      $http.delete(this.url + '/' + id).success(function(data, status, headers) {
+        deferred.resolve(id);
+        performMessage(headers);
+      }).error(function(data, status, headers) {
+        alert("Error: " + status + "[ " + data + " ]");
+        deferred.reject(id);
+        performMessage(headers);
+      });
+      return deferred.promise;
+    };
       RESTAdapter.prototype.find = function(parameters) {
         if (parameters !== null && parameters !== undefined) {
           if (typeof parameters === 'number' || typeof parameters === 'string') {
