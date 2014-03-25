@@ -355,9 +355,9 @@ public class WebComponentManager {
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 
-    // Common initializations
-    webComponentRequestContext.beforeRequestInitialize();
-    webComponentController.commonRequestContextInitialization(webComponentRequestContext);
+    // Common processing
+    webComponentRequestContext.beforeRequestProcessing();
+    webComponentController.beforeRequestProcessing(webComponentRequestContext);
 
     // Retrieving the web component manager
     WebComponentManager webComponentManager =
