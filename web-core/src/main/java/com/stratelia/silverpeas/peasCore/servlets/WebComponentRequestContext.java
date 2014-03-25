@@ -69,7 +69,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
    * This methods permits to perform initializations before the HTTP method (and associated
    * method invokation) aimed is performed.
    */
-  public void beforeRequestInitialize() {
+  public void beforeRequestProcessing() {
     // Nothing to do by default.
   }
 

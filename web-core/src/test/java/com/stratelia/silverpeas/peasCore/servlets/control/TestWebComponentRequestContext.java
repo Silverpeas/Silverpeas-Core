@@ -36,7 +36,7 @@ public class TestWebComponentRequestContext
   private int nbInvokationsAfterCall = 0;
 
   @Override
-  public void beforeRequestInitialize() {
+  public void beforeRequestProcessing() {
     nbBeforeRequestInitializeCalls++;
   }
 

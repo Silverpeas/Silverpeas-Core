@@ -69,7 +69,7 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
    * behing the identified path is invoked.
    * @param context the context of the request in relation with the web controller
    */
-  protected void commonRequestContextInitialization(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  protected void beforeRequestProcessing(WEB_COMPONENT_REQUEST_CONTEXT context) {
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
     context.getRequest().setAttribute("greaterUserRole", context.getGreaterUserRole());
   }
