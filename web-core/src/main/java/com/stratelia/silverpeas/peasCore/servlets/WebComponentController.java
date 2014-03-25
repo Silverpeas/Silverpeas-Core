@@ -70,6 +70,7 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
    * @param context the context of the request in relation with the web controller
    */
   protected void beforeRequestProcessing(WEB_COMPONENT_REQUEST_CONTEXT context) {
+    context.getRequest().setAttribute("currentUser", context.getUser());
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
     context.getRequest().setAttribute("greaterUserRole", context.getGreaterUserRole());
   }
