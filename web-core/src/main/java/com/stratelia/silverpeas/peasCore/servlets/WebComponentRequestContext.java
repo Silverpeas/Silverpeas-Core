@@ -287,7 +287,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
       getRequest().setAttribute("ComponentName",
           URLEncoder.encode(getComponentInstanceLabel(), CharEncoding.UTF_8));
       getRequest().setAttribute("ObjectId", objectId);
-      getRequest().setAttribute("Language", null);
+      getRequest().setAttribute("Language", controller.getLanguage());
       getRequest().setAttribute("ReturnUrl", URLManager.getApplicationURL() +
           URLManager.getURL(getComponentName(), "useless", getComponentInstanceId()) +
           returnPath);
