@@ -27,6 +27,7 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
 /**
+ * Defines the different possible status in which a contribution must be.
  * @author: Yohann Chastagnier
  */
 public enum ContributionStatus {
@@ -48,5 +49,21 @@ public enum ContributionStatus {
     } catch (Exception e) {
       return UNKNOWN;
     }
+  }
+
+  public boolean isInDraft() {
+    return this == ContributionStatus.DRAFT;
+  }
+
+  public boolean isRefused() {
+    return this == ContributionStatus.REFUSED;
+  }
+
+  public boolean isPendingValidation() {
+    return this == ContributionStatus.PENDING_VALIDATION;
+  }
+
+  public boolean isValidated() {
+    return this == ContributionStatus.VALIDATED;
   }
 }
