@@ -397,30 +397,15 @@ public class WebComponentManager {
       WEB_COMPONENT_REQUEST_CONTEXT webComponentContext) throws Exception {
     com.stratelia.silverpeas.peasCore.servlets.Path pathToPerform = null;
 
-    // Finding a registred path that matches the required path.
-    String[] httpMethodClassNamesToCheck = new String[2];
-    httpMethodClassNamesToCheck[0] = webComponentContext.getHttpMethodClass().getName();
-
     // If coming from a redirect, trying to find path to perform in these registred for GET HTTP
     // METHOD.
-    if (webComponentContext.isComingFromRedirect() &&
-        !httpMethodClassNamesToCheck[0].equals(GET.class.getName())) {
-      httpMethodClassNamesToCheck[1] = GET.class.getName();
-    }
-
-    for (String httpMethodClassName : httpMethodClassNamesToCheck) {
-      if (StringUtil.isNotDefined(httpMethodClassName)) {
-        continue;
-      }
-      HttpMethodPaths methodPaths = httpMethodPaths.get(httpMethodClassName);
-      if (methodPaths != null) {
-        pathToPerform = methodPaths.findPath(path, true, webComponentContext);
-        if (pathToPerform == null) {
-          pathToPerform = methodPaths.findPath(path, false, webComponentContext);
-        }
-      }
-      if (pathToPerform != null) {
-        break;
+    HttpMethodPaths methodPaths = httpMethodPaths.get(
+        webComponentContext.isComingFromRedirect() ? GET.class.getName() :
+            webComponentContext.getHttpMethodClass().getName());
+    if (methodPaths != null) {
+      pathToPerform = methodPaths.findPath(path, true, webComponentContext);
+      if (pathToPerform == null) {
+        pathToPerform = methodPaths.findPath(path, false, webComponentContext);
       }
     }
 
