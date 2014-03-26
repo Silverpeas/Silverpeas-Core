@@ -53,6 +53,7 @@ import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
  * the web services in Silverpeas like the user priviledge checking.
  */
 public abstract class RESTWebService {
+  public static final String REST_WEB_SERVICES_URI_BASE = "services";
 
   /**
    * The HTTP header parameter that provides the real size of an array of resources. It is for
