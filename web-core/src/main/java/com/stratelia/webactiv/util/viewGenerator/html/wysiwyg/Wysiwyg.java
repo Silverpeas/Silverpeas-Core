@@ -16,6 +16,7 @@ public class Wysiwyg {
   private String imageBrowserURL;
   private String serverURL;
   private String css;
+  private boolean fileStorage = false;
 
   ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
 
@@ -29,6 +30,10 @@ public class Wysiwyg {
         URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
 
+    if(isFileStorage()) {
+      builder.append("COUCOU LISTE DES FICHIERS \n");
+    }
+    
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
     builder.append("width : '").append(getWidth()).append("',\n");
     builder.append("height : ").append(getHeight()).append(",\n");
@@ -125,6 +130,14 @@ public class Wysiwyg {
   
   public void setCustomCSS(String css) {
     this.css = css;
+  }
+
+  public boolean isFileStorage() {
+    return fileStorage;
+  }
+
+  public void setFileStorage(boolean fileStorage) {
+    this.fileStorage = fileStorage;
   }
 
 }
