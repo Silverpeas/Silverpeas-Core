@@ -50,8 +50,14 @@ public class JavascriptPluginInclusion {
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
+  private static final String angularjsI18nPath = angularjsPath + "i18n/";
   private static final String angularjsServicesPath = angularjsPath + "services/";
   private static final String angularjsDirectivesPath = angularjsPath + "directives/";
+  private static final String ANGULAR_JS = "angular.min.js";
+  private static final String ANGULAR_LOCALE_JS = "angular-locale_{0}.js";
+  private static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
+  private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
+  private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
@@ -137,6 +143,15 @@ public class JavascriptPluginInclusion {
    */
   private static link link(String href) {
     return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
+  }
+
+  public static ElementContainer includeAngular(final ElementContainer xhtml, String language) {
+    xhtml.addElement(script(angularjsPath + ANGULAR_JS));
+    xhtml.addElement(script(angularjsI18nPath + MessageFormat.format(ANGULAR_LOCALE_JS, language)));
+    xhtml.addElement(script(angularjsPath + ANGULAR_SANITIZE_JS));
+    xhtml.addElement(script(angularjsPath + SILVERPEAS_ANGULAR_JS));
+    xhtml.addElement(script(angularjsPath + SILVERPEAS_ADAPTERS_ANGULAR_JS));
+    return xhtml;
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
