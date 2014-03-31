@@ -46,6 +46,8 @@ import java.util.Date;
 @Embeddable
 public class ContributionValidation implements Serializable {
 
+  private static final long serialVersionUID = 6313266204966304781L;
+
   /**
    * It represents none contribution validation.
    */

@@ -59,17 +59,19 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -108,10 +110,6 @@ public class GraphicElementFactory {
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
-  protected static final String ANGULAR_JS = "angular.min.js";
-  protected static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
-  protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
-  protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
   public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
 
@@ -362,20 +360,9 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(ANGULAR_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(ANGULAR_SANITIZE_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(SILVERPEAS_ANGULAR_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
-            "\"></script>\n");
-    code.append(JavascriptPluginInclusion.includeSecurityTokenizing(new ElementContainer()).
-        toString())
-        .append("\n");
-    code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
-        .append("\n");
+    code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append("\n");
+    code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append("\n");
+    code.append(includeNotifier(new ElementContainer()).toString()).append("\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
