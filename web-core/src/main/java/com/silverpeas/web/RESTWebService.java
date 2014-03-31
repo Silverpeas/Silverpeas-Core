@@ -29,6 +29,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.notification.message.MessageManager;
@@ -227,7 +228,11 @@ public abstract class RESTWebService {
    */
   protected ResourceLocator getBundle() {
     if (bundle == null) {
-      bundle = new ResourceLocator(getBundleLocation(), getUserPreferences().getLanguage());
+      if (getBundleLocation() == null) {
+        bundle = GeneralPropertiesManager.getGeneralMultilang(getUserPreferences().getLanguage());
+      } else {
+        bundle = new ResourceLocator(getBundleLocation(), getUserPreferences().getLanguage());
+      }
     }
     return bundle;
   }
