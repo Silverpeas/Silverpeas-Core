@@ -20,6 +20,13 @@ public class WysiwygTag extends TagSupport {
   private String width = "100%";
   private String language = "en";
   private String toolbar = "Default";
+  private String spaceId;
+  private String spaceName;
+  private String componentId;
+  private String componentName;
+  private String browseInfo;
+  private String objectId;
+  private boolean fileStorage = false;
   
   public String getHeight() {
     return height;
@@ -61,6 +68,70 @@ public class WysiwygTag extends TagSupport {
     this.replace = replace;
   }
 
+  public String getSpaceId() {
+    return spaceId;
+  }
+
+  public void setSpaceId(String spaceId) {
+    this.spaceId = spaceId;
+  }
+
+  public String getSpaceName() {
+    return spaceName;
+  }
+
+  public void setSpaceName(String spaceName) {
+    this.spaceName = spaceName;
+  }
+  
+  public String getComponentId() {
+    return componentId;
+  }
+
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
+
+  public String getComponentName() {
+    return componentName;
+  }
+
+  public void setComponentName(String componentName) {
+    this.componentName = componentName;
+  }
+
+  public String getBrowseInfo() {
+    return browseInfo;
+  }
+
+  public void setBrowseInfo(String browseInfo) {
+    this.browseInfo = browseInfo;
+  }
+
+  public String getObjectId() {
+    return objectId;
+  }
+
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
+  }
+  
+  /**
+   * Is display list of reusable files ?
+   * @return true if the list of reusable files is displayed. false otherwise.
+   */
+  public boolean isFileStorage() {
+    return fileStorage;
+  }
+
+  /**
+   * Sets the display of reusable files mode.
+   * @param fileStorage true or false. If true the list of reusable files is displayed.
+   */
+  public void setFileStorage(boolean fileStorage) {
+    this.fileStorage = fileStorage;
+  }
+
   @Override
   public int doEndTag() throws JspException {
     Wysiwyg wysiwyg = new Wysiwyg();
@@ -73,10 +144,31 @@ public class WysiwygTag extends TagSupport {
     
     HttpSession session = pageContext.getSession();
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    if(getSpaceId() != null) {
+      session.setAttribute("WYSIWYG_SpaceId", getSpaceId());
+    }
+    if(getSpaceName() != null) {
+      session.setAttribute("WYSIWYG_SpaceName", getSpaceName());
+    }
+    if(getComponentId() != null) {
+      session.setAttribute("WYSIWYG_ComponentId", getComponentId());
+    }
+    if(getComponentName() != null) {
+      session.setAttribute("WYSIWYG_ComponentName", getComponentName());
+    }
+    if(getBrowseInfo() != null) {
+      session.setAttribute("WYSIWYG_BrowseInfo", getBrowseInfo());
+    }
+    if(getObjectId() != null) {
+      session.setAttribute("WYSIWYG_ObjectId", getObjectId());
+    }
+    session.setAttribute("WYSIWYG_Language", getLanguage());
+    
     ResourceLocator settings = gef.getFavoriteLookSettings();
     if (settings != null) {
       wysiwyg.setCustomCSS(settings.getString("StyleSheet"));
     }
+    wysiwyg.setFileStorage(isFileStorage());
     
     try {     
       pageContext.getOut().println(wysiwyg.print());
