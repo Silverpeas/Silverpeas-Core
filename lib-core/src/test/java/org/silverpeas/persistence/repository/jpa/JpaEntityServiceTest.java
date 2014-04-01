@@ -62,6 +62,10 @@ public class JpaEntityServiceTest {
     animalRepository.setMaximumItemsInClause(2);
   }
 
+  public void flush() {
+    personRepository.flush();
+  }
+
   public List<Equipment> getAllEquiments() {
     return equipmentRepository.getAll();
   }

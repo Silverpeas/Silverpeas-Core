@@ -25,26 +25,14 @@ package org.silverpeas.persistence.repository.jpa;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.AnimalType;
 import org.silverpeas.persistence.repository.jpa.model.Equipment;
 import org.silverpeas.persistence.repository.jpa.model.Person;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -67,35 +55,34 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(
-    locations = {"/spring-persistence.xml", "/spring-persistence-embedded-datasource.xml"})
-public class AbstractJpaEntityRepositoryTest {
+public class AbstractJpaEntityRepositoryTest extends RepositoryBasedTest {
 
-  private static ReplacementDataSet dataSet;
-
-  @Inject
   private JpaEntityServiceTest jpaEntityServiceTest;
 
-  @BeforeClass
-  public static void prepareDataSet() throws Exception {
-    final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet = new ReplacementDataSet(builder.build(
-        AbstractJpaEntityRepositoryTest.class.getClassLoader()
-            .getResourceAsStream("org/silverpeas/persistence/persistence-dataset.xml")
-    ));
-    dataSet.addReplacementObject("[NULL]", null);
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    DBUtil.getInstanceForTest(getDataSource().getConnection());
+    jpaEntityServiceTest = getApplicationContext().getBean(JpaEntityServiceTest.class);
   }
 
-  @Inject
-  @Named("jpaDataSource")
-  private DataSource dataSource;
+  @Override
+  public void tearDown() throws Exception {
+    try {
+      super.tearDown();
+    } finally {
+      DBUtil.clearTestInstance();
+    }
+  }
 
-  @Before
-  public void generalSetUp() throws Exception {
-    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
+  @Override
+  public String[] getApplicationContextPath() {
+    return new String[]{"/spring-persistence.xml", "/spring-persistence-embedded-datasource.xml"};
+  }
+
+  @Override
+  public String getDataSetPath() {
+    return "org/silverpeas/persistence/persistence-dataset.xml";
   }
 
   @Test

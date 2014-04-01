@@ -85,6 +85,9 @@
   <ctx:component-scan base-package="org.silverpeas.rating"/>
   <ctx:component-scan base-package="org.silverpeas.persistence"/>
 
+  <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
+        factory-method="getFactory"/>
+
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
         factory-method="getDomainDriverFactory"/>
 

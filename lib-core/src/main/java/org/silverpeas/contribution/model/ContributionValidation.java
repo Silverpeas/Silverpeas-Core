@@ -25,17 +25,14 @@ package org.silverpeas.contribution.model;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import java.io.Serializable;
+import org.silverpeas.contribution.ContributionStatus;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -48,26 +45,69 @@ public class ContributionValidation implements Serializable {
 
   private static final long serialVersionUID = 6313266204966304781L;
 
-  /**
-   * It represents none contribution validation.
-   */
-  public static final ContributionValidation NONE_VALIDATION = null;
+  @Column(name = "status", nullable = false)
+  private String status = ContributionStatus.DRAFT.name();
 
   @Column(name = "validationDate")
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date validationDate;
 
   @Column(name = "validationComment")
-  @Size(min = 1)
-  @NotNull
   private String validationComment;
 
   @Column(name = "validationBy", length = 40)
-  @NotNull
   private String validationBy;
 
   @Transient
   private UserDetail validator;
+
+  /**
+   * Is that the status of the contribution is draft?
+   * @return true if it is the case, false otherwise.
+   */
+  public boolean isInDraft() {
+    return getStatus().isInDraft();
+  }
+
+  /**
+   * Is that the status of the contribution is refused?
+   * @return true if it is the case, false otherwise.
+   */
+  public boolean isRefused() {
+    return getStatus().isRefused();
+  }
+
+  /**
+   * Is that the status of the contribution is pending validation?
+   * @return true if it is the case, false otherwise.
+   */
+  public boolean isPendingValidation() {
+    return getStatus().isPendingValidation();
+  }
+
+  /**
+   * Is that the status of the contribution is validated?
+   * @return true if it is the case, false otherwise.
+   */
+  public boolean isValidated() {
+    return getStatus().isValidated();
+  }
+
+  /**
+   * Gets the status of the validation of the contribution.
+   * @return the status of the validation of the contribution.
+   */
+  public ContributionStatus getStatus() {
+    return ContributionStatus.from(status);
+  }
+
+  /**
+   * Sets the status of the effective validation of the contribution.
+   * @param status the status of the validation.
+   */
+  public void setStatus(final ContributionStatus status) {
+    this.status = status.name();
+  }
 
   /**
    * Gets the date of the validation of the contribution.
@@ -127,8 +167,8 @@ public class ContributionValidation implements Serializable {
 
   @Override
   public String toString() {
-    return "ContributionValidation{" + "validationDate=" + validationDate + ", validationComment="
-        + validationComment + ", validationBy=" + validationBy + '}';
+    return "ContributionValidation{status=" + status + ", validationDate=" + validationDate +
+        ", validationComment=" + validationComment + ", validationBy=" + validationBy + '}';
   }
 
   /**
@@ -141,10 +181,13 @@ public class ContributionValidation implements Serializable {
   /**
    * Constructs a contribution validation that was done by the specified validator at the given
    * date.
+   * @param status the status of the validation.
    * @param validator the validator that emitted this validation.
    * @param validationDate the date at which this validation was done.
    */
-  public ContributionValidation(final UserDetail validator, final Date validationDate) {
+  public ContributionValidation(final ContributionStatus status, final UserDetail validator,
+      final Date validationDate) {
+    setStatus(status);
     this.validationBy = validator.getId();
     this.validator = validator;
     this.validationDate = validationDate;
@@ -153,13 +196,14 @@ public class ContributionValidation implements Serializable {
   /**
    * Constructs a contribution validation that was done by the specified validator at the given
    * date and with the specified comment.
+   * @param status the status of the validation.
    * @param validator the validator that emitted this validation.
    * @param validationDate the date at which this validation was done.
    * @param comment the comment about validation done by the validator.
    */
-  public ContributionValidation(final UserDetail validator, final Date validationDate,
-      String comment) {
-    this(validator, validationDate);
+  public ContributionValidation(final ContributionStatus status, final UserDetail validator,
+      final Date validationDate, String comment) {
+    this(status, validator, validationDate);
     this.validationComment = comment;
   }
 }
