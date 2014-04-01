@@ -29,10 +29,6 @@ public class Wysiwyg {
     String configFile = wysiwygSettings.getString("configFile",
         URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
-
-    if(isFileStorage()) {
-      builder.append("COUCOU LISTE DES FICHIERS \n");
-    }
     
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
     builder.append("width : '").append(getWidth()).append("',\n");
@@ -59,7 +55,11 @@ public class Wysiwyg {
       builder.append("contentsCss : '").append(standardCSS).append("'\n");
     }
 
-    builder.append("});");
+    builder.append("});\n");
+    
+    if(isFileStorage()) {
+      builder.append("COUCOU LISTE DES FICHIERS \n");
+    }
 
     return builder.toString();
   }
