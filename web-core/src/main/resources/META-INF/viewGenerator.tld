@@ -11,6 +11,30 @@
 
   <tag>
     <description>
+      Tag to print out the panel of management of the attachements for a given component instance
+      and for a given resource.
+    </description>
+    <name>attachmentPane</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.AttachmentPaneTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the resource that accepts the attachements.</description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The unique identifier of the component instance the resource belongs to.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
       Tag to print out the full name of the current user and to use with it the userzoom silverpeas
       plugin.
     </description>
