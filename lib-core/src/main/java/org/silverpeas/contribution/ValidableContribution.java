@@ -78,4 +78,11 @@ public interface ValidableContribution extends SilverpeasContent {
    * @see ContributionValidation
    */
   ContributionValidation getValidation();
+
+  /**
+   * Sets the contribution validation to this validable object.
+   * @param validation the validation that was performed for this validable object.
+   * @see ContributionValidation
+   */
+  void setValidation(final ContributionValidation validation);
 }
