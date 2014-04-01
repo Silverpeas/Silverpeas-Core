@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
 import com.silverpeas.util.EncodeHelper;
@@ -56,8 +55,10 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
       operationClasses += " " + classes.trim();
     }
 
+    String ref = (action.startsWith("angularjs") ? "href=\"\" ng-click=\"" + action.substring(
+        10) + "\"" : "href=\"" + action + "\"");
     operation.append("<li class=\"yuimenuitem\"><a title=\"\" class=\"").append(operationClasses)
-        .append("\" href=\"").append(action).append("\">").append(operationLabel)
+        .append("\"").append(ref).append(">").append(operationLabel)
         .append("</a></li>");
 
     getStack().add(operation.toString());
@@ -67,9 +68,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
   public void addOperationOfCreation(final String icon, final String label, final String action,
       final String classes) {
     addOperation(icon, label, action, classes);
-    getCreationItems().add("<a href=\"" + EncodeHelper.javaStringToJsString(action) +
-        "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon +
-        "\" alt=\"\"/>" + EncodeHelper.javaStringToJsString(label) + "</span></a>");
+    getCreationItems().add("<a href=\"" + EncodeHelper.javaStringToJsString(action)
+        + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon + "\" alt=\"\"/>"
+        + EncodeHelper.javaStringToJsString(label) + "</span></a>");
   }
 
   @Override
@@ -91,7 +92,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     result.append("<div align=\"right\"><span id=\"menutoggle\">").append(alt).append(
         "<img src=\"").append(getIconsPath()).append("/ptr.gif\" alt=\"").append(alt).append(
-        "\"/></span></div>");
+            "\"/></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");
     result.append("<div class=\"bd\">");
@@ -128,7 +129,8 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
      * the page representing the Menu; the second is an object literal of configuration properties.
      */
     result
-        .append("oMenu = new YAHOO.widget.Menu(\"menuwithgroups\", { position: \"dynamic\", iframe: true, context: [\"menutoggle\", \"tr\", \"br\"] });");
+        .append(
+            "oMenu = new YAHOO.widget.Menu(\"menuwithgroups\", { position: \"dynamic\", iframe: true, context: [\"menutoggle\", \"tr\", \"br\"] });");
 
     /*
      * Call the "render" method with no arguments since the markup for this Menu instance is already
@@ -140,14 +142,15 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append("oMenu.subscribe(\"show\", oMenu.focus);");
 
     result
-        .append("YAHOO.util.Event.addListener(\"menutoggle\", \"mouseover\", oMenu.show, null, oMenu);");
-    
+        .append(
+            "YAHOO.util.Event.addListener(\"menutoggle\", \"mouseover\", oMenu.show, null, oMenu);");
+
     if (highlightCreationItems()) {
       result.append("if ($('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
           .append("').length > 0) {");
       if (!getCreationItems().isEmpty()) {
         result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
-        .append("').css({'display':'block'});");
+            .append("').css({'display':'block'});");
         for (String item : getCreationItems()) {
           result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
               .append("').append('").append(item).append("');");

@@ -26,6 +26,8 @@ package org.silverpeas.contribution.model;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
@@ -33,6 +35,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import java.util.Date;
 
 /**
@@ -41,7 +44,12 @@ import java.util.Date;
  * @author Yohann Chastagnier
  */
 @Embeddable
-public class ContributionValidation {
+public class ContributionValidation implements Serializable {
+
+  /**
+   * It represents none contribution validation.
+   */
+  public static final ContributionValidation NONE_VALIDATION = null;
 
   @Column(name = "validationDate")
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -117,7 +125,39 @@ public class ContributionValidation {
 
   @Override
   public String toString() {
-    return "ContributionValidation{" + "validationDate=" + validationDate + ", validationComment=" +
-        validationComment + ", validationBy=" + validationBy + '}';
+    return "ContributionValidation{" + "validationDate=" + validationDate + ", validationComment="
+        + validationComment + ", validationBy=" + validationBy + '}';
+  }
+
+  /**
+   * Constructs an empty contribution validation.
+   */
+  public ContributionValidation() {
+
+  }
+
+  /**
+   * Constructs a contribution validation that was done by the specified validator at the given
+   * date.
+   * @param validator the validator that emitted this validation.
+   * @param validationDate the date at which this validation was done.
+   */
+  public ContributionValidation(final UserDetail validator, final Date validationDate) {
+    this.validationBy = validator.getId();
+    this.validator = validator;
+    this.validationDate = validationDate;
+  }
+
+  /**
+   * Constructs a contribution validation that was done by the specified validator at the given
+   * date and with the specified comment.
+   * @param validator the validator that emitted this validation.
+   * @param validationDate the date at which this validation was done.
+   * @param comment the comment about validation done by the validator.
+   */
+  public ContributionValidation(final UserDetail validator, final Date validationDate,
+      String comment) {
+    this(validator, validationDate);
+    this.validationComment = comment;
   }
 }
