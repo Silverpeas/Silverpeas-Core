@@ -21,23 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.contribution;
+package org.silverpeas.persistence;
 
-import com.silverpeas.SilverpeasContent;
-import org.silverpeas.contribution.model.ContributionValidation;
+import javax.inject.Inject;
 
 /**
- * A validable contribution is an object that represents a contribution which can be validated.
- * This interface defines all methods that must be implemented in order to obtain differents
- * contribution types that can be handled by a same mechanism.
- * @author: Yohann Chastagnier
+ * A factory of transaction instances.
+ * <p/>
+ * @author mmoquillon
  */
-public interface ValidableContribution extends SilverpeasContent {
+public class TransactionFactory {
 
-  /**
-   * Gets the contribution validation instance.
-   * @return a contribution validation object.
-   * @see ContributionValidation
-   */
-  ContributionValidation getValidation();
+  @Inject
+  private Transaction transaction;
+
+  private static final TransactionFactory instance = new TransactionFactory();
+
+  public static TransactionFactory getFactory() {
+    return instance;
+  }
+
+  public Transaction getTransaction() {
+    return transaction;
+  }
 }

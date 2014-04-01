@@ -24,14 +24,15 @@
 package org.silverpeas.validation.web;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.Date;
 
 /**
  * It represents the state of a contribution validation as transmitted within the body of
@@ -44,12 +45,38 @@ public class ContributionValidationEntity {
 
   private final ContributionValidation validation;
 
-  public static final ContributionValidationEntity fromContributionValidation(
+  public static ContributionValidationEntity fromContributionValidation(
       final ContributionValidation validation) {
-    if (validation == ContributionValidation.NONE_VALIDATION) {
-      return null;
-    }
     return new ContributionValidationEntity(validation);
+  }
+
+  @XmlElement
+  public ContributionStatus getStatus() {
+    return validation.getStatus();
+  }
+
+  protected void setStatus(ContributionStatus status) {
+    validation.setStatus(status);
+  }
+
+  @XmlTransient
+  public boolean isInDraft() {
+    return getStatus().isInDraft();
+  }
+
+  @XmlTransient
+  public boolean isRefused() {
+    return getStatus().isRefused();
+  }
+
+  @XmlTransient
+  public boolean isPendingValidation() {
+    return getStatus().isPendingValidation();
+  }
+
+  @XmlTransient
+  public boolean isValidated() {
+    return getStatus().isValidated();
   }
 
   @XmlElement
@@ -72,6 +99,9 @@ public class ContributionValidationEntity {
 
   @XmlElement
   public String getValidatorId() {
+    if (validation.getValidator() == null) {
+      return null;
+    }
     return validation.getValidator().getId();
   }
 
@@ -91,4 +121,9 @@ public class ContributionValidationEntity {
     this.validation = validation;
   }
 
+  @Override
+  public String toString() {
+    return "ContributionValidationEntity{status=" + getStatus() + ", date=" + getDate() +
+        ", comment=" + getComment() + ", validatorId=" + getValidatorId() + '}';
+  }
 }
