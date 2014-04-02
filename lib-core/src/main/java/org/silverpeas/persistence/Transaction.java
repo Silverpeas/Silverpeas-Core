@@ -24,6 +24,7 @@
 package org.silverpeas.persistence;
 
 import com.silverpeas.annotation.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -39,15 +40,15 @@ public class Transaction {
   }
 
   /**
-   * Gets a new instance of indicators.
+   * The given process is executed in a transaction : support a current transaction,
+   * create a new one if none exists.
+   * Analogous to EJB transaction attribute of the same name.
+   * @param process
+   * @param <RETURN_VALUE>
    * @return
    */
-  public Indicators newIndicators() {
-    return new Indicators();
-  }
-
   @Transactional
-  public <RETURN_VALUE> RETURN_VALUE performRequired(final Process<RETURN_VALUE> process) {
+  public <RETURN_VALUE> RETURN_VALUE perform(final Process<RETURN_VALUE> process) {
     return process.execute();
   }
 
@@ -57,27 +58,5 @@ public class Transaction {
    */
   public interface Process<RETURN_VALUE> {
     RETURN_VALUE execute();
-  }
-
-  /**
-   * Class that permits to manage some indicators.
-   */
-  public class Indicators {
-    boolean isSavePerformed = false;
-
-    /**
-     * Indicates a save operation has been explicitly performed.
-     * @return
-     */
-    public boolean isSavePerformed() {
-      return isSavePerformed;
-    }
-
-    /**
-     * Sets at true the indicator that indicates a save operation has been explicitly performed.
-     */
-    public void savePerformed() {
-      this.isSavePerformed = true;
-    }
   }
 }
