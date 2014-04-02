@@ -202,4 +202,52 @@
       &lt;c:out value="${silfn:formatStringDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
     </example>
   </function>
+  <function>
+    <description>Function that return the URL of the application.</description>
+    <name>applicationURL</name>
+    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-signature>
+      java.lang.String getApplicationURL()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the images attached to an object in an application.</description>
+    <name>attachmentImages</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.lang.String[][] getImages(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the list of components kmelia (object com.stratelia.webactiv.beans.admin.ComponentInstLight) dedicated to file storage.</description>
+    <name>componentsFileStorage</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getStorageFile()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the list of components gallery (object com.stratelia.webactiv.beans.admin.ComponentInstLight) dedicated to image storage.</description>
+    <name>componentsImageStorage</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getGalleries()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if the dynamic value functionality in wysiwyg is active.</description>
+    <name>isDynamicValueActivate</name>
+    <function-class>com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-signature>
+      boolean isActivate()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the html code of the list of dynamic value in wysiwyg.</description>
+    <name>buildHtmlListDynamicValue</name>
+    <function-class>com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-signature>
+      java.lang.String buildHTMLSelect(java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
 </taglib>

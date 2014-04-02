@@ -16,7 +16,6 @@ public class Wysiwyg {
   private String imageBrowserURL;
   private String serverURL;
   private String css;
-  private boolean fileStorage = false;
 
   ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
 
@@ -56,10 +55,6 @@ public class Wysiwyg {
     }
 
     builder.append("});\n");
-    
-    if(isFileStorage()) {
-      builder.append("COUCOU LISTE DES FICHIERS \n");
-    }
 
     return builder.toString();
   }
@@ -131,13 +126,4 @@ public class Wysiwyg {
   public void setCustomCSS(String css) {
     this.css = css;
   }
-
-  public boolean isFileStorage() {
-    return fileStorage;
-  }
-
-  public void setFileStorage(boolean fileStorage) {
-    this.fileStorage = fileStorage;
-  }
-
 }

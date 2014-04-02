@@ -98,6 +98,7 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static String JAVASCRIPT_CKEDITOR;
+  private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -260,7 +261,8 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
-    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));    
+    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(wysiwygPath + SILVERPEAS_WYSIWYG_TOOLBAR));
     return xhtml;
   }
 

@@ -26,7 +26,6 @@ public class WysiwygTag extends TagSupport {
   private String componentName;
   private String browseInfo;
   private String objectId;
-  private boolean fileStorage = false;
   
   public String getHeight() {
     return height;
@@ -115,22 +114,6 @@ public class WysiwygTag extends TagSupport {
   public void setObjectId(String objectId) {
     this.objectId = objectId;
   }
-  
-  /**
-   * Is display list of reusable files ?
-   * @return true if the list of reusable files is displayed. false otherwise.
-   */
-  public boolean isFileStorage() {
-    return fileStorage;
-  }
-
-  /**
-   * Sets the display of reusable files mode.
-   * @param fileStorage true or false. If true the list of reusable files is displayed.
-   */
-  public void setFileStorage(boolean fileStorage) {
-    this.fileStorage = fileStorage;
-  }
 
   @Override
   public int doEndTag() throws JspException {
@@ -168,7 +151,6 @@ public class WysiwygTag extends TagSupport {
     if (settings != null) {
       wysiwyg.setCustomCSS(settings.getString("StyleSheet"));
     }
-    wysiwyg.setFileStorage(isFileStorage());
     
     try {     
       pageContext.getOut().println(wysiwyg.print());

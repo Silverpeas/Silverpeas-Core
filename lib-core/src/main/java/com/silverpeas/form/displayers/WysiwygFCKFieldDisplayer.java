@@ -179,7 +179,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
-        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName));
+        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName, fieldName));
         out.println("</td></tr>");
       }
 
@@ -195,7 +195,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         showFileStorages = StringUtil.getBooleanValue(parameters.get("fileStorages"));
       }
       if (showFileStorages) {
-        fileStorage = WysiwygController.getStorageFile(pageContext.getUserId());
+        fileStorage = WysiwygController.getStorageFile();
         if (!fileStorage.isEmpty()) {
           out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
           StringBuilder stringBuilder = new StringBuilder();

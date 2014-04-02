@@ -122,22 +122,19 @@ public class WysiwygManager {
    *
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
-   * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
-   * logical name of the file.
+   * @return List<SimpleDocument>
    */
-  public String[][] getImages(String id, String componentId) {
+  public List<SimpleDocument> getImages(String id, String componentId) {
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKeyAndType(new ForeignPK(id, componentId), DocumentType.image, null);
-    int nbImages = attachments.size();
-    String[][] imagesList = new String[nbImages][2];
-    for (int i = 0; i < nbImages; i++) {
-      SimpleDocument attD = attachments.get(i);
-      imagesList[i][0] = attD.getAttachmentURL();
-      imagesList[i][1] = attD.getFilename();
-      SilverTrace.info("wysiwyg", "WysiwygController.getImages()",
-          "root.MSG_GEN_PARAM_VALUE", imagesList[i][0] + "] [" + imagesList[i][1]);
+    Iterator<SimpleDocument> it = attachments.iterator();
+    while(it.hasNext()) {
+      SimpleDocument document = it.next();
+      if (! document.isContentImage()) {
+        it.remove();
+      }
     }
-    return imagesList;
+    return attachments;
   }
 
   public String getWebsiteRepository() {
@@ -997,11 +994,9 @@ public class WysiwygManager {
   /**
    * Gets the components dedicated to file storage
    *
-   * @param userId the user identifier is used to retrieve only the authorized components for the
-   * user
    * @return a components list
    */
-  public List<ComponentInstLight> getStorageFile(String userId) {
+  public static List<ComponentInstLight> getStorageFile() {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     OrganisationController controller = OrganisationControllerFactory.getOrganisationController();

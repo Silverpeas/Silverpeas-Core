@@ -401,7 +401,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
       <% } %>
       <div class="container-wysiwyg wysiwyg-fileStorage">
 
-		<% List fileStorage = WysiwygController.getStorageFile(userId);
+		<% List fileStorage = WysiwygController.getStorageFile();
  		   request.setAttribute("fileStorage",fileStorage);
 		%>
 		<c:if test="<%=!fileStorage.isEmpty()%>">
@@ -434,7 +434,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 				<%-- code adding for dynamic value functionnality --%>
 				<%
 					if(DynamicValueReplacement.isActivate()){
-					  out.println(DynamicValueReplacement.buildHTMLSelect(language,"default"));
+					  out.println(DynamicValueReplacement.buildHTMLSelect(language,"default", "default"));
 					}
 				%>
 				<%

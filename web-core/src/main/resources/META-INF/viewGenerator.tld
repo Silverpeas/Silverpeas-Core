@@ -1497,13 +1497,6 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
-    <attribute>
-      <description>Is display list of reusable files ? By default, if not set, the lists are not displayed</description>
-      <name>fileStorage</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Boolean</type>
-    </attribute>
   </tag>
   <tag>
     <description>Tag that displays the available languages.</description>
