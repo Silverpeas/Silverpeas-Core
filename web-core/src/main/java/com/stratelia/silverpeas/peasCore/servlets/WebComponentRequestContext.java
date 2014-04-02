@@ -178,6 +178,9 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   public SilverpeasRole getGreaterUserRole() {
     if (greaterUserRole == null) {
       greaterUserRole = SilverpeasRole.getGreaterFrom(getUserRoles());
+      if (greaterUserRole == null) {
+        greaterUserRole = SilverpeasRole.reader;
+      }
     }
     return greaterUserRole;
   }
