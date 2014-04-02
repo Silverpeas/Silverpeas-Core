@@ -89,7 +89,7 @@ public class TransactionTest extends RepositoryBasedTest {
     person.setFirstName("UnknownFirstName");
 
     Transaction transaction = Transaction.getTransaction();
-    transaction.performRequired(new Transaction.Process<Void>() {
+    transaction.perform(new Transaction.Process<Void>() {
       @Override
       public Void execute() {
         jpaEntityServiceTest.save(createOperationContext("26"), person);
@@ -125,7 +125,7 @@ public class TransactionTest extends RepositoryBasedTest {
     boolean exceptionThrown = false;
     try {
       Transaction transaction = Transaction.getTransaction();
-      transaction.performRequired(new Transaction.Process<Void>() {
+      transaction.perform(new Transaction.Process<Void>() {
         @Override
         public Void execute() {
           jpaEntityServiceTest.save(createOperationContext("26"), person);

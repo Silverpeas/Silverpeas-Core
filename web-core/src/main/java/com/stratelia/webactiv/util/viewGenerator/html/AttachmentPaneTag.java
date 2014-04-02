@@ -28,24 +28,25 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.text.MessageFormat;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.text.MessageFormat;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * A tag to render the pane of management of the attachments.
  * @author mmoquillon
  */
 public class AttachmentPaneTag extends TagSupport {
+  private static final long serialVersionUID = -7120227728777549004L;
 
   private static final String PANE_URI = "/attachment/jsp/displayAttachedFiles.jsp?Id={0}"
       + "&Profile={1}&ComponentId={2}&Context=attachment&addFileMenu=true";
   private String resourceId;
   private String componentId;
+  private boolean readOnly = false;
 
   @Override
   public int doEndTag() throws JspException {
@@ -68,18 +69,24 @@ public class AttachmentPaneTag extends TagSupport {
     this.componentId = componentId;
   }
 
+  public void setReadOnly(final boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
   private String getResourceId() {
     return this.resourceId;
   }
 
   private String getUserRole() {
-    String userId = getCurrentUserIdInSession();
-    String role = "user";
-    if (StringUtil.isDefined(userId)) {
-      String[] roles = OrganisationControllerFactory.getOrganisationController().getUserProfiles(
-          userId, getComponentId());
-      if (roles.length > 0) {
-        role = SilverpeasRole.getGreaterFrom(SilverpeasRole.from(roles)).getName();
+    String role = SilverpeasRole.user.getName();
+    if (!isReadOnly()) {
+      String userId = getCurrentUserIdInSession();
+      if (StringUtil.isDefined(userId)) {
+        String[] roles = OrganisationControllerFactory.getOrganisationController()
+            .getUserProfiles(userId, getComponentId());
+        if (roles.length > 0) {
+          role = SilverpeasRole.getGreaterFrom(SilverpeasRole.from(roles)).getName();
+        }
       }
     }
     return role;
@@ -96,5 +103,9 @@ public class AttachmentPaneTag extends TagSupport {
 
   private String getComponentId() {
     return this.componentId;
+  }
+
+  private boolean isReadOnly() {
+    return readOnly;
   }
 }

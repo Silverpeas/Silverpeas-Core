@@ -49,8 +49,6 @@ public abstract class RepositoryBasedTest {
 
   private DataSource dataSource;
 
-  private boolean dbUtilInstanceTestInitialized = false;
-
   @Before
   public void setUp() throws Exception {
 
