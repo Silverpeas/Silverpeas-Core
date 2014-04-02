@@ -50,6 +50,7 @@ public class AttachmentPaneTag extends TagSupport {
   @Override
   public int doEndTag() throws JspException {
     try {
+      pageContext.getOut().flush();
       String uri = MessageFormat.format(PANE_URI, getResourceId(), getUserRole(), getComponentId());
       pageContext.getServletContext().getRequestDispatcher(uri).include(pageContext.getRequest(),
           pageContext.getResponse());
