@@ -71,10 +71,9 @@ public class WysiwygController {
    * Turn over all the images attached according to the parameters id, componentId.
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
-   * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
-   * logical name of the file.
+   * @return List<SimpleDocument>
    */
-  public static String[][] getImages(String id, String componentId) {
+  public static List<SimpleDocument> getImages(String id, String componentId) {
     return getInstance().getManager().getImages(id, componentId);
   }
 
@@ -344,12 +343,11 @@ public class WysiwygController {
 
   /**
    * Gets the components dedicated to file storage
-   * @param userId the user identifier is used to retrieve only the authorized components for the
-   * user
+   *
    * @return a components list
    */
-  public static List<ComponentInstLight> getStorageFile(String userId) {
-    return getInstance().getManager().getStorageFile(userId);
+  public static List<ComponentInstLight> getStorageFile() {
+    return getInstance().getManager().getStorageFile();
   }
 
   /**
