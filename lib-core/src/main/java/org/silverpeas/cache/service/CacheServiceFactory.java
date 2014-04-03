@@ -47,8 +47,8 @@ public class CacheServiceFactory {
     requestCacheService = new ThreadCacheService();
 
     // Common cache
-    int nbMaxElements =
-        GeneralPropertiesManager.getInteger("application.cache.common.nbMaxElements", 0);
+    int nbMaxElements = GeneralPropertiesManager.
+        getInteger("application.cache.common.nbMaxElements", 0);
     if (nbMaxElements < 0) {
       nbMaxElements = 0;
     }

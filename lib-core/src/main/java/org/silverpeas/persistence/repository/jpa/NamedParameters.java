@@ -84,14 +84,12 @@ public class NamedParameters {
   @SuppressWarnings("unchecked")
   public NamedParameters add(final String name, final Object value,
       final TemporalType temporalType) {
-    if (value instanceof Object[] && ((Object[]) value)[0] instanceof Date &&
-        temporalType != null) {
+    if (value instanceof Object[] && ((Object[]) value)[0] instanceof Date && temporalType != null) {
       namedParameters.put(name,
           new DateCollectionNamedParameter(name, CollectionUtil.asSet((Date[]) value),
               temporalType));
-    } else if (value instanceof Collection &&
-        ((Collection) value).iterator().next() instanceof Date &&
-        temporalType != null) {
+    } else if (value instanceof Collection && ((Collection) value).iterator().next() instanceof Date
+        && temporalType != null) {
       namedParameters.put(name,
           new DateCollectionNamedParameter(name, new HashSet<Date>((Collection) value),
               temporalType)
@@ -101,8 +99,7 @@ public class NamedParameters {
     } else if (value instanceof Object[] && ((Object[]) value)[0] instanceof Enum) {
       namedParameters
           .put(name, new EnumCollectionNamedParameter(name, CollectionUtil.asSet((Enum[]) value)));
-    } else if (value instanceof Collection &&
-        ((Collection) value).iterator().next() instanceof Enum) {
+    } else if (value instanceof Collection && ((Collection) value).iterator().next() instanceof Enum) {
       namedParameters
           .put(name, new EnumCollectionNamedParameter(name, new HashSet<Enum>((Collection) value)));
     } else if (value instanceof Enum) {
@@ -116,8 +113,9 @@ public class NamedParameters {
 
   /**
    * Applies the named parameters to the given query.
-   * @param query
-   * @return
+   * @param <E> the type of the JPQL query.
+   * @param query the query on which the parameters have to be applied.
+   * @return the JPQL query enriched with the parameters.
    */
   public <E extends Query> E applyTo(final E query) {
     for (final NamedParameter<?, ?> namedParameter : namedParameters.values()) {

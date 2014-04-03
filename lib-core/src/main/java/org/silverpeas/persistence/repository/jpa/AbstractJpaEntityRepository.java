@@ -25,6 +25,7 @@ package org.silverpeas.persistence.repository.jpa;
 
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import org.hibernate.ejb.QueryImpl;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
@@ -294,9 +295,9 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
   }
 
   /**
-   * Gets an entity from a jpql query.
-   * @param jpqlQuery
-   * @param parameters
+   * Gets an entity from a jpql query string.
+   * @param jpqlQuery the JPQL query in string.
+   * @param parameters the parameters to apply to the query.
    * @return the required entity if exists, null otherwise
    * @throws IllegalArgumentException if it exists more than one entity from the query result.
    */
@@ -305,10 +306,12 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
   }
 
   /**
-   * Gets an entity from a jpql query.
+   * Gets an entity from a jpql query string.
    * If the result
-   * @param jpqlQuery
-   * @param parameters
+   * @param <AN_ENTITY> the type of the returned entities.
+   * @param jpqlQuery the JPQL query in string.
+   * @param parameters the parameters to apply to the query.
+   * @param returnEntityType the class of the returned entities.
    * @return the required entity if exists, null otherwise
    * @throws IllegalArgumentException if it exists more than one entity from the query result.
    */
@@ -319,20 +322,39 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
   }
 
   /**
-   * Lists entities from a jpql query.
-   * @param jpqlQuery
-   * @param parameters
-   * @return
+   * Lists entities from a jpql query string.
+   * @param jpqlQuery the JPQL query in string.
+   * @param parameters the parameters to apply to the query.
+   * @return a list of entities matching the query and the parameters
    */
   protected List<ENTITY> listFromJpqlString(String jpqlQuery, NamedParameters parameters) {
     return listFromJpqlString(jpqlQuery, parameters, getEntityClass());
   }
 
   /**
-   * Lists entities from a jpql query.
-   * @param jpqlQuery
-   * @param parameters
-   * @return
+   * Lists entities from a jpql query string and once applying the specified pagination.
+   * @param jpqlQuery the JPQL query in string.
+   * @param parameters the parameters to apply to the query.
+   * @param pagination the pagination to apply on the results.
+   * @return a list of entities matching the query and the parameters
+   */
+  protected List<ENTITY> listFromJpqlString(String jpqlQuery, NamedParameters parameters,
+      PaginationPage pagination) {
+    TypedQuery<ENTITY> query = getEntityManager().createQuery(jpqlQuery, getEntityClass());
+    if (pagination != null) {
+      query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
+      query.setMaxResults(pagination.getPageSize());
+    }
+    return listFromQuery(query, parameters);
+  }
+
+  /**
+   * Lists entities from a JPQL query string.
+   * @param <AN_ENTITY> the type of the returned entities.
+   * @param jpqlQuery the JPQL query in string.
+   * @param parameters the parameters to apply to the query.
+   * @param returnEntityType the class of the returned entities.
+   * @return a list of entities matching the query and the parameters
    */
   protected <AN_ENTITY> List<AN_ENTITY> listFromJpqlString(String jpqlQuery,
       NamedParameters parameters, Class<AN_ENTITY> returnEntityType) {
@@ -342,7 +364,7 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
   /**
    * Gets from an entity list result the unique entity expected.
    * @param entities entity list result from a query.
-   * @param <AN_ENTITY>
+   * @param <AN_ENTITY> the type of the returned entities.
    * @return the unique entity result.
    * @throws IllegalArgumentException if it exists more than one entity in the specified entity
    * result list.
@@ -366,9 +388,9 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
    * - last update date (new Timestamp((new Date()).getTime()))
    * - version (entity.version = (entity.version + 1))
    * Not to handle the above technical data could bring to a unsustainable entity state ...
-   * @param jpqlQuery
-   * @param parameters
-   * @return
+   * @param jpqlQuery the query string
+   * @param parameters the parameters to apply to the query.
+   * @return the number of updated entities.
    */
   protected long updateFromJpqlQuery(String jpqlQuery, NamedParameters parameters) {
     return updateFromQuery(getEntityManager().createQuery(jpqlQuery), parameters);
@@ -376,9 +398,9 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
 
   /**
    * Deletes entities from a jpql query.
-   * @param jpqlQuery
-   * @param parameters
-   * @return
+   * @param jpqlQuery the query string.
+   * @param parameters the parameters to apply to the query.
+   * @return the number of deleted entities.
    */
   protected long deleteFromJpqlQuery(String jpqlQuery, NamedParameters parameters) {
     return deleteFromQuery(getEntityManager().createQuery(jpqlQuery), parameters);
@@ -386,8 +408,8 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
 
   /**
    * Gets an entity from a named query.
-   * @param namedQuery
-   * @param parameters
+   * @param namedQuery the name of the query.
+   * @param parameters the parameters to apply to the query.
    * @return the required entity if exists, null otherwise
    * @throws IllegalArgumentException if it exists more than one entity from the query result.
    */
@@ -397,8 +419,10 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
 
   /**
    * Gets an entity from a named query.
-   * @param namedQuery
-   * @param parameters
+   * @param <AN_ENTITY> the type of the returned entities.
+   * @param namedQuery the name of the query.
+   * @param parameters the parameters to apply to the query.
+   * @param returnEntityType the class of the returned entities.
    * @return the required entity if exists, null otherwise
    * @throws IllegalArgumentException if it exists more than one entity from the query result.
    */
@@ -410,9 +434,9 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
 
   /**
    * Lists entities from a named query.
-   * @param namedQuery
-   * @param parameters
-   * @return
+   * @param namedQuery the n ame of the query.
+   * @param parameters the parameters to apply to the query.
+   * @return the list of entities matching the query and the parameters.
    */
   protected List<ENTITY> listFromNamedQuery(String namedQuery, NamedParameters parameters) {
     return listFromNamedQuery(namedQuery, parameters, getEntityClass());
@@ -420,8 +444,10 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
 
   /**
    * Lists entities from a named query.
+   * @param <AN_ENTITY>
    * @param namedQuery
    * @param parameters
+   * @param returnEntityType
    * @return
    */
   protected <AN_ENTITY> List<AN_ENTITY> listFromNamedQuery(String namedQuery,
