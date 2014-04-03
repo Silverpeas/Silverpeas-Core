@@ -167,8 +167,8 @@ public class ContributionValidation implements Serializable {
 
   @Override
   public String toString() {
-    return "ContributionValidation{status=" + status + ", validationDate=" + validationDate +
-        ", validationComment=" + validationComment + ", validationBy=" + validationBy + '}';
+    return "ContributionValidation{status=" + status + ", validationDate=" + validationDate
+        + ", validationComment=" + validationComment + ", validationBy=" + validationBy + '}';
   }
 
   /**
