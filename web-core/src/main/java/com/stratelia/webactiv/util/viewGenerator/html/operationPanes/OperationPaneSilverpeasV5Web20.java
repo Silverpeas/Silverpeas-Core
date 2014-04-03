@@ -55,8 +55,15 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
       operationClasses += " " + classes.trim();
     }
 
-    String ref = (action.startsWith("angularjs") ? "href=\"\" ng-click=\"" + action.substring(
-        10) + "\"" : "href=\"" + action + "\"");
+    String ref = "href=\"" + action + "\"";
+    if (action.startsWith("angularjs:")) {
+      ref = action.substring(10);
+      if (ref.contains("{{") && ref.contains("}}")) {
+        ref = "ng-href=\"" + ref + "\"";
+      } else {
+        ref = "href=\"#\" ng-click=\"" + ref + "\"";
+      }
+    }
     operation.append("<li class=\"yuimenuitem\"><a title=\"\" class=\"").append(operationClasses)
         .append("\"").append(ref).append(">").append(operationLabel)
         .append("</a></li>");

@@ -58,6 +58,7 @@ public class JavascriptPluginInclusion {
   private static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
   private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
+  private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
@@ -109,10 +110,11 @@ public class JavascriptPluginInclusion {
   private static final String RATEIT_CSS = "rateit/rateit.css";
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
-  
+
   static {
-    ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
-    JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor")+"/ckeditor.js";
+    ResourceLocator wysiwygSettings = new ResourceLocator(
+        "org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+    JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor") + "/ckeditor.js";
   }
 
   /**
@@ -151,6 +153,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(angularjsPath + ANGULAR_SANITIZE_JS));
     xhtml.addElement(script(angularjsPath + SILVERPEAS_ANGULAR_JS));
     xhtml.addElement(script(angularjsPath + SILVERPEAS_ADAPTERS_ANGULAR_JS));
+    xhtml.addElement(script(angularjsDirectivesPath + SILVERPEAS_BUTTON_ANGULAR_JS));
     return xhtml;
   }
 
@@ -166,7 +169,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
     return xhtml;
   }
-  
+
   public static ElementContainer includeRating(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + RATEIT_CSS));
     xhtml.addElement(script(jqueryPath + RATEIT_JS));
