@@ -54,4 +54,10 @@ public class TestWebComponentSpecialInheritanceController
   @RedirectToInternalJsp("homepage.jsp")
   public void homeMethod(TestWebComponentRequestContext context) {
   }
+
+  @Override
+  protected String backUrlFromCallerKey(final TestWebComponentRequestContext context,
+      final String callerKey) {
+    return "callerKey" + "Performed";
+  }
 }

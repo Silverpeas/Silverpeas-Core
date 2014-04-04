@@ -359,6 +359,16 @@ public class WebComponentManager {
     webComponentRequestContext.beforeRequestProcessing();
     webComponentController.beforeRequestProcessing(webComponentRequestContext);
 
+    // Back URL management
+    String callerPage = webComponentRequestContext.getRequest().getParameter("from");
+    final String backUrl;
+    if (StringUtil.isDefined(callerPage)) {
+      backUrl = webComponentController.backUrlFromCallerKey(webComponentRequestContext, callerPage);
+    } else {
+      backUrl = webComponentRequestContext.getComponentUriBase() + "Main";
+    }
+    webComponentRequestContext.getRequest().setAttribute("backUrl", backUrl);
+
     // Retrieving the web component manager
     WebComponentManager webComponentManager =
         managedWebComponentRouters.get(webComponentController.getClass().getName());

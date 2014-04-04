@@ -74,4 +74,15 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
     context.getRequest().setAttribute("greaterUserRole", context.getGreaterUserRole());
   }
+
+  /**
+   * This method handles the translation from a caller identifier key to an back URL.
+   * The mechnism searches from the request parameters one parameter called "from".
+   * If it exists and filled, then this method is called (just before calls of the aimed Web
+   * Controller method and its invoe before and after methods).
+   * @param callerKey the key extracted from the request prameter called "from".
+   * @return the back url computed.
+   */
+  protected abstract String backUrlFromCallerKey(WEB_COMPONENT_REQUEST_CONTEXT context,
+      String callerKey);
 }

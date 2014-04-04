@@ -98,6 +98,19 @@ public class ContributionValidationEntity {
   }
 
   @XmlElement
+  public String getValidatorName() {
+    String validatorName = "";
+    if (validation.getValidator() != null) {
+      validatorName = validation.getValidator().getDisplayedName();
+    }
+    return validatorName;
+  }
+
+  protected void setValidatorName(String validatorName) {
+
+  }
+
+  @XmlElement
   public String getValidatorId() {
     if (validation.getValidator() == null) {
       return null;
@@ -105,7 +118,7 @@ public class ContributionValidationEntity {
     return validation.getValidator().getId();
   }
 
-  protected void setValidator(String validatorId) {
+  protected void setValidatorId(String validatorId) {
     validation.setValidator(UserDetail.getById(validatorId));
   }
 

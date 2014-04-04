@@ -62,4 +62,10 @@ public class TwoHomepagesController extends WebComponentController<TestWebCompon
   @RedirectToInternalJsp("/homepage.jsp")
   public void otherHome(TestWebComponentRequestContext context) {
   }
+
+  @Override
+  protected String backUrlFromCallerKey(final TestWebComponentRequestContext context,
+      final String callerKey) {
+    return "callerKey" + "Performed";
+  }
 }
