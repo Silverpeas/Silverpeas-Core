@@ -157,7 +157,7 @@ public class DocumentRepository {
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
       checkoutNode(originDocumentNode, document.getUpdatedBy());
     }
-    if (!document.getFullJcrPath().equals(targetDoc.getFullJcrPath())) {
+    if (!originDocumentNode.getPath().equals(targetDoc.getFullJcrPath())) {
       session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     }
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
@@ -192,7 +192,8 @@ public class DocumentRepository {
     targetDoc.setDocumentType(document.getDocumentType());
     targetDoc.setForeignId(destination.getId());
     targetDoc.computeNodeName();
-    session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
+    Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
+    session.getWorkspace().copy(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());

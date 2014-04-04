@@ -1076,6 +1076,43 @@ public class DocumentRepositoryTest {
   }
 
   /**
+   * Test of moveDocument method, of class DocumentRepository.
+   */
+  @Test
+  public void testMoveDocumentWithDocumentTypeChange() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      Date creationDate = attachment.getCreated();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      foreignId = "kmelia36";
+      assertThat(document.getDocumentType(), is(DocumentType.attachment));
+      document.setDocumentType(DocumentType.form);
+      SimpleDocumentPK result =
+          documentRepository.moveDocument(session, document, new ForeignPK("45", foreignId));
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), foreignId);
+      expResult.setOldSilverpeasId(document.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, not(sameInstance(document)));
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getDocumentType(), is(DocumentType.form));
+      checkEnglishSimpleDocument(doc);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
    * Test of copyDocument method, of class DocumentRepository.
    */
   @Test
@@ -1104,6 +1141,49 @@ public class DocumentRepositoryTest {
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
       assertThat(doc.getCreated(), is(creationDate));
+      document.setForeignId(foreignId);
+      document.setPK(result);
+      assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
+      checkEnglishSimpleDocument(doc);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of copyDocument method, of class DocumentRepository.
+   */
+  @Test
+  public void testCopyDocumentWithDocumentTypeChange() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      Date creationDate = attachment.getCreated();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      document.setContentType(MimeTypes.PDF_MIME_TYPE);
+      documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      foreignId = "node36";
+      assertThat(document.getDocumentType(), is(DocumentType.attachment));
+      document.setDocumentType(DocumentType.form);
+      SimpleDocumentPK result =
+          documentRepository.copyDocument(session, document, new ForeignPK(foreignId, instanceId));
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      expResult.setOldSilverpeasId(result.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      document = documentRepository.findDocumentById(session, document.getPk(), language);
+      SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, not(sameInstance(document)));
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getDocumentType(), is(DocumentType.form));
       document.setForeignId(foreignId);
       document.setPK(result);
       assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
