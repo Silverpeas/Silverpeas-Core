@@ -32,6 +32,7 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
+import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
@@ -68,6 +69,9 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.RatingPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -75,7 +79,7 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
  * This object contains the description of a publication
  */
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N> implements SilverContentInterface,
-    SilverpeasContent, Serializable, Cloneable {
+    SilverpeasContent, Rateable, Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
@@ -1235,5 +1239,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
 
   public int getExplicitRank() {
     return explicitRank;
+  }
+  
+  public Rating getRating(String userId) {
+    NotationBm notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
+    RatingPK pk = new RatingPK(getId(), getInstanceId(), "Publication", userId);
+    return notationBm.getRating(pk);
   }
 }

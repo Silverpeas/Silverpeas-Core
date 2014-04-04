@@ -115,6 +115,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case tkn:
           includeSecurityTokenizing(xhtml);
           break;
+        case rating:
+          includeRating(xhtml);
+          break;
         case lightslideshow:
           includeLightweightSlideshow(xhtml);
           break;
