@@ -99,6 +99,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
   private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
   private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
+  private static final String RATEIT_JS = "rateit/jquery.rateit.min.js";
+  private static final String RATEIT_CSS = "rateit/rateit.css";
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
   
@@ -147,6 +149,14 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePdc(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
+    return xhtml;
+  }
+  
+  public static ElementContainer includeRating(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryPath + RATEIT_CSS));
+    xhtml.addElement(script(jqueryPath + RATEIT_JS));
+    xhtml.addElement(script(angularjsDirectivesPath+"silverpeas-rating.js"));
+    xhtml.addElement(script(angularjsServicesPath+"silverpeas-rating.js"));
     return xhtml;
   }
   

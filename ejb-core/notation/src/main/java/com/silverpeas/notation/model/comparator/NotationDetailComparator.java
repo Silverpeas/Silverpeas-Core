@@ -26,15 +26,15 @@ package com.silverpeas.notation.model.comparator;
 
 import java.util.Comparator;
 
-import com.silverpeas.notation.model.NotationDetail;
+import org.silverpeas.rating.Rating;
 
-public class NotationDetailComparator implements Comparator<NotationDetail> {
+public class NotationDetailComparator implements Comparator<Rating> {
 
-  public int compare(NotationDetail o1, NotationDetail o2) {
-    int result = (new Float(o2.getGlobalNote())).compareTo(new Float(
-        o1.getGlobalNote()));
+  public int compare(Rating o1, Rating o2) {
+    int result = (new Float(o2.getOverallRating())).compareTo(new Float(
+        o1.getOverallRating()));
     if (result == 0) {
-      result = o2.getNotesCount() - o1.getNotesCount();
+      result = o2.getNumberOfReviews() - o1.getNumberOfReviews();
     }
     return result;
   }
