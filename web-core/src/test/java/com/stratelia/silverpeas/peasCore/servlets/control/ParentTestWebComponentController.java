@@ -42,4 +42,10 @@ public class ParentTestWebComponentController
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
   }
+
+  @Override
+  protected String backUrlFromCallerKey(final TestWebComponentRequestContext context,
+      final String callerKey) {
+    return "callerKey" + "Performed";
+  }
 }
