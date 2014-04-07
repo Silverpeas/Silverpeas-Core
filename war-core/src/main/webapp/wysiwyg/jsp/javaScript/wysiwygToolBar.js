@@ -22,14 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function getCKEditor(editorName) {
-	return CKEDITOR.instances[editorName];
-}
-
+var editorName;
 var storageFileWindow = window;
 var galleryWindow = window;
 
-function openStorageFilemanager(context, nodeType) {
+function setEditorName(theEditorName) {
+	editorName = theEditorName;
+}
+
+function getEditorName() {
+	return editorName;
+}
+
+function getCKEditor() {
+	var theEditorName = getEditorName();
+	return CKEDITOR.instances[theEditorName];
+}
+
+function openStorageFileManager(editorName, context, nodeType) {
+	setEditorName(editorName);
 	var index = document.getElementById("storageFile").selectedIndex;
 	var componentId = document.getElementById("storageFile").options[index].value;
 	if (index != 0) {
@@ -45,7 +56,12 @@ function openStorageFilemanager(context, nodeType) {
 	}
 }
 
+function insertAttachmentLink(url, img, label){
+	getCKEditor().insertHtml('<a href="'+url+'" target="_blank"><img src="'+img+'" width="20" border="0" align="top" alt=""/> '+label+'</a> ');
+}
+
 function choixImage(editorName) {
+	setEditorName(editorName);
 	var index = document.getElementById("images").selectedIndex;
 	var str = document.getElementById("images").options[index].value;
 	var title = document.getElementById("images").options[index].text;
@@ -53,16 +69,17 @@ function choixImage(editorName) {
 	if (index != 0 && str != null) {
 		var ext = title.substring(title.length - 4);
 	    if (ext.toLowerCase() == ".swf") {//du flash
-	    	getCKEditor(editorName).insertHtml('<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+str+'"></embed>');
+	    	getCKEditor().insertHtml('<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+str+'"></embed>');
 		} else {
-			getCKEditor(editorName).insertHtml('<img border="0" src="'+str+'" alt=""/>');
+			getCKEditor().insertHtml('<img border="0" src="'+str+'" alt=""/>');
 		}
 	}
 }
 
-function choixGallery(context, language) {
-	var index = document.getElementById("galleries").selectedIndex;
-	var componentId = document.getElementById("galleries").options[index].value;
+function openGalleryFileManager(editorName, context, language) {
+	setEditorName(editorName);
+	var index = document.getElementById("galleryFile").selectedIndex;
+	var componentId = document.getElementById("galleryFile").options[index].value;
 	if (index != 0) {
 		var url = context+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&amp;Language="+language;
 		var windowName = "galleryWindow";
@@ -76,10 +93,15 @@ function choixGallery(context, language) {
 	}
 }
 
+function choixImageInGallery(url) {
+	getCKEditor().insertHtml('<img border="0" src="'+url+'" alt=""/>');
+}
+
 function chooseDynamicValuesdefault(editorName) {
+	setEditorName(editorName);
 	var index = document.getElementByName("dynamicValues").selectedIndex;
 	var str = document.getElementByName("dynamicValues").options[index].value;
 	if (index != 0 && str != null){
-		getCKEditor(editorName).insertHtml('(%'+str+'%)');
+		getCKEditor().insertHtml('(%'+str+'%)');
 	}
 }
