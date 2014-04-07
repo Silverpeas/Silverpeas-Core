@@ -80,7 +80,7 @@ angular.module('silverpeas.directives').directive('silverpeasRating', ['Rating',
         if (!readonly || rating.notesCount > 0) {
           // display number of votes
           displayCounter(rating.notesCount);
-          
+
           // setting up and displaying rating plugin
           $rating.rateit({
             value : rating.globalRating,
