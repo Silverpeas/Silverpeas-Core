@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.util.PairObject;
 public class AlertUser {
   protected String m_hostSpaceName;
   protected String m_hostComponentId;
-  protected PairObject m_hostComponentName;
+  protected PairObject m_hostComponentLabel;
   protected NotificationMetaData m_notificationMetaData;
   protected SelectionUsersGroups extraParams;
 
@@ -42,7 +42,7 @@ public class AlertUser {
   public void resetAll() {
     m_hostSpaceName = "";
     m_hostComponentId = "";
-    m_hostComponentName = new PairObject("", "");
+    m_hostComponentLabel = new PairObject("", "");
     extraParams = null;
   }
 
@@ -62,6 +62,11 @@ public class AlertUser {
     return m_hostSpaceName;
   }
 
+  /**
+   * Sets the component instance id that permits to apply a filter on the users or groups that have
+   * right access to the component.
+   * @param hostComponentId
+   */
   public void setHostComponentId(String hostComponentId) {
     if (hostComponentId != null) {
       m_hostComponentId = hostComponentId;
@@ -74,16 +79,21 @@ public class AlertUser {
     return m_hostComponentId;
   }
 
-  public void setHostComponentName(PairObject hostComponentName) {
-    if (hostComponentName != null) {
-      m_hostComponentName = hostComponentName;
+  /**
+   * Sets the name of the component for the browsebar rendering. It is handled by a PairObject(component name, link_to_component).
+   * Only the first element is represented for now because of the systematic use of a POPUP.
+   * @param hostComponentLabel the component label
+   */
+  public void setHostComponentName(PairObject hostComponentLabel) {
+    if (hostComponentLabel != null) {
+      m_hostComponentLabel = hostComponentLabel;
     } else {
-      m_hostComponentName = new PairObject("", "");
+      m_hostComponentLabel = new PairObject("", "");
     }
   }
 
   public PairObject getHostComponentName() {
-    return m_hostComponentName;
+    return m_hostComponentLabel;
   }
 
   public void setNotificationMetaData(NotificationMetaData notificationMetaData) {
