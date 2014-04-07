@@ -103,6 +103,10 @@ public class ApplicationIndexerTest {
     ComponentInstLight mydb = mock(ComponentInstLight.class);
     when(mydb.getName()).thenReturn("MyDB");
     assertThat(instance.getPackage(mydb), is("mydb"));
+
+    ComponentInstLight suggestionBox = mock(ComponentInstLight.class);
+    when(suggestionBox.getName()).thenReturn("SuggestionBox");
+    assertThat(instance.getPackage(suggestionBox), is("suggestionbox"));
   }
   
   @Test
@@ -130,6 +134,10 @@ public class ApplicationIndexerTest {
     ComponentInstLight mydb = mock(ComponentInstLight.class);
     when(mydb.getName()).thenReturn("MyDB");
     assertThat(instance.getClassName(mydb), is("MyDB"));
+
+    ComponentInstLight suggestionBox = mock(ComponentInstLight.class);
+    when(suggestionBox.getName()).thenReturn("SuggestionBox");
+    assertThat(instance.getClassName(suggestionBox), is("SuggestionBox"));
   }
   
   

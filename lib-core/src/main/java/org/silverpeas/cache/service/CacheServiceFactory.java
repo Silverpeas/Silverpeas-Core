@@ -86,7 +86,7 @@ public class CacheServiceFactory {
 
   /**
    * Gets the cache of the application.
-   * @return an applicative cache ervice
+   * @return an applicative cache service
    */
   public static CacheService getApplicationCacheService() {
     return getInstance().cacheService;
