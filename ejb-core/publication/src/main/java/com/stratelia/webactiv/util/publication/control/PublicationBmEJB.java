@@ -40,6 +40,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.rating.RatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -50,8 +51,6 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.model.Notation;
-import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -65,7 +64,6 @@ import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -1651,7 +1649,7 @@ public class PublicationBmEJB implements PublicationBm {
     }
     // idem pour les notations
     if (useNotation) {
-      deleteNotation(pubPK);
+      deleteRating(pubPK);
     }
   }
   
@@ -1881,9 +1879,9 @@ public class PublicationBmEJB implements PublicationBm {
     createTagCloud(pubDetail);
   }
 
-  private void deleteNotation(PublicationPK pubPK) {
-    notationBm.deleteNotation(new NotationPK(pubPK.getId(), pubPK.getInstanceId(),
-        Notation.TYPE_PUBLICATION));
+  private void deleteRating(PublicationPK pubPK) {
+    notationBm.deleteRating(new RatingPK(pubPK.getId(), pubPK.getInstanceId(),
+        "Publication"));
   }
 
   /**
