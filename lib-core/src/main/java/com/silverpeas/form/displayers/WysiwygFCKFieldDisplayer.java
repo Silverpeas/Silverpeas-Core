@@ -200,7 +200,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
           StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
-              "\" name=\"componentId\" onchange=\"openStorageFilemanager").append(
+              "\" name=\"storageFile\" onchange=\"openStorageFileManager").append(
               FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
               "();this.selectedIndex=0\">");
           stringBuilder.append("<option value=\"\">").append(
@@ -228,7 +228,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           }
           StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
-              "\" name=\"componentId\" onchange=\"openGalleryFileManager").append(
+              "\" name=\"galleryFile\" onchange=\"openGalleryFileManager").append(
               fieldNameFunction).append("();this.selectedIndex=0\">");
           stringBuilder.append("<option value=\"\">").append(
               Util.getString("GML.galleries", contentLanguage)).append("</option>");
@@ -310,7 +310,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
       // storage file : javascript functions
       out.println("var storageFileWindow=window;");
-      out.println("function openStorageFilemanager" + fieldNameFunction + "(){");
+      out.println("function openStorageFileManager" + fieldNameFunction + "(){");
       out.println("index = document.getElementById(\"storageFile_" + fieldName
           + "\").selectedIndex;");
       out.println("var componentId = document.getElementById(\"storageFile_" + fieldName
