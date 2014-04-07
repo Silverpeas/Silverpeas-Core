@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
@@ -34,7 +35,6 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
 import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
@@ -299,5 +299,23 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Gets an alert user object in order to parameterized it before asking the user to select users
+   * or groups to be manually alerted.
+   * @return the alert user object instance.
+   */
+  public AlertUser getUserManualNotificationForParameterization() {
+    return controller.getAlertUser();
+  }
+
+  /**
+   * Gets the navigation to the centralized mechanism that permits to alert manually users and/or
+   * groups about a contribution.
+   * @return the navigation object to permform the asked navigation.
+   */
+  public Navigation redirectToNotifyManuallyUsers() {
+    return redirectTo(AlertUser.getAlertUserURL());
   }
 }
