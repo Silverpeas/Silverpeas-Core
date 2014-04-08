@@ -98,9 +98,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public SimpleDocumentEntity getDocument(final @PathParam("lang") String lang) {
     SimpleDocument attachment = getSimpleDocument(lang);
-    if (attachment == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
     URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(attachment.
         getLanguage()).build();
     return SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri);
@@ -270,9 +267,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         getNumberOfLanguages());
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       SimpleDocument attachment = getSimpleDocument(lang);
-      if (attachment == null) {
-        throw new WebApplicationException(Status.NOT_FOUND);
-      }
       if (lang.equals(attachment.getLanguage())) {
         URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(lang).build();
         result.add(SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri));
@@ -312,11 +306,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("content/{lang}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(@PathParam("lang") final String language) {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
-    if (document == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
+    SimpleDocument document = getSimpleDocument(language);
     StreamingOutput stream = new StreamingOutput() {
       @Override
       public void write(OutputStream output) throws WebApplicationException {
@@ -343,14 +333,30 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("lock")
   @Produces(MediaType.APPLICATION_JSON)
   public String lock() {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
-    if (document == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
+   getSimpleDocument(defaultLanguage);
     boolean result = AttachmentServiceFactory.getAttachmentService().lock(getSimpleDocumentId(),
         getUserDetail().getId(), I18NHelper.defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}}", result);
+  }
+  
+  /**
+   * @param document
+   * @return
+   */
+  private List<SimpleDocument> getListDocuments(SimpleDocument document) {
+    List<SimpleDocument> docs =
+        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(
+            new ForeignPK(document.getForeignId(), getComponentId()), document.getDocumentType(), defaultLanguage);
+    return docs;
+  }
+  
+  /**
+   * @param docs
+   * @return
+   */
+  private String reorderDocuments(List<SimpleDocument> docs) {
+    AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
+    return MessageFormat.format("'{'\"status\":{0}}", true);
   }
 
   /**
@@ -363,18 +369,12 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("moveUp")
   @Produces(MediaType.APPLICATION_JSON)
   public String moveSimpleDocumentUp() {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-        new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
-    if (document == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-    List<SimpleDocument> docs =
-        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
-            new ForeignPK(document.getForeignId(), getComponentId()), defaultLanguage);
+    SimpleDocument document = getSimpleDocument(defaultLanguage);
+    List<SimpleDocument> docs = getListDocuments(document); 
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position - 1);
-    AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
-    return MessageFormat.format("'{'\"status\":{0}}", true);
+    String message = reorderDocuments(docs);
+    return message;
   }
 
   /**
@@ -387,18 +387,12 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("moveDown")
   @Produces(MediaType.APPLICATION_JSON)
   public String moveSimpleDocumentDown() {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
-    if (document == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKey(new ForeignPK(document.getForeignId(), getComponentId()),
-            defaultLanguage);
+    SimpleDocument document = getSimpleDocument(defaultLanguage);
+    List<SimpleDocument> docs = getListDocuments(document); 
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position + 1);
-    AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
-    return MessageFormat.format("'{'\"status\":{0}}", true);
+    String message = reorderDocuments(docs);
+    return message;
   }
 
   /**
@@ -417,11 +411,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public String unlockDocument(@FormParam("force") final boolean force,
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
-    if (document == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
+    SimpleDocument document = getSimpleDocument(defaultLanguage);
     UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUserDetail().getId(),
         defaultLanguage, comment);
     if (force) {
@@ -452,11 +442,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public String switchDocumentVersionState(@FormParam("switch-version-comment") final String comment,
       @FormParam("switch-version") final String version) {
     boolean useMajor = "lastMajor".equalsIgnoreCase(version);
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
-    if (document == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
+    SimpleDocument document = getSimpleDocument(defaultLanguage);
     SimpleDocumentPK pk = new SimpleDocumentPK(getSimpleDocumentId());
     if (document.isVersioned() && useMajor) {
       pk = document.getLastPublicVersion().getPk();
@@ -488,8 +474,17 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         allowed, document.getOldSilverpeasId(), document.getId());
   }
 
-  SimpleDocument getSimpleDocument(String lang) {
-    return AttachmentServiceFactory.getAttachmentService().
+  /**
+   * Return the current document
+   * @param lang
+   * @return SimpleDocument
+   */
+  private SimpleDocument getSimpleDocument(String lang) {
+    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), lang);
+    if (attachment == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    return attachment;
   }
 }
