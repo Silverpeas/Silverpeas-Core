@@ -122,7 +122,7 @@ label.txtlibform {
 padding-right:0;
 }
 
-label {
+.field label {
 	width:180px;
 	float:left;
 }
@@ -173,4 +173,18 @@ input.inputHour{
 
 .forms .skinFieldset legend {
     padding-left: 10px;
+}
+
+
+
+/* form & CKeditor */
+.container-wysiwyg input,
+.container-wysiwyg select
+ {
+    width: auto;
+}
+
+.skinFieldset .champs .wysiwyg-fileStorage {
+	width:600px;
+	background-color:#FFF;
 }
