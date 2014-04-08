@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000-2013 Silverpeas
+ * Copyright (C) 2000-2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,40 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.beans.admin;
+package org.silverpeas.persistence.repository;
 
 /**
- * A page in a pagination of resources.
- * This bean is dedicated to be used with search criteria.
+ * A collection of parameters used to filter a query or used in a criterion.
+ * @author mmoquillon
  */
-public class PaginationPage {
-
-  private final int page;
-  private final int count;
+public interface Parameters {
 
   /**
-   * Constructs a new page in a pagination mechanism.
-   * @param pageNumber the number of the page.
-   * @param pageSize the size in items of the page.
+   * Adds a new parameter with the specified key and value.
+   * @param key an identifier of the parameter.
+   * @param value the value of the parameter.
+   * @return itself enriched with the new parameter.
    */
-  public PaginationPage(int pageNumber, int pageSize) {
-    this.page = pageNumber;
-    this.count = pageSize;
-  }
-
-  /**
-   * Gets this page number.
-   * @return the page number.
-   */
-  public int getPageNumber() {
-    return page;
-  }
-
-  /**
-   * Gets the size of this page.
-   * @return the count of items being in part of each page.
-   */
-  public int getPageSize() {
-    return count;
-  }
+  Parameters add(String key, Object value);
 }
