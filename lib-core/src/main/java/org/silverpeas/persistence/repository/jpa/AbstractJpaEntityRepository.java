@@ -25,12 +25,13 @@ package org.silverpeas.persistence.repository.jpa;
 
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
 import org.hibernate.ejb.QueryImpl;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.repository.EntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.util.PaginationList;
+import org.silverpeas.persistence.repository.QueryCriteria;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -332,23 +333,6 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
   }
 
   /**
-   * Lists entities from a jpql query string and once applying the specified pagination.
-   * @param jpqlQuery the JPQL query in string.
-   * @param parameters the parameters to apply to the query.
-   * @param pagination the pagination to apply on the results.
-   * @return a list of entities matching the query and the parameters
-   */
-  protected List<ENTITY> listFromJpqlString(String jpqlQuery, NamedParameters parameters,
-      PaginationPage pagination) {
-    TypedQuery<ENTITY> query = getEntityManager().createQuery(jpqlQuery, getEntityClass());
-    if (pagination != null) {
-      query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
-      query.setMaxResults(pagination.getPageSize());
-    }
-    return listFromQuery(query, parameters);
-  }
-
-  /**
    * Lists entities from a JPQL query string.
    * @param <AN_ENTITY> the type of the returned entities.
    * @param jpqlQuery the JPQL query in string.
@@ -359,6 +343,30 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
   protected <AN_ENTITY> List<AN_ENTITY> listFromJpqlString(String jpqlQuery,
       NamedParameters parameters, Class<AN_ENTITY> returnEntityType) {
     return listFromQuery(getEntityManager().createQuery(jpqlQuery, returnEntityType), parameters);
+  }
+
+  /**
+   * Lists entities from the specified criteria.
+   * @param criteria the criteria constraining the query and for which the entities to list have to
+   * satisfy.
+   * @return a list of entities matching specified criteria. If a pagination criterion is defined
+   * in the criteria, then the returned list is a {@link org.silverpeas.util.PaginationList}
+   * instance.
+   */
+  protected List<ENTITY> listByCriteria(final QueryCriteria criteria) {
+    String jpqlQuery = jpqlQueryFrom(criteria);
+    String jpqlCountQuery = "select count(*) " + jpqlQuery;
+    NamedParameters parameters = criteria.clause().parameters();
+    TypedQuery<ENTITY> query = getEntityManager().createQuery(jpqlQuery, getEntityClass());
+    int count = -1;
+    if (criteria.pagination().isDefined()) {
+      count = getFromJpqlString(jpqlCountQuery, parameters, Integer.class);
+      query.setFirstResult((criteria.pagination().getPageNumber() - 1) * criteria.pagination().
+          getItemCount());
+      query.setMaxResults(criteria.pagination().getItemCount());
+    }
+    List<ENTITY> listOfEntities = listFromQuery(query, parameters);
+    return (count >= 1 ? PaginationList.from(listOfEntities) : listOfEntities);
   }
 
   /**
@@ -572,5 +580,17 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
    */
   protected void setMaximumItemsInClause(final int maximumItemsInClause) {
     this.maximumItemsInClause = maximumItemsInClause;
+  }
+
+  private String jpqlQueryFrom(QueryCriteria criteria) {
+    String query = criteria.clause().text();
+    String queryInLowerCase = query.toLowerCase();
+    if (queryInLowerCase.startsWith("select")) {
+      query = query.substring(queryInLowerCase.indexOf("from"));
+    }
+    if (!queryInLowerCase.startsWith("from ")) {
+      query = "from " + getEntityClass().getSimpleName() + " where " + query;
+    }
+    return query;
   }
 }

@@ -24,6 +24,7 @@
 package org.silverpeas.persistence.repository.jpa;
 
 import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.persistence.repository.Parameters;
 
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -44,7 +45,7 @@ import java.util.Map;
  * <p/>
  * @author Yohann Chastagnier
  */
-public class NamedParameters {
+public class NamedParameters implements Parameters {
 
   private String lastParameterName;
   final Map<String, NamedParameter<?, ?>> namedParameters;
@@ -70,6 +71,7 @@ public class NamedParameters {
    * @param value
    * @return
    */
+  @Override
   public NamedParameters add(final String name, final Object value) {
     return add(name, value, null);
   }

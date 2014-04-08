@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -117,8 +117,8 @@ public class CommentDAOTest {
     UserDetail author = aUser();
     String message = RandomGenerator.getRandomString();
     Date creationDate = aDate();
-    Comment cmt =
-        new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate, null);
+    Comment cmt = new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate,
+        null);
     CommentPK result = commentDAO.saveComment(con, cmt);
     assertNotNull(result);
     assertEquals("kmelia18", result.getInstanceId());
@@ -285,7 +285,7 @@ public class CommentDAOTest {
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
 
-    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con);
+    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con, null);
     assertNotNull(result);
     assertEquals(6, result.size());
     assertEquals(2, result.get(0).getCommentCount());

@@ -281,6 +281,19 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   /**
+   * Gets information about the most commented publications of the specified type. The publication
+   * information are returned ordered down to the lesser comment publication.
+   *
+   * @param resourceType the type of the commented publication.
+   * @return an ordered list of information about the most commented publication. The list is sorted
+   * by their comments count in a descendent order.
+   */
+  @Override
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType) {
+    return getCommentDAO().getMostCommentedPublications(resourceType);
+  }
+
+  /**
    * Gets information about all the commented publications in Silverpeas. The publication
    * information are returned ordered down to the lesser comment publication.
    *
