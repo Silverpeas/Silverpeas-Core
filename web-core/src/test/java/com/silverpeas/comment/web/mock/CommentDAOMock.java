@@ -100,7 +100,7 @@ public class CommentDAOMock implements CommentDAO {
 
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublications(String resourceType,
-      List<WAPrimaryKey> pks) {
+      List<? extends WAPrimaryKey> pks) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -133,6 +133,11 @@ public class CommentDAOMock implements CommentDAO {
 
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublications(String resourceType) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public List<Comment> getLastComments(String instanceId, int count) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

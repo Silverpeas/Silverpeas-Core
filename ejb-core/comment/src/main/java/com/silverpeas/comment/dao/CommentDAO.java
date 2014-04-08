@@ -95,7 +95,7 @@ public interface CommentDAO {
    * number of comments, and so on).
    */
   List<CommentedPublicationInfo> getMostCommentedPublications(final String resourceType,
-      final List<WAPrimaryKey> pks);
+      final List<? extends WAPrimaryKey> pks);
 
   /**
    * Among all available commented publications of the specified type, gets the moste commented
@@ -139,5 +139,13 @@ public interface CommentDAO {
    * @param cmt the comment to update in the data source.
    */
   void updateComment(final Comment cmt);
+
+  /**
+   * Gets the last comments posted to the publications in the specified component instance.
+   * @param instanceId the unique identifier of the component instance.
+   * @param count the maximum number of comments to fetch. Lesser or equal to 0 means no limit.
+   * @return a list of the last comments.
+   */
+  public List<Comment> getLastComments(String instanceId, int count);
 
 }

@@ -276,7 +276,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    */
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType,
-      final List<WAPrimaryKey> pks) {
+      final List<? extends WAPrimaryKey> pks) {
     return getCommentDAO().getMostCommentedPublications(resourceType, pks);
   }
 
@@ -424,5 +424,10 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
+  }
+
+  @Override
+  public List<Comment> getLastComments(String resourceType, int count) {
+    return getCommentDAO().getLastComments(resourceType, count);
   }
 }

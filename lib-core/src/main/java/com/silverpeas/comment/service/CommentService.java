@@ -61,11 +61,13 @@ public interface CommentService extends SilverpeasComponentService<Comment> {
   List<Comment> getAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
   List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType,
-      List<WAPrimaryKey> pks);
+      List<? extends WAPrimaryKey> pks);
 
   List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType);
 
   List<CommentedPublicationInfo> getAllMostCommentedPublicationsInfo();
+
+  List<Comment> getLastComments(final String resourceType, int count);
 
   int getCommentsCountOnPublication(final String resourceType, WAPrimaryKey pk);
 
