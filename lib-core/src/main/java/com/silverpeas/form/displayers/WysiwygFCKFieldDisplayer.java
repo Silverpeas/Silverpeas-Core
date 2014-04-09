@@ -68,7 +68,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
  * TextFiel to a end user and can retrieve via HTTP any updated value.
- *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -89,20 +88,21 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   /**
    * Returns the name of the managed types.
-   *
    * @return the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[]{TextField.TYPE};
+    return new String[] { TextField.TYPE };
   }
 
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
-   * template. <LI>the field type is not a managed type. </UL>
-   *
+   * log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
+   * </UL>
    * @param out
    * @param template
    * @param PagesContext
@@ -139,8 +139,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL> <LI>the field type is not a managed type. </UL>
-   *
+   * <UL>
+   * <LI>the field type is not a managed type.
+   * </UL>
    * @param out
    * @param field
    * @param template
@@ -179,7 +180,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
-        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName, fieldName));
+        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName,
+            fieldName));
         out.println("</td></tr>");
       }
 
@@ -206,8 +208,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           stringBuilder.append("<option value=\"\">").append(
               resources.getString("storageFile.select.title")).append("</option>");
           for (ComponentInstLight component : fileStorage) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
-                component.getLabel(contentLanguage)).append("</option>");
+            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
+                .append(
+                    component.getLabel(contentLanguage)).append("</option>");
           }
           stringBuilder.append("</select>");
           out.println(stringBuilder.toString());
@@ -233,8 +236,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           stringBuilder.append("<option value=\"\">").append(
               Util.getString("GML.galleries", contentLanguage)).append("</option>");
           for (ComponentInstLight component : galleries) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
-                component.getLabel(contentLanguage)).append("</option>");
+            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
+                .append(
+                    component.getLabel(contentLanguage)).append("</option>");
           }
           stringBuilder.append("</select>");
           out.println(stringBuilder.toString());
@@ -275,10 +279,13 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       if (StringUtil.isDefined(basehref)) {
         builder.append("baseHref : '").append(basehref).append("',\n");
       }
-      builder.append("filebrowserImageBrowseUrl : '").append(Util.getPath()).append(
-          "/wysiwyg/jsp/uploadFile.jsp?ComponentId=").append(pageContext.getComponentId()).
-          append("&ObjectId=").append(pageContext.getObjectId()).append("&Context=").append(
-          fieldName).append("',\n");
+      String fileBrowserUrl =
+          Util.getPath() + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" +
+              pageContext.getComponentId() + "&ObjectId=" + pageContext.getObjectId() +
+              "&Context=" + fieldName;
+      builder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+      builder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+      builder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
       builder.append("toolbarStartupExpanded : ").append("false").append(",\n");
       builder.append("customConfig : '").append(configFile).append("',\n");
       builder.append("toolbar : '").append("XMLForm").append("',\n");
@@ -318,7 +325,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("if (index != 0){ ");
       out.println("url = \""
           + URLManager.getApplicationURL()
-          + "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
+          +
+          "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
           + fieldNameFunction + "\";");
       out.println("windowName = \"StorageFileWindow\";");
       out.println("width = \"750\";");
@@ -337,7 +345,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println(" focusManager.focus();");
       out.
           println(
-              "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
+          "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
       out.println("}");
 
       // Gallery files exists; javascript functions
@@ -368,7 +376,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
-   *
    * @param newValue
    * @param pageContext
    * @throw FormException if the field type is not a managed type.
@@ -386,9 +393,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       try {
         String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
 
-        String fileName
-            = setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
-            template.getFieldName(), newValue, contentLanguage);
+        String fileName =
+            setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
+                template.getFieldName(), newValue, contentLanguage);
 
         field.setValue(dbKey + fileName, pageContext.getLanguage());
       } catch (FormException e) {
@@ -538,7 +545,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           if (copy) {
             // copy file and change images path (instanceId and imageId) inside
             FileUtils.copyFile(srcFile, destFile);
-            changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(), oldAndNewFileIds);
+            changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(),
+                oldAndNewFileIds);
           } else {
             // move file and change images path (instanceId only) inside
             FileUtils.moveFile(srcFile, destFile);
@@ -555,7 +563,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
               if (copy) {
                 // copy file and change images path (instanceId and imageId) inside
                 FileUtils.copyFile(srcFile, destFile);
-                changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(), oldAndNewFileIds);
+                changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(),
+                    oldAndNewFileIds);
               } else {
                 // move file and change images path (instanceId only) inside
                 FileUtils.moveFile(srcFile, destFile);
@@ -570,7 +579,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   private void changeInstanceId(File file, String from, String to) throws IOException {
     String content = FileUtils.readFileToString(file, Charsets.UTF_8);
-    String changed = content.replaceAll("/"+from+"/", "/"+to+"/");
+    String changed = content.replaceAll("/" + from + "/", "/" + to + "/");
     FileUtils.writeStringToFile(file, changed, Charsets.UTF_8);
   }
 
@@ -676,7 +685,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private static String getPath(String componentId) {
-    String[] dirs = {dir};
+    String[] dirs = { dir };
     return FileRepositoryManager.getAbsolutePath(componentId, dirs);
   }
 }

@@ -26,6 +26,7 @@ public class WysiwygTag extends TagSupport {
   private String componentName;
   private String browseInfo;
   private String objectId;
+  private boolean displayFileBrowser = true;
   
   public String getHeight() {
     return height;
@@ -114,6 +115,14 @@ public class WysiwygTag extends TagSupport {
   public void setObjectId(String objectId) {
     this.objectId = objectId;
   }
+  
+  public boolean getDisplayFileBrowser() {
+    return displayFileBrowser;
+  }
+
+  public void setDisplayFileBrowser(boolean displayFileBrowser) {
+    this.displayFileBrowser = displayFileBrowser;
+  }
 
   @Override
   public int doEndTag() throws JspException {
@@ -151,6 +160,8 @@ public class WysiwygTag extends TagSupport {
     if (settings != null) {
       wysiwyg.setCustomCSS(settings.getString("StyleSheet"));
     }
+    
+    wysiwyg.setDisplayFileBrowser(getDisplayFileBrowser());
     
     try {     
       pageContext.getOut().println(wysiwyg.print());
