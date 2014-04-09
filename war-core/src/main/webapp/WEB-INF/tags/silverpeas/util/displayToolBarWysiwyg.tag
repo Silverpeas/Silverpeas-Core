@@ -56,7 +56,7 @@
 
       <c:otherwise>
       	<c:set var="_specificURL" value="${_context}"/>
-      	<c:set var="_tabImages" value="${silfn:attachmentImages(objectId, componentId)}"/>
+      	<c:set var="_listImages" value="${silfn:attachmentImages(objectId, componentId)}"/>
       </c:otherwise>
 </c:choose>
 <c:set var="_listComponentsFileStorage" value="${silfn:componentsFileStorage()}"/>
@@ -77,9 +77,20 @@
 	<!--  list of images already uploaded for the current object -->
 	<select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
 		<option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
-		<c:forEach var="image" items="${_tabImages}">
-			<option value="${_specificURL}${image[0]}">${image[1]}</option>
-		</c:forEach>
+		<c:choose>
+      		<c:when test="${fn:startsWith(componentId, '<%=WysiwygController.WYSIWYG_WEBSITES%>')}">
+				<c:forEach var="image" items="${_tabImages}">
+					<option value="${_specificURL}${image[0]}">${image[1]}</option>
+				</c:forEach>
+		
+			</c:when>
+
+      		<c:otherwise>
+      			<c:forEach var="image" items="${_listImages}"  >
+					<option value="${image.attachmentURL}">${image.filename}</option>
+				</c:forEach>
+      		</c:otherwise>
+		</c:choose>
 	</select>
 	
 	<!--  list of gallery applications -->
