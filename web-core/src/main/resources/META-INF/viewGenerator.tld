@@ -1497,6 +1497,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>False if the button to browse files has not to be displayed</description>
+      <name>displayFileBrowser</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that displays the available languages.</description>

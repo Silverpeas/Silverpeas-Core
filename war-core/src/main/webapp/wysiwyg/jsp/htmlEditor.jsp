@@ -148,35 +148,30 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
   if (spaceId == null) {
     spaceId = (String) request.getAttribute("SpaceId");
   }
-  session.setAttribute("WYSIWYG_SpaceId", spaceId);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "spaceId = " + spaceId);
 
   spaceName = request.getParameter("SpaceName");
   if (spaceName == null) {
     spaceName = (String) request.getAttribute("SpaceName");
   }
-  session.setAttribute("WYSIWYG_SpaceName", spaceName);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "spaceName = " + spaceName);
 
   componentId = request.getParameter("ComponentId");
   if (componentId == null) {
     componentId = (String) request.getAttribute("ComponentId");
   }
-  session.setAttribute("WYSIWYG_ComponentId", componentId);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "componentId = " + componentId);
 
   componentName = request.getParameter("ComponentName");
   if (componentName == null) {
     componentName = (String) request.getAttribute("ComponentName");
   }
-  session.setAttribute("WYSIWYG_ComponentName", componentName);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "componentName = " + componentName);
 
   objectId = request.getParameter("ObjectId");
   if (objectId == null) {
     objectId = (String) request.getAttribute("ObjectId");
   }
-  session.setAttribute("WYSIWYG_ObjectId", objectId);
   SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "ObjectId = " + objectId);
 
   returnUrl = request.getParameter("ReturnUrl");
@@ -190,7 +185,6 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
   if (browseInformation == null) {
     browseInformation = (String) request.getAttribute("BrowseInfo");
   }
-  session.setAttribute("WYSIWYG_BrowseInfo", browseInformation);
 
   userId = ((MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
@@ -219,7 +213,6 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
   if (language == null) {
     language = "en";
   }
-  session.setAttribute("WYSIWYG_Language", language);
 
   contentLanguage = request.getParameter("ContentLanguage");
   if (contentLanguage == null) {
@@ -287,7 +280,9 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 <script type="text/javascript">
 	
 	window.onload = function() {
-		<view:wysiwyg replace="editor1" language="<%=language %>"/>
+		<view:wysiwyg replace="editor1" language="<%=language %>" 
+			spaceId="<%=spaceId%>" spaceName="<%=spaceName%>" componentId="<%=componentId%>" componentName="<%=componentName%>" 
+			browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" />
 	}
 
 	function saveAndExit() {
