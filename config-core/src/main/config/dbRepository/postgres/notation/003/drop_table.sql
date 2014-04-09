@@ -1,1 +1,1 @@
-drop table SB_Notation_Notation;
+DROP TABLE SB_Notation_Notation;

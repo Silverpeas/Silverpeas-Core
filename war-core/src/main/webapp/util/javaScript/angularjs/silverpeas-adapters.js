@@ -30,55 +30,63 @@
    */
   angular.module('silverpeas.adapters').factory('RESTAdapter', ['$http', '$q', function($http, $q) {
 
-	  function _fetchData(data, convert) {
-    	  var result = (convert ? convert(data) : data);
-          if (result instanceof Array) {
-            var maxlength = headers('X-Silverpeas-Size');
-            if (maxlength)
-              result.maxlength = maxlength;
-          }
-          return result;
+    function performMessage(headers) {
+      var registredKeyOfMessages = headers('X-Silverpeas-MessageKey');
+      if (registredKeyOfMessages) {
+        notyRegistredMessages(registredKeyOfMessages);
       }
-      
-      function _error(data, status) {
-        notyError("Error: " + status + "[ " + data + " ]");
-      }
-      
-      function _get(url, convert) {
-        var deferred = $q.defer();
-        $http.get(url).error(_error)
-         .success(function(data, status, headers) {
-          var result = _fetchData(data, convert);
-          deferred.resolve(result);
-        });
-        return deferred.promise;
-      }
+    }
 
-      var RESTAdapter = function(url, converter) {
-        this.url = url;
-        this.converter = converter;
-      };
-      
-      RESTAdapter.prototype.post = function() {
-    	  var requestedUrl = this.url;
-    	  var value = arguments[0];
-          if (arguments.length > 1) {
-            requestedUrl = arguments[0];
-            value = arguments[1];
-          }
-          if (typeof value === 'object') {
-        	  $http.defaults.headers.post['Content-Type'] = 'application/json';  
-          } else {
-        	  $http.defaults.headers.post['Content-Type'] = 'text/plain';
-          }
-          var deferred = $q.defer();
-          $http.post(requestedUrl, value).error(_error)
-           .success(function(data, status, headers) {
-        	var result = _fetchData(data, this.converter);
-            deferred.resolve(result);
-          });
-          return deferred.promise;
-        };
+    function _fetchData(data, convert, headers) {
+      var result = (convert ? convert(data) : data);
+      if (result instanceof Array) {
+        var maxlength = headers('X-Silverpeas-Size');
+        if (maxlength) {
+          result.maxlength = maxlength;
+        }
+      }
+      performMessage(headers);
+      return result;
+    }
+
+    function _error(data, status, headers) {
+      performMessage(headers);
+      notyError("Error: " + status + "[ " + data + " ]");
+    }
+
+    function _get(url, convert) {
+      var deferred = $q.defer();
+      $http.get(url).error(_error).success(function(data, status, headers) {
+        var result = _fetchData(data, convert, headers);
+        deferred.resolve(result);
+      });
+      return deferred.promise;
+    }
+
+    var RESTAdapter = function(url, converter) {
+      this.url = url;
+      this.converter = converter;
+    };
+
+    RESTAdapter.prototype.post = function() {
+      var requestedUrl = this.url;
+      var value = arguments[0];
+      if (arguments.length > 1) {
+        requestedUrl = arguments[0];
+        value = arguments[1];
+      }
+      if (typeof value === 'object') {
+        $http.defaults.headers.post['Content-Type'] = 'application/json';
+      } else {
+        $http.defaults.headers.post['Content-Type'] = 'text/plain';
+      }
+      var deferred = $q.defer();
+      $http.post(requestedUrl, value).error(_error).success(function(data, status, headers) {
+        var result = _fetchData(data, this.converter, headers);
+        deferred.resolve(result);
+      });
+      return deferred.promise;
+    };
       
       RESTAdapter.prototype.criteria = function() {
         var criteria = null;

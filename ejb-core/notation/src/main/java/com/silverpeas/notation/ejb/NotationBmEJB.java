@@ -45,8 +45,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class NotationBmEJB implements NotationBm {
 
-  private static final long serialVersionUID = 4906158721388935209L;
-
   @Override
   public void updateRating(RatingPK pk, int note) {
     Connection con = openConnection();
@@ -60,6 +58,19 @@ public class NotationBmEJB implements NotationBm {
       throw new NotationRuntimeException("NotationBmEJB.updateNotation()",
           SilverpeasRuntimeException.ERROR,
           "notation.CREATING_NOTATION_FAILED", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public void moveRating(final RatingPK pk, final String componentInstanceId) {
+    Connection con = openConnection();
+    try {
+      NotationDAO.moveNotation(con, pk, componentInstanceId);
+    } catch (Exception e) {
+      throw new NotationRuntimeException("NotationBmEJB.updateNotation()",
+          SilverpeasRuntimeException.ERROR, "notation.CREATING_NOTATION_FAILED", e);
     } finally {
       DBUtil.close(con);
     }

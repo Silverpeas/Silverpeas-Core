@@ -20,33 +20,7 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.rating.RatingPK;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -61,10 +35,10 @@ import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -99,6 +73,22 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.rating.RatingPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Class declaration
@@ -215,11 +205,9 @@ public class PublicationBmEJB implements PublicationBm {
   private void createTranslations(Connection con, PublicationDetail publication)
       throws SQLException, UtilException {
     if (publication.getTranslations() != null) {
-      Iterator translations = publication.getTranslations().values().iterator();
-      while (translations.hasNext()) {
-        PublicationI18N translation = (PublicationI18N) translations.next();
-        if (publication.getLanguage() != null
-            && !publication.getLanguage().equals(translation.getLanguage())) {
+      for (final PublicationI18N translation : publication.getTranslations().values()) {
+        if (publication.getLanguage() != null &&
+            !publication.getLanguage().equals(translation.getLanguage())) {
           translation.setObjectId(publication.getPK().getId());
           PublicationI18NDAO.addTranslation(con, translation);
         }
@@ -233,6 +221,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       deleteIndex(pk);
       PublicationDAO.changeInstanceId(con, pk, fatherPK.getInstanceId());
+      moveRating(pk, fatherPK.getInstanceId());
       pk.setComponentName(fatherPK.getInstanceId());
       PublicationFatherDAO.removeAllFather(con, pk);
       PublicationFatherDAO.addFather(con, pk, fatherPK);
@@ -339,7 +328,9 @@ public class PublicationBmEJB implements PublicationBm {
       InfoDAO.deleteInfoDetailByInfoPK(con, infoPK);
       // delete translations
       PublicationI18NDAO.removeTranslations(con, pk);
-      
+
+      deleteRating(pk);
+
       deleteIndex(pk);
       
       // delete publication from database
@@ -1647,10 +1638,6 @@ public class PublicationBmEJB implements PublicationBm {
     if (useTagCloud) {
       deleteTagCloud(pubPK);
     }
-    // idem pour les notations
-    if (useNotation) {
-      deleteRating(pubPK);
-    }
   }
   
   private IndexEntryPK getIndexEntryPK(String instanceId, String publiId) {
@@ -1770,8 +1757,8 @@ public class PublicationBmEJB implements PublicationBm {
         + nodeId);
     Connection con = getConnection();
     try {
-      PublicationPK primary = PublicationDAO.selectByPublicationNameAndNodeId(
-          con, pubPK, pubName, nodeId);
+      PublicationPK primary =
+          PublicationDAO.selectByPublicationNameAndNodeId(con, pubPK, pubName, nodeId);
       if (primary != null) {
         return primary.pubDetail;
       } else {
@@ -1879,9 +1866,25 @@ public class PublicationBmEJB implements PublicationBm {
     createTagCloud(pubDetail);
   }
 
+  private void moveRating(PublicationPK pubPK, String componentInstanceId) {
+    if (isRatingEnabled(pubPK)) {
+      notationBm
+          .moveRating(new RatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE),
+              componentInstanceId);
+    }
+  }
+
   private void deleteRating(PublicationPK pubPK) {
-    notationBm.deleteRating(new RatingPK(pubPK.getId(), pubPK.getInstanceId(),
-        "Publication"));
+    if (isRatingEnabled(pubPK)) {
+      notationBm
+          .deleteRating(new RatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE));
+    }
+  }
+
+  private boolean isRatingEnabled(WAPrimaryKey pk) {
+    WAComponent componentDefinition =
+        ComponentHelper.getInstance().extractComponent(pk.getInstanceId());
+    return componentDefinition.hasParameterDefined("publicationRating");
   }
 
   /**
@@ -2068,7 +2071,6 @@ public class PublicationBmEJB implements PublicationBm {
   }
   
   private static final boolean useTagCloud;
-  private static final boolean useNotation;
   private static final boolean indexAuthorName;
   private static final String thumbnailDirectory;
 
@@ -2076,7 +2078,6 @@ public class PublicationBmEJB implements PublicationBm {
     ResourceLocator publicationSettings = new ResourceLocator(
         "org.silverpeas.util.publication.publicationSettings", "");
     useTagCloud = publicationSettings.getBoolean("useTagCloud", false);
-    useNotation = publicationSettings.getBoolean("useNotation", false);
     indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
     thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");
   }

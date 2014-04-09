@@ -13,7 +13,6 @@
 <fmt:message var="ratingVote" key="notation.vote"></fmt:message>
 <fmt:message var="ratingVotes" key="notation.votes"></fmt:message>
 <fmt:message var="ratingVoteDelete" key="notation.vote.delete"></fmt:message>
-<fmt:message var="ratingVoteOK" key="notation.vote.ok"></fmt:message>
 <fmt:message var="ratingVoteYours" key="notation.vote.yours"></fmt:message>
 <fmt:message var="ratingVoteNone" key="notation.vote.yours.none"></fmt:message>
 
@@ -22,7 +21,6 @@
  var label_RatingVote = '${ratingVote}';
  var label_RatingVotes = '${ratingVotes}';
  var label_RatingVoteDelete = '${ratingVoteDelete}';
- var label_RatingVoteOK = '${ratingVoteOK}';
  var label_RatingVoteYours = '${ratingVoteYours}';
  var label_RatingVoteNone = '${silfn:escapeJs(ratingVoteNone)}';
  var param_userAnonymous = ${user.anonymous};

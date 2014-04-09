@@ -61,6 +61,10 @@ public class NotationDAO {
       + " AND " + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE
       + " = ?" + " AND " + COLUMN_AUTHOR + " = ?";
 
+  private static final String QUERY_MOVE_NOTATION = "UPDATE " + TABLE_NAME
+      + " SET " + COLUMN_INSTANCEID + " = ?" + " WHERE " + COLUMN_INSTANCEID + " = ?" + " AND "
+      + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?";
+
   private static final String QUERY_DELETE_NOTATION = "DELETE FROM "
       + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" + " AND "
       + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?";
@@ -124,6 +128,20 @@ public class NotationDAO {
       prepStmt.setString(3, pk.getResourceId());
       prepStmt.setString(4, pk.getResourceType());
       prepStmt.setString(5, pk.getUserId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
+  public static void moveNotation(Connection con, RatingPK pk, final String componentInstanceId)
+      throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(QUERY_MOVE_NOTATION);
+    try {
+      prepStmt.setString(1, componentInstanceId);
+      prepStmt.setString(2, pk.getInstanceId());
+      prepStmt.setString(3, pk.getResourceId());
+      prepStmt.setString(4, pk.getResourceType());
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

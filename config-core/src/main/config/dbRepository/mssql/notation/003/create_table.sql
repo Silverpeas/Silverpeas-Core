@@ -1,9 +1,9 @@
 CREATE TABLE SB_Notation_Notation
 (
-	id           int          not null,
-	instanceId   varchar(50)  not null,
-	externalId   varchar(50)  not null,
-	externalType varchar(50)  not null,
-	author       varchar(50)  not null,
-	note         int          not null
+  id           INT         NOT NULL,
+  instanceId   VARCHAR(50) NOT NULL,
+  externalId   VARCHAR(50) NOT NULL,
+  externalType VARCHAR(50) NOT NULL,
+  author       VARCHAR(50) NOT NULL,
+  note         INT         NOT NULL
 );

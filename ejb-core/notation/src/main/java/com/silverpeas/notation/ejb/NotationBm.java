@@ -39,6 +39,13 @@ public interface NotationBm {
   public void updateRating(RatingPK pk, int note);
 
   /**
+   * Remove all notations of identified resource to the specified component instance identifier.
+   * @param pk identifying the resource
+   * @param componentInstanceId the target component identified by its instance id.
+   */
+  public void moveRating(RatingPK pk, String componentInstanceId);
+
+  /**
    * Remove all notations of identified resource 
    * @param pk identifying the resource
    */

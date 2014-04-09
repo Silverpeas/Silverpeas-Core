@@ -23,7 +23,17 @@
  */
 package org.silverpeas.rating.web;
 
-import java.net.URI;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.notation.ejb.NotationBm;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.RatingPK;
+import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,18 +44,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.RatingPK;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import java.net.URI;
 
 /**
  * A REST Web resource representing a given rating. 
@@ -53,16 +52,21 @@ import com.stratelia.webactiv.util.JNDINames;
  */
 @Service
 @RequestScoped
-@Path("rating/{componentId}/{contentType}/{contentId}")
+@Path("rating/{componentId}/{contributionType}/{contributionId}")
 @Authorized
 public class RatingResource extends RESTWebService {
   
   @PathParam("componentId")
   private String componentId;
-  @PathParam("contentType")
-  private String contentType;
-  @PathParam("contentId")
-  private String contentId;
+  @PathParam("contributionType")
+  private String contributionType;
+  @PathParam("contributionId")
+  private String contributionId;
+
+  @Override
+  protected String getBundleLocation() {
+    return "org.silverpeas.notation.multilang.notation";
+  }
 
   @Override
   public String getComponentId() {
@@ -90,25 +94,27 @@ public class RatingResource extends RESTWebService {
   public Response saveRating(String note) {
     if (!StringUtil.isDefined(note)) {
       getNotationBm().deleteUserRating(getRatingPK());
+      NotifierUtil.addSuccess(getBundle().getString("notation.vote.delete.ok"));
     } else {
       getNotationBm().updateRating(getRatingPK(), Integer.parseInt(note));
+      NotifierUtil.addSuccess(getBundle().getString("notation.vote.ok"));
     }
     RatingEntity newRating = getRating();
     return Response.ok(newRating).build();
   }
    
   private RatingPK getRatingPK() {
-    return new RatingPK(contentId, componentId, contentType, getUserDetail().getId());
+    return new RatingPK(contributionId, componentId, contributionType, getUserDetail().getId());
   }
   
   /**
-   * Converts the comment into its corresponding web entity.
-   * @param comment the comment to convert.
-   * @param commentURI the URI of the comment.
-   * @return the corresponding comment entity.
+   * Converts the rating into its corresponding web entity.
+   * @param rating the rating to convert.
+   * @param ratingURI the URI of the rating.
+   * @return the corresponding rating entity.
    */
-  protected RatingEntity asWebEntity(final Rating rating, URI notationURI) {
-    return RatingEntity.fromRating(rating).withURI(notationURI);
+  protected RatingEntity asWebEntity(final Rating rating, URI ratingURI) {
+    return RatingEntity.fromRating(rating).withURI(ratingURI);
   }
   
   protected URI identifiedBy(URI uri) {

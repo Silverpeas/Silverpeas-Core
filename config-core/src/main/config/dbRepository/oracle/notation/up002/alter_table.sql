@@ -1,8 +1,13 @@
 -- Copy temporary notation table with current data
-SELECT
-  *
-INTO sb_notation_notation_tmp
-FROM sb_notation_notation;
+CREATE TABLE sb_notation_notation_tmp
+AS SELECT
+     id,
+     instanceId,
+     externalId,
+     externalType,
+     author,
+     note
+   FROM sb_notation_notation;
 
 -- Drop current table
 DROP TABLE sb_notation_notation;
@@ -10,12 +15,12 @@ DROP TABLE sb_notation_notation;
 -- Create notation table with its new structure
 CREATE TABLE sb_notation_notation
 (
-	id           int          not null,
-	instanceId   varchar(50)  not null,
-	externalId   varchar(50)  not null,
-	externalType varchar(50)  not null,
-	author       varchar(50)  not null,
-	note         int          not null
+  id           INT         NOT NULL,
+  instanceId   VARCHAR(50) NOT NULL,
+  externalId   VARCHAR(50) NOT NULL,
+  externalType VARCHAR(50) NOT NULL,
+  author       VARCHAR(50) NOT NULL,
+  note         INT         NOT NULL
 );
 
 -- Copy current data into new structure
@@ -24,8 +29,9 @@ INSERT INTO sb_notation_notation
   SELECT
     id,
     instanceid,
-	externalid,
-	CASE WHEN externalType = 1 THEN 'Forum' ELSE 'ForumMessage' END,
+    externalid,
+    CASE WHEN externalType = 1 THEN 'Forum'
+    ELSE 'ForumMessage' END,
     author,
     note
   FROM sb_notation_notation_tmp;

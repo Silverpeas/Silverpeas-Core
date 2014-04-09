@@ -24,10 +24,8 @@
 
 package com.silverpeas.admin.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import com.silverpeas.util.CollectionUtil;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,6 +33,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -115,6 +118,8 @@ public class WAComponent {
   @XmlElementWrapper(name = "parameters")
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
+  @XmlTransient
+  protected Map<String, Parameter> indexedParametersByName = new HashMap<String, Parameter>();
 
   /**
    * Gets the value of the name property.
@@ -267,7 +272,7 @@ public class WAComponent {
 
   /**
    * Gets the value of the profiles property.
-   * @return possible object is {@link WAComponent.Profiles }
+   * @return list of {@link Profile }
    */
   public List<Profile> getProfiles() {
     if (profiles == null) {
@@ -287,15 +292,15 @@ public class WAComponent {
 
   /**
    * Sets the value of the profiles property.
-   * @param value allowed object is {@link WAComponent.Profiles }
+   * @param profiles list of {@link Profile}
    */
-  public void setProfiles(List<Profile> value) {
-    this.profiles = value;
+  public void setProfiles(List<Profile> profiles) {
+    this.profiles = profiles;
   }
 
   /**
    * Gets the value of the parameters property.
-   * @return possible object is {@link WAComponent.Parameters }
+   * @return list of {@link Parameter}
    */
   public List<Parameter> getParameters() {
     if (parameters == null) {
@@ -305,11 +310,36 @@ public class WAComponent {
   }
 
   /**
-   * Sets the value of the parameters property.
-   * @param value allowed object is {@link WAComponent.Parameters }
+   * Gets defined parameters indexed by their names.
+   * @return
    */
-  public void setParameters(List<Parameter> value) {
-    this.parameters = value;
+  private Map<String, Parameter> getIndexedParametersByName() {
+    List<Parameter> definedParameters = getParameters();
+    if (CollectionUtil.isNotEmpty(definedParameters) &&
+        definedParameters.size() != indexedParametersByName.size()) {
+      for (Parameter parameter : definedParameters) {
+        indexedParametersByName.put(parameter.getName(), parameter);
+      }
+    }
+    return indexedParametersByName;
+  }
+
+  /**
+   * Sets the value of the parameters property.
+   * @param parameters list of {@link Parameter}
+   */
+  public void setParameters(List<Parameter> parameters) {
+    this.parameters = parameters;
+    indexedParametersByName.clear();
+  }
+
+  /**
+   * Indicates if a parameter is defined which name is equal to the given method parameter.
+   * @param parameterName the parameter name to perform.
+   * @return true if a parameter is defined behind the specified method parameter, false otherwise.
+   */
+  public boolean hasParameterDefined(String parameterName) {
+    return getIndexedParametersByName().get(parameterName) != null;
   }
 
   public List<Parameter> getSortedParameters() {
