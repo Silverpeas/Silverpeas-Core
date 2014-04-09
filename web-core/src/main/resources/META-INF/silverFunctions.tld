@@ -223,7 +223,7 @@
     <name>attachmentImages</name>
     <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
     <function-signature>
-      java.lang.String[][] getImages(java.lang.String, java.lang.String)
+      java.util.List getImages(java.lang.String, java.lang.String)
     </function-signature>
   </function>
   <function>
