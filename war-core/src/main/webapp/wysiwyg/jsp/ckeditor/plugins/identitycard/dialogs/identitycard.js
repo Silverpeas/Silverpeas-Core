@@ -51,20 +51,22 @@ CKEDITOR.dialog.add( 'identitycard', function( editor ) {
 							const document = this.getElement().getDocument();
 							var element = document.getById('user');
 							element.setValue(widget.data.userId);
-							$.ajax({
-								 type: "GET",
-								 url: "/silverpeas/services/profile/users/" + widget.data.userId,
-								 dataType: "json",
-								 cache: false,
-								 success: function (user, status, jqXHR) {
-								     document.getById('user_name').setValue(user.firstName + " " + user.lastName);
-								 },
+							if (widget.data.userId) {
+								$.ajax({
+									 type: "GET",
+									 url: "/silverpeas/services/profile/users/" + widget.data.userId,
+									 dataType: "json",
+									 cache: false,
+									 success: function (user, status, jqXHR) {
+									     document.getById('user_name').setValue(user.firstName + " " + user.lastName);
+									 },
 
-								 error: function (jqXHR, status) {
-								     // error handler
-								     alert('error');
-								 }
-							});
+									 error: function (jqXHR, status) {
+									     // error handler
+									     alert('error');
+									 }
+								});
+							}
 						},
 						commit: function( widget ) {							
 							var document = this.getElement().getDocument();

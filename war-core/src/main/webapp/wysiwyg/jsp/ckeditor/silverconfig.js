@@ -10,12 +10,12 @@ CKEDITOR.editorConfig = function( config )
 	// config.uiColor = '#AADC6E';
 
 	//config.contentsCss = webContext + '/util/styleSheets/globalSP_SilverpeasV5.css';
-  config.baseHref = webContext + '/wysiwyg/jsp/';
+    config.baseHref = webContext + '/wysiwyg/jsp/';
 	config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
-	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
-	config.extraPlugins = 'allmedias', 'identitycard';
-  config.allowedContent = true;
+	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';	
+    config.extraPlugins = 'identitycard', 'allmedias';
+    config.allowedContent = true;
 	config.toolbarCanCollapse = true;
 	//config.forcePasteAsPlainText = true;
 

@@ -53,7 +53,7 @@ CKEDITOR.plugins.add( 'identitycard', {
 				'<div class="identitycard">' +
 					'<ul><li class="avatar">avatar</li>' +
 					'<li class="firstName">firstName</li>' +
-					'<li class="lastName">lastNameName</li>' +
+					'<li class="lastName">lastName</li>' +
 					'<li class="eMail">eMail</li></ul>' +
 				'</div>',
 			

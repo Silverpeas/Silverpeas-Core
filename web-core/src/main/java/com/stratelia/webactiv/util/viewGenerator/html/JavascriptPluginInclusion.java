@@ -66,6 +66,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
+  private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_RESPONSIBLES = "silverpeas-responsibles.js";
@@ -209,6 +210,7 @@ public class JavascriptPluginInclusion {
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
     xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
     return xhtml;
   }
 

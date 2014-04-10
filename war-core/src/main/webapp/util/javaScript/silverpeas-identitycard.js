@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,26 +22,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+(function($) {
+
+  /**
+   * The structure with information about the current tooltip rendered with some data on a given user:
+   * - the HTML element as the current rendered tooltip,
+   * - the current user session within which the WEB page with this plugin is used,
+   * - the HTML element as parent for all the defined tooltip, that is the target for the plugin,
+   * - a flag indicating if the plugin is initialized.
+   *
+   * At initialization, the plugin loads the profile of the user in the current WEB session and
+   * enrichs it with additional functions related to its contacts and to its invitations sent to
+   * others users.
+   */
+  $.identitycard = {    
+    initialized: false,
+    
+    initialize: function() {
+      
+      alert('hello');
+
+      this.initialized = true;
+    }
+  };
+
+})(jQuery);
+
+
+/**
+ * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+ * javascript plugin.
+ */
 jQuery(document).ready(function() {
-
   jQuery('.identitycard').each(function() {
-	var idUser = $(this).attr('rel');
-	$.ajax({
-		 type: "GET",
-		 url: "/silverpeas/services/profile/users/" + idUser,
-		 dataType: "json",
-		 cache: false,
-		 success: function (user, status, jqXHR) {
-			$('.lastNames').html(user.lastName);
-			$('.firstName').html(user.firstName);
-			$('.eMail').html(user.eMail);
-			$('.avatar').html(user.avatar);
-		 },
-
-		 error: function (jqXHR, status) {
-		     // error handler
-		     alert('error');
-		 }
-	});
+    var $this = jQuery(this);
   })
 });
