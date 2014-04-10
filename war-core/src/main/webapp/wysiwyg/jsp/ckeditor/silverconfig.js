@@ -14,7 +14,7 @@ CKEDITOR.editorConfig = function( config )
 	config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
-	config.extraPlugins = 'allmedias';
+	config.extraPlugins = 'allmedias', 'identitycard';
   config.allowedContent = true;
 	config.toolbarCanCollapse = true;
 	//config.forcePasteAsPlainText = true;
@@ -35,7 +35,7 @@ CKEDITOR.editorConfig = function( config )
 	       { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
 	       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
 	       { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-	       { name: 'insert',      items : [ 'Image','allmedias','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak' ] },
+	       { name: 'insert',      items : [ 'Image','allmedias','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak', 'identitycard' ] },
 	       '/',
 	       { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
 	       { name: 'colors',      items : [ 'TextColor','BGColor' ] },
