@@ -24,7 +24,7 @@
 
 jQuery(document).ready(function() {
 
-  jQuery('.identitycard').each(function() {
+  jQuery('.identitycard').each(function(index, value) {
 	var idUser = $(this).attr('rel');
 	$.ajax({
 		 type: "GET",
@@ -32,10 +32,16 @@ jQuery(document).ready(function() {
 		 dataType: "json",
 		 cache: false,
 		 success: function (user, status, jqXHR) {
-			$('.lastNames').html(user.lastName);
-			$('.firstName').html(user.firstName);
-			$('.eMail').html(user.eMail);
-			$('.avatar').html(user.avatar);
+			
+			jQuery.each(user, function(userField, userFieldValue) {
+				if (userField == 'avatar') {
+					var avatar = document.createElement("img");
+					$(avatar).attr('src', user.avatar);
+					$('.avatar', value).append(avatar);
+				} else {
+					$('.' + userField, value).html(userFieldValue);	
+				}
+			});
 		 },
 
 		 error: function (jqXHR, status) {
