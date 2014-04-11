@@ -5632,7 +5632,7 @@ div.fileUpload {
   margin:4px 0;
   cursor:pointer;
   background-color:#ece9d8;
-  border:1px solid #999999;
+  border:1px solid #999999 !important;
   height:17px;
   line-height:18px;
   display:inline-block;
@@ -5645,6 +5645,7 @@ div.fileUpload {
   padding:0px 8px 0 8px;
   line-height:18px;
   border:0;
+  color:#333 !important;
 }
 
 
