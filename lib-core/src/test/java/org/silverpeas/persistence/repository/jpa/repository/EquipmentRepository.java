@@ -24,7 +24,7 @@
 package org.silverpeas.persistence.repository.jpa.repository;
 
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
+import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 import org.silverpeas.persistence.repository.jpa.model.Equipment;
 
 import javax.inject.Named;
@@ -34,5 +34,5 @@ import javax.inject.Named;
  * Date: 20/11/13
  */
 @Named
-public class EquipmentRepository extends AbstractJpaEntityRepository<Equipment, UuidIdentifier> {
+public class EquipmentRepository extends SilverpeasJpaEntityManager<Equipment, UuidIdentifier> {
 }

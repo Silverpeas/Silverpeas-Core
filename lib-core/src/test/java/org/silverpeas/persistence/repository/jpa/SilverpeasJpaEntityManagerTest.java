@@ -55,7 +55,7 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-public class AbstractJpaEntityRepositoryTest extends RepositoryBasedTest {
+public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
 
   private JpaEntityServiceTest jpaEntityServiceTest;
 

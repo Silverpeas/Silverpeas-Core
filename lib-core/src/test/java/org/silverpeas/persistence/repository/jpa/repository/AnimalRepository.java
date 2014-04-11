@@ -24,7 +24,7 @@
 package org.silverpeas.persistence.repository.jpa.repository;
 
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
+import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.AnimalType;
 import org.silverpeas.persistence.repository.jpa.model.Person;
@@ -37,29 +37,29 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Named
-public class AnimalRepository extends AbstractJpaEntityRepository<Animal, UniqueLongIdentifier> {
+public class AnimalRepository extends SilverpeasJpaEntityManager<Animal, UniqueLongIdentifier> {
 
   public List<Animal> getByType(AnimalType type) {
-    return listFromNamedQuery("getAnimalsByType", initializeNamedParameters().add("type", type));
+    return listFromNamedQuery("getAnimalsByType", newNamedParameters().add("type", type));
   }
 
   public Animal getByName(String name) {
-    return getFromNamedQuery("getAnimalsByName", initializeNamedParameters().add("name", name));
+    return getFromNamedQuery("getAnimalsByName", newNamedParameters().add("name", name));
   }
 
   public List<Person> getPersonsHaveTypeOfAnimal(AnimalType type) {
     String jpqlQuery = "select a.person from Animal a where a.type like :type";
-    return listFromJpqlString(jpqlQuery, initializeNamedParameters().add("type", type),
+    return listFromJpqlString(jpqlQuery, newNamedParameters().add("type", type),
         Person.class);
   }
 
   public long updateAnimalNamesByType(AnimalType type) {
     return updateFromNamedQuery("updateAnimalNamesByType",
-        initializeNamedParameters().add("type", type).add("lastUpdatedBy", "dummy"));
+        newNamedParameters().add("type", type).add("lastUpdatedBy", "dummy"));
   }
 
   public long deleteAnimalsByType(AnimalType type) {
     return deleteFromNamedQuery("deleteAnimalsByType",
-        initializeNamedParameters().add("type", type));
+        newNamedParameters().add("type", type));
   }
 }

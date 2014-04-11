@@ -24,7 +24,7 @@
 package org.silverpeas.persistence.repository.jpa.repository;
 
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
+import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.Person;
 
@@ -36,21 +36,21 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Named
-public class PersonRepository extends AbstractJpaEntityRepository<Person, UuidIdentifier> {
+public class PersonRepository extends SilverpeasJpaEntityManager<Person, UuidIdentifier> {
 
   public Person getByFirstName(String firstName) {
     String jpqlQuery = "from Person p where p.firstName = :firstName";
-    return getFromJpqlString(jpqlQuery, initializeNamedParameters().add("firstName", firstName));
+    return getFromJpqlString(jpqlQuery, newNamedParameters().add("firstName", firstName));
   }
 
   public List<Person> getByLastName(String lastName) {
     return listFromNamedQuery("getPersonsByName",
-        initializeNamedParameters().add("name", lastName));
+        newNamedParameters().add("name", lastName));
   }
 
   public List<Animal> getAnimalByLastNameOfPerson(String lastName) {
     String jpqlQuery = "select a from Animal a where a.person.lastName like :lastName";
-    return listFromJpqlString(jpqlQuery, initializeNamedParameters().add("lastName", lastName),
+    return listFromJpqlString(jpqlQuery, newNamedParameters().add("lastName", lastName),
         Animal.class);
   }
 
@@ -59,7 +59,7 @@ public class PersonRepository extends AbstractJpaEntityRepository<Person, UuidId
         "p.lastUpdatedBy = :lastUpdatedBy, p.lastUpdateDate = :lastUpdateDate, " +
         "p.version = (p.version + 1) where p.animals is not empty";
     return updateFromJpqlQuery(jpqlQuery,
-        initializeNamedParameters().add("lastUpdatedBy", "dummy"));
+        newNamedParameters().add("lastUpdatedBy", "dummy"));
   }
 
   /**
@@ -71,7 +71,7 @@ public class PersonRepository extends AbstractJpaEntityRepository<Person, UuidId
         "p.lastUpdateDate = :lastUpdateDate, " +
         "p.version = (p.version + 1) where p.animals is not empty";
     return updateFromJpqlQuery(jpqlQuery,
-        initializeNamedParameters().add("lastUpdatedBy", "dummy"));
+        newNamedParameters().add("lastUpdatedBy", "dummy"));
   }
 
   /**
@@ -83,7 +83,7 @@ public class PersonRepository extends AbstractJpaEntityRepository<Person, UuidId
         "p.lastUpdatedBy = :lastUpdatedBy, " +
         "p.version = (p.version + 1) where p.animals is not empty";
     return updateFromJpqlQuery(jpqlQuery,
-        initializeNamedParameters().add("lastUpdatedBy", "dummy"));
+        newNamedParameters().add("lastUpdatedBy", "dummy"));
   }
 
   /**
@@ -95,11 +95,11 @@ public class PersonRepository extends AbstractJpaEntityRepository<Person, UuidId
         "p.lastUpdatedBy = :lastUpdatedBy, p.lastUpdateDate = :lastUpdateDate, " +
         "p.version = (p.version + 2) where p.animals is not empty";
     return updateFromJpqlQuery(jpqlQuery,
-        initializeNamedParameters().add("lastUpdatedBy", "dummy"));
+        newNamedParameters().add("lastUpdatedBy", "dummy"));
   }
 
   public long deletePersonFirstNamesHavingAtLeastOneAnimal() {
     String jpqlQuery = "delete Person p where p.animals is not empty";
-    return deleteFromJpqlQuery(jpqlQuery, initializeNamedParameters());
+    return deleteFromJpqlQuery(jpqlQuery, newNamedParameters());
   }
 }
