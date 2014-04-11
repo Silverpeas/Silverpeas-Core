@@ -571,7 +571,7 @@ color:#1C94D4;
      line-height: 110%;
 }
 
-.spaceHome #spaceQuiskInfo .slideshow a:hover, .spaceHome #spaceQuiskInfo .slideshow .selected a {
+.spaceHome #spaceQuiskInfo .slides-pagination a:hover, .spaceHome #spaceQuiskInfo .slides-pagination .selected a {
      background-color: #EC7501;
 }
 
