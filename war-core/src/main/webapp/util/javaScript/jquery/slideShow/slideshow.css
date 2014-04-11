@@ -16,15 +16,15 @@
 	position:relative;
 	margin:0 0 1em;
 }
-	.slideshow a {
+	.slides-pagination a {
 		font-size:.75em;
 		line-height:2em;
 		text-decoration:none;
 		color:#fff;
 		background:#666;
 	}
-		.slideshow a:hover,
-		.slideshow .selected a {
+		.slides-pagination a:hover,
+		.slides-pagination .selected a {
 			background-color:#333;
 		}
 
