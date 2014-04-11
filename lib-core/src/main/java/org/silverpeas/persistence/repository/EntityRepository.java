@@ -41,19 +41,6 @@ import java.util.List;
  */
 public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE> {
 
-
-  /**
-   * Synchronizes the persistence context to the underlying data source. Within a transactional
-   * context, the persistence context is directly put to the data source but will be effective
-   * only when the transaction will be committed. The consequence of the synchronization within
-   * a transaction context is the persistence context is then validated by the data source. Making
-   * it work, the data source has to support the transactions.
-   *
-   * Warning, the behavior of this method is implementation-dependent. According to the type of
-   * the repository or of the underlying data source, the flush can not to be working.
-   */
-  void flush();
-
   /**
    * Gets all persisted entities.
    * (It is recommended to not use this method on huge persitent containers)
@@ -78,24 +65,6 @@ public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIE
    * @return
    */
   List<ENTITY> getById(Collection<String> ids);
-
-  /**
-   * Gets a persisted entity by its id.
-   * @return
-   */
-  ENTITY getByIdentifier(ENTITY_IDENTIFIER_TYPE id);
-
-  /**
-   * Gets persisted entities by their ids.
-   * @return
-   */
-  List<ENTITY> getByIdentifier(ENTITY_IDENTIFIER_TYPE... ids);
-
-  /**
-   * Gets persisted entities by their ids.
-   * @return
-   */
-  List<ENTITY> getByIdentifier(Collection<ENTITY_IDENTIFIER_TYPE> ids);
 
   /**
    * Persists entity : create (if id is null or empty) or update.
@@ -147,17 +116,4 @@ public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIE
    */
   long deleteById(final Collection<String> ids);
 
-  /**
-   * Deletes entities by their ids.
-   * @param ids
-   * @return number of deleted entities.
-   */
-  long deleteByIdentifier(final ENTITY_IDENTIFIER_TYPE... ids);
-
-  /**
-   * Deletes entities by their ids.
-   * @param ids
-   * @return number of deleted entities.
-   */
-  long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids);
 }

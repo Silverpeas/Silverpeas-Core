@@ -30,8 +30,8 @@ import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.repository.EntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.util.PaginationList;
 import org.silverpeas.persistence.repository.QueryCriteria;
+import org.silverpeas.util.PaginationList;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,9 +48,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Abstract implementation of {@link EntityRepository} interface.
- * All interface signatures are implemented at this level.
- * The aim of this abstraction is also hiding the use of the entity manager.
+ * A Silverpeas dedicated entity manager that wraps the JPA {@link javax.persistence.EntityManager}
+ * and that provides convenient methods to perform the CRUD operations on entities.
+ * <p/>
+ * All repositories that use only JPA for managing the persistence of their entities should extends
+ * this JPA manager. If the different parts of an entity are persisted into several data source
+ * beside a SQL-based one, then this repository should be used within a delegation of JPA related
+ * operations.
  * <p/>
  * It provides additional signatures to handle friendly the JPA queries into extensions of
  * repository classes.
@@ -64,7 +68,8 @@ import java.util.regex.Pattern;
  * primary key definition.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
+    ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
     implements EntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
 
   /**
@@ -167,9 +172,40 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
     return identifiers;
   }
 
-  @Override
+  /**
+   * Synchronizes the persistence context to the underlying data source. Within a transactional
+   * context, the persistence context is directly put to the data source but will be effective
+   * only when the transaction will be committed. The consequence of the synchronization within
+   * a transaction context is the persistence context is then validated by the data source. Making
+   * it work, the data source has to support the transactions.
+   * <p/>
+   * Warning, the behavior of this method is implementation-dependent. According to the type of
+   * the repository or of the underlying data source, the flush can not to be working.
+   */
   public void flush() {
     getEntityManager().flush();
+  }
+
+  /**
+   * Finds the entities by the specified named query (a JPQL instruction) and with the specified
+   * parameters.
+   * @param namedQuery the named query. It is an identifier to a JPQL instruction.
+   * @param parameters the parameters to apply on the query.
+   * @return a list of entities that match the specified query.
+   */
+  public List<ENTITY> findByNamedQuery(String namedQuery, final NamedParameters parameters) {
+    return listFromNamedQuery(namedQuery, parameters);
+  }
+
+  /**
+   * Finds the first or the single entity matching the specified named query (a JPQL instruction)
+   * and with the specified parameters.
+   * @param namedQuery the named query. It is an identifier to a JPQL instruction.
+   * @param parameters the parameters to apply on the query.
+   * @return the first encountered entity or the single one that matches the specified query.
+   */
+  public ENTITY findOneByNamedQuery(String namedQuery, final NamedParameters parameters) {
+    return unique(listFromNamedQuery(namedQuery, parameters));
   }
 
   @Override
@@ -194,23 +230,16 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
     return getByIdentifier(convertToEntityIdentifiers(ids));
   }
 
-  @Override
-  public ENTITY getByIdentifier(final ENTITY_IDENTIFIER_TYPE id) {
+  private ENTITY getByIdentifier(final ENTITY_IDENTIFIER_TYPE id) {
     return getEntityManager().find(getEntityClass(), id);
   }
 
-  @Override
-  public List<ENTITY> getByIdentifier(final ENTITY_IDENTIFIER_TYPE... ids) {
-    return getByIdentifier(CollectionUtil.asList(ids));
-  }
-
-  @Override
-  public List<ENTITY> getByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
+  private List<ENTITY> getByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     List<ENTITY> entities = new ArrayList<ENTITY>(ids.size());
     String selectQuery = "select a from " + getEntityClass().getName() + " a where a.id in :ids";
     for (Collection<ENTITY_IDENTIFIER_TYPE> entityIds : split(
         new HashSet<ENTITY_IDENTIFIER_TYPE>(ids))) {
-      List<ENTITY> tmp = initializeNamedParameters().add("ids", entityIds)
+      List<ENTITY> tmp = newNamedParameters().add("ids", entityIds)
           .applyTo(getEntityManager().createQuery(selectQuery, getEntityClass())).getResultList();
       if (entities.isEmpty()) {
         entities = tmp;
@@ -270,28 +299,23 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
     return deleteByIdentifier(convertToEntityIdentifiers(ids));
   }
 
-  @Override
-  public long deleteByIdentifier(final ENTITY_IDENTIFIER_TYPE... ids) {
-    return deleteByIdentifier(CollectionUtil.asList(ids));
-  }
 
-  @Override
-  public long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
+  private long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     long nbDeletes = 0;
     Query deleteQuery = getEntityManager()
         .createQuery("delete from " + getEntityClass().getName() + " a where a.id in :ids");
     for (Collection<ENTITY_IDENTIFIER_TYPE> entityIds : split(ids)) {
-      nbDeletes += initializeNamedParameters().add("ids", entityIds).applyTo(deleteQuery).
+      nbDeletes += newNamedParameters().add("ids", entityIds).applyTo(deleteQuery).
           executeUpdate();
     }
     return nbDeletes;
   }
 
   /**
-   * Gets a query parameter container.
+   * Gets a new query parameter container.
    * @return
    */
-  protected NamedParameters initializeNamedParameters() {
+  public NamedParameters newNamedParameters() {
     return new NamedParameters();
   }
 
@@ -353,7 +377,7 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
    * in the criteria, then the returned list is a {@link org.silverpeas.util.PaginationList}
    * instance.
    */
-  protected List<ENTITY> listByCriteria(final QueryCriteria criteria) {
+  public List<ENTITY> findByCriteria(final QueryCriteria criteria) {
     String jpqlQuery = jpqlQueryFrom(criteria);
     String jpqlCountQuery = "select count(*) " + jpqlQuery;
     NamedParameters parameters = criteria.clause().parameters();
@@ -528,13 +552,15 @@ public abstract class AbstractJpaEntityRepository<ENTITY extends Entity<ENTITY, 
           continue;
         }
       }
-      throw new IllegalArgumentException("parameter '" + requiredParameterName
-          + "' is missing from the query '" + queryString + "' or is missing from given parameters.");
+      throw new IllegalArgumentException(
+          "parameter '" + requiredParameterName + "' is missing from the query '" + queryString +
+              "' or is missing from given parameters.");
     }
     if (!Pattern.compile("version.*=.*version[ ]*\\+[ ]*1").matcher(queryString).find()) {
       throw new IllegalArgumentException(
-          "version management is missing from the query '" + queryString
-          + "' -> expected entity.version = (entity.version + 1)");
+          "version management is missing from the query '" + queryString +
+              "' -> expected entity.version = (entity.version + 1)"
+      );
     }
   }
 
