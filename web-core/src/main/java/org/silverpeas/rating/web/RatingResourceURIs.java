@@ -21,19 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.persistence.jpa;
+package org.silverpeas.rating.web;
 
-import org.silverpeas.DataSetTest;
 
 /**
- * Abstract class for tests that are based on the behavior of a JPA repository. These tests are not
- * about the repository itself but on the persistence characteristics of a business object using a
- * JPA repository.
+ * Base URIs from which the REST-based ressources representing rating entities are defined.
+ * @author Yohann Chastagnier
  */
-public abstract class RepositoryBasedTest extends DataSetTest {
+public final class RatingResourceURIs {
 
-  @Override
-  protected String getDataSourceInjectionBeanId() {
-    return "jpaDataSource";
-  }
+  public static final String RATER_RATING_BASE_URI = "rating";
 }

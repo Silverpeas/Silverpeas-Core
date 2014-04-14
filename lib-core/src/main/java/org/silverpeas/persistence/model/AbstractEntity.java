@@ -26,6 +26,7 @@ package org.silverpeas.persistence.model;
 import com.silverpeas.util.AssertArgument;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -58,10 +59,18 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
 
   /**
    * Sets the id of the entity.
-   * @param id
-   * @return
+   * @param id the new id of the entity.
+   * @return the entity instance.
    */
   protected abstract ENTITY setId(String id);
+
+  /**
+   * By default, if not implemented by child classes, an exception is thrown.
+   */
+  @Override
+  public String getComponentInstanceId() {
+    throw new NotImplementedException();
+  }
 
   /**
    * Sets the version of the entity.

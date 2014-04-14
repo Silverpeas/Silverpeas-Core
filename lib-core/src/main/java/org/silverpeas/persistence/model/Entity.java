@@ -57,6 +57,12 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFI
   String getId();
 
   /**
+   * Gets the identifier of the component instance which the entity is attached.
+   * @return the identifier of the component instance which the entity is attached.
+   */
+  String getComponentInstanceId();
+
+  /**
    * Gets the date of the entity creation (in the persistence environment).
    * @return
    */

@@ -24,7 +24,7 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.notation.ejb.NotationBm;
+import com.silverpeas.notation.ejb.RatingBm;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -74,7 +74,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.rating.RatingPK;
+import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -104,7 +104,7 @@ public class PublicationBmEJB implements PublicationBm {
   @EJB
   private CoordinatesBm coordinatesBm;
   @EJB
-  private NotationBm notationBm;
+  private RatingBm ratingBm;
   @EJB
   private TagCloudBm tagCloudBm;
   private static final long serialVersionUID = -829288807683338746L;
@@ -1868,16 +1868,16 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void moveRating(PublicationPK pubPK, String componentInstanceId) {
     if (isRatingEnabled(pubPK)) {
-      notationBm
-          .moveRating(new RatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE),
+      ratingBm
+          .moveRating(new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE),
               componentInstanceId);
     }
   }
 
   private void deleteRating(PublicationPK pubPK) {
     if (isRatingEnabled(pubPK)) {
-      notationBm
-          .deleteRating(new RatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE));
+      ratingBm
+          .deleteRating(new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE));
     }
   }
 
