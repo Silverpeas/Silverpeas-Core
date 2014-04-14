@@ -21,19 +21,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.persistence.jpa;
+package org.silverpeas.rating;
 
-import org.silverpeas.DataSetTest;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * Abstract class for tests that are based on the behavior of a JPA repository. These tests are not
- * about the repository itself but on the persistence characteristics of a business object using a
- * JPA repository.
+ * This class represents a technical primary key of a rater rating.
  */
-public abstract class RepositoryBasedTest extends DataSetTest {
+public class RaterRatingPK extends ContributionRatingPK {
+  private static final long serialVersionUID = -7143887879838137369L;
+
+  private UserDetail rater;
+
+  public RaterRatingPK(String id, String componentId, String type, UserDetail rater) {
+    super(id, componentId, type);
+    this.rater = rater;
+  }
+
+  public UserDetail getRater() {
+    return rater;
+  }
 
   @Override
-  protected String getDataSourceInjectionBeanId() {
-    return "jpaDataSource";
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
+
+  /**
+   * Comparison between two notation primary key. Since various attributes of the both elements can
+   * be null, using toString() method to compare the elements avoids to check null cases for each
+   * attribute.
+   * @param other
+   */
+  @Override
+  public boolean equals(Object other) {
+    return ((other instanceof RaterRatingPK) && (toString().equals(other.toString())));
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + ", userId = " + getRater().getId();
   }
 }

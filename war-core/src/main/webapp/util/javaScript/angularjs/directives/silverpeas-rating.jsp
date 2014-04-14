@@ -27,5 +27,5 @@
 </script>
 
 <span class="spOverRating">
-<span class="spRating"></span> <span class="rating-votes"><span class="rating-votes-number">{{nbRates}}</span> {{voteLabel}}</span>
+<span class="spRating"></span> <span class="rating-contribution"><span class="rating-contribution-number">{{nbRaterRatings}}</span> {{ratingLabel}}</span>
 </span>

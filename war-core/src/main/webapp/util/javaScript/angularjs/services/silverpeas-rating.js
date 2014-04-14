@@ -30,43 +30,47 @@
    * @type {Angular.Module} the silverpeas.services module.
    */
   var silverpeas = angular.module('silverpeas.services');
-  
+
   silverpeas.factory('Rating', ['RESTAdapter', function(RESTAdapter) {
-      return new function() {
-        
-        var adapter = RESTAdapter.get(webContext + '/services/rating', function(data) {
-          var rating = new Rating(data);
-          return rating;
-        });
+    return new function() {
 
-        var Rating = function() {
-          if (arguments.length > 0) {
-            for (var prop in arguments[0]) {
-              this[prop] = arguments[0][prop];
-            }
+      var adapter = RESTAdapter.get(webContext + '/services/rating', function(data) {
+        var rating = new Rating(data);
+        return rating;
+      });
+
+      var Rating = function() {
+        if (arguments.length > 0) {
+          for (var prop in arguments[0]) {
+            this[prop] = arguments[0][prop];
           }
-        };
-        
-        Rating.prototype.rate = function(value) {
-          return adapter.post(this.uri, value);
-        }
-
-        this.get = function(resourceContext) {
-          return adapter.find({
-        	  url: adapter.url+'/'+resourceContext.componentid+'/'+resourceContext.type+'/'+resourceContext.id
-          });
-        };
-        
-        this.wrap = function(jsonRating) {
-        	jsonRating.uri = adapter.url+'/'+jsonRating.componentId+'/'+jsonRating.resourceType+'/'+jsonRating.resourceId
-        	return new Rating(jsonRating);
         }
       };
-    }]);
+
+      Rating.prototype.rate = function(value) {
+        return adapter.post(this.uri, value);
+      };
+
+      this.get = function(resourceContext) {
+        return adapter.find({
+          url : adapter.url + '/' + resourceContext.componentid + '/' + resourceContext.contributiontype + '/' +
+              resourceContext.contributionid
+        });
+      };
+
+      this.wrap = function(jsonRating) {
+        jsonRating.uri =
+            adapter.url + '/' + jsonRating.componentId + '/' + jsonRating.contributionType + '/' +
+            jsonRating.contributionId
+        return new Rating(jsonRating);
+      };
+    };
+  }]);
 })();
 
 /**
  * Provider of the User angularjs service for plain old javascript code.
  * @type {User}
  */
-var Rating = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('Rating');
+var Rating = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters',
+  'silverpeas.services']).get('Rating');

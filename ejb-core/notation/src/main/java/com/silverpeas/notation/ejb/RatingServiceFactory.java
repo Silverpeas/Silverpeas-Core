@@ -30,16 +30,16 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 /**
  * @author: Yohann Chastagnier
  */
-public class NotationServiceFactory {
+public class RatingServiceFactory {
 
   /**
-   * @return an instance of {@link NotationBm} EJB.
+   * @return an instance of {@link RatingBm} EJB.
    */
-  public static NotationBm getNotationService() {
+  public static RatingBm getRatingService() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.RATINGBM_EJBHOME, RatingBm.class);
     } catch (Exception e) {
-      throw new NotationRuntimeException("NotationServiceFactory.getNotationService()",
+      throw new RatingRuntimeException("RatingServiceFactory.getRatingService()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }

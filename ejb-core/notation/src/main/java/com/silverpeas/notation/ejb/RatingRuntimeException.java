@@ -26,7 +26,7 @@ package com.silverpeas.notation.ejb;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class NotationRuntimeException extends SilverpeasRuntimeException {
+public class RatingRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = 2282109565545438425L;
 
@@ -34,23 +34,22 @@ public class NotationRuntimeException extends SilverpeasRuntimeException {
     return "notation";
   }
 
-  public NotationRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public RatingRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public NotationRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public RatingRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public NotationRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public RatingRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public NotationRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public RatingRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

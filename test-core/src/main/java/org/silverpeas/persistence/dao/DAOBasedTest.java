@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.persistence.jpa;
+package org.silverpeas.persistence.dao;
 
 import org.silverpeas.DataSetTest;
 
@@ -30,10 +30,10 @@ import org.silverpeas.DataSetTest;
  * about the repository itself but on the persistence characteristics of a business object using a
  * JPA repository.
  */
-public abstract class RepositoryBasedTest extends DataSetTest {
+public abstract class DAOBasedTest extends DataSetTest {
 
   @Override
   protected String getDataSourceInjectionBeanId() {
-    return "jpaDataSource";
+    return "dataSource";
   }
 }

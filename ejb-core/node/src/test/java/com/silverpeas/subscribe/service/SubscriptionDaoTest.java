@@ -30,18 +30,9 @@ import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.silverpeas.persistence.dao.DAOBasedTest;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -54,39 +45,20 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
-public class SubscriptionDaoTest {
+public class SubscriptionDaoTest extends DAOBasedTest {
 
   private static final String INSTANCE_ID = "kmelia60";
   private static final String FORUM_INSTANCE_ID = "forum60";
   private SubscriptionDao subscriptionDao = new SubscriptionDao();
 
-  // Spring context
-  private ClassPathXmlApplicationContext context;
-  private DataSource dataSource;
-
-  @Before
-  public void setUp() throws Exception {
-
-    // Spring
-    context = new ClassPathXmlApplicationContext("spring-subscription.xml");
-    dataSource = (DataSource) context.getBean("dataSource");
-
-    // Database
-    DatabaseOperation.INSERT
-        .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
+  @Override
+  public String getDataSetPath() {
+    return "com/silverpeas/subscribe/service/node-actors-test-dataset.xml";
   }
 
-  protected IDataSet getDataSet() throws DataSetException {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        this.getClass().getClassLoader()
-        .getResourceAsStream("com/silverpeas/subscribe/service/node-actors-test-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    context.close();
+  @Override
+  public String[] getApplicationContextPath() {
+    return new String[]{"spring-subscription.xml"};
   }
 
   /**
@@ -96,7 +68,7 @@ public class SubscriptionDaoTest {
    * @throws SQLException
    */
   private Connection getConnection() throws SQLException {
-    return dataSource.getConnection();
+    return getDataSource().getConnection();
   }
 
   /**

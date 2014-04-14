@@ -22,21 +22,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notation.model.comparator;
+package com.silverpeas.notation.model;
 
-import java.util.Comparator;
+import java.io.Serializable;
 
-import org.silverpeas.rating.Rating;
+class RatingRow implements Serializable {
 
-public class NotationDetailComparator implements Comparator<Rating> {
+  private static final long serialVersionUID = -3192241064665407800L;
 
-  public int compare(Rating o1, Rating o2) {
-    int result = (new Float(o2.getOverallRating())).compareTo(new Float(
-        o1.getOverallRating()));
-    if (result == 0) {
-      result = o2.getNumberOfReviews() - o1.getNumberOfReviews();
-    }
-    return result;
+  private int id;
+  private String instanceId;
+  private String contributionId;
+  private String contributionType;
+  private String raterId;
+  private int rating;
+
+  RatingRow(int id, String instanceId, String contributionId, String contributionType,
+      String raterId, int rating) {
+    this.id = id;
+    this.instanceId = instanceId;
+    this.contributionId = contributionId;
+    this.contributionType = contributionType;
+    this.raterId = raterId;
+    this.rating = rating;
   }
 
+  int getId() {
+    return id;
+  }
+
+  String getInstanceId() {
+    return instanceId;
+  }
+
+  String getContributionId() {
+    return contributionId;
+  }
+
+  String getContributionType() {
+    return contributionType;
+  }
+
+  String getRaterId() {
+    return raterId;
+  }
+
+  int getRating() {
+    return rating;
+  }
 }

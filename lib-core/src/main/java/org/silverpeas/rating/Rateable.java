@@ -1,12 +1,18 @@
 package org.silverpeas.rating;
 
+
+/**
+ * A rateable is an object that represents a contribution which can be rated.
+ * This interface defines all methods that must be implemented in order to obtain differents
+ * contribution types that can be handled by a same rating mechanism.
+ * @author: Yohann Chastagnier
+ */
 public interface Rateable {
 
   /**
-   * Returns rating of this rateable resource
-   * @param userId user identifier 
-   * @return If userId is defined, returned rating will contain rating of this user
+   * Gets the contribution rating.
+   * @return a contribution rating.
+   * @see ContributionRating
    */
-  public Rating getRating(String userId);
-  
+  public ContributionRating getRating();
 }
