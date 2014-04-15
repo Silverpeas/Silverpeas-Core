@@ -186,6 +186,7 @@ padding: 0px;
 border: none;
 }
 </style>
+<meta name="viewport" content="initial-scale=1.0"/>
 </head>
 <% if (attachmentId != null) {
    	session.setAttribute("RedirectToAttachmentId", null);
