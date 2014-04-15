@@ -85,6 +85,21 @@ public class CacheServiceFactory {
   }
 
   /**
+   * Gets a useful cache in relation with a session : after the end of the session,
+   * the associated cache is trashed. If no session cache exists,
+   * then the request cache is returned.
+   * @return a cache associated to the current session, or a request if no session one.
+   */
+  public static SimpleCacheService getSessionCacheService() {
+    DefaultCacheService simpleCacheService = getInstance().requestCacheService
+        .get(DefaultCacheService.class.getName(), DefaultCacheService.class);
+    if (simpleCacheService != null) {
+      return simpleCacheService;
+    }
+    return getRequestCacheService();
+  }
+
+  /**
    * Gets the cache of the application.
    * @return an applicative cache service
    */

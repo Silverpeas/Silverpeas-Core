@@ -30,6 +30,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.util.security.SecuritySettings;
 
@@ -171,10 +172,15 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeRating(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryPath + RATEIT_CSS));
-    xhtml.addElement(script(jqueryPath + RATEIT_JS));
-    xhtml.addElement(script(angularjsDirectivesPath+"silverpeas-rating.js"));
-    xhtml.addElement(script(angularjsServicesPath+"silverpeas-rating.js"));
+    Object includeRatingDone =
+        CacheServiceFactory.getRequestCacheService().get("@includeRatingDone@");
+    if (includeRatingDone == null) {
+      xhtml.addElement(link(jqueryPath + RATEIT_CSS));
+      xhtml.addElement(script(jqueryPath + RATEIT_JS));
+      xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-rating.js"));
+      xhtml.addElement(script(angularjsServicesPath + "silverpeas-rating.js"));
+      CacheServiceFactory.getRequestCacheService().put("@includeRatingDone@", true);
+    }
     return xhtml;
   }
   

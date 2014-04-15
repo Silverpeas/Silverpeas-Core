@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.beanutils.BeanUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -49,6 +50,8 @@ import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
+  public static final String CURRENT_REQUESTER_KEY =
+      UserDetail.class.getName() + "_CURRENT_REQUESTER";
 
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
@@ -87,6 +90,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public static UserDetail getById(String userId) {
     return getOrganisationController().getUserDetail(userId);
+  }
+
+  /**
+   * Gets the detail about the current user behind a request of treatment processing.
+   * @return the detail about the user above described.
+   */
+  public static UserDetail getCurrentRequester() {
+    return CacheServiceFactory.getSessionCacheService()
+        .get(CURRENT_REQUESTER_KEY, UserDetail.class);
   }
 
   /**

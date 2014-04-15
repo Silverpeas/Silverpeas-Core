@@ -25,6 +25,7 @@ package org.silverpeas.validation.web;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -45,7 +46,12 @@ public class ContributionValidationEntity {
 
   private final ContributionValidation validation;
 
-  public static ContributionValidationEntity fromContributionValidation(
+  public static ContributionValidationEntity fromValidableContribution(
+      final ValidableContribution validableContribution) {
+    return fromContributionValidation(validableContribution.getValidation());
+  }
+
+  private static ContributionValidationEntity fromContributionValidation(
       final ContributionValidation validation) {
     return new ContributionValidationEntity(validation);
   }
