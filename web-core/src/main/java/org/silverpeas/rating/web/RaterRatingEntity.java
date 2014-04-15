@@ -26,8 +26,10 @@ package org.silverpeas.rating.web;
 import com.silverpeas.web.Exposable;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.ecs.xhtml.script;
 import org.json.JSONObject;
+import org.silverpeas.rating.Rateable;
 import org.silverpeas.rating.RaterRating;
 
 import javax.validation.constraints.NotNull;
@@ -80,11 +82,24 @@ public class RaterRatingEntity implements Exposable {
   private boolean isRatingDone;
 
   /**
-   * Creates a new rating entity from the specified notation.
-   * @param raterRating the rating to entitify.
-   * @return the entity representing the specified notation.
+   * Creates a new rater rating entity from the specified parameter.
+   * The rater of the returned entity is the user that requests the current treatment.
+   * @param rateableContribution a contribution that implements the {@link Rateable} behaviour.
+   * @return the entity representing the rater rating from the specified parameter.
+   * @see UserDetail#getCurrentRequester()
    */
-  public static RaterRatingEntity fromRaterRating(final RaterRating raterRating) {
+  public static RaterRatingEntity fromRateable(final Rateable rateableContribution) {
+    RaterRating raterRating =
+        rateableContribution.getRating().getRaterRating(UserDetail.getCurrentRequester());
+    return fromRaterRating(raterRating);
+  }
+
+  /**
+   * Creates a new rater rating entity from the specified parameter.
+   * @param raterRating the rater rating to entitify.
+   * @return the entity representing the specified rater rating.
+   */
+  protected static RaterRatingEntity fromRaterRating(final RaterRating raterRating) {
     return new RaterRatingEntity(raterRating).withURI(buildRaterRatingURI(raterRating));
   }
 
@@ -129,6 +144,38 @@ public class RaterRatingEntity implements Exposable {
   }
 
   /**
+   * Gets the number of rater ratings on the contribution.
+   * @return a positive integer between 0 and 5 (included).
+   */
+  public int getNumberOfRaterRatings() {
+    return numberOfRaterRatings;
+  }
+
+  /**
+   * Gets the average rating on the contribution.
+   * @return a float value between 0 and 5 (included)
+   */
+  public float getRatingAverage() {
+    return ratingAverage;
+  }
+
+  /**
+   * Gets the rating of the current user.
+   * @return a positive integer between 0 and 5 (included)
+   */
+  public int getRaterRatingValue() {
+    return raterRatingValue;
+  }
+
+  /**
+   * Indicates if the current user made a rating on the contribution.
+   * @return true if the user made a rating, false otherwise.
+   */
+  public boolean isRatingDone() {
+    return isRatingDone;
+  }
+
+  /**
    * Hidden constructor.
    * @param raterRating the rater rating to wrap.
    */
@@ -144,10 +191,10 @@ public class RaterRatingEntity implements Exposable {
 
   public String toJSonScript(String jsVariableName) {
     return new script().setType("text/javascript")
-        .addElement("var " + jsVariableName + " = " + toJSon() + ";").toString();
+        .addElement("var " + jsVariableName + " = " + getAsJSonString() + ";").toString();
   }
 
-  public String toJSon() {
+  public String getAsJSonString() {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("componentId", componentId);
     jsonObject.put("ratingAverage", ratingAverage);
