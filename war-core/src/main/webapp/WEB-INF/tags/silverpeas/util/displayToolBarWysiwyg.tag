@@ -69,36 +69,42 @@
 		<select id="storageFile" name="storageFile" onchange="openStorageFileManager('${editorName}', '${_context}', '${_nodeType}');this.selectedIndex=0">
 			<option value=""><fmt:message key="storageFile.select.title" bundle="${wysiwygBundle}"/></option>
 			<c:forEach var="componentFileStorage" items="${_listComponentsFileStorage}"  >
-				<option value="${componentFileStorage.id}">${componentFileStorage.label}</option>
+			<option value="${componentFileStorage.id}">${componentFileStorage.label}</option>
 			</c:forEach>
 		</select>
 	</c:if>
 
 	<!--  list of images already uploaded for the current object -->
-	<select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
-		<option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
-		<c:choose>
-      		<c:when test="${fn:startsWith(componentId, '<%=WysiwygController.WYSIWYG_WEBSITES%>')}">
-				<c:forEach var="image" items="${_tabImages}">
+	<c:choose>
+		<c:when test="${fn:startsWith(componentId, '<%=WysiwygController.WYSIWYG_WEBSITES%>')}">
+			<c:if test="${not empty _tabImages}">
+				<select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
+					<option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
+					<c:forEach var="image" items="${_tabImages}">
 					<option value="${_specificURL}${image[0]}">${image[1]}</option>
-				</c:forEach>
-		
-			</c:when>
+					</c:forEach>
+				</select>
+			</c:if>
+		</c:when>
 
-      		<c:otherwise>
-      			<c:forEach var="image" items="${_listImages}"  >
-					<option value="${image.attachmentURL}">${image.filename}</option>
-				</c:forEach>
-      		</c:otherwise>
-		</c:choose>
-	</select>
+		<c:otherwise>
+			<c:if test="${not empty _listImages}">
+				<select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
+					<option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
+					<c:forEach var="image" items="${_listImages}"  >
+					<option value="${_specificURL}${image.attachmentURL}">${image.filename}</option>
+					</c:forEach>
+				</select>
+			</c:if>
+		</c:otherwise>
+	</c:choose>
 	
 	<!--  list of gallery applications -->
 	<c:if test="${not empty _listComponentsImageStorage}">
 		<select id="galleryFile" name="galleryFile" onchange="openGalleryFileManager('${editorName}', '${_context}', '${_language}');this.selectedIndex=0;">
 			<option selected="selected"><fmt:message key="GML.galleries" bundle="${generalBundle}"/></option>
 			<c:forEach var="componentImageStorage" items="${_listComponentsImageStorage}"  >
-				<option value="${componentImageStorage.id}">${componentImageStorage.label}</option>
+			<option value="${componentImageStorage.id}">${componentImageStorage.label}</option>
 			</c:forEach>
 		</select>
 	</c:if>

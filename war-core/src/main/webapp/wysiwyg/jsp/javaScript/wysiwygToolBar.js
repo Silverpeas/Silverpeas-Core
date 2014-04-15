@@ -64,15 +64,9 @@ function choixImage(editorName) {
 	setEditorName(editorName);
 	var index = document.getElementById("images").selectedIndex;
 	var str = document.getElementById("images").options[index].value;
-	var title = document.getElementById("images").options[index].text;
 
 	if (index != 0 && str != null) {
-		var ext = title.substring(title.length - 4);
-	    if (ext.toLowerCase() == ".swf") {//du flash
-	    	getCKEditor().insertHtml('<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+str+'"></embed>');
-		} else {
-			getCKEditor().insertHtml('<img border="0" src="'+str+'" alt=""/>');
-		}
+		getCKEditor().insertHtml('<img border="0" src="'+str+'" alt=""/>');
 	}
 }
 

@@ -177,9 +177,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
     } else {
       out.println("<table>");
-      // dynamic value functionality
+      // Dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
-        out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
+        out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\" align=\"center\">");
         out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName,
             fieldName));
         out.println("</td></tr>");
@@ -190,7 +190,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       ResourceLocator resources = new ResourceLocator(
           "org.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
 
-      // storage file : HTML select building
+      StringBuilder stringBuilder = new StringBuilder();
+      
+      // Storage file : HTML select building
       List<ComponentInstLight> fileStorage = null;
       boolean showFileStorages = true;
       if (parameters.containsKey("fileStorages")) {
@@ -200,7 +202,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         fileStorage = WysiwygController.getStorageFile();
         if (!fileStorage.isEmpty()) {
           out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          StringBuilder stringBuilder = new StringBuilder();
+          stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
               "\" name=\"storageFile\" onchange=\"openStorageFileManager").append(
               FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
@@ -216,6 +218,27 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           out.println(stringBuilder.toString());
         }
       }
+      
+      // Images uploaded : HTML select building
+      List<SimpleDocument> listImages = WysiwygController.getImages(pageContext.getObjectId(), pageContext.getComponentId());
+      if (!listImages.isEmpty()) {
+        if (fileStorage == null || fileStorage.isEmpty()) {
+          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+        }
+        stringBuilder = new StringBuilder();
+        stringBuilder.append("<select id=\"images_").append(fieldName).append(
+            "\" name=\"images\" onchange=\"choixImage").append(
+            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
+            "();this.selectedIndex=0\">");
+        stringBuilder.append("<option value=\"\">").append(
+            resources.getString("Image")).append("</option>");
+        for (SimpleDocument image : listImages) {
+          stringBuilder.append("<option value=\"").append(URLManager.getApplicationURL()+image.getAttachmentURL()).append("\">")
+              .append(image.getFilename()).append("</option>");
+        }
+        stringBuilder.append("</select>");
+        out.println(stringBuilder.toString());
+      }
 
       // Gallery file : HTML select building
       List<ComponentInstLight> galleries = null;
@@ -225,11 +248,12 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       }
       if (showGalleries) {
         galleries = WysiwygController.getGalleries();
-        if (galleries != null && !galleries.isEmpty()) {
-          if (fileStorage == null || fileStorage.isEmpty()) {
+        if (!galleries.isEmpty()) {
+          if ((fileStorage == null || fileStorage.isEmpty()) && 
+              listImages.isEmpty()) {
             out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
           }
-          StringBuilder stringBuilder = new StringBuilder();
+          stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
               "\" name=\"galleryFile\" onchange=\"openGalleryFileManager").append(
               fieldNameFunction).append("();this.selectedIndex=0\">");
@@ -245,7 +269,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         }
       }
 
-      if ((fileStorage != null && !fileStorage.isEmpty()) || (galleries != null && !galleries.
+      if ((fileStorage != null && !fileStorage.isEmpty()) || 
+          (!listImages.isEmpty()) ||
+          (galleries != null && !galleries.
           isEmpty())) {
         out.println("</td></tr>");
       }
@@ -267,35 +293,35 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
       out.println("<script type=\"text/javascript\">");
 
-      StringBuilder builder = new StringBuilder(100);
+      stringBuilder = new StringBuilder();
       String configFile = settings.getString("configFile", URLManager.getApplicationURL()
           + "/wysiwyg/jsp/ckeditor/silverconfig.js");
 
-      builder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
-      builder.append("width : '").append(editorWidth).append("',\n");
-      builder.append("height : ").append(editorHeight).append(",\n");
-      builder.append("language : '").append(pageContext.getLanguage()).append("',\n");
+      stringBuilder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
+      stringBuilder.append("width : '").append(editorWidth).append("',\n");
+      stringBuilder.append("height : ").append(editorHeight).append(",\n");
+      stringBuilder.append("language : '").append(pageContext.getLanguage()).append("',\n");
       String basehref = settings.getString("baseHref", pageContext.getServerURL());
       if (StringUtil.isDefined(basehref)) {
-        builder.append("baseHref : '").append(basehref).append("',\n");
+        stringBuilder.append("baseHref : '").append(basehref).append("',\n");
       }
       String fileBrowserUrl =
           Util.getPath() + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" +
               pageContext.getComponentId() + "&ObjectId=" + pageContext.getObjectId() +
               "&Context=" + fieldName;
-      builder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      builder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      builder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      builder.append("toolbarStartupExpanded : ").append("false").append(",\n");
-      builder.append("customConfig : '").append(configFile).append("',\n");
-      builder.append("toolbar : '").append("XMLForm").append("',\n");
+      stringBuilder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+      stringBuilder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+      stringBuilder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+      stringBuilder.append("toolbarStartupExpanded : ").append("false").append(",\n");
+      stringBuilder.append("customConfig : '").append(configFile).append("',\n");
+      stringBuilder.append("toolbar : '").append("XMLForm").append("',\n");
       String skin = settings.getString("skin");
       if (StringUtil.isDefined(skin)) {
-        builder.append("skin : '").append(skin).append("'\n");
+        stringBuilder.append("skin : '").append(skin).append("'\n");
       }
-      builder.append("});");
+      stringBuilder.append("});");
 
-      out.println(builder.toString());
+      out.println(stringBuilder.toString());
 
       // field name used to generate a javascript function name
       // dynamic value functionality
@@ -315,40 +341,58 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         out.println("} }");
       }
 
-      // storage file : javascript functions
-      out.println("var storageFileWindow=window;");
-      out.println("function openStorageFileManager" + fieldNameFunction + "(){");
-      out.println("index = document.getElementById(\"storageFile_" + fieldName
-          + "\").selectedIndex;");
-      out.println("var componentId = document.getElementById(\"storageFile_" + fieldName
-          + "\").options[index].value;");
-      out.println("if (index != 0){ ");
-      out.println("url = \""
-          + URLManager.getApplicationURL()
-          +
-          "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
-          + fieldNameFunction + "\";");
-      out.println("windowName = \"StorageFileWindow\";");
-      out.println("width = \"750\";");
-      out.println("height = \"580\";");
-      out.
-          println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
-      out.println("if (!storageFileWindow.closed && storageFileWindow.name==windowName)");
-      out.println("storageFileWindow.close();");
-      out.
-          println("storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
-      out.println("}}");
+      // Storage file exists : javascript functions
+      if (fileStorage != null && !fileStorage.isEmpty()) {
+        out.println("var storageFileWindow=window;");
+        out.println("function openStorageFileManager" + fieldNameFunction + "(){");
+        out.println("index = document.getElementById(\"storageFile_" + fieldName
+            + "\").selectedIndex;");
+        out.println("var componentId = document.getElementById(\"storageFile_" + fieldName
+            + "\").options[index].value;");
+        out.println("if (index != 0){ ");
+        out.println("url = \""
+            + URLManager.getApplicationURL()
+            +
+            "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
+            + fieldNameFunction + "\";");
+        out.println("windowName = \"StorageFileWindow\";");
+        out.println("width = \"750\";");
+        out.println("height = \"580\";");
+        out.
+            println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
+        out.println("if (!storageFileWindow.closed && storageFileWindow.name==windowName)");
+        out.println("storageFileWindow.close();");
+        out.
+            println("storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
+        out.println("}}");
+  
+        out.println("function insertAttachmentLink" + fieldNameFunction + "(url,img,label){");
+        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
+        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
+        out.println(" focusManager.focus();");
+        out.
+            println(
+            "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
+        out.println("}");
+      }
+      
+      // Images uploaded : javascript functions
+      if (!listImages.isEmpty()) {
+        out.println("function choixImage" + fieldNameFunction +"() {");
+        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
+        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
+        out.println(" focusManager.focus();");
+        out.println(" var index = document.getElementById(\"images_" + fieldName
+            + "\").selectedIndex;");
+        out.println(" var str = document.getElementById(\"images_" + fieldName
+            + "\").options[index].value;");
+        out.println(" if (index != 0 && str != null) {");
+        out.println("   oEditor.insertHtml('<img border=\"0\" src=\"'+str+'\" alt=\"\"/>');");
+        out.println(" }");
+        out.println("}");
+      }
 
-      out.println("function insertAttachmentLink" + fieldNameFunction + "(url,img,label){");
-      out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-      out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-      out.println(" focusManager.focus();");
-      out.
-          println(
-          "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
-      out.println("}");
-
-      // Gallery files exists; javascript functions
+      // Gallery files exists : javascript functions
       if (galleries != null && !galleries.isEmpty()) {
         GalleryHelper.getJavaScript(fieldNameFunction, fieldName, contentLanguage, out);
 
