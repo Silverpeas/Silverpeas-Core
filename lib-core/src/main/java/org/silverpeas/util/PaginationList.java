@@ -38,14 +38,14 @@ import java.util.ListIterator;
 public class PaginationList<T> implements List<T> {
 
   private final List<T> wrappedList;
-  private final int maxsize;
+  private final long maxsize;
 
   private PaginationList(final List<T> aList) {
     this.wrappedList = aList;
     this.maxsize = this.wrappedList.size();
   }
 
-  private PaginationList(final List<T> aList, int maxItems) {
+  private PaginationList(final List<T> aList, long maxItems) {
     this.wrappedList = aList;
     this.maxsize = maxItems;
   }
@@ -72,7 +72,7 @@ public class PaginationList<T> implements List<T> {
    * @param maxItems the maximum number of items; that is the size of the pagination.
    * @return a {@code PaginationList} instance.
    */
-  public static final <T> PaginationList<T> from(final Collection<T> aCollection, int maxItems) {
+  public static final <T> PaginationList<T> from(final Collection<T> aCollection, long maxItems) {
     return new PaginationList<T>(new ArrayList<T>(aCollection), maxItems);
   }
 
@@ -80,7 +80,7 @@ public class PaginationList<T> implements List<T> {
    * Gets the maximum number of items the pagination contain.
    * @return the maximum size of the pagination.
    */
-  public int maxSize() {
+  public long maxSize() {
     return maxsize;
   }
 

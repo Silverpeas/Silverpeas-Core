@@ -382,15 +382,15 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     String jpqlCountQuery = "select count(*) " + jpqlQuery;
     NamedParameters parameters = criteria.clause().parameters();
     TypedQuery<ENTITY> query = getEntityManager().createQuery(jpqlQuery, getEntityClass());
-    int count = -1;
+    long count = -1;
     if (criteria.pagination().isDefined()) {
-      count = getFromJpqlString(jpqlCountQuery, parameters, Integer.class);
+      count = getFromJpqlString(jpqlCountQuery, parameters, Long.class);
       query.setFirstResult((criteria.pagination().getPageNumber() - 1) * criteria.pagination().
           getItemCount());
       query.setMaxResults(criteria.pagination().getItemCount());
     }
     List<ENTITY> listOfEntities = listFromQuery(query, parameters);
-    return (count >= 1 ? PaginationList.from(listOfEntities) : listOfEntities);
+    return (count >= 1 ? PaginationList.from(listOfEntities, count) : listOfEntities);
   }
 
   /**
