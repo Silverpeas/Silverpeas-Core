@@ -5986,11 +5986,21 @@ blockquote {
   .rightContent {
     width: 230px;
   }
+  .attachments {
+    min-width: 230px;
+	}
+  .header h4 {
+    min-width: 210px;
+   }
   .rightContent .attachments {
     min-width:auto;
   }
   .principalContent {
     margin-right: 245px;
+  }
+   #directory .aff_colonnes li {
+	float:none;
+	width:auto;
   }
 }
 
@@ -6010,6 +6020,10 @@ blockquote {
   }
   .header h4 {
     min-width: auto;
+  }
+   #directory .aff_colonnes li {
+	float:none;
+	width:auto;
   }
 }
 
