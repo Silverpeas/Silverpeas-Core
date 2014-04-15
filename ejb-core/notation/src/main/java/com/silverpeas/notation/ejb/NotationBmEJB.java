@@ -30,10 +30,11 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.RatingPK;
+
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationDAO;
-import com.silverpeas.notation.model.NotationDetail;
-import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.notation.model.comparator.NotationDetailComparator;
 
 import com.stratelia.webactiv.util.DBUtil;
@@ -44,13 +45,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class NotationBmEJB implements NotationBm {
 
-  private static final long serialVersionUID = 4906158721388935209L;
-
   @Override
-  public void updateNotation(NotationPK pk, int note) {
+  public void updateRating(RatingPK pk, int note) {
     Connection con = openConnection();
     try {
-      if (hasUserNotation(pk)) {
+      if (hasUserRating(pk)) {
         NotationDAO.updateNotation(con, pk, note);
       } else {
         NotationDAO.createNotation(con, pk, note);
@@ -65,7 +64,20 @@ public class NotationBmEJB implements NotationBm {
   }
 
   @Override
-  public void deleteNotation(NotationPK pk) {
+  public void moveRating(final RatingPK pk, final String componentInstanceId) {
+    Connection con = openConnection();
+    try {
+      NotationDAO.moveNotation(con, pk, componentInstanceId);
+    } catch (Exception e) {
+      throw new NotationRuntimeException("NotationBmEJB.updateNotation()",
+          SilverpeasRuntimeException.ERROR, "notation.CREATING_NOTATION_FAILED", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public void deleteRating(RatingPK pk) {
     Connection con = openConnection();
     try {
       NotationDAO.deleteNotation(con, pk);
@@ -77,10 +89,46 @@ public class NotationBmEJB implements NotationBm {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public void deleteUserRating(RatingPK pk) {
+    Connection con = openConnection();
+    try {
+      NotationDAO.deleteNotationByUser(con, pk);
+    } catch (Exception e) {
+      throw new NotationRuntimeException("NotationBmEJB.deleteUserNotation()",
+          SilverpeasRuntimeException.ERROR, "notation.DELETE_NOTATION_FAILED",
+          e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  @Override
+  public void deleteAppRatings(String appId) {
+    Connection con = openConnection();
+    try {
+      NotationDAO.deleteAppNotations(con, appId);
+    } catch (Exception e) {
+      throw new NotationRuntimeException("NotationBmEJB.deleteAppNotations()",
+          SilverpeasRuntimeException.ERROR, "notation.DELETE_NOTATION_FAILED", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  @Override
+  public List<Rating> getRatings(RatingPK... pks) {
+    List<Rating> notations = new ArrayList<Rating>();
+    for (RatingPK pk : pks) {
+      notations.add(getRating(pk));
+    }
+    return notations;
+  }
 
   @Override
-  public NotationDetail getNotation(NotationPK pk) {
-    NotationDetail notationDetail = new NotationDetail(pk);
+  public Rating getRating(RatingPK pk) {
+    Rating rating = new Rating(pk);
     Collection<Notation> notations = null;
     Connection con = openConnection();
     try {
@@ -107,14 +155,14 @@ public class NotationBmEJB implements NotationBm {
       }
       globalNote = sum / notesCount;
     }
-    notationDetail.setNotesCount(notesCount);
-    notationDetail.setGlobalNote(globalNote);
-    notationDetail.setUserNote(userNote);
-    return notationDetail;
+    rating.setNumberOfReviews(notesCount);
+    rating.setOverallRating(globalNote);
+    rating.setUserRating(userNote);
+    return rating;
   }
 
   @Override
-  public int countNotations(NotationPK pk) {
+  public int countReviews(RatingPK pk) {
     Connection con = openConnection();
     try {
       return NotationDAO.countNotations(con, pk);
@@ -127,7 +175,7 @@ public class NotationBmEJB implements NotationBm {
   }
 
   @Override
-  public boolean hasUserNotation(NotationPK pk) {
+  public boolean hasUserRating(RatingPK pk) {
     Connection con = openConnection();
     try {
       return NotationDAO.hasUserNotation(con, pk);
@@ -140,26 +188,26 @@ public class NotationBmEJB implements NotationBm {
   }
 
   @Override
-  public Collection<NotationDetail> getBestNotations(NotationPK pk, int notationsCount) {
+  public Collection<Rating> getBestRatings(RatingPK pk, int notationsCount) {
     Connection con = openConnection();
-    Collection<NotationPK> notationPKs = null;
+    Collection<RatingPK> notationPKs = null;
     try {
-      notationPKs = NotationDAO.getNotationPKs(con, pk);
+      notationPKs = NotationDAO.getRatingPKs(con, pk);
     } catch (Exception e) {
-      throw new NotationRuntimeException("NotationBmEJB.hasUserNotation()",
+      throw new NotationRuntimeException("NotationBmEJB.getBestNotations()",
           SilverpeasRuntimeException.ERROR, "notation.HAS_USER_NOTATION_FAILED", e);
     } finally {
       DBUtil.close(con);
     }
-    return getBestNotations(notationPKs, notationsCount);
+    return getBestRatings(notationPKs, notationsCount);
   }
 
   @Override
-  public Collection<NotationDetail> getBestNotations(Collection<NotationPK> pks, int notationsCount) {
-    List<NotationDetail> notations = new ArrayList<NotationDetail>();
+  public Collection<Rating> getBestRatings(Collection<RatingPK> pks, int notationsCount) {
+    List<Rating> notations = new ArrayList<Rating>();
     if (pks != null && !pks.isEmpty()) {
-      for (NotationPK pk : pks) {
-        notations.add(getNotation(pk));
+      for (RatingPK pk : pks) {
+        notations.add(getRating(pk));
       }
       Collections.sort(notations, new NotationDetailComparator());
       if (notations.size() > notationsCount) {

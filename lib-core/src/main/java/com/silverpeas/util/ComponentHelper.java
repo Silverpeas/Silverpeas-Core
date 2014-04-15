@@ -26,6 +26,7 @@ package com.silverpeas.util;
 
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
+
 import java.util.Set;
 
 /**

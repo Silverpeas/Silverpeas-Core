@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.silverpeas.rating.RatingPK;
+
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -58,9 +61,21 @@ public class NotationDAO {
       + " AND " + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE
       + " = ?" + " AND " + COLUMN_AUTHOR + " = ?";
 
+  private static final String QUERY_MOVE_NOTATION = "UPDATE " + TABLE_NAME
+      + " SET " + COLUMN_INSTANCEID + " = ?" + " WHERE " + COLUMN_INSTANCEID + " = ?" + " AND "
+      + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?";
+
   private static final String QUERY_DELETE_NOTATION = "DELETE FROM "
       + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" + " AND "
       + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?";
+  
+  private static final String QUERY_DELETE_USER_NOTATION = "DELETE FROM "
+      + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ? AND "
+      + COLUMN_EXTERNALID + " = ? AND " + COLUMN_EXTERNALTYPE + " = ? AND " + COLUMN_AUTHOR +
+      " = ?";
+  
+  private static final String QUERY_DELETE_APP_NOTATIONS = "DELETE FROM "
+    + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?";
 
   private static final String QUERY_GET_NOTATIONS = "SELECT " + COLUMNS
       + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?"
@@ -80,7 +95,7 @@ public class NotationDAO {
   private NotationDAO() {
   }
 
-  public static void createNotation(Connection con, NotationPK pk, int note)
+  public static void createNotation(Connection con, RatingPK pk, int note)
       throws SQLException {
     int newId = 0;
     try {
@@ -94,8 +109,8 @@ public class NotationDAO {
     try {
       prepStmt.setInt(1, newId);
       prepStmt.setString(2, pk.getInstanceId());
-      prepStmt.setString(3, pk.getId());
-      prepStmt.setInt(4, pk.getType());
+      prepStmt.setString(3, pk.getResourceId());
+      prepStmt.setString(4, pk.getResourceType());
       prepStmt.setString(5, pk.getUserId());
       prepStmt.setInt(6, note);
       prepStmt.executeUpdate();
@@ -104,14 +119,14 @@ public class NotationDAO {
     }
   }
 
-  public static void updateNotation(Connection con, NotationPK pk, int note)
+  public static void updateNotation(Connection con, RatingPK pk, int note)
       throws SQLException {
     PreparedStatement prepStmt = con.prepareStatement(QUERY_UPDATE_NOTATION);
     try {
       prepStmt.setInt(1, note);
       prepStmt.setString(2, pk.getInstanceId());
-      prepStmt.setString(3, pk.getId());
-      prepStmt.setInt(4, pk.getType());
+      prepStmt.setString(3, pk.getResourceId());
+      prepStmt.setString(4, pk.getResourceType());
       prepStmt.setString(5, pk.getUserId());
       prepStmt.executeUpdate();
     } finally {
@@ -119,25 +134,64 @@ public class NotationDAO {
     }
   }
 
-  public static void deleteNotation(Connection con, NotationPK pk)
+  public static void moveNotation(Connection con, RatingPK pk, final String componentInstanceId)
       throws SQLException {
-    PreparedStatement prepStmt = con.prepareStatement(QUERY_DELETE_NOTATION);
+    PreparedStatement prepStmt = con.prepareStatement(QUERY_MOVE_NOTATION);
     try {
-      prepStmt.setString(1, pk.getInstanceId());
-      prepStmt.setString(2, pk.getId());
-      prepStmt.setInt(3, pk.getType());
+      prepStmt.setString(1, componentInstanceId);
+      prepStmt.setString(2, pk.getInstanceId());
+      prepStmt.setString(3, pk.getResourceId());
+      prepStmt.setString(4, pk.getResourceType());
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
     }
   }
 
-  public static Collection<Notation> getNotations(Connection con, NotationPK pk)
+  public static void deleteNotation(Connection con, RatingPK pk)
+      throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(QUERY_DELETE_NOTATION);
+    try {
+      prepStmt.setString(1, pk.getInstanceId());
+      prepStmt.setString(2, pk.getResourceId());
+      prepStmt.setString(3, pk.getResourceType());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+  
+  public static void deleteNotationByUser(Connection con, RatingPK pk)
+      throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(QUERY_DELETE_USER_NOTATION);
+    try {
+      prepStmt.setString(1, pk.getInstanceId());
+      prepStmt.setString(2, pk.getResourceId());
+      prepStmt.setString(3, pk.getResourceType());
+      prepStmt.setString(4, pk.getUserId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+  
+  public static void deleteAppNotations(Connection con, String appId)
+      throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(QUERY_DELETE_APP_NOTATIONS);
+    try {
+      prepStmt.setString(1, appId);
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
+  public static Collection<Notation> getNotations(Connection con, RatingPK pk)
       throws SQLException {
     PreparedStatement prepStmt = con.prepareStatement(QUERY_GET_NOTATIONS);
     prepStmt.setString(1, pk.getInstanceId());
-    prepStmt.setString(2, pk.getId());
-    prepStmt.setInt(3, pk.getType());
+    prepStmt.setString(2, pk.getResourceId());
+    prepStmt.setString(3, pk.getResourceType());
     ResultSet rs = null;
 
     List<Notation> notations = new ArrayList<Notation>(INITIAL_CAPACITY);
@@ -152,12 +206,12 @@ public class NotationDAO {
     return notations;
   }
 
-  public static int countNotations(Connection con, NotationPK pk)
+  public static int countNotations(Connection con, RatingPK pk)
       throws SQLException {
     PreparedStatement prepStmt = con.prepareStatement(QUERY_COUNT_NOTATIONS);
     prepStmt.setString(1, pk.getInstanceId());
-    prepStmt.setString(2, pk.getId());
-    prepStmt.setInt(3, pk.getType());
+    prepStmt.setString(2, pk.getResourceId());
+    prepStmt.setString(3, pk.getResourceType());
     ResultSet rs = null;
 
     try {
@@ -171,12 +225,12 @@ public class NotationDAO {
     return 0;
   }
 
-  public static boolean hasUserNotation(Connection con, NotationPK pk)
+  public static boolean hasUserNotation(Connection con, RatingPK pk)
       throws SQLException {
     PreparedStatement prepStmt = con.prepareStatement(QUERY_HAS_USER_NOTATION);
     prepStmt.setString(1, pk.getInstanceId());
-    prepStmt.setString(2, pk.getId());
-    prepStmt.setInt(3, pk.getType());
+    prepStmt.setString(2, pk.getResourceId());
+    prepStmt.setString(3, pk.getResourceType());
     prepStmt.setString(4, pk.getUserId());
     ResultSet rs = null;
 
@@ -188,33 +242,33 @@ public class NotationDAO {
     }
   }
 
-  public static Collection<NotationPK> getNotationPKs(Connection con, NotationPK pk)
+  public static Collection<RatingPK> getRatingPKs(Connection con, RatingPK pk)
       throws SQLException {
     String instanceId = pk.getInstanceId();
-    int externalType = pk.getType();
+    String externalType = pk.getResourceType();
 
     StringBuffer query = new StringBuffer().append("SELECT ").append(
         COLUMN_EXTERNALID).append(", ").append(COLUMN_EXTERNALTYPE).append(
         " FROM ").append(TABLE_NAME).append(" WHERE ")
         .append(COLUMN_INSTANCEID).append(" = ?");
-    if (externalType != Notation.TYPE_UNDEFINED) {
+    if (StringUtil.isDefined(externalType)) {
       query.append(" AND ").append(COLUMN_EXTERNALTYPE).append(" = ?");
     }
 
     PreparedStatement prepStmt = con.prepareStatement(query.toString());
     int index = 1;
     prepStmt.setString(index++, instanceId);
-    if (externalType != Notation.TYPE_UNDEFINED) {
-      prepStmt.setInt(index++, externalType);
+    if (StringUtil.isDefined(externalType)) {
+      prepStmt.setString(index++, externalType);
     }
 
-    List<NotationPK> notationPKs = new ArrayList<NotationPK>(INITIAL_CAPACITY);
+    List<RatingPK> notationPKs = new ArrayList<RatingPK>(INITIAL_CAPACITY);
     ResultSet rs = null;
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        NotationPK notationPK = new NotationPK(rs.getString(COLUMN_EXTERNALID),
-            instanceId, rs.getInt(COLUMN_EXTERNALTYPE));
+        RatingPK notationPK = new RatingPK(rs.getString(COLUMN_EXTERNALID),
+            instanceId, rs.getString(COLUMN_EXTERNALTYPE));
         if (!notationPKs.contains(notationPK)) {
           notationPKs.add(notationPK);
         }
@@ -227,7 +281,7 @@ public class NotationDAO {
 
   private static Notation resultSet2Notation(ResultSet rs) throws SQLException {
     return new Notation(rs.getInt(COLUMN_ID), rs.getString(COLUMN_INSTANCEID),
-        rs.getString(COLUMN_EXTERNALID), rs.getInt(COLUMN_EXTERNALTYPE), rs
+        rs.getString(COLUMN_EXTERNALID), rs.getString(COLUMN_EXTERNALTYPE), rs
         .getString(COLUMN_AUTHOR), rs.getInt(COLUMN_NOTE));
   }
 

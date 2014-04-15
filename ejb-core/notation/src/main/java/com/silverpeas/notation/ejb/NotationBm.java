@@ -21,26 +21,93 @@
 package com.silverpeas.notation.ejb;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.ejb.Local;
 
-import com.silverpeas.notation.model.NotationDetail;
-import com.silverpeas.notation.model.NotationPK;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.RatingPK;
 
 @Local
 public interface NotationBm {
 
-  public void updateNotation(NotationPK pk, int note);
+  /**
+   * Save user notation. Create it or update it if it already exists.
+   * @param pk identifying the rated resource and the user
+   * @param note the rate given to this resource by the user
+   */
+  public void updateRating(RatingPK pk, int note);
 
-  public void deleteNotation(NotationPK pk);
+  /**
+   * Remove all notations of identified resource to the specified component instance identifier.
+   * @param pk identifying the resource
+   * @param componentInstanceId the target component identified by its instance id.
+   */
+  public void moveRating(RatingPK pk, String componentInstanceId);
 
-  public NotationDetail getNotation(NotationPK pk);
+  /**
+   * Remove all notations of identified resource 
+   * @param pk identifying the resource
+   */
+  public void deleteRating(RatingPK pk);
+  
+  /**
+   * Remove user notation of identified resource 
+   * @param pk identifying the resource and the user
+   */
+  public void deleteUserRating(RatingPK pk);
+  
+  /**
+   * Remove all resources notations of given app
+   * @param appId identity of app
+   */
+  public void deleteAppRatings(String appId);
+ 
+  /**
+   * Getting notation about given resources identified by PKs.
+   * If a resource has no notation, a NotationDetail is returned anyway.
+   * @param pks identities of resource
+   * @return Notations of each identified resource
+   */
+  public List<Rating> getRatings(RatingPK... pks);
 
-  public int countNotations(NotationPK pk);
+  /**
+   * Getting notation about once given resource identified by its PK.
+   * If the resource has no notation, a NotationDetail is returned anyway.
+   * @param pk identity of resource
+   * @return Notation of identified resource
+   */
+  public Rating getRating(RatingPK pk);
 
-  public boolean hasUserNotation(NotationPK pk);
+  /**
+   * Getting number of rating about once given resource identified by its PK.
+   * @param pk identity of resource
+   * @return Number of rates of identified resource. If it has no rate, 0 is returned.
+   */
+  public int countReviews(RatingPK pk);
 
-  public Collection<NotationDetail> getBestNotations(NotationPK pk, int notationsCount);
+  /**
+   * Checking if user has given a rating on this resource
+   * @param pk identity of resource and user
+   * @return true if user has already given a rate
+   */
+  public boolean hasUserRating(RatingPK pk);
 
-  public Collection<NotationDetail> getBestNotations(Collection<NotationPK> pks, int notationsCount);
+  /**
+   * Returns best rated resources of given app (sorted by best descending global rating).
+   * If two resources have the same rating then the one with the most votes is placed ahead.
+   * @param pk identity of app and type of resource
+   * @param notationsCount number of returned notations
+   * @return Notations according to global rating and number of total votes
+   */
+  public Collection<Rating> getBestRatings(RatingPK pk, int notationsCount);
+
+  /**
+   * Returns best rated resources of given resources list (sorted by best descending global rating).
+   * If two resources have the same rating then the one with the most votes is placed ahead.
+   * @param pks identity of resources
+   * @param notationsCount number of returned notations
+   * @return Notations according to global rating and number of total votes
+   */
+  public Collection<Rating> getBestRatings(Collection<RatingPK> pks, int notationsCount);
 }
