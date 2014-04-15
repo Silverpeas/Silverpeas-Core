@@ -23,6 +23,8 @@
  */
 package org.silverpeas.persistence.repository;
 
+import com.silverpeas.util.StringUtil;
+
 /**
  * Criteria is a simplified representation of conditions the entities targeted by a query have to
  * satisfy and that constrains the query of such entities.
@@ -84,12 +86,15 @@ public interface QueryCriteria {
 
     /**
      * Adds a criterion to this clause.
-     * @param criterionText a text representation of the criterion to add. The text representatipn
-     * is in charge to the {@code QueryCriteria} implementation.
+     * @param criterionText a text representation of the criterion to add. The text representation
+     * is in charge to the {@code QueryCriteria} implementation. If the text is null or empty, then
+     * nothing is added.
      * @return itself enriched with the new criterion.
      */
     public Clause add(String criterionText) {
-      text.append(criterionText.trim()).append(" ");
+      if (StringUtil.isDefined(criterionText)) {
+        text.append(criterionText.trim()).append(" ");
+      }
       return this;
     }
 
