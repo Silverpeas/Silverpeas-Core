@@ -41,6 +41,7 @@ function MM_reloadPage(init) {  //reloads the window if Nav4 resized
 MM_reloadPage(true);
 //-->
 </script>
+<meta name="viewport" content="initial-scale=1.0"/>
 </head>
 <frameset rows="0,115,*" cols="*" border="0" framespacing="0" frameborder="NO">
   <frame src="<%=m_context%>/clipboard/jsp/Idle.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
