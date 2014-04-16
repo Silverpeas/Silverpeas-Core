@@ -379,11 +379,11 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    */
   public List<ENTITY> findByCriteria(final QueryCriteria criteria) {
     String jpqlQuery = jpqlQueryFrom(criteria);
-    String jpqlCountQuery = "select count(*) " + jpqlQuery;
     NamedParameters parameters = criteria.clause().parameters();
     TypedQuery<ENTITY> query = getEntityManager().createQuery(jpqlQuery, getEntityClass());
     long count = -1;
     if (criteria.pagination().isDefined()) {
+      String jpqlCountQuery = "select count(*) " + jpqlQuery.replaceFirst("order by.*", "");
       count = getFromJpqlString(jpqlCountQuery, parameters, Long.class);
       query.setFirstResult((criteria.pagination().getPageNumber() - 1) * criteria.pagination().
           getItemCount());

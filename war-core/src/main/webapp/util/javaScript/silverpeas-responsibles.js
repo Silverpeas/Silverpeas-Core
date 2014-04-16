@@ -146,21 +146,21 @@
     });
     if (isSpace) {
       User.get({
-        accessLevel: ['ADMINISTRATOR']
+        accessLevel : ['ADMINISTRATOR']
       }).then(function(users) {
-    	var administrators = [];
+        var administrators = [];
         $(users).each(function(index, administrator) {
           administrators.push(administrator);
         });
         if (administrators.length > 0) {
-          var $div = $('<div>', {'id':'global-admins'});
+          var $div = $('<div>', {'id' : 'global-admins'});
           $target.append($div);
           $div.append($newLine);
           $div.append($('<h5>',
-	         {'class': 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
-	      __prepareRoleResponsibles($div, userId, administrators);
-	      $newLine = $('<br/>');
-	    }
+              {'class' : 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
+          __prepareRoleResponsibles($div, userId, administrators);
+          $newLine = $('<br/>');
+        }
       });
     }
   }

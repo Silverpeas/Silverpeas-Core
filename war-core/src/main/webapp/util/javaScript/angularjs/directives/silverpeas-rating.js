@@ -58,8 +58,12 @@
               if (typeof scope.canuserrating === 'undefined') {
                 scope.canuserrating = "true";
               }
-              if (attrs.raterrating) {
-                scope.raterrating = Rating.wrap(eval(attrs.raterrating));
+              if (scope.raterrating || attrs.raterrating) {
+                if (scope.raterrating) {
+                  scope.raterrating = Rating.wrap(scope.raterrating);
+                } else {
+                  scope.raterrating = Rating.wrap(eval(attrs.raterrating));
+                }
                 scope.contributionid = scope.raterrating.contributionId;
                 scope.contributiontype = scope.raterrating.contributionType;
                 scope.componentid = scope.raterrating.componentId;
