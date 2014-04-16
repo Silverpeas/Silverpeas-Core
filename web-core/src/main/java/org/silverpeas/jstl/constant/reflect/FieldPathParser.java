@@ -23,6 +23,9 @@
  */
 package org.silverpeas.jstl.constant.reflect;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,11 +36,11 @@ import java.util.regex.Pattern;
  */
 public class FieldPathParser {
 
-  private static final String REGEX_FIELD_PATH = "((\\w+\\.)+)(\\w+)";
+  private static final String REGEX_FIELD_PATH = "^(([a-z]\\w+\\.)+[A-Z]\\w+)\\.((\\w+\\.?)+)";
   private static final int GROUP_INDEX_CLASS = 1;
   private static final int GROUP_INDEX_FIELD = 3;
   private String className;
-  private String fieldName;
+  private List<String> fieldNames = new ArrayList<String>(3);
 
   /**
    * Constructor for the parser. The fully qualified field name is parsed into its simple name and
@@ -49,15 +52,14 @@ public class FieldPathParser {
     Matcher matcher = Pattern.compile(REGEX_FIELD_PATH).matcher(path);
     matcher.find();
     this.className = matcher.group(GROUP_INDEX_CLASS);
-    this.className = className.substring(0, className.length() - 1);
-    this.fieldName = matcher.group(GROUP_INDEX_FIELD);
+    Collections.addAll(this.fieldNames, matcher.group(GROUP_INDEX_FIELD).split("\\."));
   }
 
   public String getDeclaringClassName() {
     return this.className;
   }
 
-  public String getFieldName() {
-    return this.fieldName;
+  public List<String> getFieldOrClassNames() {
+    return this.fieldNames;
   }
 }
