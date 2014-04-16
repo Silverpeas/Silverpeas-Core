@@ -282,4 +282,18 @@ public class CollectionUtil {
   public static <T> Set<T> asSet(T... values) {
     return new HashSet<T>(Arrays.asList(values));
   }
+
+  /**
+   * Null elements are not taking into account.
+   * @see Collections#addAll(java.util.Collection, Object[])
+   */
+  public static <T> boolean addAllIgnoreNull(Collection<? super T> c, T... elements) {
+    boolean result = false;
+    for (T element : elements) {
+      if (element != null) {
+        result |= c.add(element);
+      }
+    }
+    return result;
+  }
 }
