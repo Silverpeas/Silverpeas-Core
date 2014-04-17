@@ -26,6 +26,8 @@ package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
@@ -38,7 +40,7 @@ public class BrowseBarTag extends NeedWindowTag {
   private static final long serialVersionUID = 2496136938371562945L;
   private BrowseBar browseBar;
   private String extraInformations;
-  private String path;
+  private Object path;
   private String spaceId;
   private String componentId;
   private boolean ignoreComponentLink = true;
@@ -48,7 +50,7 @@ public class BrowseBarTag extends NeedWindowTag {
     this.extraInformations = extraInformations;
   }
 
-  public void setPath(String path) {
+  public void setPath(Object path) {
     this.path = path;
   }
   
@@ -85,8 +87,8 @@ public class BrowseBarTag extends NeedWindowTag {
     if (extraInformations != null) {
       browseBar.setExtraInformation(extraInformations);
     }
-    if (StringUtil.isDefined(path)) {
-      browseBar.setPath(path);
+    if (path instanceof String && StringUtil.isDefined(path.toString())) {
+      browseBar.setPath(path.toString());
     }
     if (StringUtil.isDefined(componentId)) {
       ComponentInstLight component = OrganisationControllerFactory.getOrganisationController()
@@ -102,6 +104,19 @@ public class BrowseBarTag extends NeedWindowTag {
     }
     browseBar.setIgnoreComponentLink(ignoreComponentLink);
     browseBar.setClickable(clickable);
+
+    if (path instanceof NavigationContext) {
+      NavigationContext.ViewPoint currentViewPoint = ((NavigationContext) path).getBaseViewPoint();
+      while (currentViewPoint != null) {
+        if (StringUtil.isDefined(currentViewPoint.getLabel())) {
+          BrowseBarElement element = new BrowseBarElement(currentViewPoint.getLabel(),
+              URLManager.getApplicationURL() + currentViewPoint.getUri().toString(), null);
+          browseBar.addElement(element);
+        }
+        currentViewPoint = currentViewPoint.getNext();
+      }
+    }
+
     return EVAL_BODY_INCLUDE;
   }
 }

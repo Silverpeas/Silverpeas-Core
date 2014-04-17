@@ -2583,6 +2583,21 @@ ul#globalResultListDetails {
   background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
+silverpeas-toggle a.toggle {
+  text-align: right;
+  display: block;
+  padding-right: 15px;
+  color: #666;
+}
+
+silverpeas-toggle a.toggle.more {
+  background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+}
+
+silverpeas-toggle a.toggle.less {
+  background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+}
+
 #searchGroupValues ul li.otherEntry {
   display: none;
 }

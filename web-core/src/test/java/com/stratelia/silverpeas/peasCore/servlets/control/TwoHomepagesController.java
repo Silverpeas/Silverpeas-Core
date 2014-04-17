@@ -25,6 +25,7 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
@@ -64,8 +65,7 @@ public class TwoHomepagesController extends WebComponentController<TestWebCompon
   }
 
   @Override
-  protected String backUrlFromCallerKey(final TestWebComponentRequestContext context,
-      final String callerKey) {
-    return "callerKey" + "Performed";
+  protected void specifyViewPoint(final TestWebComponentRequestContext context,
+      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
   }
 }

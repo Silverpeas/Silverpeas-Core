@@ -25,14 +25,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.servlet.HttpRequest;
@@ -44,6 +37,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -198,6 +192,7 @@ public class WebComponentManager {
         Invokable invokable = null;
         InvokeBefore invokeBefore = null;
         InvokeAfter invokeAfter = null;
+        ViewPoint viewPoint = null;
         for (Annotation annotation : resourceMethod.getDeclaredAnnotations()) {
           if (annotation instanceof GET) {
             httpMethods.add(GET.class);
@@ -209,6 +204,8 @@ public class WebComponentManager {
             httpMethods.add(DELETE.class);
           } else if (annotation instanceof Path) {
             paths.add((Path) annotation);
+          } else if (annotation instanceof ViewPoint) {
+            viewPoint = (ViewPoint) annotation;
           } else if (annotation instanceof LowestRoleAccess) {
             if (lowestRoleAccess != null) {
               throw new IllegalArgumentException(
@@ -225,8 +222,10 @@ public class WebComponentManager {
               );
             }
             isDefaultPaths = true;
-          } else if (annotation instanceof RedirectTo || annotation instanceof RedirectToInternal ||
-              annotation instanceof RedirectToInternalJsp) {
+          } else if (annotation instanceof RedirectTo ||
+              annotation instanceof RedirectToInternal ||
+              annotation instanceof RedirectToInternalJsp ||
+              annotation instanceof RedirectToViewPoint) {
             if (redirectTo != null) {
               throw new IllegalArgumentException(
                   "One, and only one, redirection must be specified for method " +
@@ -284,8 +283,8 @@ public class WebComponentManager {
               webComponentManager.httpMethodPaths.put(httpMethodClass.getName(), httpMethodPaths);
             }
             List<com.stratelia.silverpeas.peasCore.servlets.Path> registredPaths = httpMethodPaths
-                .addPaths(paths, lowestRoleAccess, resourceMethod, redirectTo, invokeBefore,
-                    invokeAfter);
+                .addPaths(paths, lowestRoleAccess, resourceMethod, viewPoint, redirectTo,
+                    invokeBefore, invokeAfter);
             if (isDefaultPaths) {
               if (webComponentManager.defaultPath != null) {
                 throw new IllegalArgumentException(
@@ -344,7 +343,7 @@ public class WebComponentManager {
    * @return
    * @throws Exception
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "ConstantConditions"})
   public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
       WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation perform(
       CONTROLLER webComponentController, String path) throws Exception {
@@ -358,16 +357,6 @@ public class WebComponentManager {
     // Common processing
     webComponentRequestContext.beforeRequestProcessing();
     webComponentController.beforeRequestProcessing(webComponentRequestContext);
-
-    // Back URL management
-    String callerPage = webComponentRequestContext.getRequest().getParameter("from");
-    final String backUrl;
-    if (StringUtil.isDefined(callerPage)) {
-      backUrl = webComponentController.backUrlFromCallerKey(webComponentRequestContext, callerPage);
-    } else {
-      backUrl = webComponentRequestContext.getComponentUriBase() + "Main";
-    }
-    webComponentRequestContext.getRequest().setAttribute("backUrl", backUrl);
 
     // Retrieving the web component manager
     WebComponentManager webComponentManager =
@@ -426,6 +415,11 @@ public class WebComponentManager {
       pathToPerform = defaultPath;
     }
 
+    // Reset navigation context if necessary
+    if (pathToPerform == defaultPath) {
+      webComponentContext.getNavigationContext().clear();
+    }
+
     // Has the user enough rights to access the aimed treatment?
     if (pathToPerform.getLowestRoleAccess() != null &&
         (webComponentContext.getGreaterUserRole() == null ||
@@ -463,6 +457,30 @@ public class WebComponentManager {
     for (String invokeAfterId : pathToPerform.getInvokeAfterIdentifiers()) {
       invokables.get(invokeAfterId).invoke(webComponentController, webComponentContext);
     }
+
+    // Navigation view point
+    NavigationContext navigationContext = webComponentContext.getNavigationContext();
+    final ViewPoint viewPointIdentifier = pathToPerform.getViewPoint();
+    if (viewPointIdentifier != null) {
+      NavigationContext.ViewPoint viewPoint =
+          navigationContext.viewPointFrom(viewPointIdentifier.identifier());
+      // updating the URI of the view point
+      UriBuilder fullUriBuilder =
+          UriBuilder.fromUri(webComponentContext.getComponentUriBase()).path(path);
+      for (Map.Entry<String, String[]> entry : webComponentContext.getRequest().getParameterMap()
+          .entrySet()) {
+        fullUriBuilder.queryParam(entry.getKey(), entry.getValue());
+      }
+      viewPoint.withFullUri(fullUriBuilder.build().toString());
+      viewPoint.withViewContext(viewPointIdentifier.contextIdentifier());
+      webComponentController.specifyViewPoint(webComponentContext, viewPoint,
+          viewPointIdentifier.contextIdentifier());
+    } else {
+      navigationContext.noViewPoint();
+    }
+
+    // Setting the navigation context attribute
+    webComponentContext.getRequest().setAttribute("navigationContext", navigationContext);
 
     // Returning the navigation
     return navigation;

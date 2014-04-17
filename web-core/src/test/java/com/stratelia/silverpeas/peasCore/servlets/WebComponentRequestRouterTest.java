@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.control.AbstractTestWebComponentGenericController;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -37,6 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.DefaultCacheService;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
@@ -48,6 +50,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.UriBuilder;
+import java.util.StringTokenizer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -102,7 +106,29 @@ public class WebComponentRequestRouterTest {
     HttpSession session = mock(HttpSession.class);
     MainSessionController mainSessionController = mock(MainSessionController.class);
     OrganisationController organisationController = getOrganisationController();
-    when(request.getPathInfo()).thenReturn(path);
+
+    String uriPart = path;
+    int indexOfUriParamSplit = path.indexOf('?');
+    if (indexOfUriParamSplit >= 0) {
+      // URI part
+      uriPart = path.substring(0, indexOfUriParamSplit);
+      // Params part
+      String paramPart = path.substring(indexOfUriParamSplit + 1);
+      StringTokenizer paramPartTokenizer = new StringTokenizer(paramPart, "&");
+      while (paramPartTokenizer.hasMoreTokens()) {
+        String param = paramPartTokenizer.nextToken();
+        int indexOfEqual = param.indexOf('=');
+        if (indexOfEqual > 0) {
+          String paramName = param.substring(0, indexOfEqual);
+          String paramValue = param.substring(indexOfEqual + 1);
+          when(request.getParameter(paramName)).thenReturn(paramValue);
+        }
+      }
+    }
+
+    when(request.getPathInfo()).thenReturn(uriPart);
+    when(request.getRequestURI()).thenReturn(
+        UriBuilder.fromPath(URLManager.getApplicationURL()).path(uriPart).build().toString());
     when(organisationController.isComponentAvailable(anyString(), anyString()))
         .then(new Returns(true));
     when(organisationController.getComponentInstLight(anyString()))
@@ -212,6 +238,11 @@ public class WebComponentRequestRouterTest {
 
     @SuppressWarnings("unchecked")
     public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
+      DefaultCacheService sessionCache = CacheServiceFactory.getRequestCacheService()
+          .get(DefaultCacheService.class.getName(), DefaultCacheService.class);
+      CacheServiceFactory.getRequestCacheService().clear();
+      CacheServiceFactory.getRequestCacheService().put(DefaultCacheService.class.getName(),
+          (sessionCache != null ? sessionCache : new DefaultCacheService()));
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
       if (HttpMethod.GET.equals(httpMethod)) {

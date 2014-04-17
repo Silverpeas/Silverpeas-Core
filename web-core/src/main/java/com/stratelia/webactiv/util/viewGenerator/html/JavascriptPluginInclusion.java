@@ -183,6 +183,16 @@ public class JavascriptPluginInclusion {
     }
     return xhtml;
   }
+
+  public static ElementContainer includeToggle(final ElementContainer xhtml) {
+    Object includeRatingDone =
+        CacheServiceFactory.getRequestCacheService().get("@includeToggleDone@");
+    if (includeRatingDone == null) {
+      xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-toggle.js"));
+      CacheServiceFactory.getRequestCacheService().put("@includeToggleDone@", true);
+    }
+    return xhtml;
+  }
   
   public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
