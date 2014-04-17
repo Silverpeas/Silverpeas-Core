@@ -215,9 +215,7 @@ public class TemplateDesignerRequestRouter extends
         templateDesignerSC.saveTemplate();
 
         destination = getDestination("ViewTemplate", templateDesignerSC, request);
-      } else {
-        destination = root + "welcome.jsp";
-      }
+      } 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";

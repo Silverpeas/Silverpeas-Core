@@ -283,6 +283,10 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 		<view:wysiwyg replace="editor1" language="<%=language %>" 
 			spaceId="<%=spaceId%>" spaceName="<%=spaceName%>" componentId="<%=componentId%>" componentName="<%=componentName%>" 
 			browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" />
+			
+		if ($.trim($(".wysiwyg-fileStorage").text()).length==0) {
+			$(".wysiwyg-fileStorage").css("display", "none") ;
+		}
 	}
 
 	function saveAndExit() {

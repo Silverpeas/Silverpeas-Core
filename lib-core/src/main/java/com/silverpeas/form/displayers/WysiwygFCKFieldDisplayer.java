@@ -220,24 +220,28 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       }
       
       // Images uploaded : HTML select building
-      List<SimpleDocument> listImages = WysiwygController.getImages(pageContext.getObjectId(), pageContext.getComponentId());
-      if (!listImages.isEmpty()) {
-        if (fileStorage == null || fileStorage.isEmpty()) {
-          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+      List<SimpleDocument> listImages = null;
+      if(pageContext.getObjectId() != null &&
+          !"useless".equals(pageContext.getComponentId())) { 
+        listImages = WysiwygController.getImages(pageContext.getObjectId(), pageContext.getComponentId());
+        if (!listImages.isEmpty()) {
+          if (fileStorage == null || fileStorage.isEmpty()) {
+            out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+          }
+          stringBuilder = new StringBuilder();
+          stringBuilder.append("<select id=\"images_").append(fieldName).append(
+              "\" name=\"images\" onchange=\"choixImage").append(
+              FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
+              "();this.selectedIndex=0\">");
+          stringBuilder.append("<option value=\"\">").append(
+              resources.getString("Image")).append("</option>");
+          for (SimpleDocument image : listImages) {
+            stringBuilder.append("<option value=\"").append(URLManager.getApplicationURL()+image.getAttachmentURL()).append("\">")
+                .append(image.getFilename()).append("</option>");
+          }
+          stringBuilder.append("</select>");
+          out.println(stringBuilder.toString());
         }
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("<select id=\"images_").append(fieldName).append(
-            "\" name=\"images\" onchange=\"choixImage").append(
-            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-            "();this.selectedIndex=0\">");
-        stringBuilder.append("<option value=\"\">").append(
-            resources.getString("Image")).append("</option>");
-        for (SimpleDocument image : listImages) {
-          stringBuilder.append("<option value=\"").append(URLManager.getApplicationURL()+image.getAttachmentURL()).append("\">")
-              .append(image.getFilename()).append("</option>");
-        }
-        stringBuilder.append("</select>");
-        out.println(stringBuilder.toString());
       }
 
       // Gallery file : HTML select building
@@ -250,7 +254,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         galleries = WysiwygController.getGalleries();
         if (!galleries.isEmpty()) {
           if ((fileStorage == null || fileStorage.isEmpty()) && 
-              listImages.isEmpty()) {
+              (listImages == null || listImages.isEmpty())) {
             out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
           }
           stringBuilder = new StringBuilder();
@@ -270,7 +274,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       }
 
       if ((fileStorage != null && !fileStorage.isEmpty()) || 
-          (!listImages.isEmpty()) ||
+          (listImages != null && !listImages.isEmpty()) ||
           (galleries != null && !galleries.
           isEmpty())) {
         out.println("</td></tr>");
@@ -377,7 +381,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       }
       
       // Images uploaded : javascript functions
-      if (!listImages.isEmpty()) {
+      if (listImages != null && !listImages.isEmpty()) {
         out.println("function choixImage" + fieldNameFunction +"() {");
         out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
         out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
