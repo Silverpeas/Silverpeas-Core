@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.ViewPoint;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -68,6 +69,7 @@ class HttpMethodPaths {
    * @param paths the paths to register.
    * @param lowestRoleAccess the lowest role that permits the access to the resourceMethod.
    * @param resourceMethod the method that has to be called for the path.
+   * @param viewPoint the identifier of the view point associated to the path.
    * @param redirectTo the redirection to be performed after the end of the treatment.
    * @param invokeBefore the list of identifiers of methods to invoke before the treatment of
    * HTTP method.
@@ -76,17 +78,20 @@ class HttpMethodPaths {
    * @return registred paths.
    */
   List<Path> addPaths(Set<javax.ws.rs.Path> paths, LowestRoleAccess lowestRoleAccess,
-      Method resourceMethod, final Annotation redirectTo, final InvokeBefore invokeBefore,
-      final InvokeAfter invokeAfter) {
+      Method resourceMethod, final ViewPoint viewPoint,
+      final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     List<Path> registredPaths = new ArrayList<Path>();
     if (paths.isEmpty()) {
       registredPaths.add(
-          addPath("/", lowestRoleAccess, resourceMethod, redirectTo, invokeBefore, invokeAfter));
+          addPath("/", lowestRoleAccess, resourceMethod, viewPoint, redirectTo,
+              invokeBefore, invokeAfter)
+      );
     } else {
       for (javax.ws.rs.Path path : paths) {
         registredPaths.add(
-            addPath(path.value(), lowestRoleAccess, resourceMethod, redirectTo, invokeBefore,
-                invokeAfter));
+            addPath(path.value(), lowestRoleAccess, resourceMethod, viewPoint, redirectTo,
+                invokeBefore, invokeAfter)
+        );
       }
     }
     return registredPaths;
@@ -98,23 +103,25 @@ class HttpMethodPaths {
    * @param path the path to register.
    * @param lowestRoleAccess the lowest role that permits the access to the resourceMethod.
    * @param resourceMethod the method that has to be called for the path.
+   * @param viewPoint the identifier of the view point associated to the path.
    * @param redirectTo the redirection to be performed after the end of the treatment.
    * @param invokeBefore the list of identifiers of methods to invoke before the treatment of
    * HTTP method.
    * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
-   * method.
-   * @return the registred path.
+   * method.    @return the registred path.
    */
   private Path addPath(String path, LowestRoleAccess lowestRoleAccess, Method resourceMethod,
-      final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
+      final ViewPoint viewPoint, final Annotation redirectTo,
+      final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     Path pathToRegister =
-        new Path(path.replaceFirst("^/", ""), lowestRoleAccess, resourceMethod, redirectTo,
-            invokeBefore, invokeAfter);
+        new Path(path.replaceFirst("^/", ""), lowestRoleAccess, resourceMethod, viewPoint,
+            redirectTo, invokeBefore, invokeAfter);
     Path pathRoute = pathRoutes.get(pathToRegister.getPath());
     if (pathRoute != null) {
       throw new IllegalArgumentException(
           "specified path for method " + resourceMethod.getName() + " already exists for method " +
-              pathRoute.getResourceMethod().getName() + " -> " + path);
+              pathRoute.getResourceMethod().getName() + " -> " + path
+      );
     }
     pathRoutes.put(pathToRegister.getPath(), pathToRegister);
     return pathToRegister;

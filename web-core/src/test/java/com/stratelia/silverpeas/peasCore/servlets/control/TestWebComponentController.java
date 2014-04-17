@@ -26,15 +26,8 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToType;
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import javax.ws.rs.DELETE;
@@ -284,5 +277,64 @@ public class TestWebComponentController extends ParentTestWebComponentController
   @Path("/variables/concurrencyWithStatics/staticPath")
   @RedirectTo("staticWay")
   public void variableConcurrencyStatic(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/viewPoint/one")
+  @ViewPoint(identifier = "list", contextIdentifier = "viewPointA")
+  @RedirectTo("viewPointOne")
+  public void viewPointOne(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("viewPoint/two")
+  @RedirectToViewPoint(identifier = "list")
+  public void viewPointTwo(TestWebComponentRequestContext context) {
+  }
+
+  @GET
+  @Path("/viewPoint/three")
+  @RedirectToViewPoint(identifier = "previous")
+  public void viewPointThree(TestWebComponentRequestContext context) {
+    context.getNavigationContext().viewPointFrom("otherList")
+        .withViewContext(ViewContext.viewPointC.name()).withSuffixUri("viewPoint/three")
+        .withLabel("viewPointThreeLabel");
+  }
+
+  @GET
+  @Path("/viewPoint/clear")
+  @RedirectTo("viewPointClear")
+  public void viewPointClear(TestWebComponentRequestContext context) {
+    context.getNavigationContext().clear();
+  }
+
+  @Override
+  protected void specifyViewPoint(final TestWebComponentRequestContext context,
+      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
+    ViewContext viewContext = ViewContext.fromIdentifier(viewContextIdentifier);
+    if (viewContext != null) {
+      switch (viewContext) {
+        case viewPointA:
+          viewPoint.withLabel("viewPointALabel");
+          break;
+        case viewPointB:
+          viewPoint.withLabel("viewPointBLabel");
+          break;
+        case viewPointC:
+          viewPoint.withLabel("viewPointCLabel");
+          break;
+      }
+    }
+  }
+
+  public static enum ViewContext {
+    viewPointA, viewPointB, viewPointC;
+    public static ViewContext fromIdentifier(String identifier) {
+      try {
+        return valueOf(identifier);
+      } catch (Exception e) {
+        return null;
+      }
+    }
   }
 }

@@ -21,31 +21,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.peasCore.servlets.control;
+package com.stratelia.silverpeas.peasCore.servlets.annotation;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * @author: Yohann Chastagnier
+ * Annotation to specify a view point.
+ * <p/>
+ * @author Yohann Chastagnier
  */
-public class ParentTestWebComponentController
-    extends AbstractTestWebComponentGenericController<TestWebComponentRequestContext> {
+@Inherited
+@Documented
+@Target(METHOD)
+@Retention(RUNTIME)
+public @interface ViewPoint {
 
   /**
-   * Standard Session Controller Constructor
-   * @param mainSessionCtrl The user's profile
-   * @param componentContext The component's profile
-   * @see
+   * The identifier of a view point (several controller paths can perform treatments on same
+   * output).
+   * @return
    */
-  public ParentTestWebComponentController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext);
-  }
+  String identifier();
 
-  @Override
-  protected void specifyViewPoint(final TestWebComponentRequestContext context,
-      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
-  }
+  /**
+   * The context identifier of a view point (several contexts can be handled into the same view
+   * point).
+   * @return
+   */
+  String contextIdentifier() default "unknown";
 }

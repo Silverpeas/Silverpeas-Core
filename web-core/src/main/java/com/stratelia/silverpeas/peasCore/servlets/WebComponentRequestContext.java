@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToViewPoint;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -59,6 +60,8 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   private HttpServletResponse response;
   private CONTROLLER controller = null;
   private boolean comingFromRedirect = false;
+  private NavigationContext navigationContext;
+  private boolean viewPointContextPerformed = false;
 
   private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
   private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
@@ -85,6 +88,10 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     this.response = response;
   }
 
+  void setController(final CONTROLLER controller) {
+    this.controller = controller;
+  }
+
   public Class<? extends Annotation> getHttpMethodClass() {
     return httpMethodClass;
   }
@@ -97,12 +104,15 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return response;
   }
 
-  CONTROLLER getController() {
-    return controller;
+  public NavigationContext getNavigationContext() {
+    if (navigationContext == null) {
+      navigationContext = NavigationContext.get(this);
+    }
+    return navigationContext;
   }
 
-  void setController(final CONTROLLER controller) {
-    this.controller = controller;
+  CONTROLLER getController() {
+    return controller;
   }
 
   public Map<String, String> getPathVariables() {
@@ -189,11 +199,21 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return comingFromRedirect;
   }
 
+  boolean isViewPointContextPerformed() {
+    return viewPointContextPerformed;
+  }
+
+  void markViewPointContextPerformed() {
+    this.viewPointContextPerformed = true;
+  }
+
   Navigation redirectTo(Annotation redirectToAnnotation) {
     if (redirectToAnnotation instanceof RedirectToInternalJsp) {
       return redirectToInternalJsp(((RedirectToInternalJsp) redirectToAnnotation).value());
     } else if (redirectToAnnotation instanceof RedirectToInternal) {
       return redirectToInternal(((RedirectToInternal) redirectToAnnotation).value());
+    } else if (redirectToAnnotation instanceof RedirectToViewPoint) {
+      return redirectToViewPoint(((RedirectToViewPoint) redirectToAnnotation).identifier());
     }
     RedirectTo redirectTo = (RedirectTo) redirectToAnnotation;
     switch (redirectTo.type()) {
@@ -205,6 +225,17 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
         return redirectTo(normalizeRedirectPath(UriBuilder.fromUri("/"),
             ((RedirectTo) redirectToAnnotation).value()).build().toString());
     }
+  }
+
+  private Navigation redirectToViewPoint(String viewPointIdentifier) {
+    NavigationContext.ViewPoint viewPoint = null;
+    if (!"previous".equals(viewPointIdentifier)) {
+      viewPoint = getNavigationContext().findViewPointFrom(viewPointIdentifier);
+    }
+    if (viewPoint == null) {
+      viewPoint = getNavigationContext().getPreviousViewPoint();
+    }
+    return redirectTo(viewPoint.getUri().toString());
   }
 
   private Navigation redirectToInternal(String internalPath) {

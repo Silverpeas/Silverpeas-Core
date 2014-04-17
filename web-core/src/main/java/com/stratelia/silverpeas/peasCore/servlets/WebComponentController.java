@@ -76,13 +76,12 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
   }
 
   /**
-   * This method handles the translation from a caller identifier key to an back URL.
-   * The mechanism searches from the request parameters one parameter called "from".
-   * If it exists and is filled, then this method is called (just before calls of the aimed Web
-   * Controller method and its invoke before and after methods).
-   * @param callerKey the key extracted from the request parameter called "from".
-   * @return the back url computed.
+   * This method permits to specify all data of a view point according to the web request context
+   * and view context.
+   * @param context the web request context.
+   * @param viewPoint the view point instance.
+   * @param viewContextIdentifier the view context identifier.
    */
-  protected abstract String backUrlFromCallerKey(WEB_COMPONENT_REQUEST_CONTEXT context,
-      String callerKey);
+  protected abstract void specifyViewPoint(final WEB_COMPONENT_REQUEST_CONTEXT context,
+      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier);
 }

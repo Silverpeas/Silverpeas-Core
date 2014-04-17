@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
+import java.net.URI;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,6 +73,11 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getMultilang(), times(1))
         .getString("GML.action.user.forbidden");
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
+    NavigationContext navigationContext = testResult.requestContext.getNavigationContext();
+    assertThat(navigationContext.getBaseViewPoint(), notNullValue());
+    assertThat(navigationContext.getBaseViewPoint(), is(navigationContext.getCurrentViewPoint()));
+    assertThat(navigationContext.getBaseViewPoint().getUri(),
+        is(URI.create("/componentName/Main")));
   }
 
   @Test
@@ -622,6 +628,337 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
     assertThat(variables.size(), is(0));
+  }
+
+  @Test
+  public void navigationViewPoint() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("Main").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
+
+    NavigationContext navigationContext = testResult.requestContext.getNavigationContext();
+    NavigationContext.ViewPoint currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO ONE
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/one").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/viewPointOne");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    NavigationContext.ViewPoint previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    // The URI is the request.getRequestUri() and not the result of Redirect mechanism
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO TWO (no ViewPoint defined)
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/two").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/viewPoint/one");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    // The URI is the request.getRequestUri() and not the result of Redirect mechanism
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO TWO (no ViewPoint defined)
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/two").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/viewPoint/one");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    // The URI is the request.getRequestUri() and not the result of Redirect mechanism
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO ONE
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/one").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/viewPointOne");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    // The URI is the request.getRequestUri() and not the result of Redirect mechanism
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION to THREE (set view manually)
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/three").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/viewPoint/one");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, not(is(navigationContext.getCurrentViewPoint())));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("otherList"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointC"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointThreeLabel"));
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/three")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO TWO (no ViewPoint defined)
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/two").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/viewPoint/one");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, not(is(navigationContext.getCurrentViewPoint())));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("otherList"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointC"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointThreeLabel"));
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/three")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO ONE
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/one").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/viewPointOne");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    // The URI is the request.getRequestUri() and not the result of Redirect mechanism
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO HOMEPAGE
+     */
+    testResult = onDefaultController().defaultRequest().changeSuffixPathWith("Main").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO ONE
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/one").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/viewPointOne");
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getBaseViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getLabel(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), notNullValue());
+
+    previousViewPoint = currentViewPoint;
+    currentViewPoint = currentViewPoint.getNext();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), is("list"));
+    assertThat(currentViewPoint.getViewContextIdentifier(), is("viewPointA"));
+    assertThat(currentViewPoint.getLabel(), is("viewPointALabel"));
+    // The URI is the request.getRequestUri() and not the result of Redirect mechanism
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/viewPoint/one")));
+    assertThat(currentViewPoint.getPrevious(), is(previousViewPoint));
+    assertThat(currentViewPoint.getNext(), nullValue());
+
+    /*
+    NAVIGATION TO A PAGE THAT CLEAR THE NAVIGATION CONTEXT
+     */
+    testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("viewPoint/clear").perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/viewPointClear");
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentViewPoint = navigationContext.getBaseViewPoint();
+    assertThat(currentViewPoint, notNullValue());
+    assertThat(currentViewPoint, is(navigationContext.getCurrentViewPoint()));
+    assertThat(currentViewPoint, is(navigationContext.getPreviousViewPoint()));
+    assertThat(currentViewPoint.getViewIdentifier(), nullValue());
+    assertThat(currentViewPoint.getViewContextIdentifier(), nullValue());
+    assertThat(currentViewPoint.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentViewPoint.getPrevious(), nullValue());
+    assertThat(currentViewPoint.getNext(), nullValue());
   }
 
   private ControllerTest<TestWebComponentController, TestWebComponentRequestContext>
