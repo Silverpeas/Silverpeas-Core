@@ -23,6 +23,8 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.annotation;
 
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -32,22 +34,22 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify to which resource, out of the current component, the control will be
- * passed
- * once the treatment of the annotated method succeeded.
+ * Annotation to specify a redirection to a specified navigation step on a HTTP method of a {@link
+ * com.stratelia.silverpeas.peasCore.servlets.WebComponentController}.
  * <p/>
- * @author Yohann Chastagnier
+ * When a HTTP method with this annotation is called, the redirection is performed from
+ * informations known by the navigation step returned by {@link
+ * NavigationContext#findNavigationStepFrom(String)} ()} method with {@link #value()} as given
+ * parameter.
  */
 @Inherited
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface RedirectToViewPoint {
+public @interface RedirectToNavigationStep {
 
   /**
-   * The identifier of the view point to navigate to.
-   * If "previous" is defined, then the previous view point is taking into account.
-   * @return
+   * The identifier of the navigation step to navigate to.
    */
-  String identifier();
+  String value();
 }

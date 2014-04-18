@@ -106,14 +106,15 @@ public class BrowseBarTag extends NeedWindowTag {
     browseBar.setClickable(clickable);
 
     if (path instanceof NavigationContext) {
-      NavigationContext.ViewPoint currentViewPoint = ((NavigationContext) path).getBaseViewPoint();
-      while (currentViewPoint != null) {
-        if (StringUtil.isDefined(currentViewPoint.getLabel())) {
-          BrowseBarElement element = new BrowseBarElement(currentViewPoint.getLabel(),
-              URLManager.getApplicationURL() + currentViewPoint.getUri().toString(), null);
+      NavigationContext.NavigationStep currentNavigationStep =
+          ((NavigationContext) path).getBaseNavigationStep();
+      while (currentNavigationStep != null) {
+        if (StringUtil.isDefined(currentNavigationStep.getLabel())) {
+          BrowseBarElement element = new BrowseBarElement(currentNavigationStep.getLabel(),
+              URLManager.getApplicationURL() + currentNavigationStep.getUri().toString(), null);
           browseBar.addElement(element);
         }
-        currentViewPoint = currentViewPoint.getNext();
+        currentNavigationStep = currentNavigationStep.getNext();
       }
     }
 

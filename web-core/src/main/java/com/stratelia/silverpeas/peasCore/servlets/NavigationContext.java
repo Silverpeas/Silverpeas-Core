@@ -23,6 +23,9 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToNavigationStep;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
+import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarTag;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.ws.rs.core.UriBuilder;
@@ -30,6 +33,28 @@ import java.net.URI;
 
 /**
  * This class permits to handle a context according to the user navigation.
+ * <p/>
+ * The navigation context can be see as a stack of {@link NavigationStep} elements. Each time a
+ * new step is defined, it is pushed into the stack. If the step already exists from the stack,
+ * then the navigation context is reset to this.
+ * <p/>
+ * The creation of navigation steps must be defined manually in web controllers by the programmer.
+ * For doing, it can use the following tools:
+ * <ul>
+ *   <li>{@link com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep}: it permits
+ *   to define a navigation step identifier and optinally a context identifier</li>
+ *   <li>{@link WebComponentRequestContext#getNavigationContext()}: provides methods that permits
+ *   to the user to set manually a navigation step without defining navigation step annotations</li>
+ *   <li>{@link RedirectToPreviousNavigationStep}: when defined the user is redirected to the
+ *   previous navigation step from the navigation stack</li>
+ *   <li>{@link RedirectToNavigationStep}: when defined the user is redirected to the
+ *   navigation step from the navigation stack that is identifier by {@link
+ *   RedirectToNavigationStep#value()}</li>
+ * </ul>
+ * The navigation context can be specified to the path attribute of TAG <view:browseBar .../>.
+ * In that case, the complete stack of navigation steps is browsed to generate browse bar element
+ * parts. {@link NavigationContext.NavigationStep} element with no label defined is ignored in
+ * this generation treatment.
  * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component request context.
  * @author: Yohann Chastagnier
  */
@@ -55,10 +80,10 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
     return navigationContext;
   }
 
-  private final ViewPoint baseViewPoint;
+  private final NavigationStep baseNavigationStep;
   private WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext;
-  private ViewPoint currentViewPoint;
-  private ViewPoint previousViewPoint;
+  private NavigationStep currentNavigationStep;
+  private NavigationStep previousNavigationStep;
 
   /**
    * Default hidden constructor.
@@ -67,9 +92,9 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    */
   NavigationContext(WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext) {
     this.webComponentRequestContext = webComponentRequestContext;
-    baseViewPoint = new ViewPoint(null).withSuffixUri("Main");
-    currentViewPoint = baseViewPoint;
-    previousViewPoint = baseViewPoint;
+    baseNavigationStep = new NavigationStep(null).withSuffixUri("Main");
+    currentNavigationStep = baseNavigationStep;
+    previousNavigationStep = baseNavigationStep;
   }
 
   /**
@@ -80,79 +105,115 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
     return webComponentRequestContext;
   }
 
-  public ViewPoint getPreviousViewPoint() {
-    return previousViewPoint;
+  /**
+   * Gets in any cases of navigation the right previous {@link NavigationContext.NavigationStep}
+   * instance.
+   * <p/>
+   * If user has just performed a web treatment that resulting to a navigation step creation or
+   * update, then the returned navigation step is the previous of the one created or updated.
+   * <p/>
+   * If user has performed a web treatment that not resulting to a navigation step creation or
+   * update, then the previous navigation step returned is the last created or updated.
+   * @return the right previous {@link NavigationContext.NavigationStep} as above described.
+   */
+  public NavigationStep getPreviousNavigationStep() {
+    return previousNavigationStep;
   }
 
   /**
-   * Gets the current point of the navigation.
-   * @return the above described point.
+   * Gets the current step of the navigation. It is the last created or updated one.
+   * @return the above described navigation step.
    */
-  public ViewPoint getCurrentViewPoint() {
-    return currentViewPoint;
+  public NavigationStep getCurrentNavigationStep() {
+    return currentNavigationStep;
   }
 
   /**
-   * Gets the first point of the navigation. It represents the one of the homepage ("Main").
-   * @return the above described point.
+   * Gets the first step of the navigation. It represents the one of the homepage ("Main").
+   * @return the above described navigation step.
    */
-  public ViewPoint getBaseViewPoint() {
-    return baseViewPoint;
+  public NavigationStep getBaseNavigationStep() {
+    return baseNavigationStep;
   }
 
   /**
-   * If the view point is not registred, then it pushes into a linked list a new view point
-   * identified by the specified view identifier.
-   * Otherwise, it pushes nothing and reset last view point of the stack to the one associated to
-   * the specified view identifier.
-   * @param viewIdentifier the identifier of the view that will be associated to the point.
-   * @return the {@link ViewPoint} instance related to the specified view identifier.
+   * Method to specify a navigation step creation/update on a HTTP method of a {@link
+   * WebComponentController} without using the
+   * {@link com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep} annotation.
+   * <p/>
+   * When a HTTP method with this annotation is called, one of the following internal treatment is
+   * performed:
+   * <ul>
+   *   <li>if no navigation step is referenced by specified identifier,
+   *   then a navigation step is created and referenced with it</li>
+   *   <li>if a navigation step with specified identifier already exists,
+   *   then the navigation step stack is reset to this</li>
+   * </ul>
+   * Then, in any cases, the following internal treatments are performed:
+   * <ul>
+   *   <li>{@link NavigationContext.NavigationStep#withFullUri(String)}: the current requested path
+   *   URI (with URL parameters) is set</li>
+   *   <li>{@link WebComponentController#specifyNavigationStep(WebComponentRequestContext,
+   *   NavigationContext.NavigationStep, String)}: this method is called and according to given
+   *   parameters the programmer can set additional informations to the navigation step (a
+   *   functional label for example)</li>
+   * </ul>
+   * @param stepIdentifier the identifier of a navigation step.
+   * @return the {@link NavigationStep} instance related to the specified identifier.
    */
-  public ViewPoint viewPointFrom(String viewIdentifier) {
-    ViewPoint current = findViewPointFrom(viewIdentifier);
+  public NavigationStep navigationStepFrom(String stepIdentifier) {
+    NavigationStep current = findNavigationStepFrom(stepIdentifier);
     if (current != null) {
-      currentViewPoint = current;
+      currentNavigationStep = current;
       current.withNext(null);
-      previousViewPoint = current.getPrevious();
+      previousNavigationStep = current.getPrevious();
     } else {
-      currentViewPoint.withNext(new ViewPoint(viewIdentifier));
-      currentViewPoint.getNext().withPrevious(currentViewPoint);
-      currentViewPoint = currentViewPoint.getNext();
-      previousViewPoint = currentViewPoint.getPrevious();
+      currentNavigationStep.withNext(new NavigationStep(stepIdentifier));
+      currentNavigationStep.getNext().withPrevious(currentNavigationStep);
+      currentNavigationStep = currentNavigationStep.getNext();
+      previousNavigationStep = currentNavigationStep.getPrevious();
     }
-    getWebComponentRequestContext().markViewPointContextPerformed();
-    return currentViewPoint;
+    getWebComponentRequestContext().markNavigationStepContextPerformed();
+    return currentNavigationStep;
   }
 
   /**
-   * Indicates that a no view point is defined for the current request processing.
+   * When no {@link com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep} is not
+   * specified to a called HTTP Web Controller method, then the mechanism calls this method.
+   * <p/>
+   * It takes into account the case that a navigation step is created or updated by using
+   * directly the {@link #navigationStepFrom(String)} method from the Web Controller.
+   * <p/>
+   * The aim of this method is to set the right navigation step returned by {@link
+   * #getPreviousNavigationStep()} method.
    */
-  public void noViewPoint() {
-    if (!getWebComponentRequestContext().isViewPointContextPerformed()) {
-      previousViewPoint = currentViewPoint;
+  void noNavigationStep() {
+    if (!getWebComponentRequestContext().isNavigationStepContextPerformed()) {
+      previousNavigationStep = currentNavigationStep;
     }
   }
 
   /**
    * Clears the navigation context and reset it to the base one.
-   * @return result of {@link #getBaseViewPoint()}
+   * @return result of {@link #getBaseNavigationStep()}
    */
-  public ViewPoint clear() {
-    baseViewPoint.withNext(null);
-    currentViewPoint = baseViewPoint;
-    previousViewPoint = baseViewPoint;
-    return currentViewPoint;
+  public NavigationStep clear() {
+    baseNavigationStep.withNext(null);
+    currentNavigationStep = baseNavigationStep;
+    previousNavigationStep = baseNavigationStep;
+    return currentNavigationStep;
   }
 
   /**
-   * Finds an existing view point from the specified view identifier.
-   * @param viewIdentifier the view identifier that aimed the requested view point.
-   * @return the {@link ViewPoint} instance if any, null otherwise.
+   * Finds an existing navigation step from the stack by the specified identifier.
+   * @param stepIdentifier the identifier that references the requested navigation step in the
+   * stack.
+   * @return the {@link NavigationContext.NavigationStep} instance if any, null otherwise.
    */
-  ViewPoint findViewPointFrom(String viewIdentifier) {
-    ViewPoint current = getBaseViewPoint().getNext();
+  NavigationStep findNavigationStepFrom(String stepIdentifier) {
+    NavigationStep current = getBaseNavigationStep().getNext();
     while (current != null) {
-      if (current.getViewIdentifier().equals(viewIdentifier)) {
+      if (current.getIdentifier().equals(stepIdentifier)) {
         break;
       }
       current = current.getNext();
@@ -161,73 +222,136 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   }
 
   /**
-   * Class that represents the data of a point of a navigation.
+   * Class that represents the data of a navigation step.
+   * This class is used for automatically set informatons to a browse bar element.
    */
-  public class ViewPoint {
-    private final String viewIdentifier;
-    private String viewContextIdentifier;
-    private ViewPoint previous;
-    private ViewPoint next;
+  public class NavigationStep {
+    private final String identifier;
+    private String contextIdentifier;
+    private NavigationStep previous;
+    private NavigationStep next;
     private URI uri = URI.create("");
     private String label;
 
-    private ViewPoint(String viewIdentifier) {
-      this.viewIdentifier = viewIdentifier;
+    /**
+     * Default constructor.
+     * @param identifier the identifier of the navigation step.
+     */
+    private NavigationStep(String identifier) {
+      this.identifier = identifier;
     }
 
-    public String getViewIdentifier() {
-      return viewIdentifier;
+    /**
+     * Gets the identifier of the navigation step.
+     * @return the above described identifier.
+     */
+    public String getIdentifier() {
+      return identifier;
     }
 
-    public String getViewContextIdentifier() {
-      return viewContextIdentifier;
+    /**
+     * Gets the identifier of a context associated to the navigation step.
+     * @return the above described identifier.
+     */
+    public String getContextIdentifier() {
+      return contextIdentifier;
     }
 
-    public ViewPoint withViewContext(final String viewContext) {
-      this.viewContextIdentifier = viewContext;
+    /**
+     * Sets the identifier of a context associated to the navigation step.
+     * @param contextIdentifier a context identifier.
+     * @return itself.
+     */
+    public NavigationStep withContextIdentifier(final String contextIdentifier) {
+      this.contextIdentifier = contextIdentifier;
       return this;
     }
 
+    /**
+     * Gets a functional label of the navigation step. It is especially used by {@link
+     * BrowseBarTag} tag.
+     * @return the above described label.
+     */
     public String getLabel() {
       return label;
     }
 
-    public ViewPoint withLabel(final String label) {
+    /**
+     * Sets a functional label of the navigation step. It is especially used by {@link
+     * BrowseBarTag} tag.
+     * @param label a label.
+     * @return itself.
+     */
+    public NavigationStep withLabel(final String label) {
       this.label = label;
       return this;
     }
 
+    /**
+     * Gets the URI associated to the navigation step. It is normally the URI performed when the
+     * navigation step has been created or updated. But in some cases, it has been modified
+     * manually from Web Controller.
+     * @return the above described URI.
+     */
     public URI getUri() {
       return uri;
     }
 
-    public ViewPoint withFullUri(final String fullUri) {
+    /**
+     * Sets the URI associated to the navigation step.
+     * @param fullUri the URI to set.
+     * @return itself.
+     */
+    public NavigationStep withFullUri(final String fullUri) {
       this.uri = URI.create(fullUri);
       return this;
     }
 
-    public ViewPoint withSuffixUri(final String suffixUri) {
+    /**
+     * Sets the URI associated to the navigation step.
+     * @param suffixUri the suffic URI that will be added to the prefix composed with
+     * {@link WebComponentRequestContext#getComponentUriBase()} information.
+     * @return itself.
+     */
+    public NavigationStep withSuffixUri(final String suffixUri) {
       this.uri =
           UriBuilder.fromUri(webComponentRequestContext.getComponentUriBase()).path(suffixUri)
               .build();
       return this;
     }
 
-
-    public ViewPoint getPrevious() {
+    /**
+     * Gets the previous navigation step.
+     * @return the previous navigation step if any, null otherwise.
+     */
+    public NavigationStep getPrevious() {
       return previous;
     }
 
-    ViewPoint withPrevious(final ViewPoint previous) {
+    /**
+     * Sets the previous navigation step.
+     * @param previous the previous navigation step to set.
+     * @return itself.
+     */
+    NavigationStep withPrevious(final NavigationStep previous) {
       this.previous = previous;
       return this;
     }
 
-    public ViewPoint getNext() {
+    /**
+     * Gets the next navigation step.
+     * @return the next navigation step if any, null otherwise.
+     */
+    public NavigationStep getNext() {
       return next;
     }
 
-    ViewPoint withNext(final ViewPoint next) {
+    /**
+     * Sets the next navigation step.
+     * @param next the next navigation step to set.
+     * @return itself.
+     */
+    NavigationStep withNext(final NavigationStep next) {
       this.next = next;
       return this;
     }

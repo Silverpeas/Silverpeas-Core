@@ -76,12 +76,12 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
   }
 
   /**
-   * This method permits to specify all data of a view point according to the web request context
+   * This method permits to specify all data of a navigation step according to the web request context
    * and view context.
    * @param context the web request context.
-   * @param viewPoint the view point instance.
-   * @param viewContextIdentifier the view context identifier.
+   * @param navigationStep the navigation step instance.
+   * @param contextIdentifier the view context identifier.
    */
-  protected abstract void specifyViewPoint(final WEB_COMPONENT_REQUEST_CONTEXT context,
-      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier);
+  protected abstract void specifyNavigationStep(final WEB_COMPONENT_REQUEST_CONTEXT context,
+      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier);
 }

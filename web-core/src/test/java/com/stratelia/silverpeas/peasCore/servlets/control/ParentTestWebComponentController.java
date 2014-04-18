@@ -45,7 +45,7 @@ public class ParentTestWebComponentController
   }
 
   @Override
-  protected void specifyViewPoint(final TestWebComponentRequestContext context,
-      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
+  protected void specifyNavigationStep(final TestWebComponentRequestContext context,
+      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
   }
 }
