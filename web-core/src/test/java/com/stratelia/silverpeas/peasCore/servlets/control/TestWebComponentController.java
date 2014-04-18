@@ -23,12 +23,15 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.control;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.AbstractNavigationContextListener;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -309,21 +312,81 @@ public class TestWebComponentController extends ParentTestWebComponentController
   }
 
   @Override
-  protected void specifyNavigationStep(final TestWebComponentRequestContext context,
-      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
-    ViewContext viewContext = ViewContext.fromIdentifier(contextIdentifier);
-    if (viewContext != null) {
-      switch (viewContext) {
-        case navigationStepA:
-          navigationStep.withLabel("navigationStepALabel");
-          break;
-        case navigationStepB:
-          navigationStep.withLabel("navigationStepBLabel");
-          break;
-        case navigationStepC:
-          navigationStep.withLabel("navigationStepCLabel");
-          break;
-      }
+  protected void onInstantiation(final TestWebComponentRequestContext context) {
+    Object called = CacheServiceFactory.getSessionCacheService().get("onInstantiationCalled");
+    if (called == null) {
+      context.getNavigationContext()
+          .addListener(new AbstractNavigationContextListener<TestWebComponentRequestContext>() {
+            @Override
+            public void navigationContextCleared(final NavigationContext navigationContext) {
+              navigationContext.getWebComponentRequestContext().getRequest()
+                  .setAttribute("navigationContextCleared", true);
+            }
+
+            @Override
+            public void navigationStepCreated(final NavigationContext navigationContext) {
+              navigationContext.getWebComponentRequestContext().getRequest()
+                  .setAttribute("navigationStepCreated", true);
+            }
+
+            @Override
+            public void navigationStepReset(final NavigationContext navigationContext) {
+              navigationContext.getWebComponentRequestContext().getRequest()
+                  .setAttribute("navigationStepReset", true);
+            }
+
+            @Override
+            public void noNavigationStepPerformed(final NavigationContext navigationContext) {
+              navigationContext.getWebComponentRequestContext().getRequest()
+                  .setAttribute("noNavigationStepPerformed", true);
+            }
+
+            @Override
+            public void navigationStepTrashed(
+                final NavigationContext.NavigationStep trashedNavigationStep) {
+              trashedNavigationStep.getNavigationContext().getWebComponentRequestContext()
+                  .getRequest().setAttribute("navigationStepTrashed", true);
+            }
+
+            @Override
+            public void navigationStepLabelSet(
+                final NavigationContext.NavigationStep navigationStep, final String oldLabel) {
+              navigationStep.getNavigationContext().getWebComponentRequestContext().getRequest()
+                  .setAttribute("navigationStepLabelSet", true);
+            }
+
+            @Override
+            public void navigationStepContextIdentifierSet(
+                final NavigationContext.NavigationStep navigationStep,
+                final String oldContextIdentifier) {
+              navigationStep.getNavigationContext().getWebComponentRequestContext().getRequest()
+                  .setAttribute("navigationStepContextIdentifierSet", true);
+              // Getting the new context identifier
+              String newContextIdentifier = navigationStep.getContextIdentifier();
+              // Performing a treatment if it is defined and if it is different as the old one
+              if (StringUtil.isDefined(newContextIdentifier) &&
+                  !newContextIdentifier.equals(oldContextIdentifier)) {
+                navigationStep.getNavigationContext().getWebComponentRequestContext().getRequest()
+                    .setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+                // Verifying given context identifier that is corresponding to on of ViewContext
+                ViewContext viewContext = ViewContext.fromIdentifier(newContextIdentifier);
+                if (viewContext != null) {
+                  switch (viewContext) {
+                    case navigationStepA:
+                      navigationStep.withLabel("navigationStepALabel");
+                      break;
+                    case navigationStepB:
+                      navigationStep.withLabel("navigationStepBLabel");
+                      break;
+                    case navigationStepC:
+                      navigationStep.withLabel("navigationStepCLabel");
+                      break;
+                  }
+                }
+              }
+            }
+          });
+      CacheServiceFactory.getSessionCacheService().put("onInstantiationCalled", true);
     }
   }
 

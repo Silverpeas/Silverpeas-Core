@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.peasCore.servlets.annotation;
 
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContextListener;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
 
@@ -51,10 +52,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <ul>
  *   <li>{@link NavigationContext.NavigationStep#withFullUri(String)}: the current requested path
  *   URI (with URL parameters) is set</li>
- *   <li>{@link WebComponentController#specifyNavigationStep(WebComponentRequestContext,
- *   NavigationContext.NavigationStep, String)}: this method is called and according to given
- *   parameters the programmer can set additional informations to the navigation step (a
- *   functional label for example)</li>
+ *   <li>{@link NavigationContextListener} necessary methods are triggered</li>
  * </ul>
  * @author Yohann Chastagnier
  */

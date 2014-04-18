@@ -30,6 +30,8 @@ import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class permits to handle a context according to the user navigation.
@@ -72,7 +74,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
     NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext =
         CacheServiceFactory.getSessionCacheService().get(cacheKey, NavigationContext.class);
     if (navigationContext == null) {
-      navigationContext = new NavigationContext(context);
+      navigationContext = new NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>(context);
       CacheServiceFactory.getSessionCacheService().put(cacheKey, navigationContext);
     } else {
       navigationContext.webComponentRequestContext = context;
@@ -84,6 +86,8 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   private WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext;
   private NavigationStep currentNavigationStep;
   private NavigationStep previousNavigationStep;
+  private final List<NavigationContextListener> listeners =
+      new ArrayList<NavigationContextListener>();
 
   /**
    * Default hidden constructor.
@@ -95,6 +99,14 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
     baseNavigationStep = new NavigationStep(null).withSuffixUri("Main");
     currentNavigationStep = baseNavigationStep;
     previousNavigationStep = baseNavigationStep;
+  }
+
+  /**
+   * Adds a listener to trigger.
+   * @param listener a listener.
+   */
+  public void addListener(NavigationContextListener listener) {
+    listeners.add(listener);
   }
 
   /**
@@ -110,10 +122,10 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * instance.
    * <p/>
    * If user has just performed a web treatment that resulting to a navigation step creation or
-   * update, then the returned navigation step is the previous of the one created or updated.
+   * reset, then the returned navigation step is the previous of the one created or reset.
    * <p/>
    * If user has performed a web treatment that not resulting to a navigation step creation or
-   * update, then the previous navigation step returned is the last created or updated.
+   * reset, then the previous navigation step returned is the last created or reset.
    * @return the right previous {@link NavigationContext.NavigationStep} as above described.
    */
   public NavigationStep getPreviousNavigationStep() {
@@ -121,7 +133,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   }
 
   /**
-   * Gets the current step of the navigation. It is the last created or updated one.
+   * Gets the current step of the navigation. It is the last created or reset one.
    * @return the above described navigation step.
    */
   public NavigationStep getCurrentNavigationStep() {
@@ -137,7 +149,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   }
 
   /**
-   * Method to specify a navigation step creation/update on a HTTP method of a {@link
+   * Method to specify a navigation step creation/reset on a HTTP method of a {@link
    * WebComponentController} without using the
    * {@link com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep} annotation.
    * <p/>
@@ -153,25 +165,29 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * <ul>
    *   <li>{@link NavigationContext.NavigationStep#withFullUri(String)}: the current requested path
    *   URI (with URL parameters) is set</li>
-   *   <li>{@link WebComponentController#specifyNavigationStep(WebComponentRequestContext,
-   *   NavigationContext.NavigationStep, String)}: this method is called and according to given
-   *   parameters the programmer can set additional informations to the navigation step (a
-   *   functional label for example)</li>
+   *   <li>{@link NavigationContextListener} necessary methods are triggered</li>
    * </ul>
    * @param stepIdentifier the identifier of a navigation step.
    * @return the {@link NavigationStep} instance related to the specified identifier.
    */
+  @SuppressWarnings("unchecked")
   public NavigationStep navigationStepFrom(String stepIdentifier) {
     NavigationStep current = findNavigationStepFrom(stepIdentifier);
     if (current != null) {
+      trashAfter(current);
       currentNavigationStep = current;
-      current.withNext(null);
       previousNavigationStep = current.getPrevious();
+      for (NavigationContextListener listener : listeners) {
+        listener.navigationStepReset(this);
+      }
     } else {
       currentNavigationStep.withNext(new NavigationStep(stepIdentifier));
       currentNavigationStep.getNext().withPrevious(currentNavigationStep);
       currentNavigationStep = currentNavigationStep.getNext();
       previousNavigationStep = currentNavigationStep.getPrevious();
+      for (NavigationContextListener listener : listeners) {
+        listener.navigationStepCreated(this);
+      }
     }
     getWebComponentRequestContext().markNavigationStepContextPerformed();
     return currentNavigationStep;
@@ -181,15 +197,19 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * When no {@link com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep} is not
    * specified to a called HTTP Web Controller method, then the mechanism calls this method.
    * <p/>
-   * It takes into account the case that a navigation step is created or updated by using
+   * It takes into account the case that a navigation step is created or reset by using
    * directly the {@link #navigationStepFrom(String)} method from the Web Controller.
    * <p/>
    * The aim of this method is to set the right navigation step returned by {@link
    * #getPreviousNavigationStep()} method.
    */
+  @SuppressWarnings("unchecked")
   void noNavigationStep() {
     if (!getWebComponentRequestContext().isNavigationStepContextPerformed()) {
       previousNavigationStep = currentNavigationStep;
+      for (NavigationContextListener listener : listeners) {
+        listener.noNavigationStepPerformed(this);
+      }
     }
   }
 
@@ -197,11 +217,31 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * Clears the navigation context and reset it to the base one.
    * @return result of {@link #getBaseNavigationStep()}
    */
+  @SuppressWarnings("unchecked")
   public NavigationStep clear() {
-    baseNavigationStep.withNext(null);
+    trashAfter(baseNavigationStep);
     currentNavigationStep = baseNavigationStep;
     previousNavigationStep = baseNavigationStep;
+    for (NavigationContextListener listener : listeners) {
+      listener.navigationContextCleared(this);
+    }
     return currentNavigationStep;
+  }
+
+  /**
+   * Trashes all navigation steps after the specified one.
+   * @param navigationStep the navigation step that must be the current.
+   */
+  private void trashAfter(NavigationStep navigationStep) {
+    NavigationStep toTrash = navigationStep.getNext();
+    navigationStep.withNext(null);
+    while (toTrash != null) {
+      toTrash.withPrevious(null);
+      for (NavigationContextListener listener : listeners) {
+        listener.navigationStepTrashed(toTrash);
+      }
+      toTrash = toTrash.getNext();
+    }
   }
 
   /**
@@ -242,6 +282,14 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
     }
 
     /**
+     * Gets the navigation context the navigation step is associated to.
+     * @return
+     */
+    public NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> getNavigationContext() {
+      return NavigationContext.this;
+    }
+
+    /**
      * Gets the identifier of the navigation step.
      * @return the above described identifier.
      */
@@ -263,7 +311,11 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
      * @return itself.
      */
     public NavigationStep withContextIdentifier(final String contextIdentifier) {
+      String oldContextIdentifier = this.contextIdentifier;
       this.contextIdentifier = contextIdentifier;
+      for (NavigationContextListener listener : listeners) {
+        listener.navigationStepContextIdentifierSet(this, oldContextIdentifier);
+      }
       return this;
     }
 
@@ -283,13 +335,17 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
      * @return itself.
      */
     public NavigationStep withLabel(final String label) {
+      String oldLabel = this.label;
       this.label = label;
+      for (NavigationContextListener listener : listeners) {
+        listener.navigationStepLabelSet(this, oldLabel);
+      }
       return this;
     }
 
     /**
      * Gets the URI associated to the navigation step. It is normally the URI performed when the
-     * navigation step has been created or updated. But in some cases, it has been modified
+     * navigation step has been created or reset. But in some cases, it has been modified
      * manually from Web Controller.
      * @return the above described URI.
      */

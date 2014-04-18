@@ -111,7 +111,8 @@ public class BrowseBarTag extends NeedWindowTag {
       while (currentNavigationStep != null) {
         if (StringUtil.isDefined(currentNavigationStep.getLabel())) {
           BrowseBarElement element = new BrowseBarElement(currentNavigationStep.getLabel(),
-              URLManager.getApplicationURL() + currentNavigationStep.getUri().toString(), null);
+              URLManager.getApplicationURL() + currentNavigationStep.getUri().toString()
+                  .replaceAll("[&]ArrayPaneAction.*", ""), null);
           browseBar.addElement(element);
         }
         currentNavigationStep = currentNavigationStep.getNext();

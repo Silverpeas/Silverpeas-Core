@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.servlets.control.*;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
@@ -638,6 +639,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
 
+    HttpRequest request = testResult.requestContext.getRequest();
+    verify(request, times(1)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(1)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(0)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     NavigationContext navigationContext = testResult.requestContext.getNavigationContext();
     NavigationContext.NavigationStep currentNavigationStep =
         navigationContext.getBaseNavigationStep();
@@ -657,6 +668,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("navigationStep/one").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/navigationStepOne");
+
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(1)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(0)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(1)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(1)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(1)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
 
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
@@ -690,6 +711,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/navigationStep/one");
 
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(1)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(0)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());
@@ -722,6 +753,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/navigationStep/one");
 
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(1)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(0)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());
@@ -753,6 +794,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("navigationStep/one").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/navigationStepOne");
+
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(1)).setAttribute("navigationStepReset", true);
+    verify(request, times(0)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(1)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
 
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
@@ -786,6 +837,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/navigationStep/one");
 
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(1)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(0)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(2)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(1)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(1)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());
@@ -829,6 +890,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/navigationStep/one");
 
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(1)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(0)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());
@@ -872,6 +943,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/navigationStepOne");
 
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(1)).setAttribute("navigationStepReset", true);
+    verify(request, times(0)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(1)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(1)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());
@@ -903,6 +984,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/componentName/jsp/homepage.jsp");
 
+    request = testResult.requestContext.getRequest();
+    verify(request, times(1)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(1)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(1)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(0)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());
@@ -921,6 +1012,16 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
         onDefaultController().defaultRequest().changeSuffixPathWith("navigationStep/one").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/navigationStepOne");
+
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(1)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(0)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(1)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(1)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(1)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
 
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
@@ -947,12 +1048,76 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     assertThat(currentNavigationStep.getNext(), nullValue());
 
     /*
+    NAVIGATION to THREE (set view manually)
+     */
+    testResult = onDefaultController().defaultRequest().changeSuffixPathWith("navigationStep/three")
+        .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyDestination(testResult.router, "/componentName/navigationStep/one");
+
+    request = testResult.requestContext.getRequest();
+    verify(request, times(0)).setAttribute("navigationContextCleared", true);
+    verify(request, times(1)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(0)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(0)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(2)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(1)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(1)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
+    navigationContext = testResult.requestContext.getNavigationContext();
+    currentNavigationStep = navigationContext.getBaseNavigationStep();
+    assertThat(currentNavigationStep, notNullValue());
+    assertThat(currentNavigationStep, is(navigationContext.getBaseNavigationStep()));
+    assertThat(currentNavigationStep.getIdentifier(), nullValue());
+    assertThat(currentNavigationStep.getContextIdentifier(), nullValue());
+    assertThat(currentNavigationStep.getLabel(), nullValue());
+    assertThat(currentNavigationStep.getUri(), is(URI.create("/componentName/Main")));
+    assertThat(currentNavigationStep.getPrevious(), nullValue());
+    assertThat(currentNavigationStep.getNext(), notNullValue());
+
+    previousNavigationStep = currentNavigationStep;
+    currentNavigationStep = currentNavigationStep.getNext();
+    assertThat(currentNavigationStep, notNullValue());
+    assertThat(currentNavigationStep, not(is(navigationContext.getCurrentNavigationStep())));
+    assertThat(currentNavigationStep, is(navigationContext.getPreviousNavigationStep()));
+    assertThat(currentNavigationStep.getIdentifier(), is("list"));
+    assertThat(currentNavigationStep.getContextIdentifier(), is("navigationStepA"));
+    assertThat(currentNavigationStep.getLabel(), is("navigationStepALabel"));
+    assertThat(currentNavigationStep.getUri(), is(URI.create("/componentName/navigationStep/one")));
+    assertThat(currentNavigationStep.getPrevious(), is(previousNavigationStep));
+    assertThat(currentNavigationStep.getNext(), notNullValue());
+
+    previousNavigationStep = currentNavigationStep;
+    currentNavigationStep = currentNavigationStep.getNext();
+    assertThat(currentNavigationStep, notNullValue());
+    assertThat(currentNavigationStep, is(navigationContext.getCurrentNavigationStep()));
+    assertThat(currentNavigationStep.getIdentifier(), is("otherList"));
+    assertThat(currentNavigationStep.getContextIdentifier(), is("navigationStepC"));
+    assertThat(currentNavigationStep.getLabel(), is("navigationStepThreeLabel"));
+    assertThat(currentNavigationStep.getUri(),
+        is(URI.create("/componentName/navigationStep/three")));
+    assertThat(currentNavigationStep.getPrevious(), is(previousNavigationStep));
+    assertThat(currentNavigationStep.getNext(), nullValue());
+
+    /*
     NAVIGATION TO A PAGE THAT CLEAR THE NAVIGATION CONTEXT
      */
     testResult = onDefaultController().defaultRequest().changeSuffixPathWith("navigationStep/clear")
         .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyDestination(testResult.router, "/navigationStepClear");
+
+    request = testResult.requestContext.getRequest();
+    verify(request, times(1)).setAttribute("navigationContextCleared", true);
+    verify(request, times(0)).setAttribute("navigationStepCreated", true);
+    verify(request, times(0)).setAttribute("navigationStepReset", true);
+    verify(request, times(1)).setAttribute("noNavigationStepPerformed", true);
+    verify(request, times(2)).setAttribute("navigationStepTrashed", true);
+    verify(request, times(0)).setAttribute("navigationStepLabelSet", true);
+    verify(request, times(0)).setAttribute("navigationStepContextIdentifierSet", true);
+    verify(request, times(0)).setAttribute("effectiveNavigationStepContextIdentifierSet", true);
+
     navigationContext = testResult.requestContext.getNavigationContext();
     currentNavigationStep = navigationContext.getBaseNavigationStep();
     assertThat(currentNavigationStep, notNullValue());

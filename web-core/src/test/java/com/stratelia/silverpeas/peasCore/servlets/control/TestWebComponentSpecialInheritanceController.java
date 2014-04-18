@@ -55,9 +55,4 @@ public class TestWebComponentSpecialInheritanceController
   @RedirectToInternalJsp("homepage.jsp")
   public void homeMethod(TestWebComponentRequestContext context) {
   }
-
-  @Override
-  protected void specifyNavigationStep(final TestWebComponentRequestContext context,
-      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
-  }
 }

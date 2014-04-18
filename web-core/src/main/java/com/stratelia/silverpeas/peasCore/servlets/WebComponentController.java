@@ -38,6 +38,8 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
     WebComponentRequestContext>
     extends AbstractComponentSessionController {
 
+  boolean onCreationCalled = false;
+
   public WebComponentController(final MainSessionController controller, final String spaceId,
       final String componentId) {
     super(controller, spaceId, componentId);
@@ -65,6 +67,13 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
   }
 
   /**
+   * This method is called one times just after the web controller is instancied and just before
+   * the call of the HTTP web controller method.
+   * @param context the web request context.
+   */
+  protected abstract void onInstantiation(final WEB_COMPONENT_REQUEST_CONTEXT context);
+
+  /**
    * Permits to perform some common initializations. The method is called just before the method
    * behing the identified path is invoked.
    * @param context the context of the request in relation with the web controller
@@ -74,14 +83,4 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
     context.getRequest().setAttribute("greaterUserRole", context.getGreaterUserRole());
   }
-
-  /**
-   * This method permits to specify all data of a navigation step according to the web request context
-   * and view context.
-   * @param context the web request context.
-   * @param navigationStep the navigation step instance.
-   * @param contextIdentifier the view context identifier.
-   */
-  protected abstract void specifyNavigationStep(final WEB_COMPONENT_REQUEST_CONTEXT context,
-      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier);
 }

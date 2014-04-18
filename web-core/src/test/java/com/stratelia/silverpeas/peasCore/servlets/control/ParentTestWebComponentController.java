@@ -43,9 +43,4 @@ public class ParentTestWebComponentController
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
   }
-
-  @Override
-  protected void specifyNavigationStep(final TestWebComponentRequestContext context,
-      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
-  }
 }
