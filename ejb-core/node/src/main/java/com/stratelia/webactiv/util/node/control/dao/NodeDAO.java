@@ -403,7 +403,7 @@ public class NodeDAO {
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeLevelNumber=").append(level);
     nodeStatement.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
-    nodeStatement.append(" order by nodeId asc ");
+    nodeStatement.append(" order by ordernumber asc, nodeId asc ");
     Statement stmt = null;
     ResultSet rs = null;
 
