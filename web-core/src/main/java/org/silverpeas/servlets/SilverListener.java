@@ -29,7 +29,7 @@ import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.cache.service.DefaultCacheService;
+import org.silverpeas.cache.service.InMemoryCacheService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -86,7 +86,7 @@ public class SilverListener
             .getSessionInfo(httpSession.getId());
         if (sessionInfo != null) {
           CacheServiceFactory.getRequestCacheService()
-              .put(DefaultCacheService.class.getName(), sessionInfo.getCache());
+              .put("@SessionCache@", sessionInfo.getCache());
         }
       }
     }

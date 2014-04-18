@@ -30,7 +30,7 @@ import java.util.Map;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-public class DefaultCacheService extends AbstractSimpleCacheService {
+public class InMemoryCacheService extends AbstractSimpleCacheService {
 
   private final Map<Object, Object> cache = new HashMap<Object, Object>();
 

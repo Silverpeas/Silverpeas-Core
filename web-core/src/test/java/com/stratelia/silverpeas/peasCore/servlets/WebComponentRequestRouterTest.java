@@ -38,7 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.cache.service.DefaultCacheService;
+import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
@@ -238,11 +238,11 @@ public class WebComponentRequestRouterTest {
 
     @SuppressWarnings("unchecked")
     public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
-      DefaultCacheService sessionCache = CacheServiceFactory.getRequestCacheService()
-          .get(DefaultCacheService.class.getName(), DefaultCacheService.class);
+      InMemoryCacheService sessionCache = CacheServiceFactory.getRequestCacheService()
+          .get("@SessionCache@", InMemoryCacheService.class);
       CacheServiceFactory.getRequestCacheService().clear();
-      CacheServiceFactory.getRequestCacheService().put(DefaultCacheService.class.getName(),
-          (sessionCache != null ? sessionCache : new DefaultCacheService()));
+      CacheServiceFactory.getRequestCacheService().put("@SessionCache@",
+          (sessionCache != null ? sessionCache : new InMemoryCacheService()));
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
       if (HttpMethod.GET.equals(httpMethod)) {
