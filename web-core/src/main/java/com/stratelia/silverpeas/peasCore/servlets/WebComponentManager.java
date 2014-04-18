@@ -355,6 +355,12 @@ public class WebComponentManager {
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 
+    // Just after the instanciation of the Web Controller
+    if (!webComponentController.onCreationCalled) {
+      webComponentController.onInstantiation(webComponentRequestContext);
+      webComponentController.onCreationCalled = true;
+    }
+
     // Common processing
     webComponentRequestContext.beforeRequestProcessing();
     webComponentController.beforeRequestProcessing(webComponentRequestContext);
@@ -474,8 +480,6 @@ public class WebComponentManager {
       }
       navigationStep.withFullUri(fullUriBuilder.build().toString());
       navigationStep.withContextIdentifier(navigationStepIdentifier.contextIdentifier());
-      webComponentController.specifyNavigationStep(webComponentContext, navigationStep,
-          navigationStepIdentifier.contextIdentifier());
     } else {
       navigationContext.noNavigationStep();
     }

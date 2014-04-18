@@ -65,7 +65,6 @@ public class TwoHomepagesController extends WebComponentController<TestWebCompon
   }
 
   @Override
-  protected void specifyNavigationStep(final TestWebComponentRequestContext context,
-      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
+  protected void onInstantiation(final TestWebComponentRequestContext context) {
   }
 }
