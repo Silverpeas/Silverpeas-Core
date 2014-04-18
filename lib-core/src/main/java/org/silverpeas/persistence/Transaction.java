@@ -24,7 +24,6 @@
 package org.silverpeas.persistence;
 
 import com.silverpeas.annotation.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -34,18 +33,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class Transaction {
 
+  /**
+   * Gets a transaction instance in order to perform some tasks transactionally.
+   * @return a transaction.
+   */
   public static Transaction getTransaction() {
     TransactionFactory factory = TransactionFactory.getFactory();
     return factory.getTransaction();
   }
 
   /**
+   * Performs in a single transaction the specified process.
+   * @param process the process to execute in a transaction.
+   * @param <RETURN_VALUE> the type of the return value.
+   * @return the result of the process.
+   */
+  public static <RETURN_VALUE> RETURN_VALUE performInOne(final Process<RETURN_VALUE> process) {
+    return getTransaction().perform(process);
+  }
+
+  /**
    * The given process is executed in a transaction : support a current transaction,
    * create a new one if none exists.
    * Analogous to EJB transaction attribute of the same name.
-   * @param process
-   * @param <RETURN_VALUE>
-   * @return
+   * @param process the process to execute in a transaction.
+   * @param <RETURN_VALUE> the type of the return value.
+   * @return the result of the process.
    */
   @Transactional
   public <RETURN_VALUE> RETURN_VALUE perform(final Process<RETURN_VALUE> process) {
