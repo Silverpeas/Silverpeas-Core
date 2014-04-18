@@ -91,8 +91,8 @@ public class CacheServiceFactory {
    * @return a cache associated to the current session, or a request if no session one.
    */
   public static SimpleCacheService getSessionCacheService() {
-    DefaultCacheService simpleCacheService = getInstance().requestCacheService
-        .get(DefaultCacheService.class.getName(), DefaultCacheService.class);
+    InMemoryCacheService simpleCacheService = getInstance().requestCacheService
+        .get("@SessionCache@", InMemoryCacheService.class);
     if (simpleCacheService != null) {
       return simpleCacheService;
     }
