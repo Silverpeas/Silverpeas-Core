@@ -27,7 +27,7 @@ import com.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.ViewPoint;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -56,7 +56,7 @@ class Path {
   private List<String> pathVariables = null;
   private final Method resourceMethod;
   private final LowestRoleAccess lowestRoleAccess;
-  private final ViewPoint viewPoint;
+  private final NavigationStep navigationStep;
   private final Annotation redirectTo;
   private final String[] invokeBeforeIdentifiers;
   private final String[] invokeAfterIdentifiers;
@@ -66,16 +66,16 @@ class Path {
    * @param path the path.
    * @param lowestRoleAccess the lowest role that permits the access to resourceMethod.
    * @param resourceMethod the method that has to be called for the path.
-   * @param viewPoint the identifier of the view point associated to the path.
+   * @param navigationStep the identifier of the navigation step associated to the path.
    * @param redirectTo the redirection to be performed after the end of the treatment.
    * @param invokeBefore the list of identifiers of methods to invoke before the treatment of HTTP method.
    * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
    */
   Path(final String path, final LowestRoleAccess lowestRoleAccess, final Method resourceMethod,
-      final ViewPoint viewPoint, final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
+      final NavigationStep navigationStep, final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     this.resourceMethod = resourceMethod;
     this.lowestRoleAccess = lowestRoleAccess;
-    this.viewPoint = viewPoint;
+    this.navigationStep = navigationStep;
     this.redirectTo = redirectTo;
     this.invokeBeforeIdentifiers = invokeBefore != null ? invokeBefore.value() : new String[0];
     this.invokeAfterIdentifiers = invokeAfter != null ? invokeAfter.value() : new String[0];
@@ -198,11 +198,11 @@ class Path {
   }
 
   /**
-   * Gets the view point annotation.
-   * @return the annotation of view point. Null if not defined on the method.
+   * Gets the navigation step annotation.
+   * @return the annotation of navigation step. Null if not defined on the method.
    */
-  public ViewPoint getViewPoint() {
-    return viewPoint;
+  public NavigationStep getNavigationStep() {
+    return navigationStep;
   }
 
   /**

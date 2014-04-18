@@ -23,6 +23,8 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.annotation;
 
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -32,27 +34,16 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to specify a view point.
+ * Annotation to specify a redirection to a previous navigation step on a HTTP method of a {@link
+ * com.stratelia.silverpeas.peasCore.servlets.WebComponentController}.
  * <p/>
- * @author Yohann Chastagnier
+ * When a HTTP method with this annotation is called, the redirection is performed from
+ * informations known by the navigation step returned by {@link
+ * NavigationContext#getPreviousNavigationStep()} method.
  */
 @Inherited
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface ViewPoint {
-
-  /**
-   * The identifier of a view point (several controller paths can perform treatments on same
-   * output).
-   * @return
-   */
-  String identifier();
-
-  /**
-   * The context identifier of a view point (several contexts can be handled into the same view
-   * point).
-   * @return
-   */
-  String contextIdentifier() default "unknown";
+public @interface RedirectToPreviousNavigationStep {
 }

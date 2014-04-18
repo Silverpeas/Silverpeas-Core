@@ -28,7 +28,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToViewPoint;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToNavigationStep;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -61,7 +62,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   private CONTROLLER controller = null;
   private boolean comingFromRedirect = false;
   private NavigationContext navigationContext;
-  private boolean viewPointContextPerformed = false;
+  private boolean navigationStepContextPerformed = false;
 
   private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
   private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
@@ -104,6 +105,10 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return response;
   }
 
+  /**
+   * @see NavigationContext
+   * @return the navigation context associated to the current instancied component.
+   */
   public NavigationContext getNavigationContext() {
     if (navigationContext == null) {
       navigationContext = NavigationContext.get(this);
@@ -199,12 +204,12 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return comingFromRedirect;
   }
 
-  boolean isViewPointContextPerformed() {
-    return viewPointContextPerformed;
+  boolean isNavigationStepContextPerformed() {
+    return navigationStepContextPerformed;
   }
 
-  void markViewPointContextPerformed() {
-    this.viewPointContextPerformed = true;
+  void markNavigationStepContextPerformed() {
+    this.navigationStepContextPerformed = true;
   }
 
   Navigation redirectTo(Annotation redirectToAnnotation) {
@@ -212,8 +217,10 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
       return redirectToInternalJsp(((RedirectToInternalJsp) redirectToAnnotation).value());
     } else if (redirectToAnnotation instanceof RedirectToInternal) {
       return redirectToInternal(((RedirectToInternal) redirectToAnnotation).value());
-    } else if (redirectToAnnotation instanceof RedirectToViewPoint) {
-      return redirectToViewPoint(((RedirectToViewPoint) redirectToAnnotation).identifier());
+    } else if (redirectToAnnotation instanceof RedirectToNavigationStep) {
+      return redirectToNavigationStep(((RedirectToNavigationStep) redirectToAnnotation).value());
+    } else if (redirectToAnnotation instanceof RedirectToPreviousNavigationStep) {
+      return redirectToNavigationStep("previous");
     }
     RedirectTo redirectTo = (RedirectTo) redirectToAnnotation;
     switch (redirectTo.type()) {
@@ -227,15 +234,15 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     }
   }
 
-  private Navigation redirectToViewPoint(String viewPointIdentifier) {
-    NavigationContext.ViewPoint viewPoint = null;
-    if (!"previous".equals(viewPointIdentifier)) {
-      viewPoint = getNavigationContext().findViewPointFrom(viewPointIdentifier);
+  private Navigation redirectToNavigationStep(String navigationStepIdentifier) {
+    NavigationContext.NavigationStep navigationStep = null;
+    if (!"previous".equals(navigationStepIdentifier)) {
+      navigationStep = getNavigationContext().findNavigationStepFrom(navigationStepIdentifier);
     }
-    if (viewPoint == null) {
-      viewPoint = getNavigationContext().getPreviousViewPoint();
+    if (navigationStep == null) {
+      navigationStep = getNavigationContext().getPreviousNavigationStep();
     }
-    return redirectTo(viewPoint.getUri().toString());
+    return redirectTo(navigationStep.getUri().toString());
   }
 
   private Navigation redirectToInternal(String internalPath) {

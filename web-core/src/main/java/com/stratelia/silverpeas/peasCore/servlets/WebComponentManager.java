@@ -192,7 +192,7 @@ public class WebComponentManager {
         Invokable invokable = null;
         InvokeBefore invokeBefore = null;
         InvokeAfter invokeAfter = null;
-        ViewPoint viewPoint = null;
+        NavigationStep navigationStep = null;
         for (Annotation annotation : resourceMethod.getDeclaredAnnotations()) {
           if (annotation instanceof GET) {
             httpMethods.add(GET.class);
@@ -204,8 +204,8 @@ public class WebComponentManager {
             httpMethods.add(DELETE.class);
           } else if (annotation instanceof Path) {
             paths.add((Path) annotation);
-          } else if (annotation instanceof ViewPoint) {
-            viewPoint = (ViewPoint) annotation;
+          } else if (annotation instanceof NavigationStep) {
+            navigationStep = (NavigationStep) annotation;
           } else if (annotation instanceof LowestRoleAccess) {
             if (lowestRoleAccess != null) {
               throw new IllegalArgumentException(
@@ -225,7 +225,8 @@ public class WebComponentManager {
           } else if (annotation instanceof RedirectTo ||
               annotation instanceof RedirectToInternal ||
               annotation instanceof RedirectToInternalJsp ||
-              annotation instanceof RedirectToViewPoint) {
+              annotation instanceof RedirectToNavigationStep||
+              annotation instanceof RedirectToPreviousNavigationStep) {
             if (redirectTo != null) {
               throw new IllegalArgumentException(
                   "One, and only one, redirection must be specified for method " +
@@ -283,7 +284,7 @@ public class WebComponentManager {
               webComponentManager.httpMethodPaths.put(httpMethodClass.getName(), httpMethodPaths);
             }
             List<com.stratelia.silverpeas.peasCore.servlets.Path> registredPaths = httpMethodPaths
-                .addPaths(paths, lowestRoleAccess, resourceMethod, viewPoint, redirectTo,
+                .addPaths(paths, lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
                     invokeBefore, invokeAfter);
             if (isDefaultPaths) {
               if (webComponentManager.defaultPath != null) {
@@ -458,25 +459,25 @@ public class WebComponentManager {
       invokables.get(invokeAfterId).invoke(webComponentController, webComponentContext);
     }
 
-    // Navigation view point
+    // Navigation navigation step
     NavigationContext navigationContext = webComponentContext.getNavigationContext();
-    final ViewPoint viewPointIdentifier = pathToPerform.getViewPoint();
-    if (viewPointIdentifier != null) {
-      NavigationContext.ViewPoint viewPoint =
-          navigationContext.viewPointFrom(viewPointIdentifier.identifier());
-      // updating the URI of the view point
+    final NavigationStep navigationStepIdentifier = pathToPerform.getNavigationStep();
+    if (navigationStepIdentifier != null) {
+      NavigationContext.NavigationStep navigationStep =
+          navigationContext.navigationStepFrom(navigationStepIdentifier.identifier());
+      // updating the URI of the navigation step
       UriBuilder fullUriBuilder =
           UriBuilder.fromUri(webComponentContext.getComponentUriBase()).path(path);
       for (Map.Entry<String, String[]> entry : webComponentContext.getRequest().getParameterMap()
           .entrySet()) {
         fullUriBuilder.queryParam(entry.getKey(), entry.getValue());
       }
-      viewPoint.withFullUri(fullUriBuilder.build().toString());
-      viewPoint.withViewContext(viewPointIdentifier.contextIdentifier());
-      webComponentController.specifyViewPoint(webComponentContext, viewPoint,
-          viewPointIdentifier.contextIdentifier());
+      navigationStep.withFullUri(fullUriBuilder.build().toString());
+      navigationStep.withContextIdentifier(navigationStepIdentifier.contextIdentifier());
+      webComponentController.specifyNavigationStep(webComponentContext, navigationStep,
+          navigationStepIdentifier.contextIdentifier());
     } else {
-      navigationContext.noViewPoint();
+      navigationContext.noNavigationStep();
     }
 
     // Setting the navigation context attribute

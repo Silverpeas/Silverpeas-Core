@@ -280,55 +280,56 @@ public class TestWebComponentController extends ParentTestWebComponentController
   }
 
   @GET
-  @Path("/viewPoint/one")
-  @ViewPoint(identifier = "list", contextIdentifier = "viewPointA")
-  @RedirectTo("viewPointOne")
-  public void viewPointOne(TestWebComponentRequestContext context) {
+  @Path("/navigationStep/one")
+  @NavigationStep(identifier = "list", contextIdentifier = "navigationStepA")
+  @RedirectTo("navigationStepOne")
+  public void navigationStepOne(TestWebComponentRequestContext context) {
   }
 
   @GET
-  @Path("viewPoint/two")
-  @RedirectToViewPoint(identifier = "list")
-  public void viewPointTwo(TestWebComponentRequestContext context) {
+  @Path("navigationStep/two")
+  @RedirectToNavigationStep(value = "list")
+  public void navigationStepTwo(TestWebComponentRequestContext context) {
   }
 
   @GET
-  @Path("/viewPoint/three")
-  @RedirectToViewPoint(identifier = "previous")
-  public void viewPointThree(TestWebComponentRequestContext context) {
-    context.getNavigationContext().viewPointFrom("otherList")
-        .withViewContext(ViewContext.viewPointC.name()).withSuffixUri("viewPoint/three")
-        .withLabel("viewPointThreeLabel");
+  @Path("/navigationStep/three")
+  @RedirectToPreviousNavigationStep
+  public void navigationStepThree(TestWebComponentRequestContext context) {
+    context.getNavigationContext().navigationStepFrom("otherList")
+        .withContextIdentifier(ViewContext.navigationStepC.name())
+        .withSuffixUri("navigationStep/three").withLabel("navigationStepThreeLabel");
   }
 
   @GET
-  @Path("/viewPoint/clear")
-  @RedirectTo("viewPointClear")
-  public void viewPointClear(TestWebComponentRequestContext context) {
+  @Path("/navigationStep/clear")
+  @RedirectTo("navigationStepClear")
+  public void navigationStepClear(TestWebComponentRequestContext context) {
     context.getNavigationContext().clear();
   }
 
   @Override
-  protected void specifyViewPoint(final TestWebComponentRequestContext context,
-      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
-    ViewContext viewContext = ViewContext.fromIdentifier(viewContextIdentifier);
+  protected void specifyNavigationStep(final TestWebComponentRequestContext context,
+      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
+    ViewContext viewContext = ViewContext.fromIdentifier(contextIdentifier);
     if (viewContext != null) {
       switch (viewContext) {
-        case viewPointA:
-          viewPoint.withLabel("viewPointALabel");
+        case navigationStepA:
+          navigationStep.withLabel("navigationStepALabel");
           break;
-        case viewPointB:
-          viewPoint.withLabel("viewPointBLabel");
+        case navigationStepB:
+          navigationStep.withLabel("navigationStepBLabel");
           break;
-        case viewPointC:
-          viewPoint.withLabel("viewPointCLabel");
+        case navigationStepC:
+          navigationStep.withLabel("navigationStepCLabel");
           break;
       }
     }
   }
 
   public static enum ViewContext {
-    viewPointA, viewPointB, viewPointC;
+    navigationStepA, navigationStepB, navigationStepC;
+
     public static ViewContext fromIdentifier(String identifier) {
       try {
         return valueOf(identifier);
