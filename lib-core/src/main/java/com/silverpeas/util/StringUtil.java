@@ -55,6 +55,7 @@ public class StringUtil extends StringUtils {
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
   private static final String EMAIL_PATTERN
       = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
+  private static final String HOUR_PATTERN = "^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$";
 
   public static boolean isDefined(String parameter) {
     return (parameter != null && !parameter.trim().isEmpty() && !"null".equalsIgnoreCase(parameter));
@@ -270,6 +271,13 @@ public class StringUtil extends StringUtils {
     return result;
   }
 
+  public static boolean isValidHour(final String time) {
+    if (!isDefined(time)) {
+      return false;
+    }
+    return Pattern.matches(HOUR_PATTERN, time);
+  }
+  
   public static String convertToEncoding(String toConvert, String encoding) {
     try {
       return new String(toConvert.getBytes(Charset.defaultCharset()), encoding);
