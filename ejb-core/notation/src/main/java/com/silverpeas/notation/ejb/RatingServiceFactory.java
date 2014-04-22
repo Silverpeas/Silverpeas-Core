@@ -27,20 +27,39 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
+
 /**
  * @author: Yohann Chastagnier
  */
 public class RatingServiceFactory {
 
+  private static final RatingServiceFactory instance = new RatingServiceFactory();
+
+  @Inject
+  private RatingBm ratingBm;
+
   /**
    * @return an instance of {@link RatingBm} EJB.
    */
   public static RatingBm getRatingService() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.RATINGBM_EJBHOME, RatingBm.class);
-    } catch (Exception e) {
-      throw new RatingRuntimeException("RatingServiceFactory.getRatingService()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    if (getInstance().ratingBm == null) {
+      try {
+        // If not initialize, then the EJB reference is searched by common tools.
+        // By this way, the instance of this EJB is not stored.
+        return EJBUtilitaire.getEJBObjectRef(JNDINames.RATINGBM_EJBHOME, RatingBm.class);
+      } catch (Exception e) {
+        throw new RatingRuntimeException("RatingServiceFactory.getRatingService()",
+            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
     }
+    return getInstance().ratingBm;
+  }
+
+  /**
+   * @return a RatingServiceFactory instance.
+   */
+  public static RatingServiceFactory getInstance() {
+    return instance;
   }
 }

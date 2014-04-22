@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -27,37 +27,36 @@ import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 
-import javax.inject.Inject;
-
 /**
- * @author Yohann Chastagnier
+ * @author: Yohann Chastagnier
  */
-public class UserNotificationHelper {
+public class UserNotificationManager {
 
-  private static final UserNotificationHelper instance = new UserNotificationHelper();
-
-  @Inject
-  private UserNotificationManager userNotificationManager;
-
-  /**
-   * Builds a notification data container from a given builder. After that, sends the builded notification
-   * @param notificationBuider
-   * @return
-   */
-  public static void buildAndSend(final UserNotificationBuider notificationBuider) {
-    getInstance().getManager().buildAndSend(notificationBuider);
+  protected UserNotificationManager() {
+    // hidden constructor.
   }
 
   /**
-   * Builds a notification data container from a given builder. After that, sends the builded notification for the given
+   * Builds a notification data container from a given builder. After that, sends the builded
+   * notification
+   * @param notificationBuider
+   * @return
+   */
+  public void buildAndSend(final UserNotificationBuider notificationBuider) {
+    notificationBuider.build().send();
+  }
+
+  /**
+   * Builds a notification data container from a given builder. After that, sends the builded
+   * notification for the given
    * media type
    * @param mediaType
    * @param notificationBuider
    * @return
    */
-  public static void buildAndSend(final NotifMediaType mediaType,
+  public void buildAndSend(final NotifMediaType mediaType,
       final UserNotificationBuider notificationBuider) {
-    getInstance().getManager().buildAndSend(mediaType, notificationBuider);
+    notificationBuider.build().send(mediaType);
   }
 
   /**
@@ -65,25 +64,7 @@ public class UserNotificationHelper {
    * @param notificationBuider
    * @return
    */
-  public static NotificationMetaData build(final UserNotificationBuider notificationBuider) {
-    return getInstance().getManager().build(notificationBuider);
-  }
-
-  /**
-   * Gets the manager.
-   * @return
-   */
-  private UserNotificationManager getManager() {
-    if (userNotificationManager == null) {
-      userNotificationManager = new UserNotificationManager();
-    }
-    return userNotificationManager;
-  }
-
-  /**
-   * @return a UserNotificationHelper instance.
-   */
-  public static UserNotificationHelper getInstance() {
-    return instance;
+  public NotificationMetaData build(final UserNotificationBuider notificationBuider) {
+    return notificationBuider.build().getNotificationMetaData();
   }
 }
