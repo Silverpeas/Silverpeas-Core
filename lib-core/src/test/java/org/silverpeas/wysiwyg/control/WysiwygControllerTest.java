@@ -51,6 +51,10 @@ public class WysiwygControllerTest {
   public WysiwygControllerTest() {
   }
 
+  private static WysiwygManager getWysiwygController() {
+    return WysiwygController.getInstance().getManager();
+  }
+
   /**
    * Test of finNode method, of class WysiwygController.
    */
@@ -58,17 +62,17 @@ public class WysiwygControllerTest {
   public void testFinNode() {
     String path = "c:\\\\silverpeas_data\\\\webSite17\\\\id\\\\rep1\\\\rep2\\\\rep3";
     String componentId = "webSite17";
-    String result = WysiwygController.finNode(path, componentId);
+    String result = getWysiwygController().finNode(path, componentId);
     assertThat(result, is("id\\rep1\\rep2\\rep3"));
 
     path = "c:\\silverpeas_data\\webSite17\\id\\rep1\\rep2\\rep3";
     componentId = "webSite17";
-    result = WysiwygController.finNode(path, componentId);
+    result = getWysiwygController().finNode(path, componentId);
     assertThat(result, is("id\\rep1\\rep2\\rep3"));
 
     path = "/var/silverpeas_data/webSite17/id/rep1/rep2/rep3";
     componentId = "webSite17";
-    result = WysiwygController.finNode(path, componentId);
+    result = getWysiwygController().finNode(path, componentId);
     assertThat(result, is("id/rep1/rep2/rep3"));
   }
 
@@ -79,12 +83,12 @@ public class WysiwygControllerTest {
   public void testFinNode2() {
     String path = "c:\\\\silverpeas_data\\\\webSite17\\\\id\\\\rep1\\\\rep2\\\\rep3";
     String componentId = "webSite17";
-    String result = WysiwygController.finNode2(path, componentId);
+    String result = getWysiwygController().finNode2(path, componentId);
     assertThat(result, is("rep1\\rep2\\rep3"));
 
     path = "/var/silverpeas_data/webSite17/id/rep1/rep2/rep3";
     componentId = "webSite17";
-    result = WysiwygController.finNode2(path, componentId);
+    result = getWysiwygController().finNode2(path, componentId);
     assertThat(result, is("rep1/rep2/rep3"));
   }
 
@@ -95,10 +99,10 @@ public class WysiwygControllerTest {
   public void testGetNodePath() {
     String currentPath = "c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\";
     String componentId = "webSite17";
-    String result = WysiwygController.getNodePath(currentPath, componentId);
+    String result = getWysiwygController().getNodePath(currentPath, componentId);
     assertThat(result, is("c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3"));
     currentPath = "c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3";
-    result = WysiwygController.getNodePath(currentPath, componentId);
+    result = getWysiwygController().getNodePath(currentPath, componentId);
     assertThat(result, is("c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3"));
   }
 
@@ -109,11 +113,11 @@ public class WysiwygControllerTest {
   public void testGetNodePathOnLinux() {
     String currentPath = "/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1";
     String componentId = "webSites45";
-    String result = WysiwygController.getNodePath(currentPath, componentId);
+    String result = getWysiwygController().getNodePath(currentPath, componentId);
     assertThat(result, is("/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1"));
     currentPath
         = "/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1/repertoire1/repertoire2/";
-    result = WysiwygController.getNodePath(currentPath, componentId);
+    result = getWysiwygController().getNodePath(currentPath, componentId);
     assertThat(result, is("/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1"));
   }
 
@@ -123,15 +127,15 @@ public class WysiwygControllerTest {
   @Test
   public void testSuppressLeadingSlashesOrAntislashes() {
     String chemin = "\\\\rep1\\rep2\\rep3";
-    String result = WysiwygController.suppressLeadingSlashesOrAntislashes(chemin);
+    String result = getWysiwygController().suppressLeadingSlashesOrAntislashes(chemin);
     assertThat(result, is("rep1\\rep2\\rep3"));
 
     chemin = "\\rep1\\rep2\\rep3";
-    result = WysiwygController.suppressLeadingSlashesOrAntislashes(chemin);
+    result = getWysiwygController().suppressLeadingSlashesOrAntislashes(chemin);
     assertThat(result, is("rep1\\rep2\\rep3"));
 
     chemin = "/rep1/rep2/rep3";
-    result = WysiwygController.suppressLeadingSlashesOrAntislashes(chemin);
+    result = getWysiwygController().suppressLeadingSlashesOrAntislashes(chemin);
     assertThat(result, is("rep1/rep2/rep3"));
   }
 
@@ -141,18 +145,18 @@ public class WysiwygControllerTest {
   @Test
   public void testIgnoreLeadingSlash() {
     String chemin = "\\\\rep1\\rep2\\rep3";
-    String result = WysiwygController.ignoreLeadingSlash(chemin);
+    String result = getWysiwygController().ignoreLeadingSlash(chemin);
     assertThat(result, is("\\\\rep1\\rep2\\rep3"));
 
     chemin = "//rep1/rep2/rep3";
-    result = WysiwygController.ignoreLeadingSlash(chemin);
+    result = getWysiwygController().ignoreLeadingSlash(chemin);
     assertThat(result, is("rep1/rep2/rep3"));
 
     chemin = "/rep1/rep2/rep3";
-    result = WysiwygController.ignoreLeadingSlash(chemin);
+    result = getWysiwygController().ignoreLeadingSlash(chemin);
     assertThat(result, is("rep1/rep2/rep3"));
     chemin = "";
-    result = WysiwygController.ignoreLeadingSlash(chemin);
+    result = getWysiwygController().ignoreLeadingSlash(chemin);
     assertThat(result, is(""));
   }
 
@@ -162,27 +166,27 @@ public class WysiwygControllerTest {
   @Test
   public void testSupprDoubleAntiSlash() {
     String chemin = "\\\\rep1\\rep2\\\\rep3";
-    String result = WysiwygController.supprDoubleAntiSlash(chemin);
+    String result = getWysiwygController().supprDoubleAntiSlash(chemin);
     assertThat(result, is("\\rep1\\rep2\\rep3"));
 
     chemin = "\\rep1\\rep2\\rep3";
-    result = WysiwygController.supprDoubleAntiSlash(chemin);
+    result = getWysiwygController().supprDoubleAntiSlash(chemin);
     assertThat(result, is("\\rep1\\rep2\\rep3"));
 
     chemin = "/rep1/rep2/rep3";
-    result = WysiwygController.supprDoubleAntiSlash(chemin);
+    result = getWysiwygController().supprDoubleAntiSlash(chemin);
     assertThat(result, is("/rep1/rep2/rep3"));
   }
 
   @Test
   public void testSuppressFinalSlash() {
-    String result = WysiwygController.suppressFinalSlash("\\\\id\\\\rep1\\\\rep2\\\\rep3/");
+    String result = getWysiwygController().suppressFinalSlash("\\\\id\\\\rep1\\\\rep2\\\\rep3/");
     assertThat(result, is("\\\\id\\\\rep1\\\\rep2\\\\rep3"));
 
-    result = WysiwygController.suppressFinalSlash("\\\\id\\\\rep1\\\\rep2\\\\rep3////");
+    result = getWysiwygController().suppressFinalSlash("\\\\id\\\\rep1\\\\rep2\\\\rep3////");
     assertThat(result, is("\\\\id\\\\rep1\\\\rep2\\\\rep3"));
 
-    result = WysiwygController.suppressFinalSlash("");
+    result = getWysiwygController().suppressFinalSlash("");
     assertThat(result, is(""));
   }
 
@@ -207,9 +211,9 @@ public class WysiwygControllerTest {
       String expectedContent = "Hello World";
       String userId = "7";
       String language = "en";
-      WysiwygController.createFileAndAttachment(expectedContent, new ForeignPK(messageId,
+      getWysiwygController().createFileAndAttachment(expectedContent, new ForeignPK(messageId,
           componentId), userId, language);
-      String content = WysiwygController.load(componentId, messageId, language);
+      String content = getWysiwygController().load(componentId, messageId, language);
       assertThat(content, is(expectedContent));
       List<SimpleDocument> lockedFiles = AttachmentServiceFactory.getAttachmentService()
           .listDocumentsLockedByUser(userId, null);
@@ -234,7 +238,7 @@ public class WysiwygControllerTest {
       SimpleDocumentPK newPk = new SimpleDocumentPK("f2eb803f-cb46-4988-b89d-045c4e846da4",
           "kmelia1");
       newPk.setOldSilverpeasId(41L);
-      String move = WysiwygController.replaceInternalImageId(content, oldPk, newPk);
+      String move = getWysiwygController().replaceInternalImageId(content, oldPk, newPk);
       assertThat(move, is(result));
     } finally {
       IOUtils.closeQuietly(in);
@@ -255,7 +259,7 @@ public class WysiwygControllerTest {
       SimpleDocumentPK newPk = new SimpleDocumentPK("f2eb803f-cb46-4988-b89d-045c4e846da4",
           "kmelia18");
       newPk.setOldSilverpeasId(41L);
-      String move = WysiwygController.replaceInternalImageId(content, oldPk, newPk);
+      String move = getWysiwygController().replaceInternalImageId(content, oldPk, newPk);
       assertThat(move, is(result));
     } finally {
       IOUtils.closeQuietly(in);
