@@ -145,6 +145,11 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     boolean authorized = true;
     boolean isRoleVerificationRequired = false;
 
+    // Checking the versions
+    if (object.isVersioned() && !object.isPublic()) {
+      isRoleVerificationRequired = true;
+    }
+
     // Verifying download is possible
     if (context.getOperations().contains(AccessControlOperation.download) &&
         !object.isDownloadAllowedForReaders()) {
