@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.model;
 
 import java.io.Serializable;
@@ -460,7 +459,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     }
     return (getNodePK().getId().equals(((NodeDetail) other).getNodePK().getId()))
         && (getNodePK().getComponentName().equals(((NodeDetail) other).getNodePK().
-        getComponentName()));
+            getComponentName()));
   }
 
   @Override
@@ -562,5 +561,23 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     node.setPath(getPath());
     node.setType(getType());
     return node;
+  }
+
+  public boolean isFatherOf(NodeDetail node) {
+    boolean isFather = false;
+    // Compare componentId
+    if (this.getNodePK().getInstanceId().equals(node.getNodePK().getInstanceId())) {
+      // Compare if they are same node
+      if (this.getNodePK().getId().equals(node.getNodePK().getId())) {
+        isFather = false;
+      } else {
+        String thisNodePath = this.getFullPath();
+        String nodePath = node.getFullPath();
+        if (nodePath.startsWith(thisNodePath)) {
+          isFather = true;
+        }
+      }
+    }
+    return isFather;
   }
 }
