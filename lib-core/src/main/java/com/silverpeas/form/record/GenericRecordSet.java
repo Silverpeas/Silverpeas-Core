@@ -92,28 +92,28 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * @param recordId
+   * @param objectId
    * @return the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
   @Override
-  public DataRecord getRecord(String recordId) throws FormException {
-    return getGenericRecordSetManager().getRecord(recordTemplate, recordId);
+  public DataRecord getRecord(String objectId) throws FormException {
+    return getGenericRecordSetManager().getRecord(recordTemplate, objectId);
   }
 
   /**
    * Returns the DataRecord with the given id.
-   * @param recordId
+   * @param objectId
    * @param language
    * @return the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
   @Override
-  public DataRecord getRecord(String recordId, String language) throws FormException {
+  public DataRecord getRecord(String objectId, String language) throws FormException {
     if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
       language = null;
     }
-    return getGenericRecordSetManager().getRecord(recordTemplate, recordId, language);
+    return getGenericRecordSetManager().getRecord(recordTemplate, objectId, language);
   }
 
   /**
@@ -218,11 +218,16 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void delete(DataRecord record) throws FormException {
     if (record != null) {
-      // remove files managed by Wysiwyg field
+      // remove files managed by WYSIWYG fields
       WysiwygFCKFieldDisplayer.removeContents(new ForeignPK(record.getId(), recordTemplate.getInstanceId()));
       
-      // remove data in database
-      getGenericRecordSetManager().deleteRecord(recordTemplate, record);
+      List<String> languages =
+          getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, record.getId());
+      for (String lang : languages) {
+        DataRecord aRecord = getRecord(record.getId(), lang);
+        // remove data in database
+        getGenericRecordSetManager().deleteRecord(recordTemplate, aRecord);
+      }
     }
   }
   
@@ -234,63 +239,76 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
       throws FormException {
-    GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId());
-    if (record != null) {
-      // move wysiwyg fields
-      WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
-      try {
-        wysiwygDisplayer.move(fromPK, toPK);
-      } catch (IOException e) {
-        SilverTrace.error("form", "GenericRecordSet.move", "form.CANT_MOVE_WYSIWYG_FIELD_CONTENT", null, e);
+    
+    // move WYSIWYG fields
+    WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
+    try {
+      wysiwygDisplayer.move(fromPK, toPK);
+    } catch (IOException e) {
+      SilverTrace.error("form", "GenericRecordSet.move", "form.CANT_MOVE_WYSIWYG_FIELD_CONTENT", null, e);
+    }
+    
+    // move files, images and video of form
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
+    for (SimpleDocument doc : documents) {
+      AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPK);
+    }
+    
+    // update data stored in database
+    List<String> languages = getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, fromPK.getId());
+    for (String lang : languages) {
+      GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId(), lang);
+      if (record != null) {
+        // move record itself in database
+        getGenericRecordSetManager().moveRecord(record.getInternalId(),
+            (IdentifiedRecordTemplate) toRecordTemplate);
       }
-      
-      // move files, images and video of form
-      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
-      for (SimpleDocument doc : documents) {
-        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPK);
-      }
-      
-      // move record itself in database
-      getGenericRecordSetManager().moveRecord(record.getInternalId(),
-          (IdentifiedRecordTemplate) toRecordTemplate);
     }
   }
   
   @Override
   public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
       Map<String, String> oldAndNewFileIds) throws FormException {
-    GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId());
-    record.setInternalId(-1);
-    record.setId(toPK.getId());
-
-    // clone wysiwyg fields content
+    
+    // clone WYSIWYG fields content
     WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
     try {
       wysiwygDisplayer.cloneContents(fromPK, toPK, oldAndNewFileIds);
     } catch (Exception e) {
-      SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
+      SilverTrace.error("form", "GenericRecordSet.copy", "form.EX_CLONE_FAILURE", null, e);
     }
     
     // copy files, images and videos
+    Map<String, String> ids = new HashMap<String, String>();
     try {
       List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
-      originals.addAll(AttachmentServiceFactory.getAttachmentService()
-          .listDocumentsByForeignKeyAndType(fromPK, DocumentType.video, null));
-      Map<String, String> ids = new HashMap<String, String>(originals.size());
       for (SimpleDocument original : originals) {
         SimpleDocumentPK clonePk =
             AttachmentServiceFactory.getAttachmentService().copyDocument(original, toPK);
         ids.put(original.getId(), clonePk.getId());
       }
-      replaceIds(ids, record, toPK.getId());
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
-
-    // insert record itself in database
-    getGenericRecordSetManager().insertRecord((IdentifiedRecordTemplate) toRecordTemplate, record);
+    
+    // copy data stored in database
+    List<String> languages = getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, fromPK.getId());
+    for (String lang : languages) {
+      GenericDataRecord record = (GenericDataRecord) getRecord(fromPK.getId(), lang);
+      if (record != null) {
+        record.setInternalId(-1);
+        record.setId(toPK.getId());
+        
+        // replace files reference
+        replaceIds(ids, record, toPK.getId());  
+    
+        // insert record itself in database
+        getGenericRecordSetManager()
+            .insertRecord((IdentifiedRecordTemplate) toRecordTemplate, record);
+      }
+    }
   }
 
   @Override
