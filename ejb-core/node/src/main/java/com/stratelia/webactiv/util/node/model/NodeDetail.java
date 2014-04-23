@@ -591,7 +591,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   }
 
   public boolean hasFather() {
-    return !this.fatherPK.isUnclassed();
+    return !this.fatherPK.isUnclassed() && !this.fatherPK.isUndefined();
   }
 
   public void setUseId(boolean useId) {
