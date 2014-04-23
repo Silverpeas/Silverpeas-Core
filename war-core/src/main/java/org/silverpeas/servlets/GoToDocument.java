@@ -19,21 +19,18 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.servlets;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.permalinks.PermalinkServiceFactory;
 
-import com.silverpeas.peasUtil.GoTo;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.ComponentSecurity;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class GoToDocument extends GoTo {
 
@@ -48,13 +45,10 @@ public class GoToDocument extends GoTo {
           findVersionnedDocumentByOldId(Integer.parseInt(objectId));
     } else {
       document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-          new SimpleDocumentPK(objectId), null);
+          new SimpleDocumentPK(objectId), getContentLanguage(req));
     }
     if (document != null) {
-      SimpleDocument version = document.getLastPublicVersion();
-      if (version != null) {
-        return redirectToFile(version, req, res);
-      }
+      return redirectToFile(document, req, res);
     }
     return null;
   }
@@ -68,28 +62,21 @@ public class GoToDocument extends GoTo {
       setGefSpaceId(req, componentId);
     }
     if (isLoggedIn) {
-      // L'utilisateur est déjà loggué
-      if (isUserAllowed(req, componentId)) {
-        // L'utilisateur a-t-il le droit de consulter le fichier/la publication
-        boolean isAccessAuthorized = true;
-        if (componentId.startsWith("kmelia")) {
-          try {
-            ComponentSecurity security = (ComponentSecurity) Class.forName(
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
-            isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
-          } catch (ClassNotFoundException e) {
-            SilverTrace.error("peasUtil", "GoToDocument.doPost", "root.EX_CLASS_NOT_INITIALIZED",
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
-            return null;
+      AccessController<SimpleDocument> accessController =
+          AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+      boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), version);
+      if (!isAccessAuthorized) {
+        SimpleDocument lastPublicVersion = version.getLastPublicVersion();
+        if (lastPublicVersion != null) {
+          isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), lastPublicVersion);
+          if (isAccessAuthorized) {
+            return URLManager.getServerURL(req) + lastPublicVersion.getUniversalURL();
           }
         }
-
-        if (isAccessAuthorized) {
-          return URLManager.getServerURL(req) + version.getUniversalURL();
-        }
+      } else {
+        return URLManager.getServerURL(req) + version.getUniversalURL();
       }
     }
-    return "ComponentId=" + componentId + "&AttachmentId=" + version.getId()
-        + "&Mapping=Version&ForeignId=" + foreignId;
+    return null;
   }
 }

@@ -222,7 +222,9 @@ public class SimpleDocumentTest {
     SimpleDocument instance = new SimpleDocument();
     String id = UUID.randomUUID().toString();
     instance.setPK(new SimpleDocumentPK(id, instanceId));
-    String expResult = "/silverpeas/File/" + id;
+    instance.setFile(new SimpleAttachment());
+    instance.getFile().setLanguage("en");
+    String expResult = "/silverpeas/File/" + id + "?ContentLanguage=en";
     String result = instance.getUniversalURL();
     assertThat(result, is(expResult));
   }

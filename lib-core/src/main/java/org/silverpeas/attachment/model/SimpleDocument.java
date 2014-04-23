@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
@@ -58,6 +57,9 @@ public class SimpleDocument implements Serializable {
   public final static String VERSION_PREFIX = "version_";
   public final static String FILE_PREFIX = "file_";
   public final static String DOCUMENT_PREFIX = "simpledoc_";
+  private String repositoryPath;
+  private SimpleDocument versionMaster = this;
+  private int versionIndex = 0;
   private SimpleDocumentPK pk;
   private String foreignId;
   private int order;
@@ -156,80 +158,103 @@ public class SimpleDocument implements Serializable {
   public SimpleDocument() {
   }
 
+  protected SimpleDocument(SimpleDocument simpleDocument) {
+    this.repositoryPath = simpleDocument.getRepositoryPath();
+    this.versionMaster = simpleDocument.getVersionMaster();
+    this.versionIndex = simpleDocument.getVersionIndex();
+    this.pk = simpleDocument.getPk();
+    this.foreignId = simpleDocument.getForeignId();
+    this.order = simpleDocument.getOrder();
+    this.versioned = simpleDocument.isVersioned();
+    this.editedBy = simpleDocument.getEditedBy();
+    this.reservation = simpleDocument.getReservation();
+    this.alert = simpleDocument.getAlert();
+    this.expiry = simpleDocument.getExpiry();
+    this.status = simpleDocument.getStatus();
+    this.cloneId = simpleDocument.getCloneId();
+    this.minorVersion = simpleDocument.getMinorVersion();
+    this.majorVersion = simpleDocument.getMajorVersion();
+    this.publicDocument = simpleDocument.isPublic();
+    this.nodeName = simpleDocument.getNodeName();
+    this.comment = simpleDocument.getComment();
+    this.documentType = simpleDocument.getDocumentType();
+    this.file = simpleDocument.getFile();
+  }
+
   public String getFilename() {
-    return file.getFilename();
+    return getFile().getFilename();
   }
 
   public void setFilename(String filename) {
-    file.setFilename(filename);
+    getFile().setFilename(filename);
   }
 
   public String getLanguage() {
-    return file.getLanguage();
+    return getFile().getLanguage();
   }
 
   public void setLanguage(String language) {
-    file.setLanguage(language);
+    getFile().setLanguage(language);
   }
 
   public String getTitle() {
-    return file.getTitle();
+    return getFile().getTitle();
   }
 
   public void setTitle(String title) {
-    file.setTitle(title);
+    getFile().setTitle(title);
   }
 
   public String getDescription() {
-    return file.getDescription();
+    return getFile().getDescription();
   }
 
   public void setDescription(String description) {
-    file.setDescription(description);
+    getFile().setDescription(description);
   }
 
   public long getSize() {
-    return file.getSize();
+    return getFile().getSize();
   }
 
   public void setSize(long size) {
-    file.setSize(size);
+    getFile().setSize(size);
   }
 
   public String getContentType() {
-    return file.getContentType();
+    return getFile().getContentType();
   }
 
   public void setContentType(String contentType) {
-    file.setContentType(contentType);
+    getFile().setContentType(contentType);
   }
 
   public String getCreatedBy() {
-    return file.getCreatedBy();
+    return getFile().getCreatedBy();
   }
 
   public Date getCreated() {
-    return file.getCreated();
+    return getFile().getCreated();
   }
 
   public void setCreated(Date created) {
-    file.setCreated(created);
+    getFile().setCreated(created);
   }
 
   public String getUpdatedBy() {
-    return file.getUpdatedBy();
+    return getFile().getUpdatedBy();
   }
 
   public void setUpdatedBy(String updatedBy) {
-    file.setUpdatedBy(updatedBy);
+    getFile().setUpdatedBy(updatedBy);
   }
 
   public Date getUpdated() {
-    return file.getUpdated();
+    return getFile().getUpdated();
   }
 
   public void setUpdated(Date updated) {
-    file.setUpdated(updated);
+    getFile().setUpdated(updated);
   }
 
   public Date getReservation() {
@@ -255,7 +280,11 @@ public class SimpleDocument implements Serializable {
   }
 
   public void setAlert(Date alert) {
-    this.alert = DateUtil.getBeginOfDay(alert);
+    if(alert == null) {
+      this.alert = null;
+    } else {
+      this.alert = DateUtil.getBeginOfDay(alert);
+    }
   }
 
   public Date getExpiry() {
@@ -266,7 +295,11 @@ public class SimpleDocument implements Serializable {
   }
 
   public void setExpiry(Date expiry) {
-    this.expiry = DateUtil.getBeginOfDay(expiry);
+    if (expiry == null) {
+      this.expiry = null;
+    } else {
+      this.expiry = DateUtil.getBeginOfDay(expiry);
+    }
   }
 
   public String getStatus() {
@@ -293,6 +326,16 @@ public class SimpleDocument implements Serializable {
     this.majorVersion = majorVersion;
   }
 
+  /**
+   * Gets a version number as String.
+   * For now, this is the concatenation of major and minor version data that are separated by a
+   * point.
+   * @return
+   */
+  public String getVersion() {
+    return getMajorVersion() + "." + getMinorVersion();
+  }
+
   public String getComment() {
     return comment;
   }
@@ -307,7 +350,7 @@ public class SimpleDocument implements Serializable {
 
   public void edit(String currentEditor) {
     this.editedBy = currentEditor;
-    this.reservation = new Date();
+    setReservation(new Date());
     String day =
         OrganisationControllerFactory.getOrganisationController()
             .getComponentParameterValue(getInstanceId(), "nbDayForReservation");
@@ -332,31 +375,31 @@ public class SimpleDocument implements Serializable {
 
   public void release() {
     this.editedBy = null;
-    this.reservation = null;
+    setReservation(null);
     setExpiry(null);
     setAlert(null);
   }
 
   public String getXmlFormId() {
-    return file.getXmlFormId();
+    return getFile().getXmlFormId();
   }
 
   public void setXmlFormId(String xmlFormId) {
-    file.setXmlFormId(xmlFormId);
+    getFile().setXmlFormId(xmlFormId);
   }
 
   public String getId() {
-    if (pk != null) {
-      return pk.getId();
+    if (getPk() != null) {
+      return getPk().getId();
     }
     return null;
   }
 
   public void setId(String id) {
-    if (pk != null) {
-      this.pk.setId(id);
+    if (getPk() != null) {
+      getPk().setId(id);
     } else {
-      this.pk = new SimpleDocumentPK(id);
+      setPK(new SimpleDocumentPK(id));
     }
   }
 
@@ -365,15 +408,15 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getInstanceId() {
-    return this.pk.getInstanceId();
+    return getPk().getInstanceId();
   }
 
   public long getOldSilverpeasId() {
-    return this.pk.getOldSilverpeasId();
+    return getPk().getOldSilverpeasId();
   }
 
   public void setOldSilverpeasId(long oldSilverpeasId) {
-    this.pk.setOldSilverpeasId(oldSilverpeasId);
+    getPk().setOldSilverpeasId(oldSilverpeasId);
   }
 
   public String getForeignId() {
@@ -418,8 +461,8 @@ public class SimpleDocument implements Serializable {
 
   public void unlock() {
     this.editedBy = null;
-    this.expiry = null;
-    this.alert = null;
+    setExpiry(null);
+    setAlert(null);
   }
 
   public String getNodeName() {
@@ -431,7 +474,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public String computeNodeName() {
-    if (!StringUtil.isDefined(nodeName)) {
+    if (!StringUtil.isDefined(getNodeName())) {
       if (getOldSilverpeasId() <= 0L) {
         setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
       }
@@ -447,7 +490,7 @@ public class SimpleDocument implements Serializable {
    * @return the full JCR path to the file node (starting with /).
    */
   public String getFullJcrContentPath() {
-    return getFullJcrPath() + '/' + file.getNodeName();
+    return getFullJcrPath() + '/' + getFile().getNodeName();
   }
 
   /**
@@ -514,19 +557,21 @@ public class SimpleDocument implements Serializable {
 
   @Override
   public String toString() {
-    return "SimpleDocument{" + nodeName + " pk=" + pk + ", foreignId=" + foreignId + ", order="
-        + order + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation="
-        + reservation + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status
-        + ", cloneId=" + cloneId + ", file=" + file + ", minorVersion=" + minorVersion
-        + ", majorVersion=" + majorVersion + ", comment=" + comment + '}';
+    return "SimpleDocument{" + getNodeName() + " pk=" + getPk() + ", foreignId=" + getForeignId() +
+        ", order=" + getOrder() + ", versioned=" + isVersioned() + ", editedBy=" + getEditedBy() +
+        ", reservation=" + getReservation() + ", alert=" + getAlert() + ", expiry=" + getExpiry() +
+        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", file=" + getFile() +
+        ", minorVersion=" + getMinorVersion() + ", majorVersion=" + getMajorVersion() +
+        ", comment=" + getComment() + '}';
   }
 
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 31 * hash + (this.pk != null ? this.pk.hashCode() : 0);
-    hash = 31 * hash + this.minorVersion;
-    hash = 31 * hash + this.majorVersion;
+    hash = 31 * hash + (getPk() != null ? getPk().hashCode() : 0);
+    hash = 31 * hash + getMinorVersion();
+    hash = 31 * hash + getMajorVersion();
+    hash = 31 * hash + getVersionIndex();
     return hash;
   }
 
@@ -539,13 +584,17 @@ public class SimpleDocument implements Serializable {
       return false;
     }
     final SimpleDocument other = (SimpleDocument) obj;
-    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
+    if (getPk() != other.getPk() &&
+        (getPk() == null || !getPk().equals(other.getPk()))) {
       return false;
     }
-    if (this.minorVersion != other.minorVersion) {
+    if (getMinorVersion() != other.getMinorVersion()) {
       return false;
     }
-    if (this.majorVersion != other.majorVersion) {
+    if (getMajorVersion() != other.getMajorVersion()) {
+      return false;
+    }
+    if (getVersionIndex() != other.getVersionIndex()) {
       return false;
     }
     return true;
@@ -557,17 +606,18 @@ public class SimpleDocument implements Serializable {
    * @return the attachment URL.
    */
   public String getAttachmentURL() {
-    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
-        getLanguage());
+    return FileServerUtils
+        .getAttachmentURL(getPk().getInstanceId(), getFilename(), getPk().getId(), getLanguage());
   }
 
   public String getUniversalURL() {
-    return URLManager.getSimpleURL(URLManager.URL_FILE, getId());
+    return URLManager.getSimpleURL(URLManager.URL_FILE, getId()) + "?ContentLanguage=" +
+        getLanguage();
   }
 
   public String getOnlineURL() {
-    String onlineUrl = FileServerUtils.getOnlineURL(pk.getComponentName(), getFilename(), "",
-        getContentType(), "");
+    String onlineUrl = FileServerUtils
+        .getOnlineURL(getPk().getComponentName(), getFilename(), "", getContentType(), "");
     String extension = FileRepositoryManager.getFileExtension(getFilename());
     if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
       onlineUrl += "&logicalName=" + URLUtils.encodePathParamValue(getFilename());
@@ -576,7 +626,8 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getAliasURL() {
-    String aliasUrl = FileServerUtils.getAliasURL(pk.getInstanceId(), getFilename(), pk.getId());
+    String aliasUrl =
+        FileServerUtils.getAliasURL(getPk().getInstanceId(), getFilename(), getPk().getId());
     if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(getLanguage())) {
       aliasUrl += "&lang=" + getLanguage();
     }
@@ -628,8 +679,56 @@ public class SimpleDocument implements Serializable {
    */
   @Deprecated
   public String getWebURL() {
-    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
-        getLanguage());
+    return FileServerUtils
+        .getAttachmentURL(getPk().getInstanceId(), getFilename(), getPk().getId(), getLanguage());
+  }
+
+  /**
+   * Returns the master of versioned document.
+   * If not versionned, it returns itself.
+   * If versioned, it returns the master of versioned document (the last created or updated in
+   * other words).
+   * @return
+   */
+  public SimpleDocument getVersionMaster() {
+    return versionMaster;
+  }
+
+  public void setVersionMaster(final SimpleDocument versionMaster) {
+    this.versionMaster = versionMaster;
+  }
+
+  /**
+   * Indicates if the current instance is a master one.
+   * @return true if current instance is master, false otherwise.
+   */
+  public boolean isVersionMaster() {
+    return this == getVersionMaster();
+  }
+
+  /**
+   * Returns the path into the repository.
+   * @return
+   */
+  public String getRepositoryPath() {
+    return repositoryPath;
+  }
+
+  public void setRepositoryPath(final String repositoryPath) {
+    this.repositoryPath = repositoryPath;
+  }
+
+  /**
+   * Returns the index of document into the history if any and if the document is a versioned one.
+   * In other cases, it returns 0 (the start index).
+   * @return
+   */
+  public int getVersionIndex() {
+    return versionIndex;
+  }
+
+  public void setVersionIndex(final int versionIndex) {
+    this.versionIndex = versionIndex;
   }
 
   /**
@@ -642,6 +741,6 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getFolder() {
-    return documentType.getFolderName();
+    return getDocumentType().getFolderName();
   }
 }
