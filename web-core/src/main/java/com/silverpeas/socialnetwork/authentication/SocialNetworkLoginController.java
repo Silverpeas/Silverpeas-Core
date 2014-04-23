@@ -107,8 +107,8 @@ public class SocialNetworkLoginController extends HttpServlet {
 
       // Try to retrieve a silverpeas account linked to remote social network account
       String profileId = connector.getUserProfileId(authorizationToken);
-      ExternalAccount account =
-          SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
+      ExternalAccount account = SocialNetworkService.getInstance().getExternalAccount(networkId,
+          profileId);
 
       // Verify that the user can login
       if (account != null) {
@@ -155,12 +155,13 @@ public class SocialNetworkLoginController extends HttpServlet {
       String firstName = req.getParameter("firstName");
       String lastName = req.getParameter("lastName");
       String email = req.getParameter("email");
+      String domainId = registrationSettings.userSelfRegistrationDomainId();
 
       try {
-        String userId = userService.registerUser(firstName, lastName, email, "0");
-        AccessToken authorizationToken =
-            SocialNetworkService.getInstance().getStoredAuthorizationToken(req.getSession(true),
-            networkId);
+        String userId = userService.registerUser(firstName, lastName, email, domainId);
+        AccessToken authorizationToken = SocialNetworkService.getInstance().
+            getStoredAuthorizationToken(req.getSession(true),
+                networkId);
         String profileId = socialNetworkConnector.getUserProfileId(authorizationToken);
         SocialNetworkService.getInstance().createExternalAccount(networkId, userId, profileId);
       } catch (AdminException e) {
