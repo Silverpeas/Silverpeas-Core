@@ -20,27 +20,20 @@
  */
 package org.silverpeas.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.security.ComponentSecurity;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ClientBrowserUtil;
 import org.apache.commons.codec.CharEncoding;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import com.silverpeas.peasUtil.GoTo;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.security.ComponentSecurity;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ClientBrowserUtil;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class GoToFile extends GoTo {
 
@@ -50,16 +43,8 @@ public class GoToFile extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    MainSessionController mainSessionCtrl = util.getMainSessionController(req);
-    String language = I18NHelper.defaultLanguage;
-    if (mainSessionCtrl != null) {
-      language = mainSessionCtrl.getFavoriteLanguage();
-    }
-    if(StringUtil.isLong(objectId)) {
-      
-    }
     SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(objectId), language);
+        searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     if (attachment == null) {
       return null;
     }
