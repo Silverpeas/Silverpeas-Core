@@ -24,6 +24,7 @@
 package org.silverpeas.util;
 
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.notification.message.Message;
 import org.silverpeas.notification.message.MessageManager;
 
 /**
@@ -46,42 +47,37 @@ public class NotifierUtil {
   }
 
   /**
-   * Add an severe message.
-   * @param message
+   * @see MessageManager#addSevere(String)
    */
-  public static void addSevere(String message) {
-    MessageManager.addSevere(message);
+  public static Message addSevere(String message) {
+    return MessageManager.addSevere(message);
   }
 
   /**
-   * Add an error message.
-   * @param message
+   * @see MessageManager#addError(String)
    */
-  public static void addError(String message) {
-    MessageManager.addError(message);
+  public static Message addError(String message) {
+    return MessageManager.addError(message);
   }
 
   /**
-   * Add an warning message.
-   * @param message
+   * @see MessageManager#addWarning(String)
    */
-  public static void addWarning(String message) {
-    MessageManager.addWarning(message);
+  public static Message addWarning(String message) {
+    return MessageManager.addWarning(message);
   }
 
   /**
-   * Add a success message.
-   * @param message
+   * @see MessageManager#addSuccess(String)
    */
-  public static void addSuccess(String message) {
-    MessageManager.addSuccess(message);
+  public static Message addSuccess(String message) {
+    return MessageManager.addSuccess(message);
   }
 
   /**
-   * Add a success message.
-   * @param message
+   * @see MessageManager#addInfo(String)
    */
-  public static void addInfo(String message) {
-    MessageManager.addInfo(message);
+  public static Message addInfo(String message) {
+    return MessageManager.addInfo(message);
   }
 }
