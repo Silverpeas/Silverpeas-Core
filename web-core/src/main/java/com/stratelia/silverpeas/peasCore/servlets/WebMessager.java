@@ -24,12 +24,12 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.notification.message.Message;
 import org.silverpeas.util.NotifierUtil;
 
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
- * notifier
- * plugin.
+ * notifier plugin.
  * @author Yohann Chastagnier
  */
 public final class WebMessager {
@@ -40,56 +40,50 @@ public final class WebMessager {
   }
 
   private WebMessager() {
-
   }
 
   /**
    * Gets the resource locator from the given property file and by taking into account of the
    * current known language.
    * @param propertyFileBaseName
-   * @return
+   * @return the aimed resource locator instance.
    */
   public ResourceLocator getResourceLocator(String propertyFileBaseName) {
     return NotifierUtil.getResourceLocator(propertyFileBaseName);
   }
 
   /**
-   * Add an severe message.
-   * @param message
+   * @see NotifierUtil#addSevere(String)
    */
-  public void addSevere(String message) {
-    NotifierUtil.addSevere(message);
+  public Message addSevere(String message) {
+    return NotifierUtil.addSevere(message);
   }
 
   /**
-   * Add an error message.
-   * @param message
+   * @see NotifierUtil#addError(String)
    */
-  public void addError(String message) {
-    NotifierUtil.addError(message);
+  public Message addError(String message) {
+    return NotifierUtil.addError(message);
   }
 
   /**
-   * Add an warning message.
-   * @param message
+   * @see NotifierUtil#addWarning(String)
    */
-  public void addWarning(String message) {
-    NotifierUtil.addWarning(message);
+  public Message addWarning(String message) {
+    return NotifierUtil.addWarning(message);
   }
 
   /**
-   * Add a success message.
-   * @param message
+   * @see NotifierUtil#addSuccess(String)
    */
-  public void addSuccess(String message) {
-    NotifierUtil.addSuccess(message);
+  public Message addSuccess(String message) {
+    return NotifierUtil.addSuccess(message);
   }
 
   /**
-   * Add a success message.
-   * @param message
+   * @see NotifierUtil#addInfo(String)
    */
-  public void addInfo(String message) {
-    NotifierUtil.addInfo(message);
+  public Message addInfo(String message) {
+    return NotifierUtil.addInfo(message);
   }
 }
