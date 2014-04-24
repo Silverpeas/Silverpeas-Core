@@ -271,6 +271,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
     private NavigationStep previous;
     private NavigationStep next;
     private URI uri = URI.create("");
+    private boolean uriMustBeUsedByBrowseBar = true;
     private String label;
 
     /**
@@ -409,6 +410,26 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
      */
     NavigationStep withNext(final NavigationStep next) {
       this.next = next;
+      return this;
+    }
+
+    /**
+     * Indicates if the URI of the navigation step must be used by the browsbar mechanism.
+     * True by default.
+     * @return true if must be used, false otherwise.
+     */
+    public boolean isUriMustBeUsedByBrowseBar() {
+      return uriMustBeUsedByBrowseBar;
+    }
+
+    /**
+     * Sets if the URI of the navigation step must be used by the browsbar mechanism.
+     * True by default.
+     * @param uriMustBeUsedByBrowseBar true if must be used, false otherwise.
+     * @return itself.
+     */
+    public NavigationStep setUriMustBeUsedByBrowseBar(final boolean uriMustBeUsedByBrowseBar) {
+      this.uriMustBeUsedByBrowseBar = uriMustBeUsedByBrowseBar;
       return this;
     }
   }
