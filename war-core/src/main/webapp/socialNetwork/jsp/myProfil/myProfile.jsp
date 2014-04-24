@@ -240,7 +240,7 @@ $(document).ready(function(){
     };
     $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
 
-    $("#newStatus").html("<%= userFull.getStatus() %>");
+    $("#newStatus").html("<%=EncodeHelper.javaStringToJsString(userFull.getStatus())%>");
 });
 
 function hideImageFile() {
@@ -260,7 +260,7 @@ function hideImageFile() {
 
 	<div class="info tableBoard">
  		<h2 class="userName"><c:out value="${currentUser.firstName}" /> <br /><c:out value="${currentUser.lastName}" /></h2>
-       	<p class="statut"><c:out value="${currentUser.status}" /></p>
+       	<p class="statut"><c:out value="${silfn:escapeHtmlWhitespaces(currentUser.status)}" escapeXml="false" /></p>
 	    <div class="action">
         	<a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
             <br />
