@@ -42,7 +42,7 @@
       templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-button.html',
       transclude: true,
       scope: {
-        doAction: '&ngClick', // the action to trigger when the button is clicked
+        doAction: '&ngClick' // the action to trigger when the button is clicked
       },
       restrict: 'AE',
       replace: true
