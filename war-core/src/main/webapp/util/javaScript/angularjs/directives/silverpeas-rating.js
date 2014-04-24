@@ -48,6 +48,7 @@
             contributiontype : '@',
             contributionid : '@',
             readonly : '@',
+            forcedisplaywhennorating : '@',
             canuserrating : '@',
             starsize : '@',
             shownbraterratings : '@',
@@ -83,6 +84,7 @@
                 scope.readonly = "true";
               }
               var readonly = scope.readonly === "true";
+              var forceDisplayWhenNoRating = scope.forcedisplaywhennorating === "true";
               if (scope.shownbraterratings === "false") {
                 angular.element(".rating-contribution", element).hide();
               }
@@ -92,7 +94,7 @@
                 var raterRating = raterRatingEntity.raterRatingValue;
                 var resetable = raterRatingEntity.isRatingDone;
 
-                if (!readonly || raterRatingEntity.numberOfRaterRatings > 0) {
+                if (!readonly || forceDisplayWhenNoRating || raterRatingEntity.numberOfRaterRatings > 0) {
                   // display number of rater ratings
                   displayCounter(raterRatingEntity.numberOfRaterRatings);
 

@@ -37,12 +37,14 @@
 
 <%-- Default values --%>
 <c:set var="_readOnly" value="false"/>
+<c:set var="_forceDisplayWhenNoRating" value="false"/>
 <c:set var="_showNbRaterRatings" value="true"/>
 <c:set var="_starsize" value="normal"/>
 <c:set var="_canuserrating" value="${true}"/>
 
 <%-- TAG attributes --%>
 <%@ attribute name="readOnly" required="false" description="Must the rater rating be displayed in a read only mode?" type="java.lang.Boolean" %>
+<%@ attribute name="forceDisplayWhenNoRating" required="false" description="Must the rating by displayed in any case?" type="java.lang.Boolean" %>
 <%@ attribute name="showNbRaterRatings" required="false" description="Must the user see the number of rater ratings on the contribution?" type="java.lang.Boolean" %>
 <%@ attribute name="starSize" required="false" description="normal = normal displaying (default), small = smaller displaying" type="java.lang.String" %>
 <%@ attribute name="canUserRating" required="false" description="Can the user perform a rating on the contribution? (default true)" type="java.lang.Boolean" %>
@@ -53,6 +55,9 @@
 
 <c:if test="${readOnly != null}">
   <c:set var="_readOnly" value="${readOnly}"/>
+</c:if>
+<c:if test="${forceDisplayWhenNoRating != null}">
+  <c:set var="_forceDisplayWhenNoRating" value="${forceDisplayWhenNoRating}"/>
 </c:if>
 <c:if test="${showNbRaterRatings != null}">
   <c:set var="_showNbRaterRatings" value="${showNbRaterRatings}"/>
@@ -75,6 +80,7 @@
 <!-- ${raterRating.ratingAverage}: a little trick for table sorting -->
 <script type="application/javascript">var ${__raterRatingJsVarName} = ${raterRating.asJSonString};</script>
 <silverpeas-rating readonly="${_readOnly}"
+                   forcedisplaywhennorating="${_forceDisplayWhenNoRating}"
                    shownbraterratings="${_showNbRaterRatings}"
                    starsize="${_starsize}"
                    canuserrating="${_canuserrating}"
