@@ -94,9 +94,10 @@
         value = arguments[1];
       }
       if (typeof value === 'object') {
-        $http.defaults.headers.post['Content-Type'] = 'application/json';
+        $http.defaults.headers.post['Content-Type'] = 'application/json; charset=UTF-8';
       } else {
-        $http.defaults.headers.post['Content-Type'] = 'text/plain';
+        value = "" + value;
+        $http.defaults.headers.post['Content-Type'] = 'text/plain; charset=UTF-8';
       }
       var deferred = $q.defer();
       $http.post(requestedUrl, value).error(_error).success(function(data, status, headers) {
