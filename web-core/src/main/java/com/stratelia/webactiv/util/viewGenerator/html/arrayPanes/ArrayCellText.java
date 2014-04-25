@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
@@ -31,6 +30,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
  * @author
  */
 public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Comparable {
+
   private String text;
   private String alignement = null;
   private String color = null;
@@ -186,19 +186,21 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
     }
     ArrayCellText tmp = (ArrayCellText) other;
 
-    if (getCompareOn() != null) {
-      if (tmp.getCompareOn() != null) {
-        return getCompareOn().compareTo(tmp.getCompareOn());
-      }
+    if (getCompareOn() != null && tmp.getCompareOn() != null && getCompareOn().getClass().equals(
+        tmp.getCompareOn().getClass())) {
+      return getCompareOn().compareTo(tmp.getCompareOn());
     }
-    // if(m_SortMode == ArrayCell.CELLSORT_CASE_INSENSITIVE)
-    // {
-    return this.getText().compareToIgnoreCase(tmp.getText());
-    // }
-    // else
-    // {
-    // return this.getText().compareTo(tmp.getText());
-    // }
-  }
 
+    if (this.getText() != null && tmp.getText() != null) {
+      return this.getText().compareToIgnoreCase(tmp.getText());
+    }
+
+    if (this.getText() == null && tmp.getText() == null) {
+      return 0;
+    } else if (this.getText() == null) {
+      return -1;
+    } else {
+      return +1;
+    }
+  }
 }
