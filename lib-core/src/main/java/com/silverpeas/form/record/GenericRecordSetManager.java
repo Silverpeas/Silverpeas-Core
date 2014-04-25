@@ -274,20 +274,20 @@ public class GenericRecordSetManager {
   /**
    * Return the DataRecord registered by the pair (templateId, recordId).
    * @param template the definition of the form template the record belongs to.
-   * @param recordId the ID of the form record.
+   * @param objectId the ID of the resource attached to form record.
    * @return the form record or <code>null</code> if not found.
    * @throws FormException if the (templateId, recordId) pair is unknown.
    */
   public DataRecord getRecord(IdentifiedRecordTemplate template,
-      String recordId) throws FormException {
-    return getRecord(template, recordId, null);
+      String objectId) throws FormException {
+    return getRecord(template, objectId, null);
   }
 
   public DataRecord getRecord(IdentifiedRecordTemplate template,
-      String recordId, String language) throws FormException {
+      String objectId, String language) throws FormException {
 
     SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
-        "root.MSG_GEN_PARAM_VALUE", "recordId = " + recordId + ", language = "
+        "root.MSG_GEN_PARAM_VALUE", "objectId = " + objectId + ", language = "
         + language);
 
     Connection con = null;
@@ -295,7 +295,7 @@ public class GenericRecordSetManager {
 
     try {
       con = getConnection();
-      record = selectRecordRow(con, template, recordId, language);
+      record = selectRecordRow(con, template, objectId, language);
 
       if (record != null) {
         try {
@@ -363,21 +363,21 @@ public class GenericRecordSetManager {
   }
 
   public void cloneRecord(IdentifiedRecordTemplate templateFrom,
-      String recordIdFrom, IdentifiedRecordTemplate templateTo,
-      String recordIdTo, Map<String, String> fileIds) throws FormException {
+      String objectIdFrom, IdentifiedRecordTemplate templateTo,
+      String objectIdTo, Map<String, String> fileIds) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
-        "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom
-        + ", recordIdTo = " + recordIdTo);
+        "root.MSG_GEN_ENTER_METHOD", "objectIdFrom = " + objectIdFrom
+        + ", objectIdTo = " + objectIdTo);
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
       String language = languages.next();
 
       GenericDataRecord record = (GenericDataRecord) getRecord(templateFrom,
-          recordIdFrom, language);
+          objectIdFrom, language);
       if (record != null) {
         record.setInternalId(-1);
-        record.setId(recordIdTo);
+        record.setId(objectIdTo);
 
         Field[] fields = record.getFields();
         for (Field field : fields) {
@@ -394,7 +394,7 @@ public class GenericRecordSetManager {
             if (oldValue != null
                 && oldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
               // Wysiwyg case
-              String newValue = oldValue.replaceAll(recordIdFrom, recordIdTo);
+              String newValue = oldValue.replaceAll(objectIdFrom, objectIdTo);
               field.setStringValue(newValue);
             }
           }
@@ -978,7 +978,7 @@ public class GenericRecordSetManager {
       DBUtil.close(rs, select);
     }
   }
-
+  
   /**
    * Select the template field declarations.
    * @throws CryptoException
