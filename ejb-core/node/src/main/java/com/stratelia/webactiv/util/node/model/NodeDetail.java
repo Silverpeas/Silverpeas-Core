@@ -24,12 +24,13 @@
 
 package com.stratelia.webactiv.util.node.model;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * This object contains the description of a node (own attributes and children attributes)
@@ -600,5 +601,24 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
 
   public String getFullPath() {
     return fullPath;
+  }
+  
+  public NodeDetail clone() {
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodePK);
+    node.setCreatorId(getCreatorId());
+    node.setName(getName());
+    node.setDescription(getDescription());
+    node.setTranslations(getTranslations());
+    node.setRightsDependsOn(getRightsDependsOn());
+    node.setCreationDate(getCreationDate());
+    node.setStatus(getStatus());
+    node.setOrder(getOrder());
+    node.setFatherPK(getFatherPK());
+    node.setLevel(getLevel());
+    node.setModelId(getModelId());
+    node.setPath(getPath());
+    node.setType(getType());
+    return node;
   }
 }
