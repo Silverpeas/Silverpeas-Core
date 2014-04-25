@@ -2586,17 +2586,23 @@ ul#globalResultListDetails {
 silverpeas-toggle a.toggle {
   text-align: right;
   display: block;
-  padding-right: 15px;
   color: #666;
 }
 
 silverpeas-toggle a.toggle.more {
-  background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+  background: transparent url(../../util/icons/toggle/btn-toggle-more.png) center bottom no-repeat;
 }
 
 silverpeas-toggle a.toggle.less {
-  background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+  background: transparent url(../../util/icons/toggle/btn-toggle-less.png) center bottom no-repeat;
 }
+
+silverpeas-toggle a.toggle span {
+  display: block;
+  font-size: 10px;
+  height: 19px;
+}
+
 
 #searchGroupValues ul li.otherEntry {
   display: none;
