@@ -23,39 +23,28 @@
  */
 
 
-(function($) {
-
-  /**
-   * The structure with information about the current tooltip rendered with some data on a given user:
-   * - the HTML element as the current rendered tooltip,
-   * - the current user session within which the WEB page with this plugin is used,
-   * - the HTML element as parent for all the defined tooltip, that is the target for the plugin,
-   * - a flag indicating if the plugin is initialized.
-   *
-   * At initialization, the plugin loads the profile of the user in the current WEB session and
-   * enrichs it with additional functions related to its contacts and to its invitations sent to
-   * others users.
-   */
-  $.identitycard = {    
-    initialized: false,
-    
-    initialize: function() {
-      
-      alert('hello');
-
-      this.initialized = true;
-    }
-  };
-
-})(jQuery);
-
 
 /**
- * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
- * javascript plugin.
+ * Populate all identity card in page.
  */
 jQuery(document).ready(function() {
-  jQuery('.identitycard').each(function() {
-    var $this = jQuery(this);
+  jQuery('.identitycard').each(function(index, value) {
+	$.ajax({
+         type: "GET",
+         url: '/silverpeas/services/profile/users/' + $(value).attr('rel'),
+         dataType: "json",
+         cache: false,
+         success: function (user, status, jqXHR) {
+             $(value).find('.firstName').text(user.firstName);
+             $(value).find('.lastName').text(user.lastName);
+             $(value).find('.eMail').text(user.eMail);
+             $(value).find('.avatar').text('');
+             $('<img />').attr({ 'src': user.avatar, 'alt':'Avatar' }).appendTo($(value).find('.avatar'));
+         },
+
+         error: function (jqXHR, status) {
+             // do nothing
+         }
+	});
   })
 });
