@@ -112,9 +112,8 @@ public class JavascriptPluginInclusion {
   private static final String RATEIT_CSS = "rateit/rateit.css";
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
-  
   private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
-  
+  private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
 
   static {
     ResourceLocator wysiwygSettings = new ResourceLocator(
@@ -202,7 +201,7 @@ public class JavascriptPluginInclusion {
     }
     return xhtml;
   }
-  
+
   public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
     xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
@@ -357,4 +356,10 @@ public class JavascriptPluginInclusion {
     }
     return xhtml;
   }
+
+  public static ElementContainer includeMylinks(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_MYLINKS));
+    return xhtml;
+  }
+
 }
