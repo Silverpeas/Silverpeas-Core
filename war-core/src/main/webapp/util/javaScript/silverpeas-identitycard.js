@@ -22,29 +22,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 /**
  * Populate all identity card in page.
  */
 jQuery(document).ready(function() {
-  jQuery('.identitycard').each(function(index, value) {
-	$.ajax({
-         type: "GET",
-         url: '/silverpeas/services/profile/users/' + $(value).attr('rel'),
-         dataType: "json",
-         cache: false,
-         success: function (user, status, jqXHR) {
-             $(value).find('.firstName').text(user.firstName);
-             $(value).find('.lastName').text(user.lastName);
-             $(value).find('.eMail').text(user.eMail);
-             $(value).find('.avatar').text('');
-             $('<img />').attr({ 'src': user.avatar, 'alt':'Avatar' }).appendTo($(value).find('.avatar'));
-         },
+	jQuery('.identitycard').each(function(index, value) {
+		$.ajax({
+			type : "GET",
+			url : '/silverpeas/services/profile/users/' + $(value).attr('rel'),
+			dataType : "json",
+			cache : false,
+			success : function(user, status, jqXHR) {
 
-         error: function (jqXHR, status) {
-             // do nothing
-         }
-	});
-  })
+				jQuery.each(user, function(key, val) {
+					if (key == 'avatar') {
+						$('<img />').attr({'src' : val, 'alt' : 'Avatar'}).appendTo($(value).find('.' + key));
+					} else {
+						$(value).find('.' + key).text(val);
+					}
+				});
+			},
+
+			error : function(jqXHR, status) {
+				// do nothing
+			}
+		});
+	})
 });
