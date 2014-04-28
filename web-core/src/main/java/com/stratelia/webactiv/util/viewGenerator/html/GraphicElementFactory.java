@@ -59,13 +59,16 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 
@@ -103,6 +106,7 @@ public class GraphicElementFactory {
   private String spaceId = null;
   private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
+  private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";  
   protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
@@ -112,7 +116,8 @@ public class GraphicElementFactory {
   protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
-  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
+  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";  
+  protected static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
 
   /**
    * Constructor declaration
@@ -362,9 +367,11 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(ANGULAR_JS).append("\"></script>\n");
+        "/util/javaScript/angularjs/").append(ANGULAR_JS).append("\"></script>\n");    
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ANGULAR_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+            javascriptPath).append(SILVERPEAS_IDENTITYCARD).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
             "\"></script>\n");
