@@ -23,9 +23,7 @@
  */
 package org.silverpeas.date;
 
-import com.stratelia.webactiv.util.DateUtil;
-
-import java.util.Date;
+import com.silverpeas.calendar.DateTime;
 
 /**
  * User: Yohann Chastagnier
@@ -36,10 +34,10 @@ public class YearPeriod extends Period {
 
   /**
    * Constructor : Constructs a newly allocated <code>period</code>.
-   * @param referenceDate the reference date to compute a year period.
+   * @param referenceDatable the reference date to compute a year period.
    */
-  protected YearPeriod(final Date referenceDate) {
-    super(DateUtil.getFirstDateOfYear(referenceDate), DateUtil.getEndDateOfYear(referenceDate));
+  protected YearPeriod(final DateTime referenceDatable) {
+    super(referenceDatable.getBeginOfYear(), referenceDatable.getEndOfYear().addMilliseconds(1));
     setPeriodType(PeriodType.year);
   }
 }

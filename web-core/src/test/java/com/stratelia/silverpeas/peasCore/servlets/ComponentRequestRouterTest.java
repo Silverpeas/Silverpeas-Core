@@ -47,6 +47,8 @@ public class ComponentRequestRouterTest extends TestCase {
   public ComponentRequestRouterTest() {
     router = new ComponentRequestRouter() {
 
+      private static final long serialVersionUID = 2578618196722321170L;
+
       @Override
       public String getDestination(String function, ComponentSessionController componentSC, HttpRequest request) {
         return "destination";

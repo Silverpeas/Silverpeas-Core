@@ -607,7 +607,7 @@
         // Start upload
         xhr.open("POST", uploadContext.uploadUrl, true);
         xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-        xhr.setRequestHeader('X-FILENAME', file.name);
+        xhr.setRequestHeader('X-FILENAME', encodeURIComponent(file.name));
         xhr.send(file);
       }
     };

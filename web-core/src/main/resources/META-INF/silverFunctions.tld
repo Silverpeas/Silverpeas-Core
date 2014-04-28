@@ -149,6 +149,12 @@
     <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
   </function>
   <function>
+    <description>Function to encode a java whitespace String into a HTML whitespace String.</description>
+    <name>escapeHtmlWhitespaces</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String convertWhiteSpacesForHTMLDisplay( java.lang.String ) </function-signature>
+  </function>
+  <function>
     <description>Function to tell if Silverpeas is in mode i18N.</description>
     <name>isI18n</name>
     <function-class>com.silverpeas.util.i18n.I18NHelper</function-class>

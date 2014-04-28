@@ -659,8 +659,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
         //If id is already performed, then it is skiped
         if (performedIds.add(componentId)) {
           ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId); //componentId = kmelia12 for example
-          compoDetail.setPath(adminController.getPathToComponent(componentId));
-          result.add(compoDetail);
+          if (compoDetail != null) {
+            // The compoDetail can be null if componentId references a deleted component
+            compoDetail.setPath(adminController.getPathToComponent(componentId));
+            result.add(compoDetail);
+          }
         }
       }
       return result;

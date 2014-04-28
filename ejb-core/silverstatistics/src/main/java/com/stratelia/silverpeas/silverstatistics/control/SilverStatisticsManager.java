@@ -128,6 +128,13 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   }
 
   /**
+   * This method must be used only by unit tests.
+   */
+  public static void setInstanceForTest(SilverStatisticsManager instanceForTest) {
+    myInstance = instanceForTest;
+  }
+
+  /**
    * Sets up the scheduling of the specified statistics computation at given moments in time as
    * specified by the Unix-like cron expression.
    * @param aCronString the cron expression.

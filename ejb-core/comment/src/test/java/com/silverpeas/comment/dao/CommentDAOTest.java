@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -66,7 +66,7 @@ import com.stratelia.webactiv.util.DateUtil;
 @ContextConfiguration(locations = "/spring-comment-dao.xml")
 public class CommentDAOTest {
 
-  private JDBCCommentRequester commentDAO = new JDBCCommentRequester();
+  private final JDBCCommentRequester commentDAO = new JDBCCommentRequester();
   protected static SilverpeasJndiCase baseTest;
 
   @Inject
@@ -117,8 +117,8 @@ public class CommentDAOTest {
     UserDetail author = aUser();
     String message = RandomGenerator.getRandomString();
     Date creationDate = aDate();
-    Comment cmt =
-        new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate, null);
+    Comment cmt = new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate,
+        null);
     CommentPK result = commentDAO.saveComment(con, cmt);
     assertNotNull(result);
     assertEquals("kmelia18", result.getInstanceId());
@@ -132,6 +132,72 @@ public class CommentDAOTest {
     assertEquals(message, savedComment.getMessage());
     assertEquals(creationDate, savedComment.getCreationDate());
     assertNull(savedComment.getModificationDate());
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  @Test
+  public void testGetLast2Comments() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+    List<Comment> comments = commentDAO.getLastComments(con, "instanceId10", 2);
+    assertNotNull(comments);
+    assertEquals(2, comments.size());
+
+    assertEquals(12, comments.get(0).getOwnerId());
+    assertEquals("1002", comments.get(0).getId());
+    assertEquals("500", comments.get(0).getForeignKey().getId());
+    assertEquals("my comments are good", comments.get(0).getMessage());
+    assertEquals(DateUtil.parseDate("2019/10/18"), comments.get(0).getCreationDate());
+
+    assertEquals(12, comments.get(1).getOwnerId());
+    assertEquals("1001", comments.get(1).getId());
+    assertEquals("500", comments.get(1).getForeignKey().getId());
+    assertEquals("my comments are good", comments.get(1).getMessage());
+    assertEquals(DateUtil.parseDate("2019/10/18"), comments.get(1).getCreationDate());
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  @Test
+  public void testGetLastComments() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+    List<Comment> comments = commentDAO.getLastComments(con, "instanceId10", 0);
+    assertNotNull(comments);
+    assertEquals(3, comments.size());
+
+    assertEquals(12, comments.get(0).getOwnerId());
+    assertEquals("1002", comments.get(0).getId());
+    assertEquals("500", comments.get(0).getForeignKey().getId());
+    assertEquals("my comments are good", comments.get(0).getMessage());
+    assertEquals(DateUtil.parseDate("2019/10/18"), comments.get(0).getCreationDate());
+
+    assertEquals(12, comments.get(1).getOwnerId());
+    assertEquals("1001", comments.get(1).getId());
+    assertEquals("500", comments.get(1).getForeignKey().getId());
+    assertEquals("my comments are good", comments.get(1).getMessage());
+    assertEquals(DateUtil.parseDate("2019/10/18"), comments.get(1).getCreationDate());
+
+    assertEquals(10, comments.get(2).getOwnerId());
+    assertEquals("1000", comments.get(2).getId());
+    assertEquals("500", comments.get(2).getForeignKey().getId());
+    assertEquals("my comments", comments.get(2).getMessage());
+    assertEquals(DateUtil.parseDate("2019/10/15"), comments.get(2).getCreationDate());
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  @Test
+  public void testGetNoLastComments() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+    List<Comment> comments = commentDAO.getLastComments(con, "instanceId1000", 0);
+    assertNotNull(comments);
+    assertTrue(comments.isEmpty());
+
     baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
@@ -285,10 +351,26 @@ public class CommentDAOTest {
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
 
-    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con);
+    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con, null);
     assertNotNull(result);
     assertEquals(6, result.size());
     assertEquals(2, result.get(0).getCommentCount());
+    assertEquals(1, result.get(1).getCommentCount());
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  @Test
+  public void testGetMostCommentedAllPublicationsForAGivenResourceType() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+
+    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con,
+        "RtypeUniqueTest");
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertEquals(1, result.get(0).getCommentCount());
     assertEquals(1, result.get(1).getCommentCount());
 
     baseTest.getDatabaseTester().closeConnection(dbConnection);
@@ -394,7 +476,7 @@ public class CommentDAOTest {
     boolean isIllegalArgumentException = false;
     foreignKey.setId(null);
     try {
-      comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+      commentDAO.getAllComments(con, resourceType, foreignKey);
     } catch (IllegalArgumentException e) {
       isIllegalArgumentException = true;
     }

@@ -2583,6 +2583,27 @@ ul#globalResultListDetails {
   background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
+silverpeas-toggle a.toggle {
+  text-align: right;
+  display: block;
+  color: #666;
+}
+
+silverpeas-toggle a.toggle.more {
+  background: transparent url(../../util/icons/toggle/btn-toggle-more.png) center bottom no-repeat;
+}
+
+silverpeas-toggle a.toggle.less {
+  background: transparent url(../../util/icons/toggle/btn-toggle-less.png) center bottom no-repeat;
+}
+
+silverpeas-toggle a.toggle span {
+  display: block;
+  font-size: 10px;
+  height: 19px;
+}
+
+
 #searchGroupValues ul li.otherEntry {
   display: none;
 }
@@ -5632,7 +5653,7 @@ div.fileUpload {
   margin:4px 0;
   cursor:pointer;
   background-color:#ece9d8;
-  border:1px solid #999999;
+  border:1px solid #999999 !important;
   height:17px;
   line-height:18px;
   display:inline-block;
@@ -5645,6 +5666,7 @@ div.fileUpload {
   padding:0px 8px 0 8px;
   line-height:18px;
   border:0;
+  color:#333 !important;
 }
 
 
@@ -6105,4 +6127,60 @@ form .forms .fields > li:nth-child(even) {
 
 .forms .field-occurrence-hidden {
 	display: none;
+}
+
+/**** Surchage plugin jquery rate it ****/
+silverpeas-rating .rateit .rateit-range,
+silverpeas-rating .rateit .rateit-preset,
+silverpeas-rating .rateit .rateit-preset-rtl,
+silverpeas-rating .rateit .rateit-selected,
+silverpeas-rating .rateit .rateit-hover {
+       background-image: url(../icons/rateit/star.png) ;
+}
+
+/**** Surchage plugin jquery rate it - small view ****/
+.rateit.smallStars .rateit-range,
+.rateit.smallStars .rateit-preset,
+.rateit.smallStars .rateit-preset-rtl,
+.rateit.smallStars .rateit-selected,
+.rateit.smallStars .rateit-hover {
+       background-image: url(../icons/rateit/star-small.png) ;
+}
+
+
+
+.rateit.smallStars .rateit-range
+{
+    background:  url(../icons/rateit/star-small.png);
+    height: 12px;
+}
+
+.rateit.smallStars .rateit-hover
+{
+    background: url(../icons/rateit/star-small.png) left -24px;
+}
+
+.rateit.smallStars .rateit-hover-rtl
+{
+    background-position: right -24px;
+}
+
+.rateit.smallStars .rateit-selected
+{
+    background: url(../icons/rateit/star-small.png) left -12px;
+}
+
+.rateit.smallStars .rateit-selected-rtl
+{
+    background-position: right -12px;
+}
+
+.rateit.smallStars .rateit-preset
+{
+    background: url(../icons/rateit/star-small.png) left -36px;
+}
+
+.rateit.smallStars .rateit-preset-rtl
+{
+    background: url(../icons/rateit/star-small.png) left -36px;
 }

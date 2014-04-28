@@ -81,7 +81,7 @@ public class JNDINames {
   public static final String BLOGBM_EJBHOME;
   public static final String MYDBBM_EJBHOME;
   public static final String TAGCLOUDBM_EJBHOME;
-  public static final String NOTATIONBM_EJBHOME;
+  public static final String RATINGBM_EJBHOME;
   public static final String CLASSIFIEDSBM_EJBHOME;
   public static final String WEBPUBMANAGER_EJBHOME;
   /**
@@ -217,7 +217,7 @@ public class JNDINames {
     WEBPUBMANAGER_EJBHOME = rs.getString("WEBPUBMANAGER_EJBHOME", "ejb/WebPublicationManagerBm");
     BLOGBM_EJBHOME = rs.getString("BLOGBM_EJBHOME", "ejb/BlogBm");
     TAGCLOUDBM_EJBHOME = rs.getString("TAGCLOUDBM_EJBHOME", "ejb/TagCloudBm");
-    NOTATIONBM_EJBHOME = rs.getString("NOTATIONBM_EJBHOME", "ejb/NotationBm");
+    RATINGBM_EJBHOME = rs.getString("RATINGBM_EJBHOME", "ejb/RatingBm");
     CLASSIFIEDSBM_EJBHOME = rs.getString("CLASSIFIEDSBM_EJBHOME", "ejb/ClassifiedsBm");
     SILVERSTATISTICS_JMS_QUEUE = rs.getString("SILVERSTATISTICS_JMS_QUEUE",
         "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE");

@@ -27,10 +27,17 @@ import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 
+import javax.inject.Inject;
+
 /**
  * @author Yohann Chastagnier
  */
 public class UserNotificationHelper {
+
+  private static final UserNotificationHelper instance = new UserNotificationHelper();
+
+  @Inject
+  private UserNotificationManager userNotificationManager;
 
   /**
    * Builds a notification data container from a given builder. After that, sends the builded notification
@@ -38,7 +45,7 @@ public class UserNotificationHelper {
    * @return
    */
   public static void buildAndSend(final UserNotificationBuider notificationBuider) {
-    notificationBuider.build().send();
+    getInstance().getManager().buildAndSend(notificationBuider);
   }
 
   /**
@@ -50,7 +57,7 @@ public class UserNotificationHelper {
    */
   public static void buildAndSend(final NotifMediaType mediaType,
       final UserNotificationBuider notificationBuider) {
-    notificationBuider.build().send(mediaType);
+    getInstance().getManager().buildAndSend(mediaType, notificationBuider);
   }
 
   /**
@@ -59,6 +66,24 @@ public class UserNotificationHelper {
    * @return
    */
   public static NotificationMetaData build(final UserNotificationBuider notificationBuider) {
-    return notificationBuider.build().getNotificationMetaData();
+    return getInstance().getManager().build(notificationBuider);
+  }
+
+  /**
+   * Gets the manager.
+   * @return
+   */
+  private UserNotificationManager getManager() {
+    if (userNotificationManager == null) {
+      userNotificationManager = new UserNotificationManager();
+    }
+    return userNotificationManager;
+  }
+
+  /**
+   * @return a UserNotificationHelper instance.
+   */
+  public static UserNotificationHelper getInstance() {
+    return instance;
   }
 }

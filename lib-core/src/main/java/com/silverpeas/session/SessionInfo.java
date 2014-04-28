@@ -21,6 +21,9 @@
 package com.silverpeas.session;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.InMemoryCacheService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +41,7 @@ public class SessionInfo {
   private long lastAccessTimestamp;
   private final Map<String, Object> attributes = new HashMap<String, Object>();
   private long idleTimestamp;
+  private final InMemoryCacheService cache = new InMemoryCacheService();
 
   /**
    * Constructs a new instance about a given opened user session.
@@ -50,6 +54,8 @@ public class SessionInfo {
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
     this.idleTimestamp = 0;
+    this.cache.put(UserDetail.CURRENT_REQUESTER_KEY, user);
+    CacheServiceFactory.getRequestCacheService().put("@SessionCache@", cache);
   }
 
   /**
@@ -184,5 +190,13 @@ public class SessionInfo {
    */
   public boolean isDefined() {
     return this != NoneSession && this.getUserDetail() != null;
+  }
+
+  /**
+   * Provides a cache associated to the current session.
+   * @return
+   */
+  public InMemoryCacheService getCache() {
+    return cache;
   }
 }

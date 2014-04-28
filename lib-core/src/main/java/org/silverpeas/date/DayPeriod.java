@@ -23,9 +23,7 @@
  */
 package org.silverpeas.date;
 
-import com.stratelia.webactiv.util.DateUtil;
-
-import java.util.Date;
+import com.silverpeas.calendar.DateTime;
 
 /**
  * User: Yohann Chastagnier
@@ -36,10 +34,10 @@ public class DayPeriod extends Period {
 
   /**
    * Constructor : Constructs a newly allocated <code>period</code>.
-   * @param referenceDate the reference date to compute a day period.
+   * @param referenceDatable the reference date to compute a day period.
    */
-  protected DayPeriod(final Date referenceDate) {
-    super(DateUtil.getBeginOfDay(referenceDate), DateUtil.getEndOfDay(referenceDate));
+  protected DayPeriod(final DateTime referenceDatable) {
+    super(referenceDatable.getBeginOfDay(), referenceDatable.getEndOfDay().addMilliseconds(1));
     setPeriodType(PeriodType.day);
   }
 }

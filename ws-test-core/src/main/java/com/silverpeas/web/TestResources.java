@@ -36,9 +36,11 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.sun.istack.logging.Logger;
+
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import javax.inject.Inject;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.EntityReference;
@@ -64,7 +66,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * It is a wrapper of the resources required in the RESTWebServiceTest test cases. It defines also
- * some default parameters to use in tests such as the language of the user or the unique identifier
+ * some default parameters to use in tests such as the language of the user or the unique
+ * identifier
  * of the user. The life-cycle of test resources is managed by the IoC container in which are
  * bootstrapped the test cases. The class is dedicated to be extending by the test classes in order
  * to set additional resources required by the test cases they represent. All data or behaviour to
@@ -125,8 +128,8 @@ public abstract class TestResources implements ApplicationContextAware {
 
         @Override
         public String answer(InvocationOnMock invocation) throws Throwable {
-          AuthenticationCredential credential
-              = (AuthenticationCredential) invocation.getArguments()[0];
+          AuthenticationCredential credential =
+              (AuthenticationCredential) invocation.getArguments()[0];
           String login = credential.getLogin();
           if (StringUtil.isDefined(login)) {
             UserDetail user = organizationControllerMockWrapper.getUserDetail(login);
@@ -147,7 +150,6 @@ public abstract class TestResources implements ApplicationContextAware {
   /**
    * Gets a TestResources instance managed by the IoC container within which is running the test
    * case.
-   *
    * @return a bean managed TestResources.
    */
   public static TestResources getTestResources() {
@@ -163,7 +165,6 @@ public abstract class TestResources implements ApplicationContextAware {
 
   /**
    * Gets the application context within which the current test case is actually running.
-   *
    * @return the test case execution context (from the underlying IoC container).
    */
   public ApplicationContext getApplicationContext() {
@@ -173,7 +174,6 @@ public abstract class TestResources implements ApplicationContextAware {
   /**
    * Gets a mock of the AccessController. This mock is used to handle authorization capabilities
    * according to the test fixture.
-   *
    * @return mock of the access controller used in the test case.
    */
   public AccessControllerMock getAccessControllerMock() {
@@ -183,7 +183,6 @@ public abstract class TestResources implements ApplicationContextAware {
   /**
    * Gets a mock of the SpaceAccessController. This mock is used to handle space authorization
    * capabilities according to the test fixture.
-   *
    * @return mock of the access controller used in the test case.
    */
   public SpaceAccessControllerMock getSpaceAccessControllerMock() {
@@ -193,7 +192,6 @@ public abstract class TestResources implements ApplicationContextAware {
   /**
    * Gets the OrganizationController mock used in the tests. With this mock, you can register
    * expected behaviours for the OrganizationController instances.
-   *
    * @return the OrganizationController mock used in the tests.
    */
   public OrganisationController getOrganizationControllerMock() {
@@ -205,7 +203,6 @@ public abstract class TestResources implements ApplicationContextAware {
    * created with Mockito, so you can use it for adding some behaviour to the returned mocked
    * service. By default, the mock is configured to returns a UserPreferences object for any user
    * with as prefered language the french (fr).
-   *
    * @return a mock of the PersonalizationService.
    */
   public PersonalizationService getPersonalizationServiceMock() {
@@ -216,7 +213,6 @@ public abstract class TestResources implements ApplicationContextAware {
    * Gets a mock of the token service. This mock is to be used in tests. This mock is created with
    * Mockito, so you can use it for adding some behaviour to the returned mocked service. By
    * default, the mock is configured to returns current sessionKey prefixed by "token-" as token.
-   *
    * @return a mock of the PersonalizationService.
    */
   public PersistentResourceTokenService getTokenServiceMock() {
@@ -226,7 +222,6 @@ public abstract class TestResources implements ApplicationContextAware {
   /**
    * Gets a mock of the session management service. This mock is to be used in tests. This mock is
    * used to manage the sessions of the user(s) used in tests.
-   *
    * @return a mock of the SessionManagement.
    */
   public SessionManagerMock getSessionManagerMock() {
@@ -234,10 +229,11 @@ public abstract class TestResources implements ApplicationContextAware {
   }
 
   /**
-   * Gets a user to use in the tests as the one in the current HTTP session. This method is just for
-   * tests requiring only one user and whatever he's. The user in defined in the default domain (see
+   * Gets a user to use in the tests as the one in the current HTTP session. This method is just
+   * for
+   * tests requiring only one user and whatever he's. The user in defined in the default domain
+   * (see
    * DEFAULT_DOMAIN). The user has no profiles for any Silverpeas component instances.
-   *
    * @return the current user in the underlying HTTP session used in the tests.
    */
   public UserDetailWithProfiles aUser() {
@@ -253,7 +249,6 @@ public abstract class TestResources implements ApplicationContextAware {
    * Computes a user named with the specified first and last name. The user in defined in the
    * default domain (see DEFAULT_DOMAIN). The user has no profiles for any Silverpeas component
    * instances.
-   *
    * @param firstName the user first name.
    * @param lastName the user last name.
    * @return a user.
@@ -273,7 +268,6 @@ public abstract class TestResources implements ApplicationContextAware {
    * user is one with profiles, then the method getUserProfile of the OrganizationController is
    * prepared to return the expected profiles. The user token is also initialized. It equals to
    * concatenation between "token-" and the user id.
-   *
    * @param user the user to registers in the test context.
    * @return the user itself with its identifier set.
    */
@@ -293,14 +287,14 @@ public abstract class TestResources implements ApplicationContextAware {
           @Override
           public String[] answer(final InvocationOnMock invocation) throws Throwable {
             String userId = (String) invocation.getArguments()[0];
-          String componentId = (String) invocation.getArguments()[1];
+            String componentId = (String) invocation.getArguments()[1];
             UserDetailWithProfiles userWithProfiles = mapOfusersWithProfiles.get(userId);
             if (userWithProfiles != null) {
               return userWithProfiles.getUserProfiles(componentId);
             }
-          return null;
-        }
-      });
+            return null;
+          }
+        });
       }
       mapOfusersWithProfiles.put(userWithProfiles.getId(), userWithProfiles);
     }
@@ -331,8 +325,8 @@ public abstract class TestResources implements ApplicationContextAware {
           } else if (argument instanceof String) {
             String value = (String) argument;
             if (value.equals(userToken)) {
-              token = PersistentResourceTokenBuilder.createToken(new UserReference(user.getId()),
-                  userToken);
+              token = PersistentResourceTokenBuilder
+                  .createToken(new UserReference(user.getId()), userToken);
               token.setId(0L);
             }
           }

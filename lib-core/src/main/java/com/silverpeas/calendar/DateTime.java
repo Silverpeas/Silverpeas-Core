@@ -25,14 +25,15 @@
 package com.silverpeas.calendar;
 
 import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.util.Calendar;
 import java.util.TimeZone;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * A date and time.
  */
-public class DateTime extends java.util.Date implements Datable<DateTime>, Cloneable {
+public class DateTime extends AbstractDateDatable<DateTime> {
 
   private static final long serialVersionUID = -2562622075317046753L;
   private TimeZone timeZone = TimeZone.getDefault();
@@ -103,8 +104,13 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
   }
 
   @Override
+  protected DateTime newInstanceFrom(final java.util.Date aDate) {
+    return new DateTime(aDate, getTimeZone());
+  }
+
+  @Override
   public DateTime clone() {
-    return new DateTime(new java.util.Date(getTime()), getTimeZone());
+    return newInstanceFrom(this);
   }
 
   @Override

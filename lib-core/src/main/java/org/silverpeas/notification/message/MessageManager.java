@@ -197,7 +197,8 @@ public class MessageManager {
    * Add an error message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addError(String message) {
     return addError(getRegistredKey(), message);
@@ -207,7 +208,8 @@ public class MessageManager {
    * Add an error message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addError(String registredKey, String message) {
     return addMessage(registredKey, new ErrorMessage(message));
@@ -217,7 +219,8 @@ public class MessageManager {
    * Add an severe message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addSevere(String message) {
     return addSevere(getRegistredKey(), message);
@@ -227,7 +230,8 @@ public class MessageManager {
    * Add an severe message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addSevere(String registredKey, String message) {
     return addMessage(registredKey, new SevereMessage(message));
@@ -237,7 +241,8 @@ public class MessageManager {
    * Add an warning message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addWarning(String message) {
     return addWarning(getRegistredKey(), message);
@@ -247,7 +252,8 @@ public class MessageManager {
    * Add an warning message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addWarning(String registredKey, String message) {
     return addMessage(registredKey, new WarningMessage(message));
@@ -257,7 +263,8 @@ public class MessageManager {
    * Add a success message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addSuccess(String message) {
     return addSuccess(getRegistredKey(), message);
@@ -267,7 +274,8 @@ public class MessageManager {
    * Add a success message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addSuccess(String registredKey, String message) {
     return addMessage(registredKey, new SuccessMessage(message));
@@ -277,7 +285,8 @@ public class MessageManager {
    * Add an info message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addInfo(String message) {
     return addInfo(getRegistredKey(), message);
@@ -287,7 +296,8 @@ public class MessageManager {
    * Add an info message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addInfo(String registredKey, String message) {
     return addMessage(registredKey, new InfoMessage(message));
@@ -296,7 +306,8 @@ public class MessageManager {
   /**
    * Centralization
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   private static Message addMessage(String registredKey, Message message) {
     MessageContainer container = getMessageContainer(registredKey);

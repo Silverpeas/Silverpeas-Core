@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.dao;
 
 import com.silverpeas.comment.model.Comment;
@@ -96,7 +95,15 @@ public interface CommentDAO {
    * number of comments, and so on).
    */
   List<CommentedPublicationInfo> getMostCommentedPublications(final String resourceType,
-      final List<WAPrimaryKey> pks);
+      final List<? extends WAPrimaryKey> pks);
+
+  /**
+   * Among all available commented publications of the specified type, gets the moste commented
+   * ones.
+   * @param resourceType the type of the publication.
+   * @return a list of information about the most commented publication sorted in descendent order.
+   */
+  List<CommentedPublicationInfo> getMostCommentedPublications(final String resourceType);
 
   /**
    * Among all available commented publications, gets the most commented ones.
@@ -132,5 +139,13 @@ public interface CommentDAO {
    * @param cmt the comment to update in the data source.
    */
   void updateComment(final Comment cmt);
+
+  /**
+   * Gets the last comments posted to the publications in the specified component instance.
+   * @param instanceId the unique identifier of the component instance.
+   * @param count the maximum number of comments to fetch. Lesser or equal to 0 means no limit.
+   * @return a list of the last comments.
+   */
+  public List<Comment> getLastComments(String instanceId, int count);
 
 }

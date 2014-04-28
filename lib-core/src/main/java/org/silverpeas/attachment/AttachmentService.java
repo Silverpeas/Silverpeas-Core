@@ -23,22 +23,20 @@
  */
 package org.silverpeas.attachment;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -51,6 +49,14 @@ public interface AttachmentService {
   String NO_UPDATE_MODE = "0";
   String UPDATE_DIRECT_MODE = "1";
   String UPDATE_SHORTCUT_MODE = "2";
+
+  /**
+   * Deletes all the documents related to the component instance identified by the specified
+   * identifier.
+   * @param componentInstanceId the component instance identifier.
+   * @throws AttachmentException
+   */
+  void deleteAllAttachments(String componentInstanceId) throws AttachmentException;
 
   /**
    * Writes the binary content into the specified File.

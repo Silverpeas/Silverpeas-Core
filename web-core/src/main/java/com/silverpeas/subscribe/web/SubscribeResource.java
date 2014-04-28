@@ -25,19 +25,27 @@
 package com.silverpeas.subscribe.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import java.net.URI;
-import javax.ws.rs.*;
+import org.silverpeas.util.NotifierUtil;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import java.net.URI;
+import java.text.MessageFormat;
 
 /**
 * A REST Web resource representing a given subscription.
@@ -58,6 +66,10 @@ public class SubscribeResource extends RESTWebService {
     try {
       Subscription subscription = new ComponentSubscription(getUserDetail().getId(), componentId);
       SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
+      ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
+      NotifierUtil.addSuccess(MessageFormat
+          .format(getBundle().getResourceBundle().getString("GML.subscribe.success"),
+              component.getLabel(getUserDetail().getUserPreferences().getLanguage())));
       return "OK";
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);

@@ -128,6 +128,14 @@ public enum SupportedJavaScriptPlugins {
    */
   tkn,
   /**
+   * Silverpeas plugin to rate any content
+   */
+  rating,
+  /**
+   * Silverpeas plugin to toggle any container
+   */
+  toggle,
+  /**
    * Lightweight slideshow. Easy to use but not only a few features.
    */
   lightslideshow
