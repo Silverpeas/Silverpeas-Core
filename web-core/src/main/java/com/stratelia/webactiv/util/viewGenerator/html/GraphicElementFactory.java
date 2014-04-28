@@ -112,7 +112,7 @@ public class GraphicElementFactory {
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
-  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";  
+  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
 
   /**
    * Constructor declaration
@@ -361,7 +361,7 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");      
-    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append("\n");    
+    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append("\n");
     code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append("\n");
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append("\n");
     code.append(includeNotifier(new ElementContainer()).toString()).append("\n");

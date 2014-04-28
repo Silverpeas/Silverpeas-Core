@@ -153,7 +153,7 @@ public class JavascriptPluginInclusion {
   }
   
   public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
-	  xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));	  
+	  xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
 	  return xhtml;
   }
 
