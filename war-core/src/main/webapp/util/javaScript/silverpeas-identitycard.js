@@ -36,6 +36,7 @@ jQuery(document).ready(function() {
 
 				jQuery.each(user, function(key, val) {
 					if (key == 'avatar') {
+						$(value).find('.' + key).html('');
 						$('<img />').attr({'src' : val, 'alt' : 'Avatar'}).appendTo($(value).find('.' + key));
 					} else {
 						$(value).find('.' + key).text(val);
