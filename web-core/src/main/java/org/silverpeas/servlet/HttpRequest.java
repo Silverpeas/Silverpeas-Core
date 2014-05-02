@@ -28,22 +28,26 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.NotImplementedException;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.NotImplementedException;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -214,6 +218,21 @@ public class HttpRequest extends HttpServletRequestWrapper {
       language = mainSessionController.getFavoriteLanguage();
     }
     return language;
+  }
+
+  /**
+   * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}.
+   *
+   * @return collection of {@link UploadedFile}. Empty collection if no uploaded file exists.
+   */
+  public Collection<UploadedFile> getUploadedFiles() {
+    Collection<UploadedFile> uploadedFiles = new ArrayList<UploadedFile>();
+    MainSessionController mainSessionController = getMainSessionController();
+    if (mainSessionController != null) {
+      uploadedFiles =
+          FileUploadManager.getUploadedFiles(this, mainSessionController.getCurrentUserDetail());
+    }
+    return uploadedFiles;
   }
 
   /**

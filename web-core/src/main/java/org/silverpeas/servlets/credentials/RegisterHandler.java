@@ -44,10 +44,12 @@ public class RegisterHandler extends FunctionHandler {
     String lastName = request.getParameter("lastName");
     String email = request.getParameter("email");
     String token = request.getParameter(REGISTRATION_TOKEN);
+    String domainId = settings.userSelfRegistrationDomainId();
+
     if (settings.isUserSelfRegistrationEnabled()) {
       try {
         UserService service = UserServiceProvider.getInstance().getService();
-        service.registerUser(firstName, lastName, email, "0");
+        service.registerUser(firstName, lastName, email, domainId);
       } catch (AdminException e) {
         return "/admin/jsp/registrationFailed.jsp";
       }

@@ -30,6 +30,7 @@
  * the application itself and by its dependencies (other silverpeas modules).
  * When declaring an application as a module in silverpeas, usually it depends on
  * the module silverpeas.services in which are defined all the Silverpeas services at client side.
+ * Common and default behaviour is configured here to handle properly HTTP Ajax Request.
  *
  * The example below illustrates the declaration of an application:
  * @example
@@ -43,7 +44,16 @@
  * @example
  * var myapp = angular.module('silverpeas.myapp', ['silverpeas.services', 'silverpeas.directives']);
  */
-angular.module('silverpeas', []);
+angular.module('silverpeas', ['ngSanitize']).config(['$httpProvider', function($httpProvider) {
+  // disable http caching
+  $httpProvider.defaults.cache = false;
+  //initialize get if not there
+  if (!$httpProvider.defaults.headers.get) {
+    $httpProvider.defaults.headers.get = {};
+  }
+  //disable IE ajax request caching
+  $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+}]);
 
 /**
  * Defines the context object used to share application contextual properties with the different

@@ -25,9 +25,9 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SynchroReport {
@@ -49,8 +49,8 @@ public class SynchroReport {
 
   private static int iTraceLevel;
   @SuppressWarnings("unchecked")
-  private static final List<String> VMessage = (List<String>)Collections.synchronizedList(
-      new ArrayList<String>());
+  private static final List<String> VMessage =
+      (List<String>) Collections.synchronizedList(new ArrayList<String>());
   private static int iState;
 
   // Initialisation

@@ -72,6 +72,11 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
+  public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
+    realService.deleteAllAttachments(componentInstanceId);
+  }
+
+  @Override
   public void updateAttachment(SimpleDocument document, InputStream in, boolean indexIt,
       boolean invokeCallback) {
     realService.updateAttachment(document, in, indexIt, invokeCallback);

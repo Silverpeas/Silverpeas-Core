@@ -33,7 +33,7 @@
    * @property {string} resourceid - the id of the resource
    * @property {string} readonly - [optional] if true, user is not able to rate associated resource
    * @property {string} starsize - [optional] use 'small' to display smaller stars
-   * @property {string} shownbratings - [optional] if false, number of ratings is not display (true by default)
+   * @property {string} shownbraterratings - [optional] if false, number of ratings is not display (true by default)
    * @property {string} rating - [optional] a JSON representation of an existing rating object (ie RatingEntity.java).
    * If provided, attributes componentid, resourcetype and resourceid are useless.
    *
@@ -45,19 +45,29 @@
           restrict : 'AE',
           scope : {
             componentid : '@',
-            type : '@resourcetype',
-            id : '@resourceid',
+            contributiontype : '@',
+            contributionid : '@',
             readonly : '@',
+            forcedisplaywhennorating : '@',
+            canuserrating : '@',
             starsize : '@',
-            shownbratings : '@',
-            rating : '='
+            shownbraterratings : '@',
+            raterrating : '='
           },
           link : function postLink(scope, element, attrs) {
             $timeout(function() {
-              if (attrs.rating) {
-                scope.rating = Rating.wrap(eval(attrs.rating));
-                scope.id = scope.rating.resourceId;
-                scope.componentid = scope.rating.componentId;
+              if (typeof scope.canuserrating === 'undefined') {
+                scope.canuserrating = "true";
+              }
+              if (scope.raterrating || attrs.raterrating) {
+                if (scope.raterrating) {
+                  scope.raterrating = Rating.wrap(scope.raterrating);
+                } else {
+                  scope.raterrating = Rating.wrap(eval(attrs.raterrating));
+                }
+                scope.contributionid = scope.raterrating.contributionId;
+                scope.contributiontype = scope.raterrating.contributionType;
+                scope.componentid = scope.raterrating.componentId;
               }
 
               var starWidth = 16;
@@ -69,23 +79,28 @@
                 starWidth = 12;
                 starHeight = 12;
               }
-              var readonly = scope.readonly === "true" || param_userAnonymous;
-              if (scope.shownbratings === "false") {
-                angular.element(".rating-votes", element).hide();
+              var canuserrating = (scope.canuserrating === "true") && !param_userAnonymous;
+              if (!canuserrating) {
+                scope.readonly = "true";
+              }
+              var readonly = scope.readonly === "true";
+              var forceDisplayWhenNoRating = scope.forcedisplaywhennorating === "true";
+              if (scope.shownbraterratings === "false") {
+                angular.element(".rating-contribution", element).hide();
               }
 
-              var _rating = function(rating) {
-                // rating resetable only if user has already participated
-                var userRating = rating.userRating;
-                var resetable = userRating > 0;
+              var _rating = function(raterRatingEntity) {
+                // rating resetable only if rater has already participated
+                var raterRating = raterRatingEntity.raterRatingValue;
+                var resetable = raterRatingEntity.isRatingDone;
 
-                if (!readonly || rating.notesCount > 0) {
-                  // display number of votes
-                  displayCounter(rating.notesCount);
+                if (!readonly || forceDisplayWhenNoRating || raterRatingEntity.numberOfRaterRatings > 0) {
+                  // display number of rater ratings
+                  displayCounter(raterRatingEntity.numberOfRaterRatings);
 
                   // setting up and displaying rating plugin
                   $rating.rateit({
-                    value : rating.globalRating,
+                    value : raterRatingEntity.ratingAverage,
                     readonly : readonly,
                     resetable : resetable,
                     ispreset : true,
@@ -96,12 +111,12 @@
 
                   if (readonly) {
                     angular.element(".spOverRating", element).attr('title',
-                        displayTitleCounter(rating, param_userAnonymous));
+                        displayTitleCounter(raterRatingEntity, canuserrating));
                   }
 
                   // setting titles over stars and reset buttons
                   $rating.find(".rateit-reset").attr('title',
-                          label_RatingVoteDelete + ' : ' + label_RatingTooltips[userRating - 1]);
+                          label_RatingVoteDelete + ' : ' + label_RatingTooltips[raterRating - 1]);
                   $rating.bind('over', function(event, value) {
                     $(this).attr('title', label_RatingTooltips[value - 1]);
                   });
@@ -117,14 +132,14 @@
                     }
 
                     // save user rate
-                    rating.rate(value).then(function(newRating) {
+                    raterRatingEntity.rate(value).then(function(newRaterRatingEntity) {
                       // refreshing global rate
-                      ri.rateit('value', newRating.globalRating);
+                      ri.rateit('value', newRaterRatingEntity.ratingAverage);
                       ri.rateit('ispreset', true);
-                      ri.rateit('resetable', newRating.userRating > 0);
-                      ri.find(".rateit-reset").attr('title',
-                              label_RatingVoteDelete + ' : ' + label_RatingTooltips[newRating.userRating - 1]);
-                      displayCounter(newRating.notesCount);
+                      ri.rateit('resetable', newRaterRatingEntity.raterRatingValue > 0);
+                      ri.find(".rateit-reset").attr('title', label_RatingVoteDelete + ' : ' +
+                          label_RatingTooltips[newRaterRatingEntity.raterRatingValue - 1]);
+                      displayCounter(newRaterRatingEntity.numberOfRaterRatings);
                     });
 
                     //maybe we want to disable voting?
@@ -135,22 +150,24 @@
                 }
               };
 
-              if (scope.rating) {
-                _rating(scope.rating);
+              if (scope.raterrating) {
+                _rating(scope.raterrating);
               } else {
                 Rating.get(scope).then(_rating);
               }
 
-              function displayCounter(nb) {
-                scope.nbRates = nb;
-                scope.voteLabel = getRatingsLabel(nb);
+              function displayCounter(nbRaterRatings) {
+                scope.nbRaterRatings = nbRaterRatings;
+                scope.ratingLabel = getRatingsLabel(nbRaterRatings);
               }
 
-              function displayTitleCounter(rating, anonymous) {
-                var label = rating.notesCount + ' ' + getRatingsLabel(rating.notesCount) + '. ';
-                if (!anonymous) {
-                  if (rating.userRating > 0) {
-                    label += label_RatingVoteYours + ' ' + label_RatingTooltips[rating.userRating - 1];
+              function displayTitleCounter(raterRatingEntity, canuserrating) {
+                var label = raterRatingEntity.numberOfRaterRatings + ' ' +
+                    getRatingsLabel(raterRatingEntity.numberOfRaterRatings) + '. ';
+                if (canuserrating) {
+                  if (raterRatingEntity.raterRatingValue > 0) {
+                    label += label_RatingVoteYours + ' ' +
+                        label_RatingTooltips[raterRatingEntity.raterRatingValue - 1];
                   } else {
                     label += label_RatingVoteNone;
                   }
@@ -158,8 +175,8 @@
                 return label;
               }
 
-              function getRatingsLabel(nb) {
-                if (nb > 1) {
+              function getRatingsLabel(nbRaterRatings) {
+                if (nbRaterRatings > 1) {
                   return label_RatingVotes;
                 }
                 return label_RatingVote;

@@ -118,6 +118,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case rating:
           includeRating(xhtml);
           break;
+        case toggle:
+          includeToggle(xhtml);
+          break;
         case lightslideshow:
           includeLightweightSlideshow(xhtml);
           break;

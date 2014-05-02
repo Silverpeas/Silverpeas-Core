@@ -25,15 +25,17 @@
 package com.silverpeas.calendar;
 
 import com.stratelia.webactiv.util.DateUtil;
+
 import java.util.Calendar;
 import java.util.TimeZone;
+
 import static java.util.Calendar.*;
 
 /**
  * A date on a day of a month and in year. The time isn't represented here. Please refers to
  * DateTime to models also the time.
  */
-public class Date extends java.util.Date implements Datable<Date>, Cloneable {
+public class Date extends AbstractDateDatable<Date> {
 
   private static final long serialVersionUID = 7970735205076340522L;
   private TimeZone timeZone = TimeZone.getDefault();
@@ -93,8 +95,13 @@ public class Date extends java.util.Date implements Datable<Date>, Cloneable {
   }
 
   @Override
+  protected Date newInstanceFrom(final java.util.Date aDate) {
+    return new Date(aDate);
+  }
+
+  @Override
   public Date clone() {
-    return new Date(new java.util.Date(getTime()));
+    return newInstanceFrom(this);
   }
 
   @Override
@@ -230,10 +237,9 @@ public class Date extends java.util.Date implements Datable<Date>, Cloneable {
    * @param date1 the date1 to compare with.
    * @param date2 the date2 to compare with.
    * @return true if the two calendar dates are both a date in the same month in the same year,
-   * false otherwise.
+   *         false otherwise.
    */
   private boolean isInSameMonthInYear(Calendar date1, Calendar date2) {
     return date1.get(YEAR) == date2.get(YEAR) && date1.get(MONTH) == date2.get(MONTH);
   }
-
 }

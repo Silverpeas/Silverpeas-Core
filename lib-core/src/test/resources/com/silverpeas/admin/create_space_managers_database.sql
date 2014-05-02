@@ -27,7 +27,7 @@ CREATE TABLE DomainSP_User (
 	password	varchar (32) NULL ,
 	passwordValid	char (1) DEFAULT ('Y') NOT NULL ,
 	loginMail	varchar (100) NULL ,
-	email		varchar (100) NULL 
+	email		varchar (100) NULL
 );
 
 
@@ -143,7 +143,7 @@ CREATE TABLE ST_Domain (
 	className		varchar (100) NOT NULL ,
 	authenticationServer	varchar (100) NOT NULL ,
   theTimeStamp            varchar (100) DEFAULT('0') NOT NULL ,
-  silverpeasServerURL     varchar (400) NULL 
+  silverpeasServerURL     varchar (400) NULL
 );
 
 CREATE TABLE DomainSP_Group_User_Rel (
@@ -154,7 +154,7 @@ CREATE TABLE DomainSP_Group_User_Rel (
 CREATE TABLE ST_NotifDefaultAddress (
 	id int NOT NULL ,
 	userId int NOT NULL ,
-	notifAddressId int NOT NULL 
+	notifAddressId int NOT NULL
 );
 
 CREATE TABLE ST_Instance_Data
@@ -191,7 +191,7 @@ CREATE TABLE ST_SpaceUserRole
     name          varchar(100)  NULL,
     roleName      varchar(100)  NOT NULL,
     description   varchar(400),
-    isInherited	  int	        default(0) NOT NULL 
+    isInherited	  int	        default(0) NOT NULL
 );
 
 CREATE TABLE ST_SpaceUserRole_User_Rel
@@ -206,4 +206,13 @@ CREATE TABLE ST_SpaceUserRole_Group_Rel
     groupId           int NOT NULL
 );
 
+CREATE TABLE ST_UserRole_Group_Rel
+(
+    userRoleId   int NOT NULL,
+    groupId      int NOT NULL,
+
+	PRIMARY KEY (userRoleId, groupId),
+    FOREIGN KEY (userRoleId) REFERENCES ST_UserRole(id) , --ON DELETE CASCADE,
+    FOREIGN KEY (groupId) REFERENCES ST_Group(id), --ON DELETE CASCADE
+);
 

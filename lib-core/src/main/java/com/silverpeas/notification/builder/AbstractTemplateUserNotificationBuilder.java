@@ -36,13 +36,16 @@ import com.silverpeas.util.template.SilverpeasTemplateFactory;
 
 /**
  * @author Yohann Chastagnier
+ * @param <T> the type of resource concerned by the notification.
  */
 public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     AbstractResourceUserNotificationBuilder<T> {
 
-  /** The silverpeas templates indexed by languages */
-  private final Map<String, SilverpeasTemplate> templates =
-      new HashMap<String, SilverpeasTemplate>();
+  /**
+   * The silverpeas templates indexed by languages
+   */
+  private final Map<String, SilverpeasTemplate> templates
+      = new HashMap<String, SilverpeasTemplate>();
 
   /**
    * Default constructor
@@ -67,7 +70,8 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * @param title
    * @param fileName
    */
-  public AbstractTemplateUserNotificationBuilder(final T resource, final String title, final String fileName) {
+  public AbstractTemplateUserNotificationBuilder(final T resource, final String title,
+      final String fileName) {
     super(resource, title, fileName);
   }
 
@@ -130,9 +134,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
     if (OrganisationControllerFactory.getOrganisationController()
-        .isComponentExist(getComponentInstanceId()) ||
-        OrganisationControllerFactory.getOrganisationController()
-            .isToolAvailable(getComponentInstanceId())) {
+        .isComponentExist(getComponentInstanceId()) || OrganisationControllerFactory.
+        getOrganisationController()
+        .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(getTemplatePath());
@@ -158,9 +162,12 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       SilverpeasTemplate template);
 
   /**
-   * Builds the notification resource data container from a given language. Don't forget to fill resourceId,
-   * resourceType, resourceName, resourceDescription (optional), resourceLocation (optional). If ResourceLocation is
-   * empty , it will be filled by the NotificationManager with the given componentInstanceId of NotificationMetaData
+   * Builds the notification resource data container from a given language. Don't forget to fill
+   * resourceId,
+   * resourceType, resourceName, resourceDescription (optional), resourceLocation (optional). If
+   * ResourceLocation is
+   * empty , it will be filled by the NotificationManager with the given componentInstanceId of
+   * NotificationMetaData
    * @param language
    * @param resource
    * @param notificationResourceData

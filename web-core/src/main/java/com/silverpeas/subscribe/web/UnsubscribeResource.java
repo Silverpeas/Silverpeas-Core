@@ -36,7 +36,9 @@ import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -46,6 +48,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.text.MessageFormat;
 import java.util.Collections;
 
 /**
@@ -91,6 +94,10 @@ public class UnsubscribeResource extends RESTWebService {
       Subscription subscription =
           new ComponentSubscription(subscriber, componentId, getUserDetail().getId());
       SubscriptionServiceFactory.getFactory().getSubscribeService().unsubscribe(subscription);
+      ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
+      NotifierUtil.addSuccess(MessageFormat
+          .format(getBundle().getResourceBundle().getString("GML.unsubscribe.success"),
+              component.getLabel(getUserDetail().getUserPreferences().getLanguage())));
       return Response.ok(Collections.singletonList("OK")).build();
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);

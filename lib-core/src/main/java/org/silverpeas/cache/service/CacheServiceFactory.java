@@ -47,8 +47,8 @@ public class CacheServiceFactory {
     requestCacheService = new ThreadCacheService();
 
     // Common cache
-    int nbMaxElements =
-        GeneralPropertiesManager.getInteger("application.cache.common.nbMaxElements", 0);
+    int nbMaxElements = GeneralPropertiesManager.
+        getInteger("application.cache.common.nbMaxElements", 0);
     if (nbMaxElements < 0) {
       nbMaxElements = 0;
     }
@@ -85,8 +85,23 @@ public class CacheServiceFactory {
   }
 
   /**
+   * Gets a useful cache in relation with a session : after the end of the session,
+   * the associated cache is trashed. If no session cache exists,
+   * then the request cache is returned.
+   * @return a cache associated to the current session, or a request if no session one.
+   */
+  public static SimpleCacheService getSessionCacheService() {
+    InMemoryCacheService simpleCacheService = getInstance().requestCacheService
+        .get("@SessionCache@", InMemoryCacheService.class);
+    if (simpleCacheService != null) {
+      return simpleCacheService;
+    }
+    return getRequestCacheService();
+  }
+
+  /**
    * Gets the cache of the application.
-   * @return an applicative cache ervice
+   * @return an applicative cache service
    */
   public static CacheService getApplicationCacheService() {
     return getInstance().cacheService;

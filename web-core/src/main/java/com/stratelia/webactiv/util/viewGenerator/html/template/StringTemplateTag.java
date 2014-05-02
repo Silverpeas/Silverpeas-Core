@@ -56,7 +56,7 @@ public class StringTemplateTag extends TagSupport {
 
       // Component or Core ?
       final String[] locationNsAndBase = locationBase.split(":");
-      if (locationNsAndBase == null || locationNsAndBase.length != 2) {
+      if (locationNsAndBase.length != 2) {
         throw new IllegalArgumentException(
             "locationBase parameter is not correct. Please check if the namespace is defined.");
       }
@@ -67,7 +67,7 @@ public class StringTemplateTag extends TagSupport {
       if (CORE_NAMESPACE.equals(nameSpace)) {
         template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(locationBase);
       } else {
-        template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(locationBase);
+        template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
       }
 
       // Register in context

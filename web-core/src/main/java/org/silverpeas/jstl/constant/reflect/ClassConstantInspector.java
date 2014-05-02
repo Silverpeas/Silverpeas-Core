@@ -22,6 +22,8 @@ package org.silverpeas.jstl.constant.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Inspector class that analyses a class and extract its constant filed value.
@@ -44,9 +46,25 @@ public class ClassConstantInspector {
   public ClassConstantInspector(String constantPath) throws ClassNotFoundException,
       NoSuchFieldException {
     FieldPathParser parser = new FieldPathParser(constantPath);
-    this.field = Class.forName(parser.getDeclaringClassName()).getField(parser.getFieldName());
-    if (!Modifier.isPublic(this.field.getModifiers()) || !Modifier.isStatic(this.field.
-        getModifiers()) || !Modifier.isFinal(this.field.getModifiers())) {
+    Class currentClass = Class.forName(parser.getDeclaringClassName());
+    Map<String, Class> innerClasses = null;
+    for (String fieldOrClassName : parser.getFieldOrClassNames()) {
+      if (innerClasses == null) {
+        innerClasses = new HashMap<String, Class>();
+        for (Class innerClass : currentClass.getClasses()) {
+          innerClasses.put(innerClass.getSimpleName(), innerClass);
+        }
+      }
+      if (innerClasses.containsKey(fieldOrClassName)) {
+        currentClass = innerClasses.get(fieldOrClassName);
+        innerClasses = null;
+      } else {
+        this.field = currentClass.getField(fieldOrClassName);
+      }
+    }
+    if (this.field == null || !Modifier.isPublic(this.field.getModifiers()) ||
+        !Modifier.isStatic(this.field.getModifiers()) ||
+        !Modifier.isFinal(this.field.getModifiers())) {
       throw new IllegalArgumentException("Field " + constantPath
           + " is not a public static final field");
     }

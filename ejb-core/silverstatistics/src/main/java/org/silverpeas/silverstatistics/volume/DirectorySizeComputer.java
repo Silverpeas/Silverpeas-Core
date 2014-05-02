@@ -28,6 +28,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 /**
  * Compute the total size of a directory.
  */
@@ -42,6 +44,14 @@ public class DirectorySizeComputer implements Callable<DirectoryStats> {
 
   @Override
   public DirectoryStats call() throws Exception {
-    return new DirectoryStats(directory.getName(), FileUtils.sizeOfDirectory(directory), 0L);
+    long size = 0L;
+    try {
+      size = FileUtils.sizeOfDirectory(directory);
+    } catch (Exception e) {
+      // preventing bug http://tracker.silverpeas.org/issues/5340
+      SilverTrace.error("silverstatistics", "DirectorySizeComputer.call", "root.EX_CANT_READ_FILE",
+          "Directory : " + directory.getAbsolutePath(), e);
+    }
+    return new DirectoryStats(directory.getName(), size, 0L);
   }
 }

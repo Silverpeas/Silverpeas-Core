@@ -26,13 +26,12 @@ package org.silverpeas.rating.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.RatingPK;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.rating.RaterRating;
+import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.GET;
@@ -44,10 +43,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.net.URI;
+
+import static com.silverpeas.notation.ejb.RatingServiceFactory.getRatingService;
 
 /**
- * A REST Web resource representing a given rating. 
+ * A REST Web resource representing a given rating.
  * It is a web service that provides an access to a rating referenced by its URL.
  */
 @Service
@@ -55,7 +55,7 @@ import java.net.URI;
 @Path("rating/{componentId}/{contributionType}/{contributionId}")
 @Authorized
 public class RatingResource extends RESTWebService {
-  
+
   @PathParam("componentId")
   private String componentId;
   @PathParam("contributionType")
@@ -72,56 +72,50 @@ public class RatingResource extends RESTWebService {
   public String getComponentId() {
     return componentId;
   }
-  
+
   /**
    * Gets the JSON representation of the rating associated to defined content.
    * @return the response to the HTTP GET request with the JSON representation of the rating.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public RatingEntity getRating() {
+  public RaterRatingEntity getRaterRating() {
     try {
-      Rating rating = getNotationBm().getRating(getRatingPK());
-      URI ratingURI = getUriInfo().getRequestUri();
-      return asWebEntity(rating, identifiedBy(ratingURI));
+      ContributionRating contributionRating = getRatingService().getRating(getRatingPK());
+      return asWebEntity(contributionRating.getRaterRating(getUserDetail()));
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-  
+
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response saveRating(String note) {
     if (!StringUtil.isDefined(note)) {
-      getNotationBm().deleteUserRating(getRatingPK());
+      getRatingService().deleteRaterRating(getRaterRatingPK());
       NotifierUtil.addSuccess(getBundle().getString("notation.vote.delete.ok"));
     } else {
-      getNotationBm().updateRating(getRatingPK(), Integer.parseInt(note));
+      getRatingService().updateRating(getRaterRatingPK(), Integer.parseInt(note));
       NotifierUtil.addSuccess(getBundle().getString("notation.vote.ok"));
     }
-    RatingEntity newRating = getRating();
+    RaterRatingEntity newRating = getRaterRating();
     return Response.ok(newRating).build();
   }
-   
-  private RatingPK getRatingPK() {
-    return new RatingPK(contributionId, componentId, contributionType, getUserDetail().getId());
+
+  private ContributionRatingPK getRatingPK() {
+    return new ContributionRatingPK(contributionId, componentId, contributionType);
   }
-  
+
+  private RaterRatingPK getRaterRatingPK() {
+    return new RaterRatingPK(contributionId, componentId, contributionType, getUserDetail());
+  }
+
   /**
    * Converts the rating into its corresponding web entity.
-   * @param rating the rating to convert.
-   * @param ratingURI the URI of the rating.
+   * @param raterRating the rater rating to convert.
    * @return the corresponding rating entity.
    */
-  protected RatingEntity asWebEntity(final Rating rating, URI ratingURI) {
-    return RatingEntity.fromRating(rating).withURI(ratingURI);
-  }
-  
-  protected URI identifiedBy(URI uri) {
-    return uri;
-  }
-  
-  private NotationBm getNotationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
+  protected RaterRatingEntity asWebEntity(final RaterRating raterRating) {
+    return RaterRatingEntity.fromRaterRating(raterRating);
   }
 }

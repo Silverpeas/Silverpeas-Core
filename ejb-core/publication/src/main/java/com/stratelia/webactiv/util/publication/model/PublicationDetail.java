@@ -32,7 +32,7 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
-import com.silverpeas.notation.ejb.NotationBm;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
@@ -55,6 +55,18 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -63,17 +75,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.RatingPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 /**
  * This object contains the description of a publication
@@ -116,7 +117,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   // added for import/export
   private boolean statusMustBeChecked = true;
   private boolean updateDateMustBeSet = true;
-  // ajoutÃ© pour les statistiques
+  // ajouté pour les statistiques
   private int nbAccess = 0;
   private Visibility visibility = null;
   // added for export component
@@ -126,6 +127,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
   public static final String TYPE = "Publication";
+
+  private ContributionRating contributionRating;
 
   /**
    * Default contructor, required for castor mapping in importExport.
@@ -1240,10 +1243,17 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public int getExplicitRank() {
     return explicitRank;
   }
-  
-  public Rating getRating(String userId) {
-    NotationBm notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
-    RatingPK pk = new RatingPK(getId(), getInstanceId(), "Publication", userId);
-    return notationBm.getRating(pk);
+
+  /**
+   * Gets the rating informations linked with the current publication.
+   * @return the rating of the publication.
+   */
+  @Override
+  public ContributionRating getRating() {
+    if (contributionRating == null) {
+      contributionRating = RatingServiceFactory.getRatingService()
+          .getRating(new ContributionRatingPK(getId(), getInstanceId(), "Publication"));
+    }
+    return contributionRating;
   }
 }

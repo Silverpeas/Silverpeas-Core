@@ -132,6 +132,10 @@ public enum SupportedJavaScriptPlugins {
    */
   rating,
   /**
+   * Silverpeas plugin to toggle any container
+   */
+  toggle,
+  /**
    * Lightweight slideshow. Easy to use but not only a few features.
    */
   lightslideshow

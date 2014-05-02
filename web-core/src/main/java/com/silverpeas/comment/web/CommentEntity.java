@@ -265,7 +265,7 @@ public class CommentEntity implements Exposable {
     return this;
   }
 
-  private CommentEntity(final Comment comment) {
+  protected CommentEntity(final Comment comment) {
     this.componentId = comment.getCommentPK().getInstanceId();
     this.id = comment.getCommentPK().getId();
     this.resourceType = comment.getResourceType();

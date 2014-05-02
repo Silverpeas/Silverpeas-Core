@@ -153,7 +153,7 @@ public class DocumentRepository {
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
       checkoutNode(originDocumentNode, document.getUpdatedBy());
     }
-    if (!document.getFullJcrPath().equals(targetDoc.getFullJcrPath())) {
+    if (!originDocumentNode.getPath().equals(targetDoc.getFullJcrPath())) {
       session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     }
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
@@ -188,7 +188,8 @@ public class DocumentRepository {
     targetDoc.setDocumentType(document.getDocumentType());
     targetDoc.setForeignId(destination.getId());
     targetDoc.computeNodeName();
-    session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
+    Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
+    session.getWorkspace().copy(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
@@ -553,9 +554,25 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsByComponentdAndType(Session session, String instanceId,
+  public List<SimpleDocument> listDocumentsByComponentIdAndType(Session session, String instanceId,
       DocumentType type, String language) throws RepositoryException {
     NodeIterator iter = selectDocumentsByComponentIdAndType(session, instanceId, type);
+    return converter.convertNodeIterator(iter, language);
+  }
+
+  /**
+   * Search all the documents related to the component instance identified by the specified
+   * identifier.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param language the language in which the documents are required.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  public List<SimpleDocument> listAllDocumentsByComponentId(Session session, String instanceId,
+      String language) throws RepositoryException {
+    NodeIterator iter = selectAllDocumentsByComponentId(session, instanceId);
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -683,6 +700,30 @@ public class DocumentRepository {
         SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, childNodeConstraint, new Ordering[]{order},
         null);
+    QueryResult result = query.execute();
+    return result.getNodes();
+  }
+
+  /**
+   * Search all the documents related to the component instance identified by the specified
+   * identifier.
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  NodeIterator selectAllDocumentsByComponentId(Session session, String instanceId)
+      throws RepositoryException {
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    DescendantNode childNodeConstraint =
+        factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+            getPath() + instanceId);
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, childNodeConstraint, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }

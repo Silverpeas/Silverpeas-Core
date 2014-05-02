@@ -24,11 +24,16 @@
 
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.web.TestResources;
 import com.silverpeas.subscribe.MockableSubscriptionService;
+import com.silverpeas.web.TestResources;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 /**
  * Wrapper of resources required by the unit tests on the subscription web service.
@@ -43,7 +48,13 @@ public class SubscriptionTestResources extends TestResources {
 
   @Inject
   private MockableSubscriptionService subscriptionService;
-  
+
+  @PostConstruct
+  public void setupMocks() {
+    when(getOrganizationControllerMock().getComponentInstLight(COMPONENT_ID))
+        .thenReturn(new ComponentInstLight());
+  }
+
   public MockableSubscriptionService getMockableSubscriptionService() {
     assertNotNull(subscriptionService);
     return subscriptionService;

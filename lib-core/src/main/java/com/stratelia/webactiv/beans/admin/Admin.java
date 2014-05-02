@@ -1342,12 +1342,12 @@ public final class Admin {
   boolean isContentManagedComponent(String componentName) {
     return "expertLocator".equals(componentName) || "questionReply".equals(componentName)
         || "whitePages".equals(componentName) || "kmelia".equals(componentName) || "survey".equals(
-        componentName) || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
+            componentName) || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
         || "almanach".equals(componentName) || "quizz".equals(componentName) || "forums".equals(
-        componentName) || "pollingStation".equals(componentName) || "bookmark".equals(
-        componentName) || "chat".equals(componentName) || "infoLetter".equals(componentName)
+            componentName) || "pollingStation".equals(componentName) || "bookmark".equals(
+            componentName) || "chat".equals(componentName) || "infoLetter".equals(componentName)
         || "webSites".equals(componentName) || "gallery".equals(componentName) || "blog".equals(
-        componentName);
+            componentName);
   }
 
   /**
@@ -2418,7 +2418,7 @@ public final class Admin {
         } else {
           allProfileSources.add(spaceProfileManager
               .getInheritedSpaceProfileInstByName(domainDriverManager, spaceId,
-              oldSpaceProfile.getName()));
+                  oldSpaceProfile.getName()));
         }
         SpaceProfileInst profileToSpread = new SpaceProfileInst();
         profileToSpread.setName(oldSpaceProfile.getName());
@@ -2452,7 +2452,7 @@ public final class Admin {
   }
 
   private String spaceRole2ComponentRole(String spaceRole, String componentName) {
-    return roleMapping.getString(componentName + "_" + spaceRole);
+    return roleMapping.getString(componentName + "_" + spaceRole, spaceRole);
   }
 
   private List<String> componentRole2SpaceRoles(String componentRole,
@@ -2534,7 +2534,7 @@ public final class Admin {
       if (!subSpace.isInheritanceBlocked()) {
         SpaceProfileInst subSpaceProfile = spaceProfileManager
             .getInheritedSpaceProfileInstByName(domainDriverManager, subSpace.getShortId(),
-            spaceProfile.getName());
+                spaceProfile.getName());
         if (subSpaceProfile != null) {
           subSpaceProfile.setGroups(spaceProfile.getAllGroups());
           subSpaceProfile.setUsers(spaceProfile.getAllUsers());
@@ -5557,7 +5557,7 @@ public final class Admin {
             removedUsers.add(actualUserId);
             SynchroGroupReport
                 .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId,
-                null);
+                    null);
           }
         }
         SynchroGroupReport.warn("admin.synchronizeGroup", "Suppression de " + removedUsers.size()
@@ -5870,7 +5870,7 @@ public final class Admin {
         try {
           existingGroupId = groupManager
               .getGroupIdBySpecificIdAndDomainId(domainDriverManager, child.getSpecificId(),
-              latestGroup.getDomainId());
+                  latestGroup.getDomainId());
           Group existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
             // Only synchronize the group if latestGroup is his true parent
@@ -6488,8 +6488,8 @@ public final class Admin {
           PARAM_MSG_KEY, "%%%%FULLSYNCHRO%%%%>Deal with group : " + specificId);
       // search for group in Silverpeas database
       for (int nJ = 0;
-          nJ < existingGroups.length && !bFound;
-          nJ++) {
+           nJ < existingGroups.length && !bFound;
+           nJ++) {
         if (existingGroups[nJ].getSpecificId().equals(specificId)) {
           bFound = true;
           testedGroup.setId(existingGroups[nJ].getId());
@@ -6522,7 +6522,7 @@ public final class Admin {
         {
           SynchroReport.debug("admin.checkOutGroups",
               "le groupe " + specificId + " a pour père le groupe " + domainDriverManager.getGroup(
-              superGroupId).getSpecificId() + " d'Id base " + superGroupId, null);
+                  superGroupId).getSpecificId() + " d'Id base " + superGroupId, null);
         }
       }
       String[] userSpecificIds = testedGroup.getUserIds();
@@ -6954,8 +6954,8 @@ public final class Admin {
       // cannot paste component on root
       return null;
     }
-    ComponentInst newCompo =
-        (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).clone();
+    ComponentInst newCompo = (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).
+        clone();
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
     String lang = I18NHelper.defaultLanguage;
@@ -6968,8 +6968,8 @@ public final class Admin {
     newCompo.setLanguage(lang);
 
     // Rename if componentName already exists in the destination space
-    String label =
-        renameComponentName(newCompo.getLabel(lang), destinationSpace.getAllComponentsInst());
+    String label = renameComponentName(newCompo.getLabel(lang), destinationSpace.
+        getAllComponentsInst());
     newCompo.setLabel(label);
     ComponentI18N translation = (ComponentI18N) newCompo.getTranslation(lang);
     if (translation != null) {
@@ -6986,8 +6986,8 @@ public final class Admin {
     // Execute specific paste by the component
     try {
       pasteDetail.setToComponentId(sComponentId);
-      String componentRootName =
-          URLManager.getComponentNameFromComponentId(pasteDetail.getFromComponentId());
+      String componentRootName = URLManager.getComponentNameFromComponentId(pasteDetail.
+          getFromComponentId());
       String className = "com.silverpeas.component." + componentRootName + "." + componentRootName
           .substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
       if (Class.forName(className).getClass() != null) {
