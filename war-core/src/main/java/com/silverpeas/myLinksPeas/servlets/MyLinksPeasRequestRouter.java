@@ -24,20 +24,16 @@
 
 package com.silverpeas.myLinksPeas.servlets;
 
-import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.Collection;
+
 import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
+import com.silverpeas.myLinks.model.LinkDetail;
+import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeasSessionController> {
 
@@ -127,39 +123,17 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         destination = rootDest + "viewLinks.jsp";
       } else if (function.equals("NewLink")) {
         boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
-        request.setAttribute("IsVisible", new Boolean(isVisible));
+        request.setAttribute("IsVisible", Boolean.valueOf(isVisible));
         // appel jsp
         destination = rootDest + "linkManager.jsp";
-      } else if (function.equals("CreateLink")) {
-        // récupération des paramètres venus de l'écran de saisie et
-        // création de
-        // l'objet LinkDetail
-        myLinksSC.createLink(generateLink(request, false));
-        // retour sur le liste des liens
-        destination = getDestination("ViewLinks", myLinksSC, request);
-      } else if (function.equals("AddLinkFromComponent")) {
-        // récupération des paramètres transmis et création de l'objet
-        // LinkDetail
-        myLinksSC.createLink(generateLink(request, true));
-        // affichage d'une fenêtre de confirmation
-        destination = rootDest + "confirm.jsp";
       } else if (function.equals("EditLink")) {
         String linkId = request.getParameter("LinkId");
         LinkDetail link = myLinksSC.getLink(linkId);
         request.setAttribute("Link", link);
         boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
-        request.setAttribute("IsVisible", new Boolean(isVisible));
+        request.setAttribute("IsVisible", Boolean.valueOf(isVisible));
         // appel jsp
         destination = rootDest + "linkManager.jsp";
-      } else if (function.equals("UpdateLink")) {
-        // récupération des paramètres venus de l'écran de saisie
-        String linkId = request.getParameter("LinkId");
-        LinkDetail link = generateLink(request, false);
-        link.setLinkId(Integer.parseInt(linkId));
-        // modification du lien
-        myLinksSC.updateLink(link);
-        // retour sur le liste des liens
-        destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("DeleteLinks")) {
         Object o = request.getParameterValues("linkCheck");
         if (o != null) {
@@ -179,35 +153,5 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
     SilverTrace.info("myLinks", "MyLinksPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
-  }
-
-  private LinkDetail generateLink(HttpServletRequest request, boolean decode)
-      throws UnsupportedEncodingException {
-    String name = request.getParameter("Name");
-    String description = request.getParameter("Description");
-    if (decode) {
-      name = URLDecoder.decode(name, "UTF-8");
-      description = URLDecoder.decode(description, "UTF-8");
-    }
-    String url = request.getParameter("Url");
-
-    // supprimer le context en début d'url
-    String sRequestURL = request.getRequestURL().toString();
-    String m_sAbsolute =
-        sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-    String urlServeur = m_sAbsolute;
-    if (url.startsWith(urlServeur)) {
-      url = url.substring(urlServeur.length(), url.length());
-    }
-    String context = URLManager.getApplicationURL();
-    if (url.startsWith(context)) {
-      url = url.substring(context.length(), url.length());
-    }
-    boolean visible = StringUtil.getBooleanValue(request.getParameter("Visible"));
-    boolean popup = StringUtil.getBooleanValue(request.getParameter("Popup"));
-    if (!StringUtil.isDefined(name)) {
-      name = url;
-    }
-    return new LinkDetail(name, description, url, visible, popup);
   }
 }
