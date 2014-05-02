@@ -69,17 +69,17 @@ public class MyLinkEntity implements Exposable {
   @XmlElement(defaultValue = "true")
   @NotNull
   private boolean visible;
-  
+
   @XmlElement(defaultValue = "false")
   @NotNull
   private boolean popup;
-  
+
   @XmlElement
   private String userId;
-  
+
   @XmlElement
   private String instanceId;
-  
+
   @XmlElement
   private String objectId;
 
@@ -130,6 +130,76 @@ public class MyLinkEntity implements Exposable {
     linkDetail.setUserId(this.userId);
     linkDetail.setLinkId(this.linkId);
     return linkDetail;
+  }
+
+  /**
+   * @return the uri
+   */
+  public URI getUri() {
+    return uri;
+  }
+
+  /**
+   * @return the linkId
+   */
+  public int getLinkId() {
+    return linkId;
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return the description
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * @return the url
+   */
+  public String getUrl() {
+    return url;
+  }
+
+  /**
+   * @return the visible
+   */
+  public boolean isVisible() {
+    return visible;
+  }
+
+  /**
+   * @return the popup
+   */
+  public boolean isPopup() {
+    return popup;
+  }
+
+  /**
+   * @return the userId
+   */
+  public String getUserId() {
+    return userId;
+  }
+
+  /**
+   * @return the instanceId
+   */
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  /**
+   * @return the objectId
+   */
+  public String getObjectId() {
+    return objectId;
   }
 
 }

@@ -21,49 +21,146 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-$(document).ready(function() {
-  $.i18n.properties({
-    name: 'myLinksBundle',
-    path: webContext + '/services/bundles/org/silverpeas/mylinks/multilang/',
-    //TODO change the language with a plateform global javascript method which return the right language
-    language: getUserLanguage(),
-    mode: 'map'
-  });
 
-});
+// Web Context
+
+
+(function($) {
+
+  if (!webContext) {
+    var webContext = '/silverpeas';
+  }
+
+  $.mylinks = {
+    initialized: false,
+    postNewLink: function (name, url, description) {
+      var ajaxUrl = webContext + '/services/mylinks/';
+      var cleanUrl = url.replace(webContext, '');
+      var newLink = {
+          "description": description,
+          "linkId": -1,
+          "name": name,
+          "url": cleanUrl,
+          "popup": false,
+          "uri": '',
+          "visible": true
+      };
+      jQuery.ajax({
+        url: ajaxUrl,
+        type: 'POST',
+        data: $.toJSON(newLink),
+        contentType: "application/json",
+        cache: false,
+        dataType: "json",
+        async: true,
+        success: function(result) {
+          notySuccess(__getFromBundleKey('myLinks.messageConfirm'));
+        }
+      });
+    },
+    addFavoriteSpace: function (spaceId) {
+      var ajaxUrl = webContext + '/services/mylinks/space/' + spaceId;
+      jQuery.ajax({
+        url: ajaxUrl,
+        type: 'POST',
+        contentType: "application/json",
+        cache: false,
+        dataType: "json",
+        async: true,
+        success: function(result) {
+          notySuccess(__getFromBundleKey('myLinks.add.space.messageConfirm'));
+        }
+      });
+    },
+    addFavoriteApp: function (applicationId) {
+      var ajaxUrl = webContext + '/services/mylinks/app/' + applicationId;
+      jQuery.ajax({
+        url: ajaxUrl,
+        type: 'POST',
+        contentType: "application/json",
+        cache: false,
+        dataType: "json",
+        async: true,
+        success: function(result) {
+          notySuccess(getString('myLinks.add.application.messageConfirm'));
+        }
+      });
+    },
+    getMyLink: function (linkId) {
+      var ajaxUrl = webContext + '/services/mylinks/' + linkId;
+
+      // Ajax request
+      jQuery.ajax({
+        url: ajaxUrl,
+        type: 'GET',
+        contentType: "application/json",
+        cache: false,
+        dataType: "json",
+        async: true,
+        success: function(result) {
+          // TODO create an update form of a user link
+          return result;
+        }
+      });
+    }
+  };
+
+  // Localization init indicator.
+  var __i18nInitialized = false;
+
+  /**
+   * Private method that handles i18n.
+   * @param key
+   * @return message
+   * @private
+   */
+  function __getFromBundleKey(key) {
+    if (webContext) {
+      if (!__i18nInitialized) {
+        $.i18n.properties({
+          name: 'myLinksBundle',
+          path: webContext + '/services/bundles/org/silverpeas/mylinks/multilang/',
+          language: getUserLanguage(),
+          mode: 'map'
+        });
+        __i18nInitialized = true;
+      }
+      return getString(key);
+    }
+    return key;
+  }
+
+})(jQuery);
 
 /**
- * This method post a new link with the given parameter
- * name, url and description
+ * This method post a new favorite link with the given parameter
+ * @param name
+ * @param url
+ * @param description
  */
 function postNewLink(name, url, description) {
-  jQuery(document).ready(function() {
-    var ajaxUrl = webContext + '/services/mylinks/';
-    var cleanUrl = url.replace(webContext, '');
-    var newLink = {
-        "description": description,
-        "linkId": -1,
-        "name": name,
-        "url": cleanUrl,
-        "popup": false,
-        "uri": '',
-        "visible": true
-    };
-
-    // Ajax request
-    jQuery.ajax({
-      url: ajaxUrl,
-      type: 'POST',
-      data: $.toJSON(newLink),
-      contentType: "application/json",
-      cache: false,
-      dataType: "json",
-      async: true,
-      success: function(result) {
-        notySuccess('Success see the following message : ' + getString('myLinks.messageConfirm'));
-      }
-    });
-  });
+  $.mylinks.postNewLink(name, url, description);
 }
 
+/**
+ * this method post given space as a new user favorite link
+ * @param spaceId the space identifier
+ */
+function addFavoriteSpace(spaceId) {
+  $.mylinks.addFavoriteSpace(spaceId);
+}
+/**
+ * this method post given application as a new user favorite link
+ * @param applicationId
+ */
+function addFavoriteApp(applicationId) {
+  $.mylinks.addFavoriteApp(applicationId);
+}
 
+/**
+ * retrieve MyLink identified from link identifier parameter
+ * @param linkId
+ */
+function getMyLink(linkId) {
+  $.mylinks.getMyLink(linkId);
+}
