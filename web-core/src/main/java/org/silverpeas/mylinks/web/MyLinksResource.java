@@ -47,14 +47,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.rating.web.RatingEntity;
-import org.silverpeas.util.NotifierUtil;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.comment.web.CommentEntity;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.util.StringUtil;

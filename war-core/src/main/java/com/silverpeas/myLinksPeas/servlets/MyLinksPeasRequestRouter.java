@@ -123,7 +123,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         destination = rootDest + "viewLinks.jsp";
       } else if (function.equals("NewLink")) {
         boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
-        request.setAttribute("IsVisible", new Boolean(isVisible));
+        request.setAttribute("IsVisible", Boolean.valueOf(isVisible));
         // appel jsp
         destination = rootDest + "linkManager.jsp";
       } else if (function.equals("EditLink")) {
@@ -131,7 +131,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         LinkDetail link = myLinksSC.getLink(linkId);
         request.setAttribute("Link", link);
         boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
-        request.setAttribute("IsVisible", new Boolean(isVisible));
+        request.setAttribute("IsVisible", Boolean.valueOf(isVisible));
         // appel jsp
         destination = rootDest + "linkManager.jsp";
       } else if (function.equals("DeleteLinks")) {
