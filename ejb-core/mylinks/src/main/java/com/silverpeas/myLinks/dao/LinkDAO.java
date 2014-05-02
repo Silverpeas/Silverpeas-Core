@@ -37,6 +37,14 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class LinkDAO {
+
+  /**
+   * Hide constructor of utility class
+   */
+  private LinkDAO() {
+    super();
+  }
+
   public static List<LinkDetail> getAllLinksByUser(Connection con, String userId)
       throws SQLException {
     // récupérer toutes les liens d'un utilisateur

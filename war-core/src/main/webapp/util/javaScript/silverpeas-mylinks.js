@@ -82,7 +82,7 @@
         dataType: "json",
         async: true,
         success: function(result) {
-          notySuccess(getString('myLinks.add.application.messageConfirm'));
+          notySuccess(__getFromBundleKey('myLinks.add.application.messageConfirm'));
         }
       });
     },
