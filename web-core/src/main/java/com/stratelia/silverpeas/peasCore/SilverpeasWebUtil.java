@@ -27,6 +27,8 @@ package com.stratelia.silverpeas.peasCore;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -130,5 +132,27 @@ public class SilverpeasWebUtil {
           getComponentId(request)[1]);
     }
     return ArrayUtil.EMPTY_STRING_ARRAY;
+  }
+
+  /**
+   * Gets the content language specified into the request.
+   * @param request
+   * @return
+   */
+  public String getContentLanguage(HttpServletRequest request) {
+    String contentLanguage = (String) request.getAttribute("ContentLanguage");
+    if (StringUtil.isNotDefined(contentLanguage)) {
+      contentLanguage = request.getParameter("ContentLanguage");
+    }
+    if (StringUtil.isNotDefined(contentLanguage)) {
+      contentLanguage = I18NHelper.defaultLanguage;
+    }
+    if (StringUtil.isNotDefined(contentLanguage)) {
+      MainSessionController mainSessionCtrl = getMainSessionController(request);
+      if (mainSessionCtrl != null) {
+        contentLanguage = mainSessionCtrl.getFavoriteLanguage();
+      }
+    }
+    return contentLanguage;
   }
 }
