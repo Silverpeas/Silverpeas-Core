@@ -42,21 +42,21 @@ CKEDITOR.plugins.add( 'identitycard', {
 		editor.widgets.add( 'identitycard', {
 			
 			upcast: function( element ) {
-        			return element.name == 'div' && element.hasClass( 'identitycard' );
+        			return element.name == 'div' && element.hasClass( 'user-card' );
 			},
 
 			// Minimum HTML which is required by this widget to work.
-			requiredContent: 'div(identitycard)',			
+			requiredContent: 'div(user-card)',			
 
 			// Define the template of a new Identity Card widget.
 			template:
 				'<div class="user-card">' +				
-					'<div class="avatar"></div>' +
-					'<span class="userToZoom"></span>' +
-					'<span class="eMail">eMail</span>' +
-					'<span class="title"></span>' + 
-					'<span class="phone"></span>' +
-					'<span class="cellularPhone"></span>' +					
+					'<div class="avatar">avatar</div>' +
+					'<span class="field userToZoom">firstName lastName</span>' +
+					'<span class="field eMail">eMail</span>' +
+					'<span class="field title">title</span>' + 
+					'<span class="field phone">phone</span>' +
+					'<span class="field cellularPhone">cellularPhone</span>' +					
 				'</div>',
 			
 			dialog: 'identitycard',
@@ -70,7 +70,13 @@ CKEDITOR.plugins.add( 'identitycard', {
 
 			data: function() {
 				this.element.setAttribute('rel', this.data.userId);
-				$(this.element).find('.userToZoom').attribute('rel', this.data.userId);
+				for (var i=0; i < this.element.getChildCount(); i++) {
+					var item = this.element.getChildren().getItem(i);
+					if (item.getAttribute('class') == 'field userToZoom') {
+						item.setAttribute('rel', this.data.userId);
+						break;
+					}
+				}
 			}}
 		);
 

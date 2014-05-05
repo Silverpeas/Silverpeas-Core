@@ -29,7 +29,7 @@ jQuery(document).ready(function() {
 	jQuery('.user-card').each(function(index, value) {
 		$.ajax({
 			type : "GET",
-			url : '/silverpeas/services/profile/users/' + $(value).attr('rel'),
+			url : '/silverpeas/services/profile/users/' + $(value).attr('rel') + '?extended=true',
 			dataType : "json",
 			cache : false,
 			success : function(user, status, jqXHR) {
@@ -38,7 +38,11 @@ jQuery(document).ready(function() {
 					if (key == 'avatar') {
 						$(value).find('.' + key).html('');
 						$('<img />').attr({'src' : val, 'alt' : 'Avatar'}).appendTo($(value).find('.' + key));
-					} else {
+					} else if (key == 'moreData') {
+						jQuery.each(val, function(keyMore, valMore) {
+							$(value).find('.' + keyMore).text(valMore);
+						});
+					} else  {
 						$(value).find('.' + key).text(val);
 					}
 				});

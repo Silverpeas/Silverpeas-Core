@@ -6208,10 +6208,7 @@ div.user-card .avatar img{
 	width:60px;
 }
 
-div.user-card .userToZoom,
-div.user-card .title,
-div.user-card .phone,
-div.user-card .cellularPhone{
+div.user-card .field{
 	float:left;
 	width:220px;
 	padding:0 4px 2px 6px;
@@ -6222,8 +6219,6 @@ div.user-card .userToZoom{
 	font-weight:bold;
 }
 
-div.user-card .title,
-div.user-card .phone,
-div.user-card .cellularPhone{	
+div.user-card .field{	
 	color:#444;
 }
