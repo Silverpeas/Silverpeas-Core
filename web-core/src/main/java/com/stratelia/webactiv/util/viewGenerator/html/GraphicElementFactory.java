@@ -360,11 +360,12 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");      
-    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append("\n");
+        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");    
     code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append("\n");
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append("\n");
     code.append(includeNotifier(new ElementContainer()).toString()).append("\n");
+    code.append(includeUserZoom(new ElementContainer()).toString()).append("\n");    
+    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append("\n");
 
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
