@@ -50,11 +50,13 @@ CKEDITOR.plugins.add( 'identitycard', {
 
 			// Define the template of a new Identity Card widget.
 			template:
-				'<div class="identitycard">' +
-					'<ul><li class="avatar">avatar</li>' +
-					'<li class="firstName">firstName</li>' +
-					'<li class="lastName">lastName</li>' +
-					'<li class="eMail">eMail</li></ul>' +
+				'<div class="user-card">' +				
+					'<div class="avatar"></div>' +
+					'<span class="userToZoom"></span>' +
+					'<span class="eMail">eMail</span>' +
+					'<span class="title"></span>' + 
+					'<span class="phone"></span>' +
+					'<span class="cellularPhone"></span>' +					
 				'</div>',
 			
 			dialog: 'identitycard',
@@ -63,12 +65,14 @@ CKEDITOR.plugins.add( 'identitycard', {
 
 			init: function() {
 				var userId = this.element.getAttribute( 'rel' );
-			        this.setData( 'userId', userId );				
+			    this.setData( 'userId', userId );
 			},
 
 			data: function() {
-				this.element.setAttribute("rel",this.data.userId);}
-		} );
+				this.element.setAttribute('rel', this.data.userId);
+				$(this.element).find('.userToZoom').attribute('rel', this.data.userId);
+			}}
+		);
 
 		editor.ui.addButton( 'identitycard',
 		{

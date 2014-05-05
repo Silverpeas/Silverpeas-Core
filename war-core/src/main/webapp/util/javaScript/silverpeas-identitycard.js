@@ -26,14 +26,14 @@
  * Populate all identity card in page.
  */
 jQuery(document).ready(function() {
-	jQuery('.identitycard').each(function(index, value) {
+	jQuery('.user-card').each(function(index, value) {
 		$.ajax({
 			type : "GET",
 			url : '/silverpeas/services/profile/users/' + $(value).attr('rel'),
 			dataType : "json",
 			cache : false,
 			success : function(user, status, jqXHR) {
-
+				$(value).find('.userToZoom').text(user.firstName + ' ' + user.lastName);
 				jQuery.each(user, function(key, val) {
 					if (key == 'avatar') {
 						$(value).find('.' + key).html('');
