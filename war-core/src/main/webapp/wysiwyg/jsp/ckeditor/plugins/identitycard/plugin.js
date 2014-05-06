@@ -66,58 +66,11 @@ CKEDITOR.plugins.add( 'identitycard', {
 			init: function() {
 				var userId = this.element.getAttribute( 'rel' );
 				this.setData( 'userId', userId );
+				updateContent(this);
 			},
 
 			data: function() {
-				
-				var widgetUI = this.element;				
-				var widgetData = this.data;
-				widgetUI.setAttribute('rel', this.data.userId);
-
-				$.ajax({
-					type : "GET",
-					url : '/silverpeas/services/profile/users/' + $(widgetUI).attr('rel') + '?extended=true',
-					dataType : "json",
-					cache : false,
-					success : function(user, status, jqXHR) {
-						for (var i=0; i < widgetUI.getChildCount(); i++) {
-							var item = widgetUI.getChildren().getItem(i);
-							if (item.getAttribute('class') == 'field userToZoom') {
-								item.setAttribute('rel', widgetData.userId);
-								item.setHtml(user.firstName + ' ' + user.lastName);								
-
-							} else if (item.getAttribute('class') == 'avatar') {
-								var avatar = item.getChildren().getItem(0);
-								avatar.setAttribute('src', user.avatar);
-							}
-						}
-						jQuery.each(user, function(key, val) {					
-							for (var i=0; i < widgetUI.getChildCount(); i++) {
-								var item = widgetUI.getChildren().getItem(i);
-								if (key == 'moreData') {
-									jQuery.each(val, function(keyMore, valMore) {
-										for (var j=0; j < widgetUI.getChildCount(); j++) {
-											var itemMore = widgetUI.getChildren().getItem(j);
-											if (itemMore.getAttribute('class') == 'field ' + keyMore) {
-												itemMore.setHtml(valMore);
-												break;
-											}
-										}
-									});
-								} else {
-									if (item.getAttribute('class') == 'field ' + key) {
-										item.setHtml(val);
-										break;
-									}
-								}
-							}
-						});					
-					},
-
-					error : function(jqXHR, status) {
-						// do nothing
-					}
-				});
+				updateContent(this);				
 			}}
 		);
 
@@ -128,3 +81,60 @@ CKEDITOR.plugins.add( 'identitycard', {
 		});
 	}	
 } );
+
+function updateContent(widget) {
+	var widgetUI = widget.element;				
+	var widgetData = widget.data;
+	widgetUI.setAttribute('rel', widget.data.userId);
+
+	$.ajax({
+		type : "GET",
+		url : '/silverpeas/services/profile/users/' + $(widgetUI).attr('rel') + '?extended=true',
+		dataType : "json",
+		cache : false,
+		success : function(user, status, jqXHR) {
+			for (var i=0; i < widgetUI.getChildCount(); i++) {
+				var item = widgetUI.getChildren().getItem(i);
+				if (item.type == 1) {
+					if (item.getAttribute('class') == 'field userToZoom') {
+						item.setAttribute('rel', widgetData.userId);
+						item.setHtml(user.firstName + ' ' + user.lastName);								
+
+					} else if (item.getAttribute('class') == 'avatar') {
+						var avatar = item.getChildren().getItem(0);
+						avatar.setAttribute('src', user.avatar);
+					}
+				}
+			}
+			jQuery.each(user, function(key, val) {
+				for (var i=0; i < widgetUI.getChildCount(); i++) {
+					var item = widgetUI.getChildren().getItem(i);
+					if (item.type == 1) {
+						if (key == 'moreData') {
+							jQuery.each(val, function(keyMore, valMore) {
+								for (var j=0; j < widgetUI.getChildCount(); j++) {
+									var itemMore = widgetUI.getChildren().getItem(j);
+									if (itemMore.type == 1) {
+										if (itemMore.getAttribute('class') == 'field ' + keyMore) {
+											itemMore.setHtml(valMore);
+											break;
+										}
+									}
+								}
+							});
+						} else {
+							if (item.getAttribute('class') == 'field ' + key) {
+								item.setHtml(val);
+								break;
+							}
+						}
+					}
+				}
+			});					
+		},
+
+		error : function(jqXHR, status) {
+			// do nothing
+		}
+	});
+}
