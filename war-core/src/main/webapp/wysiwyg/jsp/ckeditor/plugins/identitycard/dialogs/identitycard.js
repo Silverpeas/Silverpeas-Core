@@ -43,7 +43,7 @@ CKEDITOR.dialog.add( 'identitycard', function( editor ) {
 						commit: function( widget ) {
 							widget.setData( 'userId', this.getValue() );
 						}
-					},
+					},					
 					{
 						type : 'html',
 						html : '<form name="myForm"><label title="user" class="txtlibform" for="user">'+editor.lang.identitycard.user+'</label><div class="fieldInput"><input type="hidden" value="" name="user" id="user"><input type="text" value="" name="user$$name" id="user_name" disabled="disabled">&nbsp;<a onclick="javascript:SP_openWindow(\'/silverpeas/RselectionPeasWrapper/jsp/open?formName=myForm&amp;elementId=user&amp;elementName=user_name&amp;selectedUser=\',\'selectUser\',800,600,\'\');" href="#"><img width="15" border="0" align="top" height="15" title="Sélectionner un utilisateur" alt="Sélectionner un utilisateur" src="/silverpeas/util/icons/user.gif"></a>&nbsp;<a onclick="javascript:document.myForm.user.value=\'\';document.myForm.user$$name.value=\'\';" href="#"><img width="15" border="0" align="top" height="15" title="Réinitialiser le champ" alt="Réinitialiser le champ" src="/silverpeas/util/icons/delete.gif"></a></div></form>',

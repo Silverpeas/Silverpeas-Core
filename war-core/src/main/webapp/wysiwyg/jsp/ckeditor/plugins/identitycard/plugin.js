@@ -51,7 +51,7 @@ CKEDITOR.plugins.add( 'identitycard', {
 			// Define the template of a new Identity Card widget.
 			template:
 				'<div class="user-card">' +				
-					'<div class="avatar">avatar</div>' +
+					'<div class="avatar"><img src="" alt="avatar"/></div>' +
 					'<span class="field userToZoom">firstName lastName</span>' +
 					'<span class="field eMail">eMail</span>' +
 					'<span class="field title">title</span>' + 
@@ -65,18 +65,59 @@ CKEDITOR.plugins.add( 'identitycard', {
 
 			init: function() {
 				var userId = this.element.getAttribute( 'rel' );
-			    this.setData( 'userId', userId );
+				this.setData( 'userId', userId );
 			},
 
 			data: function() {
-				this.element.setAttribute('rel', this.data.userId);
-				for (var i=0; i < this.element.getChildCount(); i++) {
-					var item = this.element.getChildren().getItem(i);
-					if (item.getAttribute('class') == 'field userToZoom') {
-						item.setAttribute('rel', this.data.userId);
-						break;
+				
+				var widgetUI = this.element;				
+				var widgetData = this.data;
+				widgetUI.setAttribute('rel', this.data.userId);
+
+				$.ajax({
+					type : "GET",
+					url : '/silverpeas/services/profile/users/' + $(widgetUI).attr('rel') + '?extended=true',
+					dataType : "json",
+					cache : false,
+					success : function(user, status, jqXHR) {
+						for (var i=0; i < widgetUI.getChildCount(); i++) {
+							var item = widgetUI.getChildren().getItem(i);
+							if (item.getAttribute('class') == 'field userToZoom') {
+								item.setAttribute('rel', widgetData.userId);
+								item.setHtml(user.firstName + ' ' + user.lastName);								
+
+							} else if (item.getAttribute('class') == 'avatar') {
+								var avatar = item.getChildren().getItem(0);
+								avatar.setAttribute('src', user.avatar);
+							}
+						}
+						jQuery.each(user, function(key, val) {					
+							for (var i=0; i < widgetUI.getChildCount(); i++) {
+								var item = widgetUI.getChildren().getItem(i);
+								if (key == 'moreData') {
+									jQuery.each(val, function(keyMore, valMore) {
+										for (var j=0; j < widgetUI.getChildCount(); j++) {
+											var itemMore = widgetUI.getChildren().getItem(j);
+											if (itemMore.getAttribute('class') == 'field ' + keyMore) {
+												itemMore.setHtml(valMore);
+												break;
+											}
+										}
+									});
+								} else {
+									if (item.getAttribute('class') == 'field ' + key) {
+										item.setHtml(val);
+										break;
+									}
+								}
+							}
+						});					
+					},
+
+					error : function(jqXHR, status) {
+						// do nothing
 					}
-				}
+				});
 			}}
 		);
 
