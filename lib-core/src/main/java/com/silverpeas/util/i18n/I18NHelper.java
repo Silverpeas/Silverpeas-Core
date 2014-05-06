@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class I18NHelper {
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
   public final static Map<String, List<I18NLanguage>> allLanguages =
-      new HashMap<String, List<I18NLanguage>>();
+      new LinkedHashMap<String, List<I18NLanguage>>();
 
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
