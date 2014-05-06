@@ -311,9 +311,59 @@ public class AttachmentServiceTest {
     assertThat(content, is(notNullValue()));
     assertThat(content.length, is("This is a test".getBytes(Charsets.UTF_8).length));
     assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
+
     out = new ByteArrayOutputStream();
     lang = "fr";
     instance.getBinaryContent(out, pk, lang);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(14));
+    assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, -1);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(14));
+    assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, 0);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(0));
+    assertThat(new String(content, Charsets.UTF_8), is(""));
+
+    long length = "This".length();
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, -10, length);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(4));
+    assertThat(new String(content, Charsets.UTF_8), is("This"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, length);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(4));
+    assertThat(new String(content, Charsets.UTF_8), is("This"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 5, length);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(4));
+    assertThat(new String(content, Charsets.UTF_8), is("is a"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, 500000000);
     assertThat(out, is(notNullValue()));
     content = out.toByteArray();
     assertThat(content, is(notNullValue()));
@@ -526,9 +576,14 @@ public class AttachmentServiceTest {
   public void testRemoveContent() {
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, "fr");
     checkFrenchSimpleDocument(document);
+    File pathToVerify = new File(document.getAttachmentPath()).getParentFile();
+    assertThat(pathToVerify.exists(), is(true));
     instance.removeContent(document, "fr", false);
     document = instance.searchDocumentById(existingFrDoc, "fr");
     assertThat(document, is(nullValue()));
+    assertThat(pathToVerify.exists(), is(false));
+    assertThat(pathToVerify.getParentFile().getParentFile().exists(), is(false));
+    assertThat(pathToVerify.getParentFile().getParentFile().getParentFile().exists(), is(true));
 
     document = instance.searchDocumentById(existingEnDoc, "en");
     checkEnglishSimpleDocument(document);

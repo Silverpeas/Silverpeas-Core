@@ -31,6 +31,7 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.util.jcr.AbstractJcrConverter;
 
 import javax.jcr.Node;
@@ -133,9 +134,10 @@ class DocumentConverter extends AbstractJcrConverter {
    * @return a collection of SimpleDocument.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> convertNodeIterator(NodeIterator iter, String language) throws
-      RepositoryException {
-    List<SimpleDocument> result = new ArrayList<SimpleDocument>((int) iter.getSize());
+  public SimpleDocumentList<SimpleDocument> convertNodeIterator(NodeIterator iter, String language)
+      throws RepositoryException {
+    SimpleDocumentList<SimpleDocument> result =
+        new SimpleDocumentList<SimpleDocument>((int) iter.getSize()).setQueryLanguage(language);
     while (iter.hasNext()) {
       result.add(convertNode(iter.nextNode(), language));
     }
@@ -191,9 +193,16 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   public void fillNode(SimpleDocument document, Node documentNode) throws RepositoryException {
+    fillNode(document, documentNode, false);
+  }
+
+  public void fillNode(SimpleDocument document, Node documentNode, boolean skipAttachmentContent)
+      throws RepositoryException {
     setDocumentNodeProperties(document, documentNode);
-    Node attachmentNode = getAttachmentNode(document.getFile().getNodeName(), documentNode);
-    attachmentConverter.fillNode(document.getFile(), attachmentNode);
+    if (!skipAttachmentContent) {
+      Node attachmentNode = getAttachmentNode(document.getFile().getNodeName(), documentNode);
+      attachmentConverter.fillNode(document.getFile(), attachmentNode);
+    }
   }
 
   private void setDocumentNodeProperties(SimpleDocument document, Node documentNode) throws

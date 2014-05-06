@@ -23,30 +23,27 @@
  */
 package org.silverpeas.attachment.mock;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Named;
-
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.Default;
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.Default;
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.mockito.Mockito;
+import javax.inject.Named;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Default
 @Service
@@ -80,6 +77,12 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   @Override
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
     realService.getBinaryContent(output, pk, lang);
+  }
+
+  @Override
+  public void getBinaryContent(final OutputStream output, final SimpleDocumentPK pk,
+      final String lang, final long contentOffset, final long contentLength) {
+    realService.getBinaryContent(output, pk, lang, contentOffset, contentLength);
   }
 
   @Override
@@ -153,7 +156,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     return realService.listDocumentsByForeignKey(foreignKey, lang);
   }
 
@@ -242,8 +246,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-      DocumentType type, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
+      WAPrimaryKey foreignKey, DocumentType type, String lang) {
     return realService.listDocumentsByForeignKeyAndType(foreignKey, type, lang);
   }
 
@@ -263,7 +267,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     return realService.listAllDocumentsByForeignKey(foreignKey, lang);
   }
 

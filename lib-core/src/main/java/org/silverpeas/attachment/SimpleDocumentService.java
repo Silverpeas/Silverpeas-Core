@@ -30,6 +30,7 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -40,6 +41,26 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.attachment.webdav.WebdavRepository;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,24 +74,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 /**
  *
@@ -343,7 +346,8 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -357,7 +361,8 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -457,25 +462,39 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
-      repository.removeContent(session, document.getPk(), lang);
+      boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         webdavRepository.deleteAttachmentNode(session, document);
       }
       String userId = document.getCreatedBy();
       if ((userId != null) && (userId.length() > 0) && invokeCallback) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-            document.getInstanceId(), document.getForeignId());
+        if (existsOtherContents) {
+          CallBackManager callBackManager = CallBackManager.get();
+          callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
+              document.getInstanceId(), document.getForeignId());
+        } else {
+          AttachmentNotificationService.getService().notifyOnDeletionOf(document);
+        }
       }
       deleteIndex(document, document.getLanguage());
       session.save();
       SimpleDocument finalDocument = document;
       if (requireLock) {
-        finalDocument = repository.unlock(session, document, false);
-        repository.duplicateContent(document, finalDocument);
+        finalDocument = repository.unlockFromContentDeletion(session, document);
+        if (existsOtherContents) {
+          repository.duplicateContent(document, finalDocument);
+        }
       }
       finalDocument.setLanguage(lang);
-      FileUtils.deleteQuietly(new File(finalDocument.getAttachmentPath()));
+      final File fileToDelete;
+      if (!existsOtherContents) {
+        fileToDelete =
+            new File(finalDocument.getDirectoryPath(null)).getParentFile().getParentFile();
+      } else {
+        fileToDelete = new File(finalDocument.getAttachmentPath());
+      }
+      FileUtils.deleteQuietly(fileToDelete);
+      FileUtil.deleteEmptyDir(fileToDelete.getParentFile());
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
@@ -606,12 +625,18 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
+    getBinaryContent(output, pk, lang, 0, -1);
+  }
+
+  @Override
+  public void getBinaryContent(final OutputStream output, final SimpleDocumentPK pk,
+      final String lang, final long contentOffset, final long contentLength) {
     Session session = null;
     InputStream in = null;
     try {
       session = BasicDaoFactory.getSystemSession();
       in = repository.getContent(session, pk, lang);
-      IOUtils.copy(in, output);
+      IOUtils.copyLarge(in, output, contentOffset, contentLength);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (RepositoryException ex) {
@@ -871,14 +896,15 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-      DocumentType type, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
+      WAPrimaryKey foreignKey, DocumentType type, String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      return repository.listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(),
-          foreignKey.
-          getId(), type, lang);
+      return repository
+          .listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
+                  getId(), type, lang
+          );
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {

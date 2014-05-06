@@ -25,12 +25,6 @@ package org.silverpeas.attachment.mock;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
@@ -38,7 +32,15 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A wrapper of a mock of an {@code AttachmentService} instance dedicated to the tests. This wrapper
@@ -63,6 +65,12 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   @Override
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
     mock.getBinaryContent(output, pk, lang);
+  }
+
+  @Override
+  public void getBinaryContent(final OutputStream output, final SimpleDocumentPK pk,
+      final String lang, final long contentOffset, final long contentLength) {
+    mock.getBinaryContent(output, pk, lang, contentOffset, contentLength);
   }
 
   @Override
@@ -173,18 +181,20 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     return mock.listDocumentsByForeignKey(foreignKey, lang);
   }
 
   @Override
-  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     return mock.listAllDocumentsByForeignKey(foreignKey, lang);
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-      DocumentType type, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
+      WAPrimaryKey foreignKey, DocumentType type, String lang) {
     return mock.listDocumentsByForeignKeyAndType(foreignKey, type, lang);
   }
 
