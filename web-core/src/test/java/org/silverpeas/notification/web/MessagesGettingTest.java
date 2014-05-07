@@ -23,6 +23,8 @@
  */
 package org.silverpeas.notification.web;
 
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +36,7 @@ import org.silverpeas.notification.message.MessageManager;
 import javax.ws.rs.core.MediaType;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.silverpeas.notification.web.MessageContainerEntityMatcher.matches;
@@ -47,6 +50,8 @@ import static org.silverpeas.notification.web.NotificationTestResources.SPRING_C
 public class MessagesGettingTest extends ResourceGettingTest<NotificationTestResources> {
 
   private String sessionKey;
+  private SessionInfo sessionInfo;
+  private long lastUserAccessTime;
   private String registredKeyOfMessages;
   private MessageContainer expectedMessageContainer;
 
@@ -57,13 +62,15 @@ public class MessagesGettingTest extends ResourceGettingTest<NotificationTestRes
   @Before
   public void prepareTestResources() {
     sessionKey = authenticate(aUser());
+    sessionInfo =
+        SessionManagementFactory.getFactory().getSessionManagement().getSessionInfo(sessionKey);
+    lastUserAccessTime = sessionInfo.getLastAccessTimestamp();
     MessageManager.initialize();
     registredKeyOfMessages = MessageManager.getRegistredKey();
     expectedMessageContainer = MessageManager.getMessageContainer(registredKeyOfMessages);
   }
 
   @Override
-  @After
   public void tearDown() throws Exception {
     super.tearDown();
     MessageManager.destroy();
@@ -78,6 +85,7 @@ public class MessagesGettingTest extends ResourceGettingTest<NotificationTestRes
     MessageManager.addError("error 3");
     assertThat(expectedMessageContainer.getMessages(), not(emptyIterable()));
     assertEntity(getAt(aResourceURI(), MessageContainerEntity.class));
+    assertThat(lastUserAccessTime, is(sessionInfo.getLastAccessTimestamp()));
   }
 
   @Override
@@ -85,6 +93,7 @@ public class MessagesGettingTest extends ResourceGettingTest<NotificationTestRes
     MessageContainerEntity entity = getAt(anUnexistingResourceURI(), getWebEntityClass());
     assertNotNull(entity);
     assertThat(entity.getMessages(), emptyIterable());
+    assertThat(lastUserAccessTime, is(sessionInfo.getLastAccessTimestamp()));
   }
 
   @Override
