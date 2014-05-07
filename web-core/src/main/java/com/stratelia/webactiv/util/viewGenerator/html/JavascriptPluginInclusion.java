@@ -42,13 +42,13 @@ import java.text.MessageFormat;
  * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
- *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
+  private static final String stylesheetPath = URLManager.getApplicationURL() +
+      "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
@@ -115,6 +115,7 @@ public class JavascriptPluginInclusion {
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
   private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
   private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
+  private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
 
   static {
     ResourceLocator wysiwygSettings = new ResourceLocator(
@@ -124,7 +125,6 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
-   *
    * @param src
    * @return
    */
@@ -134,7 +134,6 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
-   *
    * @param content
    * @return
    */
@@ -144,17 +143,16 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of link instantiation.
-   *
    * @param href
    * @return
    */
   private static link link(String href) {
     return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
   }
-  
+
   public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
-	  xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
-	  return xhtml;
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
+    return xhtml;
   }
 
   public static ElementContainer includeAngular(final ElementContainer xhtml, String language) {
@@ -272,10 +270,10 @@ public class JavascriptPluginInclusion {
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-        .getString("GML.platform.responsibles", "")).append("';");
+            .getString("GML.platform.responsibles", "")).append("';");
     responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-        .getString("GML.notification.send", "")).append("';");
+            .getString("GML.notification.send", "")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }
@@ -364,4 +362,8 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static ElementContainer includeLang(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
+    return xhtml;
+  }
 }
