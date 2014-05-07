@@ -138,5 +138,9 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Lightweight slideshow. Easy to use but not only a few features.
    */
-  lightslideshow
+  lightslideshow,
+  /**
+   * Silverpeas plugin to change user language
+   */
+  lang
 }
