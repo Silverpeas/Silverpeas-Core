@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.directory.servlets;
 
 import com.silverpeas.directory.DirectoryException;
@@ -74,6 +73,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       if (function.equalsIgnoreCase("Main")) {
 
         String groupId = request.getParameter("GroupId");
+        String groupIds = request.getParameter("GroupIds");
         String spaceId = request.getParameter("SpaceId");
         String domainId = request.getParameter("DomainId");
         String domainIds = request.getParameter("DomainIds");
@@ -86,6 +86,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
+        } else if (StringUtil.isDefined(groupIds)) {
+          List<String> lGroupIds = new ArrayList<String>();
+          StringTokenizer tokenizer = new StringTokenizer(groupIds, ",");
+          while (tokenizer.hasMoreTokens()) {
+            lGroupIds.add(tokenizer.nextToken());
+          }
+          users = directorySC.getAllUsersByGroups(lGroupIds);
         } else if (StringUtil.isDefined(spaceId)) {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (StringUtil.isDefined(domainId)) {
@@ -185,12 +192,12 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     }
 
     HttpSession session = request.getSession();
-    GraphicElementFactory gef =
-        (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+        "SessionGraphicElementFactory");
     Pagination pagination = gef.getPagination(users.size(), directorySC.getElementsByPage(), index);
-    List<Member> membersToDisplay =
-        toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
-            getLastItemIndex()));
+    List<Member> membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(),
+        pagination.
+        getLastItemIndex()));
 
     // setting one fragment per user displayed
     request.setAttribute("UserFragments", directorySC.getFragments(membersToDisplay));
