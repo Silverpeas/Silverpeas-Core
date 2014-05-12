@@ -27,6 +27,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
@@ -111,6 +112,9 @@ public class JavascriptPluginInclusion {
   private static final String RATEIT_CSS = "rateit/rateit.css";
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
+  
+  private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
+  
 
   static {
     ResourceLocator wysiwygSettings = new ResourceLocator(
@@ -146,6 +150,11 @@ public class JavascriptPluginInclusion {
    */
   private static link link(String href) {
     return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
+  }
+  
+  public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
+	  xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
+	  return xhtml;
   }
 
   public static ElementContainer includeAngular(final ElementContainer xhtml, String language) {
@@ -252,7 +261,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
-    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));    
     return xhtml;
   }
 
