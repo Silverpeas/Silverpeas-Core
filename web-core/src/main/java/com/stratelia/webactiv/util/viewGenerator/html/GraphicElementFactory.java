@@ -65,6 +65,7 @@ import org.apache.ecs.ElementContainer;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -104,7 +105,7 @@ public class GraphicElementFactory {
   private MainSessionController mainSessionController = null;
   private String spaceId = null;
   private boolean componentMainPage = false;
-  public static final String defaultLookName = "Initial";
+  public static final String defaultLookName = "Initial"; 
   protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
@@ -359,10 +360,13 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
+        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");    
     code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append("\n");
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append("\n");
     code.append(includeNotifier(new ElementContainer()).toString()).append("\n");
+    code.append(includeUserZoom(new ElementContainer()).toString()).append("\n");    
+    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append("\n");
+
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
