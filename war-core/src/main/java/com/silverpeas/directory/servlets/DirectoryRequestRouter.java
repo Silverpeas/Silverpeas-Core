@@ -40,6 +40,7 @@ import org.silverpeas.servlet.HttpRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -87,22 +88,14 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
         } else if (StringUtil.isDefined(groupIds)) {
-          List<String> lGroupIds = new ArrayList<String>();
-          StringTokenizer tokenizer = new StringTokenizer(groupIds, ",");
-          while (tokenizer.hasMoreTokens()) {
-            lGroupIds.add(tokenizer.nextToken());
-          }
+          List<String> lGroupIds = Arrays.asList(StringUtil.split(groupIds, ','));
           users = directorySC.getAllUsersByGroups(lGroupIds);
         } else if (StringUtil.isDefined(spaceId)) {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (StringUtil.isDefined(domainId)) {
           users = directorySC.getAllUsersByDomain(domainId);
         } else if (StringUtil.isDefined(domainIds)) {
-          List<String> lDomainIds = new ArrayList<String>();
-          StringTokenizer tokenizer = new StringTokenizer(domainIds, ",");
-          while (tokenizer.hasMoreTokens()) {
-            lDomainIds.add(tokenizer.nextToken());
-          }
+          List<String> lDomainIds = Arrays.asList(StringUtil.split(domainIds, ','));
           users = directorySC.getAllUsersByDomains(lDomainIds);
         } else if (StringUtil.isDefined(userId)) {
           users = directorySC.getAllContactsOfUser(userId);

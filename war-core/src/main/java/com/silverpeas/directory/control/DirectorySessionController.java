@@ -76,8 +76,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String currentView = "tous";
   public static final int DIRECTORY_DEFAULT = 0; // all users
   public static final int DIRECTORY_MINE = 1; // contacts of online user
-  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another
-  // user
+  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
   public static final int DIRECTORY_OTHER = 3; // contact of another user
   public static final int DIRECTORY_GROUP = 4; // all users of group
   public static final int DIRECTORY_DOMAIN = 5; // all users of domain
@@ -407,8 +406,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds = relationShipService.getAllCommonContactsIds(Integer.parseInt(
-          getUserId()), Integer.
-          parseInt(userId));
+          getUserId()), Integer.parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
