@@ -102,4 +102,9 @@ public class SimpleDocumentPK extends WAPrimaryKey {
         append(getComponentName()).append(", oldSilverpeasId=").append(oldSilverpeasId).append('}');
     return buffer.toString();
   }
+
+  @Override
+  public SimpleDocumentPK clone() {
+    return (SimpleDocumentPK) super.clone();
+  }
 }

@@ -33,7 +33,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @author Georgy Shakirin
  * @version 1.0
  */
-public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Cloneable {
+public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = -2771550937468713859L;
 
@@ -128,16 +128,5 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
    */
   public int hashCode() {
     return (getId() != null) ? getId().hashCode() : 0;
-  }
-
-  /**
-   * Support Cloneable Interface
-   */
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
-    }
   }
 }
