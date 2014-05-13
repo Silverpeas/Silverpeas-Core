@@ -22,8 +22,10 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CKEDITOR.plugins.setLang( 'identitycard', 'fr', {
-	title: 'Edit Identity Card',
-	userId: 'User id',
-	user: 'User :'
+CKEDITOR.plugins.setLang( 'identitycard', 'en', {
+  identitycard: 'Insert User ID card',
+	  title: 'Edit ID Card',
+	  userId: 'User id',
+	  user: 'User :',
+	  select: 'Select a user'
 } );

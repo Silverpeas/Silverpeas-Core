@@ -24,55 +24,54 @@
 
 // Register the plugin within the editor.
 CKEDITOR.plugins.add( 'userzoom', {
-	// This plugin requires the Widgets System defined in the 'widget' plugin.
-	requires: 'widget',
+  // This plugin requires the Widgets System defined in the 'widget' plugin.
+	  requires: 'widget',
 
-	// Register the icon used for the toolbar button. It must be the same
-	// as the name of the widget.
-	icons: 'userzoom',
+	  // Register the icon used for the toolbar button. It must be the same
+	  // as the name of the widget.
+	  icons: 'userzoom',
 
-	lang: 'en,fr',
+	  lang: 'en,fr',
 
-	// The plugin initialization logic goes inside this method.
-	init: function( editor ) {
-		// Register the editing dialog.
-		CKEDITOR.dialog.add( 'userzoom', this.path + 'dialogs/userzoom.js' );
+	  // The plugin initialization logic goes inside this method.
+	  init: function( editor ) {
+	    // Register the editing dialog.
+	    CKEDITOR.dialog.add( 'userzoom', this.path + 'dialogs/userzoom.js' );
 
-		// Register the userzoom widget.
-		editor.widgets.add( 'userzoom', {
+	    // Register the userzoom widget.
+	    editor.widgets.add( 'userzoom', {
 			
-			upcast: function( element ) {
+	      upcast: function( element ) {
         			return element.name == 'span' && element.hasClass( 'userToZoom' );
-			},
+	      },
 
-			// Minimum HTML which is required by this widget to work.
-			requiredContent: 'span(userzoom)',			
+	      // Minimum HTML which is required by this widget to work.
+	      requiredContent: 'span(userzoom)',			
 
-			// Define the template of a new User Zoom widget.
-			template:
-				'<span class="userToZoom">userzoom' +
-				'</span>',
+	      // Define the template of a new User Zoom widget.
+	      template:
+	        '<span class="userToZoom">userzoom' +
+	        '</span>',
 			
-			dialog: 'userzoom',
+	      dialog: 'userzoom',
+	      draggable: true,
 
-			draggable: true,
-
-			init: function() {
-				var userId = this.element.getAttribute( 'rel' );
-				var userName = this.element.getHtml();
+	      init: function() {
+	        var userId = this.element.getAttribute( 'rel' );
+	        var userName = this.element.getHtml();
 			        this.setData( 'userId', userId );				
 			        this.setData( 'userName', userName );
-			},
+	      },
 
-			data: function() {
-				this.element.setAttribute("rel",this.data.userId);
-				this.element.setHtml(this.data.userName);}
-		} );
+	      data: function() {
+	        this.element.setAttribute("rel",this.data.userId);
+	        this.element.setHtml(this.data.userName);
+	      }
+	    });
 
-		editor.ui.addButton( 'userzoom',
-		{
-		    label : 'User Zoom',
-		    command : 'userzoom',
-		});
-	}	
-} );
+	    editor.ui.addButton( 'userzoom', 		{
+		      label : editor.lang.userzoom.userzoom,
+		      command : 'userzoom',
+	    });
+	  }	
+});

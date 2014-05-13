@@ -22,9 +22,11 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CKEDITOR.plugins.setLang( 'userzoom', 'fr', {
-	title: 'Edit User Zoom',
-	userId: 'User id',
-	user: 'User :',
-	userName : 'User name : '
+CKEDITOR.plugins.setLang( 'userzoom', 'en', {
+  userzoom: 'Insert User full name',
+	  title: 'Edit User full name',
+	  userId: 'User id',
+	  user: 'User :',
+	  userName: 'User name : ',
+	  select: 'Select a user'
 } );

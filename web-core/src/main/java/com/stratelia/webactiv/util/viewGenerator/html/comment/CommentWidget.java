@@ -98,7 +98,6 @@ public abstract class CommentWidget extends TagSupport {
         addElement(setUpJQueryCommentPlugin());
 
     xhtmlcontainer.addElement(comments).addElement(checkForm);
-    JavascriptPluginInclusion.includeUserZoom(xhtmlcontainer);
     JavascriptPluginInclusion.includeComment(xhtmlcontainer);
     xhtmlcontainer.addElement(initCommentPlugin);
     return xhtmlcontainer;

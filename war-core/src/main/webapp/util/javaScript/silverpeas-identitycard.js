@@ -26,30 +26,29 @@
  * Populate all identity card in page.
  */
 jQuery(document).ready(function() {
-	jQuery('.user-card').each(function(index, value) {
-		$.ajax({
-			type : "GET",
-			url : '/silverpeas/services/profile/users/' + $(value).attr('rel') + '?extended=true',
-			dataType : "json",
-			cache : false,
-			success : function(user, status, jqXHR) {
-				$(value).find('.userToZoom').text(user.firstName + ' ' + user.lastName);
-				jQuery.each(user, function(key, val) {
-					if (key == 'avatar') {
-						$(value).find('.' + key + ' img:first').get(0).setAttribute('src', val);
-					} else if (key == 'moreData') {
-						jQuery.each(val, function(keyMore, valMore) {
-							$(value).find('.' + keyMore).text(valMore);
-						});
-					} else  {
-						$(value).find('.' + key).text(val);
-					}
-				});
-			},
-
-			error : function(jqXHR, status) {
-				// do nothing
-			}
-		});
-	})
+	  jQuery('.user-card').each(function(index, value) {
+	    $.ajax({
+	      type : "GET",
+	      url : '/silverpeas/services/profile/users/' + $(value).attr('rel') + '?extended=true',
+	      dataType : "json",
+	      cache : false,
+	      success : function(user, status, jqXHR) {
+	        $(value).find('.userToZoom').text(user.firstName + ' ' + user.lastName);
+	        jQuery.each(user, function(key, val) {
+	          if (key == 'avatar') {
+	            $(value).find('.' + key + ' img:first').get(0).setAttribute('src', val);
+	          } else if (key == 'moreData') {
+	            jQuery.each(val, function(keyMore, valMore) {
+	              $(value).find('.' + keyMore).text(valMore);
+	            });
+	          } else  {
+	            $(value).find('.' + key).text(val);
+	          }
+	        });
+	      },
+	      error : function(jqXHR, status) {
+	        // do nothing
+	      }
+	    });
+	  })
 });

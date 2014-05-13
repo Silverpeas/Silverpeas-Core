@@ -23,8 +23,10 @@
  */
 
 CKEDITOR.plugins.setLang( 'userzoom', 'fr', {
-	title: 'Editer zoom utilisateur',
-	userId: 'Id utilisateur',
-	user: 'Utilisateur :',
-	userName: 'Nom utilisateur :'
+	  userzoom: 'Insérer un nom d\'utilisateur',
+	  title: 'Editer un nom d\'utilisateur',
+	  userId: 'Id utilisateur',
+	  user: 'Utilisateur :',
+	  userName: 'Nom utilisateur :',
+	  select: 'Sélectionner un utilisateur'
 } );

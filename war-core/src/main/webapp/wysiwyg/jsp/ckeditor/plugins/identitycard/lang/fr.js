@@ -23,7 +23,9 @@
  */
 
 CKEDITOR.plugins.setLang( 'identitycard', 'fr', {
-	title: 'Editer carte d\'identité',
-	userId: 'Id utilisateur',
-	user: 'Utilisateur :'
+  identitycard: 'Insérer une carte d\'identité',
+	  title: 'Editer la carte d\'identité',
+	  userId: 'Id utilisateur',
+	  user: 'Utilisateur :',
+	  select: 'Sélectionner un utilisateur'
 } );
