@@ -24,14 +24,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * This class represents a document that is versioned. It exposes all data of a versioned
+ * document from the master version to the first version.
+ * To obtain the master version, please use {@link #getVersionMaster()} method (must return the
+ * same instance as the one of "this").
+ * To check if the current instance is indexed on master version,
+ * please use {@link #isVersionMaster()} method.
  * @author ehugonnet
  */
 public class HistorisedDocument extends SimpleDocument {
   private static final long serialVersionUID = -5850838926035340609L;
 
-  private List<SimpleDocument> history;
-  private List<SimpleDocument> functionalHistory;
+  private List<SimpleDocumentVersion> history;
+  private List<SimpleDocumentVersion> functionalHistory;
 
   public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order, SimpleAttachment file) {
     super(pk, foreignId, order, true, file);
@@ -47,16 +52,13 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   public HistorisedDocument(SimpleDocument doc) {
-    super(doc.getPk(), doc.getForeignId(), doc.getOrder(), true, doc.getEditedBy(), doc.
-        getReservation(), doc.getAlert(), doc.getExpiry(), doc.getComment(), doc.getFile());
-    setRepositoryPath(doc.getRepositoryPath());
-    setVersionIndex(doc.getVersionIndex());
-    setVersionMaster(doc.getVersionMaster());
-    setMajorVersion(doc.getMajorVersion());
-    setMinorVersion(doc.getMinorVersion());
-    setStatus(doc.getStatus());
-    setPublicDocument(doc.isPublic());
-    setNodeName(doc.getNodeName());
+    super(doc);
+    setVersionMaster(this);
+  }
+
+  @Override
+  public HistorisedDocument getVersionMaster() {
+    return (HistorisedDocument) super.getVersionMaster();
   }
 
   @Override
@@ -68,19 +70,34 @@ public class HistorisedDocument extends SimpleDocument {
    * Returns technical history (as the JCR)
    * @return
    */
-  public List<SimpleDocument> getHistory() {
+  public List<SimpleDocumentVersion> getHistory() {
     return history;
+  }
+
+  /**
+   * Gets from the history the version identified by the given identifier.
+   * @param id the identifier of the searched version.
+   * @return the version of the simple document which the identifier is the one specified,
+   * null otherwise.
+   */
+  public SimpleDocumentVersion getVersionIdentifiedBy(String id) {
+    for (SimpleDocumentVersion version : history) {
+      if (version.getId().equals(id)) {
+        return version;
+      }
+    }
+    return null;
   }
 
   /**
    * Returns functional history based on versions and indexes.
    * @return
    */
-  public List<SimpleDocument> getFunctionalHistory() {
+  public List<SimpleDocumentVersion> getFunctionalHistory() {
     if (functionalHistory == null && history != null) {
-      functionalHistory = new ArrayList<SimpleDocument>(history.size());
-      String lastVersion = getVersionMaster().getVersion();
-      for (SimpleDocument currentDocumentVersion : history) {
+      functionalHistory = new ArrayList<SimpleDocumentVersion>(history.size());
+      String lastVersion = getVersion();
+      for (SimpleDocumentVersion currentDocumentVersion : history) {
         String currentVersion = currentDocumentVersion.getVersion();
         if (!currentVersion.equals(lastVersion) &&
             currentDocumentVersion.getVersionIndex() < getVersionIndex()) {
@@ -92,7 +109,7 @@ public class HistorisedDocument extends SimpleDocument {
     return functionalHistory;
   }
 
-  public void setHistory(List<SimpleDocument> history) {
+  public void setHistory(List<SimpleDocumentVersion> history) {
     this.history = history;
   }
 
@@ -119,10 +136,15 @@ public class HistorisedDocument extends SimpleDocument {
     }
     for (SimpleDocument document : getFunctionalHistory()) {
       if (document.isPublic()) {
-        HistorisedDocument historisedDocument = new HistorisedDocument(document);
-        historisedDocument.setHistory(history);
-        return historisedDocument;
+        return document;
       }
+    }
+    return null;
+  }
+
+  public SimpleDocumentVersion getPreviousVersion() {
+    if (!getHistory().isEmpty()) {
+      return getHistory().get(0);
     }
     return null;
   }

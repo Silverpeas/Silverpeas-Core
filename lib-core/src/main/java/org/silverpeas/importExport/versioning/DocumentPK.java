@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @version 1.0
  */
 
-public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable {
+public class DocumentPK extends WAPrimaryKey implements Serializable {
   private static final long serialVersionUID = -93533696421871014L;
 
   /**
@@ -93,18 +93,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
     builder.append("(id = ").append(getId()).append(", space = ").append(getSpace());
     builder.append(", componentName = ").append(getComponentName()).append(")");
     return builder.toString();
-  }
-
-  /**
-   * Support Cloneable Interface
-   */
-  @Override
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
-    }
   }
 
   @Override
