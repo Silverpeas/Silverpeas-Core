@@ -37,6 +37,7 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.util.jcr.NodeIterable;
 import org.silverpeas.util.jcr.PropertyIterable;
@@ -229,6 +230,25 @@ public class DocumentRepository {
     targetDoc.setUpdatedBy(null);
     targetDoc.computeNodeName();
     pk = createDocument(session, targetDoc);
+    if (I18NHelper.isI18nActivated()) {
+      // The first version can have several language contents.
+      Set<String> checkedLanguages = new HashSet<String>();
+      checkedLanguages.add(targetDoc.getLanguage());
+      for (String language : I18NHelper.getAllSupportedLanguages()) {
+        if (!checkedLanguages.contains(language)) {
+          HistorisedDocument temp =
+              (HistorisedDocument) findDocumentById(session, document.getPk(), language);
+          List<SimpleDocumentVersion> versions = temp.getHistory();
+          if (!versions.isEmpty()) {
+            SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
+            if (!checkedLanguages.contains(firstVersion.getLanguage())) {
+              addContent(session, targetDoc.getPk(), firstVersion.getFile());
+            }
+          }
+          checkedLanguages.add(language);
+        }
+      }
+    }
     unlock(session, targetDoc, false);
     VersionManager versionManager = session.getWorkspace().getVersionManager();
     String currentVersion = targetDoc.getVersion();
