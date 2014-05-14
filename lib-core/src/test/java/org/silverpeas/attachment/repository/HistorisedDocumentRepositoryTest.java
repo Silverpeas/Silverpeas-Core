@@ -33,6 +33,7 @@ import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -70,6 +71,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -155,8 +157,8 @@ public class HistorisedDocumentRepositoryTest {
     repository.shutdown();
     context.close();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
-    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
-        + "temp_jackrabbit"));
+    FileUtils.deleteQuietly(
+        new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar + "temp_jackrabbit"));
   }
 
   /**
@@ -1684,6 +1686,362 @@ public class HistorisedDocumentRepositoryTest {
   }
 
   /**
+   * Test of moveDocument method, of class DocumentRepository.
+   * @throws Exception
+   */
+  @Test
+  public void testMoveDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
+    FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath("")));
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      Map<String, Date> creationDateByLanguage = new HashMap<String, Date>();
+      creationDateByLanguage.put("en", attachment.getCreated());
+      String foreignId = "node78";
+      SimpleDocument initialDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      initialDocument.setContentType(MimeTypes.PDF_MIME_TYPE);
+      initialDocument.setPublicDocument(false);
+      createVersionedDocument(session, initialDocument, content);
+      // French content before version
+      initialDocument.setLanguage("fr");
+      initialDocument.setFile(createFrenchVersionnedAttachment());
+      creationDateByLanguage.put("fr", initialDocument.getFile().getCreated());
+      documentRepository.updateDocument(session, initialDocument);
+      session.save();
+
+      SimpleDocumentPK sourcePk = initialDocument.getPk();
+      SimpleDocument frDocument = documentRepository.findDocumentById(session, sourcePk, "fr");
+      SimpleDocument enDocument = documentRepository.findDocumentById(session, sourcePk, "en");
+      assertThat(frDocument, not(instanceOf(HistorisedDocument.class)));
+      assertThat(frDocument.getLanguage(), is("fr"));
+      assertThat(frDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_fr"));
+      assertThat(frDocument.getVersion(), is("0.0"));
+      assertThat(enDocument, not(instanceOf(HistorisedDocument.class)));
+      assertThat(enDocument.getLanguage(), is("en"));
+      assertThat(enDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_en"));
+      assertThat(enDocument.getVersion(), is("0.0"));
+
+      // Changing document to version management
+      documentRepository.changeVersionState(session, sourcePk, "Changing to version...");
+      session.save();
+
+      HistorisedDocument frHistorisedDocument =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "fr");
+      HistorisedDocument enHistorisedDocument =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "en");
+      assertThat(frHistorisedDocument.getLanguage(), is("fr"));
+      assertThat(frHistorisedDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_fr"));
+      assertThat(frHistorisedDocument.getVersion(), is("1.0"));
+      assertThat(enHistorisedDocument.getLanguage(), is("en"));
+      assertThat(enHistorisedDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_en"));
+      assertThat(enHistorisedDocument.getVersion(), is("1.0"));
+
+      // Version path pattern
+      String masterUuid = initialDocument.getVersionMaster().getId();
+      String versionPathPattern =
+          "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+              masterUuid.substring(2, 4) + "/" +
+              masterUuid.substring(4, 6) + "/" + masterUuid + "/%s/jcr:frozenNode";
+
+      HistorisedDocument document = enHistorisedDocument;
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(0));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(1));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+
+      document.setOrder(10);
+      documentRepository.setOrder(session, document);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(1));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(1));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(1));
+      assertThat(document.getFullJcrPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.0")));
+
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(2));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(1));
+      assertThat(document.getMajorVersion(), is(1));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(2));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.1")));
+
+      document.setPublicDocument(true);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(3));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(2));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(3));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.2")));
+
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(4));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(3));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(4));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.3")));
+
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(5));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(4));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(2));
+      assertThat(document.getVersionIndex(), is(5));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.4")));
+
+      document.setOrder(0);
+      documentRepository.setOrder(session, document);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(6));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(4));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(2));
+      assertThat(document.getVersionIndex(), is(6));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.5")));
+
+      document.setPublicDocument(true);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(7));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(5));
+      assertThat(document.getMajorVersion(), is(3));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(7));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.6")));
+
+      Map<String, HistorisedDocument> historisedDocumentByLanguage =
+          new HashMap<String, HistorisedDocument>();
+      historisedDocumentByLanguage.put("fr",
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "fr"));
+      historisedDocumentByLanguage.put("en",
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "en"));
+      assertThat(historisedDocumentByLanguage.get("fr").getLanguage(), is("fr"));
+      assertThat(historisedDocumentByLanguage.get("en").getLanguage(), is("en"));
+
+      /*
+      History :
+      Technical   Functional  Action
+      1.0                     initialization
+      1.1         1.1         change order
+      1.2         1.1         update private
+      1.3         1.2         update public
+      1.4         2.0         update private
+      1.5         2.1         update private
+      1.6         2.1         change order
+      1.7         2.2         update public
+       */
+
+      String targetInstanceId = "kmelia36";
+      String targetForeignId = "foreignId45";
+      SimpleDocumentPK result = documentRepository
+          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+      try {
+        assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+        session.getNode(document.getFullJcrPath());
+        fail("The JCR path " + document.getFullJcrPath() + " should not longer exist...");
+      } catch (PathNotFoundException ex) {
+        // OK
+      }
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
+      expResult.setOldSilverpeasId(document.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      for (String lang : new String[]{"fr", "en"}) {
+        document = historisedDocumentByLanguage.get(lang);
+        HistorisedDocument doc =
+            (HistorisedDocument) documentRepository.findDocumentById(session, expResult, lang);
+        assertThat(doc.getLanguage(), is(lang));
+        assertThat(doc, is(notNullValue()));
+        assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
+        assertThat(doc.getCreated(), is(creationDateByLanguage.get(lang)));
+        if (lang.equals("fr")) {
+          checkFrenchSimpleDocument(doc);
+        } else {
+          checkEnglishSimpleDocument(doc);
+        }
+        assertThat(doc.getMajorVersion(), is(3));
+        assertThat(doc.getMinorVersion(), is(0));
+        assertThat(doc.getVersionIndex(), is(8));
+        assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+
+        String[] ignoredBeanPropertiesInComparison =
+            new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
+                "publicVersions", "versionMaster", "realVersionPk", "realVersionForeignId",
+                "previousVersion"};
+        document.getPk().setComponentName(targetInstanceId);
+        document.setForeignId(targetForeignId);
+        document.setVersionIndex(8);
+        assertSimpleDocumentsAreEquals(doc, document, ignoredBeanPropertiesInComparison);
+
+        // Version path pattern
+        assertThat(document.getVersionMaster().getId(), is(doc.getVersionMaster().getId()));
+        masterUuid = doc.getVersionMaster().getId();
+        versionPathPattern = "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+            masterUuid.substring(2, 4) + "/" +
+            masterUuid.substring(4, 6) + "/" + masterUuid + "/%s/jcr:frozenNode";
+
+        // History
+        assertThat(doc.getHistory(), hasSize(8));
+        assertThat(doc.getFunctionalHistory(), hasSize(5));
+
+
+        SimpleDocumentVersion currentVersion = doc.getHistory().remove(0);
+        assertThat(currentVersion.getVersionIndex(), is(7));
+        assertThat(currentVersion.getRepositoryPath(),
+            is(String.format(versionPathPattern, "1.7")));
+        assertThat(currentVersion.getPk(), not(sameInstance(currentVersion.getRealVersionPk())));
+        assertThat(currentVersion.getPk().getId(), is(currentVersion.getRealVersionPk().getId()));
+        assertThat(currentVersion.getPk().getComponentName(), is(targetInstanceId));
+        assertThat(currentVersion.getRealVersionPk().getComponentName(), is(instanceId));
+        assertThat(currentVersion.getPk().getOldSilverpeasId(),
+            is(currentVersion.getRealVersionPk().getOldSilverpeasId()));
+        assertThat(currentVersion.getForeignId(), is(targetForeignId));
+        assertThat(currentVersion.getRealVersionForeignId(), is(foreignId));
+        document.getPk().setId(currentVersion.getId());
+        document.setVersionIndex(currentVersion.getVersionIndex());
+        assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils
+            .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
+                "onlineURL"));
+
+        for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
+          expectedVersion.setVersionMaster(doc.getVersionMaster());
+        }
+        int versionIndex = doc.getHistory().size();
+        Iterator<SimpleDocumentVersion> resultHistoryIt = doc.getHistory().iterator();
+        for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
+          currentVersion = resultHistoryIt.next();
+          assertThat(currentVersion.getRepositoryPath(), currentVersion.getLanguage(), is(lang));
+          assertThat(currentVersion.getRepositoryPath(),
+              is(String.format(versionPathPattern, "1." + (--versionIndex))));
+          assertThat(currentVersion.getFullJcrPath(), is(doc.getFullJcrPath()));
+          assertThat(currentVersion.getPk(), not(sameInstance(currentVersion.getRealVersionPk())));
+          assertThat(currentVersion.getPk().getId(), is(currentVersion.getRealVersionPk().getId()));
+          assertThat(currentVersion.getPk().getComponentName(), is(targetInstanceId));
+          assertThat(currentVersion.getRealVersionPk().getComponentName(), is(instanceId));
+          assertThat(currentVersion.getPk().getOldSilverpeasId(),
+              is(currentVersion.getRealVersionPk().getOldSilverpeasId()));
+          assertThat(currentVersion.getForeignId(), is(targetForeignId));
+          assertThat(currentVersion.getRealVersionForeignId(), is(foreignId));
+          assertSimpleDocumentsAreEquals(currentVersion, expectedVersion,
+              ignoredBeanPropertiesInComparison);
+        }
+      }
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
    * Test of copyDocument method, of class DocumentRepository.
    *
    * @throws Exception
@@ -2330,6 +2688,343 @@ public class HistorisedDocumentRepositoryTest {
         expectedVersion.setId(currentVersion.getId());
         assertSimpleDocumentsAreEquals(currentVersion, expectedVersion,
             ignoredBeanPropertiesInComparison);
+      }
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of copyDocument method, of class DocumentRepository.
+   * @throws Exception
+   */
+  @Test
+  public void testCopyDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
+    FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath("")));
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      Map<String, Date> creationDateByLanguage = new HashMap<String, Date>();
+      creationDateByLanguage.put("en", attachment.getCreated());
+      String foreignId = "node78";
+      SimpleDocument initialDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      initialDocument.setContentType(MimeTypes.PDF_MIME_TYPE);
+      initialDocument.setPublicDocument(false);
+      createVersionedDocument(session, initialDocument, content);
+      // French content before version
+      initialDocument.setLanguage("fr");
+      initialDocument.setFile(createFrenchVersionnedAttachment());
+      creationDateByLanguage.put("fr", initialDocument.getFile().getCreated());
+      documentRepository.updateDocument(session, initialDocument);
+      session.save();
+
+      SimpleDocumentPK sourcePk = initialDocument.getPk();
+      SimpleDocument frDocument = documentRepository.findDocumentById(session, sourcePk, "fr");
+      SimpleDocument enDocument = documentRepository.findDocumentById(session, sourcePk, "en");
+      assertThat(frDocument, not(instanceOf(HistorisedDocument.class)));
+      assertThat(frDocument.getLanguage(), is("fr"));
+      assertThat(frDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_fr"));
+      assertThat(frDocument.getVersion(), is("0.0"));
+      assertThat(enDocument, not(instanceOf(HistorisedDocument.class)));
+      assertThat(enDocument.getLanguage(), is("en"));
+      assertThat(enDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_en"));
+      assertThat(enDocument.getVersion(), is("0.0"));
+
+      // Changing document to version management
+      documentRepository.changeVersionState(session, sourcePk, "Changing to version...");
+      session.save();
+
+      HistorisedDocument frHistorisedDocument =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "fr");
+      HistorisedDocument enHistorisedDocument =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "en");
+      assertThat(frHistorisedDocument.getLanguage(), is("fr"));
+      assertThat(frHistorisedDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_fr"));
+      assertThat(frHistorisedDocument.getVersion(), is("1.0"));
+      assertThat(enHistorisedDocument.getLanguage(), is("en"));
+      assertThat(enHistorisedDocument.getFullJcrContentPath(),
+          is("/kmelia73/attachments/simpledoc_1/file_en"));
+      assertThat(enHistorisedDocument.getVersion(), is("1.0"));
+
+      // Version path pattern
+      String masterUuid = initialDocument.getVersionMaster().getId();
+      String versionPathPattern =
+          "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+              masterUuid.substring(2, 4) + "/" +
+              masterUuid.substring(4, 6) + "/" + masterUuid + "/%s/jcr:frozenNode";
+
+      HistorisedDocument document = enHistorisedDocument;
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(0));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(1));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+
+      document.setOrder(10);
+      documentRepository.setOrder(session, document);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(1));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(1));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(1));
+      assertThat(document.getFullJcrPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.0")));
+
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(2));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(1));
+      assertThat(document.getMajorVersion(), is(1));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(2));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.1")));
+
+      document.setPublicDocument(true);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(3));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(2));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(3));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.2")));
+
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(4));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(3));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(4));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.3")));
+
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(10));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(5));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(4));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(2));
+      assertThat(document.getVersionIndex(), is(5));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.4")));
+
+      document.setOrder(0);
+      documentRepository.setOrder(session, document);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(6));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(4));
+      assertThat(document.getMajorVersion(), is(2));
+      assertThat(document.getMinorVersion(), is(2));
+      assertThat(document.getVersionIndex(), is(6));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.5")));
+
+      document.setPublicDocument(true);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(7));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(5));
+      assertThat(document.getMajorVersion(), is(3));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(7));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getHistory().get(0).getRepositoryPath(),
+          is(String.format(versionPathPattern, "1.6")));
+
+      Map<String, HistorisedDocument> historisedDocumentByLanguage =
+          new HashMap<String, HistorisedDocument>();
+      historisedDocumentByLanguage.put("fr",
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "fr"));
+      historisedDocumentByLanguage.put("en",
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "en"));
+      assertThat(historisedDocumentByLanguage.get("fr").getLanguage(), is("fr"));
+      assertThat(historisedDocumentByLanguage.get("en").getLanguage(), is("en"));
+
+      /*
+      History :
+      Technical   Functional  Action
+      1.0         1.0         initialization
+      1.1         1.1         change order
+      1.2         1.1         update private
+      1.3         1.2         update public
+      1.4         2.0         update private
+      1.5         2.1         update private
+      1.6         2.1         change order
+      1.7         2.2         update public
+       */
+
+      String targetInstanceId = "kmelia26";
+      String targetForeignId = "node36";
+      SimpleDocumentPK result = documentRepository
+          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
+      expResult.setOldSilverpeasId(result.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      for (String lang : new String[]{"fr", "en"}) {
+        document = historisedDocumentByLanguage.get(lang);
+        HistorisedDocument doc =
+            (HistorisedDocument) documentRepository.findDocumentById(session, expResult, lang);
+        assertThat(doc.getLanguage(), is(lang));
+        assertThat(doc, is(notNullValue()));
+        assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
+        assertThat(doc.getCreated(), is(creationDateByLanguage.get(lang)));
+        document.setForeignId(targetForeignId);
+        document.setPK(result);
+        document.setNodeName(doc.getNodeName());
+        assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
+        if (lang.equals("fr")) {
+          checkFrenchSimpleDocument(doc);
+        } else {
+          checkEnglishSimpleDocument(doc);
+        }
+        assertThat(doc.getMajorVersion(), is(3));
+        assertThat(doc.getMinorVersion(), is(0));
+        assertThat(doc.getVersionIndex(), is(7));
+        assertThat(doc.getRepositoryPath(), is("/kmelia26/attachments/simpledoc_2"));
+
+        String[] ignoredBeanPropertiesInComparison =
+            new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
+                "publicVersions", "lastPublicVersion", "versionMaster", "realVersionPk",
+                "realVersionForeignId", "previousVersion"};
+        assertSimpleDocumentsAreEquals(doc, document, ignoredBeanPropertiesInComparison);
+
+        // Reloading original for following assertions.
+        document =
+            (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, lang);
+        assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+        assertThat(document.getVersionMaster().getId(), is(not(doc.getVersionMaster().getId())));
+
+        // Version path pattern
+        masterUuid = doc.getVersionMaster().getId();
+        versionPathPattern = "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+            masterUuid.substring(2, 4) + "/" +
+            masterUuid.substring(4, 6) + "/" + masterUuid + "/%s/jcr:frozenNode";
+
+        // History
+        assertThat(doc.getHistory(), hasSize(7));
+        assertThat(doc.getFunctionalHistory(), hasSize(5));
+
+        for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
+          expectedVersion.setVersionMaster(doc.getVersionMaster());
+        }
+        Iterator<SimpleDocumentVersion> resultHistoryIt = doc.getHistory().iterator();
+        int versionIndex = doc.getHistory().size();
+        for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
+          SimpleDocumentVersion currentVersion = resultHistoryIt.next();
+          assertThat(currentVersion.getRepositoryPath(), currentVersion.getLanguage(), is(lang));
+          assertThat(currentVersion.getRepositoryPath(),
+              is(String.format(versionPathPattern, "1." + (--versionIndex))));
+          assertThat(currentVersion.getFullJcrPath(), is(doc.getFullJcrPath()));
+          assertThat(currentVersion.getPk(), not(sameInstance(currentVersion.getRealVersionPk())));
+          assertThat(currentVersion.getPk().getId(), is(currentVersion.getRealVersionPk().getId()));
+          assertThat(currentVersion.getPk().getComponentName(),
+              is(currentVersion.getRealVersionPk().getComponentName()));
+          assertThat(currentVersion.getPk().getOldSilverpeasId(),
+              is(currentVersion.getRealVersionPk().getOldSilverpeasId()));
+          assertThat(currentVersion.getForeignId(), is(targetForeignId));
+          assertThat(currentVersion.getForeignId(), is(currentVersion.getRealVersionForeignId()));
+          expectedVersion.setId(currentVersion.getId());
+          assertSimpleDocumentsAreEquals(currentVersion, expectedVersion,
+              ignoredBeanPropertiesInComparison);
+        }
       }
     } finally {
       BasicDaoFactory.logout(session);
