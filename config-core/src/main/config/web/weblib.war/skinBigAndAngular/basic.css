@@ -731,6 +731,7 @@ background-image: none;
 display: none;
 }
 .milieuBoutonV5 a,
+a.milieuBoutonV5,
 button{
 background-image:url();
 background-color:#7eb73b ;
@@ -941,9 +942,17 @@ background-repeat:no-repeat;
 
 }
 
-.ArrayColumn , #classifieds .tableFrame #categories .categoryTitle{
+.ArrayColumn, .ArrayCell,  
+#classifieds .tableFrame #categories .categoryTitle{
 background-image:none;
-padding-left:10px;
+padding-left:8px;
+padding-right:8px;
+}
+
+.ArrayColumn .ArrayColumn,
+.ArrayCell .ArrayCell {
+padding-left:0;
+padding-right:0;
 }
 
 .pageNav , .pageNav .ArrayNavigation, .pageNav .pageOff {
