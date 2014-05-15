@@ -32,11 +32,6 @@ import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -48,12 +43,18 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -342,6 +343,8 @@ public class ActifyDocumentProcessSchedulerTest {
      * then should require a new version (an update).
      */
     private void prepareMock() {
+      when(attachmentService.listDocumentsByForeignKey(any(ForeignPK.class), eq((String) null)))
+          .thenReturn(new SimpleDocumentList<SimpleDocument>());
       if (isVersioned()) {
         String lastFilename = ACTIFY_DOCUMENT_PREFIX + (actifyDocuments - 1) + ".3d";
         SimpleAttachment existingAttachment = new SimpleAttachment(lastFilename, null,
