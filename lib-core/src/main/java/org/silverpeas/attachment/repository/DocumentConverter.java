@@ -28,14 +28,17 @@ import com.silverpeas.util.i18n.I18NHelper;
 import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.HistorisedDocumentVersion;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.util.jcr.AbstractJcrConverter;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
@@ -59,18 +62,23 @@ class DocumentConverter extends AbstractJcrConverter {
   final SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
 
   /**
-   * Convert the document history in a list of SimpleDocument.
-   *
-   * @param lang
-   * @return
+   * Builds from the root version node and from a language the object representation of a
+   * versioned document and its history.
+   * @param rootVersionNode the root version node (master).
+   * @param lang the aimed content language.
+   * @return the instance of a versioned document.
    * @throws RepositoryException
    */
-  List<SimpleDocument> convertDocumentHistory(Node node, String lang) throws
-      RepositoryException {
-    try {
-      VersionManager versionManager = node.getSession().getWorkspace().getVersionManager();
+  HistorisedDocument buildHistorisedDocument(Node rootVersionNode, String lang)
+  throws RepositoryException {
 
-      String path = node.getPath();
+    VersionManager versionManager = rootVersionNode.getSession().getWorkspace().getVersionManager();
+    HistorisedDocument historisedDocument =
+        new HistorisedDocument(fillDocument(rootVersionNode, lang));
+
+    try {
+
+      String path = rootVersionNode.getPath();
       VersionHistory history = versionManager.getVersionHistory(path);
       Version root = history.getRootVersion();
       String rootId = "";
@@ -83,45 +91,61 @@ class DocumentConverter extends AbstractJcrConverter {
         baseId = base.getIdentifier();
       }
       VersionIterator versionsIterator = history.getAllVersions();
-      List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
-          getSize());
+      List<SimpleDocumentVersion> documentHistory =
+          new ArrayList<SimpleDocumentVersion>((int) versionsIterator.
+              getSize());
 
+      int versionIndex = 0;
+      SimpleDocumentVersion previousVersion = null;
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
         if (!version.getIdentifier().equals(rootId) && !version.getIdentifier().equals(baseId)) {
-          SimpleDocument versionDocument = fillDocument(version.getFrozenNode(), lang);
-          versionDocument.setNodeName(node.getName());
+          SimpleDocumentVersion versionDocument =
+              new SimpleDocumentVersion(fillDocument(version.getFrozenNode(), lang),
+                  historisedDocument);
+          versionDocument.setNodeName(rootVersionNode.getName());
+          versionDocument.setVersionIndex(versionIndex++);
+          versionDocument.setPreviousVersion(previousVersion);
           documentHistory.add(versionDocument);
+          previousVersion = versionDocument;
         }
       }
-      HistoryDocumentSorter.sortHistory(documentHistory);
-      return documentHistory;
+
+      HistoryDocumentSorter.sortHistory((List) documentHistory);
+      historisedDocument.setHistory(documentHistory);
+      historisedDocument.setVersionIndex(versionIndex);
     } catch (RepositoryException ex) {
       if (ex.getCause() instanceof NoSuchItemStateException) {
-        return new ArrayList<SimpleDocument>(0);
+        historisedDocument.setHistory(new ArrayList<SimpleDocumentVersion>(0));
+      } else {
+        throw ex;
       }
-      throw ex;
     }
+    return historisedDocument;
   }
 
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
-    if (isVersioned(node)) {
-      HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
-      List<SimpleDocument> history = convertDocumentHistory(node, lang);
-      document.setHistory(history);
-      return document;
+    if (isVersionedMaster(node)) {
+      return buildHistorisedDocument(node, lang);
     }
-    if (node.getParent() != null && node.getParent() instanceof Version) {
-      //We are accessing a version directly throught its id
-      HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
-      Node fullNode = getCurrentNodeForVersion((Version)node.getParent());
-      document.setHistory(convertDocumentHistory(fullNode, lang));
-      return document;
+    Node parentNode = node.getParent();
+    if (parentNode instanceof Version) {
+      // Getting the parent node, the versionned one
+      Node masterNode = getMasterNodeForVersion((Version) parentNode);
+      // The historised document is built from the parent node
+      HistorisedDocument document = buildHistorisedDocument(masterNode, lang);
+      // Returning the version
+      SimpleDocumentVersion version = document.getVersionIdentifiedBy(node.getIdentifier());
+      if (version != null) {
+        return new HistorisedDocumentVersion(version);
+      }
+      throw new PathNotFoundException(
+          "Version identified by " + node.getIdentifier() + " has not been found.");
     }
     return fillDocument(node, lang);
   }
 
-  public Node getCurrentNodeForVersion(Version version) throws RepositoryException {
+  public Node getMasterNodeForVersion(Version version) throws RepositoryException {
     String uuid = version.getContainingHistory().getVersionableIdentifier();
     return version.getSession().getNodeByIdentifier(uuid);
   }
@@ -166,6 +190,7 @@ class DocumentConverter extends AbstractJcrConverter {
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
         getStringProperty(node, SLV_PROPERTY_COMMENT), file);
+    doc.setRepositoryPath(node.getPath());
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
@@ -249,7 +274,7 @@ class DocumentConverter extends AbstractJcrConverter {
     }
   }
 
-  public boolean isVersioned(Node node) throws RepositoryException {
+  public boolean isVersionedMaster(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
         JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
   }
@@ -261,7 +286,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public String updateVersion(Node node, String lang, boolean isPublic) throws RepositoryException {
     int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR);
     int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR);
-    if (isVersioned(node) && node.isCheckedOut()) {
+    if (isVersionedMaster(node) && node.isCheckedOut()) {
       releaseDocumentNode(node, lang);
       if (isPublic) {
         majorVersion = majorVersion + 1;

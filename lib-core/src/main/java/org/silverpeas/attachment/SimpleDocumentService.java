@@ -932,7 +932,7 @@ public class SimpleDocumentService implements AttachmentService {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
       SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
-      repository.moveMultilangContent(document, moveDoc);
+      repository.moveFullContent(document, moveDoc);
       session.save();
       return pk;
     } catch (RepositoryException ex) {

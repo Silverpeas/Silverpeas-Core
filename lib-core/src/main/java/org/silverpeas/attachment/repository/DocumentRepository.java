@@ -37,6 +37,7 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.util.jcr.NodeIterable;
 import org.silverpeas.util.jcr.PropertyIterable;
@@ -65,6 +66,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -149,17 +151,23 @@ public class DocumentRepository {
     targetDoc.setDocumentType(document.getDocumentType());
     targetDoc.setNodeName(document.getNodeName());
     prepareComponentAttachments(session, destination.getInstanceId(), document.getFolder());
+    session.save();
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
-    if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
-      checkoutNode(originDocumentNode, document.getUpdatedBy());
-    }
     if (!originDocumentNode.getPath().equals(targetDoc.getFullJcrPath())) {
-      session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
+      session.getWorkspace().move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     }
+    VersionManager versionManager = session.getWorkspace().getVersionManager();
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
+    if (converter.isVersionedMaster(targetDocumentNode) && !targetDocumentNode.isCheckedOut()) {
+      versionManager.checkout(targetDocumentNode.getPath());
+    }
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
         getInstanceId());
+    if (converter.isVersionedMaster(targetDocumentNode) && targetDocumentNode.isCheckedOut()) {
+      session.save();
+      versionManager.checkin(targetDocumentNode.getPath());
+    }
     pk.setId(targetDocumentNode.getIdentifier());
     return pk;
   }
@@ -211,24 +219,75 @@ public class DocumentRepository {
       WAPrimaryKey destination) throws RepositoryException, IOException {
     prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
-    List<SimpleDocument> history = document.getHistory();
+    List<SimpleDocument> history = new ArrayList<SimpleDocument>(document.getHistory());
+    Collections.reverse(history);
     history.add(document);
-    Collections.reverseOrder();
     SimpleDocument targetDoc = new HistorisedDocument(history.remove(0));
     targetDoc.setNodeName(null);
     targetDoc.setPK(pk);
     targetDoc.setDocumentType(document.getDocumentType());
     targetDoc.setForeignId(destination.getId());
+    targetDoc.setUpdatedBy(null);
     targetDoc.computeNodeName();
     pk = createDocument(session, targetDoc);
+    if (I18NHelper.isI18nActivated()) {
+      // The first version can have several language contents.
+      Set<String> checkedLanguages = new HashSet<String>();
+      checkedLanguages.add(targetDoc.getLanguage());
+      for (String language : I18NHelper.getAllSupportedLanguages()) {
+        if (!checkedLanguages.contains(language)) {
+          HistorisedDocument temp =
+              (HistorisedDocument) findDocumentById(session, document.getPk(), language);
+          List<SimpleDocumentVersion> versions = temp.getHistory();
+          if (!versions.isEmpty()) {
+            SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
+            if (!checkedLanguages.contains(firstVersion.getLanguage())) {
+              addContent(session, targetDoc.getPk(), firstVersion.getFile());
+            }
+          }
+          checkedLanguages.add(language);
+        }
+      }
+    }
     unlock(session, targetDoc, false);
+    VersionManager versionManager = session.getWorkspace().getVersionManager();
+    String currentVersion = targetDoc.getVersion();
     for (SimpleDocument doc : history) {
-      lock(session, targetDoc, document.getUpdatedBy());
-      targetDoc = new HistorisedDocument(doc);
-      targetDoc.setPK(pk);
-      targetDoc.setForeignId(destination.getId());
-      updateDocument(session, targetDoc);
-      unlock(session, targetDoc, false);
+      if (I18NHelper.isI18nActivated()) {
+        // One language content is aimed by a version. So the first step here is to search the
+        // language content updated.
+        Set<String> checkedLanguages = new HashSet<String>();
+        checkedLanguages.add(doc.getLanguage());
+        for (String language : I18NHelper.getAllSupportedLanguages()) {
+          if (!checkedLanguages.contains(language)) {
+            SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
+            if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
+                temp.getUpdated().after(doc.getUpdated())) {
+              doc = temp;
+            }
+            checkedLanguages.add(language);
+          }
+        }
+      }
+      HistorisedDocument targetHistorisedDoc = new HistorisedDocument(doc);
+      targetHistorisedDoc.setPK(pk);
+      targetHistorisedDoc.setForeignId(destination.getId());
+      targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
+      Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
+      if (!currentVersion.equals(doc.getVersion())) {
+        // In this case, a functional version is performed, so the common tools are used
+        lock(session, targetDoc, doc.getUpdatedBy());
+        converter.fillNode(targetHistorisedDoc, masterDocumentNode);
+        unlock(session, targetHistorisedDoc, false);
+        currentVersion = targetHistorisedDoc.getVersion();
+      } else {
+        // In this case, the version is a technical one (setOrder for example) and technical
+        // tools are used
+        versionManager.checkout(masterDocumentNode.getPath());
+        converter.fillNode(targetHistorisedDoc, masterDocumentNode);
+        session.save();
+        versionManager.checkin(masterDocumentNode.getPath());
+      }
     }
     return pk;
   }
@@ -332,8 +391,8 @@ public class DocumentRepository {
       String comment) throws RepositoryException, IOException {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-      boolean versionedNode = documentNode.getParent() instanceof Version || converter.isVersioned(
-          documentNode);
+      boolean versionedNode =
+          documentNode.getParent() instanceof Version || converter.isVersionedMaster(documentNode);
       Node parent = documentNode.getParent();
       if (parent instanceof Version) {
         Version selectedVersion = (Version) parent;
@@ -385,7 +444,7 @@ public class DocumentRepository {
 
   private void deleteDocumentNode(Node documentNode) throws RepositoryException {
     if (null != documentNode) {
-      if (converter.isVersioned(documentNode)) {
+      if (converter.isVersionedMaster(documentNode)) {
         removeHistory(documentNode);
       }
       documentNode.remove();
@@ -628,9 +687,11 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.
         getRootNode().getPath() + instanceId + '/');
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
-        literal(session.getValueFactory().createValue(foreignId)));
+    Comparison foreignIdComparison = factory
+        .comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_FOREIGN_KEY),
+            QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+                literal(session.getValueFactory().createValue(foreignId))
+        );
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
@@ -674,8 +735,7 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listExpiringDocuments(Session session, Date expiryDate,
       String language) throws RepositoryException {
-    NodeIterator iter = selectExpiringDocuments(session, DateUtil.getBeginOfDay(
-        expiryDate));
+    NodeIterator iter = selectExpiringDocuments(session, DateUtil.getBeginOfDay(expiryDate));
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -690,8 +750,7 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsRequiringWarning(Session session, Date alertDate,
       String language) throws RepositoryException {
-    NodeIterator iter = selectWarningDocuments(session, DateUtil.getBeginOfDay(
-        alertDate));
+    NodeIterator iter = selectWarningDocuments(session, DateUtil.getBeginOfDay(alertDate));
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -848,7 +907,7 @@ public class DocumentRepository {
   public void addContent(Session session, SimpleDocumentPK documentPk, SimpleAttachment attachment)
       throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
+    if (converter.isVersionedMaster(documentNode) && !documentNode.isCheckedOut()) {
       String owner = attachment.getUpdatedBy();
       if (!StringUtil.isDefined(owner)) {
         owner = attachment.getCreatedBy();
@@ -893,7 +952,7 @@ public class DocumentRepository {
   public boolean removeContent(Session session, SimpleDocumentPK documentPk, String language)
       throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
+    if (converter.isVersionedMaster(documentNode) && !documentNode.isCheckedOut()) {
       checkoutNode(documentNode, null);
     }
     converter.removeAttachment(documentNode, language);
@@ -1041,7 +1100,7 @@ public class DocumentRepository {
   public void setVersionnable(Session session, SimpleDocumentPK documentPk) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (!converter.isVersioned(documentNode)) {
+    if (!converter.isVersionedMaster(documentNode)) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
       documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
     }
@@ -1058,7 +1117,7 @@ public class DocumentRepository {
   public void removeVersionnable(Session session, SimpleDocumentPK documentPk) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (converter.isVersioned(documentNode)) {
+    if (converter.isVersionedMaster(documentNode)) {
       removeHistory(documentNode);
       VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
           getVersionHistory(documentNode.getPath());
@@ -1145,12 +1204,12 @@ public class DocumentRepository {
     String targetDir = copy.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
-    if (target.exists()) {
-      FileUtils.cleanDirectory(target);
-    }
     File source = new File(originDir).getParentFile();
     if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
       return;
+    }
+    if (target.exists()) {
+      FileUtils.cleanDirectory(target);
     }
     FileUtils.copyDirectory(source, target);
   }
@@ -1163,6 +1222,9 @@ public class DocumentRepository {
     File source = new File(originDir).getParentFile().getParentFile();
     if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
       return;
+    }
+    if (target.exists()) {
+      FileUtils.cleanDirectory(target);
     }
     FileUtils.copyDirectory(source, target);
   }
@@ -1179,6 +1241,21 @@ public class DocumentRepository {
     if (!target.getParentFile().getName().equals(source.getParentFile().getName())) {
       source = source.getParentFile();
       target = target.getParentFile();
+    }
+    if (!source.equals(target)) {
+      FileUtils.moveDirectory(source, target);
+      FileUtil.deleteEmptyDir(source.getParentFile());
+    }
+  }
+
+  public void moveFullContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
+    String originDir = origin.getDirectoryPath(null);
+    File source = new File(originDir).getParentFile().getParentFile();
+    String targetDir = copy.getDirectoryPath(null);
+    targetDir = targetDir.replace('/', File.separatorChar);
+    File target = new File(targetDir).getParentFile().getParentFile();
+    if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
+      return;
     }
     if (!source.equals(target)) {
       FileUtils.moveDirectory(source, target);
