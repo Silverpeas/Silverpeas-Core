@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
@@ -874,5 +875,40 @@ public class SimpleDocument implements Serializable {
   public Set<SilverpeasRole> getForbiddenDownloadForRoles() {
     return (getVersionMaster().forbiddenDownloadForRoles != null) ?
         Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles) : null;
+  }
+  
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of image.
+   */
+  public boolean isContentImage() {
+    return FileUtil.isImage(getAttachmentPath());
+  }
+  
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of 3D.
+   */
+  public boolean isContentSpinfire() {
+    return FileUtil.isSpinfireDocument(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of archive.
+   */
+  public boolean isContentArchive() {
+    return FileUtil.isArchive(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of mail.
+   */
+  public boolean isContentMail() {
+    return FileUtil.isMail(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of pdf.
+   */
+  public boolean isContentPdf() {
+    return FileUtil.isPdf(getAttachmentPath());
   }
 }

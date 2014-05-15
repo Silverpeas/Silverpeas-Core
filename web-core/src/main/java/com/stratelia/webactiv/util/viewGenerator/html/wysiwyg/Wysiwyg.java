@@ -13,9 +13,9 @@ public class Wysiwyg {
   private String language = "en";
   private String toolbar = "Default";
   private boolean toolbarStartExpanded = true;
-  private String imageBrowserURL;
   private String serverURL;
   private String css;
+  private boolean displayFileBrowser = true;
 
   ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
 
@@ -28,15 +28,17 @@ public class Wysiwyg {
     String configFile = wysiwygSettings.getString("configFile",
         URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
-
+    
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
     builder.append("width : '").append(getWidth()).append("',\n");
     builder.append("height : ").append(getHeight()).append(",\n");
     builder.append("language : '").append(getLanguage()).append("',\n");
     String basehref = wysiwygSettings.getString("baseHref", getServerURL());
     builder.append("baseHref : '").append(basehref).append("',\n");
-    if (StringUtil.isDefined(getImageBrowserURL())) {
-      builder.append("filebrowserImageBrowseUrl : '").append(getImageBrowserURL()).append("',\n");
+    if (! getDisplayFileBrowser()) {
+      builder.append("filebrowserImageBrowseUrl : '',\n");
+      builder.append("filebrowserFlashBrowseUrl : '',\n");
+      builder.append("filebrowserBrowseUrl : '',\n");
     }
     builder.append("toolbarStartupExpanded : ").append(isToolbarStartExpanded()).append(",\n");
     builder.append("customConfig : '").append(configFile).append("',\n");
@@ -54,7 +56,7 @@ public class Wysiwyg {
       builder.append("contentsCss : '").append(standardCSS).append("'\n");
     }
 
-    builder.append("});");
+    builder.append("});\n");
 
     return builder.toString();
   }
@@ -107,14 +109,6 @@ public class Wysiwyg {
     this.toolbarStartExpanded = toolbarStartExpanded;
   }
 
-  public String getImageBrowserURL() {
-    return imageBrowserURL;
-  }
-
-  public void setImageBrowserURL(String imageBrowserURL) {
-    this.imageBrowserURL = imageBrowserURL;
-  }
-
   public void setServerURL(String serverURL) {
     this.serverURL = serverURL;
   }
@@ -127,4 +121,11 @@ public class Wysiwyg {
     this.css = css;
   }
 
+  public boolean getDisplayFileBrowser() {
+    return displayFileBrowser;
+  }
+
+  public void setDisplayFileBrowser(boolean displayFileBrowser) {
+    this.displayFileBrowser = displayFileBrowser;
+  }
 }
