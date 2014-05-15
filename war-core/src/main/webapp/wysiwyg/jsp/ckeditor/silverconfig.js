@@ -45,7 +45,7 @@ CKEDITOR.editorConfig = function( config )
 	config.toolbar_Light = [
    	       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
    	       { name: 'links',       items : [ 'Link','Unlink' ] },
-   	       { name: 'insert',      items : [ 'Table','HorizontalRule','Smiley','SpecialChar' ] },
+   	       { name: 'insert',      items : [ 'Table','HorizontalRule','Smiley','SpecialChar', 'identitycard', 'userzoom' ] },
    	       '/',
    	       { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
    	       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
@@ -57,7 +57,7 @@ CKEDITOR.editorConfig = function( config )
 	config.toolbar_XMLForm = [
   	       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
   	       { name: 'links',       items : [ 'Link','Unlink' ] },
-  	       { name: 'insert',      items : [ 'Image','Table','HorizontalRule','Smiley','SpecialChar' ] },
+  	       { name: 'insert',      items : [ 'Image','Table','HorizontalRule','Smiley','SpecialChar', 'identitycard', 'userzoom' ] },
   	       '/',
   	       { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
   	       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
@@ -74,7 +74,7 @@ CKEDITOR.editorConfig = function( config )
    	       { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
    	       { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
    	       { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-   	       { name: 'insert',      items : [ 'Image','allmedias','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak' ] },
+   	       { name: 'insert',      items : [ 'Image','allmedias','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak', 'identitycard', 'userzoom' ] },
    	       '/',
    	       { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
    	       { name: 'colors',      items : [ 'TextColor','BGColor' ] },
