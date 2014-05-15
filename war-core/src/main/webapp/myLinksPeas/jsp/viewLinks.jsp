@@ -36,16 +36,17 @@
 
 <%@ include file="check.jsp"%>
 <%
-  Collection links = (Collection) request.getAttribute("Links");
+  Collection<LinkDetail> links = (Collection<LinkDetail>) request.getAttribute("Links");
   String url = (String) request.getAttribute("UrlReturn");
   String instanceId = (String) request.getAttribute("InstanceId");
+  boolean appScope = StringUtil.isDefined(instanceId);
 
   String action = "CreateLink";
-
-  // Retrieve data if update existing link
-  //if (link != null) {
-  //  action      = "UpdateLink";
-  //}
+  
+  String reloadPageURL = "/RmyLinksPeas/jsp/Main";
+  if (appScope) {
+    reloadPageURL = "/RmyLinksPeas/jsp/ComponentLinks?InstanceId="+instanceId;
+  }
 %>
 <%@page import="com.silverpeas.util.StringUtil"%>
 
@@ -53,16 +54,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <view:includePlugin name="popup"/>
-<view:includePlugin name="mylinks"/>
-
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-
 <script type="text/javascript">
-
-var linkWindow = window;
-
 $.i18n.properties({
   name: 'myLinksBundle',
   path: webContext + '/services/bundles/org/silverpeas/mylinks/multilang/',
@@ -70,16 +64,13 @@ $.i18n.properties({
   mode: 'map'
 });
 
-
-function addLink()
-{
+function addLink() {
   cleanMyLinkForm()
   $("#linkFormId").attr('action', 'CreateLink');
   createLinkPopup();
 }
 
-function editLink(id)
-{
+function editLink(id) {
   cleanMyLinkForm()
   $("#linkFormId").attr('action', 'UpdateLink');
 
@@ -123,22 +114,6 @@ function deleteSelectLinksConfirm() {
   	}
 }
 
-function sendData() {
-  if (isCorrectForm()) {
-      document.linkForm.LinkId.value = document.linkForm.LinkId.value;
-      document.linkForm.Name.value = document.linkForm.Name.value;
-      document.linkForm.Description.value = document.linkForm.Description.value;
-      document.linkForm.Url.value = document.linkForm.Url.value;
-      if (document.linkForm.Visible.checked) {
-        document.linkForm.Visible.value = document.linkForm.Visible.value;
-      }
-      if (document.linkForm.Popup.checked) {
-        document.linkForm.Popup.value = document.linkForm.Popup.value;
-      }
-      document.linkForm.submit();
-  }
-}
-
 function isCorrectForm() {
   var errorMsg = "";
   var errorNb = 0;
@@ -176,6 +151,7 @@ function createLinkPopup() {
   $('#mylink-popup-content').popup('validation', {
       title : "<fmt:message key="myLinks.addLink" />",
       width : "700px",
+      isMaxWidth: false,
     callback : function() {
       if ( window.console && window.console.log ) {
         console.log("User create new link !!!");
@@ -194,6 +170,7 @@ function updateLinkPopup() {
   $('#mylink-popup-content').popup('validation', {
       title : "<fmt:message key="myLinks.updateLink" />",
       width : "700px",
+      isMaxWidth: false,
     callback : function() {
       if ( window.console && window.console.log ) {
         console.log("User update the following link identifier = " + $("#linkId").attr('value'));
@@ -208,7 +185,6 @@ function updateLinkPopup() {
   });
 }
 
-
 function updateLink() {
   var ajaxUrl = webContext + '/services/mylinks/' + $("#hiddenLinkId").val();
 
@@ -220,7 +196,8 @@ function updateLink() {
       "url": cleanUrl,
       "popup": $("#popupId").is(":checked"),
       "uri": '',
-      "visible": $("#visibleId").is(":checked")
+      "visible": isVisible(),
+      "instanceId": getAppId()
   };
   jQuery.ajax({
     url: ajaxUrl,
@@ -237,6 +214,21 @@ function updateLink() {
   });
 }
 
+function isVisible() {
+  if ($("#visibleId")) {
+    return $("#visibleId").is(":checked");
+  }
+  return false;
+}
+
+function getAppId() {
+  <% if (appScope) { %>
+  	return "<%=instanceId%>";
+  <% } else { %>
+    return "";
+  <% } %>
+}
+
 function createLink() {
   var ajaxUrl = webContext + '/services/mylinks/';
 
@@ -248,7 +240,8 @@ function createLink() {
       "url": cleanUrl,
       "popup": $("#popupId").is(":checked"),
       "uri": '',
-      "visible": $("#visibleId").is(":checked")
+      "visible": isVisible(),
+      "instanceId": getAppId()
   };
   jQuery.ajax({
     url: ajaxUrl,
@@ -266,17 +259,14 @@ function createLink() {
 }
 
 function reloadPage() {
-  setTimeout(function(){ location.href= webContext + '/RmyLinksPeas/jsp/Main'; }, 1000);
+  setTimeout(function(){ location.href= webContext + '<%=reloadPageURL%>'; }, 1000);
 }
-
 </script>
 </head>
 <body>
-<form name="readForm" action="DeleteLinks" method="post">
-  <input type="hidden" name="mode"/>
 <%
    String bBar = resource.getString("myLinks.links");
-   if (instanceId != null) {
+   if (appScope) {
      bBar = resource.getString("myLinks.linksByComponent");
    }
    browseBar.setComponentName(bBar);
@@ -292,50 +282,48 @@ function reloadPage() {
 %>
 <view:frame>
 <view:areaOfOperationOfCreation/>
+<form name="readForm" action="DeleteLinks" method="post">
+  <input type="hidden" name="mode"/>
 <%
    ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
    arrayPane.setSortableLines(true);
    arrayPane.addArrayColumn(resource.getString("GML.nom"));
    arrayPane.addArrayColumn(resource.getString("GML.description"));
-   ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("myLinks.operation"));
+   ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operations"));
    columnOp.setSortable(false);
 
    // Fill ArrayPane with links
-   if ((links != null) && (links.size() != 0)) {
-     Iterator it = (Iterator) links.iterator();
-     while (it.hasNext()) {
-       ArrayLine line = arrayPane.addArrayLine();
-       LinkDetail link = (LinkDetail) it.next();
-       int linkId = link.getLinkId();
-       String lien = link.getUrl();
-       String name = link.getName();
-       String desc = link.getDescription();
+   for (LinkDetail link : links) {
+     ArrayLine line = arrayPane.addArrayLine();
+     int linkId = link.getLinkId();
+     String lien = link.getUrl();
+     String name = link.getName();
+     String desc = link.getDescription();
 
-       if (!StringUtil.isDefined(name)) {
-         name = lien;
-       }
-       if (!StringUtil.isDefined(desc)) {
-         desc = "";
-       }
-       // Add context before link if needed
-       if (lien.indexOf("://") == -1) {
-         lien = m_context + lien;
-       }
-       ArrayCellLink monLien = line.addArrayCellLink(name, lien);
-       if (link.isPopup()) {
-         monLien.setTarget("_blank");
-       }
-
-       line.addArrayCellText(desc);
-
-       IconPane iconPane = gef.getIconPane();
-       Icon updateIcon = iconPane.addIcon();
-       updateIcon.setProperties(resource.getIcon("myLinks.update"), resource
-           .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
-       line.addArrayCellText(updateIcon.print() +
-           "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
-           link.getLinkId() + "\"/>");
+     if (!StringUtil.isDefined(name)) {
+       name = lien;
      }
+     if (!StringUtil.isDefined(desc)) {
+       desc = "";
+     }
+     // Add context before link if needed
+     if (lien.indexOf("://") == -1) {
+       lien = m_context + lien;
+     }
+     ArrayCellLink monLien = line.addArrayCellLink(name, lien);
+     if (link.isPopup()) {
+       monLien.setTarget("_blank");
+     }
+
+     line.addArrayCellText(desc);
+
+     IconPane iconPane = gef.getIconPane();
+     Icon updateIcon = iconPane.addIcon();
+     updateIcon.setProperties(resource.getIcon("myLinks.update"), resource
+         .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
+     line.addArrayCellText(updateIcon.print() +
+         "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
+         link.getLinkId() + "\"/>");
    }
 
    out.println(arrayPane.print());
@@ -345,11 +333,16 @@ function reloadPage() {
    }
 %>
 </form>
+</view:frame>
+<%
+	out.println(window.printAfter());
+%>
+
 <div id="mylink-popup-content" style="display: none">
 <form name="linkForm" action="" method="post" id="linkFormId">
 <label id="url_label" class="label-ui-dialog" for="url"><fmt:message key="myLinks.url"/></label>
 <span class="champ-ui-dialog">
-  <input id="urlId" name="url" size="60" maxlength="150" type="text" />&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5">
+  <input id="urlId" name="url" size="60" maxlength="150" type="text" />&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>
 </span>
 <label id="name_label" class="label-ui-dialog" for="name"><fmt:message key="GML.nom"/></label>
 <span class="champ-ui-dialog">
@@ -360,10 +353,12 @@ function reloadPage() {
 <span class="champ-ui-dialog">
   <input type="text" name="description" size="60" maxlength="150" value="" id="descriptionId" />
 </span>
+<% if (!appScope) { %>
 <label id="visible_label" class="label-ui-dialog" for="visible"><fmt:message key="myLinks.visible"/></label>
 <span class="champ-ui-dialog">
   <input type="checkbox" name="visible" value="true" id="visibleId"/>
 </span>
+<% } %>
 <label id="popup_label" class="label-ui-dialog" for="popup"><fmt:message key="myLinks.popup"/></label>
 <span class="champ-ui-dialog">
   <input type="checkbox" name="popup" value="true" id="popupId"/>
@@ -373,12 +368,6 @@ function reloadPage() {
 
 </form>
 </div>
-
-</view:frame>
-<%
-	out.println(window.printAfter());
-%>
-
 
 </body>
 </html>

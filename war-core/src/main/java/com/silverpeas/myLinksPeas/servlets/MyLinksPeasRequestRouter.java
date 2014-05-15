@@ -30,8 +30,10 @@ import org.silverpeas.servlet.HttpRequest;
 
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -87,6 +89,9 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         // recupere l'id de l'instance
         String instanceId = request.getParameter("InstanceId");
         String url = request.getParameter("UrlReturn");
+        if (!StringUtil.isDefined(url)) {
+          url = URLManager.getApplicationURL() + URLManager.getURL(null, instanceId) + "Main";
+        }
         myLinksSC.setInstanceId(instanceId);
         myLinksSC.setUrl(url);
         request.setAttribute("UrlReturn", url);
@@ -121,19 +126,6 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         request.setAttribute("UrlReturn", myLinksSC.getUrl());
         request.setAttribute("InstanceId", myLinksSC.getInstanceId());
         destination = rootDest + "viewLinks.jsp";
-      } else if (function.equals("NewLink")) {
-        boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
-        request.setAttribute("IsVisible", Boolean.valueOf(isVisible));
-        // appel jsp
-        destination = rootDest + "linkManager.jsp";
-      } else if (function.equals("EditLink")) {
-        String linkId = request.getParameter("LinkId");
-        LinkDetail link = myLinksSC.getLink(linkId);
-        request.setAttribute("Link", link);
-        boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
-        request.setAttribute("IsVisible", Boolean.valueOf(isVisible));
-        // appel jsp
-        destination = rootDest + "linkManager.jsp";
       } else if (function.equals("DeleteLinks")) {
         Object o = request.getParameterValues("linkCheck");
         if (o != null) {
