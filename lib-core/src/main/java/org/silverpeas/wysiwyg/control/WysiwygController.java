@@ -235,22 +235,6 @@ public class WysiwygController {
   }
 
   /**
-   * Loads the content of a Wysiwyg as a String.
-   * @param foreignPk
-   * @param context
-   * @param lang
-   * @return
-   */
-  public static String loadFileAndAttachment(ForeignPK foreignPk, DocumentType context,
-      String lang) {
-    return getInstance().getManager().loadFileAndAttachment(foreignPk, context, lang);
-  }
-
-  public static String loadContent(SimpleDocument doc, String lang) {
-    return getInstance().getManager().loadContent(doc, lang);
-  }
-
-  /**
    * Load wysiwyg content.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.

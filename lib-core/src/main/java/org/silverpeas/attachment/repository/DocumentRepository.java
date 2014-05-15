@@ -37,6 +37,7 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.util.jcr.NodeIterable;
 import org.silverpeas.util.jcr.PropertyIterable;
 
@@ -103,7 +104,6 @@ public class DocumentRepository {
   }
 
   /**
-   * /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
    *
@@ -543,8 +543,8 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsByForeignId(Session session, String instanceId,
-      String foreignId, String language) throws RepositoryException {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignId(Session session,
+      String instanceId, String foreignId, String language) throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
         DocumentType.attachment);
     return converter.convertNodeIterator(iter, language);
@@ -560,8 +560,8 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listAllDocumentsByForeignId(Session session, String instanceId,
-      String foreignId, String language) throws RepositoryException {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignId(Session session,
+      String instanceId, String foreignId, String language) throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignId(session, instanceId, foreignId);
     return converter.convertNodeIterator(iter, language);
   }
@@ -577,8 +577,9 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsByForeignIdAndType(Session session, String instanceId,
-      String foreignId, DocumentType type, String language) throws RepositoryException {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignIdAndType(Session session,
+      String instanceId, String foreignId, DocumentType type, String language)
+      throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId, type);
     return converter.convertNodeIterator(iter, language);
   }
@@ -980,28 +981,33 @@ public class DocumentRepository {
       language = I18NHelper.defaultLanguage;
     }
     SimpleDocument document = converter.fillDocument(docNode, language);
-    return new BufferedInputStream(FileUtils.openInputStream(new File(document.getAttachmentPath())));
+    return new BufferedInputStream(
+        FileUtils.openInputStream(new File(document.getAttachmentPath())));
   }
 
   /**
    * Remove the content for the specified language.
+   * If no other content exists, then the document node is deleted.
    *
    * @param session the current JCR session.
    * @param documentPk the document which content is to be removed.
    * @param language the language of the content which is to be removed.
+   * @return false if the document has no child node after the content remove, true otherwise.
    * @throws RepositoryException
    */
-  public void removeContent(Session session, SimpleDocumentPK documentPk, String language) throws
-      RepositoryException {
+  public boolean removeContent(Session session, SimpleDocumentPK documentPk, String language)
+      throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersionedMaster(documentNode) && !documentNode.isCheckedOut()) {
       checkoutNode(documentNode, null);
     }
     converter.removeAttachment(documentNode, language);
     documentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (!documentNode.hasNodes()) {
+    boolean existsOtherContents = documentNode.hasNodes();
+    if (!existsOtherContents) {
       deleteDocumentNode(documentNode);
     }
+    return existsOtherContents;
   }
 
   /**
@@ -1026,16 +1032,48 @@ public class DocumentRepository {
   }
 
   /**
-   * Unlock a document if it is versionned to create a new version.
+   * Unlock a document if it is versionned to create a new version or to restore a previous one.
+   * By using this method, the metadata of the content are always updated.
    *
-   * @param session
-   * @param document
-   * @param restore
-   * @return
+   * @param session the current JCR open session to perform actions.
+   * @param document the document data from which all needed identifiers are retrieved.
+   * @param restore true to restore the previous version if any.
+   * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
    * @throws RepositoryException
    */
   public SimpleDocument unlock(Session session, SimpleDocument document, boolean restore)
       throws RepositoryException {
+    return unlock(session, document, restore, false);
+  }
+
+  /**
+   * Unlock a document if it is versionned from a context into which a language content has just
+   * been deleted. This method does not update the metadata of the content in order to obtain an
+   * efficient content deletion.
+   *
+   * @param session the current JCR open session to perform actions.
+   * @param document the document data from which all needed identifiers are retrieved.
+   * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
+   * @throws RepositoryException
+   */
+  public SimpleDocument unlockFromContentDeletion(Session session, SimpleDocument document)
+      throws RepositoryException {
+    return unlock(session, document, false, true);
+  }
+
+  /**
+   * Unlock a document if it is versionned to create a new version or to restore a previous one.
+   *
+   * @param session the current JCR open session to perform actions.
+   * @param document the document data from which all needed identifiers are retrieved.
+   * @param restore true to restore the previous version if any.
+   * @param skipContentMetadataUpdate false to update the metadata of the content {@link
+   * SimpleDocument#getFile()}.
+   * @return the document updated.
+   * @throws RepositoryException
+   */
+  private SimpleDocument unlock(Session session, SimpleDocument document, boolean restore,
+      boolean skipContentMetadataUpdate) throws RepositoryException {
     Node documentNode;
     try {
       documentNode = session.getNodeByIdentifier(document.getId());
@@ -1056,11 +1094,11 @@ public class DocumentRepository {
           return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
         }
       }
-      converter.fillNode(document, documentNode);
+      converter.fillNode(document, documentNode, skipContentMetadataUpdate);
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
     if (!document.isVersioned()) {
-      converter.fillNode(document, documentNode);
+      converter.fillNode(document, documentNode, skipContentMetadataUpdate);
       converter.releaseDocumentNode(documentNode, document.getLanguage());
       return converter.convertNode(documentNode, document.getLanguage());
     }
