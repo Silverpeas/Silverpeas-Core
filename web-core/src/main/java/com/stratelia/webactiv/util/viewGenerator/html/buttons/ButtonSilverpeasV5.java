@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 
 /**
@@ -41,12 +40,22 @@ public class ButtonSilverpeasV5 extends AbstractButton {
    * @return
    * @see
    */
+  @Override
   public String print() {
-    String action = this.action;
+    String theAction = this.action;
     String iconsPath = getIconsPath();
 
     if (disabled) {
-      action = "#";
+      theAction = "#";
+    } else if (theAction.startsWith("angularjs:")) {
+      theAction = theAction.substring(10);
+      if (theAction.contains("{{") && theAction.contains("}}")) {
+        theAction = "ng-href=\"" + theAction + "\"";
+      } else {
+        theAction = "href=\"#\" ng-click=\"" + theAction + "\"";
+      }
+    } else {
+      theAction = "href=\"" + action + "\"";
     }
 
     StringBuilder str = new StringBuilder();
@@ -54,8 +63,8 @@ public class ButtonSilverpeasV5 extends AbstractButton {
     str.append("<tr>");
     str.append("<td align=\"left\" class=\"gaucheBoutonV5\"><img src=\"")
         .append(iconsPath).append("/px.gif\" alt=\"\"/></td>");
-    str.append("<td nowrap=\"nowrap\" class=\"milieuBoutonV5\"><a href=\"").append(action)
-        .append("\">").append(label).append("</a></td>");
+    str.append("<td nowrap=\"nowrap\" class=\"milieuBoutonV5\"><a ").append(theAction)
+        .append(" >").append(label).append("</a></td>");
     str.append("<td align=\"right\" class=\"droiteBoutonV5\"><img src=\"")
         .append(iconsPath).append("/px.gif\" alt=\"\"/></td>");
     str.append("</tr>");

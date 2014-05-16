@@ -20,14 +20,24 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.scheduler.*;
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionValidationContext;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.notificationManager.*;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean;
 import com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
@@ -41,14 +51,23 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.text.ParseException;
-import java.util.*;
+import org.silverpeas.servlets.LogoutServlet;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.servlets.LogoutServlet;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 /**
  * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user
@@ -73,9 +92,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   // Client refresh intervall in ms (see Clipboard Session Controller)
   private long maxRefreshInterval = 90000; // 1mn30
   // Contains all current sessions
-  private Map<String, SessionInfo> userDataSessions = new HashMap<String, SessionInfo>(100);
+  private final Map<String, SessionInfo> userDataSessions = new HashMap<String, SessionInfo>(100);
   // Contains the session when notified
-  private List<String> userNotificationSessions = new ArrayList<String>(100);
+  private final List<String> userNotificationSessions = new ArrayList<String>(100);
   private ResourceLocator messages = null;
   @Inject
   private SilverStatisticsManager myStatisticsManager = null;
@@ -95,7 +114,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   public void initSessionManager() {
     SilverTrace.
         info("peasCore", "SessionManagement.initialization", "peasCore.MSG_SERVICE_STARTING",
-        "Initialization of the session management service");
+            "Initialization of the session management service");
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
       ResourceLocator rl = new ResourceLocator("com.stratelia.webactiv.clipboard.settings"
@@ -147,13 +166,21 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   @Override
-  public synchronized SessionInfo validateSession(String sessionKey) {
-    SessionInfo si = userDataSessions.get(sessionKey);
-    if (si != null) {
-      si.updateLastAccess();
+  public SessionInfo validateSession(String sessionKey) {
+    return validateSession(SessionValidationContext.withSessionKey(sessionKey));
+  }
+
+  @Override
+  public synchronized SessionInfo validateSession(final SessionValidationContext context) {
+    String sessionKey = context.getSessionKey();
+    SessionInfo sessionInfo = getSessionInfo(sessionKey);
+    if (!context.mustSkipLastUserAccessTimeRegistering()) {
+      if (sessionInfo.isDefined()) {
+        sessionInfo.updateLastAccess();
+      }
+      userNotificationSessions.remove(sessionKey);
     }
-    userNotificationSessions.remove(sessionKey);
-    return si;
+    return sessionInfo;
   }
 
   /**
@@ -233,7 +260,11 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   @Override
   public synchronized SessionInfo getSessionInfo(String sessionId) {
-    return userDataSessions.get(sessionId);
+    SessionInfo session = userDataSessions.get(sessionId);
+    if (session == null) {
+      session = SessionInfo.NoneSession;
+    }
+    return session;
   }
 
   /**
@@ -281,8 +312,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   @Override
   public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList(
       UserDetail user) {
-    Map<String, com.silverpeas.session.SessionInfo> distinctConnectedUsersList =
-        new HashMap<String, com.silverpeas.session.SessionInfo>();
+    Map<String, com.silverpeas.session.SessionInfo> distinctConnectedUsersList
+        = new HashMap<String, com.silverpeas.session.SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
       UserDetail sessionUser = si.getUserDetail();
@@ -559,5 +590,13 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   private String log(final SessionInfo sessionInfo) {
     return sessionInfo.getUserDetail().getLogin() + " (" + sessionInfo.getUserDetail().getDomainId()
         + ")";
+  }
+
+  @Override
+  public long getNextSessionTimeOut(String sessionKey) {
+    SessionInfo session = userDataSessions.get(sessionKey);
+    long actualUserSessionTimeout = (session.getUserDetail().isAccessAdmin()) ? adminSessionTimeout
+        : userSessionTimeout;
+    return session.getLastAccessTimestamp() + actualUserSessionTimeout;
   }
 }

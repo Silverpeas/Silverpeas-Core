@@ -22,7 +22,7 @@ class ConcurrentEncryptionTaskExecutor {
 
   // safe value taken from the ReentrantLock API
   private static final int TOKEN_COUNT = 2147483647;
-  private static Semaphore semaphore = new Semaphore(TOKEN_COUNT);
+  private static final Semaphore semaphore = new Semaphore(TOKEN_COUNT);
 
   /**
    * Executes concurrently the specified task according to the following policy: a non-privileged

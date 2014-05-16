@@ -30,6 +30,7 @@
  * the application itself and by its dependencies (other silverpeas modules).
  * When declaring an application as a module in silverpeas, usually it depends on
  * the module silverpeas.services in which are defined all the Silverpeas services at client side.
+ * Common and default behaviour is configured here to handle properly HTTP Ajax Request.
  *
  * The example below illustrates the declaration of an application:
  * @example
@@ -43,7 +44,16 @@
  * @example
  * var myapp = angular.module('silverpeas.myapp', ['silverpeas.services', 'silverpeas.directives']);
  */
-angular.module('silverpeas', []);
+angular.module('silverpeas', ['ngSanitize']).config(['$httpProvider', function($httpProvider) {
+  // disable http caching
+  $httpProvider.defaults.cache = false;
+  //initialize get if not there
+  if (!$httpProvider.defaults.headers.get) {
+    $httpProvider.defaults.headers.get = {};
+  }
+  //disable IE ajax request caching
+  $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+}]);
 
 /**
  * Defines the context object used to share application contextual properties with the different
@@ -80,5 +90,43 @@ angular.module('silverpeas.services', ['silverpeas', 'silverpeas.adapters']);
  * application.
  * @requires silverpeas
  */
-angular.module('silverpeas.directives', ['silverpeas']);
+angular.module('silverpeas.directives', ['silverpeas', 'silverpeas.services']);
 
+/**
+ * Provider of the promise manager in AngularJS to be used in plain old javascript.
+ * @type {promise}
+ */
+var Promise = angular.injector(['ng']).get('$q');
+
+/**
+ * Common directive to provide solution to update HTML DOM with partial HTML
+ * containing angular directives get from AJAX REQUEST.
+ * The mechanism is simple :
+ * 1 - put one times into the parent HTML DOM : <div compile-directive style="display: none"></div>
+ * 2 - update the HTML DOM by using the method updateHtmlContainingAngularDirectives
+ */
+angular.module('silverpeas.directives').directive('compileDirective', function($compile) {
+  return {
+    template : '<div id="compile-directive-identifier" style="display: none"></div>',
+    link : function(scope, element, attr) {
+      angular.element('#compile-directive-identifier').on('compile-directive-execute',
+          function(event, $target, html) {
+            scope.renderIn($target, html);
+          });
+      scope.renderIn = function($target, html) {
+        var el = $compile(html)(scope);
+        angular.element($target).children().remove();
+        angular.element($target).append(el);
+      }
+    }
+  };
+});
+
+/**
+ * Simple method to update HTML DOM partially with HTML containing angular directives
+ * @param $target the jQuery or angular element container.
+ * @param html the HTML DOM to put into $target container.
+ */
+function updateHtmlContainingAngularDirectives($target, html) {
+  angular.element('#compile-directive-identifier').trigger('compile-directive-execute', [$target, html]);
+}

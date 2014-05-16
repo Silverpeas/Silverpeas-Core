@@ -51,7 +51,7 @@
         var $pagination = angular.element(element);
 
         function renderPagination() {
-          if (scope.itemsSize > 0) {
+          if (scope.itemsSize > scope.pageSize) {
             if (!$pagination.is(':visible'))
               $pagination.show();
             $pagination.smartpaginator({

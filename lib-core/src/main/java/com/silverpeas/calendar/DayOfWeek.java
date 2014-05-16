@@ -24,10 +24,75 @@
 
 package com.silverpeas.calendar;
 
+import net.fortuna.ical4j.model.WeekDay;
+
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * The days of week.
  */
 public enum DayOfWeek {
+  MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
 
-  MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+  /**
+   * Gets the corresponding ICal4J day of week.
+   * @return
+   */
+  public WeekDay toICal4J() {
+    switch (this) {
+      case MONDAY:
+        return WeekDay.MO;
+      case TUESDAY:
+        return WeekDay.TU;
+      case WEDNESDAY:
+        return WeekDay.WE;
+      case THURSDAY:
+        return WeekDay.TH;
+      case FRIDAY:
+        return WeekDay.FR;
+      case SATURDAY:
+        return WeekDay.SA;
+      case SUNDAY:
+        return WeekDay.SU;
+    }
+    return null;
+  }
+
+  /**
+   * Gets the Silverpeas Day Of Week from a {@link Date}
+   * @param aDate
+   * @return
+   */
+  public static DayOfWeek fromDate(Date aDate) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(aDate);
+    return fromDayOfWeekNumber(calendar.get(Calendar.DAY_OF_WEEK));
+  }
+
+  /**
+   * Gets the Silverpeas Day Of Week from the number of the day in week normalized by {@link
+   * Calendar}.
+   * @param dayOfWeekNumber
+   * @return
+   */
+  public static DayOfWeek fromDayOfWeekNumber(int dayOfWeekNumber) {
+    switch (dayOfWeekNumber) {
+      case java.util.Calendar.MONDAY:
+        return MONDAY;
+      case java.util.Calendar.TUESDAY:
+        return TUESDAY;
+      case java.util.Calendar.WEDNESDAY:
+        return WEDNESDAY;
+      case java.util.Calendar.THURSDAY:
+        return THURSDAY;
+      case java.util.Calendar.FRIDAY:
+        return FRIDAY;
+      case java.util.Calendar.SATURDAY:
+        return SATURDAY;
+      case java.util.Calendar.SUNDAY:
+        return SUNDAY;
+    }
+    return null;
+  }
 }

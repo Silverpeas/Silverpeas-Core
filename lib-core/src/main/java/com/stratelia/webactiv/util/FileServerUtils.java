@@ -50,7 +50,6 @@ public class FileServerUtils {
   public static final String FILE_NAME_PARAMETER = "fileName";
   public static final String ATTACHMENT_ID_PARAMETER = "attachmentId";
   public static final String LANGUAGE_PARAMETER = "lang";
-  public static final String DOCUMENT_ID_PARAMETER = "DocumentId";
   public static final String VERSION_ID_PARAMETER = "VersionId";
   public static final String NODE_ID_PARAMETER = "NodeId";
   public static final String PUBLICATION_ID_PARAMETER = "PubId";

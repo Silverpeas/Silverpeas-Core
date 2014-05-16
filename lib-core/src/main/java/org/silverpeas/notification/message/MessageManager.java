@@ -23,8 +23,10 @@
  */
 package org.silverpeas.notification.message;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 /**
@@ -67,7 +69,7 @@ public class MessageManager {
   public static String initialize() {
     String registredKey =
         CacheServiceFactory.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceFactory.getThreadCacheService().put(MessageManager.class, registredKey);
+    CacheServiceFactory.getRequestCacheService().put(MessageManager.class, registredKey);
     return registredKey;
   }
 
@@ -75,7 +77,7 @@ public class MessageManager {
    * Clear out the thread cache the registred key referenced.
    */
   public static void destroy() {
-    CacheServiceFactory.getThreadCacheService().remove(MessageManager.class);
+    CacheServiceFactory.getRequestCacheService().remove(MessageManager.class);
   }
 
   /**
@@ -147,8 +149,40 @@ public class MessageManager {
    * Get the key that permits to get the MessageContainer registred for the thread.
    */
   public static String getRegistredKey() {
-    return CacheServiceFactory.getThreadCacheService().get(MessageManager.class, String.class);
+    return CacheServiceFactory.getRequestCacheService().get(MessageManager.class, String.class);
   }
+
+  /**
+   * Gets the resource locator from the given property file and by taking into account of the
+   * current known language.
+   * @param propertyFileBaseName
+   * @return
+   */
+  public static ResourceLocator getResourceLocator(String propertyFileBaseName) {
+    return getResourceLocator(getRegistredKey(), propertyFileBaseName, null);
+  }
+
+  /**
+   * Gets the resource locator from the given property file and given language.
+   * @param propertyFileBaseName
+   * @param language
+   * @return
+   */
+  protected static ResourceLocator getResourceLocator(String registredKey,
+      String propertyFileBaseName, String language) {
+    MessageContainer container = getMessageContainer(registredKey);
+
+    // If null, manager has not been initialized -> ERROR is traced
+    if (container == null) {
+      SilverTrace.error("notification", "MessageManager.getResourceLocator",
+          "MESSAGE_MANAGER.NOT_INITIALIZED", "ResourceLocator : " + propertyFileBaseName);
+      return null;
+    }
+
+    return container.getResourceLocator(propertyFileBaseName,
+        StringUtil.isDefined(language) ? language : container.getLanguage());
+  }
+
 
   /**
    * Gets the message container.
@@ -163,7 +197,8 @@ public class MessageManager {
    * Add an error message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addError(String message) {
     return addError(getRegistredKey(), message);
@@ -173,7 +208,8 @@ public class MessageManager {
    * Add an error message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addError(String registredKey, String message) {
     return addMessage(registredKey, new ErrorMessage(message));
@@ -183,7 +219,8 @@ public class MessageManager {
    * Add an severe message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addSevere(String message) {
     return addSevere(getRegistredKey(), message);
@@ -193,7 +230,8 @@ public class MessageManager {
    * Add an severe message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addSevere(String registredKey, String message) {
     return addMessage(registredKey, new SevereMessage(message));
@@ -203,7 +241,8 @@ public class MessageManager {
    * Add an warning message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addWarning(String message) {
     return addWarning(getRegistredKey(), message);
@@ -213,7 +252,8 @@ public class MessageManager {
    * Add an warning message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addWarning(String registredKey, String message) {
     return addMessage(registredKey, new WarningMessage(message));
@@ -223,7 +263,8 @@ public class MessageManager {
    * Add a success message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addSuccess(String message) {
     return addSuccess(getRegistredKey(), message);
@@ -233,7 +274,8 @@ public class MessageManager {
    * Add a success message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addSuccess(String registredKey, String message) {
     return addMessage(registredKey, new SuccessMessage(message));
@@ -243,7 +285,8 @@ public class MessageManager {
    * Add an info message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   public static Message addInfo(String message) {
     return addInfo(getRegistredKey(), message);
@@ -253,7 +296,8 @@ public class MessageManager {
    * Add an info message. If a message already exists, HTML newline is added
    * between the existent message and the given one
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   protected static Message addInfo(String registredKey, String message) {
     return addMessage(registredKey, new InfoMessage(message));
@@ -262,7 +306,8 @@ public class MessageManager {
   /**
    * Centralization
    * @param message
-   * @return the complete message
+   * @return the instance of the created message. Some parameters of this instance can be
+   * overridden (the display live time for example).
    */
   private static Message addMessage(String registredKey, Message message) {
     MessageContainer container = getMessageContainer(registredKey);

@@ -20,18 +20,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
@@ -39,19 +27,31 @@ import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.apache.commons.beanutils.BeanUtils;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
+  public static final String CURRENT_REQUESTER_KEY =
+      UserDetail.class.getName() + "_CURRENT_REQUESTER";
 
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
@@ -90,6 +90,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public static UserDetail getById(String userId) {
     return getOrganisationController().getUserDetail(userId);
+  }
+
+  /**
+   * Gets the detail about the current user behind a request of treatment processing.
+   * @return the detail about the user above described.
+   */
+  public static UserDetail getCurrentRequester() {
+    return CacheServiceFactory.getSessionCacheService()
+        .get(CURRENT_REQUESTER_KEY, UserDetail.class);
   }
 
   /**

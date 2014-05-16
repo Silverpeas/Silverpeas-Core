@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="com.silverpeas.util.FileUtil" %>
-<%@page import="org.apache.commons.lang3.CharEncoding" %>
+<%@page import="com.silverpeas.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page isELIgnored="false" %>
 
@@ -36,23 +36,23 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ page import="
-				 com.silverpeas.util.StringUtil,
-                 com.stratelia.silverpeas.peasCore.ComponentContext,
-                 com.stratelia.silverpeas.peasCore.MainSessionController,
+				 com.stratelia.silverpeas.peasCore.MainSessionController,
                  com.stratelia.silverpeas.peasCore.URLManager,
                  com.stratelia.silverpeas.util.ResourcesWrapper,
                  com.stratelia.webactiv.util.FileRepositoryManager,
                  com.stratelia.webactiv.util.FileServerUtils,
                  com.stratelia.webactiv.util.ResourceLocator,
-                 com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory" %>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+                 com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory,
+                 com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText,
+                 com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine" %>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane" %>
-<%@page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.apache.commons.lang3.CharEncoding" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@page import="org.silverpeas.attachment.web.VersioningSessionController" %>
-<%@ page import="java.net.URLEncoder" %>
+<%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 
 <%
   GraphicElementFactory gef =
@@ -121,16 +121,18 @@
     ArrayLine arrayLine = null; // declare line object of the array
 
     for (SimpleDocument publicVersion : vVersions) {
+      boolean canUserDownloadFile =
+          publicVersion.isDownloadAllowedForRolesFrom(mainSessionCtrl.getCurrentUserDetail());
+
       arrayLine = arrayPane.addArrayLine(); // set a new line
-      String url =
-          FileServerUtils.getUrl(publicVersion.getInstanceId(), publicVersion.getFilename()) +
-              "&DocumentId=" + publicVersion.getId() + "&VersionId=" + publicVersion.getId();
+      String url = URLManager.getApplicationURL() + publicVersion.getAttachmentURL();
       if (fromAlias) {
         url = publicVersion.getAliasURL();
       }
 
       String spinFire = "";
-      if (FileUtil.isSpinfireDocument(publicVersion.getFilename()) && spinfireViewerEnable) {
+      if (publicVersion.isContentSpinfire() && spinfireViewerEnable &&
+          canUserDownloadFile) {
         spinFire = "<br><div id=\"switchView\" name=\"switchView\" style=\"display: none\">";
         spinFire += "<a title=\"Viewer SpinFire 3D\"href=\"#\" onClick=\"changeView3d(" +
             publicVersion.getPk().getId() +
@@ -143,19 +145,33 @@
         spinFire += "</OBJECT>";
         spinFire += "</div>";
       }
-      String permalink =
-          " <a href=\"" + URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId()) +
-              "\"><img src=\"" + URLManager.getApplicationURL() +
-              "/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\"" +
-              messages.getString("versioning.CopyLink") + "\" title=\"" +
-              messages.getString("versioning.CopyLink") + "\" target=\"_blank\"></a> ";
-      arrayLine.addArrayCellText(
-          "<a href=\"" + url + "\" target=\"_blank\">" + publicVersion.getMajorVersion() + "." +
-              publicVersion.getMinorVersion() + "</a>" + permalink + spinFire);
-      arrayLine.addArrayCellText("<a href=\"" + url + "\" target=\"_blank\"><img src=\"" +
-          FileRepositoryManager.getFileIcon(publicVersion.getFilename()) +
-          "\" border=\"0\" title=\"" + publicVersion.getFilename() + "\"/> " +
-          publicVersion.getFilename() + "</a>");
+      String permalink = "";
+      if (canUserDownloadFile) {
+        permalink =
+            " <a href=\"" + publicVersion.getUniversalURL() + "\">" +
+                "<img src=\"" + URLManager.getApplicationURL() + "/util/icons/link.gif\"" +
+                "border=\"0\" valign=\"absmiddle\" alt=\"" +
+                messages.getString("versioning.CopyLink") + "\" title=\"" +
+                messages.getString("versioning.CopyLink") + "\" target=\"_blank\"></a> ";
+      }
+      StringBuilder sb = new StringBuilder();
+      sb.append(publicVersion.getVersion());
+      if (canUserDownloadFile) {
+        sb.insert(0, "<a href=\"" + url + "\" target=\"_blank\">");
+        sb.append("</a>");
+      }
+      sb.append(permalink).append(spinFire);
+      arrayLine.addArrayCellText(sb.toString());
+      sb.setLength(0);
+      sb.append("<img src=\"")
+          .append(FileRepositoryManager.getFileIcon(publicVersion.getFilename()))
+          .append("\" border=\"0\" title=\"").append(publicVersion.getFilename()).append("\"/> ")
+          .append(publicVersion.getFilename());
+      if (canUserDownloadFile) {
+        sb.insert(0, "<a href=\"" + url + "\" target=\"_blank\">");
+        sb.append("</a>");
+      }
+      arrayLine.addArrayCellText(sb.toString());
 
       if (StringUtil.isDefined(publicVersion.getTitle())) {
         arrayLine.addArrayCellText(publicVersion.getTitle());
@@ -167,9 +183,14 @@
       } else {
         arrayLine.addArrayCellText("");
       }
-      if (StringUtil.isDefined(publicVersion.getCreatedBy())) {
-        arrayLine.addArrayCellText(
-            versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
+      UserDetail lastModifier = null;
+      if (StringUtil.isDefined(publicVersion.getUpdatedBy())) {
+        lastModifier = UserDetail.getById(publicVersion.getUpdatedBy());
+      } else if (StringUtil.isDefined(publicVersion.getCreatedBy())) {
+        lastModifier = UserDetail.getById(publicVersion.getCreatedBy());
+      }
+      if (lastModifier != null) {
+        arrayLine.addArrayCellText(lastModifier.getDisplayedName());
       } else {
         arrayLine.addArrayCellText("????");
       }

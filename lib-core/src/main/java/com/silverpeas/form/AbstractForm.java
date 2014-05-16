@@ -24,19 +24,22 @@
 
 package com.silverpeas.form;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.jsp.JspWriter;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 /**
  * This abstract class implements the form interface and provides for all concretes classes a
@@ -47,8 +50,14 @@ public abstract class AbstractForm implements Form {
   private List<FieldTemplate> fieldTemplates;
   private String title = "";
   private String name = "";
+  private String formName = "";
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
+  
+  public static final String REPEATED_FIELD_CSS_SHOW = "field-occurrence-shown";
+  public static final String REPEATED_FIELD_CSS_HIDE = "field-occurrence-hidden";
+  public static final String REPEATED_FIELD_SEPARATOR = "__SSPP__";
+  
 
   /**
    * Creates a new form from the specified template of records.
@@ -61,6 +70,15 @@ public abstract class AbstractForm implements Form {
     } else {
       fieldTemplates = new ArrayList<FieldTemplate>();
     }
+  }
+  
+  @Override
+  public void setFormName(String name) {
+    formName = name;
+  }
+  
+  public String getFormName() {
+    return formName;
   }
 
   /**
@@ -153,6 +171,8 @@ public abstract class AbstractForm implements Form {
         if (fieldTemplate != null) {
           String fieldDisplayerName = fieldTemplate.getDisplayerName();
           String fieldType = fieldTemplate.getTypeName();
+          String fieldName = fieldTemplate.getFieldName();
+          boolean mandatory = fieldTemplate.isMandatory();
           FieldDisplayer fieldDisplayer = null;
           try {
             if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
@@ -161,18 +181,27 @@ public abstract class AbstractForm implements Form {
             fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
 
             if (fieldDisplayer != null) {
-              out.append("	field = document.getElementById(\"")
-                  .append(fieldTemplate.getFieldName()).append("\");\n");
-              out.append("	if (field == null) {\n");
-              // try to find field by name
-              out.append("  field = $(\"input[name=").append(fieldTemplate.getFieldName()).append(
-                  "]\");\n");
-              out.println("}");
-              out.append(" if (field != null) {\n");
-              fieldDisplayer.displayScripts(out, fieldTemplate, pc);
-              out.println("}");
-              pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
-                  pc));
+              int nbFieldsToDisplay = fieldTemplate.getMaximumNumberOfOccurrences();              
+              for (int i=0; i<nbFieldsToDisplay; i++) {
+                String currentFieldName = Util.getFieldOccurrenceName(fieldName, i);
+                ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
+                if (i > 0) {
+                  ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
+                }
+                out.append("	field = document.getElementById(\"").append(currentFieldName).append("\");\n");
+                out.append("	if (field == null) {\n");
+                // try to find field by name
+                out.append("  field = $(\"input[name=").append(currentFieldName).append("]\");\n");
+                out.println("}");
+                out.append(" if (field != null) {\n");
+                fieldDisplayer.displayScripts(out, fieldTemplate, pc);
+                out.println("}");
+                pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+              }
+              
+              // set original data
+              ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
+              ((GenericFieldTemplate) fieldTemplate).setMandatory(mandatory);
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "AbstractForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
@@ -198,7 +227,7 @@ public abstract class AbstractForm implements Form {
           .append("	default :\n")
           .append("		errorMsg = \"")
           .append(Util.getString("GML.ThisFormContains", language))
-          .append("\" + errorNb + \" ")
+          .append(" \" + errorNb + \" ")
           .append(Util.getString("GML.errors", language))
           .append(" :\\n \" + errorMsg;\n")
           .append("		window.alert(errorMsg);\n")
@@ -207,8 +236,17 @@ public abstract class AbstractForm implements Form {
           .append("	}\n")
           .append("	return result;\n")
           .append("}\n")
-          .append("	\n\n")
-          .append("</script>\n");
+          .append("	\n\n");
+      
+      out.append("function showOneMoreField(fieldName) {\n");
+      out.append("$('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + ":first').removeClass('" +
+          REPEATED_FIELD_CSS_HIDE + "').addClass('" + REPEATED_FIELD_CSS_SHOW + "');\n");
+      out.append("if ($('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + "').length == 0) {\n");
+      out.append(" $('#form-row-'+fieldName+' #moreField-'+fieldName).hide();\n");
+      out.append("}\n");
+      out.append("}\n");
+      
+      out.append("</script>\n");
       out.flush();
       jw.write(sw.toString());
     } catch (java.io.IOException fe) {
@@ -258,8 +296,6 @@ public abstract class AbstractForm implements Form {
     List<String> attachmentIds = new ArrayList<String>();
 
     for (FieldTemplate fieldTemplate : fieldTemplates) {
-      FieldDisplayer fieldDisplayer = null;
-
       // Have to check if field is not readonly, if so no need to update
       if (!fieldTemplate.isReadOnly()) {
         if (fieldTemplate != null) {
@@ -267,18 +303,18 @@ public abstract class AbstractForm implements Form {
           String fieldType = fieldTemplate.getTypeName();
           String fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
-            if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
+            if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
               fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
             }
             if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
-              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+              FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
-                attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
-                    fieldTemplate, pagesContext));
+                for (int occ=0; occ<fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
+                  attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName, occ),
+                      fieldTemplate, pagesContext)); 
+                }
               }
             }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
           } catch (Exception e) {
             SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
           }
@@ -324,8 +360,6 @@ public abstract class AbstractForm implements Form {
                   fieldTemplate, pagesContext));
             }
           }
-        } catch (FormException fe) {
-          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
         } catch (Exception e) {
           SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
         }
@@ -365,8 +399,6 @@ public abstract class AbstractForm implements Form {
               isEmpty = !StringUtil.isDefined(itemValue);
             }
           }
-        } catch (FormException fe) {
-          SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, fe);
         } catch (Exception e) {
           SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, e);
         }
@@ -428,5 +460,18 @@ public abstract class AbstractForm implements Form {
 
   public String getName() {
     return name;
+  }
+  
+  protected Field getSureField(FieldTemplate fieldTemplate, DataRecord record, int occurrence) {
+    Field field = null;
+    try {
+      field = record.getField(fieldTemplate.getFieldName(), occurrence);
+      if (field == null) {
+        field = fieldTemplate.getEmptyField(occurrence);
+      }
+    } catch (FormException fe) {
+      SilverTrace.error("form", "AbstractForm.display", "form.EX_CANT_GET_FORM", null, fe);
+    }
+    return field;
   }
 }

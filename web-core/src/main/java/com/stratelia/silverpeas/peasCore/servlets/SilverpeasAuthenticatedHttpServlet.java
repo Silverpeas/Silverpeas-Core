@@ -24,11 +24,14 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.authentication.SilverpeasSessionOpener;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,9 +42,8 @@ import java.io.IOException;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
- * Servlet that verifies especially the user is authenticated.
- * User: Yohann Chastagnier
- * Date: 20/09/13
+ * Servlet that verifies especially the user is authenticated. User: Yohann Chastagnier Date:
+ * 20/09/13
  */
 public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
@@ -53,10 +55,10 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
+    // Gets the main session controller
+    HttpSession session = request.getSession(false);
     try {
-
       // Gets the main session controller
-      HttpSession session = request.getSession(false);
       MainSessionController mainSessionCtrl = null;
       if (session != null) {
         mainSessionCtrl = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
@@ -81,20 +83,31 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
     } catch (UserSessionExpirationException uste) {
 
       /*
-      The session doesn't contains an authenticated user :
-      - delay is passed
-      - session expired manually
+       The session doesn't contains an authenticated user :
+       - delay is passed
+       - session expired manually
        */
-
       // Logging
-      SilverTrace.warn("peasCore", "SilverpeasAuthenticatedHttpServlet.service",
-          "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + request.getSession(true).getId());
-      // Thoroughly clean the session
-      silverpeasSessionOpener.closeSession(request);
+      if (session != null) {
+        SilverTrace.warn("peasCore", "SilverpeasAuthenticatedHttpServlet.service",
+            "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
+        // Thoroughly clean the session
+        silverpeasSessionOpener.closeSession(session);
+      }
       // Redirecting the user
       redirectOrForwardService(request, response,
           GeneralPropertiesManager.getString("sessionTimeout"));
     }
+  }
+
+  /**
+   * Renews the session security token.
+   * @param request
+   */
+  protected void renewSessionSecurityToken(final HttpServletRequest request) {
+    SessionInfo sessionInfo = SessionManagementFactory.getFactory().getSessionManagement()
+        .getSessionInfo(getMainSessionController(request).getSessionId());
+    SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(sessionInfo);
   }
 
   /**
@@ -109,6 +122,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
    * Used to handle the expiration of the user session.
    */
   private class UserSessionExpirationException extends RuntimeException {
+
     private static final long serialVersionUID = -7476590253287182372L;
     // Empty
   }

@@ -20,6 +20,25 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeAngular;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeNotifier;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeSecurityTokenizing;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeUserZoom;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeCkeditorAddOns;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
+
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -59,18 +78,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -103,20 +110,20 @@ public class GraphicElementFactory {
   private MainSessionController mainSessionController = null;
   private String spaceId = null;
   private boolean componentMainPage = false;
-  public static final String defaultLookName = "Initial";
+  public static final String defaultLookName = "Initial"; 
   protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
-  protected static final String ANGULAR_JS = "angular.min.js";
-  protected static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
-  protected static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
+  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
+  private static final String JAVASCRIPT_TAG_START = "<script type=\"text/javascript\" src=\"";
+  private static final String JAVASCRIPT_TAG_END = "\"></script>";
+  private static final String STR_NEW_LINE = "\n";
 
   /**
    * Constructor declaration
-   *
    * @param look
    * @see
    */
@@ -151,7 +158,6 @@ public class GraphicElementFactory {
 
   /**
    * Get the settings for the factory.
-   *
    * @return The ResourceLocator returned contains all default environment settings necessary to
    * know wich component to instanciate, but also to know how to generate html code.
    */
@@ -161,7 +167,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return Customer specific look settings if defined, default look settings otherwise
    * @see
    */
@@ -174,8 +179,8 @@ public class GraphicElementFactory {
           "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
-        lookSettings
-            = new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
+        lookSettings =
+            new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
                 silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
@@ -189,7 +194,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return the default look settings ResourceLocator
    * @see
    */
@@ -205,7 +209,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -215,7 +218,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @param look
    * @see
    */
@@ -243,7 +245,7 @@ public class GraphicElementFactory {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
         "root.MSG_GEN_PARAM_VALUE", " look = " + look
-        + " | corresponding settings = " + selectedLook);
+            + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -267,27 +269,24 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
   public String getLookFrame() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
         "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
-        + getFavoriteLookSettings().getString("FrameJSP"));
+            + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
   public String getLookStyleSheet() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
         "root.MSG_GEN_ENTER_METHOD");
-    String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     String charset = getGeneralSettings().getString("charset", CharEncoding.UTF_8);
@@ -299,29 +298,26 @@ public class GraphicElementFactory {
     String specificJS = null;
 
     if (externalStylesheet == null) {
-      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
-          "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
+      code.append(getCSSLinkTag(contextPath + "/util/styleSheets/jquery/" + JQUERYUI_CSS));
 
       // define CSS(default and specific) and JS (specific) dedicated to current component
-      StringBuilder defaultComponentCSS = null;
-      StringBuilder specificComponentCSS = null;
+      String defaultComponentCSS = null;
+      String specificComponentCSS = null;
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
         ComponentInstLight component = mainSessionController.getOrganisationController().
             getComponentInstLight(componentId);
         if (component != null) {
           String componentName = component.getName();
           String genericComponentName = getGenericComponentName(componentName);
-          defaultComponentCSS = new StringBuilder(50);
-          defaultComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"")
-              .append(contextPath).
-              append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
-                  genericComponentName).append(".css").append("\"/>\n");
+          if (component.isWorkflow()) {
+            genericComponentName = "processManager";
+          }
+          defaultComponentCSS = getCSSLinkTag(contextPath + "/" + genericComponentName
+              + "/jsp/styleSheets/" + genericComponentName + ".css");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
           if (StringUtil.isDefined(specificStyle)) {
-            specificComponentCSS = new StringBuilder(50);
-            specificComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-            specificComponentCSS.append(specificStyle).append("\"/>\n");
+            specificComponentCSS = getCSSLinkTag(specificStyle);
           }
 
           specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
@@ -329,12 +325,10 @@ public class GraphicElementFactory {
       }
 
       // append default global CSS
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
-      code.append(standardStyle).append("\"/>\n");
+      code.append(getCSSLinkTag(contextPath + STANDARD_CSS));
 
       code.append("<!--[if IE]>\n");
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-          contextPath).append(standardStyleForIE).append("\"/>\n");
+      code.append(getCSSLinkTag(contextPath + standardStyleForIE));
       code.append("<![endif]-->\n");
 
       // append default CSS of current component
@@ -350,41 +344,39 @@ public class GraphicElementFactory {
         code.append(specificComponentCSS);
       }
     } else {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet)
-          .append("\"/>\n");
+      code.append(getCSSLinkTag(externalStylesheet));
     }
 
     // append javascript
-    code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
-        "';").append("</script>\n");
+    code.append("<script type=\"text/javascript\">var webContext='").append(contextPath)
+        .append("';").append(STR_NEW_LINE).append(addGlobalJSVariable()).append("</script>\n");
 
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
         "/util/javaScript/").append(SILVERPEAS_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYJSON_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(ANGULAR_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(SILVERPEAS_ANGULAR_JS).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/angularjs/").append(SILVERPEAS_ADAPTERS_ANGULAR_JS).append(
-            "\"></script>\n");
-    code.append(JavascriptPluginInclusion.includeNotifier(new ElementContainer()).toString())
-        .append("\n");
+    code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append(
+        STR_NEW_LINE);
+    code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);    
+    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append(
+        STR_NEW_LINE);
+
     if (StringUtil.isDefined(specificJS)) {
-      code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
-          "\"></script>\n");
+      code.append(JAVASCRIPT_TAG_START).append(specificJS).append(JAVASCRIPT_TAG_END)
+          .append(STR_NEW_LINE);
     }
 
     if (isComponentMainPage()) {
-      code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-          "/util/javaScript/jquery/jquery.cookie.js\"></script>\n");
+      code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
+          "/util/javaScript/jquery/jquery.cookie.js\"></script>").append(STR_NEW_LINE);
     }
 
     if (getFavoriteLookSettings() != null
@@ -392,7 +384,9 @@ public class GraphicElementFactory {
       code.append(getYahooElements());
       code.append(
           JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), getLanguage())
-          .toString()).append("\n");
+              .toString()).append(STR_NEW_LINE);
+      code.append(JavascriptPluginInclusion.includeMylinks(new ElementContainer()).toString())
+          .append(STR_NEW_LINE);
     }
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
@@ -400,11 +394,25 @@ public class GraphicElementFactory {
     return code.toString();
   }
 
+  private String addGlobalJSVariable() {
+    StringBuilder globalJSVariableBuilder = new StringBuilder();
+    globalJSVariableBuilder.append("var userLanguage = '").append(getLanguage()).append("';")
+        .append(STR_NEW_LINE);
+    globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
+        .append(" }").append(STR_NEW_LINE);
+    globalJSVariableBuilder.append("function getString(key) { return $.i18n.prop(key); }").append(
+        STR_NEW_LINE);
+    return globalJSVariableBuilder.toString();
+  }
+
   /**
-   * Retrieve space look <br/> Look Style behavior algorithm is : <ul> <li>Use specific space look
-   * if defined</li> <li>else if use the user defined look settings</li> <li>else if use the default
-   * look settings</li> </ul>
-   *
+   * Retrieve space look <br/>
+   * Look Style behavior algorithm is :
+   * <ul>
+   * <li>Use specific space look if defined</li>
+   * <li>else if use the user defined look settings</li>
+   * <li>else if use the default look settings</li>
+   * </ul>
    * @param code the current state of the HTML produced for the header.
    */
   private void appendSpecificCSS(StringBuilder code) {
@@ -454,7 +462,6 @@ public class GraphicElementFactory {
 
   /**
    * Append the default look CSS.
-   *
    * @param code the current state of the HTML produced for the header.
    */
   private void appendDefaultLookCSS(StringBuilder code) {
@@ -470,7 +477,6 @@ public class GraphicElementFactory {
   /**
    * Some logical components have got the same technical component. For example, "toolbox" component
    * is technically "kmelia"
-   *
    * @return the "implementation" name of the given component
    */
   private String getGenericComponentName(String componentName) {
@@ -499,18 +505,17 @@ public class GraphicElementFactory {
     code.append("    visibility:hidden;\n");
     code.append("    }\n");
     code.append("</style>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
+    code.append(JAVASCRIPT_TAG_START).append(contextPath);
     code.append("/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
+    code.append(JAVASCRIPT_TAG_START).append(contextPath);
     code.append("/util/yui/container/container_core-min.js\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
+    code.append(JAVASCRIPT_TAG_START).append(contextPath);
     code.append("/util/yui/menu/menu-min.js\"></script>\n");
     return code.toString();
   }
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -522,7 +527,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -538,7 +542,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new button.
-   *
    * @param label The new button label
    * @param action The action associated exemple : "javascript:onClick=history.back()", or
    * "http://www.stratelia.com/"
@@ -565,7 +568,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new frame.
-   *
    * @return returns an object implementing the Frame interface. That's the new frame to use.
    */
   public Frame getFrame() {
@@ -584,7 +586,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new board.
-   *
    * @return returns an object implementing the Board interface. That's the new board to use.
    */
   public Board getBoard() {
@@ -603,7 +604,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new navigation list.
-   *
    * @return returns an object implementing the NavigationList interface.
    */
   public NavigationList getNavigationList() {
@@ -623,7 +623,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new button.
-   *
    * @param label The new button label
    * @param action The action associated exemple : "javascript:history.back()", or
    * "http://www.stratelia.com/"
@@ -640,7 +639,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new TabbedPane.
-   *
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane() {
@@ -664,7 +662,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new TabbedPane.
-   *
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane(int nbLines) {
@@ -688,7 +685,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ArrayPane.
-   *
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
@@ -718,7 +714,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ArrayPane.
-   *
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
@@ -746,7 +741,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ArrayPane.
-   *
    * @param name The name from your array. This name has to be unique in the session. It will be
    * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
@@ -776,7 +770,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new main Window using the object specified in the properties.
-   *
    * @return An object implementing Window interface
    */
   public Window getWindow() {
@@ -798,7 +791,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ButtonPane.
-   *
    * @return An object implementing the ButtonPane interface
    */
   public ButtonPane getButtonPane() {
@@ -816,7 +808,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new IconPane.
-   *
    * @return An object implementing the IconPane interface.
    */
   public IconPane getIconPane() {
@@ -832,7 +823,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new FormPane.
-   *
    * @param name
    * @param actionURL
    * @param pageContext
@@ -845,7 +835,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new OperationPane.
-   *
    * @return An object implementing the OperationPane interface.
    */
   public OperationPane getOperationPane() {
@@ -864,7 +853,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new BrowseBar.
-   *
    * @return An object implementing the BrowseBar interface.
    */
   public BrowseBar getBrowseBar() {
@@ -886,7 +874,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new SilverpeasCalendar.
-   *
    * @param language : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
@@ -904,7 +891,8 @@ public class GraphicElementFactory {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination;
     if (paginationClassName == null) {
-      paginationClassName = "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
+      paginationClassName =
+          "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
     }
     try {
       pagination = (Pagination) Class.forName(paginationClassName).newInstance();
@@ -921,8 +909,8 @@ public class GraphicElementFactory {
     String progressClassName = getFavoriteLookSettings().getString("Progress");
     ProgressMessage progress;
     if (progressClassName == null) {
-      progressClassName
-          = "com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
+      progressClassName =
+          "com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
     }
     try {
       progress = (ProgressMessage) Class.forName(progressClassName).newInstance();
@@ -976,7 +964,6 @@ public class GraphicElementFactory {
 
   /**
    * Retrieve default look name
-   *
    * @return user personal look settings if defined, default look settings otherwise
    */
   public String getDefaultLookName() {
@@ -989,5 +976,9 @@ public class GraphicElementFactory {
       userLookStyle = defaultLookName;
     }
     return userLookStyle;
+  }
+
+  private String getCSSLinkTag(String href) {
+    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + href + "\"/>\n";
   }
 }

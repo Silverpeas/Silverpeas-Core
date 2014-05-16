@@ -20,41 +20,45 @@
  */
 package com.silverpeas.look;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.core.admin.OrganisationController;
-
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.date.Period;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
@@ -202,7 +206,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
-        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+        "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages = new ResourceLocator(resources.getString("MessageBundle"),
@@ -372,8 +376,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       // Remove the current user
       SessionManagementFactory factory = SessionManagementFactory.getFactory();
       SessionManagement sessionManagement = factory.getSessionManagement();
-      nbConnectedUsers =
-          sessionManagement.getNbConnectedUsersList(getMainSessionController().
+      nbConnectedUsers = sessionManagement.getNbConnectedUsersList(getMainSessionController().
           getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
@@ -450,8 +453,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer =
-          new StringTokenizer(resources.getString("componentsTop", ""), ",");
+      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
         String itemId = tokenizer.nextToken();
 
@@ -655,7 +657,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-          "UTF-8"));
+              "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
@@ -736,4 +738,136 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public boolean isDisplayPDCInHomePage() {
     return displayPDCInHomePage;
   }
+  
+  public DefaultSpaceHomePage getSpaceHomePage(String spaceId) {
+    setSpaceIdAndSubSpaceId(spaceId);
+    String currentSpaceId = getSubSpaceId();
+    DefaultSpaceHomePage homepage = new DefaultSpaceHomePage();
+    
+    // get main information of space
+    SpaceInstLight space = orga.getSpaceInstLightById(currentSpaceId);
+    homepage.setSpace(space);
+
+    // get latest publications
+    if (resources.getBoolean("space.homepage.latestpublications", true)) {
+      try {
+        homepage.setPublications(getPublicationHelper().getUpdatedPublications(currentSpaceId, 0,
+            resources.getInteger("space.homepage.latestpublications.nb", 5)));
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+    if (resources.getBoolean("space.homepage.news", true)) {
+      // get visible news from 'quickinfo' apps
+      homepage.setNews(getNews(currentSpaceId));
+    }
+
+    if (resources.getBoolean("space.homepage.subspaces", true)) {
+      // get allowed subspaces
+      String[] subspaceIds =
+          getOrganisationController().getAllowedSubSpaceIds(userId, currentSpaceId);
+      List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>();
+      for (String subspaceId : subspaceIds) {
+        subspaces.add(getOrganisationController().getSpaceInstLightById(subspaceId));
+      }
+      homepage.setSubSpaces(subspaces);
+    }
+
+    boolean displayApps = resources.getBoolean("space.homepage.apps", true);
+    boolean displayEvents = resources.getBoolean("space.homepage.events", true);
+    if (displayApps || displayEvents) {
+      // get allowed apps
+      String[] appIds = getOrganisationController().getAvailCompoIdsAtRoot(currentSpaceId, userId);
+      List<ComponentInstLight> apps = new ArrayList<ComponentInstLight>();
+      for (String appId : appIds) {
+        ComponentInstLight app = getOrganisationController().getComponentInstLight(appId);
+        if (displayApps) {
+          apps.add(app);
+        }
+        if (displayEvents && app.getName().equals("almanach") &&
+            !StringUtil.isDefined(homepage.getNextEventsURL())) {
+          homepage.setNextEventsURL(URLManager.getApplicationURL()+URLManager.getURL(null, appId)+"portlet");
+        }
+      }
+      homepage.setApps(apps);
+    }
+    
+    if (resources.getBoolean("space.homepage.admins", true)) {
+      // get space admins (not global admins)
+      homepage.setAdmins(getSpaceAdmins(currentSpaceId));
+    }
+
+    return homepage;
+  }
+
+  public List<UserDetail> getSpaceAdmins(String spaceId) {
+    List<UserDetail> admins = new ArrayList<UserDetail>();
+    SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
+    List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
+    profiles.addAll(spaceInst.getInheritedProfiles());
+    profiles.addAll(spaceInst.getProfiles());
+
+    for (SpaceProfileInst profile : profiles) {
+      SilverpeasRole role = SilverpeasRole.from(profile.getName());
+      if (role != null && role.equals(SilverpeasRole.Manager)) {
+        // Users
+        for (String userId : profile.getAllUsers()) {
+          admins.add(UserDetail.getById(userId));
+        }
+
+        // Groups
+        for (String groupId : profile.getAllGroups()) {
+          UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
+          for (UserDetail user : users) {
+            admins.add(user);
+          }
+        }
+      }
+    }
+    return admins;
+  }
+
+  public List<PublicationDetail> getNews(String spaceId) {
+    List<String> appIds = new ArrayList<String>();
+    String[] cIds = getOrganisationController().getAvailCompoIds(spaceId, userId);
+    for (String id : cIds) {
+      if (StringUtil.startsWithIgnoreCase(id, "quickinfo")) {
+        appIds.add(id);
+      }
+    }
+
+    List<PublicationDetail> news = new ArrayList<PublicationDetail>();
+    for (String appId : appIds) {
+        Collection<PublicationDetail> someNews = getPublicationBm().getOrphanPublications(new PublicationPK("", appId));
+        news.addAll(someNews);
+    }
+    
+    Collections.sort(filterVisibleNews(news), PublicationUpdateDateComparator.comparator);
+    
+    return news;
+  }
+  
+  private List<PublicationDetail> filterVisibleNews(Collection<PublicationDetail> all) {
+    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
+    Date now = new Date();
+    for (PublicationDetail detail : all) {
+      if (detail.getBeginDate() == null && detail.getEndDate() == null){
+        result.add(detail);
+      } else if (detail.getBeginDate() != null && detail.getEndDate() == null) {
+        if (DateUtil.compareTo(detail.getBeginDate(), now, false) <= 0) {
+          result.add(detail);
+        }
+      } else if (detail.getBeginDate() == null && detail.getEndDate() != null) {
+        if (DateUtil.compareTo(detail.getEndDate(), now, false) >= 0) {
+          result.add(detail);
+        }
+      } else if (Period.from(detail.getBeginDate(), detail.getEndDate()).contains(now)) {
+        result.add(detail);
+      }
+    }
+    return result;
+  }
+  
 }

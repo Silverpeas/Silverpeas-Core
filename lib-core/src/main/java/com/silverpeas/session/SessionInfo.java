@@ -21,6 +21,9 @@
 package com.silverpeas.session;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.InMemoryCacheService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,13 +32,16 @@ import java.util.Map;
  */
 public class SessionInfo {
 
-  private String sessionId;
+  public static final SessionInfo NoneSession = new SessionInfo(null, null);
+
+  private final String sessionId;
   private String ipAddress;
-  private UserDetail userDetail;
-  private long openingTimestamp;
+  private final UserDetail userDetail;
+  private final long openingTimestamp;
   private long lastAccessTimestamp;
-  private Map<String, Object> attributes = new HashMap<String, Object>();
+  private final Map<String, Object> attributes = new HashMap<String, Object>();
   private long idleTimestamp;
+  private final InMemoryCacheService cache = new InMemoryCacheService();
 
   /**
    * Constructs a new instance about a given opened user session.
@@ -48,6 +54,8 @@ public class SessionInfo {
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
     this.idleTimestamp = 0;
+    this.cache.put(UserDetail.CURRENT_REQUESTER_KEY, user);
+    CacheServiceFactory.getRequestCacheService().put("@SessionCache@", cache);
   }
 
   /**
@@ -88,6 +96,7 @@ public class SessionInfo {
 
   /**
    * Gets the last duration of its idle time.
+   *
    * @return the session alive timestamp.
    */
   public long getLastIdleDuration() {
@@ -95,8 +104,8 @@ public class SessionInfo {
   }
 
   /**
-   * Sets this session as currently idle. A session is idle if it is not used since a given time
-   * but it is still in alive.
+   * Sets this session as currently idle. A session is idle if it is not used since a given time but
+   * it is still in alive.
    */
   public void setAsIdle() {
     idleTimestamp = System.currentTimeMillis();
@@ -171,5 +180,23 @@ public class SessionInfo {
    */
   public void onClosed() {
     attributes.clear();
+  }
+
+  /**
+   * Is this session is defined? A session is defined if it a session opened to a user in
+   * Silverpeas.
+   *
+   * @return true if this session is defined, false otherwise.
+   */
+  public boolean isDefined() {
+    return this != NoneSession && this.getUserDetail() != null;
+  }
+
+  /**
+   * Provides a cache associated to the current session.
+   * @return
+   */
+  public InMemoryCacheService getCache() {
+    return cache;
   }
 }

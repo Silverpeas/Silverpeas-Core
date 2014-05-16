@@ -31,18 +31,6 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.exception.AuthenticationHostException;
-import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
-import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
-
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -55,6 +43,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
+
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
  * authentication process as it wraps all the mechanism and the delegation to perform the actual
@@ -83,6 +83,7 @@ public class AuthenticationService {
   static final protected String m_UserLoginColumnName;
   static final protected String m_UserDomainColumnName;
   static protected int m_AutoInc = 1;
+  private static final String ERROR_PREFIX = "Error";
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
   public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
   public static final String ERROR_BAD_CREDENTIAL = "Error_1";
@@ -229,6 +230,16 @@ public class AuthenticationService {
   }
 
   /**
+   * Is the specified authentication key represents an error status?
+   *
+   * @param authenticationKey the key returned by the authentication process.
+   * @return true if the key is in fact an authentication error status.
+   */
+  public boolean isInError(String authenticationKey) {
+    return StringUtil.isNotDefined(authenticationKey) || authenticationKey.startsWith(ERROR_PREFIX);
+  }
+
+  /**
    * Authenticates the user with the login, password, and domain contained in the specified
    * authentication credential.
    *
@@ -353,9 +364,10 @@ public class AuthenticationService {
   }
 
   /**
-   * Changes the password and email of the specified user credential with the specified new ones.
-   * In order to change the password and email of a user, the user will be first authenticated.
-   * The specified credential won't be updated by the password change.
+   * Changes the password and email of the specified user credential with the specified new ones. In
+   * order to change the password and email of a user, the user will be first authenticated. The
+   * specified credential won't be updated by the password change.
+   *
    * @param credential the current authentication credential of the user.
    * @param newPassword User new password the new password to set.
    * @param email User email the email to set.
@@ -553,8 +565,10 @@ public class AuthenticationService {
    *
    * @param credential
    * @param email
+   * @throws AuthenticationException
    */
-  private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email) {
+  private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email)
+      throws AuthenticationException {
     AdminController admin = new AdminController(null);
     UserDetail user = UserDetail
         .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
@@ -578,7 +592,12 @@ public class AuthenticationService {
     }
 
     // Persisting user data changes.
-    admin.updateUserFull(userFull);
+    try {
+      admin.updateUserFull(userFull);
+    } catch (AdminException e) {
+      throw new AuthenticationException("AuthenticationService.onPasswordAndEmailChanged",
+          SilverpeasException.ERROR, "authentication.EX_CANT_UPDATE_USERFULL", e);
+    }
   }
 
   /**

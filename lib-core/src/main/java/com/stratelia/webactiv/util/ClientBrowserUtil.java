@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ClientBrowserUtil {
 
-  public static final Pattern MOZILLA = Pattern.compile(".*[G,g][E,e][C,c][K,k][O,o].*");
+  public static final Pattern MOZILLA = Pattern.compile("(?i).*gecko.*");
+  public static final Pattern MOZILLA_LIKE = Pattern.compile("(?i).*like.gecko.*");
   public static final Pattern CHROME = Pattern.compile(".*[C,c][H,h][R,r][O,o][M,m][E,e].*");
   public static final Pattern MSIE = Pattern.compile(".*[M,m][S,s][I,i][E,e].*");
   public static final Pattern MICROSOFT = Pattern.compile(
@@ -112,9 +113,7 @@ public class ClientBrowserUtil {
    * @return true if the user-agent indicates a Firefox browser..
    */
   public static boolean isFirefox(HttpServletRequest request) {
-    Matcher matchMoz = MOZILLA.matcher(getUserAgent(request));
-    Matcher matchChrome = CHROME.matcher(getUserAgent(request));
-    return matchMoz.matches() && !matchChrome.matches();
+    return isFirefox(getUserAgent(request));
   }
 
   /**
@@ -124,8 +123,9 @@ public class ClientBrowserUtil {
    */
   public static boolean isFirefox(String userAgent) {
     Matcher matchMoz = MOZILLA.matcher(userAgent);
+    Matcher matchMozLike = MOZILLA_LIKE.matcher(userAgent);
     Matcher matchChrome = CHROME.matcher(userAgent);
-    return matchMoz.matches() && !matchChrome.matches();
+    return matchMoz.matches() && !matchMozLike.matches() && !matchChrome.matches();
   }
 
   /**

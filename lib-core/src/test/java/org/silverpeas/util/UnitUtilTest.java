@@ -73,21 +73,23 @@ public class UnitUtilTest {
         new BigDecimal("10485760")));
 
     assertThat(convertTo(new BigDecimal("1024"), MemoryUnit.B, MemoryUnit.KB), is(
-        new BigDecimal("1")));
+        new BigDecimal("1.0000000000000000000000000")));
 
     assertThat(convertTo(new BigDecimal("1048576"), MemoryUnit.B, MemoryUnit.MB), is(
-        new BigDecimal("1")));
+        new BigDecimal("1.0000000000000000000000000")));
 
     assertThat(convertTo(new BigDecimal("1073741824"), MemoryUnit.B, MemoryUnit.GB), is(
-        new BigDecimal("1")));
+        new BigDecimal("1.0000000000000000000000000")));
   }
 
   @Test
   public void testConvertToFromLong() {
     assertThat(convertTo(1L, MemoryUnit.KB, MemoryUnit.B), is(1024L));
     assertThat(convertTo(1L, MemoryUnit.B, MemoryUnit.KB), is(0L));
-    assertThat(convertTo(512L, MemoryUnit.B, MemoryUnit.KB), is(1L));
-    assertThat(convertTo(513L, MemoryUnit.B, MemoryUnit.KB), is(1L));
+    assertThat(convertTo(512L, MemoryUnit.B, MemoryUnit.KB), is(0L));
+    assertThat(convertTo(513L, MemoryUnit.B, MemoryUnit.KB), is(0L));
+    assertThat(convertTo(1023L, MemoryUnit.B, MemoryUnit.KB), is(0L));
+    assertThat(convertTo(1024L, MemoryUnit.B, MemoryUnit.KB), is(1L));
   }
 
   @Test
@@ -99,7 +101,7 @@ public class UnitUtilTest {
     assertFormatValue(formatValue(new BigDecimal("2"), MemoryUnit.KB, MemoryUnit.B),
         "2048 Octets");
     assertFormatValue(formatValue(new BigDecimal("2.4"), MemoryUnit.KB, MemoryUnit.B),
-        "2458 Octets");
+        "2457 Octets");
     assertFormatValue(formatValue(new BigDecimal("2.4"), MemoryUnit.GB, MemoryUnit.MB),
         "2457.6 Mo");
     assertFormatValue(formatValue(new BigDecimal("1"), MemoryUnit.MB, MemoryUnit.B),
@@ -118,8 +120,10 @@ public class UnitUtilTest {
   public void testFormatValueFromLong() {
     assertFormatValue(formatValue(1L, MemoryUnit.KB, MemoryUnit.B), "1024 Octets");
     assertFormatValue(formatValue(1L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
-    assertFormatValue(formatValue(512L, MemoryUnit.B, MemoryUnit.KB), "1 Ko");
-    assertFormatValue(formatValue(513L, MemoryUnit.B, MemoryUnit.KB), "1 Ko");
+    assertFormatValue(formatValue(512L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
+    assertFormatValue(formatValue(513L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
+    assertFormatValue(formatValue(1023L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
+    assertFormatValue(formatValue(1024L, MemoryUnit.B, MemoryUnit.KB), "1 Ko");
   }
 
   @Test
@@ -131,7 +135,9 @@ public class UnitUtilTest {
 
   @Test
   public void testFormatValueFromLongAroundLimits() {
-    assertFormatValue(formatValue(513L, MemoryUnit.KB), "1 Ko");
+    assertFormatValue(formatValue(513L, MemoryUnit.KB), "0 Ko");
+    assertFormatValue(formatValue(1023L, MemoryUnit.KB), "0 Ko");
+    assertFormatValue(formatValue(1024L, MemoryUnit.KB), "1 Ko");
   }
 
   @Test

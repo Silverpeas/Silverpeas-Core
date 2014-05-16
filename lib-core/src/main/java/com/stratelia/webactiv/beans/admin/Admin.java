@@ -20,34 +20,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import com.stratelia.webactiv.util.DateUtil;
-import org.silverpeas.admin.space.SpaceServiceFactory;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.util.ListSlice;
-
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
@@ -60,7 +32,6 @@ import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
@@ -79,12 +50,29 @@ import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.model.Quota;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.ListSlice;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.sql.Connection;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
@@ -1354,12 +1342,12 @@ public final class Admin {
   boolean isContentManagedComponent(String componentName) {
     return "expertLocator".equals(componentName) || "questionReply".equals(componentName)
         || "whitePages".equals(componentName) || "kmelia".equals(componentName) || "survey".equals(
-        componentName) || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
+            componentName) || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
         || "almanach".equals(componentName) || "quizz".equals(componentName) || "forums".equals(
-        componentName) || "pollingStation".equals(componentName) || "bookmark".equals(
-        componentName) || "chat".equals(componentName) || "infoLetter".equals(componentName)
+            componentName) || "pollingStation".equals(componentName) || "bookmark".equals(
+            componentName) || "chat".equals(componentName) || "infoLetter".equals(componentName)
         || "webSites".equals(componentName) || "gallery".equals(componentName) || "blog".equals(
-        componentName);
+            componentName);
   }
 
   /**
@@ -2430,7 +2418,7 @@ public final class Admin {
         } else {
           allProfileSources.add(spaceProfileManager
               .getInheritedSpaceProfileInstByName(domainDriverManager, spaceId,
-              oldSpaceProfile.getName()));
+                  oldSpaceProfile.getName()));
         }
         SpaceProfileInst profileToSpread = new SpaceProfileInst();
         profileToSpread.setName(oldSpaceProfile.getName());
@@ -2464,7 +2452,7 @@ public final class Admin {
   }
 
   private String spaceRole2ComponentRole(String spaceRole, String componentName) {
-    return roleMapping.getString(componentName + "_" + spaceRole);
+    return roleMapping.getString(componentName + "_" + spaceRole, spaceRole);
   }
 
   private List<String> componentRole2SpaceRoles(String componentRole,
@@ -2546,7 +2534,7 @@ public final class Admin {
       if (!subSpace.isInheritanceBlocked()) {
         SpaceProfileInst subSpaceProfile = spaceProfileManager
             .getInheritedSpaceProfileInstByName(domainDriverManager, subSpace.getShortId(),
-            spaceProfile.getName());
+                spaceProfile.getName());
         if (subSpaceProfile != null) {
           subSpaceProfile.setGroups(spaceProfile.getAllGroups());
           subSpaceProfile.setUsers(spaceProfile.getAllUsers());
@@ -4014,15 +4002,15 @@ public final class Admin {
   /**
    * Get the user id for the given login password
    */
-  public String authenticate(String sKey, String sSessionId,
+  public String identify(String sKey, String sSessionId,
       boolean isAppInMaintenance) throws AdminException {
-    return authenticate(sKey, sSessionId, isAppInMaintenance, true);
+    return identify(sKey, sSessionId, isAppInMaintenance, true);
   }
 
   /**
    * Get the user id for the given login password
    */
-  public String authenticate(String sKey, String sSessionId, boolean isAppInMaintenance,
+  public String identify(String sKey, String sSessionId, boolean isAppInMaintenance,
       boolean removeKey) throws AdminException {
     String sUserId;
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
@@ -5569,7 +5557,7 @@ public final class Admin {
             removedUsers.add(actualUserId);
             SynchroGroupReport
                 .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId,
-                null);
+                    null);
           }
         }
         SynchroGroupReport.warn("admin.synchronizeGroup", "Suppression de " + removedUsers.size()
@@ -5882,7 +5870,7 @@ public final class Admin {
         try {
           existingGroupId = groupManager
               .getGroupIdBySpecificIdAndDomainId(domainDriverManager, child.getSpecificId(),
-              latestGroup.getDomainId());
+                  latestGroup.getDomainId());
           Group existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
             // Only synchronize the group if latestGroup is his true parent
@@ -6500,8 +6488,8 @@ public final class Admin {
           PARAM_MSG_KEY, "%%%%FULLSYNCHRO%%%%>Deal with group : " + specificId);
       // search for group in Silverpeas database
       for (int nJ = 0;
-          nJ < existingGroups.length && !bFound;
-          nJ++) {
+           nJ < existingGroups.length && !bFound;
+           nJ++) {
         if (existingGroups[nJ].getSpecificId().equals(specificId)) {
           bFound = true;
           testedGroup.setId(existingGroups[nJ].getId());
@@ -6534,7 +6522,7 @@ public final class Admin {
         {
           SynchroReport.debug("admin.checkOutGroups",
               "le groupe " + specificId + " a pour père le groupe " + domainDriverManager.getGroup(
-              superGroupId).getSpecificId() + " d'Id base " + superGroupId, null);
+                  superGroupId).getSpecificId() + " d'Id base " + superGroupId, null);
         }
       }
       String[] userSpecificIds = testedGroup.getUserIds();
@@ -6966,8 +6954,8 @@ public final class Admin {
       // cannot paste component on root
       return null;
     }
-    ComponentInst newCompo =
-        (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).clone();
+    ComponentInst newCompo = (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).
+        clone();
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
     String lang = I18NHelper.defaultLanguage;
@@ -6980,8 +6968,8 @@ public final class Admin {
     newCompo.setLanguage(lang);
 
     // Rename if componentName already exists in the destination space
-    String label =
-        renameComponentName(newCompo.getLabel(lang), destinationSpace.getAllComponentsInst());
+    String label = renameComponentName(newCompo.getLabel(lang), destinationSpace.
+        getAllComponentsInst());
     newCompo.setLabel(label);
     ComponentI18N translation = (ComponentI18N) newCompo.getTranslation(lang);
     if (translation != null) {
@@ -6998,8 +6986,8 @@ public final class Admin {
     // Execute specific paste by the component
     try {
       pasteDetail.setToComponentId(sComponentId);
-      String componentRootName =
-          URLManager.getComponentNameFromComponentId(pasteDetail.getFromComponentId());
+      String componentRootName = URLManager.getComponentNameFromComponentId(pasteDetail.
+          getFromComponentId());
       String className = "com.silverpeas.component." + componentRootName + "." + componentRootName
           .substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
       if (Class.forName(className).getClass() != null) {
@@ -7055,7 +7043,8 @@ public final class Admin {
     boolean pasteAllowed = !isParent(spaceId, toSpaceId);
     if (pasteAllowed) {
       // paste space itself
-      SpaceInst newSpace = getSpaceInstById(spaceId).clone();
+      SpaceInst oldSpace = getSpaceInstById(spaceId);
+      SpaceInst newSpace = oldSpace.clone();
       newSpace.setId("-1");
       List<String> newBrotherIds;
       if (StringUtil.isDefined(toSpaceId)) {
@@ -7088,6 +7077,20 @@ public final class Admin {
 
       // Add space
       newSpaceId = addSpaceInst(pasteDetail.getUserId(), newSpace);
+
+      // Copy space quota
+      Quota dataStorageQuota = SpaceServiceFactory.getDataStorageSpaceQuotaService()
+          .get(DataStorageSpaceQuotaKey.from(oldSpace));
+      if (dataStorageQuota.exists()) {
+        SpaceServiceFactory.getDataStorageSpaceQuotaService()
+            .initialize(DataStorageSpaceQuotaKey.from(newSpace), dataStorageQuota);
+      }
+      Quota componentQuota = SpaceServiceFactory.getComponentSpaceQuotaService()
+          .get(ComponentSpaceQuotaKey.from(oldSpace));
+      if (componentQuota.exists()) {
+        SpaceServiceFactory.getComponentSpaceQuotaService()
+            .initialize(ComponentSpaceQuotaKey.from(newSpace), componentQuota);
+      }
 
       // verify space homepage
       String componentIdAsHomePage = null;

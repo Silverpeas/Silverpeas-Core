@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -72,13 +73,15 @@ public class GenericPanelPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param genericPanelPeasSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      GenericPanelPeasSessionController genericPanelPeasSC, HttpServletRequest request) {
+      GenericPanelPeasSessionController genericPanelPeasSC, HttpRequest request) {
     String destination = "";
     SilverTrace.info("genericPanelPeas", "getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "Function=" + function);

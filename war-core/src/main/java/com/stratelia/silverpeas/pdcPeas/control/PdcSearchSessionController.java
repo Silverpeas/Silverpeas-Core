@@ -623,6 +623,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (results != null) {
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList = getFacetBlackList();
+      Map<String, ComponentInstLight> components = new HashMap<String, ComponentInstLight>();
 
       // Loop on each result
       for (GlobalSilverResult result : results) {
@@ -643,15 +644,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         processFacetComponent(componentFacet, result, blackList);
 
         // manage "datatype" facet
-        processFacetDatatype(dataTypeFacet, result);
-        
-        if (result.isAttachment()) {
-          processFacetFiletype(fileTypeFacet, result);
-        }
+        processFacetDatatype(dataTypeFacet, result, components);
 
+        processFacetFiletype(fileTypeFacet, result);
+        
         // manage forms fields facets
         processFacetsFormField(fieldFacetsMap, result);
       }
+
+      components.clear();
     }
 
     // Fill result filter with current result values
@@ -683,11 +684,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  private void processFacetDatatype(Facet facet, GlobalSilverResult result) {
+  private void processFacetDatatype(Facet facet, GlobalSilverResult result,
+      Map<String, ComponentInstLight> components) {
     String instanceId = result.getInstanceId();
     String type = result.getType();
     if (StringUtil.isDefined(type)) {
-      SearchTypeConfigurationVO theSearchType = getSearchType(instanceId, type);
+      SearchTypeConfigurationVO theSearchType = getSearchType(instanceId, type, components);
       if (theSearchType != null) {
         FacetEntryVO facetEntry = new FacetEntryVO(theSearchType.getName(), String.valueOf(
             theSearchType.getConfigId()));
@@ -839,7 +841,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // Tous les résultats
     List<GlobalSilverResult> results =
         matchingIndexEntries2GlobalSilverResults(filterMatchingIndexEntries(indexEntries));
-    setGlobalSR(results, true);
+    setGlobalSR(results);
     return results;
   }
 
@@ -847,7 +849,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       throws Exception {
     // Tous les résultats
     List<GlobalSilverResult> results = globalSilverContents2GlobalSilverResults(silverContents);
-    setGlobalSR(results, true);
+    setGlobalSR(results);
 
     // case of PDC results : pertinence sort is not applicable
     // sort by updateDate desc
@@ -861,17 +863,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     // Tous les résultats
     List<GlobalSilverResult> results = getGlobalSR();
-
-    if (results != null && getSelectedSilverContents() != null) {
-      for (int i = 0; i < results.size(); i++) {
-        GlobalSilverResult result = results.get(i);
-        if (getSelectedSilverContents().contains(result)) {
-          result.setSelected(true);
-        } else {
-          result.setSelected(false);
-        }
-      }
-    }
 
     // Tri de tous les résultats
     // Gets a SortResult implementation to realize the sorting and/or filtering results
@@ -890,16 +881,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     List<GlobalSilverResult> sortedResults = sortResults.execute(results, sortOrder, sortValString,
         getLanguage());
+    List<GlobalSilverResult> resultsToDisplay = new ArrayList<GlobalSilverResult>();
     if (filter != null && !filter.isEmpty()) {
       // Check Author filter
-      return filterResult(filter, sortedResults);
+      resultsToDisplay = filterResult(filter, sortedResults);
     } else {
       // Put the full result list in session
-      setGlobalSR(sortedResults, false);
+      setGlobalSR(sortedResults);
 
       // get the part of results to display
-      return sortedResults.subList(getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
+      resultsToDisplay = sortedResults.subList(getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
     }
+    setExtraInfoToResultsToDisplay(resultsToDisplay);
+    return resultsToDisplay;
   }
 
   private void setPopularityToResults() {
@@ -960,6 +954,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     boolean filterFormFields = !filter.isSelectedFormFieldFacetsEmpty();
 
     List<String> blackList = getFacetBlackList();
+    Map<String, ComponentInstLight> components = new HashMap<String, ComponentInstLight>();
 
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
@@ -979,7 +974,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         // check datatype facet
         if (visible && filterDatatype) {
-          SearchTypeConfigurationVO theSearchType = getSearchType(gsrInstanceId, gsResult.getType());
+          SearchTypeConfigurationVO theSearchType = getSearchType(gsrInstanceId, gsResult.getType(), components);
           if (theSearchType == null || !datatypeFilter.equals(String.valueOf(theSearchType.
               getConfigId()))) {
             visible = false;
@@ -1024,6 +1019,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
       }
     }
+    components.clear();
 
     // Put the full result list in session
     setFilteredSR(sortedResults);
@@ -1219,6 +1215,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         result.setExportable(isCompliantResult(result));
       }
 
+      if (getSelectedSilverContents() != null && getSelectedSilverContents().contains(result)) {
+        result.setSelected(true);
+      } else {
+        result.setSelected(false);
+      }
     }
   }
 
@@ -1586,6 +1587,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     gsr.setViewable(viewable);
     gsr.setAttachmentId(id);
     gsr.setVersioned(false);
+    gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
+    gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
 
     String urlAttachment = document.getAttachmentURL();
 
@@ -1630,6 +1633,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       gsr.setViewable(viewable);
       gsr.setAttachmentId(documentId);
       gsr.setVersioned(true);
+      gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
+      gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
 
       // process download link
       return FileServerUtils.getApplicationContext() + document.getAttachmentURL();
@@ -2833,10 +2838,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    *
    * @param globalSR : the current list of result
    */
-  private void setGlobalSR(List<GlobalSilverResult> globalSR, boolean setExtraInfo) {
-    if (setExtraInfo) {
-      setExtraInfoToResultsToDisplay(globalSR);
-    }
+  private void setGlobalSR(List<GlobalSilverResult> globalSR) {
     this.globalSR = globalSR;
     clearFilteredSR();
   }
@@ -2952,8 +2954,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return dataSearchTypes;
   }
 
-  private SearchTypeConfigurationVO getSearchType(String componentId, String type) {
-    ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
+  private SearchTypeConfigurationVO getSearchType(String componentId, String type, Map<String, ComponentInstLight> components) {
+    ComponentInstLight component = components.get(componentId);
+    if (component == null) {
+      component = getOrganisationController().getComponentInstLight(componentId);
+      components.put(componentId, component);
+    }
     if (component != null) {
       for (SearchTypeConfigurationVO aSearchType : getSearchTypeConfig()) {
         if (aSearchType.getComponents().contains(component.getName())) {

@@ -122,7 +122,7 @@ label.txtlibform {
 padding-right:0;
 }
 
-label {
+.field label {
 	width:180px;
 	float:left;
 }
@@ -163,4 +163,28 @@ input.inputHour{
 .champs input.checkbox:first-child, .champs input.radio:first-child {
 	margin-left:0;
 	border:0;
+}
+
+/* Default forms look n feel */
+.forms .skinFieldset {
+	margin:1% 0 ;
+	padding:10px 10px 15px;
+}
+
+.forms .skinFieldset legend {
+    padding-left: 10px;
+}
+
+
+
+/* form & CKeditor */
+.container-wysiwyg input,
+.container-wysiwyg select
+ {
+    width: auto;
+}
+
+.skinFieldset .champs .wysiwyg-fileStorage {
+	width:90%;
+	background-color:#FFF;
 }

@@ -278,7 +278,6 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
         + componentId + ", silverObjectid = " + silverObjectid);
 
     Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    SilverContentInterface silverContent = null;
     OrganisationController organizationController = OrganisationControllerFactory
         .getOrganisationController();
 
@@ -295,20 +294,25 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
           // check if current subscription corresponds a list of classify values
           // provided into the method
           if (isCorrespondingSubscription(subscription, classifyValues)) {
-            if (silverContent == null) {
-              silverContent = getSilverContent(componentId, silverObjectid);
-            }
             // The current subscription matches the new classification.
             // Now, we have to test if subscription's owner is allowed to access
             // the classified item.
             String userId = String.valueOf(subscription.getOwnerId());
-            String[] roles = organizationController.getUserProfiles(userId, componentId);
-            if (roles.length > 0) {
-              // if user have got at least one role, sends a notification to the
-              // user specified in pdcSubscription
-              UserNotificationHelper.buildAndSend(
-                  new PdcResourceClassificationUserNotification(subscription,
-                      silverContent));
+            if (organizationController.isComponentAvailable(componentId, userId)) {
+              // if user is able to see component which contains content
+              SilverContentInterface silverContent =
+                  getSilverContent(componentId, silverObjectid, userId);
+              if (silverContent != null) {
+                // if user is able to see this content, sends a notification to the
+                // user specified in the pdcSubscription
+                UserNotificationHelper.buildAndSend(
+                    new PdcResourceClassificationUserNotification(subscription,
+                        silverContent));
+              } else {
+                SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.checkSubscriptions()",
+                    "root.MSG_GEN_PARAM_VALUE", "user #" + userId +
+                        " not allowed to see silverContent #" + silverObjectid);
+              }
             }
           }
         }
@@ -330,7 +334,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    * @param silverObjectId - the unique identifier of the silverContent
    * @return SilverContentInterface the object which has been classified
    */
-  private SilverContentInterface getSilverContent(String componentId, int silverObjectId) {
+  private SilverContentInterface getSilverContent(String componentId, int silverObjectId, String userId) {
     ArrayList<Integer> silverobjectIds = new ArrayList<Integer>();
     silverobjectIds.add(silverObjectId);
 
@@ -343,7 +347,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
       ArrayList<String> userRoles = new ArrayList<String>();
       userRoles.add("admin");
       silverContents = contentInterface.getSilverContentById(silverobjectIds,
-          componentId, "unknown", userRoles);
+          componentId, userId, userRoles);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionBmEJB.sendSubscriptionNotif",

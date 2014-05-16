@@ -63,9 +63,10 @@ public class DynamicValueReplacement {
    * @param language used to display information in correct language
    * @param fieldName name of the html field to allow using the generating code html with page
    * contained many HTML editor
+   * @param editorName name of the wysiwyg editor
    * @return String which contains HTML code
    */
-  public static String buildHTMLSelect(String language, String fieldName) {
+  public static String buildHTMLSelect(String language, String fieldName, String editorName) {
     // local variable initialization
     String HTMLCodeFramgment = "";
     Connection conn = null;
@@ -89,7 +90,7 @@ public class DynamicValueReplacement {
             firstOption = message.getString("DynamicValues");
           }
         } catch (Exception ex) {
-          SilverTrace.error("wysiwiy", DynamicValueReplacement.class.toString(),
+          SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
               "root.EX_CANT_GET_LANGUAGE_RESOURCE ", ex);
         }
 
@@ -98,7 +99,7 @@ public class DynamicValueReplacement {
             " <select id=\"dynamicValues_").append(fieldName).append(
             "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues").append(
             FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-            "();this.selectedIndex=0;\">").append("<option value=\"\">").append(firstOption)
+            "('").append(editorName).append("');this.selectedIndex=0;\">").append("<option value=\"\">").append(firstOption)
             .append(
             "</option>");
         for (DynamicValue dynamicValue : list) {
@@ -111,7 +112,7 @@ public class DynamicValueReplacement {
       }
 
     } catch (Exception e) {
-      SilverTrace.error("wysiwiy", DynamicValueReplacement.class.toString(),
+      SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
           "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(conn);

@@ -21,20 +21,23 @@
 package com.silverpeas.authentication;
 
 import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.util.Collections;
+import java.util.UUID;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import com.silverpeas.util.CollectionUtil;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.authentication.Authentication;
+import org.silverpeas.servlet.HttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -50,6 +53,11 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration("/spring-authentication.xml")
 public class SilverpeasSessionOpenenerTest {
 
+  @Inject
+  private SessionManagement sessionManagement;
+  private HttpRequest httpRequest;
+  private HttpSession session;
+
   public SilverpeasSessionOpenenerTest() {
   }
 
@@ -63,6 +71,20 @@ public class SilverpeasSessionOpenenerTest {
 
   @Before
   public void setUp() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.isSecure()).thenReturn(false);
+    when(request.getScheme()).thenReturn("http");
+    when(request.getServerPort()).thenReturn(80);
+    when(request.getServerName()).thenReturn("www.silverpeas.org");
+
+    session = mock(HttpSession.class);
+    when(request.getSession()).thenReturn(session);
+    when(request.getSession(false)).thenReturn(session);
+    when(session.getId()).thenReturn(UUID.randomUUID().toString());
+    when(session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED)).thenReturn("true");
+    when(session.getAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE)).thenReturn(true);
+
+    httpRequest = HttpRequest.decorate(request);
   }
 
   @After
@@ -74,11 +96,8 @@ public class SilverpeasSessionOpenenerTest {
    */
   @Test
   public void testIsAnonymousUser() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpSession session = mock(HttpSession.class);
-    when(request.getSession()).thenReturn(session);
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
-    boolean result = instance.isAnonymousUser(request);
+    boolean result = httpRequest.isWithinAnonymousUserSession();
     assertThat(result, is(false));
     MainSessionController controller = mock(MainSessionController.class);
     UserDetail user = mock(UserDetail.class);
@@ -86,10 +105,10 @@ public class SilverpeasSessionOpenenerTest {
     when(controller.getCurrentUserDetail()).thenReturn(user);
     when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).thenReturn(
         controller);
-    result = instance.isAnonymousUser(request);
+    result = httpRequest.isWithinAnonymousUserSession();
     assertThat(result, is(false));
     when(user.isAnonymous()).thenReturn(true);
-    result = instance.isAnonymousUser(request);
+    result = httpRequest.isWithinAnonymousUserSession();
     assertThat(result, is(true));
 
   }
@@ -99,21 +118,11 @@ public class SilverpeasSessionOpenenerTest {
    */
   @Test
   public void testGetErrorPageUrl() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.isSecure()).thenReturn(false);
-    when(request.getScheme()).thenReturn("http");
-    when(request.getServerPort()).thenReturn(80);
-    when(request.getServerName()).thenReturn("www.silverpeas.org");
-
-    HttpSession session = mock(HttpSession.class);
-    when(request.getSession()).thenReturn(session);
-    when(session.getId()).thenReturn("mysessionid");
-
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
-    String url = instance.getAbsoluteUrl(request);
+    String url = instance.getAbsoluteUrl(httpRequest);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
     String sKey = RandomGenerator.getRandomString();
-    String errorUrl = instance.getErrorPageUrl(request, sKey);
+    String errorUrl = instance.getErrorPageUrl(httpRequest, sKey);
     assertThat(errorUrl, is("http://www.silverpeas.org:80/silverpeas/Login.jsp"));
   }
 
@@ -122,21 +131,17 @@ public class SilverpeasSessionOpenenerTest {
    */
   @Test
   public void testGetAbsoluteUrl() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.isSecure()).thenReturn(false);
-    when(request.getScheme()).thenReturn("http");
-    when(request.getServerPort()).thenReturn(80);
-    when(request.getServerName()).thenReturn("www.silverpeas.org");
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
-    String url = instance.getAbsoluteUrl(request);
+    String url = instance.getAbsoluteUrl(httpRequest);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
 
-    request = mock(HttpServletRequest.class);
+    HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.isSecure()).thenReturn(true);
     when(request.getScheme()).thenReturn("https");
     when(request.getServerPort()).thenReturn(443);
     when(request.getServerName()).thenReturn("www.silverpeas.org");
-    url = instance.getAbsoluteUrl(request);
+    httpRequest = HttpRequest.decorate(request);
+    url = instance.getAbsoluteUrl(httpRequest);
     assertThat(url, is("https://www.silverpeas.org:443/silverpeas/"));
   }
 
@@ -146,14 +151,13 @@ public class SilverpeasSessionOpenenerTest {
   @Test
   public void testUnauthenticate() {
     HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpSession session = mock(HttpSession.class);
-    when(request.getSession()).thenReturn(session);
+    when(request.getSession(anyBoolean())).thenReturn(session);
     when(session.getAttributeNames()).thenReturn(Collections.enumeration(CollectionUtil.asList(
         "test1", "test2")));
+    httpRequest = HttpRequest.decorate(request);
+    sessionManagement.openSession(new UserDetail(), request);
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
-    instance.closeSession(request);
-    verify(session, times(1)).removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    verify(session, times(1)).removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    instance.closeSession(session);
     verify(session, times(1)).removeAttribute("test1");
     verify(session, times(1)).removeAttribute("test2");
 

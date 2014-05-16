@@ -20,26 +20,12 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.subscription.SubscriptionContext;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -59,6 +45,17 @@ import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.subscription.SubscriptionContext;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
@@ -82,8 +79,8 @@ public class MainSessionController implements Clipboard {
   private Date userLastRequest = null;
   private String userLanguage = null;
   private ContentManager contentManager = null;
-  Map<String, GenericPanel> genericPanels =
-      Collections.synchronizedMap(new HashMap<String, GenericPanel>());
+  Map<String, GenericPanel> genericPanels = Collections.synchronizedMap(
+      new HashMap<String, GenericPanel>());
   Selection selection = null;
   private String userSpace = null;
   AlertUser m_alertUser = null;
@@ -166,9 +163,8 @@ public class MainSessionController implements Clipboard {
         "MainSessionController.constructor()", "root.MSG_GEN_PARAM_VALUE",
         "authenticationKey = " + authenticationKey + " sessionId=" + sessionId);
     try {
-      // Authenticate the user
-      this.userId =
-          getAdminService().authenticate(authenticationKey, sessionId, isAppInMaintenance());
+      // Identify the user
+      this.userId = getAdminService().identify(authenticationKey, sessionId, isAppInMaintenance());
       this.sessionId = sessionId;
       this.userPreferences = SilverpeasServiceProvider.getPersonalizationService()
           .getUserSettings(userId);

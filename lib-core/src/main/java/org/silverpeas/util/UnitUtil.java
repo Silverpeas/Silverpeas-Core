@@ -25,6 +25,8 @@ package org.silverpeas.util;
 
 import org.silverpeas.util.memory.MemoryData;
 import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.util.time.TimeData;
+import org.silverpeas.util.time.TimeUnit;
 
 import java.math.BigDecimal;
 
@@ -219,5 +221,191 @@ public class UnitUtil {
   public static MemoryData getMemData(final BigDecimal memSize, final MemoryUnit from) {
     BigDecimal byteMemSize = MemoryData.convertTo(memSize, from, MemoryUnit.B);
     return new MemoryData(byteMemSize);
+  }
+
+  /**
+   * Converting a time value (milliseconds)
+   * @param millisecondValue
+   * @param to
+   * @return
+   */
+  public static long convertTo(final long millisecondValue, final TimeUnit to) {
+    return getTimeData(millisecondValue).getRoundedTimeConverted(to).longValue();
+  }
+
+  /**
+   * Converting a time value (milliseconds)
+   *
+   * @param millisecondValue
+   * @param to
+   * @return
+   */
+  public static BigDecimal convertTo(BigDecimal millisecondValue, final TimeUnit to) {
+    return getTimeData(millisecondValue).getTimeConverted(to);
+  }
+
+  /**
+   * Converting a time value
+   *
+   * @param value
+   * @param from
+   * @param to
+   * @return
+   */
+  public static long convertTo(final long value, final TimeUnit from, final TimeUnit to) {
+    return getTimeData(value, from).getRoundedTimeConverted(to).longValue();
+  }
+
+  /**
+   * Converting a time value
+   *
+   * @param value
+   * @param from
+   * @param to
+   * @return
+   */
+  public static BigDecimal convertTo(BigDecimal value, final TimeUnit from, final TimeUnit to) {
+    return getTimeData(value, from).getTimeConverted(to);
+  }
+
+  /**
+   * Converting a time value
+   *
+   * @param timeData
+   * @param to
+   * @return
+   */
+  public static BigDecimal convertAndRoundTo(TimeData timeData, final TimeUnit to) {
+    return timeData.getRoundedTimeConverted(to);
+  }
+
+  /**
+   * Format a millisecond time value
+   *
+   * @param millisecondValue
+   * @param to
+   * @return
+   */
+  public static String formatValue(final long millisecondValue, final TimeUnit to) {
+    return getTimeData(millisecondValue).getFormattedValue(to);
+  }
+
+  /**
+   * Format a millisecond time value
+   *
+   * @param millisecondValue
+   * @param to
+   * @return
+   */
+  public static String formatValue(final BigDecimal millisecondValue, final TimeUnit to) {
+    return getTimeData(millisecondValue).getFormattedValue(to);
+  }
+
+  /**
+   * Format a time value
+   *
+   * @param value
+   * @param from
+   * @param to
+   * @return
+   */
+  public static String formatValue(final long value, final TimeUnit from, final TimeUnit to) {
+    return getTimeData(value, from).getFormattedValue(to);
+  }
+
+  /**
+   * Format a time value
+   *
+   * @param value
+   * @param from
+   * @param to
+   * @return formated value
+   */
+  public static String formatValue(final BigDecimal value, final TimeUnit from,
+      final TimeUnit to) {
+    return getTimeData(value, from).getFormattedValue(to);
+  }
+
+  /**
+   * Get the time with the suitable unit
+   *
+   * @param time in milliseconds
+   * @return String
+   */
+  public static String formatTime(final long time) {
+    return getTimeData(time).getBestDisplayValue();
+  }
+
+  /**
+   * Get the time with the suitable unit
+   *
+   * @param time in milliseconds
+   * @return String
+   */
+  public static String formatTime(final BigDecimal time) {
+    return getTimeData(time).getBestDisplayValue();
+  }
+
+  /**
+   * Get the time with the suitable unit
+   *
+   * @param time
+   * @param from the unit of the given size
+   * @return String
+   */
+  public static String formatTime(final long time, final TimeUnit from) {
+    return getTimeData(time, from).getBestDisplayValue();
+  }
+
+  /**
+   * Get the time with the suitable unit
+   *
+   * @param time
+   * @param from the unit of the given size
+   * @return String
+   */
+  public static String formatTime(final BigDecimal time, final TimeUnit from) {
+    return getTimeData(time, from).getBestDisplayValue();
+  }
+
+  /**
+   * Get the time data
+   * @param time in milliseconds
+   * @return TimeData
+   */
+  public static TimeData getTimeData(final long time) {
+    return getTimeData(time, TimeUnit.MILLI);
+  }
+
+  /**
+   * Get the time data
+   * @param time in milliseconds
+   * @return TimeData
+   */
+  public static TimeData getTimeData(final BigDecimal time) {
+    return getTimeData(time, TimeUnit.MILLI);
+  }
+
+  /**
+   * Get the time data
+   * @param time
+   * @param from the unit of the given size
+   * @return TimeData
+   */
+  public static TimeData getTimeData(final long time, final TimeUnit from) {
+    BigDecimal millisecondTime =
+        TimeData.convertTo(new BigDecimal(String.valueOf(time)), from, TimeUnit.MILLI);
+    return new TimeData(millisecondTime.setScale(0, BigDecimal.ROUND_HALF_UP).longValue());
+  }
+
+  /**
+   * Get the time data
+   * @param time
+   * @param from the unit of the given size
+   * @return TimeData
+   */
+  public static TimeData getTimeData(final BigDecimal time, final TimeUnit from) {
+    BigDecimal millisecondTime = TimeData.convertTo(time, from, TimeUnit.MILLI);
+    return new TimeData(millisecondTime);
   }
 }

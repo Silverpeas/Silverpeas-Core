@@ -7,15 +7,24 @@ Iterator<FieldTemplate> existingFields = (Iterator<FieldTemplate>) request.getAt
 
 String name = "";
 String mandatoryChecked = "";
+int nbMaxValues = 1;
+String multivaluableChecked = "";
 String searchable = "";
 String usedAsFacet = "";
 boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
 boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
+boolean showMultiValuesParam = "text".equals(displayer) || "textarea".equals(displayer) || "url".equals(displayer) || "file".equals(displayer) || "image".equals(displayer) || "video".equals(displayer);
+boolean shownInNewWindow = "pdc".equals(displayer);
+String checked = "checked=\"checked\"";
 
 if (field != null) {
 	name 			= field.getFieldName();
+	if (field.isRepeatable()) {
+		nbMaxValues = field.getMaximumNumberOfOccurrences();
+		multivaluableChecked = checked;
+	}
 	actionForm 		= "UpdateField";
 	
 	String actionFormFromPdcUtilization = (String)request.getAttribute("actionForm");
@@ -30,18 +39,20 @@ if (field != null) {
 	parameters = field.getParameters("fr");
 		
 	if (field.isMandatory()) {
-		mandatoryChecked = "checked=\"checked\"";
+		mandatoryChecked = checked;
 	}
 		
 	if (field.isSearchable()) {
-		searchable = "checked=\"checked\"";
+		searchable = checked;
 	}
 	
 	if (field.isUsedAsFacet()) {
-		usedAsFacet = "checked=\"checked\"";
+		usedAsFacet = checked;
 	}
 }
 %>
+
+<% if (shownInNewWindow) { %>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -49,6 +60,10 @@ if (field != null) {
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<% } else { %>
+<view:includePlugin name="tkn"/>
+<% } %>
+
 <script type="text/javascript">
 	
 	var errorMsg = "";
@@ -65,6 +80,7 @@ if (field != null) {
 		} else {
 			errorMsg = "";
     		errorNb = 0;
+    		return false;
 		}
 	}
 	
@@ -126,4 +142,23 @@ if (field != null) {
      	}
      	return result;
 	}
+	
+	function checkMultivaluedVisibility() {
+	  if ($("#multivaluableChk").is(":checked")) {
+		$("#multivaluableNb").show();
+	  } else {
+		$("#multivaluableNb").hide();
+		$("#multivaluableNb input").val('1');
+	  }
+	}
+	
+	$(document).ready(
+		function () {
+			$( "#multivaluableChk" ).change(function() {
+			  checkMultivaluedVisibility();
+			});
+			
+			checkMultivaluedVisibility();
+		}
+	);
 </script>

@@ -76,8 +76,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String currentView = "tous";
   public static final int DIRECTORY_DEFAULT = 0; // all users
   public static final int DIRECTORY_MINE = 1; // contacts of online user
-  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another
-                                                // user
+  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
   public static final int DIRECTORY_OTHER = 3; // contact of another user
   public static final int DIRECTORY_GROUP = 4; // all users of group
   public static final int DIRECTORY_DOMAIN = 5; // all users of domain
@@ -105,10 +104,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
-          ComponentContext componentContext) {
+      ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.directory.multilang.DirectoryBundle",
-            "org.silverpeas.directory.settings.DirectoryIcons",
-            "org.silverpeas.directory.settings.DirectorySettings");
+        "org.silverpeas.directory.settings.DirectoryIcons",
+        "org.silverpeas.directory.settings.DirectorySettings");
 
     elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", 10);
 
@@ -277,6 +276,30 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
+   * get all Users of the Groups which Id is in "groupIds"
+   * @param groupIds:a list of groups' ids
+   * @see
+   */
+  public List<UserDetail> getAllUsersByGroups(List<String> groupIds) {
+    setCurrentView("tous");
+    setCurrentDirectory(DIRECTORY_GROUP);
+    setCurrentQuery(null);
+
+    List<UserDetail> tmpList = new ArrayList<UserDetail>();
+
+    for (String groupId : groupIds) {
+      fillList(tmpList, getOrganisationController().getAllUsersOfGroup(
+          groupId));
+    }
+
+    lastAlllistUsersCalled = tmpList;
+
+    lastListUsersCalled = lastAlllistUsersCalled;
+    return lastAlllistUsersCalled;
+
+  }
+
+  /**
    * get all User "we keep the last list of All users"
    * @see
    */
@@ -382,9 +405,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     commonUserDetail = getUserDetail(userId);
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
-      List<String> contactsIds =
-              relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
-                  parseInt(userId));
+      List<String> contactsIds = relationShipService.getAllCommonContactsIds(Integer.parseInt(
+          getUserId()), Integer.parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
@@ -407,12 +429,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @throws NotificationManagerException
    */
   public void sendMessage(String compoId, String txtTitle, String txtMessage,
-          UserRecipient[] selectedUsers) throws NotificationManagerException {
+      UserRecipient[] selectedUsers) throws NotificationManagerException {
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
     int priorityId = 0;
     SilverTrace.debug("notificationUser", "NotificationUsersessionController.sendMessage()",
-            "root.MSG_GEN_PARAM_VALUE", " AVANT CONTROLE priorityId=" + priorityId);
+        "root.MSG_GEN_PARAM_VALUE", " AVANT CONTROLE priorityId=" + priorityId);
     NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
@@ -437,14 +459,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
-    SessionManagement sessionManagement =
-        SessionManagementFactory.getFactory().getSessionManagement();
-    Collection<SessionInfo> sessions =
-        sessionManagement.getDistinctConnectedUsersList(getUserDetail());
+    SessionManagement sessionManagement = SessionManagementFactory.getFactory().
+        getSessionManagement();
+    Collection<SessionInfo> sessions = sessionManagement.getDistinctConnectedUsersList(
+        getUserDetail());
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
-    
+
     if (getCurrentDirectory() != DIRECTORY_DEFAULT) {
       // all connected users must be filtered according to directory scope
       lastListUsersCalled = new ArrayList<UserDetail>();
@@ -455,6 +477,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     } else {
       lastListUsersCalled = connectedUsers;
+      lastAlllistUsersCalled = connectedUsers;
     }
 
     return lastListUsersCalled;
@@ -463,7 +486,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserFragmentVO> getFragments(List<Member> membersToDisplay) {
     // using StringTemplate to personalize display of members
     List<UserFragmentVO> fragments = new ArrayList<UserFragmentVO>();
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("directory");
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
+        "directory");
     for (Member member : membersToDisplay) {
       template.setAttribute("user", member);
       template.setAttribute("type", getString("GML.user.type." + member.getAccessLevel().code()));
@@ -487,7 +511,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("extra", extra);
 
       fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_"
-              + getLanguage())));
+          + getLanguage())));
     }
     return fragments;
 
@@ -497,9 +521,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     StringBuilder sb = new StringBuilder();
     String webcontext = URLManager.getApplicationURL();
     sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
-            member.getId()).append("\">");
+        member.getId()).append("\">");
     sb.append("<img src=\"").append(webcontext).append(member.getUserDetail().getAvatar()).append(
-            "\" alt=\"viewUser\"").append(" class=\"avatar\"/></a>");
+        "\" alt=\"viewUser\"").append(" class=\"avatar\"/></a>");
     return sb.toString();
   }
 

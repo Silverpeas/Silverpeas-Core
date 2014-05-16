@@ -20,7 +20,9 @@
  */
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 
 /**
@@ -29,7 +31,7 @@ import com.silverpeas.form.FormException;
  * @see Field
  * @see FieldDisplayer
  */
-public abstract class TextField implements Field {
+public abstract class TextField extends AbstractField {
 
   private static final long serialVersionUID = 983277921021971664L;
   /**

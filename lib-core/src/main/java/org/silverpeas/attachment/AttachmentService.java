@@ -23,22 +23,21 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  *
@@ -51,6 +50,14 @@ public interface AttachmentService {
   String NO_UPDATE_MODE = "0";
   String UPDATE_DIRECT_MODE = "1";
   String UPDATE_SHORTCUT_MODE = "2";
+
+  /**
+   * Deletes all the documents related to the component instance identified by the specified
+   * identifier.
+   * @param componentInstanceId the component instance identifier.
+   * @throws AttachmentException
+   */
+  void deleteAllAttachments(String componentInstanceId) throws AttachmentException;
 
   /**
    * Writes the binary content into the specified File.
@@ -69,6 +76,18 @@ public interface AttachmentService {
    * @param lang the language of the content.
    */
   void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang);
+
+  /**
+   * Writes the binary content contained between begin and end indexes into the specified
+   * OutputStream.
+   * @param output the stream where the content is to be written.
+   * @param pk the id of the document.
+   * @param lang the language of the content.
+   * @param contentOffset number of bytes to skip from input content before copying into output.
+   * @param contentLength number of bytes to copy.
+   */
+  void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang, long contentOffset,
+      long contentLength);
 
   void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName);
 
@@ -259,7 +278,8 @@ public interface AttachmentService {
    * @return the list of attached documents.
    * @throws AttachmentException when is impossible to search
    */
-  List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
+  SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang);
 
   /**
    * Search all documents (files, xmlform content, wysiwyg) attached to a foreign object.
@@ -269,7 +289,8 @@ public interface AttachmentService {
    * @return the list of attached documents.
    * @throws AttachmentException when is impossible to search
    */
-  List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
+  SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang);
 
   /**
    * Search all file attached to a foreign object.
@@ -280,8 +301,8 @@ public interface AttachmentService {
    * @return the list of attached documents.
    * @throws AttachmentException when is impossible to search
    */
-  List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey, DocumentType type,
-      String lang);
+  SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
+      DocumentType type, String lang);
 
   void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey);
 
@@ -425,4 +446,13 @@ public interface AttachmentService {
    * versioned attachments become simple attachments.
    */
   public void switchComponentBehaviour(String componentId, boolean toVersionning);
+
+  /**
+   * Allows or forbids the download for readers.
+   *
+   * @param pk the id of the document.
+   * @param allowing: allowing the download for readers if true
+   * versioned attachments become simple attachments.
+   */
+  public void switchAllowingDownloadForReaders(SimpleDocumentPK pk, boolean allowing);
 }

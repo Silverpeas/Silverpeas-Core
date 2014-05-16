@@ -37,6 +37,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.apache.tika.parser.txt.CharsetDetector;
 import org.json.JSONObject;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.UnitUtil;
@@ -55,6 +56,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -134,12 +136,12 @@ public class FileUploadResource extends RESTWebService {
   @Produces(MediaType.TEXT_HTML)
   public Response uploadFile(InputStream inputStream) {
     try {
-      String fileName = new String(getHttpServletRequest().getHeader(X_FILENAME).getBytes(
-          Charsets.ISO_8859_1), Charsets.UTF_8);
-      if (!StringUtil.isDefined(fileName)) {
+      String brutFileName = getHttpServletRequest().getHeader(X_FILENAME);
+      if (!StringUtil.isDefined(brutFileName)) {
         throw new WebApplicationException(Response.Status.BAD_REQUEST);
       }
       String fileId = UUID.randomUUID().toString();
+      String fileName = URLDecoder.decode(brutFileName, Charsets.UTF_8.name());
       JSONObject jsonFile = uploadFile(fileId, fileName, inputStream);
       return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFile)).build();
     } catch (final WebApplicationException ex) {

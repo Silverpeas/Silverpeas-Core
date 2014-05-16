@@ -20,42 +20,39 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * Servlet used whith the drag and drop applet to import documents.
+ * Servlet used whith the drag and drop applet to import non-versioned documents.
  */
 public class DragAndDrop extends HttpServlet {
 
@@ -89,23 +86,23 @@ public class DragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-    if (!FileUploadUtil.isRequestMultipart(req)) {
+    HttpRequest request = HttpRequest.decorate(req);
+    if (!request.isContentInMultipart()) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
-    ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
-    boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
+    
     String userId = req.getParameter("UserId");
     try {
-      req.setCharacterEncoding(CharEncoding.UTF_8);
-      String componentId = req.getParameter("ComponentId");
-      String id = req.getParameter("PubId");
-      String lang = I18NHelper.checkLanguage(req.getParameter("lang"));
+      request.setCharacterEncoding(CharEncoding.UTF_8);
+      String componentId = request.getParameter("ComponentId");
+      String id = request.getParameter("PubId");
+      String lang = I18NHelper.checkLanguage(request.getParameter("lang"));
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId + ", id = " + id + ", userId = " + userId);
-      boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
+      boolean bIndexIt = StringUtil.getBooleanValue(request.getParameter("IndexIt"));
 
-      List<FileItem> items = FileUploadUtil.parseRequest(req);
+      List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
@@ -121,8 +118,8 @@ public class DragAndDrop extends HttpServlet {
             // create AttachmentDetail Object
             SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
                 id, 0, false, new SimpleAttachment(fileName, lang, null, null, item.getSize(),
-                mimeType, userId, new Date(), null));
-            document.setDocumentType(determineDocumentType(req));
+                    mimeType, userId, new Date(), null));
+            document.setDocumentType(determineDocumentType(request));
             File tempFile = File.createTempFile("silverpeas_", fileName);
             try {
               FileUploadUtil.saveToFile(tempFile, item);
@@ -137,36 +134,7 @@ public class DragAndDrop extends HttpServlet {
               FileUtils.deleteQuietly(tempFile);
             }
             // Specific case: 3d file to convert by Actify Publisher
-            if (actifyPublisherEnable) {
-              String extensions = settings.getString("Actify3dFiles");
-              StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
-              // 3d native file ?
-              boolean fileForActify = false;
-              SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-                  "nb tokenizer =" + tokenizer.countTokens());
-              String type = FileRepositoryManager.getFileExtension(fileName);
-              while (tokenizer.hasMoreTokens() && !fileForActify) {
-                String extension = tokenizer.nextToken();
-                fileForActify = type.equalsIgnoreCase(extension);
-              }
-              if (fileForActify) {
-                String dirDestName = "a_" + componentId + "_" + id;
-                String actifyWorkingPath = settings.getString("ActifyPathSource")
-                    + File.separatorChar + dirDestName;
-
-                String destPath = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath;
-                if (!new File(destPath).exists()) {
-                  FileRepositoryManager.createGlobalTempPath(actifyWorkingPath);
-                }
-                String normalizedFileName = FilenameUtils.normalize(fileName);
-                if (normalizedFileName == null) {
-                  normalizedFileName = FilenameUtils.getName(fileName);
-                }
-                String destFile = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath
-                    + File.separatorChar + normalizedFileName;
-                FileRepositoryManager.copyFile(document.getAttachmentPath(), destFile);
-              }
-            }
+            ActifyDocumentProcessor.getProcessor().process(document);
           }
         }
       }
@@ -176,7 +144,7 @@ public class DragAndDrop extends HttpServlet {
       final String errorMessage = SilverpeasTransverseWebErrorUtil
           .performAppletAlertExceptionMessage(e,
               UserDetail.getById(userId).getUserPreferences().getLanguage());
-      if (isDefined(errorMessage)) {
+      if (StringUtil.isDefined(errorMessage)) {
         sb.append(errorMessage);
       } else {
         sb.append(e.getMessage());

@@ -54,7 +54,7 @@ public class MandatoryQuestionChecker {
       HttpSession session = req.getSession();
       session.setAttribute("svplogin_Key", authenticationKey);
       try {
-        String userId = AdminReference.getAdminService().authenticate(authenticationKey,
+        String userId = AdminReference.getAdminService().identify(authenticationKey,
             session.getId(), false, false);
         UserDetail userDetail = AdminReference.getAdminService().getUserDetail(userId);
         if (userDetail != null && !userDetail.isAnonymous() && !StringUtil.isDefined(userDetail.

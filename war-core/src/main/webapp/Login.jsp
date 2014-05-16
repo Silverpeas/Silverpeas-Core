@@ -50,6 +50,8 @@
     }
     if (!StringUtil.isDefined(loginPage)) {
       loginPage = request.getContextPath() + "/defaultLogin.jsp";
+    } else if (!loginPage.startsWith(request.getContextPath())){
+      loginPage = request.getContextPath() + "/" + loginPage;
     }
     loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
         request.getParameter("logout");

@@ -3,7 +3,7 @@ CREATE TABLE UniqueId (
 	tableName varchar(100) NOT NULL
 );
 
-CREATE TABLE sb_attachment_attachment 
+CREATE TABLE sb_attachment_attachment
 (
 	attachmentId		int		NOT NULL ,
 	attachmentPhysicalName	varchar (500)	NOT NULL ,

@@ -32,7 +32,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import net.sourceforge.spnego.SpnegoPrincipal;
+import org.silverpeas.spnego.SpnegoPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
 import org.silverpeas.cache.service.CacheServiceFactory;

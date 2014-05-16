@@ -23,9 +23,7 @@
  */
 package org.silverpeas.date;
 
-import com.stratelia.webactiv.util.DateUtil;
-
-import java.util.Date;
+import com.silverpeas.calendar.DateTime;
 
 /**
  * User: Yohann Chastagnier
@@ -36,10 +34,10 @@ public class MonthPeriod extends Period {
 
   /**
    * Constructor : Constructs a newly allocated <code>period</code>.
-   * @param referenceDate the reference date to compute a month period.
+   * @param referenceDatable the reference date to compute a month period.
    */
-  protected MonthPeriod(final Date referenceDate) {
-    super(DateUtil.getFirstDateOfMonth(referenceDate), DateUtil.getEndDateOfMonth(referenceDate));
+  protected MonthPeriod(final DateTime referenceDatable) {
+    super(referenceDatable.getBeginOfMonth(), referenceDatable.getEndOfMonth().addMilliseconds(1));
     setPeriodType(PeriodType.month);
   }
 }

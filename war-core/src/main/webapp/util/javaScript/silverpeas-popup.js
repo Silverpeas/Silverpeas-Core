@@ -160,6 +160,31 @@
       return __openPopup($(this), settings);
     },
     /**
+     * The modal error dialog.
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the title of the dialog box (if it is empty a default title is used),
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - callbackOnClose : the callback on dialog box closing.
+     */
+    error: function(options) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+      if (!settings.title) {
+        settings.title = $.i18n.prop('GML.error.dialog.title');
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonTextNo: $.i18n.prop('GML.ok'),
+        isMaxWidth: true
+      }));
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+    /**
      * The modal help dialog.
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
@@ -199,11 +224,11 @@
       var settings = __extendCommonSettings(options);
 
       // Internal settings
-      $.extend(settings, __buildInternalSettings({
+      settings = $.extend(__buildInternalSettings({
         buttonTextYes: $.i18n.prop('GML.validate'),
         buttonTextNo: $.i18n.prop('GML.cancel'),
         isMaxWidth: true
-      }));
+      }), settings);
 
       // Dialog
       return __openPopup($(this), settings);
@@ -449,7 +474,7 @@
             click: function() {
               var isok = true;
               if (options.callback) {
-                isok = options.callback.call(this);
+                isok = options.callback.call($_this);
               }
               if (isok) {
                 $_this.dialog("close");

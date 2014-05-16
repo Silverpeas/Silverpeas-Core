@@ -30,40 +30,16 @@ import com.stratelia.webactiv.organization.SpaceI18NRow;
 public class SpaceI18N extends Translation {
 
   private static final long serialVersionUID = 7054435736300537280L;
-  private String name = null;
-  private String description = null;
 
   public SpaceI18N() {
   }
 
   public SpaceI18N(String lang, String name, String description) {
-    if (lang != null)
-      super.setLanguage(lang);
-    this.name = name;
-    this.description = description;
+    super(lang, name, description);
   }
 
   public SpaceI18N(SpaceI18NRow row) {
-    super.setId(row.id);
-    super.setLanguage(row.lang);
-    name = row.name;
-    description = row.description;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+    super(row.id, row.lang, row.name, row.description);
   }
 
   public String getSpaceId() {

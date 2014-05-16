@@ -39,7 +39,7 @@ import org.owasp.encoder.Encode;
  */
 public class BrowseBarComplete extends AbstractBrowseBar {
 
-  private static String CONNECTOR = "<span class=\"connector\">&nbsp;>&nbsp;</span>";
+  private static final String CONNECTOR = "<span class=\"connector\">&nbsp;>&nbsp;</span>";
 
   /**
    * Constructor declaration
@@ -81,7 +81,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       setSpaceJavascriptCallback("goSpace");
     }
     result.append("<div id=\"breadCrumb\">");
-    
+
     boolean emptyBreadCrumb = true;
 
     // Display spaces path from root to component
@@ -91,8 +91,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       List<SpaceInst> spaces;
 
       if (StringUtil.isDefined(getComponentId())) {
-        spaces =
-            getMainSessionController().getOrganisationController().getSpacePathToComponent(
+        spaces = getMainSessionController().getOrganisationController().getSpacePathToComponent(
             getComponentId());
       } else {
         spaces = getMainSessionController().getOrganisationController().getSpacePath(getSpaceId());
@@ -124,9 +123,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
       if (StringUtil.isDefined(getComponentId())) {
         // Display component's label
-        ComponentInstLight componentInstLight =
-            getMainSessionController().getOrganisationController().getComponentInstLight(
-            getComponentId());
+        ComponentInstLight componentInstLight = getMainSessionController().
+            getOrganisationController().getComponentInstLight(
+                getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);
           result.append("<a href=\"");

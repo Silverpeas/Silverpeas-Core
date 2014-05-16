@@ -24,6 +24,7 @@
 
 package com.silverpeas.form.fieldType;
 
+import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.displayers.PdcFieldDisplayer;
@@ -33,7 +34,7 @@ import com.silverpeas.form.displayers.PdcFieldDisplayer;
  * @author ahedin
  * @see PdcFieldDisplayer
  */
-public class PdcField implements Field {
+public class PdcField extends AbstractField {
 
   private static final long serialVersionUID = 1L;
 

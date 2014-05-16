@@ -23,12 +23,13 @@
  */
 package org.silverpeas.contribution.web;
 
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.silverpeas.contribution.web.ContributionTestResources.JAVA_PACKAGE;
@@ -42,6 +43,8 @@ public class ContributionFormContentGettingTest
     extends ResourceGettingTest<ContributionTestResources> {
 
   private String sessionKey;
+  private SessionInfo sessionInfo;
+  private long lastUserAccessTime;
 
   public ContributionFormContentGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -50,6 +53,9 @@ public class ContributionFormContentGettingTest
   @Before
   public void prepareTestResources() {
     sessionKey = authenticate(aUser());
+    sessionInfo =
+        SessionManagementFactory.getFactory().getSessionManagement().getSessionInfo(sessionKey);
+    lastUserAccessTime = sessionInfo.getLastAccessTimestamp();
   }
 
   @Test
@@ -58,6 +64,7 @@ public class ContributionFormContentGettingTest
     assertNotNull(entity);
     assertThat(entity.getType(), is("form"));
     assertThat(entity.getURI().toString(), endsWith(aResourceURI() + "/testFormId"));
+    assertThat(lastUserAccessTime, not(is(sessionInfo.getLastAccessTimestamp())));
   }
 
   @Test
@@ -67,6 +74,7 @@ public class ContributionFormContentGettingTest
     assertNotNull(entity);
     assertThat(entity.getType(), is("form"));
     assertThat(entity.getURI().toString(), endsWith(aResourceURI() + "/specifiedFormId"));
+    assertThat(lastUserAccessTime, not(is(sessionInfo.getLastAccessTimestamp())));
   }
 
   @Test
@@ -75,6 +83,7 @@ public class ContributionFormContentGettingTest
     assertNotNull(entity);
     assertThat(entity.getType(), is("form"));
     assertThat(entity.getURI().toString(), endsWith(aResourceURI() + "/testFormId"));
+    assertThat(lastUserAccessTime, not(is(sessionInfo.getLastAccessTimestamp())));
   }
 
   @Test
@@ -84,6 +93,7 @@ public class ContributionFormContentGettingTest
     assertNotNull(entity);
     assertThat(entity.getType(), is("form"));
     assertThat(entity.getURI().toString(), endsWith(aResourceURI() + "/specifiedFormId"));
+    assertThat(lastUserAccessTime, not(is(sessionInfo.getLastAccessTimestamp())));
   }
 
   @Override

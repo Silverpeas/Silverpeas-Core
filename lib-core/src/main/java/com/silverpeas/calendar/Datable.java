@@ -24,7 +24,9 @@
 
 package com.silverpeas.calendar;
 
-import java.util.TimeZone;
+import org.silverpeas.util.time.TimeData;
+
+import java.util.*;
 
 /**
  * A datable object is an object that represents a date in Silverpeas, whatever it is. It can be a
@@ -100,7 +102,7 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
    * @param timeZone the time zone of this datable.
    * @return itself.
    */
-  Datable<T> inTimeZone(final TimeZone timeZone);
+  T inTimeZone(final TimeZone timeZone);
 
   /**
    * Gets the time zone for which this datable is defined.
@@ -156,4 +158,142 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
    */
   String toICalInUTC();
 
+  /**
+   * Computes first hour, minute, second, millisecond from the datable instance.
+   * @return a date at last hour, minute, second and millisecond of the datable instance.
+   */
+  T getBeginOfDay();
+
+  /**
+   * Computes first hour, minute, second, millisecond from the datable instance.
+   * @return a date at last hour, minute, second and millisecond of the datable instance.
+   */
+  T getEndOfDay();
+
+  /**
+   * Compute the first hour, minute, second, millisecond from the datable instance.
+   * @return a date at last hour, minute, second and millisecond of the datable instance.
+   */
+  T getBeginOfWeek();
+
+  /**
+   * Compute the date of the first day in the week from the datable instance.
+   * @return a date for the first day of the week of the datable instance.
+   */
+  T getEndOfWeek();
+
+  /**
+   * Compute the first hour, minute, second, millisecond from the datable instance and a given
+   * locale.
+   * @return a date at last hour, minute, second and millisecond of the datable instance.
+   */
+  T getBeginOfWeek(String locale);
+
+  /**
+   * Compute the date of the first day in the week from the datable instance and a given locale.
+   * @return a date for the first day of the week of the datable instance.
+   */
+  T getEndOfWeek(String locale);
+
+  /**
+   * Compute the first hour, minute, second, millisecond from the datable instance.
+   * @return a date at last hour, minute, second and millisecond of the datable instance.
+   */
+  T getBeginOfMonth();
+
+  /**
+   * Compute the date of the first day in the month from the datable instance.
+   * @return a date for the first day of the month of the datable instance.
+   */
+  T getEndOfMonth();
+
+  /**
+   * Compute the first hour, minute, second, millisecond from the datable instance.
+   * @return a date at last hour, minute, second and millisecond of the datable instance.
+   */
+  T getBeginOfYear();
+
+  /**
+   * Compute the date of the first day in the year from the datable instance.
+   * @return a date for the first day of the year of the datable instance.
+   */
+  T getEndOfYear();
+
+  /**
+   * Compute the time between the datable instance and another one.
+   * @return the time between the datable instance and another one represented by {@link TimeData}.
+   */
+  TimeData getTimeDataTo(T anotherDatable);
+
+  /**
+   * Adds a number of years to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addYears(int amount);
+
+  /**
+   * Adds a number of months to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addMonths(int amount);
+
+  /**
+   * Adds a number of weeks to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addWeeks(int amount);
+
+  /**
+   * Adds a number of days to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addDays(int amount);
+
+  /**
+   * Adds a number of hours to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addHours(int amount);
+
+  /**
+   * Adds a number of minutes to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addMinutes(int amount);
+
+  /**
+   * Adds a number of seconds to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addSeconds(int amount);
+
+  /**
+   * Adds a number of milliseconds to the datable instance returning a new one.
+   * The original {@code Datable} is unchanged.
+   *
+   * @param amount  the amount to add, may be negative
+   * @return the new {@code Datable} with the amount added
+   */
+  T addMilliseconds(int amount);
 }

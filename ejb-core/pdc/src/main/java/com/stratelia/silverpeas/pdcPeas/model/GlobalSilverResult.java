@@ -56,6 +56,8 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private int resultId = 0;
   private int hits = -1;
   private String externalUrl = null;
+  private boolean isDownloadAllowedForReaders = true;
+  private boolean userAllowedToDownloadFile = true;
 
   /**
    * List of all linked attachment in wysiwyg content
@@ -269,6 +271,22 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   public boolean isAttachment() {
     return StringUtil.isDefined(getAttachmentId());
+  }
+
+  public boolean isUserAllowedToDownloadFile() {
+    return userAllowedToDownloadFile;
+  }
+
+  public void setUserAllowedToDownloadFile(final boolean userAllowedToDownloadFile) {
+    this.userAllowedToDownloadFile = userAllowedToDownloadFile;
+  }
+
+  public boolean isDownloadAllowedForReaders() {
+    return isDownloadAllowedForReaders;
+  }
+
+  public void setDownloadAllowedForReaders(final boolean isDownloadAllowedForReaders) {
+    this.isDownloadAllowedForReaders = isDownloadAllowedForReaders;
   }
 
   @Override

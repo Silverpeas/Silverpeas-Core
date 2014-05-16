@@ -28,7 +28,7 @@ import com.silverpeas.importExport.report.ExportPDFReport;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExportPeas.control.ImportExportSessionController;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -38,8 +38,8 @@ import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 
@@ -69,6 +69,7 @@ public class ImportExportRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param importExportSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -77,14 +78,14 @@ public class ImportExportRequestRouter extends
    */
   @Override
   public String getDestination(String function, ImportExportSessionController importExportSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     try {
       if (function.startsWith("Main")) {
         destination = "/importExportPeas/jsp/welcome.jsp";
       } else if ("Import".equals(function)) {
         File file = null;
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
         for (FileItem item : items) {
           if (!item.isFormField()) {
             String fileName = FileUploadUtil.getFileName(item);

@@ -23,7 +23,7 @@
   <jpa:repositories base-package="org.silverpeas.token" transaction-manager-ref="jpaTransactionManager" />
 
   <util:list id="entities">
-    <value>org.silverpeas.token.model</value>
+    <value>org.silverpeas.token.persistent</value>
   </util:list>
 
 </beans>

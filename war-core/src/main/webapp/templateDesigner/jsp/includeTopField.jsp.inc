@@ -1,11 +1,11 @@
-<%
+<% if (shownInNewWindow) { 
 	browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 	browseBar.setComponentName(resource.getString("templateDesigner.field"));
 
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
-%>
+} %>
 <form name="fieldForm" action="<%=m_context%>/RtemplateDesigner/jsp/<%=actionForm%>" method="post">
 <table cellspacing="5" width="100%">
 <tr>
@@ -33,6 +33,11 @@
 <tr>
 <td class="txtlibform"><%=resource.getString("GML.requiredField")%> :</td><td><input type="checkbox" name="Mandatory" value="true" <%=mandatoryChecked%>/></td>
 </tr>
+<% if (showMultiValuesParam) { %>
+<tr>
+<td class="txtlibform"><%=resource.getString("templateDesigner.field.multivalued")%> :</td><td><input type="checkbox" id="multivaluableChk" <%=multivaluableChecked%>/> <span id="multivaluableNb"><input type="text" name="NbMaxValues" value="<%=nbMaxValues%>" size="3"/> <%=resource.getString("templateDesigner.field.multivalued.max")%></span></td>
+</tr>
+<% } %>
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>

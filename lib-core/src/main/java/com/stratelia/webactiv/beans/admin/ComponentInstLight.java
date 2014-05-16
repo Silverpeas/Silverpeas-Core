@@ -24,19 +24,19 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.organization.ComponentInstanceRow;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.organization.ComponentInstanceRow;
-
 /**
  * The class ComponentInstLight is the representation in memory of a component instance
  */
-public class ComponentInstLight extends AbstractI18NBean implements Serializable {
+public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implements Serializable {
 
   private static final long serialVersionUID = 4859368422448142768L;
 
@@ -45,12 +45,6 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
 
   /* Unique identifier of the father of the space */
   private String m_sDomainFatherId;
-
-  /* name of the instance */
-  private String m_sLabel;
-
-  /* description of the instance */
-  private String m_sDescription;
 
   /* instance Type */
   private String m_sName;
@@ -74,9 +68,7 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   public ComponentInstLight() {
     m_sId = "";
     m_sDomainFatherId = "";
-    m_sLabel = "";
     m_sName = "";
-    m_sDescription = "";
   }
 
   /**
@@ -85,8 +77,8 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   public ComponentInstLight(ComponentInstanceRow compo) {
     m_sId = Integer.toString(compo.id);
     m_sDomainFatherId = Integer.toString(compo.spaceId);
-    m_sLabel = compo.name;
-    m_sDescription = compo.description;
+    setLabel(compo.name);
+    setDescription(compo.description);
     m_sName = compo.componentName;
 
     if (compo.createTime != null) {
@@ -140,9 +132,11 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   }
 
   /**
-   * Get the space name
-   * @return the space name
+   * Get the component name
+   * This method is a hack (technical debt)
+   * @return the component name
    */
+  @Override
   public String getName() {
     return m_sName;
   }
@@ -152,19 +146,11 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
    * @return the component type
    */
   public String getLabel() {
-    return m_sLabel;
+    return super.getName();
   }
 
-  public void setLabel(String s) {
-    m_sLabel = s;
-  }
-
-  /**
-   * Get the component description
-   * @return the component description
-   */
-  public String getDescription() {
-    return m_sDescription;
+  public void setLabel(String label) {
+    super.setName(label);
   }
 
   public Date getCreateDate() {
@@ -243,27 +229,14 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
    * I18N
    */
   public String getLabel(String language) {
-    if (!I18NHelper.isI18N) {
-      return getLabel();
-    }
-    ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null) {
-      return s.getName();
-    }
-    return getLabel();
+    return super.getName(language);
   }
 
-  public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
-      return getDescription();
-    }
-    ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null) {
-      return s.getDescription();
-    }
-    return getDescription();
-  }
-
+  /**
+   * This method is a hack (technical debt)
+   * @param name
+   */
+  @Override
   public void setName(String name) {
     m_sName = name;
   }
@@ -294,6 +267,15 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   
   public boolean isWorkflow() {
     return Instanciateur.isWorkflow(getName());
+  }
+  
+  public String getIcon(boolean bigOne) {
+    String app = getName();
+    if (isWorkflow()) {
+      app = "processManager";
+    }
+    String size = bigOne ? "Big.png" : "Small.gif";
+    return URLManager.getApplicationURL() + "/util/icons/component/" + app + size;
   }
 
   @Override

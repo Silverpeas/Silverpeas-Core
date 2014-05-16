@@ -23,6 +23,20 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,27 +47,16 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.IOUtils;
-
 /**
  *
  * @author ehugonnet
  */
 public class MockBinaryAttachmentService implements AttachmentService {
+
+  @Override
+  public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
   @Override
   public void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt,
@@ -76,6 +79,16 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
     try {
       IOUtils.write("Ceci est un test et ca marche", output);
+    } catch (IOException ex) {
+      Logger.getLogger(MockBinaryAttachmentService.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  @Override
+  public void getBinaryContent(final OutputStream output, final SimpleDocumentPK pk,
+      final String lang, final long contentOffset, final long contentLength) {
+    try {
+      IOUtils.write("Ceci est un test et ca ne marche pas", output);
     } catch (IOException ex) {
       Logger.getLogger(MockBinaryAttachmentService.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -173,7 +186,8 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -229,8 +243,8 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-      DocumentType type, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
+      WAPrimaryKey foreignKey, DocumentType type, String lang) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -250,7 +264,8 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -274,5 +289,10 @@ public class MockBinaryAttachmentService implements AttachmentService {
   @Override
   public void switchComponentBehaviour(String componentId, boolean toVersionning) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk, final boolean allowing) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

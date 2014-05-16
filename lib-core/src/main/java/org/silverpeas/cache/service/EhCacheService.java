@@ -29,18 +29,17 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 
 /**
- * Implementation of the CacheService that uses EhCache API.
- * User: Yohann Chastagnier
- * Date: 11/09/13
+ * Implementation of the CacheService that uses EhCache API. User: Yohann Chastagnier Date: 11/09/13
  */
-public class EhCacheService extends AbstractCacheService {
+public final class EhCacheService extends AbstractCacheService {
 
   private final static String CACHE_NAME = "SILVERPEAS_COMMON_EH_CACHE";
 
-  private CacheManager cacheManager;
+  private final CacheManager cacheManager;
 
   /**
    * Initialization of the service using EhCache API.
+   *
    * @param nbMaxElements
    */
   EhCacheService(int nbMaxElements) {
@@ -55,10 +54,19 @@ public class EhCacheService extends AbstractCacheService {
 
   /**
    * Gets the cache.
+   *
    * @return
    */
   Cache getCache() {
     return cacheManager.getCache(CACHE_NAME);
+  }
+
+  @Override
+  public void clear() {
+    Cache cache = getCache();
+    for (Object key : cache.getKeys()) {
+      cache.remove(key);
+    }
   }
 
   @Override

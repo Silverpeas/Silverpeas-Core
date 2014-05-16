@@ -68,10 +68,16 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
     return new Quota();
   }
 
+  @Override
+  public Quota initialize(final ComponentSpaceQuotaKey key, final Quota quota)
+      throws QuotaException {
+    return null;
+  }
+
   /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
-   */
+     * (non-Javadoc)
+     * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
+     */
   @Override
   public Quota get(final ComponentSpaceQuotaKey key) throws QuotaException {
     return new Quota();

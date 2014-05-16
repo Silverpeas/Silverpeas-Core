@@ -35,6 +35,7 @@ public class RegistrationSettings {
   private static ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.authentication.settings.authenticationSettings", "");
   private static String SELF_AUTHENTICATION_ACTIVATION = "newRegistrationEnabled";
+  private static String SELF_AUTHENTICATION_DOMAINID = "justRegisteredDomainId";
   private static long PURGE_PERIOD = 10;
   private static final RegistrationSettings instance = new RegistrationSettings();
 
@@ -51,5 +52,14 @@ public class RegistrationSettings {
    */
   public boolean isUserSelfRegistrationEnabled() {
     return settings.getBoolean(SELF_AUTHENTICATION_ACTIVATION, false);
+  }
+
+  /**
+   * In case of self registration, define domain id where the account will be created
+   *
+   * @return specified domain id. "0" otherwise.
+   */
+  public String userSelfRegistrationDomainId() {
+    return settings.getString(SELF_AUTHENTICATION_DOMAINID, "0");
   }
 }

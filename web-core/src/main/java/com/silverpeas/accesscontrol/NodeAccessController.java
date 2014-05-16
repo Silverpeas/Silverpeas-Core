@@ -24,10 +24,9 @@
 
 package com.silverpeas.accesscontrol;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -37,12 +36,19 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Set;
+
 /**
  * Check the access to a node for a user.
  * @author ehugonnet
  */
 @Named
-public class NodeAccessController implements AccessController<NodePK> {
+public class NodeAccessController extends AbstractAccessController<NodePK> {
+
+  @Inject
+  private ComponentAccessController componentAccessController;
 
   @Inject
   private OrganisationController controller;
@@ -59,23 +65,50 @@ public class NodeAccessController implements AccessController<NodePK> {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, NodePK nodePK) {
+  public boolean isUserAuthorized(String userId, NodePK nodePK,
+      final AccessControlContext context) {
+    return isUserAuthorized(getUserRoles(context, userId, nodePK));
+  }
+
+  public boolean isUserAuthorized(Set<SilverpeasRole> nodeUserRoles) {
+    return CollectionUtil.isNotEmpty(nodeUserRoles);
+  }
+
+  @Override
+  protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
+      String userId, NodePK nodePK) {
+
+    // Component access control
+    final Set<SilverpeasRole> componentUserRoles =
+        getComponentAccessController().getUserRoles(context, userId, nodePK.getInstanceId());
+    if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
+      return;
+    }
+
+    // If rights are not handled from the node, then filling the user role containers with these
+    // of component
+    if (!getComponentAccessController().isRightOnTopicsEnabled(nodePK.getInstanceId())) {
+      userRoles.addAll(componentUserRoles);
+      return;
+    }
+
     NodeDetail node;
     try {
       node = getNodeBm().getHeader(nodePK, false);
     } catch (Exception ex) {
       SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
           "root.NO_EX_MESSAGE", ex);
-      return false;
+      return;
     }
     if (node != null) {
       if (!node.haveRights()) {
-        return true;
+        userRoles.addAll(componentUserRoles);
+        return;
       }
-      return getOrganisationController().isObjectAvailable(node.getRightsDependsOn(),
-          ObjectType.NODE, nodePK.getInstanceId(), userId);
+      userRoles.addAll(SilverpeasRole.from(getOrganisationController()
+          .getUserProfiles(userId, nodePK.getInstanceId(), node.getRightsDependsOn(),
+              ObjectType.NODE)));
     }
-    return false;
   }
 
   public NodeBm getNodeBm() throws Exception {
@@ -91,5 +124,16 @@ public class NodeAccessController implements AccessController<NodePK> {
       controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
+  }
+
+  /**
+   * Gets a controller of access on the components of a publication.
+   * @return a ComponentAccessController instance.
+   */
+  protected ComponentAccessController getComponentAccessController() {
+    if (componentAccessController == null) {
+      componentAccessController = new ComponentAccessController();
+    }
+    return componentAccessController;
   }
 }

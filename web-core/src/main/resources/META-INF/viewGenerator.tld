@@ -1,14 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
-        version="2.0">
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
   <description>View Generator 1.1 core library</description>
   <display-name>View Generator</display-name>
   <tlib-version>1.0</tlib-version>
   <short-name>view</short-name>
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
+  <tag>
+    <description>
+      Tag to print out the panel of management of the attachements for a given component instance
+      and for a given resource.
+    </description>
+    <name>attachmentPane</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.AttachmentPaneTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the resource that accepts the attachements.</description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The unique identifier of the component instance the resource belongs to.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Indicates if the attachment pane must be display in read only view.
+        By default, it is in editable view.
+      </description>
+      <name>readOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
   <tag>
     <description>
       Tag to print out the full name of the current user and to use with it the userzoom silverpeas
@@ -690,6 +723,15 @@
       <name>path</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
+      <deferred-value>
+        <type>java.lang.Object</type>
+      </deferred-value>
+    </attribute>
+    <attribute>
+      <description>Forces spaceId (usefull in portlets page and space homepage)</description>
+      <name>spaceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
@@ -752,6 +794,13 @@
       com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneTag
     </tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>Set type of OperationPane (personal, space or component)</description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to define a separator line between two operations in an OperationPane.
@@ -893,7 +942,8 @@
     <attribute>
       <description>If the column is sortable</description>
       <name>sortable</name>
-      <type>boolean</type>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
   <tag>
@@ -1404,6 +1454,55 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current space</description>
+      <name>spaceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current space</description>
+      <name>spaceName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current component</description>
+      <name>componentId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current component</description>
+      <name>componentName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current object for browseBar</description>
+      <name>browseInfo</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current object</description>
+      <name>objectId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>False if the button to browse files has not to be displayed</description>
+      <name>displayFileBrowser</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
     </attribute>
   </tag>
   <tag>

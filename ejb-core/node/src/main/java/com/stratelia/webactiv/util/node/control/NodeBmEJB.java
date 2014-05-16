@@ -139,10 +139,10 @@ public class NodeBmEJB implements NodeBm {
       }
 
       // Add default translation
-      Translation nodeI18NDetail = new NodeI18NDetail(nodeDetail.getLanguage(),
+      NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nodeDetail.getLanguage(),
           nodeDetail.getName(), nodeDetail.getDescription());
       nodeDetail.addTranslation(nodeI18NDetail);
-      List<Translation> translations = getTranslations(Integer.parseInt(pk.getId()));
+      List<NodeI18NDetail> translations = getTranslations(Integer.parseInt(pk.getId()));
       for (int t = 0; translations != null && t < translations.size(); t++) {
         nodeI18NDetail = translations.get(t);
         nodeDetail.addTranslation(nodeI18NDetail);
@@ -161,7 +161,7 @@ public class NodeBmEJB implements NodeBm {
    * @param nodeId
    * @return List of translations
    */
-  private List<Translation> getTranslations(int nodeId) {
+  private List<NodeI18NDetail> getTranslations(int nodeId) {
     Connection con = getConnection();
     try {
       return NodeI18NDAO.getTranslations(con, nodeId);
@@ -420,9 +420,9 @@ public class NodeBmEJB implements NodeBm {
         // Remove of a translation is required
         if ("-1".equals(nd.getTranslationId())) {
           // Default language = translation
-          List<Translation> translations = NodeI18NDAO.getTranslations(con, nd.getId());
+          List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, nd.getId());
           if (translations != null && !translations.isEmpty()) {
-            NodeI18NDetail translation = (NodeI18NDetail) translations.get(0);
+            NodeI18NDetail translation = translations.get(0);
             nd.setLanguage(translation.getLanguage());
             nd.setName(translation.getName());
             nd.setDescription(translation.getDescription());
@@ -780,9 +780,7 @@ public class NodeBmEJB implements NodeBm {
   private void createTranslations(Connection con, NodeDetail node) throws SQLException,
       UtilException {
     if (node.getTranslations() != null) {
-      Iterator<Translation> translations = node.getTranslations().values().iterator();
-      while (translations.hasNext()) {
-        NodeI18NDetail translation = (NodeI18NDetail) translations.next();
+      for (final NodeI18NDetail translation : node.getTranslations().values()) {
         if (node.getLanguage() != null && !node.getLanguage().equals(translation.getLanguage())) {
           translation.setObjectId(node.getNodePK().getId());
           NodeI18NDAO.saveTranslation(con, translation);

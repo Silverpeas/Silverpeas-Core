@@ -32,6 +32,7 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
@@ -54,6 +55,18 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -62,26 +75,16 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 /**
  * This object contains the description of a publication
  */
-public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
-    SilverpeasContent, Serializable, Cloneable {
+public class PublicationDetail extends AbstractI18NBean<PublicationI18N> implements SilverContentInterface,
+    SilverpeasContent, Rateable, Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
   private String infoId;
-  private String name;
-  private String description;
   private Date creationDate;
   private Date beginDate;
   private Date endDate;
@@ -114,12 +117,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   // added for import/export
   private boolean statusMustBeChecked = true;
   private boolean updateDateMustBeSet = true;
-  // ajoutÃ© pour les statistiques
+  // ajouté pour les statistiques
   private int nbAccess = 0;
-  private boolean notYetVisible = false;
-  private boolean noMoreVisible = false;
-  private Date beginDateAndHour = null;
-  private Date endDateAndHour = null;
+  private Visibility visibility = null;
   // added for export component
   public static final String DRAFT = "Draft";
   public static final String VALID = "Valid";
@@ -127,6 +127,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
   public static final String TYPE = "Publication";
+
+  private ContributionRating contributionRating;
 
   /**
    * Default contructor, required for castor mapping in importExport.
@@ -138,8 +140,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -167,13 +169,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content) {
     this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
+    this.importance = new Integer(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -184,8 +186,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       int importance, String version, String keywords, String content,
       String status) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -202,8 +204,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       int importance, String version, String keywords, String content,
       String status, Date updateDate) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -238,8 +240,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String status, Date updateDate,
       String updaterId) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -259,8 +261,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String status, Date updateDate,
       String updaterId, String author) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -294,8 +296,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String importance, String version, String keywords, String content,
       String status) {
     this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -312,8 +314,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String importance, String version, String keywords, String content,
       String status, String updaterId, String author) {
     this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -332,8 +334,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String importance, String version, String keywords, String content,
       String status, Date updateDate) {
     this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -352,8 +354,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String status, Date updateDate,
       String updaterId) {
     this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -373,8 +375,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String status, Date updateDate,
       String updaterId, Date validateDate, String validatorId) {
     this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -418,8 +420,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String status, Date updateDate,
       String updaterId, Date validateDate, String validatorId) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -442,8 +444,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       String status, Date updateDate,
       String updaterId, Date validateDate, String validatorId, String author) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creationDate = creationDate;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -475,57 +477,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public void setInfoId(String infoId) {
     this.infoId = infoId;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public String getName(String lang) {
-    if (!I18NHelper.isI18N) {
-      return getName();
-    }
-
-    PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
-    if (p == null) {
-      p = (PublicationI18N) getNextTranslation();
-    }
-
-    if (p != null) {
-      return p.getName();
-    } else {
-      return getName();
-    }
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public String getDescription(String lang) {
-    if (!I18NHelper.isI18N) {
-      return getDescription();
-    }
-    PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
-    if (p == null) {
-      p = (PublicationI18N) getNextTranslation();
-    }
-    if (p != null) {
-      return p.getDescription();
-    }
-    return getDescription();
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public void setCreationDate(Date creationDate) {
@@ -1122,13 +1073,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     clone.setContent(content);
     clone.setCreationDate(creationDate);
     clone.setCreatorId(creatorId);
-    clone.setDescription(description);
+    clone.setDescription(getDescription());
     clone.setEndDate(endDate);
     clone.setEndHour(endHour);
     clone.setImportance(importance);
     clone.setInfoId(infoId);
     clone.setKeywords(keywords);
-    clone.setName(name);
+    clone.setName(getName());
     clone.setPk(pk);
     clone.setStatus(status);
     clone.setTargetValidatorId(targetValidatorId);
@@ -1166,54 +1117,31 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.nbAccess = nbAccess;
   }
 
-  public boolean isNoMoreVisible() {
-    return noMoreVisible;
-  }
-
-  public void setNoMoreVisible(boolean noMoreVisible) {
-    this.noMoreVisible = noMoreVisible;
-  }
-
-  public boolean isNotYetVisible() {
-    return notYetVisible;
-  }
-
-  public void setNotYetVisible(boolean notYetVisible) {
-    this.notYetVisible = notYetVisible;
-  }
-
   public boolean isVisible() {
-    return !(notYetVisible || noMoreVisible);
+    return getVisibility().isVisible();
   }
-
+  
+  public boolean isNoMoreVisible() {
+    return getVisibility().isNoMoreVisible();
+  }
+  
+  public boolean isNotYetVisible() {
+    return getVisibility().isNotYetVisible();
+  }
+  
   public Date getBeginDateAndHour() {
-    if (beginDateAndHour != null) {
-      return (Date) beginDateAndHour.clone();
-    }
-    return null;
-  }
-
-  public void setBeginDateAndHour(Date beginDateAndHour) {
-    if (beginDateAndHour != null) {
-      this.beginDateAndHour = (Date) beginDateAndHour.clone();
-    } else {
-      this.beginDateAndHour = null;
-    }
+    return getVisibility().getBeginDateAndHour();
   }
 
   public Date getEndDateAndHour() {
-    if (endDateAndHour != null) {
-      return (Date) endDateAndHour.clone();
-    }
-    return null;
+    return getVisibility().getEndDateAndHour();
   }
-
-  public void setEndDateAndHour(Date endDateAndHour) {
-    if (endDateAndHour != null) {
-      this.endDateAndHour = (Date) endDateAndHour.clone();
-    } else {
-      this.endDateAndHour = null;
+  
+  private Visibility getVisibility() {
+    if (visibility == null) {
+      visibility = new Visibility(beginDate, beginHour, endDate, endHour);
     }
+    return visibility;
   }
 
   public Date getDraftOutDate() {
@@ -1314,5 +1242,18 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public int getExplicitRank() {
     return explicitRank;
+  }
+
+  /**
+   * Gets the rating informations linked with the current publication.
+   * @return the rating of the publication.
+   */
+  @Override
+  public ContributionRating getRating() {
+    if (contributionRating == null) {
+      contributionRating = RatingServiceFactory.getRatingService()
+          .getRating(new ContributionRatingPK(getId(), getInstanceId(), "Publication"));
+    }
+    return contributionRating;
   }
 }

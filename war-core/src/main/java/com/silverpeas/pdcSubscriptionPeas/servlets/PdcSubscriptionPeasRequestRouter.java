@@ -29,6 +29,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +60,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -66,7 +69,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
    */
   @Override
   public String getDestination(String function, PdcSubscriptionSessionController pdcSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     request.setAttribute("language", pdcSC.getLanguage());
     request.setAttribute("currentUserId", pdcSC.getUserId());

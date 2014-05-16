@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -31,16 +27,15 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion;
+import java.util.Arrays;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-import java.util.Arrays;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -66,6 +61,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets a javascript function to call when an event occurs on a comment or on a list of comments.
+   *
    * @return the callback to invoke.
    */
   public String getCallback() {
@@ -75,6 +71,7 @@ public abstract class CommentWidget extends TagSupport {
   /**
    * Sets the javascript function to call when an event occurs on a comment or on a list of
    * comments.
+   *
    * @param callback the callback to invoke.
    */
   public void setCallback(String callback) {
@@ -85,6 +82,7 @@ public abstract class CommentWidget extends TagSupport {
    * Sets up the widget with all required information. It initializes the JQuery comment plugin with
    * and it parameterizes from Silverpeas settings and from the resource for which the comments
    * should be rendered.
+   *
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
@@ -98,32 +96,17 @@ public abstract class CommentWidget extends TagSupport {
         setSrc(context + "/util/javaScript/checkForm.js");
     script initCommentPlugin = new script().setType("text/javascript").
         addElement(setUpJQueryCommentPlugin());
-    script autoresizePlugin = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL()
-            + "/util/javaScript/jquery/autoresize.jquery.min.js");
-    script userProfilePlugin = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-profile.js");
-    script invitMePlugin = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-invitme.js");
-    script userZoomPlugin = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-userZoom.js");
-    script commentJqueryScript = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-comment.js");
 
-    xhtmlcontainer.addElement(checkForm).
-            addElement(autoresizePlugin).
-            addElement(userProfilePlugin).
-            addElement(invitMePlugin).
-            addElement(userZoomPlugin).
-            addElement(commentJqueryScript).
-            addElement(comments).
-            addElement(initCommentPlugin);
+    xhtmlcontainer.addElement(comments).addElement(checkForm);
+    JavascriptPluginInclusion.includeComment(xhtmlcontainer);
+    xhtmlcontainer.addElement(initCommentPlugin);
     return xhtmlcontainer;
   }
 
   /**
    * Gets the unique identifier of the user that requested the page in which will be rendered the
    * widget.
+   *
    * @return the unique identifier of the user.
    */
   public String getUserId() {
@@ -133,6 +116,7 @@ public abstract class CommentWidget extends TagSupport {
   /**
    * Sets the unique identifier of the user that requested the page in which will be rendered the
    * widget.
+   *
    * @param userId the user identifier.
    */
   public void setUserId(String userId) {
@@ -142,6 +126,7 @@ public abstract class CommentWidget extends TagSupport {
   /**
    * Sets the unique identifier of the Silverpeas component instance to which the commented resource
    * belongs.
+   *
    * @param componentId the unique identifier of the instance of a Silverpeas component.
    */
   public void setComponentId(String componentId) {
@@ -150,6 +135,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Sets the unique identifier of the resource that is commented out.
+   *
    * @param resourceId the unique identifier of the commented resource.
    */
   public void setResourceId(String resourceId) {
@@ -167,6 +153,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets the identifier of the Silverpeas component instance to which the resource belongs.
+   *
    * @return the component identifier.
    */
   public String getComponentId() {
@@ -175,6 +162,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets the unique identifier of the resource in Silverpeas.
+   *
    * @return the resource identifier.
    */
   public String getResourceId() {
@@ -222,6 +210,7 @@ public abstract class CommentWidget extends TagSupport {
    * This method generates the Javascript instructions to retrieve in AJAX the comments on the given
    * resource and to display them. The generated code is built upon the JQuery toolkit, so that it
    * is required to be included within the the XHTML header section.
+   *
    * @return the javascript code to handle a list of comments on a given resource.
    */
   private String setUpJQueryCommentPlugin() {
@@ -240,27 +229,27 @@ public abstract class CommentWidget extends TagSupport {
     boolean canBeUpdated = settings.getSetting("AdminAllowedToUpdate", true) && isAdmin;
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
-            + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
-            + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
-            + "', id: '" + getUserId() + "', anonymous: "+currentUser.isAnonymous()+"}, "
-            + "update: { activated: function( comment ) {"
-            + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
-            + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
-            + settings.getString("GML.update") + "'},"
-            + "deletion: {activated: function( comment ) {if (" + canBeUpdated
-            + " || (comment.author.id === '" + getUserId() + "')) return true; else return false;},"
-            + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
-            + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
-            + "'}, updateBox: { title: '" + settings.getString("comment.comment")
-            + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
-            + settings.getString("GML.validate")
-            + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { "
-            + "alert('"
-            + settings.getString("comment.pleaseFill_single") + "');"
-            + "} else if (!isValidTextArea(text)) { alert('" + settings.getString(
+        + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
+        + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
+        + "', id: '" + getUserId() + "', anonymous: " + currentUser.isAnonymous() + "}, "
+        + "update: { activated: function( comment ) {"
+        + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
+        + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
+        + settings.getString("GML.update") + "'},"
+        + "deletion: {activated: function( comment ) {if (" + canBeUpdated
+        + " || (comment.author.id === '" + getUserId() + "')) return true; else return false;},"
+        + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
+        + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
+        + "'}, updateBox: { title: '" + settings.getString("comment.comment")
+        + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
+        + settings.getString("GML.validate")
+        + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { "
+        + "alert('"
+        + settings.getString("comment.pleaseFill_single") + "');"
+        + "} else if (!isValidTextArea(text)) { alert('" + settings.getString(
             "comment.champsTropLong") + "'); } else { return true; } return false; },"
-            + "mandatory: '"
-            + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + settings.getString(
+        + "mandatory: '"
+        + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + settings.getString(
             "GML.requiredField") + "'";
     if (isDefined(getCallback())) {
       script += ",callback: " + getCallback() + "});";

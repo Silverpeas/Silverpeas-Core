@@ -31,21 +31,48 @@ public class Translation implements Serializable {
   private static final long serialVersionUID = -3879515108587719162L;
   private int id = -1;
   private String objectId = null;
-  private String language = "fr";
+  private String language = I18NHelper.defaultLanguage;
+  private String name = "";
+  private String description = "";
 
-  public int getId() {
+  protected Translation() {
+    // Nothing is done
+  }
+
+  protected Translation(String lang, String name, String description) {
+    if (lang != null) {
+      setLanguage(lang);
+    }
+    setName(name);
+    setDescription(description);
+  }
+
+  protected Translation(int id, String lang, String name, String description) {
+    this(lang, name, description);
+    setId(id);
+  }
+
+  public Translation(Translation otherTranslation) {
+    setId(otherTranslation.getId());
+    setObjectId(otherTranslation.getObjectId());
+    setLanguage(otherTranslation.getLanguage());
+    setName(otherTranslation.getName());
+    setDescription(otherTranslation.getDescription());
+  }
+
+  public final int getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public final void setId(int id) {
     this.id = id;
   }
 
-  public String getLanguage() {
+  public final String getLanguage() {
     return language;
   }
 
-  public void setLanguage(String language) {
+  public final void setLanguage(String language) {
     this.language = language;
   }
 
@@ -57,4 +84,19 @@ public class Translation implements Serializable {
     this.objectId = objectId;
   }
 
+  public final String getName() {
+    return this.name;
+  }
+
+  public final void setName(String name) {
+    this.name = name;
+  }
+
+  public final String getDescription() {
+    return this.description;
+  }
+
+  public final void setDescription(String description) {
+    this.description = description;
+  }
 }

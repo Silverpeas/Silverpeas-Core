@@ -25,6 +25,9 @@
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -36,16 +39,8 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
@@ -64,7 +59,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
   public String[] getManagedTypes() {
     return new String[] { UserField.TYPE };
   }
-
+  
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
@@ -80,8 +75,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
 
     if (!UserField.TYPE.equals(template.getTypeName())) {
@@ -233,15 +227,4 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     return 2;
   }
 
-  @Override
-  public List<String> update(List<FileItem> items, UserField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName();
-    String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-        && !StringUtil.isDefined(value)) {
-      return new ArrayList<String>();
-    }
-    return update(value, field, template, pageContext);
-  }
 }

@@ -236,4 +236,19 @@ public class StringUtilTest {
     assertThat(StringUtil.defaultStringIfNotDefined("   ", defaultString), is(defaultString));
     assertThat(StringUtil.defaultStringIfNotDefined(" A ", defaultString), is(" A "));
   }
+  
+  @Test
+  public void testIsValidHour() {
+    assertTrue(StringUtil.isValidHour("10:30"));
+    assertTrue(StringUtil.isValidHour("24:59"));
+    assertTrue(StringUtil.isValidHour("00:00"));
+    assertTrue(StringUtil.isValidHour("8:01"));
+    assertTrue(StringUtil.isValidHour("0:01"));
+    // Check limit hour
+    assertFalse(StringUtil.isValidHour("25:00"));
+    assertFalse(StringUtil.isValidHour("24:60"));
+    assertFalse(StringUtil.isValidHour("10-30"));
+    assertFalse(StringUtil.isValidHour(null));
+    assertFalse(StringUtil.isValidHour(""));
+  }
 }

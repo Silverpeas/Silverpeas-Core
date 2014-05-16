@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
- * Provides an API to manage token associated to different types of resource.
- * A token is defined by a <code>TokenType</code> (@see {@link org.silverpeas.token.constant.TokenType}) and a resource id.
- * As the caller of token API has to know which type of resource it handles, only this two above data permit to verify token.
+ * Provides an API to generate and to handle tokens of different kinds. Usually a token is used for
+ * security reason to either validate the access to a resource or identify a user, a group of users
+ * or another resource in Silverpeas. With each type of token is associated a generator of such
+ * tokens. The generator embeds the generation policy.
  */
 package org.silverpeas.token;

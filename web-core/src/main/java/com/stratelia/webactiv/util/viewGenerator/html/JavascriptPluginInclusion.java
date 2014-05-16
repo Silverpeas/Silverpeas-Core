@@ -23,16 +23,19 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.text.MessageFormat;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.security.SecuritySettings;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -49,8 +52,15 @@ public class JavascriptPluginInclusion {
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
+  private static final String angularjsI18nPath = angularjsPath + "i18n/";
   private static final String angularjsServicesPath = angularjsPath + "services/";
   private static final String angularjsDirectivesPath = angularjsPath + "directives/";
+  private static final String ANGULAR_JS = "angular.min.js";
+  private static final String ANGULAR_LOCALE_JS = "angular-locale_{0}.js";
+  private static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
+  private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
+  private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
+  private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
@@ -87,7 +97,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
-  private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
+  private static String JAVASCRIPT_CKEDITOR;
+  private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -95,6 +106,21 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_SVG = "raphael.min.js";
   private static final String JQUERY_GAUGE = "justgage.min.js";
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
+  private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
+  private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
+  private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
+  private static final String RATEIT_JS = "rateit/jquery.rateit.min.js";
+  private static final String RATEIT_CSS = "rateit/rateit.css";
+  private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
+  private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
+  private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
+  private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
+
+  static {
+    ResourceLocator wysiwygSettings = new ResourceLocator(
+        "org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+    JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor") + "/ckeditor.js";
+  }
 
   /**
    * Centralization of script instantiation.
@@ -125,6 +151,21 @@ public class JavascriptPluginInclusion {
   private static link link(String href) {
     return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
   }
+  
+  public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
+	  xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
+	  return xhtml;
+  }
+
+  public static ElementContainer includeAngular(final ElementContainer xhtml, String language) {
+    xhtml.addElement(script(angularjsPath + ANGULAR_JS));
+    xhtml.addElement(script(angularjsI18nPath + MessageFormat.format(ANGULAR_LOCALE_JS, language)));
+    xhtml.addElement(script(angularjsPath + ANGULAR_SANITIZE_JS));
+    xhtml.addElement(script(angularjsPath + SILVERPEAS_ANGULAR_JS));
+    xhtml.addElement(script(angularjsPath + SILVERPEAS_ADAPTERS_ANGULAR_JS));
+    xhtml.addElement(script(angularjsDirectivesPath + SILVERPEAS_BUTTON_ANGULAR_JS));
+    return xhtml;
+  }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
@@ -136,6 +177,35 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePdc(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
+    return xhtml;
+  }
+
+  public static ElementContainer includeRating(final ElementContainer xhtml) {
+    Object includeRatingDone =
+        CacheServiceFactory.getRequestCacheService().get("@includeRatingDone@");
+    if (includeRatingDone == null) {
+      xhtml.addElement(link(jqueryPath + RATEIT_CSS));
+      xhtml.addElement(script(jqueryPath + RATEIT_JS));
+      xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-rating.js"));
+      xhtml.addElement(script(angularjsServicesPath + "silverpeas-rating.js"));
+      CacheServiceFactory.getRequestCacheService().put("@includeRatingDone@", true);
+    }
+    return xhtml;
+  }
+
+  public static ElementContainer includeToggle(final ElementContainer xhtml) {
+    Object includeRatingDone =
+        CacheServiceFactory.getRequestCacheService().get("@includeToggleDone@");
+    if (includeRatingDone == null) {
+      xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-toggle.js"));
+      CacheServiceFactory.getRequestCacheService().put("@includeToggleDone@", true);
+    }
+    return xhtml;
+  }
+
+  public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
+    xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
     return xhtml;
   }
 
@@ -192,6 +262,7 @@ public class JavascriptPluginInclusion {
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
     xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(wysiwygPath + SILVERPEAS_WYSIWYG_TOOLBAR));
     return xhtml;
   }
 
@@ -260,6 +331,12 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static ElementContainer includeComment(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + JQUERY_AUTORESIZE));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_COMMENT));
+    return xhtml;
+  }
+
   public static ElementContainer includeJQuery(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryCssPath + GraphicElementFactory.JQUERYUI_CSS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
@@ -274,4 +351,17 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryPath + JQUERY_TAGS));
     return xhtml;
   }
+
+  public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
+    if (SecuritySettings.isWebSecurityByTokensEnabled()) {
+      xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
+    }
+    return xhtml;
+  }
+
+  public static ElementContainer includeMylinks(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_MYLINKS));
+    return xhtml;
+  }
+
 }

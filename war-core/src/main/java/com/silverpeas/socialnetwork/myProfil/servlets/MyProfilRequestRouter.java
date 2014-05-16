@@ -30,10 +30,9 @@ import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -53,7 +52,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.crypto.CryptMD5;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
@@ -78,6 +77,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   /**
+   *
    * @param function
    * @param myProfilSC
    * @param request
@@ -85,7 +85,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    */
   @Override
   public String getDestination(String function, MyProfilSessionController myProfilSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = valueOf(function);
@@ -136,7 +136,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == LinkToSVP) {
         return socialNetworkHelper.buildAuthenticationURL(request, route);
-      } else if (route == CreateLinkToSVP) {
+      } else if (route == AddLinkToSVP) {
         socialNetworkHelper.linkToSilverpeas(myProfilSC, request);
         request.setAttribute("View", MyNetworks.name());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
@@ -202,9 +202,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    * @return String
    * @throws UtilException
    */
-  protected String saveAvatar(HttpServletRequest request, String nameAvatar)
+  protected String saveAvatar(HttpRequest request, String nameAvatar)
       throws UtilException {
-    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+    List<FileItem> parameters = request.getFileItems();
     String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     ImageProfil img = new ImageProfil(nameAvatar);
@@ -243,8 +243,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
    */
   private List<UserDetail> getContactsToDisplay(List<String> contactIds,
       MyProfilSessionController sc) {
-    int numberOfContactsTodisplay =
-        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
+    int numberOfContactsTodisplay = sc.getSettings().getInteger("numberOfContactsTodisplay",
+        NUMBER_CONTACTS_TO_DISPLAY);
     List<UserDetail> contacts = new ArrayList<UserDetail>();
     if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String userId : contactIds) {
@@ -265,8 +265,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
         "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-    ResourceLocator authenticationSettings =
-        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+    ResourceLocator authenticationSettings = new ResourceLocator(
+        "org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
@@ -305,7 +305,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
       // process extra properties
       Map<String, String> properties = new HashMap<String, String>();
-      @SuppressWarnings("unchecked")
       Enumeration<String> parameters = request.getParameterNames();
       String parameterName;
       String property;
@@ -331,7 +330,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));
-    } catch (AuthenticationException e) {
+    } catch (Exception e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_unknown"));
     }
   }

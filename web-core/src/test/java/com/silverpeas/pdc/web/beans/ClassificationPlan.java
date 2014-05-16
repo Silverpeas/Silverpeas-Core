@@ -139,7 +139,7 @@ public class ClassificationPlan {
     UsedAxis axis = pdcAxis.get(index);
     AxisHeader header = new AxisHeader(axisId, axis._getAxisName(), axis._getAxisType(),
         axis.getAxisId(), axis.getAxisId());
-    Translation translationInFrench = new AxisHeaderI18N(axis.getAxisId(), FRENCH,
+    AxisHeaderI18N translationInFrench = new AxisHeaderI18N(axis.getAxisId(), FRENCH,
         axis._getAxisName(), "");
     header.addTranslation(translationInFrench);
     return header;

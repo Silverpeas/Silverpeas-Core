@@ -33,8 +33,9 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.Util;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  *
@@ -46,8 +47,8 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
   @Override
   public List<String> update(List<FileItem> items, T field, FieldTemplate template,
           PagesContext pageContext) throws FormException {
-    String value = FileUploadUtil.getParameter(items, template.getFieldName(), null, pageContext.
-            getEncoding());
+    String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
+    String value = FileUploadUtil.getParameter(items, fieldName, null, pageContext.getEncoding());
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
             && !StringUtil.isDefined(value)) {
       return new ArrayList<String>(0);

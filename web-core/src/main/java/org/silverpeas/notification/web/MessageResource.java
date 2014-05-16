@@ -59,7 +59,8 @@ public class MessageResource extends AbstractMessageResource {
   public void validateUserAuthentication(final UserPriviledgeValidation validation)
       throws WebApplicationException {
     try {
-      super.validateUserAuthentication(validation);
+      super.validateUserAuthentication(
+          validation.skipLastUserAccessTimeRegistering(getHttpServletRequest()));
     } catch (WebApplicationException wae) {
       if (Status.UNAUTHORIZED.getStatusCode() != wae.getResponse().getStatus()) {
         throw wae;

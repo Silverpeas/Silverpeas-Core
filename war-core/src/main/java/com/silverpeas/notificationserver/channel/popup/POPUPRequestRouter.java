@@ -38,8 +38,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
@@ -72,7 +71,7 @@ public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionContr
   }
 
   public String getDestination(String function, POPUPSessionController popupSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "/POPUP/jsp/" + function;
     SilverTrace.info("popup", "POPUPRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);

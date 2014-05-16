@@ -95,14 +95,14 @@
       display: none
     }
   </style>
-  <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-profile.js'/>"></script>
+  <script type="text/javascript" src="<c:url value='/util/javaScript/angularjs/services/silverpeas-profile.js'/>"></script>
   <script type="text/javascript">
 
     /**
      * Go to screen that proposing to select groups and users : User Panel.
      */
     function modifyForcedSubscriptions() {
-      $("<form>").attr('method', 'POST').attr('action',
+      $("<form>").attr('method', 'GET').attr('action',
           '<c:url value="/RSubscription/jsp/ToUserPanel"/>').appendTo(document.body).submit();
     }
 
@@ -181,19 +181,20 @@
        * @private
        */
       function __renderSubscriptions(subscriptions) {
-        __classifySubscriptions(subscriptions);
-        var $forcedGroups = __renderSubscriptionBloc({
-          subType : context.SUB_TYPE.FORCED_GROUP
-        });
-        var $forcedUsers = __renderSubscriptionBloc({
-          subType : context.SUB_TYPE.FORCED_USER
-        });
-        var $manualUsers = __renderSubscriptionBloc({
-          subType : context.SUB_TYPE.SELF_CREATION_USER
-        });
+        __classifySubscriptions(subscriptions).then(function() {
+          var $forcedGroups = __renderSubscriptionBloc({
+            subType : context.SUB_TYPE.FORCED_GROUP
+          });
+          var $forcedUsers = __renderSubscriptionBloc({
+            subType : context.SUB_TYPE.FORCED_USER
+          });
+          var $manualUsers = __renderSubscriptionBloc({
+            subType : context.SUB_TYPE.SELF_CREATION_USER
+          });
 
-        __paginate($('div.compulsory-subscription-management'), [$forcedGroups, $forcedUsers]);
-        __paginate($('div.individual-subscription'), [$manualUsers]);
+          __paginate($('div.compulsory-subscription-management'), [$forcedGroups, $forcedUsers]);
+          __paginate($('div.individual-subscription'), [$manualUsers]);
+        });
       }
 
       /**
@@ -221,36 +222,44 @@
           }
         });
 
+        // the promise of the processing termination to chain the asynchronous computations together;
+        // it is immediatly resolved as the computation of this method is synchrone.
+        var termination =  Promise.defer();
+        termination.resolve(0);
+        termination = termination.promise;
+
         // User profiles
         if (userIds.length > 0) {
-          var userProfiles = new UserProfileManagement();
-          userProfiles.get({
-            async : false,
-            ids : userIds
-          }, function(users) {
-            $(users).each(function(index, user) {
-              context.users[user.id] = user;
+          termination = termination.then(function() {
+            return User.get({
+              id : userIds
+            }).then(function(users) {
+              $(users).each(function(index, user) {
+                context.users[user.id] = user;
+              });
+              // Agregate informations
+              __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_USER], context.users);
+              __agregatesData(context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER], context.users);
             });
           });
         }
 
         // Group profiles
         if (groupIds.length > 0) {
-          var groupProfiles = new UserGroupManagement();
-          groupProfiles.get({
-            async : false,
-            ids : groupIds
-          }, function(groups) {
-            $(groups).each(function(index, group) {
-              context.groups[group.id] = group;
+          termination = termination.then(function() {
+            return UserGroup.get({
+              id : groupIds
+            }).then(function(groups) {
+              $(groups).each(function(index, group) {
+                context.groups[group.id] = group;
+              });
+              // Agregate informations
+              __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_GROUP], context.groups);
             });
           });
         }
 
-        // Agregate informations
-        __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_GROUP], context.groups);
-        __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_USER], context.users);
-        __agregatesData(context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER], context.users);
+        return termination;
       }
 
       /**

@@ -29,8 +29,8 @@ package com.stratelia.webactiv.beans.admin;
  */
 public class PaginationPage {
 
-  private int page;
-  private int count;
+  private final int page;
+  private final int count;
 
   /**
    * Constructs a new page in a pagination mechanism.

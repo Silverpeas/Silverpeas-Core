@@ -23,6 +23,48 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
+import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import javax.jcr.LoginException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,48 +79,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.jcr.LoginException;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
-import org.silverpeas.search.indexEngine.IndexFileManager;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -140,6 +140,22 @@ public class AttachmentServiceTest {
       }
     }
     instance = AttachmentServiceFactory.getAttachmentService();
+  }
+
+  private Node getComponentRootJcrNode() {
+    Node node = null;
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      node = session.getNode('/' + instanceId);
+    } catch (PathNotFoundException e) {
+      // Nothing to do, the root node doesn't exist. That is all.
+    } catch (RepositoryException e) {
+      throw new RuntimeException(e);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+    return node;
   }
 
   @BeforeClass
@@ -311,9 +327,59 @@ public class AttachmentServiceTest {
     assertThat(content, is(notNullValue()));
     assertThat(content.length, is("This is a test".getBytes(Charsets.UTF_8).length));
     assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
+
     out = new ByteArrayOutputStream();
     lang = "fr";
     instance.getBinaryContent(out, pk, lang);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(14));
+    assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, -1);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(14));
+    assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, 0);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(0));
+    assertThat(new String(content, Charsets.UTF_8), is(""));
+
+    long length = "This".length();
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, -10, length);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(4));
+    assertThat(new String(content, Charsets.UTF_8), is("This"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, length);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(4));
+    assertThat(new String(content, Charsets.UTF_8), is("This"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 5, length);
+    assertThat(out, is(notNullValue()));
+    content = out.toByteArray();
+    assertThat(content, is(notNullValue()));
+    assertThat(content.length, is(4));
+    assertThat(new String(content, Charsets.UTF_8), is("is a"));
+
+    out = new ByteArrayOutputStream();
+    instance.getBinaryContent(out, pk, lang, 0, 500000000);
     assertThat(out, is(notNullValue()));
     content = out.toByteArray();
     assertThat(content, is(notNullValue()));
@@ -495,6 +561,24 @@ public class AttachmentServiceTest {
    * Test of deleteAttachment method, of class AttachmentService.
    */
   @Test
+  public void testDeleteAllDocuments() {
+    assertThat(getComponentRootJcrNode(), notNullValue());
+    SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
+    SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    instance.deleteAllAttachments(instanceId);
+    documentFr = instance.searchDocumentById(existingFrDoc, null);
+    documentEn = instance.searchDocumentById(existingEnDoc, null);
+    assertThat(documentFr, nullValue());
+    assertThat(documentEn, nullValue());
+    assertThat(getComponentRootJcrNode(), nullValue());
+  }
+
+  /**
+   * Test of deleteAttachment method, of class AttachmentService.
+   */
+  @Test
   public void testDeleteAttachment() {
     String lang = "en";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, lang);
@@ -526,9 +610,14 @@ public class AttachmentServiceTest {
   public void testRemoveContent() {
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, "fr");
     checkFrenchSimpleDocument(document);
+    File pathToVerify = new File(document.getAttachmentPath()).getParentFile();
+    assertThat(pathToVerify.exists(), is(true));
     instance.removeContent(document, "fr", false);
     document = instance.searchDocumentById(existingFrDoc, "fr");
     assertThat(document, is(nullValue()));
+    assertThat(pathToVerify.exists(), is(false));
+    assertThat(pathToVerify.getParentFile().getParentFile().exists(), is(false));
+    assertThat(pathToVerify.getParentFile().getParentFile().getParentFile().exists(), is(true));
 
     document = instance.searchDocumentById(existingEnDoc, "en");
     checkEnglishSimpleDocument(document);
@@ -741,6 +830,61 @@ public class AttachmentServiceTest {
     assertThat(result, is(notNullValue()));
     assertThat(result.getAlert(), is(DateUtil.getBeginOfDay(alertDate)));
     assertThat(result.getContentType(), is(MimeTypes.BZ2_ARCHIVE_MIME_TYPE));
+  }
+
+  /**
+   * Test of updateAttachment method, of class AttachmentService.
+   */
+  @Test
+  public void testUpdateAttachmentForbidRoles() {
+    SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
+
+    // Adding roles that adds technically the downloadable mixin to the SimpleDocument node
+    documentUpdated
+        .addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader, SilverpeasRole.writer);
+    instance.updateAttachment(documentUpdated, false, false);
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, not(sameInstance(documentUpdated)));
+    assertThat(result.getForbiddenDownloadForRoles(),
+        contains(SilverpeasRole.writer, SilverpeasRole.reader));
+
+    // Allowing writers here updates the list of forbidden roles
+    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer);
+    instance.updateAttachment(documentUpdated, false, false);
+    result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+
+    // Allowing readers here cleans up the list of forbidden roles and technically removes the
+    // downloadable mixin from the SimpleDocument node
+    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.reader);
+    instance.updateAttachment(documentUpdated, false, false);
+    result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result.getForbiddenDownloadForRoles(), nullValue());
+  }
+
+  /**
+   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
+   */
+  @Test
+  public void testSwitchAllowingDownloadForReaders() {
+    SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
+
+    // Forbid download for readers
+    instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), false);
+
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, not(sameInstance(documentUpdated)));
+    assertThat(result.getForbiddenDownloadForRoles(),
+        contains(SilverpeasRole.user, SilverpeasRole.reader));
+
+    // Allow download for readers
+    instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), true);
+    result = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(result.getForbiddenDownloadForRoles(), nullValue());
   }
 
   /**

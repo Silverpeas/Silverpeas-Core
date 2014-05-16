@@ -6,6 +6,9 @@ import org.silverpeas.util.crypto.CryptoException;
  * Exception that is thrown when an error has occurred while updating a cipher key.
  */
 public class CipherKeyUpdateException extends CryptoException {
+
+  private static final long serialVersionUID = -6970908432032192938L;
+
   public CipherKeyUpdateException(final Throwable cause) {
     super(cause);
   }

@@ -20,16 +20,16 @@
  */
 package org.silverpeas.importExport.versioning;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.silverpeas.form.importExport.FormTemplateImportExport;
+import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -41,16 +41,15 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 
-import com.silverpeas.form.importExport.FormTemplateImportExport;
-import com.silverpeas.form.importExport.XMLModelContentType;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author neysseri
@@ -89,7 +88,8 @@ public class VersioningImportExport {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", componentId);
     int nbFilesProcessed = 0;
-    AttachmentImportExport attachmentImportExport = new AttachmentImportExport();
+    AttachmentImportExport attachmentImportExport =
+        new AttachmentImportExport(UserDetail.getById(String.valueOf(userId)));
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object

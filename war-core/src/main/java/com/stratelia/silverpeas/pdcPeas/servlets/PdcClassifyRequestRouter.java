@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -84,7 +85,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
   @Override
   public String getDestination(String function, PdcClassifySessionController pdcSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
 
     // get the session controller to inform the request

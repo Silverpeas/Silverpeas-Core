@@ -439,6 +439,10 @@ Definition des class de style Silverpeas
   margin-bottom: 10px;
 }
 
+#genericForm {
+  height: 0;
+}
+
 #agenda #currentScope,
 #agenda #jump,
 #agenda #today {
@@ -2579,6 +2583,27 @@ ul#globalResultListDetails {
   background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
+silverpeas-toggle a.toggle {
+  text-align: right;
+  display: block;
+  color: #666;
+}
+
+silverpeas-toggle a.toggle.more {
+  background: transparent url(../../util/icons/toggle/btn-toggle-more.png) center bottom no-repeat;
+}
+
+silverpeas-toggle a.toggle.less {
+  background: transparent url(../../util/icons/toggle/btn-toggle-less.png) center bottom no-repeat;
+}
+
+silverpeas-toggle a.toggle span {
+  display: block;
+  font-size: 10px;
+  height: 19px;
+}
+
+
 #searchGroupValues ul li.otherEntry {
   display: none;
 }
@@ -3915,6 +3940,11 @@ hr.sep  {
 
 /*- [ publicProfile END ] --------------------------- */
 
+/* Forbidden download */
+.forbidden-download {
+  opacity: 0.6;
+}
+
 /*- [ attachments BEGIN ] ------------------------- */
 a.yuimenuitemlabel-disabled:hover {
   color: #B9B9B9;
@@ -3953,10 +3983,14 @@ ul#attachmentList li.attachmentListItem .lineMain {
   line-height:16px;
 }
 
+ul#attachmentList li.attachmentListItem .lineSize {
+  padding-left: 25px;
+  position: relative;
+}
 
-ul#attachmentList li.attachmentListItem .lineSize img {
-  float:left;
-  margin-right:10px;
+ul#attachmentList li.attachmentListItem .lineSize a img {
+  position: absolute;
+  left: 0;
 }
 
 ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
@@ -3964,6 +3998,10 @@ ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
 }
 
 ul#attachmentList li.attachmentListItem .lineSize img.view-file {
+  margin-right:0px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.forbidden-download-file {
   margin-right:0px;
 }
 
@@ -3979,11 +4017,20 @@ img.view-file {
   margin-right:0px;
 }
 
+img.forbidden-download-file {
+  margin-left:5px;
+  margin-right:0px;
+}
+
 ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
   float:inherit;
 }
 
 ul#attachmentList li.attachmentListItem .lineSize img.view-file {
+  float:inherit;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.forbidden-download-file {
   float:inherit;
 }
 
@@ -5606,7 +5653,7 @@ div.fileUpload {
   margin:4px 0;
   cursor:pointer;
   background-color:#ece9d8;
-  border:1px solid #999999;
+  border:1px solid #999999 !important;
   height:17px;
   line-height:18px;
   display:inline-block;
@@ -5619,6 +5666,7 @@ div.fileUpload {
   padding:0px 8px 0 8px;
   line-height:18px;
   border:0;
+  color:#333 !important;
 }
 
 
@@ -5827,7 +5875,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 .list-responsible-user .userName a,
 #portletPages .list-responsible-user .userName a{
-  font-size:14px;
+  font-size:12px;
   color:#333333;
   font-weight:bold;
   line-height:12px;
@@ -5908,6 +5956,53 @@ ul.tagit li.tagit-choice a.tagit-close {
   width:180px;
 }
 
+h2.wysiwyg-title1 {
+	border-left:3px solid #2a2a2a ;
+	color:#2a2a2a;
+	font-size:16px;
+	padding:0 6px;
+}
+h3.wysiwyg-title2{
+	border-left:3px solid #7eb73b ;
+	color:#7eb73b;
+	font-size:14px;
+	padding:0 6px;
+}
+
+strong.wysiwyg-focus {
+	background-color:#2a2a2a ;
+	color:#FFF;
+}
+
+p.wysiwyg-important{
+	background-color: #F5F5F5;
+	border-radius: 0 10px 0 10px;
+	padding: 9.5px;
+	border:1px solid #ebebeb;
+	font-size:110%;
+}
+
+blockquote {
+    border-left:1px solid #E4E4E4;
+    margin:0;
+    padding-left:1.5em;
+    font-style:italic;
+    color:#666;
+}
+
+.container-wysiwyg {
+	width:95%;
+}
+
+.wysiwyg-fileStorage {
+	border: 1px solid #D3D3D3;
+    border-radius: 5px;
+    padding:5px 0;
+	margin-bottom:5px;
+	background-color:#eaeaea;
+	text-align:center;
+}
+
 /*responsive design */
 @media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
   .rightContent {
@@ -5938,4 +6033,192 @@ ul.tagit li.tagit-choice a.tagit-close {
   .header h4 {
     min-width: auto;
   }
+}
+
+/* Default forms look n feel */
+.forms .form-border {
+	border:1px solid #CCC;
+}
+
+.forms .form-title {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+    margin: 0 0 5px;
+    padding: 0;
+}
+
+.forms .legend {
+	padding: 10px 0px 0px 10px;
+}
+
+.forms .fields .fieldInput {
+	display:inline-block;
+}
+
+.forms.mode-design .fields label {
+	background: url("../icons/grippy_large.png") repeat-y scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: move;
+}
+
+.forms .fields label {
+	display: inline-block;
+    float: inherit;
+    height: 20px;
+    padding-left: 15px;
+    width:180px;
+	float:left;
+}
+
+.forms .field .fieldInput input,
+.forms .field .fieldInput textarea,
+.forms .field .fieldInput select {
+	width:auto;
+}
+
+.forms .fields {
+	margin:0 0 0 0;
+	padding:0 0 0 0;
+}
+.forms .fields > li{
+	padding:10px 0 5px 2%;
+	margin:0 0 0 0;
+	position:relative;
+	display:block;
+	float:inherit;
+	width:98%;
+	min-height: 28px;
+}
+
+/* design and edition modes */
+form .forms .fields > li:nth-child(odd) {
+	background-color:#fffce7;
+	border-bottom:1px solid #ccc;
+}
+form .forms .fields > li:nth-child(even) {
+	background-color:#f6f6f6;
+	border-bottom:1px solid #ccc;
+}
+
+/* view mode */
+.forms .fields > li:nth-child(odd) {
+	background-color:#f9f9f9;
+	border-bottom:1px solid #ddd;
+}
+.forms .fields > li:nth-child(even) {
+	background-color:#f6f6f6;
+	border-bottom:1px solid #ddd;
+}
+
+.forms .field .actions {
+	position:absolute;
+	top:10px;
+	right:1%;
+}
+
+.forms .field ul.repeatable-field-list {
+	list-style-type: none;
+	padding-left: 0px;
+}
+
+.forms .actions img{
+	border:0;
+}
+
+.forms .field-occurrence-hidden {
+	display: none;
+}
+
+/**** Surchage plugin jquery rate it ****/
+silverpeas-rating .rateit .rateit-range,
+silverpeas-rating .rateit .rateit-preset,
+silverpeas-rating .rateit .rateit-preset-rtl,
+silverpeas-rating .rateit .rateit-selected,
+silverpeas-rating .rateit .rateit-hover {
+       background-image: url(../icons/rateit/star.png) ;
+}
+
+/**** Surchage plugin jquery rate it - small view ****/
+.rateit.smallStars .rateit-range,
+.rateit.smallStars .rateit-preset,
+.rateit.smallStars .rateit-preset-rtl,
+.rateit.smallStars .rateit-selected,
+.rateit.smallStars .rateit-hover {
+       background-image: url(../icons/rateit/star-small.png) ;
+}
+
+
+
+.rateit.smallStars .rateit-range
+{
+    background:  url(../icons/rateit/star-small.png);
+    height: 12px;
+}
+
+.rateit.smallStars .rateit-hover
+{
+    background: url(../icons/rateit/star-small.png) left -24px;
+}
+
+.rateit.smallStars .rateit-hover-rtl
+{
+    background-position: right -24px;
+}
+
+.rateit.smallStars .rateit-selected
+{
+    background: url(../icons/rateit/star-small.png) left -12px;
+}
+
+.rateit.smallStars .rateit-selected-rtl
+{
+    background-position: right -12px;
+}
+
+.rateit.smallStars .rateit-preset
+{
+    background: url(../icons/rateit/star-small.png) left -36px;
+}
+
+.rateit.smallStars .rateit-preset-rtl
+{
+    background: url(../icons/rateit/star-small.png) left -36px;
+}
+
+/**** Fragment User Card *****/
+div.user-card {
+	border: 1px solid #CCC;
+	background-color:#f6f6f6;
+	width:292px;
+	display:inline-block;
+	padding:4px;
+	vertical-align:top;
+	margin:0 8px 8px 0;
+}
+
+div.user-card .avatar{
+	float:left;
+	width:60px;
+	overflow:hidden;
+	border:1px solid #eaeaea;
+	background-color:#FFF;
+}
+
+div.user-card .avatar img{
+	width:60px;
+}
+
+div.user-card .field{
+	float:left;
+	width:220px;
+	padding:0 4px 2px 6px;
+}
+
+div.user-card .userToZoom{
+	color:#000;
+	font-weight:bold;
+}
+
+div.user-card .field{	
+	color:#444;
 }

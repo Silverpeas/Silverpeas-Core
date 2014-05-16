@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.14-SNAPSHOT</version>
+    <version>5.15-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -162,7 +162,20 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>notation</artifactId>
+      <classifier>client</classifier>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>searchengine</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>mylinks</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -222,8 +235,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.spnego</groupId>
-      <artifactId>spnego</artifactId>
+      <groupId>org.silverpeas.spnego</groupId>
+      <artifactId>silverpeas-spnego</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

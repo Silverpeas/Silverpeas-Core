@@ -23,33 +23,110 @@
  */
 package org.silverpeas.date;
 
+import com.silverpeas.calendar.DateTime;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.time.TimeData;
+import org.silverpeas.util.time.TimeUnit;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Class representing a period between two dates and offering tools around it.
+ * <p/>
  * User: Yohann Chastagnier
  * Date: 19/04/13
  */
-public class Period implements Comparable, Serializable {
+public class Period implements Comparable, Serializable, Cloneable {
   private static final long serialVersionUID = 6378275537498456869L;
 
+  private final static Set<PeriodType> knownPeriodTypes;
+
+  static {
+    knownPeriodTypes = EnumSet.allOf(PeriodType.class);
+    knownPeriodTypes.remove(PeriodType.unknown);
+  }
+
   private PeriodType periodType = PeriodType.unknown;
-  private Date beginDate;
-  private Date endDate;
+  private DateTime beginDatable;
+  private DateTime endDatable;
 
   /**
    * Initialize a period from given dates.
+   * The treatment is trying to identify the type of the period ({@link PeriodType}).
    * @param beginDate the date of the beginning of the period.
    * @param endDate the date of the ending of the period.
    * @return
    */
   public static Period from(Date beginDate, Date endDate) {
-    return new Period(beginDate, endDate);
+    return from(new DateTime(beginDate), new DateTime(endDate));
+  }
+
+  /**
+   * Initialize a period from given dates.
+   * The treatment is trying to identify the type of the period ({@link PeriodType}).
+   * @param beginDate the date of the beginning of the period.
+   * @param endDate the date of the ending of the period.
+   * @param timeZone the time zone to set to this period.
+   * @return
+   */
+  public static Period from(Date beginDate, Date endDate, TimeZone timeZone) {
+    return from(new DateTime(beginDate, timeZone), new DateTime(endDate, timeZone));
+  }
+
+  /**
+   * Initialize a period from given dates.
+   * The treatment is trying to identify the type of the period ({@link PeriodType}).
+   * @param beginDatable the date of the beginning of the period.
+   * @param endDatable the date of the ending of the period.
+   * @return
+   */
+  public static Period from(DateTime beginDatable, DateTime endDatable) {
+    Period period = new Period(beginDatable, endDatable);
+    for (PeriodType periodToIdentify : knownPeriodTypes) {
+      Period guessedPeriod = from(beginDatable, periodToIdentify, MessageManager.getLanguage());
+      if (guessedPeriod.equals(period)) {
+        return guessedPeriod;
+      }
+    }
+    return period;
+  }
+
+  /**
+   * Initialize a period from a date and a type of period.
+   * @param referenceDate
+   * @param periodType
+   * @return
+   */
+  public static Period from(Date referenceDate, PeriodType periodType) {
+    return from(referenceDate, periodType, MessageManager.getLanguage());
+  }
+
+  /**
+   * Initialize a period from a date and a type of period.
+   * @param referenceDate
+   * @param timeZone
+   * @param periodType
+   * @return
+   */
+  public static Period from(Date referenceDate, TimeZone timeZone, PeriodType periodType) {
+    return from(referenceDate, timeZone, periodType, MessageManager.getLanguage());
+  }
+
+  /**
+   * Initialize a period from a date and a type of period.
+   * @param referenceDatable
+   * @param periodType
+   * @return
+   */
+  public static Period from(DateTime referenceDatable, PeriodType periodType) {
+    return from(referenceDatable.asDate(), periodType, MessageManager.getLanguage());
   }
 
   /**
@@ -60,27 +137,82 @@ public class Period implements Comparable, Serializable {
    * @return
    */
   public static Period from(Date referenceDate, PeriodType periodType, String locale) {
+    return from(new DateTime(referenceDate), periodType, locale);
+  }
+
+  /**
+   * Initialize a period from a date and a type of period.
+   * @param referenceDate
+   * @param timeZone
+   * @param periodType
+   * @param locale
+   * @return
+   */
+  public static Period from(Date referenceDate, TimeZone timeZone, PeriodType periodType,
+      String locale) {
+    return from(new DateTime(referenceDate, timeZone), periodType, locale);
+  }
+
+  /**
+   * Initialize a period from a date and a type of period.
+   * @param referenceDatable
+   * @param periodType
+   * @param locale
+   * @return
+   */
+  public static Period from(DateTime referenceDatable, PeriodType periodType, String locale) {
     switch (periodType) {
       case year:
-        return new YearPeriod(referenceDate);
+        return new YearPeriod(referenceDatable);
       case month:
-        return new MonthPeriod(referenceDate);
+        return new MonthPeriod(referenceDatable);
       case week:
-        return new WeekPeriod(referenceDate, locale);
+        return new WeekPeriod(referenceDatable, locale);
       case day:
       default:
-        return new DayPeriod(referenceDate);
+        return new DayPeriod(referenceDatable);
     }
   }
 
   /**
    * Constructor : Constructs a newly allocated <code>period</code>.
-   * @param beginDate the date of the beginning of the period.
-   * @param endDate the date of the ending of the period.
+   * TimeZone is set from the begin date of the period.
+   * @param beginDatable the date of the beginning of the period.
+   * @param endDatable the date of the ending of the period.
    */
-  protected Period(final Date beginDate, final Date endDate) {
-    this.beginDate = beginDate;
-    this.endDate = endDate;
+  protected Period(final DateTime beginDatable, final DateTime endDatable) {
+    this(beginDatable, endDatable, beginDatable.getTimeZone());
+  }
+
+  /**
+   * Constructor : Constructs a newly allocated <code>period</code>.
+   * @param beginDatable the date of the beginning of the period.
+   * @param endDatable the date of the ending of the period.
+   * @param timeZone the time zone to set to this period.
+   */
+  protected Period(final DateTime beginDatable, final DateTime endDatable,
+      final TimeZone timeZone) {
+    this.beginDatable = beginDatable;
+    this.endDatable = endDatable;
+    inTimeZone(timeZone == null ? TimeZone.getDefault() : timeZone);
+  }
+
+  /**
+   * The time zone for a period has no meaning.
+   * @param timeZone the time zone to set to this period.
+   */
+  public Period inTimeZone(final TimeZone timeZone) {
+    beginDatable.inTimeZone(timeZone);
+    endDatable.inTimeZone(timeZone);
+    return this;
+  }
+
+  /**
+   * The time zone has no meaning for a date.
+   * @return the time zone in which this period is set.
+   */
+  public TimeZone getTimeZone() {
+    return beginDatable.getTimeZone();
   }
 
   /**
@@ -101,18 +233,12 @@ public class Period implements Comparable, Serializable {
 
   /**
    * Gets the begin date of the period.
+   * It represents the begin date of the event if no recurrence exists,
+   * or the begin date of the first occurence of the event if a recurrence exists.
    * @return
    */
   public Date getBeginDate() {
-    return beginDate;
-  }
-
-  /**
-   * Sets the begin of the period.
-   * @param beginDate
-   */
-  public void setBeginDate(final Date beginDate) {
-    this.beginDate = beginDate;
+    return beginDatable.asDate();
   }
 
   /**
@@ -120,25 +246,125 @@ public class Period implements Comparable, Serializable {
    * @return
    */
   public Date getEndDate() {
-    return endDate;
+    return endDatable.asDate();
   }
 
   /**
-   * Sets the end date of the period.
-   * @param endDate
+   * Gets the begin date of the period represented as a {@link com.silverpeas.calendar.Datable}.
+   * (see {@link #getBeginDate()} for more details).
+   * @return
    */
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
+  public DateTime getBeginDatable() {
+    return beginDatable;
   }
 
   /**
-   * @return the number of days included in the period.
+   * Gets the end date of the period represented as a {@link com.silverpeas.calendar.Datable}.
+   * (see {@link #getEndDate()} for more details).
+   * @return
    */
-  public int getNumberOfDays() {
-    if (beginDate == null || endDate == null) {
-      return -1;
-    }
-    return DateUtil.getDayNumberBetween(beginDate, endDate) + 1;
+  public DateTime getEndDatable() {
+    return endDatable;
+  }
+
+  /**
+   * Sets the begin and the end dates of the period.
+   * @param dateReference
+   */
+  public void setDate(final Date dateReference, PeriodType periodType) {
+    setDate(new DateTime(dateReference), periodType);
+  }
+
+  /**
+   * Sets the begin and the end dates of the period.
+   * @param dateReference
+   * @param timeZone
+   */
+  public void setDate(final Date dateReference, TimeZone timeZone, PeriodType periodType) {
+    setDate(new DateTime(dateReference, timeZone), periodType);
+  }
+
+  /**
+   * Sets the begin and the end dates of the period.
+   * @param referenceDatable
+   */
+  public void setDate(final DateTime referenceDatable, PeriodType periodType) {
+    Period myReferencePeriod = from(referenceDatable, periodType, MessageManager.getLanguage());
+    this.beginDatable = myReferencePeriod.getBeginDatable();
+    this.endDatable = myReferencePeriod.getEndDatable();
+    this.periodType = myReferencePeriod.getPeriodType();
+  }
+
+  /**
+   * Sets the begin and the end dates of the period.
+   * @param beginDate
+   */
+  public void setDates(final Date beginDate, Date endDate) {
+    setDates(new DateTime(beginDate), new DateTime(endDate));
+  }
+
+  /**
+   * Sets the begin and the end dates of the period.
+   * @param beginDate
+   * @param timeZone
+   */
+  public void setDates(final Date beginDate, Date endDate, TimeZone timeZone) {
+    setDates(new DateTime(beginDate, timeZone), new DateTime(endDate, timeZone));
+  }
+
+  /**
+   * Sets the begin and the end dates of the period.
+   * @param beginDatable
+   */
+  public void setDates(final DateTime beginDatable, DateTime endDatable) {
+    this.beginDatable = beginDatable;
+    this.endDatable = endDatable;
+    this.periodType = from(beginDatable, endDatable).getPeriodType();
+  }
+
+  /**
+   * Computes the elapsed time between the begin and the end dates.
+   * @return the elapsed time computed represented by {@link TimeData}.
+   * To retrieve informations from this returned object :
+   * <pre>
+   *   // Gets the elpased time in milliseconds<br/>
+   *   period.getElapsedTimeData().getTime();<br/>
+   * <br/>
+   *   // Gets the elpased time in seconds<br/>
+   *   period.getElapsedTimeData().getTimeConverted(TimeUnit.SEC);<br/>
+   * <br/>
+   *   // Gets the elpased time in years<br/>
+   *   period.getElapsedTimeData().getTimeConverted(TimeUnit.YEAR);<br/>
+   * <br/>
+   *   ...<br/>
+   *   // Gets the elpased time in the best unit value<br/>
+   *   period.getElapsedTimeData().getBestValue();<br/>
+   * </pre>
+   */
+  public TimeData getElapsedTimeData() {
+    return beginDatable.getTimeDataTo(endDatable);
+  }
+
+  /**
+   * Computes the number of whole or partial days covered by the period.
+   * @return the number of whole or partial days covered by the period. represented by {@link
+   * TimeData}.
+   * To retrieve informations from this returned object :
+   * <pre>
+   *   // Gets the number of days (in milliseconds)<br/>
+   *   period.getCoveredDaysTimeData().getTime();<br/>
+   * <br/>
+   *   // Gets the number of days (in days)<br/>
+   *   period.getCoveredDaysTimeData().getTimeConverted(TimeUnit.DAY);<br/>
+   * <br/>
+   *   ...<br/>
+   *   // Gets the number of days (in best unit value)<br/>
+   *   period.getCoveredDaysTimeData().getBestValue();<br/>
+   * </pre>
+   */
+  public TimeData getCoveredDaysTimeData() {
+    return beginDatable.getBeginOfDay()
+        .getTimeDataTo(endDatable.addMilliseconds(-1).getEndOfDay().addMilliseconds(1));
   }
 
   /*
@@ -150,10 +376,27 @@ public class Period implements Comparable, Serializable {
     return compareTo((Period) o);
   }
 
+  /**
+   * The comparison is at first time executed on the begin dates.
+   * If they are equals, then it is executed on the end dates.
+   * @param period
+   * @return
+   */
   public int compareTo(final Period period) {
     return getBeginDate().compareTo(period.getBeginDate()) != 0 ?
         getBeginDate().compareTo(period.getBeginDate()) :
         getEndDate().compareTo(period.getEndDate());
+  }
+
+  /**
+   * Indicates if the period is longer than th given one.
+   * @param period
+   * @return
+   */
+  public boolean isLongerThan(final Period period) {
+    long elapsedTime = getEndDate().getTime() - getBeginDate().getTime();
+    long givenElapsedTime = period.getEndDate().getTime() - period.getBeginDate().getTime();
+    return elapsedTime > givenElapsedTime;
   }
 
   public boolean equals(Object o) {
@@ -182,8 +425,12 @@ public class Period implements Comparable, Serializable {
    * @return
    */
   public String toString() {
+    return formatPeriodForTests();
+  }
+
+  protected String formatPeriodForTests() {
     StringBuilder sb = new StringBuilder("Period(");
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     if (getBeginDate() != null) {
       sb.append(sdf.format(getBeginDate()));
     } else {
@@ -195,7 +442,14 @@ public class Period implements Comparable, Serializable {
     } else {
       sb.append("NA");
     }
-    sb.append(")");
+    sb.append(") -> elapsed time ");
+    sb.append(getElapsedTimeData().getFormattedValueOnly(TimeUnit.DAY));
+    sb.append(" day(s), covered time ");
+    sb.append(getCoveredDaysTimeData().getFormattedValueOnly(TimeUnit.DAY));
+    sb.append(" day(s), ");
+    sb.append(getPeriodType().name());
+    sb.append(" type, ");
+    sb.append(isValid() ? "is valid" : "is not valid");
     return sb.toString();
   }
 
@@ -227,5 +481,15 @@ public class Period implements Comparable, Serializable {
   public boolean containsPartOf(final Period period) {
     return DateUtil.compareTo(getBeginDate(), period.getEndDate()) <= 0 &&
         DateUtil.compareTo(getEndDate(), period.getBeginDate()) >= 0;
+  }
+
+  @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
+  @Override
+  public Period clone() {
+    try {
+      return (Period) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

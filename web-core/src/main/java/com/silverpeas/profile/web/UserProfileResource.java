@@ -436,7 +436,9 @@ public class UserProfileResource extends RESTWebService {
       String[] pageAttributes = page.split(";");
       int nth = Integer.valueOf(pageAttributes[0]);
       int count = Integer.valueOf(pageAttributes[1]);
-      paginationPage = new PaginationPage(nth, count);
+      if (count > 0) {
+        paginationPage = new PaginationPage(nth, count);
+      }
     }
     return paginationPage;
   }

@@ -31,6 +31,7 @@
 package com.stratelia.webactiv.publication;
 
 import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
@@ -88,6 +89,13 @@ public class PublicationInstanciator extends SQLRequest {
       // No exceptions are throwed still attachments directory is no more used
       // throw new InstanciationException("PublicationInstanciator.delete()",
       // SilverpeasException.ERROR, "root.EX_CANT_DELETE_FILE", e);
+    }
+
+    try {
+      // Delete the notations
+      RatingServiceFactory.getRatingService().deleteComponentRatings(componentId);
+    } catch (Exception e) {
+      // No exceptions are throwed because of those informations are not sensible.
     }
 
     WysiwygInstanciator wysiwygI = new WysiwygInstanciator(

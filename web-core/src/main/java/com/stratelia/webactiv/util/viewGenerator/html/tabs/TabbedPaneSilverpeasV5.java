@@ -112,33 +112,27 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
         styleDroite = "droiteOngletOff";
       }
 
+      result.append("<td id=\"tableft").append(i)
+          .append("\" align=\"center\" nowrap=\"nowrap\" class=\"")
+          .append(styleGauche).append("\">");
+      result.append("<img src=\"").append(iconsPath).append("/tabs/1px.gif\" alt=\"\"/></td>\n");
+      result.append("<td id=\"tab").append(i)
+          .append("\" align=\"center\" nowrap=\"nowrap\" class=\"")
+          .append(style).append("\">");
       if (tab.getEnabled()) {
-        result.append("<td id=\"tableft").append(i)
-            .append("\" align=\"center\" nowrap=\"nowrap\" class=\"")
-            .append(styleGauche).append("\">");
-        result.append("<img src=\"").append(iconsPath).append("/tabs/1px.gif\" alt=\"\"/></td>\n");
-        result.append("<td id=\"tab").append(i)
-            .append("\" align=\"center\" nowrap=\"nowrap\" class=\"")
-            .append(style).append("\">");
-        result.append("<a href=\"").append(tab.getAction()).append("\">&nbsp;").append(
-            tab.getLabel()).append("&nbsp;</a></td>\n");
-        result.append("<td id=\"tabright").append(i)
-            .append("\" align=\"center\" nowrap=\"nowrap\" class=\"").append(styleDroite)
-            .append("\"><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\" alt=\"\"/></td>\n");
+        result.append("<a href=\"").append(tab.getAction()).append("\">");
+        result.append(tab.getLabel());
+        result.append("</a>");
       } else {
-        result.append("<td id=\"tableft").append(i)
-            .append("\" align=\"center\" nowrap=\"nowrap\" class=\"").append(styleGauche)
-            .append("\"><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\" alt=\"\"/></td>\n");
-        result.append("<td id=\"tab").append(i)
-            .append("\" align=\"center\" nowrap=\"nowrap\" class=\"").append(style).append(
-            "\">").append(tab.getLabel()).append("</td>\n");
-        result.append("<td id=\"tabright").append(i)
-            .append("\" align=\"center\" nowrap=\"nowrap\" class=\"").append(styleDroite)
-            .append("\"><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\" alt=\"\"/></td>\n");
+        result.append("<span>");
+        result.append(tab.getLabel());
+        result.append("</span>");
       }
+      result.append("</td>\n");
+      result.append("<td id=\"tabright").append(i)
+          .append("\" align=\"center\" nowrap=\"nowrap\" class=\"").append(styleDroite)
+          .append("\"><img src=\"").append(iconsPath).append(
+              "/tabs/1px.gif\" alt=\"\"/></td>\n");
       i++;
     }
 

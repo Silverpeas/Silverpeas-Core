@@ -23,32 +23,31 @@
  */
 package org.silverpeas.viewer.web;
 
+import com.silverpeas.web.ResourceGettingTest;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.viewer.Preview;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import static org.silverpeas.viewer.web.ViewerTestResources.JAVA_PACKAGE;
 import static org.silverpeas.viewer.web.ViewerTestResources.SPRING_CONTEXT;
 
-import java.io.File;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.viewer.Preview;
-
-import com.silverpeas.web.ResourceGettingTest;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
 /**
  * Tests on the comment getting by the CommentResource web service.
+ *
  * @author Yohann Chastagnier
  */
 public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources> {
@@ -150,6 +149,6 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[] { "componentName5" };
+    return new String[]{"componentName5"};
   }
 }

@@ -30,26 +30,83 @@
    */
   angular.module('silverpeas.adapters').factory('RESTAdapter', ['$http', '$q', function($http, $q) {
 
-      function _get(url, convert) {
-        var deferred = $q.defer();
-        $http.get(url).error(function(data, status) {
-          alert("Error: " + status + "[ " + data + " ]");
-        }).success(function(data, status, headers) {
-          var result = (convert ? convert(data) : data);
-          if (result instanceof Array) {
-            var maxlength = headers('X-Silverpeas-Size');
-            if (maxlength)
-              result.maxlength = maxlength;
-          }
-          deferred.resolve(result);
-        });
-        return deferred.promise;
+    function performMessage(headers) {
+      var registredKeyOfMessages = headers('X-Silverpeas-MessageKey');
+      if (registredKeyOfMessages) {
+        notyRegistredMessages(registredKeyOfMessages);
       }
+    }
 
-      var RESTAdapter = function(url, converter) {
-        this.url = url;
-        this.converter = converter;
-      };
+    function _fetchData(data, convert, headers) {
+      var result = (convert ? convert(data) : data);
+      if (result instanceof Array) {
+        var maxlength = headers('X-Silverpeas-Size');
+        if (maxlength) {
+          result.maxlength = maxlength;
+        }
+      }
+      performMessage(headers);
+      return result;
+    }
+
+    function _error(data, status, headers) {
+      performMessage(headers);
+      notyError("Error: " + status + "[ " + data + " ]");
+    }
+
+    function _get(url, convert) {
+      var deferred = $q.defer();
+      $http.get(url).error(_error).success(function(data, status, headers) {
+        var result = _fetchData(data, convert, headers);
+        deferred.resolve(result);
+      });
+      return deferred.promise;
+    }
+
+    function _put(url, data, convert) {
+      var deferred = $q.defer();
+      $http.put(url, data).error(function(data, status, headers) {
+        alert("Error: " + status + "[ " + data + " ]");
+        performMessage(headers);
+      }).success(function(data, status, headers) {
+        var result = (convert ? convert(data) : data);
+        if (result instanceof Array) {
+          var maxlength = headers('X-Silverpeas-Size');
+          if (maxlength)
+            result.maxlength = maxlength;
+        }
+        deferred.resolve(result);
+        performMessage(headers);
+      });
+      return deferred.promise;
+    }
+
+    var RESTAdapter = function(url, converter) {
+      this.url = url;
+      this.converter = converter;
+    };
+
+    RESTAdapter.prototype.post = function() {
+      var requestedUrl = this.url;
+      var value = arguments[0];
+      if (arguments.length > 1) {
+        requestedUrl = arguments[0];
+        value = arguments[1];
+      }
+      if (typeof value === 'object') {
+        $http.defaults.headers.post['Content-Type'] = 'application/json; charset=UTF-8';
+      } else {
+        value = "" + value;
+        $http.defaults.headers.post['Content-Type'] = 'text/plain; charset=UTF-8';
+      }
+      var deferred = $q.defer();
+      $http.post(requestedUrl, value).error(_error).success(function(data, status, headers) {
+        var result = _fetchData(data, this.converter, headers);
+        deferred.resolve(result);
+      });
+      return deferred.promise;
+    };
+
       RESTAdapter.prototype.criteria = function() {
         var criteria = null;
         if (arguments && arguments.length > 0) {
@@ -60,7 +117,7 @@
               for (var prop in obj) {
                 if (prop === 'page' && obj.page.number && obj.page.size)
                   criteria.page = obj.page.number + ';' + obj.page.size;
-                else if (obj[prop] !== null && obj[prop] !== undefined)
+                else if (prop !== 'page' && obj[prop] !== null && obj[prop] !== undefined)
                   criteria[prop] = obj[prop];
               }
             }
@@ -68,6 +125,24 @@
         }
         return criteria;
       };
+    RESTAdapter.prototype.delete = function(id) {
+      var deferred = $q.defer();
+      $http.delete(this.url + '/' + id).success(function(data, status, headers) {
+        deferred.resolve(id);
+        performMessage(headers);
+      }).error(function(data, status, headers) {
+        alert("Error: " + status + "[ " + data + " ]");
+        deferred.reject(id);
+        performMessage(headers);
+      });
+      return deferred.promise;
+    };
+    RESTAdapter.prototype.update = function(id, data) {
+      return _put(this.url + '/' + id, data, this.converter);
+    };
+    RESTAdapter.prototype.update = function(id, suffixUri, data) {
+      return _put(this.url + '/' + id + '/' + suffixUri, data, this.converter);
+    };
       RESTAdapter.prototype.find = function(parameters) {
         if (parameters !== null && parameters !== undefined) {
           if (typeof parameters === 'number' || typeof parameters === 'string') {

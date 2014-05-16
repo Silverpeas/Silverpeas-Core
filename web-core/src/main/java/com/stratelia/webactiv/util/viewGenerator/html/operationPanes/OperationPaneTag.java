@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.window.WindowTag;
 public class OperationPaneTag extends NeedWindowTag {
   static final String OPERATION_PANE_PAGE_ATT = "pageContextOperationPane";
   private static final long serialVersionUID = 1L;
+  
+  private OperationPaneType type;
 
   @Override
   public int doStartTag() throws JspException {
@@ -39,8 +41,17 @@ public class OperationPaneTag extends NeedWindowTag {
       throw new JspException("OperationPane Tag should not be after a WindowTag but before");
     }
     OperationPane pane = getWindow().getOperationPane();
+    pane.setType(type);
     pageContext.setAttribute(OPERATION_PANE_PAGE_ATT, pane);
     return EVAL_BODY_INCLUDE;
+  }
+
+  public void setType(OperationPaneType type) {
+    this.type = type;
+  }
+
+  public OperationPaneType getType() {
+    return type;
   }
 
 }

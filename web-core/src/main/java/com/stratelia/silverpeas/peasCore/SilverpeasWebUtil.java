@@ -27,31 +27,29 @@ package com.stratelia.silverpeas.peasCore;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.util.ArrayUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author ehugonnet
  */
 public class SilverpeasWebUtil {
 
-  private OrganisationController organizationController = OrganisationControllerFactory
-      .getOrganisationController();
-
   public SilverpeasWebUtil() {
   }
 
-  public SilverpeasWebUtil(OrganisationController controller) {
-    organizationController = controller;
-  }
-
   public OrganisationController getOrganisationController() {
-    return organizationController;
+    return OrganisationControllerFactory.getOrganisationController();
   }
 
   /**
@@ -104,7 +102,8 @@ public class SilverpeasWebUtil {
             || function.equalsIgnoreCase("searchresult")
             || function.startsWith("portlet")
             || function.equals("GoToFilesTab")) {
-          ComponentInstLight component = organizationController.getComponentInstLight(componentId);
+          ComponentInstLight component =
+              getOrganisationController().getComponentInstLight(componentId);
           spaceId = component.getDomainFatherId();
         }
         SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
@@ -126,9 +125,31 @@ public class SilverpeasWebUtil {
   public String[] getRoles(HttpServletRequest request) {
     MainSessionController controller = getMainSessionController(request);
     if (controller != null) {
-      return organizationController.getUserProfiles(controller.getUserId(),
-          getComponentId(request)[1]);
+      return getOrganisationController()
+          .getUserProfiles(controller.getUserId(), getComponentId(request)[1]);
     }
     return ArrayUtil.EMPTY_STRING_ARRAY;
+  }
+
+  /**
+   * Gets the content language specified into the request.
+   * @param request
+   * @return
+   */
+  public String getContentLanguage(HttpServletRequest request) {
+    String contentLanguage = (String) request.getAttribute("ContentLanguage");
+    if (StringUtil.isNotDefined(contentLanguage)) {
+      contentLanguage = request.getParameter("ContentLanguage");
+    }
+    if (StringUtil.isNotDefined(contentLanguage)) {
+      contentLanguage = I18NHelper.defaultLanguage;
+    }
+    if (StringUtil.isNotDefined(contentLanguage)) {
+      MainSessionController mainSessionCtrl = getMainSessionController(request);
+      if (mainSessionCtrl != null) {
+        contentLanguage = mainSessionCtrl.getFavoriteLanguage();
+      }
+    }
+    return contentLanguage;
   }
 }

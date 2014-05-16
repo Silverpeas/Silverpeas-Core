@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.agenda.view;
 
 import com.silverpeas.util.EncodeHelper;
@@ -69,6 +65,7 @@ public class AgendaHtmlView {
 
   /**
    * Constructor declaration
+   *
    * @param viewType
    * @see
    */
@@ -79,6 +76,7 @@ public class AgendaHtmlView {
 
   /**
    * Constructor declaration
+   *
    * @param viewType
    * @param date
    * @param agendaSessionController
@@ -99,6 +97,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param on
    * @see
    */
@@ -108,6 +107,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param date
    * @see
    */
@@ -131,6 +131,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param scheduleCount
    * @see
    */
@@ -143,6 +144,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param schedule
    * @see
    */
@@ -202,6 +204,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -223,6 +226,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param startDate
    * @return
    * @see
@@ -249,11 +253,13 @@ public class AgendaHtmlView {
       result.append("\t\t\t\t<tr> \n");
       result.append("\t\t\t\t\t<td> \n");
       result
-          .append("\t\t\t\t\t\t<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
+          .append(
+              "\t\t\t\t\t\t<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
       result.append("\t\t\t\t\t\t\t<tr>\n");
       result.append("\t\t\t\t\t\t\t\t<td class=\"grille\">\n");
       result
-          .append("\t\t\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n");
+          .append(
+              "\t\t\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n");
       result.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
       result.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\" class=\"grille\"> ");
       result.append(calendarHtmlView
@@ -280,6 +286,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param startDate
    * @return
    * @see
@@ -297,12 +304,12 @@ public class AgendaHtmlView {
     result += "        <tr> \n";
     result += "          <td> \n";
 
-    result +=
-        "            <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n";
+    result
+        += "            <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n";
     result += "              <tr> \n";
     result += "                <td class=\"grille\"> \n";
-    result +=
-        "                  <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" width=\"100%\">\n";
+    result
+        += "                  <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" width=\"100%\">\n";
     String year = startDate.substring(0, 4);
     int month = 1;
 
@@ -341,6 +348,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param today
    * @return
    * @see
@@ -360,18 +368,18 @@ public class AgendaHtmlView {
     }
     SchedulableList dayList = new SchedulableList(DateUtil.date2SQLDate(day.getTime()), schedules);
 
-    result +=
-        "<table border=\"0\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" class=\"grille\">\n";
+    result
+        += "<table border=\"0\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" class=\"grille\">\n";
     result += "<tr valign=\"top\">";
     result += "<td>";
-    result +=
-        "<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n";
+    result
+        += "<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n";
     result += "  <tr>\n";
     result += "    <td width=\"100%\">";
     Vector<Schedulable> all = dayList.getWithoutHourSchedules();
 
-    result +=
-        "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">";
+    result
+        += "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">";
 
     if (all.size() > 0) {
 
@@ -407,8 +415,8 @@ public class AgendaHtmlView {
       }
     } else {
       result += "  <tr>";
-      result +=
-          "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
+      result
+          += "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
       result += "&nbsp;</td>";
       result += "    <td class=\"intfdcolor4\" width=\"600\">";
       result += "&nbsp;";
@@ -420,8 +428,8 @@ public class AgendaHtmlView {
     result += "  </tr>\n";
 
     result += "<tr> ";
-    result +=
-        "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>";
+    result
+        += "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>";
     result += "</tr>\n";
 
     int i = BEGINHOUR;
@@ -492,8 +500,8 @@ public class AgendaHtmlView {
         // ouverture de la table
         result += "  <tr>";
         result += "    <td>";
-        result +=
-            "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
+        result
+            += "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
       } else {
         if (((goOn.size() != 0) && (lastGoOn.size() == 0))
             || ((goOn.size() == 0) && (lastGoOn.size() != 0))) {
@@ -502,14 +510,14 @@ public class AgendaHtmlView {
           result += "  </tr>\n";
           result += "  <tr>";
           result += "    <td>";
-          result +=
-              "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
+          result
+              += "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
         }
       }
 
       result += "       <tr>";
-      result +=
-          "        <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
+      result
+          += "        <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
       result += "<a href=\"javascript:onClick=selectHour('" + i + "')\">";
       result += String.valueOf(i) + "H</a>";
       result += "        </td>";
@@ -603,7 +611,8 @@ public class AgendaHtmlView {
             result += "</td>";
           }
         }
-        for (int maxColumnsIterator = goOn.size(); maxColumnsIterator < maxColumns; maxColumnsIterator++) {
+        for (int maxColumnsIterator = goOn.size(); maxColumnsIterator < maxColumns;
+            maxColumnsIterator++) {
           result += "        <td class=\"intfdcolor4\" width=\""
               + (600 / maxColumns) + "\">&nbsp;</td>";
         }
@@ -631,19 +640,19 @@ public class AgendaHtmlView {
     result += "    <tr> ";
     result += "     <td align=\"right\" class=\"intfdcolor2\">";
     if (!calendarVisible) {
-      result +=
-          "        <a href=\"javascript:onClick=openCalendar()\"><img src=\"icons/cal_open.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Afficher le calendrier\" title=\"Afficher le calendrier\"/></a> \n";
+      result
+          += "        <a href=\"javascript:onClick=openCalendar()\"><img src=\"icons/cal_open.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Afficher le calendrier\" title=\"Afficher le calendrier\"/></a> \n";
     } else {
-      result +=
-          "        <a href=\"javascript:onClick=closeCalendar()\"><img src=\"icons/croix3.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Fermer le calendrier\" title=\"Fermer le calendrier\"/></a> \n";
+      result
+          += "        <a href=\"javascript:onClick=closeCalendar()\"><img src=\"icons/croix3.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Fermer le calendrier\" title=\"Fermer le calendrier\"/></a> \n";
     }
     result += "     </td>";
     result += "    </tr> ";
     if (calendarVisible) {
       result += "    <tr> ";
       result += "     <td>";
-      result +=
-          "       <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\"> \n";
+      result
+          += "       <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\"> \n";
       result += "        <tr><td><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n";
       result += "         <tr>\n";
       result += "            <td align=\"center\" class=\"txtbigdate\">"
@@ -681,6 +690,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param firstDay
    * @return
    * @see
@@ -691,14 +701,17 @@ public class AgendaHtmlView {
     SchedulableList[] dayList = new SchedulableList[WEEKDAYNUMBER];
 
     result
-        .append("<table border=\"0\" width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" class=\"grille\">\n");
+        .append(
+            "<table border=\"0\" width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" class=\"grille\">\n");
     result.append("<tr>");
     result.append("<td>");
     result
-        .append("<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n");
+        .append(
+            "<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n");
     result.append("  <tr bgcolor=\"#ffffff\">\n");
     result
-        .append("    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
+        .append(
+            "    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
     result.append("</td>\n");
     Calendar day = Calendar.getInstance();
 
@@ -718,14 +731,15 @@ public class AgendaHtmlView {
         result.append("<span ");
         result.append(weekDayOffStyle).append(">").append(
             agendaSessionController.getString("jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0,
-            3));
+                3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH)).append("</span>");
       } else {
         result
-            .append("    <td class=\"intfdcolor2\" valign=\"bottom\" width=\"14%\" align=\"center\">");
+            .append(
+                "    <td class=\"intfdcolor2\" valign=\"bottom\" width=\"14%\" align=\"center\">");
         result.append("<a href=\"javascript:onClick=selectDay('").append(
             DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage())).append(
-            "')\" class=\"txtnav\">");
+                "')\" class=\"txtnav\">");
         result.append(agendaSessionController.getString(
             "jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0, 3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
@@ -778,7 +792,8 @@ public class AgendaHtmlView {
 
     result.append("<tr> ");
     result
-        .append("<td colspan=\"8\" class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>");
+        .append(
+            "<td colspan=\"8\" class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>");
     result.append("</tr>\n");
 
     for (int i = BEGINHOUR; i < ENDHOUR; i++) {
@@ -893,7 +908,8 @@ public class AgendaHtmlView {
     // redisplay the date
     result.append("  <tr bgcolor=\"#ffffff\">\n");
     result
-        .append("    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
+        .append(
+            "    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
     result.append("</td>\n");
 
     try {
@@ -912,13 +928,13 @@ public class AgendaHtmlView {
         result.append("<span ");
         result.append(dayOffStyle).append(">").append(
             agendaSessionController.getString("jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0,
-            3));
+                3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
         result.append("</span>");
       } else {
         result.append("<a href=\"javascript:onClick=selectDay('").append(
             DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage())).append(
-            "')\">");
+                "')\">");
         result.append(agendaSessionController.getString(
             "jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0, 3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
@@ -939,6 +955,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param schedule
    * @return
    * @see
@@ -964,6 +981,7 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
+   *
    * @param group
    * @return
    * @see
@@ -989,13 +1007,13 @@ public class AgendaHtmlView {
 
   /**
    * Get infobulle detail of the event
+   *
    * @param schedule
    * @return
    * @throws AgendaException
    */
   private String getInfoBulle(Schedulable schedule) throws AgendaException {
-    Collection<Category> categories =
-        agendaSessionController.getJournalCategories(schedule.getId());
+    Collection<Category> categories = agendaSessionController.getJournalCategories(schedule.getId());
     if (!StringUtil.isDefined(schedule.getDescription())
         && categories.isEmpty()) {
       return ">";
@@ -1008,7 +1026,7 @@ public class AgendaHtmlView {
 
     StringBuilder result = new StringBuilder("onmouseover=\"return overlib('");
     result.append(EncodeHelper.javaStringToJsString(EncodeHelper
-        .javaStringToHtmlParagraphe(schedule.getDescription())));
+        .javaStringToHtmlParagraphe(EncodeHelper.javaStringToHtmlString(schedule.getDescription()))));
     result.append("',CAPTION,'").append(EncodeHelper.javaStringToJsString(categs)).append(
         "');\" onmouseout=\"return nd();\">");
     return result.toString();

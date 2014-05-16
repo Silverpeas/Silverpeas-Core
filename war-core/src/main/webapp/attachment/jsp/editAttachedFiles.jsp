@@ -40,8 +40,7 @@
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ include file="checkAttachment.jsp"%>
 <view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
-<view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT" />
-<c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}" />
+<c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
 <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
 <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
 <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
@@ -200,9 +199,25 @@
   }
 
   function updateAttachment(attachmentId, lang) {
-      loadAttachment(attachmentId, lang);
-      $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
-    }
+    loadAttachment(attachmentId, lang);
+    $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
+  }
+
+  function switchDownloadAllowedForReaders(attachmentId, allowed) {
+    $.progressMessage();
+    $.ajax({
+      url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+          attachmentId + '/switchDownloadAllowedForReaders',
+      type : "POST",
+      cache : false,
+      contentType : "application/json",
+      dataType : "json",
+      data : {"allowed" : (allowed) ? allowed : false},
+      success : function(data) {
+        reloadPage();
+      }
+    });
+  }
 
   function loadAttachment(id, lang) {
     translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
@@ -273,9 +288,9 @@
         }
       });
 
-    var performDialogAddOrUpdateError = function(jqXHR, textStatus, errorThrown) {
+    jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
       $.closeProgressMessage();
-    };
+    });
 
     $("#dialog-attachment-add").dialog({
       autoOpen : false,
@@ -302,8 +317,7 @@
               data : formData,
               success : function(data) {
                 reloadPage();
-              },
-              error : performDialogAddOrUpdateError
+              }
             });
           } else {
             $('#add-attachment-form').attr('action', submitUrl);
@@ -344,8 +358,7 @@
               data : formData,
               success : function(data) {
                 reloadPage();
-              },
-              error : performDialogAddOrUpdateError
+              }
             });
           } else {
             $('#update-attachment-form').attr('action', submitUrl);
@@ -462,22 +475,50 @@
             <fmt:message var="moveDownIconMsg" key="Down" />
             
             <c:forEach items="${pageScope.attachments}" var="varAttachment" varStatus="attachmentIterStatus">
+
+              <%-- Download variable handling --%>
+              <c:set var="canUserDownloadFile" value="${true}"/>
+              <c:set var="forbiddenDownloadClass" value=""/>
+              <fmt:message key="GML.download.forbidden.readers" var="forbiddenDownloadHelp"/>
+              <c:if test="${!varAttachment.downloadAllowedForReaders}">
+                <c:set var="canUserDownloadFile"
+                       value="${varAttachment.isDownloadAllowedForRolesFrom(mainSessionController.currentUserDetail)}"/>
+                <c:if test="${!canUserDownloadFile}">
+                  <c:set var="forbiddenDownloadClass" value="forbidden-download"/>
+                  <fmt:message key="GML.download.forbidden" var="forbiddenDownloadHelp"/>
+                </c:if>
+              </c:if>
+
               <c:url var="currentAttachmentUrl" value="${varAttachment.attachmentURL}" />
               <tr id='attachment_${varAttachment.oldSilverpeasId}'>
-                <td class="odd" align="center">
-                  <a id="other" href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><img src='<c:out value="${varAttachment.displayIcon}" />' border="0" alt=""/></a>
+                <td class="odd ${forbiddenDownloadClass}" align="center">
+                  <c:choose>
+                    <c:when test="${canUserDownloadFile}">
+                      <a id="other" href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><img src='<c:out value="${varAttachment.displayIcon}" />' border="0" alt=""/></a>
+                    </c:when>
+                    <c:otherwise>
+                      <img src='<c:out value="${varAttachment.displayIcon}" />' border="0" alt=""/>
+                    </c:otherwise>
+                  </c:choose>
                 </td>
-                <td class="odd" align="left">
+                <td class="odd ${forbiddenDownloadClass}" align="left">
                   <c:choose>
                     <c:when test="${originWysiwyg}">
                       <a href="javascript:selectFile('<c:out value="${currentAttachmentUrl}" />');"><c:out value="${varAttachment.filename}" /></a>
                     </c:when>
                     <c:otherwise>
-                      <a href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><c:out value="${varAttachment.filename}" /></a>
+                      <c:choose>
+                        <c:when test="${canUserDownloadFile}">
+                          <a href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><c:out value="${varAttachment.filename}" /></a>
+                        </c:when>
+                        <c:otherwise>
+                          <c:out value="${varAttachment.filename}" />
+                        </c:otherwise>
+                      </c:choose>
                     </c:otherwise>
                   </c:choose>
                 </td>
-                <td class="odd" align="left">
+                <td class="odd ${forbiddenDownloadClass}" align="left">
                   <c:choose>
                     <c:when test="${view:isDefined(varAttachment.title)}">
                       <c:out value="${varAttachment.title}" />
@@ -485,7 +526,7 @@
                     <c:otherwise>&nbsp;</c:otherwise>
                   </c:choose>
                 </td>
-                <td class="odd" align="center">
+                <td class="odd ${forbiddenDownloadClass}" align="center">
                   <view:icon altText="${varAttachment.description}" iconName="${infoIcon}" />
                 </td>
                 <td class="odd" align="left"><c:out value="${view:humanReadableSize(varAttachment.size)}" /></td>

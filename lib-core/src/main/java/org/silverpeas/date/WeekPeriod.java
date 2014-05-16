@@ -23,9 +23,7 @@
  */
 package org.silverpeas.date;
 
-import com.stratelia.webactiv.util.DateUtil;
-
-import java.util.Date;
+import com.silverpeas.calendar.DateTime;
 
 /**
  * User: Yohann Chastagnier
@@ -36,11 +34,10 @@ public class WeekPeriod extends Period {
 
   /**
    * Constructor : Constructs a newly allocated <code>period</code>.
-   * @param referenceDate the reference date to compute a week period.
+   * @param referenceDatable the reference date to compute a week period.
    */
-  protected WeekPeriod(final Date referenceDate, final String locale) {
-    super(DateUtil.getFirstDateOfWeek(referenceDate, locale),
-        DateUtil.getEndDateOfWeek(referenceDate, locale));
+  protected WeekPeriod(final DateTime referenceDatable, final String locale) {
+    super(referenceDatable.getBeginOfWeek(locale), referenceDatable.getEndOfWeek(locale).addMilliseconds(1));
     setPeriodType(PeriodType.week);
   }
 }

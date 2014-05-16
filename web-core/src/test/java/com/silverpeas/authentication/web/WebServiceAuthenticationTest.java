@@ -23,30 +23,24 @@
  */
 package com.silverpeas.authentication.web;
 
-import static com.silverpeas.authentication.web.WebTestResources.COMPONENT_ID;
-import static com.silverpeas.authentication.web.WebTestResources.SPRING_CONTEXT;
-import static com.silverpeas.authentication.web.WebTestResources.WEB_PACKAGES;
-import static com.silverpeas.authentication.web.WebTestResources.WEB_RESOURCE_ID;
-import static com.silverpeas.authentication.web.WebTestResources.WEB_RESOURCE_PATH;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
+import com.silverpeas.web.RESTWebServiceTest;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.sun.jersey.api.client.ClientResponse;
 import java.io.UnsupportedEncodingException;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.web.RESTWebServiceTest;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.sun.jersey.api.client.ClientResponse;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import static com.silverpeas.authentication.web.WebTestResources.*;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 
 /**
  * Tests on the authentication process when accessing the WEB resources published as REST services.
@@ -71,8 +65,8 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
   @Test
   public void accessDenied() {
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
   }
 
@@ -80,9 +74,9 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
   public void authenticate() throws UnsupportedEncodingException {
     UserFull user = getTestResources().getAUser();
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
-            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
     String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
     assertThat(sessionKey, notNullValue());
@@ -92,18 +86,18 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
   public void accessWebResourcesInAnOpenedSession() {
     UserFull user = getTestResources().getAUser();
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
-            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
-    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    assertThat(response.getEntity(String.class), is(WEB_RESOURCE_ID));
 
     response = resource().path(WEB_RESOURCE_PATH).
-            header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        header(HTTP_SESSIONKEY, sessionKey).
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
-    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    assertThat(response.getEntity(String.class), is(WEB_RESOURCE_ID));
   }
 
   @Test
@@ -111,25 +105,25 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
     UserFull user = getTestResources().getAUser();
     getTestResources().registerUser(user);
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
-            header(HTTP_SESSIONKEY, user.getToken()).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        header(HTTP_SESSIONKEY, "token-" + user.getId()).
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
-    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    assertThat(response.getEntity(String.class), is(WEB_RESOURCE_ID));
   }
 
   @Test
   public void openASessionAndAccessWebResourcesOutOfTheOpenedSession() {
     UserFull user = getTestResources().getAUser();
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
-            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
-    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+        header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
+    assertThat(response.getEntity(String.class), is(WEB_RESOURCE_ID));
 
     response = resource().path(WEB_RESOURCE_PATH).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
   }
 
@@ -137,22 +131,23 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
   public void openASessionAndAccessWebResourcesInAnInexistingSession() {
     UserFull user = getTestResources().getAUser();
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
-            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
-            accept(MediaType.APPLICATION_JSON).
-            get(ClientResponse.class);
+        header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+        accept(MediaType.APPLICATION_JSON).
+        get(ClientResponse.class);
     String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
-    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    assertThat(response.getEntity(String.class), is(WEB_RESOURCE_ID));
 
     response = resource().path(WEB_RESOURCE_PATH).
-            accept(MediaType.APPLICATION_JSON).
-            header(HTTP_SESSIONKEY, sessionKey + "3").
-            get(ClientResponse.class);
+        accept(MediaType.APPLICATION_JSON).
+        header(HTTP_SESSIONKEY, sessionKey + "3").
+        get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
   }
 
   private String encodeCredentials(String login, String password) {
     String credentials = login + ":" + password;
-    String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes(Charsets.UTF_8)),
+    String encodedCredentials
+        = new String(Base64.encodeBase64(credentials.getBytes(Charsets.UTF_8)),
             Charsets.UTF_8);
     return encodedCredentials;
   }

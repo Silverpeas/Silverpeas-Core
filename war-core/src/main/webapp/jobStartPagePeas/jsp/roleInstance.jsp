@@ -106,12 +106,12 @@ function goToOperationInUserPanel(action) {
 	windowName = "userPanelWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
 	userPanelWindow = SP_openUserPanel(url, windowName, windowParams);
-}    
+}
 
-function deleteUsersGroupsProfileInstance() {	
-    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceManager")%>")) { 
-    	location.href = "DeleteUsersGroupsProfileInstance";
-	}
+function deleteUsersGroupsProfileInstance() {
+  if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceManager")%>")) {
+    jQuery('#genericForm').attr('action', "DeleteUsersGroupsProfileInstance").submit();
+  }
 }
 </script>                
 </HEAD>
@@ -276,5 +276,6 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<form id="genericForm" action="" method="POST"></form>
 </BODY>
 </HTML>
