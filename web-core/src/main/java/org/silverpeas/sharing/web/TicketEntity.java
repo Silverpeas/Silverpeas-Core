@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -40,7 +39,6 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.TicketFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.Exposable;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
@@ -153,7 +151,6 @@ public class TicketEntity implements Exposable {
 
     }
     return ticket;
-
   }
 
   /**

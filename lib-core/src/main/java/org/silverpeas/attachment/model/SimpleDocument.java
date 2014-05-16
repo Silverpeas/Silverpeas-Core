@@ -758,6 +758,20 @@ public class SimpleDocument implements Serializable {
   public String getFolder() {
     return getDocumentType().getFolderName();
   }
+  
+  public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
+    if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
+      // In that case, from point of security view if no user data exists,
+      // then download is forbidden.
+      return false;
+    }
+    
+    // Access is verified for sharing context
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+  }
 
   /**
    * Indicates if the download of the document is allowed for the given user in relation to its

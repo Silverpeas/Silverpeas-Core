@@ -26,6 +26,17 @@ package com.silverpeas.sharing.model;
 
 import java.util.Date;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
 /**
  *
  * @author ehugonnet
@@ -34,32 +45,43 @@ public class TicketFactory {
   
   public static Ticket aTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax, String type) {
-    if(Ticket.FILE_TYPE.equalsIgnoreCase(type)) {
-      return new SimpleFileTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-              nbAccessMax);
-    }
-    if(Ticket.VERSION_TYPE.equalsIgnoreCase(type)) {
-      return new VersionFileTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-              nbAccessMax);
-    }
-    if(Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
-      return new NodeTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-              nbAccessMax);
+    if (isUserAllowed(sharedObjectId, componentId, creatorId, type)) {
+      if(Ticket.FILE_TYPE.equalsIgnoreCase(type)) {
+        return new SimpleFileTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
+                nbAccessMax);
+      }
+      if(Ticket.VERSION_TYPE.equalsIgnoreCase(type)) {
+        return new VersionFileTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
+                nbAccessMax);
+      }
+      if(Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
+        return new NodeTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
+                nbAccessMax);
+      }
     }
     return null;
   }
   
   public static Ticket continuousTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, String type) {
-    if(Ticket.FILE_TYPE.equalsIgnoreCase(type)) {
-      return new SimpleFileTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1);
+    return aTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1, type);
+  }
+  
+  private static boolean isUserAllowed(int sharedObjectId, String componentId, String creatorId,
+      String type) {
+    if (Ticket.FILE_TYPE.equalsIgnoreCase(type) || Ticket.VERSION_TYPE.equalsIgnoreCase(type)) {
+      SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
+      pk.setOldSilverpeasId(sharedObjectId);
+      SimpleDocument doc =
+          AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk, null);
+      return doc.isSharingAllowedForRolesFrom(UserDetail.getById(creatorId));
+    } else if (Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
+      AccessController<NodePK> nodeAccessController =
+          AccessControllerProvider.getAccessController("nodeAccessController");
+      return nodeAccessController.isUserAuthorized(creatorId,
+          new NodePK(String.valueOf(sharedObjectId), componentId),
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
     }
-    if(Ticket.VERSION_TYPE.equalsIgnoreCase(type)) {
-      return new VersionFileTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1);
-    }
-    if(Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
-      return new NodeTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1);
-    }
-    return null;
+    return false;
   }
 }

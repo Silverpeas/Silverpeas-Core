@@ -4017,6 +4017,12 @@ img.view-file {
   margin-right:0px;
 }
 
+img.share-file {
+  cursor:pointer;
+  margin-left:5px;
+  margin-right:0px;
+}
+
 img.forbidden-download-file {
   margin-left:5px;
   margin-right:0px;

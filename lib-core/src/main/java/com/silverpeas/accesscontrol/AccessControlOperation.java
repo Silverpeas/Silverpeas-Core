@@ -33,7 +33,7 @@ import java.util.EnumSet;
  * Date: 30/12/13
  */
 public enum AccessControlOperation {
-  unknown, creation, modification, deletion, download;
+  unknown, creation, modification, deletion, download, sharing;
 
   public static EnumSet<AccessControlOperation> PERSIST_ACTIONS =
       EnumSet.of(creation, modification, deletion);

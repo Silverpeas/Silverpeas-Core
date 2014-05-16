@@ -72,6 +72,7 @@ public class Util {
     addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
     addSilverpeasScript(includes, "/util/javaScript/checkForm.js");
     addSilverpeasScript(includes, "/util/javaScript/animation.js");
+    addSilverpeasScript(includes, "/util/javaScript/silverpeas-sharing.js");
 
     // includes external scripts once because
     // including several times the same script (once per field) can provide

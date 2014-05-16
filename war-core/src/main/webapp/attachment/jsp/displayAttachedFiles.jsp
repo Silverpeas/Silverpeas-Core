@@ -74,6 +74,7 @@
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/javaScript/silverpeas-sharing.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
   <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
@@ -88,8 +89,6 @@
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
   <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
-  <view:componentParam var="useFileSharingParam" componentId="${param.ComponentId}" parameter="useFileSharing" />
-  <c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' eq userProfile }" />
   <c:choose>
     <c:when test="${contextualMenuEnabled}">
       <c:set var="iconStyle" scope="page">style="cursor:move"</c:set>
@@ -226,7 +225,7 @@
           <c:if test="${contextualMenuEnabled}">
             <menu:simpleDocument attachment="${currentAttachment}" contentLanguage="${contentLanguage}"
                                  showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
-                                 useFileSharing="${useFileSharing}" useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
+                                 useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           </c:if>
           <span class="lineMain ${forbiddenDownloadClass}">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
