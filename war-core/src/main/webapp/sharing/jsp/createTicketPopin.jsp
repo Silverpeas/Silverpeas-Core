@@ -183,6 +183,14 @@ function createTicket() {
       }));
       showInformation();
       cleanForm();
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      var data = /<body.*?>([\s\S]*)<\/body>/.exec(xhr.responseText)[1];
+      $("#sharingticket-error-content").html(data);
+      $('#sharingticket-error-content').popup('basic', {
+        title : "Error"
+      });
+      cleanForm();
     }
   });
 }
@@ -271,4 +279,6 @@ function showInformation() {
 <div id="sharingticket-message-content" style="display: none">
   <label class="label-ui-dialog" for=""><fmt:message key="sharing.url" bundle="${fsBundle}"/></label>
   <span class="champ-ui-dialog" id="message-content-url"></span>
+</div>
+<div id="sharingticket-error-content" style="display: none">
 </div>

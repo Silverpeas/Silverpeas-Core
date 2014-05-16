@@ -156,6 +156,12 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
       authorized = object.isDownloadAllowedForRoles(userRoles);
       isRoleVerificationRequired = authorized;
     }
+    
+    // Verifying sharing is possible
+    if (context.getOperations().contains(AccessControlOperation.sharing)) {
+      authorized = getComponentAccessController().isSharingEnabled(object.getInstanceId());
+      isRoleVerificationRequired = authorized;
+    }
 
     // Verifying persist actions are possible
     if (authorized && !CollectionUtils
@@ -173,6 +179,9 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
           authorized = greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
         }
       } else {
+        if (context.getOperations().contains(AccessControlOperation.sharing)) {
+          return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+        }
         if (SilverpeasRole.writer.equals(greaterUserRole)) {
           authorized = userId.equals(foreignUserAuthor) ||
               getComponentAccessController().isCoWritingEnabled(object.getInstanceId());

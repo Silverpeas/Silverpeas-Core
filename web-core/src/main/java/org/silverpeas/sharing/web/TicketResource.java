@@ -40,6 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.sharing.bean.SharingNotificationVO;
 import org.silverpeas.sharing.notification.FileSharingUserNotification;
@@ -96,6 +97,9 @@ public class TicketResource extends RESTWebService {
       ticket = ticketEntity.toTicket(getUserDetail());
     } catch (ParseException e) {
       return Response.serverError().build();
+    }
+    if (ticket == null) {
+      return Response.status(Status.FORBIDDEN).build();
     }
     String keyFile = getFileSharingService().createTicket(ticket);
     ticket.setToken(keyFile);

@@ -23,6 +23,7 @@ package org.silverpeas.attachment.tag;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -45,7 +46,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   private SimpleDocument attachment;
   private boolean useXMLForm;
-  private boolean useFileSharing;
   private boolean useWebDAV;
   private String contentLanguage;
   private boolean showMenuNotif;
@@ -57,10 +57,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   public void setUseXMLForm(boolean useXMLForm) {
     this.useXMLForm = useXMLForm;
-  }
-
-  public void setUseFileSharing(boolean useFileSharing) {
-    this.useFileSharing = useFileSharing;
   }
 
   public void setUseWebDAV(boolean useWebDAV) {
@@ -94,7 +90,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       ResourceLocator messages = new ResourceLocator(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
       String httpServerBase = URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
-      pageContext.getOut().print(prepareActions(attachment, useXMLForm, useFileSharing, useWebDAV,
+      pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
           mainSessionController.getUserId(), contentLanguage, messages, httpServerBase,
           showMenuNotif, useContextualMenu));
       return EVAL_BODY_INCLUDE;
@@ -121,7 +117,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm,
-      boolean useFileSharing, boolean useWebDAV, String userId, String lang,
+      boolean useWebDAV, String userId, String lang,
       ResourceLocator resources, String httpServerBase, boolean showMenuNotif,
       boolean useContextualMenu) throws UnsupportedEncodingException {
     String language = I18NHelper.checkLanguage(lang);
@@ -165,7 +161,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(
-        "attachment.share"));
+        "GML.share.file"));
 
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
@@ -213,7 +209,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       builder.append(configureCheckoutAndEdit(attachmentId, !useWebDAV || !attachment.
           isOpenOfficeCompatible()));
     }
-    builder.append(configureFileSharing(attachmentId, !useFileSharing));
+    builder.append(configureFileSharing(attachmentId,
+        !attachment.isSharingAllowedForRolesFrom(UserDetail.getById(userId))));
     builder.append(configureSwitchState(attachmentId, attachment.isReadOnly()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);

@@ -38,13 +38,6 @@
       <type>java.lang.Boolean</type>
     </attribute>
     <attribute>
-      <description>To indicate if the attachment may be shared.</description>
-      <name>useFileSharing</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Boolean</type>
-    </attribute>
-    <attribute>
       <description>To indicate if the attachment may be edited with webdav.</description>
       <name>useWebDAV</name>
       <required>true</required>

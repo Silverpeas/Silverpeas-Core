@@ -42,6 +42,7 @@ import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
+
 public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharingSessionController> {
 
   private static final long serialVersionUID = -8855028133035807994L;
@@ -107,6 +108,9 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         UserDetail creator = fileSharingSC.getUserDetail();
         Ticket newTicket = TicketFactory.aTicket(Integer.parseInt(objectId), componentId, creator.
             getId(), new Date(), new Date(), 1, type);
+        if (newTicket == null) {
+          throwHttpForbiddenError();
+        }
         // passage des paramètres
         request.setAttribute("Ticket", newTicket);
         request.setAttribute("Creator", creator.getDisplayedName());
@@ -116,6 +120,9 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       } else if ("CreateTicket".equals(function)) {
         // TODO delete this structure when all the ticket will be call using popin
         Ticket ticket = generateTicket(fileSharingSC, request);
+        if (ticket == null) {
+          throwHttpForbiddenError();
+        }
         String keyFile = fileSharingSC.createTicket(ticket);
         // mettre à jour l'objet ticket
         ticket.setToken(keyFile);
