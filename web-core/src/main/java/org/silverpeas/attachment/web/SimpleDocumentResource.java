@@ -20,11 +20,32 @@
  */
 package org.silverpeas.attachment.web;
 
-import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,42 +58,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.ActifyDocumentProcessor;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.WebdavServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.UserPriviledgeValidation;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 @Service
 @RequestScoped
@@ -333,7 +320,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("lock")
   @Produces(MediaType.APPLICATION_JSON)
   public String lock() {
-   getSimpleDocument(defaultLanguage);
     boolean result = AttachmentServiceFactory.getAttachmentService().lock(getSimpleDocumentId(),
         getUserDetail().getId(), I18NHelper.defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}}", result);
@@ -480,8 +466,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return SimpleDocument
    */
   private SimpleDocument getSimpleDocument(String lang) {
+    String language = (lang == null ? defaultLanguage : lang);
     SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), lang);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
     if (attachment == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
