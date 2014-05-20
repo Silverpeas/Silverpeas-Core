@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List"%>
@@ -224,9 +225,9 @@ if(listResult != null) {
 			ArrayLine arrayLine = arrayPane.addArrayLine();
 			arrayLine.addArrayCellText("<a href=\"#\" onclick=\""+url+"\">"+name+"</a>");
 			
-			String desc = searchResult.getDesc();
-			if (desc != null && desc.length() > 200) {
-				desc = desc.substring(0, 200)+"...";
+			String desc = "";
+			if (StringUtil.isDefined(searchResult.getDesc())) {
+			  desc = StringUtil.abbreviate(searchResult.getDesc(), 200);
 			}
 			arrayLine.addArrayCellText(desc);
 			
