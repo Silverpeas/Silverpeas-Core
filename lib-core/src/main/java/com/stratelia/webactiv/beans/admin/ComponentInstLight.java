@@ -61,6 +61,8 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
   private String removerName = null;
   private List<SpaceInstLight> path = null;
   private boolean isInheritanceBlocked = false;
+  private boolean hidden = false;
+  private boolean publicApp = false;
 
   /**
    * Constructor
@@ -99,6 +101,8 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
     orderNum = compo.orderNum;
 
     isInheritanceBlocked = compo.inheritanceBlocked == 1;
+    hidden = compo.hidden == 1;
+    publicApp = compo.publicAccess == 1;
   }
 
   /**
@@ -263,6 +267,14 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
 
   public void setInheritanceBlocked(boolean isInheritanceBlocked) {
     this.isInheritanceBlocked = isInheritanceBlocked;
+  }
+  
+  public boolean isHidden() {
+    return hidden;
+  }
+  
+  public boolean isPublic() {
+    return publicApp;
   }
   
   public boolean isWorkflow() {

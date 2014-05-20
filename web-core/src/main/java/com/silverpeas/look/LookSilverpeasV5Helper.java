@@ -783,7 +783,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       List<ComponentInstLight> apps = new ArrayList<ComponentInstLight>();
       for (String appId : appIds) {
         ComponentInstLight app = getOrganisationController().getComponentInstLight(appId);
-        if (displayApps) {
+        if (displayApps && !app.isHidden()) {
           apps.add(app);
         }
         if (displayEvents && app.getName().equals("almanach") &&
