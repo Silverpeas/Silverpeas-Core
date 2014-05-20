@@ -506,14 +506,18 @@ public class WysiwygManager {
    */
   private void saveFile(String textHtml, WAPrimaryKey foreignKey, String userId,
       String language, boolean indexIt) {
+    String lang = I18NHelper.checkLanguage(language);
     DocumentType wysiwygType = DocumentType.wysiwyg;
-    String fileName = getWysiwygFileName(foreignKey.getId(), language);
+    String fileName = getWysiwygFileName(foreignKey.getId(), lang);
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
         "root.MSG_GEN_PARAM_VALUE",
         "fileName=" + fileName + " context=" + wysiwygType + "objectId=" + foreignKey.getId());
-    SimpleDocument document = searchAttachmentDetail(foreignKey, wysiwygType, language);
+    SimpleDocument document = searchAttachmentDetail(foreignKey, wysiwygType, lang);
     if (document != null) {
-      document.setLanguage(I18NHelper.checkLanguage(language));
+      if (!document.getLanguage().equals(lang)) {
+        document.setFilename(fileName);
+      }
+      document.setLanguage(lang);
       document.setSize(textHtml.getBytes(Charsets.UTF_8).length);
       document.setDocumentType(wysiwygType);
       document.setUpdatedBy(userId);
@@ -523,10 +527,10 @@ public class WysiwygManager {
                 indexIt, false);
         invokeCallback(userId, foreignKey);
       } else {
-        AttachmentServiceFactory.getAttachmentService().removeContent(document, language, true);
+        AttachmentServiceFactory.getAttachmentService().removeContent(document, lang, true);
       }
     } else {
-      createFileAndAttachment(textHtml, foreignKey, wysiwygType, userId, language, indexIt, true);
+      createFileAndAttachment(textHtml, foreignKey, wysiwygType, userId, lang, indexIt, true);
     }
   }
 
@@ -1062,7 +1066,7 @@ public class WysiwygManager {
    *
    * @return a components list
    */
-  public static List<ComponentInstLight> getStorageFile() {
+  public List<ComponentInstLight> getStorageFile() {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
