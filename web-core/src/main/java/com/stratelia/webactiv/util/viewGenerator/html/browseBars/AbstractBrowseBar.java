@@ -162,11 +162,10 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    */
   @Override
   public void setExtraInformation(String information) {
-    if (information != null) {
-      if (information.length() > 0) {
-        if (information.contains("<") || information.contains(">")) {
-          this.information = Encode.forHtml(information);
-        }
+    this.information = information;
+    if (StringUtil.isDefined(information)) {
+      if (information.contains("<") || information.contains(">")) {
+        this.information = Encode.forHtml(information);
       }
     }
   }
