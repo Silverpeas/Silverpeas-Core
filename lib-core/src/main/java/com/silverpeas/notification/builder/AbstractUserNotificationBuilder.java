@@ -27,11 +27,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.notificationManager.ExternalRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -158,14 +163,20 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     return null;
   }
 
+  protected Collection<String> getExternalAddressesToNotify() {
+    return null;
+  }
+
   protected final void performUsersToBeNotified() {
     final Collection<String> userIdsToNotify = getUserIdsToNotify();
     final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();
     final Collection<String> groupIdsToNotify = getGroupIdsToNotify();
+    final Collection<String> emailsToNotify = getExternalAddressesToNotify();
 
     // Stopping the process if no user to notify
     if (stopWhenNoUserToNotify() &&
-        CollectionUtil.isEmpty(userIdsToNotify) && CollectionUtil.isEmpty(groupIdsToNotify)) {
+        CollectionUtil.isEmpty(userIdsToNotify) && CollectionUtil.isEmpty(groupIdsToNotify) &&
+        CollectionUtil.isEmpty(emailsToNotify)) {
       SilverTrace.warn("notification", "IUserNotificationBuider.build()",
           "IUserNotificationBuider.EX_NO_USER_OR_GROUP_TO_NOTIFY");
       stop();
@@ -189,6 +200,12 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
       // There is at least one group to notify
       for (final String groupId : groupIdsToNotify) {
         getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
+      }
+    }
+
+    if (CollectionUtil.isNotEmpty(emailsToNotify)) {
+      for (String address : emailsToNotify) {
+        getNotificationMetaData().addExternalRecipient(new ExternalRecipient(address));
       }
     }
   }

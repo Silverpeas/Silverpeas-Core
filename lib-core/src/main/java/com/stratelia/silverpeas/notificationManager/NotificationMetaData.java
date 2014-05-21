@@ -37,7 +37,6 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
-
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -53,6 +52,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private Collection<UserRecipient> userRecipients;
   private Collection<UserRecipient> userRecipientsToExclude;
   private Collection<GroupRecipient> groupRecipients;
+  private Collection<ExternalRecipient> externalRecipients;
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
@@ -109,6 +109,7 @@ public class NotificationMetaData implements java.io.Serializable {
     userRecipients = new ArrayList<UserRecipient>();
     userRecipientsToExclude = new ArrayList<UserRecipient>();
     groupRecipients = new ArrayList<GroupRecipient>();
+    externalRecipients = new ArrayList<ExternalRecipient>();
     componentId = "";
     isAnswerAllowed = false;
     fileName = null;
@@ -419,6 +420,29 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   /**
+   * @return the externalAddress
+   */
+  public Collection<ExternalRecipient> getExternalRecipients() {
+    return externalRecipients;
+  }
+
+  /**
+   * @param externalAddress the externalAddress to set
+   */
+  public void setExternalRecipients(Collection<ExternalRecipient> externalRecipients) {
+    if (externalRecipients != null) {
+      this.externalRecipients = externalRecipients;
+    }
+  }
+
+  /**
+   * @param externalRecipient the externalRecipient to add
+   */
+  public void addExternalRecipient(ExternalRecipient externalRecipient) {
+    externalRecipients.add(externalRecipient);
+  }
+
+  /**
    * Set message group recipients
    * @param groups the groups that must receive this message
    */
@@ -476,7 +500,7 @@ public class NotificationMetaData implements java.io.Serializable {
       }
     }
   }
-  
+
   public String getOriginalExtraMessage() {
     return originalExtraMessage;
   }

@@ -23,43 +23,26 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+public class ExternalRecipient {
+  /**
+   * the external email
+   */
+  private String email;
 
-public class UserRecipient {
-
-  private String userId;
-
-  public UserRecipient(String userId) {
-    this.userId = userId;
+  /**
+   * Default constructor
+   * @param email
+   */
+  public ExternalRecipient(String email) {
+    super();
+    this.email = email;
   }
 
-  public UserRecipient(UserDetail userDetail) {
-    this.userId = userDetail.getId();
+  /**
+   * @return the email
+   */
+  public String getEmail() {
+    return email;
   }
 
-  public String getUserId() {
-    return userId;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final UserRecipient other = (UserRecipient) obj;
-    if ((this.userId == null) ? (other.userId != null) : !this.userId.equals(other.userId)) {
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 89 * hash + (this.userId != null ? this.userId.hashCode() : 0);
-    return hash;
-  }
 }

@@ -5826,6 +5826,29 @@ ul.tagit li.tagit-choice a.tagit-close {
   width: 90%;
 }
 
+.ui-dialog .filedset-ui-dialog legend {
+  padding:0 0.5em;
+}
+
+.ui-dialog .filedset-ui-dialog.notification legend{
+  padding-left:30px;
+  background:transparent url(../icons/email.gif) 5px 0 no-repeat;
+}
+
+.ui-dialog .filedset-ui-dialog.validity legend {
+  padding-left:30px;
+	background: url("../icons/calendar_2.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+.ui-dialog .filedset-ui-dialog{
+  clear:both;
+  background-color:#f4f4f4;
+  border-radius:8px;
+  border:1px solid #c7c7c7;
+  margin:0 0 14px 0;
+  padding:1em;
+}
+
 /*******************************/
 /**       Responsibles        **/
 /*******************************/

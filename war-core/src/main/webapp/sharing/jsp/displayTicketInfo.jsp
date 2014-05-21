@@ -50,8 +50,8 @@
   <head>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
 
-    <link href="<c:url value='/util/styleSheets/silverpeas_light_style.css'/>" type="text/css" rel="stylesheet">
-    <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet"/>
+    <link href="<c:url value='/util/styleSheets/silverpeas_light_style.css'/>" type="text/css" rel="stylesheet" />
+    <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet" />
 
     <style type="text/css">
       <!--

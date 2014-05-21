@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.notificationManager;
@@ -45,8 +45,8 @@ public class NotificationParameters {
 
   static public final int ADDRESS_DEFAULT = -1;
   static public final int ADDRESS_COMPONENT_DEFINED = -2; // Send by media :
-  // 1)Component
-  // specific 2)Default
+  // 1)Component specific
+  // 2)Default
   // 3)ADDRESS_BASIC_SILVERMAIL
   /**
    * The channel used for notifications is the popup.
@@ -99,8 +99,8 @@ public class NotificationParameters {
 
   public Date dDate = new Date();
   public String sLanguage = null;
-  
-  public NotifAction eAction = null;  
+
+  public NotifAction eAction = null;
   public NotificationResourceData nNotificationResourceData = null;
 
   public void traceObject() {

@@ -1042,9 +1042,15 @@
       }
 
       function ShareAttachment(id) {
-        var url = '<c:url value="/RfileSharing/jsp/NewTicket"><c:param name="componentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /></c:url>&objectId=' + id;
-        SP_openWindow(url, "NewTicket", "700", "360", "scrollbars=no, resizable, alwaysRaised");
+        var sharingObject = {
+            componentId: "${param.ComponentId}",
+            type       : "Attachment",
+            id         : id,
+            name   : $("#url_" + id).text()
+        };
+        createSharingTicketPopup(sharingObject);
       }
+
   </c:if>
 
   function displayAttachment(attachment) {
@@ -1113,6 +1119,7 @@
     });
     return false;
   }
+
 </script>
 
 <div id="dialog-attachment-update" style="display:none">
@@ -1218,5 +1225,7 @@
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
+
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 
 <view:progressMessage/>
