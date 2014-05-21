@@ -100,6 +100,51 @@ public class URLManager {
   static Properties specialsURL = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
+  
+  private enum Permalink {
+    Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
+    Component(URL_COMPONENT, "/Component/"), Folder(URL_TOPIC, "/Topic/"),
+    File(URL_FILE, "/File/"), Document(URL_DOCUMENT, "/Document/"),
+    Version(URL_VERSION, "/Version/"), Survey(URL_SURVEY, "/Survey/"),
+    Question(URL_QUESTION, "/Question/"), ForumMessage(URL_MESSAGE, "/ForumsMessage/");
+    private int type;
+    private String urlPrefix;
+
+    private Permalink(int type, String urlPrefix) {
+      this.type = type;
+      this.urlPrefix = urlPrefix;
+    }
+
+    public int getType() {
+      return type;
+    }
+
+    public String getURLPrefix() {
+      return urlPrefix;
+    }
+
+    public static Permalink fromType(int type) {
+      Permalink permalink = null;
+      for (Permalink aPermalink : values()) {
+        if (aPermalink.getType() == type) {
+          permalink = aPermalink;
+          break;
+        }
+      }
+      return permalink;
+    }
+
+    public static boolean isCompliant(String url) {
+      boolean compliant = false;
+      for (Permalink aPermalink : values()) {
+        if (url != null && url.contains(aPermalink.getURLPrefix())) {
+          compliant = true;
+          break;
+        }
+      }
+      return compliant;
+    }
+  }
 
   static {
     ResourceLocator resources = new ResourceLocator("com.stratelia.silverpeas.peasCore.URLManager",
@@ -222,9 +267,10 @@ public class URLManager {
     if (appendContext) {
       url = getApplicationURL();
     }
-    switch (type) {
-      case URL_MESSAGE:
-        url += "/ForumsMessage/" + id + "?ForumId=" + forumId;
+    Permalink permalink = Permalink.fromType(type);
+    switch (permalink) {
+      case ForumMessage:
+        url += permalink.getURLPrefix() + id + "?ForumId=" + forumId;
         break;
     }
     return url;
@@ -240,40 +286,28 @@ public class URLManager {
     if (url.endsWith("/")) {
       url = url.substring(0, url.length() - 1);
     }
-    switch (type) {
-      case URL_SPACE:
+    Permalink permalink = Permalink.fromType(type);
+    switch (permalink) {
+      case Space:
         if (!id.startsWith(Admin.SPACE_KEY_PREFIX)) {
           id = Admin.SPACE_KEY_PREFIX + id;
         }
-        url += "/Space/" + id;
+        url += permalink.getURLPrefix() + id;
         break;
-      case URL_COMPONENT:
-        url += "/Component/" + id;
-        break;
-      case URL_PUBLI:
-        url += "/Publication/" + id;
+      case Publication:
+        url += permalink.getURLPrefix() + id;
         if (isDefined(componentId)) {
           url += "?ComponentId=" + componentId;
         }
         break;
-      case URL_TOPIC:
-        url += "/Topic/" + id + "?ComponentId=" + componentId;
+      case Folder:
+        url += permalink.getURLPrefix() + id;
+        if (isDefined(componentId)) {
+          url += "?ComponentId=" + componentId;
+        }
         break;
-      case URL_FILE:
-        url += "/File/" + id;
-        break;
-      case URL_SURVEY:
-        url += "/Survey/" + id;
-        break;
-      case URL_QUESTION:
-        url += "/Question/" + id;
-        break;
-      case URL_DOCUMENT:
-        url += "/Document/" + id;
-        break;
-      case URL_VERSION:
-        url += "/Version/" + id;
-        break;
+      default:
+        url += permalink.getURLPrefix() + id;
     }
     return url;
   }
@@ -296,5 +330,9 @@ public class URLManager {
           getContributionType() + "&Id=" + content.getId();
     }
     return url;
+  }
+  
+  public static boolean isPermalink(String url) {
+    return Permalink.isCompliant(url);
   }
 }

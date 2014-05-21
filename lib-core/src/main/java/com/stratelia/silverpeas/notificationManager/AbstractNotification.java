@@ -40,7 +40,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class AbstractNotification {
 
   private ResourceLocator notifResources = new ResourceLocator(
-      "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+      "org.silverpeas.notificationManager.settings.notificationManagerSettings", "");
 
   public String getApplicationURL() {
     return URLManager.getApplicationURL();
@@ -54,10 +54,17 @@ public class AbstractNotification {
     return (urlBase.startsWith("http") ? urlBase : getUserAutoRedirectURL(userId, urlBase));
   }
 
-  public String getUserAutoRedirectURL(final String userId,
-      final String target) {
+  public String getUserAutoRedirectURL(final String userId, final String target) {
     try {
-      return getUserAutoRedirectURL(userId) + URLEncoder.encode(target, "UTF-8");
+      final UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
+      final Domain dom = AdminReference.getAdminService().getDomain(ud.getDomainId());
+      String url = null;
+      if (URLManager.isPermalink(target)) {
+        url = dom.getSilverpeasServerURL() + getApplicationURL() + target;
+      } else {
+        url = getUserAutoRedirectURL(dom) + URLEncoder.encode(target, "UTF-8");
+      }
+      return url;
     } catch (final Exception e) {
       SilverTrace.error("peasCore",
           "URLManager.getUserAutoRedirectURL(userId)", "root.EX_NO_MESSAGE",
@@ -66,16 +73,14 @@ public class AbstractNotification {
     }
   }
 
-  public String getUserAutoRedirectURL(final String userId) {
+  public String getUserAutoRedirectURL(final Domain dom) {
     try {
-      final UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
-      final Domain dom = AdminReference.getAdminService().getDomain(ud.getDomainId());
       return dom.getSilverpeasServerURL() + getApplicationURL()
           + "/autoRedirect.jsp?domainId=" + dom.getId() + "&goto=";
     } catch (final Exception ae) {
       SilverTrace.error("peasCore",
-          "URLManager.getUserAutoRedirectURL(userId)",
-          "admin.EX_ERR_GET_USER_DETAILS", "user id: '" + userId + "'", ae);
+          "URLManager.getUserAutoRedirectURL(domain)",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainId : " + dom.getId(), ae);
       return "ErrorGettingDomainServer";
     }
   }

@@ -122,6 +122,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
   public static final String TYPE = "Publication";
+  private boolean alias = false;
 
   /**
    * Default contructor, required for castor mapping in importExport.
@@ -1235,5 +1236,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
 
   public int getExplicitRank() {
     return explicitRank;
+  }
+
+  public void setAlias(boolean alias) {
+    this.alias = alias;
+  }
+
+  public boolean isAlias() {
+    return alias;
   }
 }
