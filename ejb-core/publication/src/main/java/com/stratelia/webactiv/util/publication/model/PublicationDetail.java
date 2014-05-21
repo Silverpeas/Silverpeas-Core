@@ -127,6 +127,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
   public static final String TYPE = "Publication";
+  private boolean alias = false;
 
   private ContributionRating contributionRating;
 
@@ -1255,5 +1256,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
           .getRating(new ContributionRatingPK(getId(), getInstanceId(), "Publication"));
     }
     return contributionRating;
+  }
+
+  public void setAlias(boolean alias) {
+    this.alias = alias;
+  }
+
+  public boolean isAlias() {
+    return alias;
   }
 }
