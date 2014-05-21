@@ -20,17 +20,9 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,11 +32,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
@@ -56,12 +60,12 @@ public class NotificationSender implements java.io.Serializable {
   private static final long serialVersionUID = 4165938893905145809L;
   private static ResourceLocator settings = new ResourceLocator(
       "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+
   protected NotificationManager notificationManager = null;
   protected int instanceId = -1;
 
   /**
    * Constructor for a standard component
-   *
    * @param instanceId the instance Id of the calling's component
    */
   public NotificationSender(String instanceId) {
@@ -71,7 +75,6 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Method declaration
-   *
    * @param metaData
    * @throws NotificationManagerException
    * @see
@@ -83,7 +86,6 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Indicates if the notification is manual (sent by a Silverpeas user) or automatic.
-   *
    * @param metaData the notification metadata.
    * @return true if the notification is sent by a Silverpeas user - false otherwise.
    */
@@ -93,7 +95,6 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Method declaration
-   *
    * @param aMediaType
    * @param metaData
    * @throws NotificationManagerException
@@ -184,9 +185,14 @@ public class NotificationSender implements java.io.Serializable {
           "allUserIds apres remove= " + allUserIds);
       notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
     }
-
     // Notify other users in language of the sender.
     notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
+
+    if (CollectionUtil.isNotEmpty(metaData.getExternalRecipients())) {
+      params.sLanguage = I18NHelper.defaultLanguage;
+      params.sMessage = metaData.getContent(params.sLanguage);
+      notificationManager.notifyExternals(params, metaData.getExternalRecipients());
+    }
 
     if (isNotificationManual(metaData)) {
       // save notification for history
@@ -277,7 +283,6 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Add all recipients to the notification message.
-   *
    * @param usersSet set of the recipients.
    * @param languages set of recipients languages.
    * @param metaData the message metadata.
@@ -366,7 +371,7 @@ public class NotificationSender implements java.io.Serializable {
     }
     SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",
         "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
-        + lang + "' ");
+            + lang + "' ");
     return result;
   }
 
@@ -411,7 +416,6 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Extract the last number from the string
-   *
    * @param chaine The String to clean
    * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
    */
@@ -505,4 +509,5 @@ public class NotificationSender implements java.io.Serializable {
     }
     return valret;
   }
+
 }
