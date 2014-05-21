@@ -21,8 +21,9 @@
 package com.silverpeas.session;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 /**
  * It defines the contract the session management implementation in Silverpeas should implement. It
@@ -88,17 +89,25 @@ public interface SessionManagement {
   long getNextSessionTimeOut(String sessionKey);
 
   /**
+   * Calls {@link #validateSession(SessionValidationContext)} method by specifying to it a
+   * context that contains only the specified session key.
+   * @param sessionKey the key of the user session.
+   * @return the result of {@link #validateSession(SessionValidationContext)} execution.
+   */
+  SessionInfo validateSession(String sessionKey);
+
+  /**
    * Validates the session identified uniquely by the specified key. The validation checks a session
    * exists with the specified identifier and returns information about this session. At each access
    * by the user to Silverpeas, its current session must be validated. The validation updates also
    * useful information about the session like the timestamp of this access so that additional
    * features can be performed (for example, the timeout computation of the session).
    *
-   * @param sessionKey the key of the user session.
+   * @param context the context of the validation that contains at least the session key
    * @return information about the session identified by the specified key or null if no such
    * session exists.
    */
-  SessionInfo validateSession(String sessionKey);
+  SessionInfo validateSession(SessionValidationContext context);
 
   /**
    * Opens a new session for the specified user. This method is dedicated to open session off any

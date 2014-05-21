@@ -21,27 +21,24 @@
 
 package com.silverpeas.peasUtil;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import com.silverpeas.look.LookHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.util.Charsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public abstract class GoTo extends HttpServlet {
 
@@ -163,5 +160,14 @@ public abstract class GoTo extends HttpServlet {
         gef.setSpaceId(helperSpaceId);
       }
     }
+  }
+
+  /**
+   * Gets the content language specified into the request.
+   * @param request
+   * @return
+   */
+  protected String getContentLanguage(HttpServletRequest request) {
+    return util.getContentLanguage(request);
   }
 }

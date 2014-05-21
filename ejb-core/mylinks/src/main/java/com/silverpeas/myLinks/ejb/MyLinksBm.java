@@ -29,19 +29,19 @@ import com.silverpeas.myLinks.model.LinkDetail;
 @Local
 public interface MyLinksBm {
 
-  public Collection<LinkDetail> getAllLinks(String userId);
+  Collection<LinkDetail> getAllLinks(String userId);
 
-  public Collection<LinkDetail> getAllLinksByUser(String userId);
+  Collection<LinkDetail> getAllLinksByUser(String userId);
 
-  public Collection<LinkDetail> getAllLinksByInstance(String instanceId);
+  Collection<LinkDetail> getAllLinksByInstance(String instanceId);
 
-  public Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId);
+  Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId);
 
-  public void createLink(LinkDetail link);
+  void createLink(LinkDetail link);
 
-  public LinkDetail getLink(String linkId);
+  LinkDetail getLink(String linkId);
 
-  public void deleteLinks(String[] links);
+  void deleteLinks(String[] links);
 
-  public void updateLink(LinkDetail link);
+  void updateLink(LinkDetail link);
 }

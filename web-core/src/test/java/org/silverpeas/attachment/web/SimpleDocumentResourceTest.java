@@ -105,6 +105,31 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     return RESOURCE_PATH + id + '/' + "translations";
   }
 
+  @Test
+  @Override
+  public void gettingAResourceByAnUnauthorizedUser() {
+    denieAuthorizationToUsers();
+    try {
+      // prepare an existing document
+      SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+          "18", 10, false,
+          new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
+              MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+      AttachmentService service = mock(AttachmentService.class);
+      when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+          thenReturn(document);
+      getTestResources().setAttachmentService(service);
+
+      // perform the unauthorized request
+      getAt(getDocumentUri(DOCUMENT_ID, null), SimpleDocumentEntity.class);
+      fail("An unauthorized user shouldn't access the resource");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
+  }
+
   /**
    * Test of getDocument method, of class SimpleDocumentRessource.
    */

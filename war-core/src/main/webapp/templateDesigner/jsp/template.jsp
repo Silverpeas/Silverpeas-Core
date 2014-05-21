@@ -47,7 +47,8 @@ PagesContext		context	= (PagesContext) request.getAttribute("context");
 <% formUpdate.displayScripts(out, context); %>
 <script type="text/javascript">
 function deleteField(fieldName) {
-    location.href="DeleteField?FieldName="+fieldName;
+  $("#templateForm #fieldName").val(fieldName);
+  $("#templateForm").submit();
 }
 
 function editField(fieldName,displayer) {
@@ -160,5 +161,8 @@ out.println(tabbedPane.print());
 <div id="fieldDialog" style="display:none">
 <div id="fieldArea"></div>
 </div>
+<form id="templateForm" method="post" action="DeleteField">
+<input id="fieldName" type="hidden" name="FieldName" />
+</form>
 </body>
 </html>

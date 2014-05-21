@@ -20,15 +20,14 @@
  */
 package org.silverpeas.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.permalinks.PermalinkServiceFactory;
 
-import com.silverpeas.util.StringUtil;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class GoToVersion extends GoToDocument {
 
@@ -42,14 +41,11 @@ public class GoToVersion extends GoToDocument {
       document = PermalinkServiceFactory.getPermalinkCompatibilityService().
           findDocumentVersionByOldId(Integer.parseInt(objectId));
     } else {
-      document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-          new SimpleDocumentPK(objectId), null);
+      document = AttachmentServiceFactory.getAttachmentService()
+          .searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     }
     if (document != null) {
-      SimpleDocument version = document.getLastPublicVersion();
-      if (version != null) {
-        return redirectToFile(version, req, res);
-      }
+      return redirectToFile(document, req, res);
     }
     return null;
   }

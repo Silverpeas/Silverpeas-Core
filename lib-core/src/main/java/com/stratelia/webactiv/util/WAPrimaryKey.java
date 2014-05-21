@@ -36,7 +36,7 @@ import java.io.Serializable;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public abstract class WAPrimaryKey implements Serializable {
+public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -2456912022917180222L;
 
@@ -230,5 +230,15 @@ public abstract class WAPrimaryKey implements Serializable {
 
   public String getInstanceId() {
     return getComponentName();
+  }
+
+  @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
+  @Override
+  public WAPrimaryKey clone() {
+    try {
+      return (WAPrimaryKey) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -43,7 +43,7 @@
     String objectType	= request.getParameter("objectType");
     List<String> 	userIds 	= (List<String>) request.getAttribute("UserIds");
     %>
-    <view:includePlugin name="userZoom"/>
+    
     <script language="javascript">
     function editDetail(userId, actorName)
     {
