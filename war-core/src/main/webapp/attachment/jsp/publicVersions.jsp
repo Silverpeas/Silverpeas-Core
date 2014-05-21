@@ -125,15 +125,13 @@
           publicVersion.isDownloadAllowedForRolesFrom(mainSessionCtrl.getCurrentUserDetail());
 
       arrayLine = arrayPane.addArrayLine(); // set a new line
-      String url =
-          FileServerUtils.getUrl(publicVersion.getInstanceId(), publicVersion.getFilename()) +
-              "&DocumentId=" + publicVersion.getId() + "&VersionId=" + publicVersion.getId();
+      String url = URLManager.getApplicationURL() + publicVersion.getAttachmentURL();
       if (fromAlias) {
         url = publicVersion.getAliasURL();
       }
 
       String spinFire = "";
-      if (FileUtil.isSpinfireDocument(publicVersion.getFilename()) && spinfireViewerEnable &&
+      if (publicVersion.isContentSpinfire() && spinfireViewerEnable &&
           canUserDownloadFile) {
         spinFire = "<br><div id=\"switchView\" name=\"switchView\" style=\"display: none\">";
         spinFire += "<a title=\"Viewer SpinFire 3D\"href=\"#\" onClick=\"changeView3d(" +
@@ -150,9 +148,9 @@
       String permalink = "";
       if (canUserDownloadFile) {
         permalink =
-            " <a href=\"" + URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId()) +
-                "\"><img src=\"" + URLManager.getApplicationURL() +
-                "/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\"" +
+            " <a href=\"" + publicVersion.getUniversalURL() + "\">" +
+                "<img src=\"" + URLManager.getApplicationURL() + "/util/icons/link.gif\"" +
+                "border=\"0\" valign=\"absmiddle\" alt=\"" +
                 messages.getString("versioning.CopyLink") + "\" title=\"" +
                 messages.getString("versioning.CopyLink") + "\" target=\"_blank\"></a> ";
       }

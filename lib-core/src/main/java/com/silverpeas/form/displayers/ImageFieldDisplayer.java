@@ -36,15 +36,12 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileServerUtils;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
@@ -218,7 +215,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append(" ").append(Util.getString("GML.or", language)).append(" ");
       stringBuilder.append("<select id=\"galleryFile_").append(fieldName).
-          append("\" name=\"componentId\" onchange=\"openGalleryFileManager").
+          append("\" name=\"galleryFile\" onchange=\"openGalleryFileManager").
           append(fieldNameFunction).append("();this.selectedIndex=0\">");
       stringBuilder.append("<option value=\"\">");
       stringBuilder.append(Util.getString("GML.galleries", language));

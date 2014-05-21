@@ -224,11 +224,11 @@
       var settings = __extendCommonSettings(options);
 
       // Internal settings
-      $.extend(settings, __buildInternalSettings({
+      settings = $.extend(__buildInternalSettings({
         buttonTextYes: $.i18n.prop('GML.validate'),
         buttonTextNo: $.i18n.prop('GML.cancel'),
         isMaxWidth: true
-      }));
+      }), settings);
 
       // Dialog
       return __openPopup($(this), settings);

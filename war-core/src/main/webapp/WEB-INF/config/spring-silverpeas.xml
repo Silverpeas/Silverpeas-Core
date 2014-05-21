@@ -84,6 +84,7 @@
   <ctx:component-scan base-package="com.silverpeas.thumbnail"/>
   <ctx:component-scan base-package="org.silverpeas.rating"/>
   <ctx:component-scan base-package="org.silverpeas.persistence"/>
+  <ctx:component-scan base-package="org.silverpeas.mylinks"/>
 
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>

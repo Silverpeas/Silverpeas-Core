@@ -53,8 +53,8 @@ import java.util.List;
 public class VersioningSessionController extends AbstractComponentSessionController {
 
   private SimpleDocument document;
+  private String contentLanguage;
   private String nodeId = null;
-  private boolean topicRightsEnabled = false;
   private AdminController adminController = null;
   private String currentProfile = null;
   public static final String ADMIN = SilverpeasRole.admin.toString();
@@ -80,7 +80,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   private boolean isTopicRightsEnabled() {
-    return topicRightsEnabled;
+    return false;
   }
 
   /**
@@ -103,7 +103,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return SimpleDocument
    */
   public SimpleDocument getDocument(SimpleDocumentPK documentPK) {
-    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(documentPK, null);
+    return AttachmentServiceFactory.getAttachmentService()
+        .searchDocumentById(documentPK, getContentLanguage());
   }
 
   /**
@@ -113,19 +114,19 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return List<SimpleDocument>
    */
   public List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
-    return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
-        .searchDocumentById(documentPK, null)).getFunctionalHistory();
+    return (List)((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
+        .searchDocumentById(documentPK, getContentLanguage())).getFunctionalHistory();
   }
 
   /**
-   * To get only public versions of document.
+   * To get only public versions of document (according to the content language).
    *
    * @param documentPK
    * @return List<SimpleDocument>
    */
   public List<SimpleDocument> getPublicDocumentVersions(SimpleDocumentPK documentPK) {
     SimpleDocument currentDoc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-        documentPK, null);
+        documentPK, getContentLanguage());
     if (currentDoc.isVersioned()) {
       return ((HistorisedDocument) currentDoc).getPublicVersions();
     }
@@ -139,6 +140,15 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public void setEditingDocument(SimpleDocument document) {
     this.document = document;
+    setComponentId(document.getInstanceId());
+  }
+
+  public String getContentLanguage() {
+    return contentLanguage;
+  }
+
+  public void setContentLanguage(final String contentLanguage) {
+    this.contentLanguage = contentLanguage;
   }
 
   /**
