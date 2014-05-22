@@ -30,11 +30,15 @@
    */
   angular.module('silverpeas.adapters').factory('RESTAdapter', ['$http', '$q', function($http, $q) {
 
+    /* process any message identified by an HTTP header.
+       returns true if a such message is defined and is processed, false otherwise. */
     function performMessage(headers) {
       var registredKeyOfMessages = headers('X-Silverpeas-MessageKey');
       if (registredKeyOfMessages) {
         notyRegistredMessages(registredKeyOfMessages);
+        return true;
       }
+      return false;
     }
 
     function _fetchData(data, convert, headers) {
@@ -50,8 +54,11 @@
     }
 
     function _error(data, status, headers) {
-      performMessage(headers);
-      notyError("Error: " + status + "[ " + data + " ]");
+      if (!performMessage(headers) && status)
+        notyError("Error: " + status + "[ " + data + " ]");
+      else if (typeof window.console !== 'undefined') {
+        console.warn("An unknown and unexpected error occurred");
+      }
     }
 
     function _get(url, convert) {
@@ -65,10 +72,7 @@
 
     function _put(url, data, convert) {
       var deferred = $q.defer();
-      $http.put(url, data).error(function(data, status, headers) {
-        alert("Error: " + status + "[ " + data + " ]");
-        performMessage(headers);
-      }).success(function(data, status, headers) {
+      $http.put(url, data).error(_error).success(function(data, status, headers) {
         var result = (convert ? convert(data) : data);
         if (result instanceof Array) {
           var maxlength = headers('X-Silverpeas-Size');
@@ -131,9 +135,8 @@
         deferred.resolve(id);
         performMessage(headers);
       }).error(function(data, status, headers) {
-        alert("Error: " + status + "[ " + data + " ]");
+        _error(data, status, headers);
         deferred.reject(id);
-        performMessage(headers);
       });
       return deferred.promise;
     };
