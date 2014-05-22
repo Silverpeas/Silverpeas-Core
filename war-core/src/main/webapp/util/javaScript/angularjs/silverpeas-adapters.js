@@ -56,7 +56,7 @@
     function _error(data, status, headers) {
       if (!performMessage(headers) && status)
         notyError("Error: " + status + "[ " + data + " ]");
-      else if (typeof windows.console !== 'undefined') {
+      else if (typeof window.console !== 'undefined') {
         console.warn("An unknown and unexpected error occurred");
       }
     }
