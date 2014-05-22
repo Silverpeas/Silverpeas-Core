@@ -32,15 +32,15 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -53,15 +53,19 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -70,14 +74,14 @@ import static org.junit.Assert.assertThat;
 public class DocumentRepositoryTest {
 
   private static final String instanceId = "kmelia73";
-  private static ClassPathXmlApplicationContext context;
-  private static JackrabbitRepository repository;
+  private ClassPathXmlApplicationContext context;
+  private DataSource dbDataSource;
+  private JackrabbitRepository repository;
   private final DocumentRepository documentRepository = new DocumentRepository();
 
   public DocumentRepositoryTest() {
   }
 
-  @After
   public void cleanRepository() throws RepositoryException {
     Session session = null;
     try {
@@ -97,15 +101,17 @@ public class DocumentRepositoryTest {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(instanceId)));
   }
 
-  @BeforeClass
-  public static void loadSpringContext() throws Exception {
+  public void loadSpringContext() throws Exception {
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
     Reader reader = new InputStreamReader(DocumentRepositoryTest.class.getClassLoader().
         getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
     try {
       SimpleMemoryContextFactory.setUpAsInitialContext();
-      context = new ClassPathXmlApplicationContext("/spring-pure-memory-jcr.xml");
+      context = new ClassPathXmlApplicationContext("/spring-pure-memory-jcr.xml",
+          "/spring-uniqueid-datasource.xml");
+      dbDataSource = (DataSource) context.getBean("dataSource");
+      DBUtil.getInstanceForTest(dbDataSource.getConnection());
       repository = context.getBean("repository", JackrabbitRepository.class);
       BasicDaoFactory.getInstance().setApplicationContext(context);
       SilverpeasRegister.registerNodeTypes(reader);
@@ -115,17 +121,20 @@ public class DocumentRepositoryTest {
     }
   }
 
-  @AfterClass
-  public static void tearAlldown() throws Exception {
+  @After
+  public void tearAlldown() throws Exception {
+    DBUtil.clearTestInstance();
+    cleanRepository();
     repository.shutdown();
     context.close();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
-    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
-        + "temp_jackrabbit"));
+    FileUtils.deleteQuietly(
+        new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar + "temp_jackrabbit"));
   }
 
   @Before
   public void setupJcr() throws Exception {
+    loadSpringContext();
     Session session = null;
     try {
       session = repository.login(new SilverpeasSystemCredentials());
@@ -1227,8 +1236,8 @@ public class DocumentRepositoryTest {
       documentRepository.storeContent(document, content);
       session.save();
       foreignId = "node36";
-      SimpleDocumentPK result = documentRepository.copyDocument(session, document, new ForeignPK(
-          foreignId, instanceId));
+      SimpleDocumentPK result =
+          documentRepository.copyDocument(session, document, new ForeignPK(foreignId, instanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -1242,6 +1251,124 @@ public class DocumentRepositoryTest {
       checkEnglishSimpleDocument(doc);
     } finally {
       BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of copyDocument method, of class DocumentRepository.
+   */
+  @Test
+  public void testCopyReservedDocument() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      Date creationDate = attachment.getCreated();
+      SimpleDocument document = new SimpleDocument(emptyId, "node18", 0, false, attachment);
+      document.setContentType(MimeTypes.PDF_MIME_TYPE);
+      SimpleDocumentPK sourcePk = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+
+      document = documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getMajorVersion(), is(0));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getEditedBy(), nullValue());
+
+      document.edit("26");
+      documentRepository.updateDocument(session, document);
+      session.save();
+
+      document = documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getMajorVersion(), is(0));
+      assertThat(document.getMinorVersion(), is(0));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getEditedBy(), is("26"));
+
+      String targetInstanceId = "kmelia26";
+      String targetForeignId = "node36";
+      SimpleDocumentPK result = documentRepository
+          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
+      expResult.setOldSilverpeasId(result.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
+      assertThat(doc.getCreated(), is(creationDate));
+      document.setForeignId(targetForeignId);
+      document.setPK(result);
+      document.setNodeName(doc.getNodeName());
+      document.release();
+      assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
+      checkEnglishSimpleDocument(doc);
+
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(0));
+      assertThat(doc.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(doc.getSize(), is(14L));
+      assertThat(doc.getMajorVersion(), is(0));
+      assertThat(doc.getMinorVersion(), is(0));
+      assertThat(doc.getVersionIndex(), is(0));
+      assertThat(doc.getRepositoryPath(), is("/kmelia26/attachments/simpledoc_2"));
+      assertThat(doc.getEditedBy(), nullValue());
+
+      String[] ignoredBeanPropertiesInComparison =
+          new String[]{"created", "updated", "repositoryPath", "versionMaster"};
+      assertSimpleDocumentsAreEquals(doc, document, ignoredBeanPropertiesInComparison);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void assertSimpleDocumentsAreEquals(SimpleDocument result, SimpleDocument expected,
+      String... ignoredBeanProperties) throws Exception {
+
+    // SimpleDocument
+    Map<String, String> expectedBeanProperties = BeanUtils.describe(expected);
+    Map<String, String> resultBeanProperties = BeanUtils.describe(result);
+    String resultRepoPath = resultBeanProperties.get("repositoryPath");
+    List<String> toIgnoredBeanProperties = new ArrayList<String>();
+    Collections.addAll(toIgnoredBeanProperties, ignoredBeanProperties);
+    toIgnoredBeanProperties.add("file");
+    for (String keyToRemove : toIgnoredBeanProperties) {
+      expectedBeanProperties.remove(keyToRemove);
+      resultBeanProperties.remove(keyToRemove);
+    }
+    assertThat(resultBeanProperties.size(), is(expectedBeanProperties.size()));
+    for (Map.Entry<String, String> expectedEntry : expectedBeanProperties.entrySet()) {
+      assertThat("ResultRepoPath (simpledoc): " + resultRepoPath, resultBeanProperties,
+          hasEntry(expectedEntry.getKey(), expectedEntry.getValue()));
+    }
+
+    // Attachment
+    expectedBeanProperties = BeanUtils.describe(expected.getFile());
+    resultBeanProperties = BeanUtils.describe(result.getFile());
+    for (String keyToRemove : toIgnoredBeanProperties) {
+      expectedBeanProperties.remove(keyToRemove);
+      resultBeanProperties.remove(keyToRemove);
+    }
+    assertThat(resultBeanProperties.size(), is(expectedBeanProperties.size()));
+    for (Map.Entry<String, String> expectedEntry : expectedBeanProperties.entrySet()) {
+      assertThat("ResultRepoPath (attachment): " + resultRepoPath, resultBeanProperties,
+          hasEntry(expectedEntry.getKey(), expectedEntry.getValue()));
     }
   }
 

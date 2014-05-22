@@ -20,14 +20,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.PrintWriter;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.viewer.ViewerFactory;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -39,6 +31,13 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.viewer.ViewerFactory;
+
+import java.io.File;
+import java.io.PrintWriter;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -59,8 +58,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
    *
    * @param out
    * @param field
-   * @param pagesContext
    * @param template
+   * @param pageContext
    * @throws FormException
    */
   public void display(PrintWriter out, FileField field, FieldTemplate template,
@@ -161,7 +160,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     sb.append("function previewFormFile(target, attachmentId) {\n");
     sb.append("$(target).preview(\"previewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId\n");
+    sb.append("attachmentId: attachmentId,\n");
+    sb.append("lang: '" + context.getContentLanguage() + "'\n");
     sb.append("});\n");
     sb.append("return false;");
     sb.append("}\n");
@@ -175,7 +175,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     sb.append("function viewFormFile(target, attachmentId) {\n");
     sb.append("$(target).view(\"viewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId\n");
+    sb.append("attachmentId: attachmentId,\n");
+    sb.append("lang: '" + context.getContentLanguage() + "'\n");
     sb.append("});\n");
     sb.append("return false;");
     sb.append("}\n");

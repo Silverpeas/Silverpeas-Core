@@ -326,7 +326,7 @@ public class SimpleDocumentService implements AttachmentService {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       deleteIndex(document, lang);
     }
-    if (document.isOpenOfficeCompatible() && !document.isReadOnly()) {
+    if (document.isOpenOfficeCompatible()) {
       webdavRepository.deleteAttachmentNode(session, document);
     }
     if (invokeCallback) {
@@ -407,7 +407,7 @@ public class SimpleDocumentService implements AttachmentService {
             webdavRepository.deleteAttachmentNode(session, oldAttachment);
             webdavRepository.createAttachmentNode(session, document);
           } else {
-            webdavRepository.updateAttachment(session, document);
+            webdavRepository.updateAttachmentBinaryContent(session, document);
           }
         }
       }
@@ -482,7 +482,7 @@ public class SimpleDocumentService implements AttachmentService {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
-        webdavRepository.deleteAttachmentNode(session, document);
+        webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
       String userId = document.getCreatedBy();
       if ((userId != null) && (userId.length() > 0) && invokeCallback) {
@@ -509,7 +509,7 @@ public class SimpleDocumentService implements AttachmentService {
         fileToDelete =
             new File(finalDocument.getDirectoryPath(null)).getParentFile().getParentFile();
       } else {
-        fileToDelete = new File(finalDocument.getAttachmentPath());
+        fileToDelete = new File(finalDocument.getAttachmentPath()).getParentFile();
       }
       FileUtils.deleteQuietly(fileToDelete);
       FileUtil.deleteEmptyDir(fileToDelete.getParentFile());
@@ -780,8 +780,24 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
+      String contentLanguage = I18NHelper.checkLanguage(context.getLang());
       SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
-          context.getAttachmentId()), context.getLang());
+          context.getAttachmentId()), contentLanguage);
+      contentLanguage = document.getLanguage();
+      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
+        // Verifying if the content language handled in WEBDAV repository is the same as the
+        // content language took from the context.
+        if (!contentLanguage.equals(StringUtil
+            .defaultStringIfNotDefined(document.getWebdavContentEditionLanguage(),
+                contentLanguage))) {
+          // The language handled into WEVDAV is different, SimpleDocument must be reloaded with
+          // the right content language.
+          contentLanguage = document.getWebdavContentEditionLanguage();
+          document = repository
+              .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
+                  contentLanguage);
+        }
+      }
       if (document.isOpenOfficeCompatible() && !context.isForce() && webdavRepository.isNodeLocked(
           session, document)) {
         return false;
@@ -802,7 +818,9 @@ public class SimpleDocumentService implements AttachmentService {
       document.setComment(context.getComment());
       SimpleDocument finalDocument = repository.unlock(session, document, context.isForce());
       if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
-        webdavRepository.updateAttachment(session, finalDocument);
+        webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
+        webdavRepository.deleteAttachmentNode(session, finalDocument);
+        repository.duplicateContent(document, finalDocument);
       } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
           isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, finalDocument);
@@ -966,6 +984,9 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
       SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
       repository.moveFullContent(document, moveDoc);
+      if (moveDoc.isOpenOfficeCompatible()) {
+        webdavRepository.moveNodeAttachment(session, document, destination.getInstanceId());
+      }
       session.save();
       return pk;
     } catch (RepositoryException ex) {

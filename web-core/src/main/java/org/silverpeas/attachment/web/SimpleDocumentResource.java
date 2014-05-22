@@ -231,7 +231,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
               .updateAttachment(document, content, true, true);
         } else {
           if (isWebdav) {
-            WebdavServiceFactory.getWebdavService().getUpdatedDocument(document);
+            WebdavServiceFactory.getWebdavService().updateDocumentContent(document);
           }
           AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
         }
@@ -340,16 +340,16 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * otherwise..
    */
   @PUT
-  @Path("lock")
+  @Path("lock/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String lock() {
+  public String lock(@PathParam("lang") final String language) {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
-    boolean result = AttachmentServiceFactory.getAttachmentService().lock(getSimpleDocumentId(),
-        getUserDetail().getId(), I18NHelper.defaultLanguage);
+    boolean result = AttachmentServiceFactory.getAttachmentService().lock(document.getId(),
+        getUserDetail().getId(), document.getLanguage());
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
 

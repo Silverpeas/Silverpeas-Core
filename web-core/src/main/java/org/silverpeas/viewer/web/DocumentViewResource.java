@@ -3,6 +3,7 @@ package org.silverpeas.viewer.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -13,7 +14,12 @@ import org.silverpeas.viewer.exception.PreviewException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.io.File;
 
@@ -65,18 +71,22 @@ public class DocumentViewResource extends RESTWebService {
    * is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
    * when processing the request, a 503 HTTP code is returned.
    *
+   * @param id the identifier of the JCR master node under which the document is handled.
+   * @param language the language used to select the content to view.
    * @return the response to the HTTP GET request with the JSON representation of preview
    * information.
    */
   @GET
   @Path("attachment/{id}")
   @Produces(APPLICATION_JSON)
-  public DocumentViewEntity getAttachmentView(@PathParam("id") final String id) {
+  public DocumentViewEntity getAttachmentView(@PathParam("id") final String id,
+      @QueryParam("lang") final String language) {
     try {
 
       // Retrieve attachment data
-      final SimpleDocument attachment = attachmentService.searchDocumentById(new SimpleDocumentPK(
-          id, getComponentId()), getUserPreferences().getLanguage());
+      final SimpleDocument attachment = attachmentService
+          .searchDocumentById(new SimpleDocumentPK(id, getComponentId()),
+              (StringUtil.isNotDefined(language) ? getUserPreferences().getLanguage() : language));
 
       // Checking availability
       if (attachment == null) {
