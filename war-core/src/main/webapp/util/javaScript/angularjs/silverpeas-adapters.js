@@ -30,11 +30,28 @@
    */
   angular.module('silverpeas.adapters').factory('RESTAdapter', ['$http', '$q', function($http, $q) {
 
+    /* process any message identified by an HTTP header.
+    returns true if a such message is defined and is processed, false otherwise. */
+    function performMessage(headers) {
+      var registredKeyOfMessages = headers('X-Silverpeas-MessageKey');
+      if (registredKeyOfMessages) {
+        notyRegistredMessages(registredKeyOfMessages);
+        return true;
+      }
+      return false;
+    }
+ 
+      function _error(data, status, headers) {
+        if (!performMessage(headers) && status)
+          notyError("Error: " + status + "[ " + data + " ]");
+        else if (typeof window.console !== 'undefined') {
+          console.warn("An unknown and unexpected error occurred");
+        }
+      }
+    
       function _get(url, convert) {
         var deferred = $q.defer();
-        $http.get(url).error(function(data, status) {
-          alert("Error: " + status + "[ " + data + " ]");
-        }).success(function(data, status, headers) {
+        $http.get(url).error(_error).success(function(data, status, headers) {
           var result = (convert ? convert(data) : data);
           if (result instanceof Array) {
             var maxlength = headers('X-Silverpeas-Size');
