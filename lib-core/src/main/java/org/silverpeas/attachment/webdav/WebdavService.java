@@ -26,42 +26,26 @@ package org.silverpeas.attachment.webdav;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 public interface WebdavService {
-  /**
-   * Create a new node for the specified attachment so that the file may be accessed through webdav.
-   * @param attachment the attachment.
-   *
-   */
-  public void createAttachment(SimpleDocument attachment);
 
   /**
-   * Update the attachment content with the data from the node.
-   * @param attachment the attachment.
-   *
+   * Update the document content language with the data from the associated webdav node.
+   * @param document the document for which the content language will be updated with data from
+   * webdav.
    */
-  public void getUpdatedDocument(SimpleDocument attachment);
+  void updateDocumentContent(SimpleDocument document);
 
   /**
-   * Delete the node associated to the specified attachment.
-   * @param attachment the attachment.
-   *
+   * Gets the current content edition language of the specified attachment.
+   * If several webdav document exists (several content languages), then the one which has the
+   * highest modified date is taken into account.
+   * @param document the attachment.
+   * @return the content edition language if the specified attachment exists in the webdav
+   * repository, null otherwise.
+   * @throws javax.jcr.RepositoryException
    */
-  public void deleteAttachment(SimpleDocument attachment);
-
-  /**
-   * Update the node content with the attachment data.
-   * @param attachment the attachment.
-   *
-   */
-  public void updateNodeAttachment(SimpleDocument attachment);
-
-  /**
-   * Indicate if the node for the specified attachment is currently locked (for example by Office in
-   * the case of a webdav online edition).
-   *
-   * @param attachment the attachment.
-   * @return true if the node is locked - false otherwise.
-   */
-  public boolean isNodeLocked(SimpleDocument attachment);
-
+  String getContentEditionLanguage(SimpleDocument document);
 }

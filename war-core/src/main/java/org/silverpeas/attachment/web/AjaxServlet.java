@@ -22,7 +22,7 @@ package org.silverpeas.attachment.web;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -30,7 +30,6 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -40,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class AjaxServlet extends HttpServlet {
+public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
 
@@ -85,10 +84,7 @@ public class AjaxServlet extends HttpServlet {
   }
 
   private String getUserId(HttpServletRequest req) {
-    MainSessionController msc =
-        (MainSessionController) req.getSession().getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    return msc.getCurrentUserDetail().getId();
+    return getMainSessionController(req).getCurrentUserDetail().getId();
   }
 
   private String checkout(HttpServletRequest req) {
@@ -190,10 +186,5 @@ public class AjaxServlet extends HttpServlet {
 
   private boolean isIndexable(HttpServletRequest req) {
     return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt"));
-  }
-
-  private MainSessionController getMainSessionController(HttpServletRequest request) {
-    return (MainSessionController) request.getSession().getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   }
 }

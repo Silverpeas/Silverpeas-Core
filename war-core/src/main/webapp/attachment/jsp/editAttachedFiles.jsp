@@ -578,7 +578,7 @@
     <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
     <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
     <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
-    <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
+    <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" includeLabel="true" /><br/>
     <label for="fileTitle"><fmt:message key="Title"/></label><br/>
     <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
     <label for="fileDescription"><fmt:message key="GML.description" /></label><br/>
@@ -593,7 +593,7 @@
     <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />
     <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
     <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>
-    <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" /><br/>
+    <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" includeLabel="true" /><br/>
     <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
     <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
     <label for="fileDescriptionCreate"><fmt:message key="GML.description" /></label><br/>

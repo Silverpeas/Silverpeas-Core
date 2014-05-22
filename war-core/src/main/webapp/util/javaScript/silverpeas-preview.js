@@ -116,6 +116,9 @@
       var url = $.preview.webServiceContext;
       url += "/preview/" + options.componentInstanceId;
       url += "/attachment/" + options.attachmentId;
+      if (options.lang) {
+        url += "?lang=" + options.lang;
+      }
       $.ajax({
         url: url,
         type: 'GET',

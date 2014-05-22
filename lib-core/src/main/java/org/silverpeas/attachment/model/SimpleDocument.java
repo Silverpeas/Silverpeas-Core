@@ -40,7 +40,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
+import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
@@ -77,6 +77,7 @@ public class SimpleDocument implements Serializable {
   private String foreignId;
   private int order;
   private boolean versioned;
+  private String webdavContentEditionLanguage;
   private String editedBy;
   private Date reservation;
   private Date alert;
@@ -180,6 +181,8 @@ public class SimpleDocument implements Serializable {
     this.foreignId = simpleDocument.getForeignId();
     this.order = simpleDocument.getOrder();
     this.versioned = simpleDocument.isVersioned();
+    // This below instruction is commented because of the lazy behavior of the get method.
+    // this.webdavContentEditionLanguage = simpleDocument.getWebdavContentEditionLanguage();
     this.editedBy = simpleDocument.getEditedBy();
     this.reservation = simpleDocument.getReservation();
     this.alert = simpleDocument.getAlert();
@@ -359,11 +362,40 @@ public class SimpleDocument implements Serializable {
     this.comment = comment;
   }
 
+  protected void setWebdavContentEditionLanguage(final String webdavContentEditionLanguage) {
+    this.webdavContentEditionLanguage = webdavContentEditionLanguage;
+  }
+
+  /**
+   * Gets the content language handled into webdav for the document.
+   * @return the content language if the document is currently handled into the webdav repository,
+   * empty string otherwise.
+   */
+  public String getWebdavContentEditionLanguage() {
+    if (webdavContentEditionLanguage == null) {
+      // To be handled into webdav repository, the document must be an open office compatible,
+      // and it must also be read only (reservation)
+      if (isOpenOfficeCompatible() && isReadOnly()) {
+        // The method has not been called yet.
+        // Firstly searching through Webdav services the information.
+        webdavContentEditionLanguage =
+            WebdavServiceFactory.getWebdavService().getContentEditionLanguage(getVersionMaster());
+      }
+      // If null, it indicates that the document does not exists into webdav repository.
+      // The class attribute is initialized to empty value.
+      if (webdavContentEditionLanguage == null) {
+        webdavContentEditionLanguage = StringUtil.EMPTY;
+      }
+    }
+    return webdavContentEditionLanguage;
+  }
+
   public String getEditedBy() {
     return editedBy;
   }
 
   public void edit(String currentEditor) {
+    setWebdavContentEditionLanguage(null);
     this.editedBy = currentEditor;
     setReservation(new Date());
     String day =
@@ -389,6 +421,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public void release() {
+    setWebdavContentEditionLanguage(null);
     this.editedBy = null;
     setReservation(null);
     setExpiry(null);
@@ -475,6 +508,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public void unlock() {
+    setWebdavContentEditionLanguage(null);
     this.editedBy = null;
     setExpiry(null);
     setAlert(null);
@@ -675,14 +709,14 @@ public class SimpleDocument implements Serializable {
   public String getWebdavJcrPath() {
     StringBuilder jcrPath = new StringBuilder(500);
     jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append('/').
-        append(getInstanceId()).append('/');
-    if (getId() != null) {
-      jcrPath.append(getId()).append('/');
+        append(getVersionMaster().getInstanceId()).append('/');
+    if (getVersionMaster().getId() != null) {
+      jcrPath.append(getVersionMaster().getId()).append('/');
     }
     if (getLanguage() != null) {
-      jcrPath.append(getLanguage()).append('/');
+      jcrPath.append(getVersionMaster().getLanguage()).append('/');
     }
-    jcrPath.append(StringUtil.escapeQuote(getFilename()));
+    jcrPath.append(StringUtil.escapeQuote(getVersionMaster().getFilename()));
     return jcrPath.toString();
   }
 

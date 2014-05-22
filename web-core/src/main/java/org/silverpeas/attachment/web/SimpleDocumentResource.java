@@ -215,7 +215,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
               .updateAttachment(document, content, true, true);
         } else {
           if (isWebdav) {
-            WebdavServiceFactory.getWebdavService().getUpdatedDocument(document);
+            WebdavServiceFactory.getWebdavService().updateDocumentContent(document);
           }
           AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
         }
@@ -317,11 +317,11 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * otherwise..
    */
   @PUT
-  @Path("lock")
+  @Path("lock/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String lock() {
+  public String lock(@PathParam("lang") final String language) {
     boolean result = AttachmentServiceFactory.getAttachmentService().lock(getSimpleDocumentId(),
-        getUserDetail().getId(), I18NHelper.defaultLanguage);
+        getUserDetail().getId(), language);
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
   

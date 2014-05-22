@@ -261,10 +261,28 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
     getTestResources().setAttachmentService(service);
     WebResource webResource = resource();
-    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock").header(
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock/fr").header(
         HTTP_SESSIONKEY, getSessionKey()).put(String.class);
     assertThat(result, is(notNullValue()));
     assertThat(result, is("{\"status\":true}"));
+  }
+
+  @Test
+  public void testLockDocumentWrongContentLanguage() {
+    String lang = "fr";
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+        "18", 10, false, new SimpleAttachment("test.pdf", lang, "Test", "Ceci est un test.", 500L,
+        MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+        thenReturn(document);
+    when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
+    getTestResources().setAttachmentService(service);
+    WebResource webResource = resource();
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock/en").header(
+        HTTP_SESSIONKEY, getSessionKey()).put(String.class);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is("{\"status\":false}"));
   }
 
   @Test
