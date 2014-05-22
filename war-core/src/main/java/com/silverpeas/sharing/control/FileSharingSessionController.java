@@ -58,14 +58,6 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
     return getFileSharingService().getTicketsByUser(getUserId());
   }
 
-  public String createTicket(Ticket ticket) {
-    Ticket newTicket = ticket;
-    if (!StringUtil.isDefined(newTicket.getCreatorId())) {
-      newTicket.setCreator(getUserDetail());
-    }
-    return getFileSharingService().createTicket(newTicket);
-  }
-
   public void updateTicket(Ticket ticket) {
     Ticket newTicket = ticket;
     UserDetail user = getUserDetail();

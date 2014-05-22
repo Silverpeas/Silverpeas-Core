@@ -61,10 +61,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:if test="${ticket.continuous}">
   <c:set var="continuousChecked" value="checked='checked'"/>
   <c:set var="endDate" value="<%= new java.util.Date() %>"/>
-  <c:set var="maxAccessNb" value="1"/>
+  <c:set var="maxAccessNb" value="0"/>
+  <!--
   <c:if test="${fn:length(ticket.downloads) gt 1}">
     <c:set var="maxAccessNb" value="${fn:length(ticket.downloads)}"/>
   </c:if>
+   -->
 </c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -224,7 +226,7 @@ function toggleContinuous(effect) {
                       <div id="nbAccessMaxArea" class="field threshold">
                         <label class="txtlibform" for="nbAccessMax"><fmt:message key="sharing.nbAccessMax"/></label>
                         <div class="champs">
-                          <input id="nbAccessMax" type="text" value="1" maxlength="5" size="5" name="nbAccessMax"/> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+                          <input id="nbAccessMax" type="text" value="${maxAccessNb}" maxlength="5" size="5" name="nbAccessMax"/> <fmt:message key="sharing.nbAccessMax.info" bundle="${fsBundle}" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
                         </div>
                       </div>
                     </div>
@@ -233,20 +235,20 @@ function toggleContinuous(effect) {
               </div>
               <div class="cell">
                 <fieldset class="skinFieldset" id="ticketNotification">
-                  <legend><fmt:message key="sharing.notification"/></legend>
+                  <legend><fmt:message key="GML.notification"/></legend>
                   <div class="fields">
                     <div id="ticketNotificationUserArea" class="field">
-                      <label class="txtlibform" for="users_name"><fmt:message key="sharing.notification.selected.users"/></label>
+                      <label class="txtlibform" for="users_name"><fmt:message key="GML.users"/></label>
                       <div class="champs">
                         <input id="users" name="users" value="" type="hidden" />
-                        <textarea id="users_name"  name="users$$name" cols="30" rows="4" ></textarea>&nbsp;
+                        <textarea id="users_name"  name="users$$name" cols="30" rows="3" ></textarea>&nbsp;
                         <a href="#" onclick="javascript:SP_openWindow( webContext + '/RselectionPeasWrapper/jsp/open?formName=ticketForm&amp;elementId=users&amp;elementName=users$$name&amp;selectedUsers=' + $('#users').val() + '&amp;selectionMultiple=true','selectUser',800,600,'');">
-                          <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='sharing.notification.select.users'/>" title="<fmt:message key='sharing.notification.select.users'/>" align="absmiddle" border="0" height="15" width="15" />
+                          <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='GML.users'/>" title="<fmt:message key='GML.users'/>" align="absmiddle" border="0" height="15" width="15" />
                         </a>
                       </div>
                     </div>
                      <div id="ticketNotificationEmailArea" class="field">
-                      <label class="txtlibform" for="externalEmails"><fmt:message key="sharing.notification.extern.email"/></label>
+                      <label class="txtlibform" for="externalEmails"><fmt:message key="GML.external.emails"/></label>
                       <div class="champs">
                         <!-- <ul id="ticket-email"></ul>
                         <input type="hidden" id="ticketEmail" name="externEmails" size="60" maxlength="150" /> -->
@@ -254,9 +256,9 @@ function toggleContinuous(effect) {
                       </div>
                     </div>
                     <div id="ticketNotificationMessageArea" class="field">
-                      <label class="txtlibform" for="additionalMessage"><fmt:message key="sharing.notification.message"/></label>
+                      <label class="txtlibform" for="additionalMessage"><fmt:message key="GML.additional.message"/></label>
                       <div class="champs">
-                        <textarea name="additionalMessage" rows="4" cols="30" ></textarea>
+                        <textarea name="additionalMessage" rows="5" cols="30" ></textarea>
                       </div>
                     </div>
                   </div>

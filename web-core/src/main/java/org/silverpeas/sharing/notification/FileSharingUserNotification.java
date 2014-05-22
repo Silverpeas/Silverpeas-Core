@@ -42,7 +42,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class FileSharingUserNotification extends AbstractTemplateUserNotificationBuilder<Ticket> {
 
   private static final String FILE_SHARING_BUNDLE_SUBJECT_KEY =
-      "sharing.notification.message.subject";
+      "sharing.notification.message.subject.file";
+  private static final String FOLDER_SHARING_BUNDLE_SUBJECT_KEY =
+      "sharing.notification.message.subject.folder";
+
   private static final String FILE_SHARING_TEMPLATE_PATH = "fileSharing";
   private static final String FILE_SHARING_TEMPLATE_FILE_NAME = "fileSharing";
   private static final String NODE_SHARING_TEMPLATE_FILE_NAME = "nodeSharing";
@@ -62,6 +65,11 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
 
   @Override
   protected String getBundleSubjectKey() {
+    String sharedObjectType = getResource().getSharedObjectType();
+    if (Ticket.NODE_TYPE.equals(sharedObjectType)) {
+      return FOLDER_SHARING_BUNDLE_SUBJECT_KEY;
+    }
+    //else FILE_TYPE or VERSION_TYPE
     return FILE_SHARING_BUNDLE_SUBJECT_KEY;
   }
 

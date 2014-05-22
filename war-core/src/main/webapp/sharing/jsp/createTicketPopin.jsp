@@ -87,13 +87,13 @@ function createSharingTicketPopup(sharingParam) {
 
 function toggleContinuous(effect) {
   var continuousTicket = $("#validity").val() == "0";
-  var isNodeSharing = <c:out value="${sharedObjectType eq 'Node'}" />;
+  var isNodeSharing = $("#hiddenType").val() == 'Node';
   if (continuousTicket) {
     $('.threshold').hide(effect);
   } else {
     $('.threshold').show(effect);
     if (isNodeSharing) {
-      $("#nbAccessMax").hide();
+      $("#nbAccessMaxArea").hide();
     }
   }
 }
@@ -105,14 +105,15 @@ function isCorrectForm() {
   var nb  = $("#nbAccessMax").val();
   var nbMin = 0;
   var endDate = $("#endDate").val();
+  var isNodeSharing = $("#hiddenType").val() == 'Node';
 
   if($("#validity").val() == "1")
   {
-    if (isWhitespace(nb)) {
+    if (!isNodeSharing && isWhitespace(nb)) {
       errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
       errorNb++;
     }
-    if (!isInteger(nb)) {
+    if (!isNodeSharing && !isInteger(nb)) {
       errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
       errorNb++;
     }
@@ -248,28 +249,29 @@ function showInformation() {
         <input type="hidden" name="endDateFormat" id="endDateFormat" value="<fmt:message key='GML.dateFormat'/>"/>
         <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
       </span>
-
-      <label class="label-ui-dialog threshold" for="nbAccessMax"><fmt:message key="sharing.nbAccessMax" bundle="${fsBundle}"/></label>
-      <span class="champ-ui-dialog threshold">
-        <input id="nbAccessMax" type="text" value="" maxlength="5" size="5" name="nbAccessMax"/> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
-      </span>
+      <div id="nbAccessMaxArea">
+        <label class="label-ui-dialog threshold" for="nbAccessMax"><fmt:message key="sharing.nbAccessMax" bundle="${fsBundle}"/></label>
+        <span class="champ-ui-dialog threshold">
+          <input id="nbAccessMax" type="text" value="" maxlength="5" size="5" name="nbAccessMax" class="int-5"/> <fmt:message key="sharing.nbAccessMax.info" bundle="${fsBundle}" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+        </span>
+      </div>
     </fieldset>
 
     <fieldset class="filedset-ui-dialog notification">
-      <legend><fmt:message key="sharing.notification" bundle="${fsBundle}"/></legend>
-      <label class="label-ui-dialog" for="users_name"><fmt:message key="sharing.notification.selected.users" bundle="${fsBundle}"/></label>
+      <legend><fmt:message key="GML.notification" /></legend>
+      <label class="label-ui-dialog" for="users_name"><fmt:message key="GML.users"/></label>
       <span class="champ-ui-dialog">
         <input id="users" name="users" value="" type="hidden" />
-        <textarea id="users_name"  name="users$$name" cols="30" rows="3" ></textarea>&nbsp;
+        <textarea id="users_name"  name="users$$name" cols="30" rows="2" ></textarea>&nbsp;
         <a href="#" onclick="javascript:SP_openWindow( webContext + '/RselectionPeasWrapper/jsp/open?formName=ticketForm&amp;elementId=users&amp;elementName=users$$name&amp;selectedUsers=' + $('#users').val() + '&amp;selectionMultiple=true','selectUser',800,600,'');">
-          <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='sharing.notification.select.users' bundle="${fsBundle}"/>" title="<fmt:message key='sharing.notification.select.users' bundle="${fsBundle}"/>" align="absmiddle" border="0" height="15" width="15" />
+          <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='GML.users' />" title="<fmt:message key='GML.users' />" align="absmiddle" border="0" height="15" width="15" />
         </a>
       </span>
-      <label class="label-ui-dialog" for="externalEmails"><fmt:message key="sharing.notification.extern.email" bundle="${fsBundle}"/></label>
+      <label class="label-ui-dialog" for="externalEmails"><fmt:message key="GML.external.emails" /></label>
       <span class="champ-ui-dialog">
         <input type="text" pattern="^([\w+-.%]+@[\w-.]+\.[A-Za-z]{2,4},*[\W]*)+$" value="" name="externalEmails" id="externalEmails" size="60" maxlength="" />
       </span>
-      <label class="label-ui-dialog" for="additionalMessage"><fmt:message key="sharing.notification.message" bundle="${fsBundle}"/></label>
+      <label class="label-ui-dialog" for="additionalMessage"><fmt:message key="GML.additional.message" /></label>
       <span class="champ-ui-dialog">
         <textarea name="additionalMessage" id="additionalMessage" rows="5" cols="30" ></textarea>
       </span>

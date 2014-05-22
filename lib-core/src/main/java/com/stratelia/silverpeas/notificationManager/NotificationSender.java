@@ -189,8 +189,10 @@ public class NotificationSender implements java.io.Serializable {
     notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
 
     if (CollectionUtil.isNotEmpty(metaData.getExternalRecipients())) {
+      // We only use default language for external notification
       params.sLanguage = I18NHelper.defaultLanguage;
       params.sMessage = metaData.getContent(params.sLanguage);
+      params.sTitle = metaData.getTitle(params.sLanguage);
       notificationManager.notifyExternals(params, metaData.getExternalRecipients());
     }
 

@@ -117,18 +117,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         request.setAttribute("Url", newTicket.getUrl(request));
         request.setAttribute("Action", "CreateTicket");
         destination = rootDest + "ticketManager.jsp";
-      } else if ("CreateTicket".equals(function)) {
-        // TODO delete this structure when all the ticket will be call using popin
-        Ticket ticket = generateTicket(fileSharingSC, request);
-        if (ticket == null) {
-          throwHttpForbiddenError();
-        }
-        String keyFile = fileSharingSC.createTicket(ticket);
-        // mettre à jour l'objet ticket
-        ticket.setToken(keyFile);
-        request.setAttribute("Url", ticket.getUrl(request));
-
-        destination = rootDest + "confirmTicket.jsp";
       } else if ("EditTicket".equals(function)) {
         String token = request.getParameter("token");
         Ticket ticket = fileSharingSC.getTicket(token);
@@ -175,27 +163,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
 
-  }
-
-  private Ticket generateTicket(FileSharingSessionController fileSharingSC,
-      HttpServletRequest request)
-      throws ParseException {
-    Ticket ticket;
-    UserDetail creator = fileSharingSC.getUserDetail();
-    int fileId = Integer.parseInt(request.getParameter("objectId"));
-    String componentId = request.getParameter("componentId");
-    String type = request.getParameter("type");
-    if (!StringUtil.isDefined(request.getParameter("continuous"))) {
-      String date = request.getParameter("endDate");
-      Date endDate = DateUtil.getEndOfDay(DateUtil.stringToDate(date, fileSharingSC.getLanguage()));
-      int maxAccessNb = Integer.parseInt(request.getParameter("nbAccessMax"));
-      ticket = TicketFactory.aTicket(fileId, componentId, creator.getId(), new Date(), endDate,
-          maxAccessNb, type);
-    } else {
-      ticket =
-          TicketFactory.continuousTicket(fileId, componentId, creator.getId(), new Date(), type);
-    }
-    return ticket;
   }
 
   private Ticket updateTicket(String token, FileSharingSessionController fileSharingSC,
