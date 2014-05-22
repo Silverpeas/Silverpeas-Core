@@ -149,6 +149,12 @@ input.dateToPick,
 	margin:0;
 }
 
+input.int-5,
+.ui-dialog .champ-ui-dialog input.int-5 {
+  width:36px;
+  margin:0;
+}
+
 input.inputHour{
 	width:48px;
 	margin:0;
