@@ -23,16 +23,23 @@
  */
 package org.silverpeas.attachment.model;
 
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.util.PathTestUtil;
+import org.junit.Test;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.mock.WebdavServiceMockWrapper;
+import org.silverpeas.attachment.webdav.WebdavService;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import java.io.File;
 import java.util.UUID;
 
-import org.junit.Test;
-
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.util.PathTestUtil;
-
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -141,6 +148,119 @@ public class SimpleDocumentTest {
     instance.setFilename("toto.tar.bz2");
     result = instance.isOpenOfficeCompatible();
     assertThat(result, is(false));
+  }
+
+  @Test
+  public void testGetWebdavContentEditionLanguage() {
+    ClassPathXmlApplicationContext appContext =
+        new ClassPathXmlApplicationContext("spring-mock-webdav.xml");
+    try {
+      assertThat("Spring initialization failed", WebdavServiceFactory.getWebdavService(),
+          notNullValue());
+      WebdavService mock = appContext.getBean(WebdavServiceMockWrapper.class).getMock();
+
+      SimpleDocument document = new SimpleDocument();
+      SimpleAttachment attachment = new SimpleAttachment();
+      document.setFile(attachment);
+      attachment.setFilename("file.mov");
+
+      /*
+      Current file is not an open office compatible one
+       */
+
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      // Trying a test case that must never happen but that shows that the open office compatible
+      // condition is respected.
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      /*
+      Current file is now an open office compatible one
+       */
+      attachment.setFilename("file.odp");
+
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      reset(mock);
+      document.release();
+      ReflectionTestUtils.setField(document, "editedBy", "26");
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), is("fr"));
+
+    } finally {
+      appContext.close();
+    }
+  }
+
+  @Test
+  public void testGetWebdavContentEditionLanguageWithoutRelease() {
+    ClassPathXmlApplicationContext appContext =
+        new ClassPathXmlApplicationContext("spring-mock-webdav.xml");
+    try {
+      assertThat("Spring initialization failed", WebdavServiceFactory.getWebdavService(),
+          notNullValue());
+      WebdavService mock = appContext.getBean(WebdavServiceMockWrapper.class).getMock();
+
+      SimpleDocument document = new SimpleDocument();
+      SimpleAttachment attachment = new SimpleAttachment();
+      document.setFile(attachment);
+      attachment.setFilename("file.mov");
+
+      /*
+      Current file is not an open office compatible one
+       */
+
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      // Trying a test case that must never happen but that shows that the open office compatible
+      // condition is respected.
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      /*
+      Current file is now an open office compatible one
+       */
+      attachment.setFilename("file.odp");
+
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      // The result should be "fr", but as the getWebdavContentEditionLanguage method has a lazy
+      // behavior, the previous tests has already made the information loaded.
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+    } finally {
+      appContext.close();
+    }
   }
 
   /**

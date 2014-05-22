@@ -61,6 +61,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionManager;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -1000,6 +1001,7 @@ public class HistorisedDocumentRepositoryTest {
 
       String targetInstanceId = "kmelia36";
       String targetForeignId = "foreignId45";
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
           .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
       try {
@@ -1022,6 +1024,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getMinorVersion(), is(1));
       assertThat(doc.getVersionIndex(), is(1));
       assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(doc.getId()).isCheckedOut(), is(false));
 
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
@@ -1061,7 +1064,122 @@ public class HistorisedDocumentRepositoryTest {
       document.setOrder(resultHistory.getOrder());
       assertSimpleDocumentsAreEquals(resultHistory, document, ArrayUtils
           .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
-              "onlineURL"));
+              "webdavJcrPath", "onlineURL"));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of moveDocument method, of class DocumentRepository.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testMoveDocumentWithCheckOutStateAtTrue() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      Date creationDate = attachment.getCreated();
+      String foreignId = "node78";
+      HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
+      document.setContentType(MimeTypes.PDF_MIME_TYPE);
+      document.setPublicDocument(false);
+      createVersionedDocument(session, document, content);
+      SimpleDocumentPK sourcePk = document.getPk();
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(0));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(0));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
+
+      documentRepository.lock(session, document, document.getEditedBy());
+      session.save();
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(0));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(0));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(true));
+
+      /*
+      History :
+      Technical   Functional  Action
+      1.0                     initialization
+       */
+
+      String targetInstanceId = "kmelia36";
+      String targetForeignId = "foreignId45";
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(true));
+      SimpleDocumentPK result = documentRepository
+          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+      try {
+        assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+        session.getNode(document.getFullJcrPath());
+        fail("The JCR path " + document.getFullJcrPath() + " should not longer exist...");
+      } catch (PathNotFoundException ex) {
+        // OK
+      }
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
+      expResult.setOldSilverpeasId(document.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      HistorisedDocument doc =
+          (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
+      assertThat(doc.getCreated(), is(creationDate));
+      checkEnglishSimpleDocument(doc);
+      assertThat(doc.getMajorVersion(), is(0));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(0));
+      assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(doc.getId()).isCheckedOut(), is(true));
+
+      String[] ignoredBeanPropertiesInComparison =
+          new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
+              "publicVersions", "lastPublicVersion", "versionMaster", "realVersionPk",
+              "realVersionForeignId", "previousVersion"};
+      document.getPk().setComponentName(targetInstanceId);
+      document.setForeignId(targetForeignId);
+      assertSimpleDocumentsAreEquals(doc, document, ignoredBeanPropertiesInComparison);
+
+      // Version path pattern
+      assertThat(document.getVersionMaster().getId(), is(doc.getVersionMaster().getId()));
+      String masterUuid = doc.getVersionMaster().getId();
+      String versionPathPattern =
+          "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+              masterUuid.substring(2, 4) + "/" + masterUuid.substring(4, 6) + "/" + masterUuid +
+              "/%s/jcr:frozenNode";
+
+      // History
+      assertThat(doc.getHistory(), hasSize(0));
+      assertThat(doc.getFunctionalHistory(), hasSize(0));
+
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -1141,6 +1259,7 @@ public class HistorisedDocumentRepositoryTest {
 
       String targetInstanceId = "kmelia36";
       String targetForeignId = "foreignId45";
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
           .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
       try {
@@ -1163,6 +1282,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getMinorVersion(), is(2));
       assertThat(doc.getVersionIndex(), is(2));
       assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(doc.getId()).isCheckedOut(), is(false));
 
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
@@ -1199,8 +1319,9 @@ public class HistorisedDocumentRepositoryTest {
       document.getPk().setId(currentVersion.getId());
       document.setVersionIndex(currentVersion.getVersionIndex());
       document.setOrder(currentVersion.getOrder());
-      assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils.addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
-              "onlineURL"));
+      assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils
+          .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
+              "webdavJcrPath", "onlineURL"));
 
       for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
         expectedVersion.setVersionMaster(doc.getVersionMaster());
@@ -1300,6 +1421,7 @@ public class HistorisedDocumentRepositoryTest {
 
       String targetInstanceId = "kmelia36";
       String targetForeignId = "foreignId45";
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
           .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
       try {
@@ -1322,6 +1444,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getMinorVersion(), is(1));
       assertThat(doc.getVersionIndex(), is(2));
       assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(doc.getId()).isCheckedOut(), is(false));
 
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
@@ -1358,8 +1481,9 @@ public class HistorisedDocumentRepositoryTest {
       document.getPk().setId(currentVersion.getId());
       document.setVersionIndex(currentVersion.getVersionIndex());
       document.setOrder(currentVersion.getOrder());
-      assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils.addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
-              "onlineURL"));
+      assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils
+          .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
+              "webdavJcrPath", "onlineURL"));
 
       for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
         expectedVersion.setVersionMaster(doc.getVersionMaster());
@@ -1599,6 +1723,7 @@ public class HistorisedDocumentRepositoryTest {
 
       String targetInstanceId = "kmelia36";
       String targetForeignId = "foreignId45";
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
           .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
       try {
@@ -1621,6 +1746,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getMinorVersion(), is(0));
       assertThat(doc.getVersionIndex(), is(8));
       assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+      assertThat(session.getNodeByIdentifier(doc.getId()).isCheckedOut(), is(false));
 
       String[] ignoredBeanPropertiesInComparison =
           new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
@@ -1656,8 +1782,9 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(currentVersion.getRealVersionForeignId(), is(foreignId));
       document.getPk().setId(currentVersion.getId());
       document.setVersionIndex(currentVersion.getVersionIndex());
-      assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils.addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
-              "onlineURL"));
+      assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils
+          .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
+              "webdavJcrPath", "onlineURL"));
 
       for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
         expectedVersion.setVersionMaster(doc.getVersionMaster());
@@ -1944,6 +2071,7 @@ public class HistorisedDocumentRepositoryTest {
 
       String targetInstanceId = "kmelia36";
       String targetForeignId = "foreignId45";
+      assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
           .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
       try {
@@ -1973,6 +2101,7 @@ public class HistorisedDocumentRepositoryTest {
         assertThat(doc.getMinorVersion(), is(0));
         assertThat(doc.getVersionIndex(), is(8));
         assertThat(doc.getRepositoryPath(), is("/kmelia36/attachments/simpledoc_1"));
+        assertThat(session.getNodeByIdentifier(doc.getId()).isCheckedOut(), is(false));
 
         String[] ignoredBeanPropertiesInComparison =
             new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
@@ -2011,7 +2140,7 @@ public class HistorisedDocumentRepositoryTest {
         document.setVersionIndex(currentVersion.getVersionIndex());
         assertSimpleDocumentsAreEquals(currentVersion, document, ArrayUtils
             .addAll(ignoredBeanPropertiesInComparison, "class", "universalURL", "webdavUrl",
-                "onlineURL"));
+                "webdavJcrPath", "onlineURL"));
 
         for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
           expectedVersion.setVersionMaster(doc.getVersionMaster());
@@ -2122,6 +2251,151 @@ public class HistorisedDocumentRepositoryTest {
       // History
       assertThat(doc.getHistory(), hasSize(0));
       assertThat(doc.getFunctionalHistory(), hasSize(0));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Test of copyDocument method, of class DocumentRepository.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testCopyReservedDocument() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      Date creationDate = attachment.getCreated();
+      String foreignId = "node78";
+      HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
+      document.setContentType(MimeTypes.PDF_MIME_TYPE);
+      document.setPublicDocument(false);
+      createVersionedDocument(session, document, content);
+      SimpleDocumentPK sourcePk = document.getPk();
+      document = (HistorisedDocument) documentRepository
+          .findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(0));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(0));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(0));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getEditedBy(), nullValue());
+
+      // Simulating a reservation
+      VersionManager versionManager = session.getWorkspace().getVersionManager();
+      versionManager.checkout(document.getFullJcrPath());
+      document.edit("26");
+      documentRepository.updateDocument(session, document);
+      session.save();
+      versionManager.checkin(document.getFullJcrPath());
+
+      document = (HistorisedDocument) documentRepository
+          .findDocumentById(session, sourcePk, language);
+
+      assertThat(document, is(notNullValue()));
+      assertThat(document.getOrder(), is(0));
+      assertThat(document.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(document.getSize(), is(14L));
+      assertThat(document.getHistory(), is(notNullValue()));
+      assertThat(document.getHistory(), hasSize(1));
+      assertThat(document.getFunctionalHistory(), is(notNullValue()));
+      assertThat(document.getFunctionalHistory(), hasSize(0));
+      assertThat(document.getMajorVersion(), is(0));
+      assertThat(document.getMinorVersion(), is(1));
+      assertThat(document.getVersionIndex(), is(1));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+      assertThat(document.getEditedBy(), is("26"));
+
+      /*
+      History :
+      Technical   Functional  Action
+      1.0                     initialization
+      1.1         1.0         reservation
+       */
+
+      String targetInstanceId = "kmelia26";
+      String targetForeignId = "node36";
+      SimpleDocumentPK result = documentRepository
+          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
+      expResult.setOldSilverpeasId(result.getOldSilverpeasId());
+      assertThat(result, is(expResult));
+      HistorisedDocument doc =
+          (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
+      assertThat(doc.getCreated(), is(creationDate));
+      document.setForeignId(targetForeignId);
+      document.setPK(result);
+      document.setNodeName(doc.getNodeName());
+      document.setUpdatedBy("26");
+      document.release();
+      assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
+      checkEnglishSimpleDocument(doc);
+      assertThat(doc.getMajorVersion(), is(0));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(1));
+      assertThat(doc.getRepositoryPath(), is("/kmelia26/attachments/simpledoc_2"));
+      assertThat(doc.getEditedBy(), nullValue());
+
+      String[] ignoredBeanPropertiesInComparison =
+          new String[]{"history", "functionalHistory", "created", "updated", "repositoryPath",
+              "publicVersions", "lastPublicVersion", "versionMaster", "realVersionPk",
+              "realVersionForeignId", "previousVersion"};
+      assertSimpleDocumentsAreEquals(doc, document, ignoredBeanPropertiesInComparison);
+
+      // Reloading original for following assertions.
+      document =
+          (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
+      assertThat(document.getVersionMaster().getId(), is(not(doc.getVersionMaster().getId())));
+      assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
+
+      // Version path pattern
+      String masterUuid = doc.getVersionMaster().getId();
+      String versionPathPattern =
+          "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
+              masterUuid.substring(2, 4) + "/" +
+              masterUuid.substring(4, 6) + "/" + masterUuid + "/%s/jcr:frozenNode";
+
+      // History
+      assertThat(doc.getHistory(), hasSize(1));
+      assertThat(doc.getFunctionalHistory(), hasSize(0));
+
+      for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
+        expectedVersion.setVersionMaster(doc.getVersionMaster());
+      }
+      Iterator<SimpleDocumentVersion> resultHistoryIt = doc.getHistory().iterator();
+      int versionIndex = doc.getHistory().size();
+      for (SimpleDocumentVersion expectedVersion : document.getHistory()) {
+        SimpleDocumentVersion currentVersion = resultHistoryIt.next();
+        assertThat(currentVersion.getRepositoryPath(),
+            is(String.format(versionPathPattern, "1." + (--versionIndex))));
+        assertThat(currentVersion.getFullJcrPath(), is(doc.getFullJcrPath()));
+        assertThat(currentVersion.getPk(), not(sameInstance(currentVersion.getRealVersionPk())));
+        assertThat(currentVersion.getPk().getId(), is(currentVersion.getRealVersionPk().getId()));
+        assertThat(currentVersion.getPk().getComponentName(),
+            is(currentVersion.getRealVersionPk().getComponentName()));
+        assertThat(currentVersion.getPk().getOldSilverpeasId(),
+            is(currentVersion.getRealVersionPk().getOldSilverpeasId()));
+        assertThat(currentVersion.getForeignId(), is(targetForeignId));
+        assertThat(currentVersion.getForeignId(), is(currentVersion.getRealVersionForeignId()));
+        expectedVersion.setId(currentVersion.getId());
+        assertSimpleDocumentsAreEquals(currentVersion, expectedVersion,
+            ignoredBeanPropertiesInComparison);
+      }
     } finally {
       BasicDaoFactory.logout(session);
     }

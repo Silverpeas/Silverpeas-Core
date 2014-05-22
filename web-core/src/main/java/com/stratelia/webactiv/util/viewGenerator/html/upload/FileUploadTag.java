@@ -42,6 +42,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import java.util.Locale;
 
 public class FileUploadTag extends TagSupport {
+  private static final long serialVersionUID = -7065381733362836565L;
 
   public static final String FILE_UPLOAD_ATT = "@FileUploadTag@";
   public static final String FILE_UPLOAD_CONTEXT = FILE_UPLOAD_ATT + "@FileUploadContext@";

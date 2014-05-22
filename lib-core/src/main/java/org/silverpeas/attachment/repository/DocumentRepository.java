@@ -158,15 +158,22 @@ public class DocumentRepository {
     }
     VersionManager versionManager = session.getWorkspace().getVersionManager();
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
-    if (converter.isVersionedMaster(targetDocumentNode) && !targetDocumentNode.isCheckedOut()) {
-      versionManager.checkout(targetDocumentNode.getPath());
+    boolean mustCheckInVersion = true;
+    if (converter.isVersionedMaster(targetDocumentNode)) {
+      if (!targetDocumentNode.isCheckedOut()) {
+        versionManager.checkout(targetDocumentNode.getPath());
+      } else {
+        mustCheckInVersion = false;
+      }
     }
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
         getInstanceId());
     if (converter.isVersionedMaster(targetDocumentNode) && targetDocumentNode.isCheckedOut()) {
       session.save();
-      versionManager.checkin(targetDocumentNode.getPath());
+      if (mustCheckInVersion) {
+        versionManager.checkin(targetDocumentNode.getPath());
+      }
     }
     pk.setId(targetDocumentNode.getIdentifier());
     return pk;
@@ -202,8 +209,11 @@ public class DocumentRepository {
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     copy.setProperty(SLV_PROPERTY_INSTANCEID, destination.getInstanceId());
-    pk.setId(copy.getIdentifier());
-    return pk;
+    // The reservation is not copied.
+    targetDoc = converter.fillDocument(copy, null);
+    targetDoc.release();
+    converter.fillNode(targetDoc, copy);
+    return targetDoc.getPk();
   }
 
   /**
@@ -273,6 +283,8 @@ public class DocumentRepository {
       targetHistorisedDoc.setPK(pk);
       targetHistorisedDoc.setForeignId(destination.getId());
       targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
+      // The reservation is not copied.
+      targetHistorisedDoc.release();
       Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
       if (!currentVersion.equals(doc.getVersion())) {
         // In this case, a functional version is performed, so the common tools are used

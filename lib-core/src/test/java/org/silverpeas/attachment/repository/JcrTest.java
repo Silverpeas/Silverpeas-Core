@@ -39,16 +39,26 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.jcr.Binary;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -58,10 +68,10 @@ import static org.hamcrest.Matchers.*;
  * @author: Yohann Chastagnier
  */
 public abstract class JcrTest {
+  private final Date testStartDate = new Date();
 
   private ClassPathXmlApplicationContext appContext;
 
-  private DocumentRepository documentRepository = new DocumentRepository();
   private final DocumentConverter converter = new DocumentConverter();
 
   public ClassPathXmlApplicationContext getAppContext() {
@@ -73,11 +83,15 @@ public abstract class JcrTest {
   }
 
   private DocumentRepository getDocumentRepository() {
-    return documentRepository;
+    return (DocumentRepository) getAppContext().getBean("documentRepository");
   }
 
   private JackrabbitRepository getRepository() {
     return ((JackrabbitRepository) getAppContext().getBean(BasicDaoFactory.JRC_REPOSITORY));
+  }
+
+  public Date getTestStartDate() {
+    return testStartDate;
   }
 
   public abstract void run() throws Exception;
@@ -326,5 +340,141 @@ public abstract class JcrTest {
     } finally {
       BasicDaoFactory.logout(session);
     }
+  }
+
+  /**
+   * Gets the single child node of a node.
+   * If no node exists or sevreal node exists, a failed assertion is performed.
+   * @param node the parent node.
+   * @return the single child node.
+   * @throws Exception
+   */
+  protected Node getSingleChildNode(Node node) throws Exception {
+    assertThat("getTheOnlyOneChildNode - no child node exists", node.hasNodes(), is(true));
+    NodeIterator singleChildNodeIt = node.getNodes();
+    Node singleChildNode = singleChildNodeIt.nextNode();
+    assertThat("getTheOnlyOneChildNode - several child nodes exists", singleChildNodeIt.hasNext(),
+        is(false));
+    return singleChildNode;
+  }
+
+  /**
+   * Gets the {@link Binary} content of a JCR node property as a {@link String}.
+   * @param property the JCR property that must contains a binary content.
+   * @return the binary content as a {@link String}.
+   * @throws Exception
+   */
+  protected String getBinaryContentAsString(Property property) throws Exception {
+    return new String(getBinaryContent(property), Charsets.UTF_8.name());
+  }
+
+  /**
+   * Gets the {@link Binary} content of a JCR node property.
+   * @param property the JCR property that must contains a binary content.
+   * @return the binary content.
+   * @throws Exception
+   */
+  protected byte[] getBinaryContent(Property property) throws Exception {
+    ByteArrayOutputStream byteContent = new ByteArrayOutputStream();
+    Binary content = property.getBinary();
+    InputStream in = content.getStream();
+    try {
+      IOUtils.copy(in, byteContent);
+    } finally {
+      IOUtils.closeQuietly(in);
+      content.dispose();
+    }
+    return byteContent.toByteArray();
+  }
+
+  /**
+   * Sets the {@link Binary} content of a JCR node property.
+   * @param property the JCR property that must contains a binary content.
+   * @return the binary content.
+   * @throws Exception
+   */
+  protected void setBinaryContent(Property property, byte[] content) throws Exception {
+    InputStream in = new ByteArrayInputStream(content);
+    try {
+      Binary attachmentBinary = property.getSession().getValueFactory().createBinary(in);
+      property.setValue(attachmentBinary);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
+
+  /**
+   * Gets from the specified parent node the child node that satisfies the given jcrPath.
+   * @param parentNode the parent node from which the JCR path is guessed.
+   * @param jcrPath the JCR path to find.
+   * @return the JCR node instance if it exists, null otherwise.
+   */
+  protected Node getRelativeNode(Node parentNode, String jcrPath) {
+    try {
+      return parentNode.getNode(jcrPath);
+    } catch (RepositoryException re) {
+      return null;
+    }
+  }
+
+  /**
+   * Lists all entire pathes that exists from the specified node (recursive treatment).
+   * @param parentNode the parent node.
+   * @return the list of entire pathes, null if the specified node does not exist anymore.
+   * @throws RepositoryException
+   */
+  protected List<String> listPathesFrom(Node parentNode) throws RepositoryException {
+    return listPathesFrom(parentNode, -1);
+  }
+
+  /**
+   * Lists all entire pathes that exists from the specified node (recursive treatment).
+   * @param parentNode the parent node.
+   * @param deep the maximum number sub-nodes to reach.
+   * @return the list of entire pathes, null if the specified node does not exist anymore.
+   * @throws RepositoryException
+   */
+  protected List<String> listPathesFrom(Node parentNode, int deep) throws RepositoryException {
+    return listPathesFrom(parentNode, deep, 0);
+  }
+
+  /**
+   * Lists all entire pathes that exists from the specified node (recursive treatment).
+   * @param parentNode the parent node.
+   * @param maximumDeep the maximum number of sub-nodes to reach.
+   * @param currentDeep the current sub-node position from the initial parent.
+   * @return the list of entire pathes, null if the specified node does not exist anymore.
+   * @throws RepositoryException
+   */
+  private List<String> listPathesFrom(Node parentNode, int maximumDeep, int currentDeep)
+      throws RepositoryException {
+    try {
+      parentNode.getPath();
+    } catch (RepositoryException re) {
+      // Node does not exist anymore.
+      return null;
+    }
+    if ((maximumDeep >= 0 && currentDeep >= maximumDeep)) {
+      return Collections.emptyList();
+    }
+    NodeIterator nodeIt = parentNode.getNodes();
+    List<String> pathes = new ArrayList<String>();
+    Set<String> uuidNodePerformed = new HashSet<String>();
+    boolean willMaximumDeepBeReached = (maximumDeep >= 0 && (currentDeep + 1) >= maximumDeep);
+    while (nodeIt.hasNext()) {
+      Node node = nodeIt.nextNode();
+      if (node.hasNodes()) {
+        if (!willMaximumDeepBeReached) {
+          pathes.addAll(listPathesFrom(node, maximumDeep, currentDeep + 1));
+        } else if (!uuidNodePerformed.contains(node.getIdentifier())) {
+          uuidNodePerformed.add(node.getIdentifier());
+          pathes.add(node.getPath());
+        }
+      } else if (!uuidNodePerformed.contains(node.getIdentifier())) {
+        uuidNodePerformed.add(node.getIdentifier());
+        pathes.add(node.getPath());
+      }
+    }
+    return pathes;
   }
 }
