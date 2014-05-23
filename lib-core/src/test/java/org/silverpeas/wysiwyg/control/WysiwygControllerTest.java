@@ -22,6 +22,7 @@ package org.silverpeas.wysiwyg.control;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
@@ -33,7 +34,7 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.util.JcrTest;
+import org.silverpeas.attachment.repository.JcrTest;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 
 import java.io.ByteArrayInputStream;
@@ -1953,6 +1954,68 @@ public class WysiwygControllerTest {
    * Test of save method, of class WysiwygController.
    */
   @Test
+  public void testSaveExistingWysiwygWithWrongFileName() throws Exception {
+    new JcrWysiwygControllerTest() {
+      @Override
+      public void run() throws Exception {
+        String instanceId_1 = "instance1";
+        SimpleAttachment rightFrAttachment = defaultFRContent();
+        rightFrAttachment.setFilename("foreignId_A_wysiwyg_fr.txt");
+        SimpleDocument rightFrWrongEn =
+            createWysiwygForTest(instanceId_1, "foreignId_A", rightFrAttachment, "contentFR");
+        addWysiwygForTest(rightFrWrongEn, "en", "contentEN");
+        SimpleDocument rightFrWrongEn_fr = assertContent(rightFrWrongEn.getId(), "fr", "contentFR");
+        SimpleDocument rightFrWrongEn_en = assertContent(rightFrWrongEn.getId(), "en", "contentEN");
+        assertThat(rightFrWrongEn_fr.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
+        assertThat(rightFrWrongEn_en.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
+
+        WysiwygController.save("contentFR_updated", rightFrWrongEn_fr.getInstanceId(),
+            rightFrWrongEn_fr.getForeignId(), "26", rightFrWrongEn_fr.getLanguage(), false);
+        WysiwygController.save("contentEN_updated", rightFrWrongEn_en.getInstanceId(),
+            rightFrWrongEn_en.getForeignId(), "26", rightFrWrongEn_en.getLanguage(), false);
+
+        rightFrWrongEn_fr = assertContent(rightFrWrongEn.getId(), "fr", "contentFR_updated");
+        rightFrWrongEn_en = assertContent(rightFrWrongEn.getId(), "en", "contentEN_updated");
+        assertThat(rightFrWrongEn_fr.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
+        assertThat(rightFrWrongEn_en.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
+      }
+    }.execute();
+  }
+
+  /**
+   * Test of save method, of class WysiwygController.
+   */
+  @Test
+  public void testSaveWysiwygWithRightFileName() throws Exception {
+    new JcrWysiwygControllerTest() {
+      @Override
+      public void run() throws Exception {
+        String instanceId_1 = "instance1";
+        SimpleAttachment rightFrAttachment = defaultFRContent();
+        rightFrAttachment.setFilename("foreignId_A_wysiwyg_fr.txt");
+        SimpleDocument rightFrWrongEn =
+            createWysiwygForTest(instanceId_1, "foreignId_A", rightFrAttachment, "contentFR");
+        SimpleDocument rightFrWrongEn_fr = assertContent(rightFrWrongEn.getId(), "fr", "contentFR");
+        SimpleDocument rightFrWrongEn_en = assertContent(rightFrWrongEn.getId(), "en", null);
+        assertThat(rightFrWrongEn_fr.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
+
+        WysiwygController.save("contentFR_updated", rightFrWrongEn_fr.getInstanceId(),
+            rightFrWrongEn_fr.getForeignId(), "26", rightFrWrongEn_fr.getLanguage(), false);
+        WysiwygController.save("contentEN_created", rightFrWrongEn_fr.getInstanceId(),
+            rightFrWrongEn_fr.getForeignId(), "26", "en", false);
+
+        rightFrWrongEn_fr = assertContent(rightFrWrongEn.getId(), "fr", "contentFR_updated");
+        rightFrWrongEn_en = assertContent(rightFrWrongEn.getId(), "en", "contentEN_created");
+        assertThat(rightFrWrongEn_fr.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
+        assertThat(rightFrWrongEn_en.getFilename(), is("foreignId_Awysiwyg_en.txt"));
+      }
+    }.execute();
+  }
+
+  /**
+   * Test of save method, of class WysiwygController.
+   */
+  @Test
   public void testSaveVersionedWysiwygThenUpdateItWithEmptyOne() throws Exception {
     new JcrTest() {
       @Override
@@ -2048,6 +2111,42 @@ public class WysiwygControllerTest {
     } finally {
       IOUtils.closeQuietly(in);
       IOUtils.closeQuietly(resultIn);
+    }
+  }
+
+  private abstract class JcrWysiwygControllerTest extends JcrTest {
+
+    protected SimpleDocument addWysiwygForTest(SimpleDocument document, String language,
+        final String emptyContent) throws Exception {
+      String content = emptyContent;
+      if (StringUtil.isNotDefined(content)) {
+        if (content != null && content.isEmpty()) {
+          content = "";
+        } else {
+          content =
+              language + "_content_" + document.getInstanceId() + "_" + document.getForeignId();
+        }
+      }
+      return updateAttachmentForTest(document, language, content);
+    }
+
+    protected SimpleDocument createWysiwygForTest(String instanceId, String foreignId,
+        SimpleAttachment attachment, final String emptyContent) throws Exception {
+      String content = emptyContent;
+      if (StringUtil.isNotDefined(content)) {
+        if (content != null && content.isEmpty()) {
+          content = "";
+        } else {
+          content = attachment.getLanguage() + "_content_" + instanceId + "_" + foreignId;
+        }
+      }
+      SimpleDocument wysiwyg = defaultDocument(instanceId, foreignId);
+      wysiwyg.setDocumentType(DocumentType.wysiwyg);
+      if (StringUtil.isNotDefined(attachment.getFilename())) {
+        attachment.setFilename("wysiwyg.txt");
+      }
+      attachment.setSize(content.length());
+      return createAttachmentForTest(wysiwyg, attachment, content);
     }
   }
 }

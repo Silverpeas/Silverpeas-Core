@@ -21,16 +21,19 @@
 package com.silverpeas.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import com.silverpeas.util.exception.RelativeFileAccessException;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -154,5 +157,31 @@ public class FileUtilTest {
   @Test(expected = RelativeFileAccessException.class)
   public void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
     FileUtil.checkPathNotRelative("\\..");
+  }
+
+  @Test
+  public void testDeleteEmptyDir() throws IOException {
+    File root = File.createTempFile("prefix", "suffix");
+    FileUtils.deleteQuietly(root);
+    assertThat(root.exists(), is(false));
+
+    File newFile = new File(root, "aFile.txt");
+    FileUtils.touch(newFile);
+    assertThat(root.exists(), is(true));
+    assertThat(root.isDirectory(), is(true));
+    assertThat(newFile.exists(), is(true));
+    assertThat(newFile.isFile(), is(true));
+
+    assertThat(FileUtil.deleteEmptyDir(root), is(false));
+    assertThat(root.exists(), is(true));
+    assertThat(root.isDirectory(), is(true));
+    assertThat(newFile.exists(), is(true));
+    assertThat(newFile.isFile(), is(true));
+
+    assertThat(newFile.delete(), is(true));
+    assertThat(newFile.exists(), is(false));
+
+    assertThat(FileUtil.deleteEmptyDir(root), is(true));
+    assertThat(root.exists(), is(false));
   }
 }

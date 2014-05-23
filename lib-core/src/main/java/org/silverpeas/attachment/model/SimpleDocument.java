@@ -172,7 +172,7 @@ public class SimpleDocument implements Serializable {
   public SimpleDocument() {
   }
 
-  protected SimpleDocument(SimpleDocument simpleDocument) {
+  public SimpleDocument(SimpleDocument simpleDocument) {
     this.repositoryPath = simpleDocument.getRepositoryPath();
     this.versionMaster = simpleDocument.getVersionMaster();
     this.versionIndex = simpleDocument.getVersionIndex();
