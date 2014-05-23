@@ -31,8 +31,9 @@
   $.lang = {
     initialized: false,
     changeLanguage: function (name) {
-      console.log("Changing user language using " + name);
-      var ajaxUrl = webContext + '/services/lang/';
+      window.console &&
+        window.console.log("Changing user language using " + name + ", currentUserLanguage = " + getUserLanguage());
+      var ajaxUrl = webContext + '/services/languages/';
       var newLanguage = { "lang": name };
       jQuery.ajax({
         url: ajaxUrl,
@@ -43,12 +44,16 @@
         dataType: "json",
         async: true,
         success: function(result) {
-          notySuccess(__getFromBundleKey('GML.reconnect'));
+          var changeLanguageOptions = {
+              timeout: false,
+              closeWith: ['button']
+            };
+          notySuccess($('<a></a>').attr("href", webContext + "/LogoutServlet").attr("target", "_top").html(__getFromBundleKey('GML.reconnect')), changeLanguageOptions);
         }
       });
     },
     displayLanguageSelection : function () {
-      var ajaxUrl = webContext + '/services/lang/';
+      var ajaxUrl = webContext + '/services/languages/';
       jQuery.ajax({
         url: ajaxUrl,
         type: 'GET',
@@ -62,32 +67,27 @@
             sel.append($("<option>").attr('value',this.lang).text(this.name)
                 .prop('selected', this.lang == getUserLanguage()));
           });
-          console.log('userLanguage = ' + getUserLanguage());
+          window.console &&
+            window.console.log('userLanguage = ' + getUserLanguage());
         }
       });
     }
   };
 
-  // Localization init indicator.
-  var __i18nInitialized = false;
-
   /**
-* Private method that handles i18n.
-* @param key
-* @return message
-* @private
-*/
+   * Private method that handles i18n.
+   * @param key
+   * @return message
+   * @private
+   */
   function __getFromBundleKey(key) {
     if (webContext) {
-      if (!__i18nInitialized) {
-        $.i18n.properties({
-          name: 'generalMultilang',
-          path: webContext + '/services/bundles/org/silverpeas/multilang/',
-          language: getUserLanguage(),
-          mode: 'map'
-        });
-        __i18nInitialized = true;
-      }
+      $.i18n.properties({
+        name: 'generalMultilang',
+        path: webContext + '/services/bundles/org/silverpeas/multilang/',
+        language: getUserLanguage(),
+        mode: 'map'
+      });
       return getString(key);
     }
     return key;
@@ -100,6 +100,7 @@
 * @param name the
 */
 function changeLanguage(name) {
+  userLanguage = name;
   $.lang.changeLanguage(name);
 }
 

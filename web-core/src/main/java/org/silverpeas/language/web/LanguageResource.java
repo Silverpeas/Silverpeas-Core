@@ -46,7 +46,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 @Service
 @RequestScoped
-@Path("lang")
+@Path("languages")
 @Authenticated
 public class LanguageResource extends RESTWebService {
 
