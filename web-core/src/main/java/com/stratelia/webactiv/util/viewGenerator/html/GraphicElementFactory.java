@@ -110,7 +110,7 @@ public class GraphicElementFactory {
   private MainSessionController mainSessionController = null;
   private String spaceId = null;
   private boolean componentMainPage = false;
-  public static final String defaultLookName = "Initial"; 
+  public static final String defaultLookName = "Initial";
   protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
@@ -365,7 +365,7 @@ public class GraphicElementFactory {
         STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);    
+    code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append(
         STR_NEW_LINE);
 

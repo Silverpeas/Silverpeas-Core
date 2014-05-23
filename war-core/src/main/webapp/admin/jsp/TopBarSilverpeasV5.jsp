@@ -60,11 +60,11 @@ if (wallPaper == null) {
 if (wallPaper == null) {
   wallPaper = m_sContext+"/admin/jsp/icons/silverpeasV5/bandeauTop.jpg";
 }
-	
+
 boolean outilDisplayed = false;
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -82,9 +82,9 @@ boolean outilDisplayed = false;
 	height: 20px;
 	width: auto;
 }
-body {  
-	background-image: url(<%=wallPaper%>); 
-	background-repeat: no-repeat; 
+body {
+	background-image: url(<%=wallPaper%>);
+	background-repeat: no-repeat;
 	background-position: left top;
 }
 </style>
@@ -159,31 +159,31 @@ function getFooterHeight() {
         	<div class="userNav">
         		<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a>
 		        <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
-				    outilDisplayed = true; 
+				    outilDisplayed = true;
 				%>
 				<a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
-		<% } %> 
+		<% } %>
 		<% if (helper.getSettings("glossaryVisible", false)) {
-				outilDisplayed = true; 
+				outilDisplayed = true;
 		%>
-				<a href="javascript:onClick=openPdc()"><%=helper.getString("lookSilverpeasV5.glossaire")%></a> 
-		<% } %> 
+				<a href="javascript:onClick=openPdc()"><%=helper.getString("lookSilverpeasV5.glossaire")%></a>
+		<% } %>
 		<% if (helper.getSettings("mapVisible", true)) {
 		    	if (outilDisplayed) {
 		    		out.print(" | ");
 		    	}
 		    	outilDisplayed = true;
 		    %>
-				<a href="<%=m_sContext + "/admin/jsp/Map.jsp"%>" target="MyMain"><%=helper.getString("lookSilverpeasV5.Map")%></a> 
+				<a href="<%=m_sContext + "/admin/jsp/Map.jsp"%>" target="MyMain"><%=helper.getString("lookSilverpeasV5.Map")%></a>
 		<% } %>
-		<% if (helper.getSettings("helpVisible", true)) { 
+		<% if (helper.getSettings("helpVisible", true)) {
 			if (outilDisplayed) {
 		    	out.print(" | ");
 			}
 		    outilDisplayed = true;
 		%>
 			<a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><%=helper.getString("lookSilverpeasV5.Help")%></a>
-		<% } %> 
+		<% } %>
 		<% if (!isAnonymousAccess && helper.getSettings("logVisible", true)) {
 			if (outilDisplayed) {
 		    	out.print(" | ");
@@ -215,7 +215,7 @@ function getFooterHeight() {
         </table>
     </div>
     <% } %>
-    
+
     <% if(helper.isBackOfficeVisible()) { %>
     <div id="administration">
        <table border="0" cellspacing="0" cellpadding="0">
