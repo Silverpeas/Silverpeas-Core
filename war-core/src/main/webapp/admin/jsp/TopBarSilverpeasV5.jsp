@@ -93,7 +93,6 @@ body {
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/connectedUsers.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
-<view:includePlugin name="lang" />
 <script type="text/javascript">
 function goToHome() {
   top.bottomFrame.location.href = "<%=goToHome%>";
@@ -228,8 +227,6 @@ function getFooterHeight() {
         </table>
     </div>
     <% } %>
-    <div id="lang-select-div" style="float:right;display:none;">
-    </div>
 </div>
 <form name="searchForm" action="">
 <input type="hidden" name="query"/>
