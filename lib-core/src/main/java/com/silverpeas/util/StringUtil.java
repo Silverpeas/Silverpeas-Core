@@ -167,6 +167,12 @@ public class StringUtil extends StringUtils {
     fileName = fileName.replace('$', '_');
     fileName = fileName.replace('%', '_');
     fileName = fileName.replace('?', '_');
+    fileName = fileName.replace(':', '_');
+    fileName = fileName.replace('*', '_');
+    fileName = fileName.replace('"', '_');
+    fileName = fileName.replace('<', '_');
+    fileName = fileName.replace('>', '_');
+    fileName = fileName.replace('|', '_');
     return fileName;
   }
 
@@ -238,7 +244,6 @@ public class StringUtil extends StringUtils {
     if (StringUtil.isNotDefined(source) || StringUtil.isNotDefined(regex)) {
       return source;
     }
-    String replacementText = StringUtil.isDefined(replacement) ? replacement : "";
     return source.replaceAll(regex, replacement);
   }
 
