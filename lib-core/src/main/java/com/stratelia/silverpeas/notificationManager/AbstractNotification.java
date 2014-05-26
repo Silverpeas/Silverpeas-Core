@@ -23,14 +23,15 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import java.net.URLEncoder;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.net.URLEncoder;
 
 /**
  * Class declaration
@@ -55,34 +56,29 @@ public class AbstractNotification {
   }
 
   public String getUserAutoRedirectURL(final String userId, final String target) {
+    String resourceUrl = target;
     try {
-      final UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
-      final Domain dom = AdminReference.getAdminService().getDomain(ud.getDomainId());
-      String url = null;
+      final UserDetail ud = UserDetail.getById(userId);
+      final Domain dom = ud.getDomain();
+      String url;
       if (URLManager.isPermalink(target)) {
-        url = dom.getSilverpeasServerURL() + getApplicationURL() + target;
+        url = dom.getSilverpeasServerURL() + getApplicationURL() + resourceUrl;
       } else {
-        url = getUserAutoRedirectURL(dom) + URLEncoder.encode(target, "UTF-8");
+        resourceUrl = URLEncoder.encode(target, "UTF-8");
+        url = getUserAutoRedirectURL(dom) + resourceUrl;
       }
       return url;
     } catch (final Exception e) {
-      SilverTrace.error("peasCore",
-          "URLManager.getUserAutoRedirectURL(userId)", "root.EX_NO_MESSAGE",
-          "Cannot encode '" + target + "'", e);
-      return null;
+      SilverTrace.error("peasCore", "URLManager.getUserAutoRedirectURL(userId, target)",
+          "admin.EX_ERR_GET_USER_DETAILS", "user id: '" + userId + "', target: '" + target + "'",
+          e);
+      return "ErrorGettingDomainServer" + resourceUrl;
     }
   }
 
   public String getUserAutoRedirectURL(final Domain dom) {
-    try {
       return dom.getSilverpeasServerURL() + getApplicationURL()
           + "/autoRedirect.jsp?domainId=" + dom.getId() + "&goto=";
-    } catch (final Exception ae) {
-      SilverTrace.error("peasCore",
-          "URLManager.getUserAutoRedirectURL(domain)",
-          "admin.EX_ERR_GET_USER_DETAILS", "domainId : " + dom.getId(), ae);
-      return "ErrorGettingDomainServer";
-    }
   }
 
   /**
@@ -91,6 +87,15 @@ public class AbstractNotification {
    */
   protected ResourceLocator getNotificationResources() {
     return notifResources;
+  }
+
+  /**
+   * Gets a {@link org.silverpeas.core.admin.OrganisationController} instance with which
+   * information related to the users in Silverpeas can be get.
+   * @return the organisation controller.
+   */
+  protected OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getOrganisationController();
   }
 
   /**

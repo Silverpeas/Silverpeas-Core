@@ -10,6 +10,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.admin.mock.OrganizationControllerMockWrapper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.notification.delayed.DelayedNotificationFactory;
@@ -39,6 +43,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-delayed-notification.xml",
