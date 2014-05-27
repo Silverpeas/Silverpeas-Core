@@ -56,23 +56,22 @@ public class AbstractNotification {
   }
 
   public String getUserAutoRedirectURL(final String userId, final String target) {
-    String resourceUrl = target;
+    String encodedTarget = URLManager.encodeURL(target);
     try {
       final UserDetail ud = UserDetail.getById(userId);
       final Domain dom = ud.getDomain();
       String url;
       if (URLManager.isPermalink(target)) {
-        url = dom.getSilverpeasServerURL() + getApplicationURL() + resourceUrl;
+        url = dom.getSilverpeasServerURL() + getApplicationURL() + target;
       } else {
-        resourceUrl = URLEncoder.encode(target, "UTF-8");
-        url = getUserAutoRedirectURL(dom) + resourceUrl;
+        url = getUserAutoRedirectURL(dom) + encodedTarget;
       }
       return url;
     } catch (final Exception e) {
       SilverTrace.error("peasCore", "URLManager.getUserAutoRedirectURL(userId, target)",
           "admin.EX_ERR_GET_USER_DETAILS", "user id: '" + userId + "', target: '" + target + "'",
           e);
-      return "ErrorGettingDomainServer" + resourceUrl;
+      return "ErrorGettingDomainServer" + encodedTarget;
     }
   }
 
