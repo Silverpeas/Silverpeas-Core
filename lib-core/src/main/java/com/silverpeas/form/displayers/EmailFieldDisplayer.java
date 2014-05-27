@@ -50,13 +50,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see FieldDisplayer
  */
 public class EmailFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
-  
+
   public final static String PARAM_MAILTO = "mailto";
   public final static String PARAM_SIZE = "size";
 
   public EmailFieldDisplayer() {
   }
-  
+
   @Override
   public void addSpecificScript(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     String language = pageContext.getLanguage();
@@ -66,16 +66,17 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer<TextField> {
       SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-    StringBuilder script = new StringBuilder(10000);
-    
-    script.append("   if (!checkemail(field.value)) {\n");
-    script.append("     errorMsg+=\"  - '").append(label).append("' ").
-        append(Util.getString("GML.MustContainsEmail", language)).append(
-        "\\n\";\n");
-    script.append("     errorNb++;\n");
-    script.append("   }\n");
-    
-    out.print(script.toString());
+    if (template.isMandatory() && pageContext.useMandatory()) {
+      StringBuilder script = new StringBuilder(10000);
+
+      script.append("   if (!checkemail(field.value)) {\n");
+      script.append("     errorMsg+=\"  - '").append(label).append("' ").
+          append(Util.getString("GML.MustContainsEmail", language)).append("\\n\";\n");
+      script.append("     errorNb++;\n");
+      script.append("   }\n");
+
+      out.print(script.toString());
+    }
   }
 
   /**

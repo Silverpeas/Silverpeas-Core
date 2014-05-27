@@ -27,8 +27,13 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -331,7 +336,24 @@ public class URLManager {
     }
     return url;
   }
-  
+
+  /**
+   * Translates a string into <code>application/x-www-form-urlencoded</code>
+   * format using a specific encoding scheme. The specified string is  expected to be in the UTF-8
+   * charset, otherwise it is returned as such.
+   * @param url an UTF-8 string representing an URL of a resource in Silverpeas.
+   * @return the encoded URL.
+   */
+  public static String encodeURL(String url) {
+    String encodedUrl = url;
+    try {
+      encodedUrl = URLEncoder.encode(url, "UTF-8");
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(URLManager.class.getSimpleName()).log(Level.WARNING, ex.getMessage());
+    }
+    return encodedUrl;
+  }
+
   public static boolean isPermalink(String url) {
     return Permalink.isCompliant(url);
   }
