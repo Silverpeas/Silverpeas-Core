@@ -23,8 +23,6 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import java.net.URLEncoder;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -55,34 +53,28 @@ public class AbstractNotification {
   }
 
   public String getUserAutoRedirectURL(final String userId, final String target) {
+    String encodedTarget = URLManager.encodeURL(target);
     try {
-      final UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
-      final Domain dom = AdminReference.getAdminService().getDomain(ud.getDomainId());
-      String url = null;
+      final UserDetail ud = UserDetail.getById(userId);
+      final Domain dom = ud.getDomain();
+      String url;
       if (URLManager.isPermalink(target)) {
         url = dom.getSilverpeasServerURL() + getApplicationURL() + target;
       } else {
-        url = getUserAutoRedirectURL(dom) + URLEncoder.encode(target, "UTF-8");
+        url = getUserAutoRedirectURL(dom) + encodedTarget;
       }
       return url;
     } catch (final Exception e) {
-      SilverTrace.error("peasCore",
-          "URLManager.getUserAutoRedirectURL(userId)", "root.EX_NO_MESSAGE",
-          "Cannot encode '" + target + "'", e);
-      return null;
+      SilverTrace.error("peasCore", "URLManager.getUserAutoRedirectURL(userId, target)",
+          "admin.EX_ERR_GET_USER_DETAILS", "user id: '" + userId + "', target: '" + target + "'",
+          e);
+      return "ErrorGettingDomainServer" + encodedTarget;
     }
   }
 
   public String getUserAutoRedirectURL(final Domain dom) {
-    try {
       return dom.getSilverpeasServerURL() + getApplicationURL()
           + "/autoRedirect.jsp?domainId=" + dom.getId() + "&goto=";
-    } catch (final Exception ae) {
-      SilverTrace.error("peasCore",
-          "URLManager.getUserAutoRedirectURL(domain)",
-          "admin.EX_ERR_GET_USER_DETAILS", "domainId : " + dom.getId(), ae);
-      return "ErrorGettingDomainServer";
-    }
   }
 
   /**
