@@ -29,18 +29,22 @@ import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ImageUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.apache.commons.io.FileUtils;
+
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.servlet.FileUploadUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -48,11 +52,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 public class ThumbnailController {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+      "org.silverpeas.util.publication.publicationSettings", "fr");
 
   /**
    * the constructor.
@@ -62,6 +67,68 @@ public class ThumbnailController {
 
   private static ThumbnailService getThumbnailService() {
     return ThumbnailServiceFactory.getThumbnailService();
+  }
+  
+  public static boolean processThumbnail(ForeignPK pk, String objectType, List<FileItem> parameters)
+      throws Exception {
+    boolean thumbnailChanged = false;
+    String mimeType = null;
+    String physicalName = null;
+    FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
+    if (file != null) {
+      String logicalName = file.getName().replace('\\', '/');
+      if (StringUtil.isDefined(logicalName)) {
+        logicalName = FilenameUtils.getName(logicalName);
+        mimeType = FileUtil.getMimeType(logicalName);
+        String type = FileRepositoryManager.getFileExtension(logicalName);
+        if (FileUtil.isImage(logicalName)) {
+          physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
+          File dir = new File(FileRepositoryManager.getAbsolutePath(pk.getInstanceId())
+              + publicationSettings.getString("imagesSubDirectory"));
+          if (!dir.exists()) {
+            dir.mkdirs();
+          }
+          File target = new File(dir, physicalName);
+          file.write(target);
+        } else {
+          throw new ThumbnailRuntimeException("ThumbnailController.processThumbnail()",
+              SilverpeasRuntimeException.ERROR, "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
+        }
+      }
+    }
+
+    // If no image have been uploaded, check if one have been picked up from a gallery
+    if (physicalName == null) {
+      // on a pas d'image, regarder s'il y a une provenant de la galerie
+      String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
+      if (StringUtil.isDefined(nameImageFromGallery)) {
+        physicalName = nameImageFromGallery;
+        mimeType = "image/jpeg";
+      }
+    }
+
+    // If one image is defined, save it through Thumbnail service
+    if (StringUtil.isDefined(physicalName)) {
+      ThumbnailDetail detail = new ThumbnailDetail(pk.getInstanceId(),
+          Integer.parseInt(pk.getId()),
+          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      detail.setOriginalFileName(physicalName);
+      detail.setMimeType(mimeType);
+      try {
+        ThumbnailController.updateThumbnail(detail);
+        thumbnailChanged = true;
+      } catch (ThumbnailRuntimeException e) {
+        SilverTrace.error("thumbnail", "KmeliaRequestRouter.processVignette",
+            "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
+        try {
+          ThumbnailController.deleteThumbnail(detail);
+        } catch (Exception exp) {
+          SilverTrace.info("thumbnail", "KmeliaRequestRouter.processVignette",
+              "thumbnail_MSG_DELETE_THUMBNAIL_KO", exp);
+        }
+      }
+    }
+    return thumbnailChanged;
   }
 
   /**

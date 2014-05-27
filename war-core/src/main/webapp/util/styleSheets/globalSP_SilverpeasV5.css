@@ -6282,3 +6282,44 @@ div.user-card .userToZoom{
 div.user-card .field{	
 	color:#444;
 }
+
+/**** Thumbnail service */
+#thumbnailPreviewAndActions {
+	background-color:#EEEEEE;
+	border:1px solid #DDDDDD;
+	float:left;
+	margin-left:0;
+	padding:3px;
+	margin-bottom: 3px;
+}
+
+#thumbnailPreview {
+	float: left;
+}
+
+#thumbnailPreview #thumbnail {
+	height: 50px;
+	border:1px solid #DDDDDD;
+}
+
+#thumbnailActions {
+	float: left;
+	margin-left: 4px;	
+}
+
+#thumbnailActions a {
+	margin-bottom: 5px;
+	display: block;
+}
+
+#thumbnailActions img {
+	vertical-align: middle;
+}
+
+#thumbnailInputs {
+	clear: both;
+}
+
+#thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
+	vertical-align: middle;
+}
