@@ -257,6 +257,10 @@ public class Period implements Comparable, Serializable, Cloneable {
   public DateTime getBeginDatable() {
     return beginDatable;
   }
+  
+  public boolean isBeginUndefined() {
+    return beginDatable.isUndefined();
+  }
 
   /**
    * Gets the end date of the period represented as a {@link com.silverpeas.calendar.Datable}.
@@ -265,6 +269,10 @@ public class Period implements Comparable, Serializable, Cloneable {
    */
   public DateTime getEndDatable() {
     return endDatable;
+  }
+  
+  public boolean isEndUndefined() {
+    return endDatable.isUndefined();
   }
 
   /**

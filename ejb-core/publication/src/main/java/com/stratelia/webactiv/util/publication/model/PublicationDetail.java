@@ -20,6 +20,28 @@
  */
 package com.stratelia.webactiv.util.publication.model;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.date.Period;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
@@ -55,26 +77,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * This object contains the description of a publication
@@ -135,6 +137,15 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    * Default contructor, required for castor mapping in importExport.
    */
   public PublicationDetail() {
+  }
+  
+  public PublicationDetail(String name, String description,
+      Period visibilityPeriod, String creatorId, String componentId) {
+    this.pk = new PublicationPK("unknown", componentId);
+    setName(name);
+    setDescription(description);
+    setVisibilityPeriod(visibilityPeriod);
+    this.creatorId = creatorId;
   }
 
   public PublicationDetail(PublicationPK pk, String name, String description,
@@ -490,6 +501,31 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+  
+  public void setVisibilityPeriod(Period period) {
+    if (period.isBeginUndefined()) {
+      setBeginDate(null);
+    } else {
+      setBeginDate(period.getBeginDate());
+    }
+    if (period.isEndUndefined()) {
+      setEndDate(null);
+    } else {
+      setEndDate(period.getEndDate());
+    }
+  }
+  
+  public Period getVisibilityPeriod() {
+    Date begin = getBeginDate();
+    if (begin == null) {
+      begin = DateUtil.MINIMUM_DATE;
+    }
+    Date end = getEndDate();
+    if (end == null) {
+      end = DateUtil.MAXIMUM_DATE;
+    }
+    return Period.from(begin, end);
   }
 
   public void setCreatorId(String creatorId) {
