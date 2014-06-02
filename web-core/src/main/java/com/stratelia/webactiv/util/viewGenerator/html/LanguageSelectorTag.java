@@ -26,30 +26,36 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.I18NLanguage;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
+import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.Input;
 import org.apache.ecs.html.Label;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
+import org.apache.ecs.html.Span;
 
 /**
- *
  * @author ehugonnet
  */
-public class LanguageSelectorTag extends SimpleTagSupport {
+public class LanguageSelectorTag extends TagSupport {
+  private static final long serialVersionUID = -6521946554686125224L;
 
   private String currentLangCode = I18NHelper.defaultLanguage;
   private String elementId;
   private String elementName;
   private boolean includeLabel;
+  private boolean readOnly = false;
 
   public void setElementId(String elementId) {
     this.elementId = elementId;
@@ -58,7 +64,7 @@ public class LanguageSelectorTag extends SimpleTagSupport {
   public void setElementName(String elementName) {
     this.elementName = elementName;
   }
-  
+
   public void setIncludeLabel(boolean includeLabel) {
     this.includeLabel = includeLabel;
   }
@@ -67,30 +73,53 @@ public class LanguageSelectorTag extends SimpleTagSupport {
     return currentLangCode;
   }
 
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  public void setReadOnly(final boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
   @Override
-  public void doTag() throws JspException, IOException {
+  public int doStartTag() throws JspException {
     ElementContainer xhtml = new ElementContainer();
     if (I18NHelper.isI18N) {
-      Select langSelector = new Select();
-      langSelector.setID(elementId);
-      langSelector.setName(elementName);
-      List<Option> options = new ArrayList<Option>(I18NHelper.getNumberOfLanguages());
-      for (I18NLanguage language : I18NHelper.getAllLanguages(getLangCode())) {
-        Option option = new Option(language.getLabel(), language.getCode());
-        option.addElement(language.getLabel());
-        if (getLangCode().equalsIgnoreCase(language.getCode())) {
-          option.setSelected(true);
-        }
-        options.add(option);
+      String userLanguage = null;
+      final Locale locale = (Locale) Config.find(pageContext, Config.FMT_LOCALE);
+      if (locale != null) {
+        userLanguage = locale.getLanguage();
       }
-      langSelector.addElement(options.toArray(new Option[options.size()]));
+      final Element langElement;
+      if (!isReadOnly()) {
+        Select langSelector = new Select();
+        langSelector.setID(elementId);
+        langSelector.setName(elementName);
+        List<Option> options = new ArrayList<Option>(I18NHelper.getNumberOfLanguages());
+        for (I18NLanguage language : I18NHelper.getAllLanguages(userLanguage)) {
+          Option option = new Option(language.getLabel(), language.getCode());
+          option.addElement(language.getLabel());
+          if (getLangCode().equalsIgnoreCase(language.getCode())) {
+            option.setSelected(true);
+          }
+          options.add(option);
+        }
+        langSelector.addElement(options.toArray(new Option[options.size()]));
+        langElement = langSelector;
+      } else {
+        Span readOnlyLanguage = new Span();
+        readOnlyLanguage.setID(elementId);
+        readOnlyLanguage.addElement(I18NHelper.getLanguageLabel(getLangCode(), userLanguage));
+        langElement = readOnlyLanguage;
+      }
       if (includeLabel) {
         Label label = new Label(elementId);
-        label.addElement(GeneralPropertiesManager.getGeneralMultilang(getLangCode()).getString(
-            "GML.language"));
+        label.setStyle("margin-right: 5px");
+        label.addElement(
+            GeneralPropertiesManager.getGeneralMultilang(userLanguage).getString("GML.language"));
         xhtml.addElement(label);
       }
-      xhtml.addElement(langSelector);
+      xhtml.addElement(langElement);
     } else {
       Input hidden = new Input();
       hidden.setID(elementId);
@@ -98,7 +127,13 @@ public class LanguageSelectorTag extends SimpleTagSupport {
       hidden.setType("hidden");
       xhtml.addElement(hidden);
     }
-    xhtml.output(getJspContext().getOut());
+    xhtml.output(pageContext.getOut());
+    return SKIP_BODY;
+  }
+
+  @Override
+  public int doEndTag() throws JspException {
+    return EVAL_PAGE;
   }
 
   public void setLangCode(String currentLang) {

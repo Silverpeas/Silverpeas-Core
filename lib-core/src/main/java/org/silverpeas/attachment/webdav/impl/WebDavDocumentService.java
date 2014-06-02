@@ -20,136 +20,63 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 import org.silverpeas.attachment.webdav.WebdavService;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.io.IOException;
 
 @Named("webdavService")
 public class WebDavDocumentService implements WebdavService {
 
   @Inject
   @Named("webdavRepository")
-  private WebdavRepository webdavAttachmentDao;
+  private WebdavRepository webdavRepository;
 
   @Override
-  public void createAttachment(SimpleDocument attachment) {
+  public void updateDocumentContent(SimpleDocument document) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      webdavAttachmentDao.createAttachmentNode(session, attachment);
+      webdavRepository.updateAttachmentBinaryContent(session, document);
       session.save();
+    } catch (RepositoryException ex) {
+      SilverTrace
+          .error("attachment", "WebDavDocumentService", "attachment.jcr.create.exception", ex);
+      throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
+          "attachment.jcr.create.exception", ex);
     } catch (IOException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
+      SilverTrace
+          .error("attachment", "WebDavDocumentService", "attachment.jcr.create.exception", ex);
+      throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
-    } catch (RepositoryException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
-  public void getUpdatedDocument(SimpleDocument attachment) {
+  public String getContentEditionLanguage(final SimpleDocument document) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      webdavAttachmentDao.updateAttachment(session, attachment);
-      session.save();
+      return webdavRepository.getContentEditionLanguage(session, document);
     } catch (RepositoryException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
-    } catch (IOException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
+      SilverTrace
+          .error("attachment", "WebDavDocumentService", "attachment.jcr.node.notFound.exception",
+              ex);
+      throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
+          "attachment.jcr.node.notFound.exception", ex);
     } finally {
-      if (session != null) {
-        session.logout();
-      }
-    }
-  }
-
-  @Override
-  public void deleteAttachment(SimpleDocument attachment) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
-      webdavAttachmentDao.deleteAttachmentNode(session, attachment);
-      session.save();
-    } catch (RepositoryException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.delete.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
-    } finally {
-      if (session != null) {
-        session.logout();
-      }
-    }
-  }
-
-  @Override
-  public void updateNodeAttachment(SimpleDocument attachment) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
-      webdavAttachmentDao.updateNodeAttachment(session, attachment);
-      session.save();
-    } catch (RepositoryException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
-    } catch (IOException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
-    } finally {
-      if (session != null) {
-        session.logout();
-      }
-    }
-  }
-
-  @Override
-  public boolean isNodeLocked(SimpleDocument attachment) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
-      return webdavAttachmentDao.isNodeLocked(session, attachment);
-    } catch (RepositoryException ex) {
-      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
-          "attachment.jcr.isLocked.exception", ex);
-      throw new AttachmentException("JcrAttachmentServiceImpl",
-          SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
-    } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 }

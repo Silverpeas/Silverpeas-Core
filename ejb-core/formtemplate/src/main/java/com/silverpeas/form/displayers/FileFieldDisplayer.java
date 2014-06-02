@@ -21,15 +21,22 @@
 package com.silverpeas.form.displayers;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.Util;
+import com.silverpeas.form.fieldType.FileField;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileServerUtils;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -43,24 +50,14 @@ import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.viewer.ViewerFactory;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.Util;
-import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileServerUtils;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -229,7 +226,8 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     sb.append("function previewFormFile(target, attachmentId) {\n");
     sb.append("$(target).preview(\"previewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId\n");
+    sb.append("attachmentId: attachmentId,\n");
+    sb.append("lang: '" + context.getContentLanguage() + "'\n");
     sb.append("});\n");
     sb.append("return false;");
     sb.append("}\n");
@@ -243,7 +241,8 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     sb.append("function viewFormFile(target, attachmentId) {\n");
     sb.append("$(target).view(\"viewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId\n");
+    sb.append("attachmentId: attachmentId,\n");
+    sb.append("lang: '" + context.getContentLanguage() + "'\n");
     sb.append("});\n");
     sb.append("return false;");
     sb.append("}\n");

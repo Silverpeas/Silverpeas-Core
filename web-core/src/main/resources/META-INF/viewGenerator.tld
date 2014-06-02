@@ -1441,6 +1441,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>If true, only the language label of langCode attribute is displayed</description>
+      <name>readOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Obtain the value of the parameter for the specified component instance.</description>

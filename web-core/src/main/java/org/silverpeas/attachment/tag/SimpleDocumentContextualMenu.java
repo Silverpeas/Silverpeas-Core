@@ -20,24 +20,21 @@
  */
 package org.silverpeas.attachment.tag;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static com.silverpeas.util.StringUtil.newline;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
@@ -97,10 +94,11 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       String favoriteLanguage = mainSessionController.getFavoriteLanguage();
       ResourceLocator messages = new ResourceLocator(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
-      String httpServerBase = URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
+      String httpServerBase =
+          URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
       pageContext.getOut().print(prepareActions(attachment, useXMLForm, useFileSharing, useWebDAV,
-          mainSessionController.getUserId(), contentLanguage, messages, httpServerBase,
-          showMenuNotif, useContextualMenu));
+          mainSessionController.getUserId(), contentLanguage, favoriteLanguage, messages,
+          httpServerBase, showMenuNotif, useContextualMenu));
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
       throw new JspException(ioex);
@@ -121,14 +119,16 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV) {
-    return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment);
+    return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment) &&
+        StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+            attachment.getLanguage()).equals(attachment.getLanguage());
   }
 
-  String prepareActions(SimpleDocument attachment, boolean useXMLForm,
-      boolean useFileSharing, boolean useWebDAV, String userId, String lang,
+  String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useFileSharing,
+      boolean useWebDAV, String userId, String contentLanguage, final String userLanguage,
       ResourceLocator resources, String httpServerBase, boolean showMenuNotif,
       boolean useContextualMenu) throws UnsupportedEncodingException {
-    String language = I18NHelper.checkLanguage(lang);
+    String language = I18NHelper.checkLanguage(contentLanguage);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(1024);
@@ -140,10 +140,19 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + webDavOK + ");", resources.getString("checkOut"));
     prepareMenuItem(builder, "checkoutAndDownload('" + attachment.getId() + "'," + attachmentId
         + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
-    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId
-        + ");", resources.getString("attachment.checkOutAndEditOnline"));
-    prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + ','
-        + attachment.isOpenOfficeCompatible() + ", false ," + attachment.isVersioned() + ");",
+    String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
+    String webdavContentEditionLanguageLabel = "";
+    if (I18NHelper.isI18nActivated()) {
+      webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
+              .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+                  attachment.getLanguage()), userLanguage);
+      checkoutAndEditLabel += " (" + webdavContentEditionLanguageLabel + ")";
+    }
+    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ");",
+        checkoutAndEditLabel);
+    prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + "," +
+            attachment.isOpenOfficeCompatible() + ", false, " + attachment.isVersioned() + ", '" +
+            webdavContentEditionLanguageLabel + "');",
         resources.getString("checkIn"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
