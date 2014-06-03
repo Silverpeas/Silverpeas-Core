@@ -46,10 +46,16 @@ public class LanguageEntity implements Exposable {
   @XmlElement
   private String name;
 
+  @XmlElement
+  private URI uri;
+
   @Override
   public URI getURI() {
-    // TODO Auto-generated method stub
-    return null;
+    return uri;
+  }
+
+  protected void setURI(final URI uri) {
+    this.uri = uri;
   }
 
   /**
@@ -67,7 +73,7 @@ public class LanguageEntity implements Exposable {
   /**
    * @return the lang
    */
-  public String getLang() {
+  public String getLanguage() {
     return lang;
   }
 

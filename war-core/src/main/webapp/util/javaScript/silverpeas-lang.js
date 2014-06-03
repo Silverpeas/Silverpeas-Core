@@ -30,14 +30,14 @@
 
   $.lang = {
     initialized: false,
-    changeLanguage: function (name) {
+    changeLanguage: function (lang) {
       window.console &&
-        window.console.log("Changing user language using " + name + ", currentUserLanguage = " + getUserLanguage());
-      var ajaxUrl = webContext + '/services/languages/';
-      var newLanguage = { "lang": name };
+        window.console.log("Changing user language using " + lang + ", currentUserLanguage = " + getUserLanguage());
+      var ajaxUrl = webContext + '/services/mypreferences';
+      var newLanguage = { "language": lang };
       jQuery.ajax({
         url: ajaxUrl,
-        type: 'POST',
+        type: 'PUT',
         data: $.toJSON(newLanguage),
         contentType: "application/json",
         cache: false,
@@ -65,7 +65,7 @@
           var sel = $('<select id="languageSelect" onChange="javascript:changeLanguage(this.value);"/>').appendTo($("#lang-select-div"));
           $(result).each(function() {
             sel.append($("<option>").attr('value',this.lang).text(this.name)
-                .prop('selected', this.lang == getUserLanguage()));
+                .prop('selected', this.lang === getUserLanguage()));
           });
           window.console &&
             window.console.log('userLanguage = ' + getUserLanguage());
@@ -97,11 +97,11 @@
 
 /**
 * This method change user language preference
-* @param name the
+* @param lang the new language
 */
-function changeLanguage(name) {
-  userLanguage = name;
-  $.lang.changeLanguage(name);
+function changeLanguage(lang) {
+  userLanguage = lang;
+  $.lang.changeLanguage(lang);
 }
 
 function displayLanguageSelection() {

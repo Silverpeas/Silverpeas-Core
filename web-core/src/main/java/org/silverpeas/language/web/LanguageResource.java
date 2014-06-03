@@ -65,19 +65,11 @@ public class LanguageResource extends RESTWebService {
         new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle",
             getUserPreferences().getLanguage());
     for (String language : DisplayI18NHelper.getLanguages()) {
-      languages.add(new LanguageEntity(language, multilang.getString(
-          MY_PROFILE_SETTINGS_LANGUAGE_KEY + language, StringUtil.EMPTY)));
+      LanguageEntity entity = new LanguageEntity(language, multilang.getString(
+          MY_PROFILE_SETTINGS_LANGUAGE_KEY + language, StringUtil.EMPTY));
+      entity.setURI(getUriInfo().getRequestUriBuilder().path(language).build());
+      languages.add(entity);
     }
     return languages;
-  }
-
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response setLanguage(final LanguageEntity newLanguage) {
-    UserPreferences userPref = getUserPreferences();
-    userPref.setLanguage(newLanguage.getLang());
-    SilverpeasServiceProvider.getPersonalizationService().saveUserSettings(userPref);
-    return Response.ok(newLanguage).build();
   }
 }
