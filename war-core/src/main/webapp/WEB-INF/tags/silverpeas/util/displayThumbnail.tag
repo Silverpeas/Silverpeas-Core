@@ -44,14 +44,22 @@
 <%@ attribute name="backURL" required="true" type="java.lang.String" description="URL to go back after processing the request" %>
 <%@ attribute name="width" required="false" type="java.lang.String" description="Width of thumbnail" %>
 <%@ attribute name="height" required="false" type="java.lang.String" description="Height of thumbnail" %>
-
+<style>
+<!--
+<c:if test="${thumbnail == null}">
+#thumbnailPreviewAndActions {
+display: none;
+}
+</c:if>
+-->
+</style>
 <script type="text/javascript">
 function updateThumbnail() {
   	$("#thumbnailInputs").css("display", "block");
   }
 
   function cropThumbnail() {
-  	$("#thumbnailDialog").dialog("option", "title", "<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>");
+  	$("#thumbnailDialog").dialog("option", "title", "<fmt:message key="GML.thumbnail.update"/>");
   	$("#thumbnailDialog").dialog("option", "width", 850);
   	<c:url value="/Thumbnail/jsp/thumbnailManager.jsp" var="myURL"><c:param name="Action" value="Update"/>
 	  <c:param name="modal" value="true"/>
@@ -79,6 +87,36 @@ function updateThumbnail() {
   	$("#thumbnailDialog").dialog("close");
   }
   
+  function getExtension(filename) {
+	var indexPoint = filename.lastIndexOf(".");
+	// on verifie qu il existe une extension au nom du fichier
+	if (indexPoint != -1) {
+	  // le fichier contient une extension. On recupere l extension
+	  var ext = filename.substring(indexPoint + 1);
+	  return ext.toLowerCase();
+	}
+	return null;
+  }
+  
+  function checkThumbnail(error) {
+    <c:if test="${mandatory}">
+      if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == '') {
+        error.msg += " - '<fmt:message key="GML.thumbnail"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+        error.nb++;
+      }
+    </c:if>
+
+    if ($('#thumbnailFile').length && $('#thumbnailFile').val() != '') {
+      var logicalName = $('#thumbnailFile').val();
+      var extension = getExtension(logicalName);
+      if (extension == null || (extension != "gif" && extension != "jpeg" && extension != "jpg" && extension != "png")) {
+        error.msg += " - '<fmt:message key="GML.thumbnail"/>' <fmt:message key="GML.thumbnail.badformat"/>\n";
+        error.nb++;
+      }
+    }
+    return false;
+  }
+  
   $(document).ready(function(){
     var dialogOpts = {
             modal: true,
@@ -97,16 +135,16 @@ function updateThumbnail() {
 			</div>
 			<div id="thumbnailActions">
 				<c:if test="${thumbnail != null && thumbnail.cropable}">
-					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop" bundle="${generalBundle}"/></a>
+					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop"/></a>
 				</c:if>
 				<c:if test="${thumbnail != null && !mandatory}">
-					<a href="javascript:deleteThumbnail()"><img src="<c:url value="/util/icons/cross.png"/>" alt="<fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/>"/> <fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/></a>
+					<a href="javascript:deleteThumbnail()"><img src="<c:url value="/util/icons/cross.png"/>" alt="<fmt:message key="GML.thumbnail.delete"/>" title="<fmt:message key="GML.thumbnail.delete"/>"/> <fmt:message key="GML.thumbnail.delete"/></a>
 				</c:if>
 			</div>
 		</div>
 
 		<div id="thumbnailInputs">
-			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
+			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update"/>" title="<fmt:message key="GML.thumbnail.update"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
 			<!-- TODO : Galleries -->
           	<c:if test="${mandatory}">
 				<img src="<c:url value="/util/icons/mandatoryField.gif"/>" width="5" height="5" border="0" alt=""/>
