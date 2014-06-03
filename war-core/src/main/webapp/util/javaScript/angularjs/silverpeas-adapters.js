@@ -56,14 +56,16 @@
     function _error(data, status, headers) {
       if (!performMessage(headers) && status)
         notyError("Error: " + status + "[ " + data + " ]");
-      else if (typeof window.console !== 'undefined') {
+      else if (typeof window.console !== 'undefined')
         console.warn("An unknown and unexpected error occurred");
-      }
     }
-
+       
     function _get(url, convert) {
       var deferred = $q.defer();
-      $http.get(url).error(_error).success(function(data, status, headers) {
+      $http.get(url).error(function(data, status, headers) {
+        _error(data, status, headers);
+        deferred.reject(data);
+      }).success(function(data, status, headers) {
         var result = _fetchData(data, convert, headers);
         deferred.resolve(result);
       });
@@ -72,15 +74,12 @@
 
     function _put(url, data, convert) {
       var deferred = $q.defer();
-      $http.put(url, data).error(_error).success(function(data, status, headers) {
-        var result = (convert ? convert(data) : data);
-        if (result instanceof Array) {
-          var maxlength = headers('X-Silverpeas-Size');
-          if (maxlength)
-            result.maxlength = maxlength;
-        }
+      $http.put(url, data).error(function(data, status, headers) {
+        _error(data, status, headers);
+        deferred.reject(data);
+      }).success(function(data, status, headers) {
+        var result = _fetchData(data, convert, headers);
         deferred.resolve(result);
-        performMessage(headers);
       });
       return deferred.promise;
     }
@@ -104,31 +103,35 @@
         $http.defaults.headers.post['Content-Type'] = 'text/plain; charset=UTF-8';
       }
       var deferred = $q.defer();
-      $http.post(requestedUrl, value).error(_error).success(function(data, status, headers) {
+      $http.post(requestedUrl, value).error(function(data, status, headers) {
+        _error(data, status, headers);
+        deferred.reject(data);
+      }).success(function(data, status, headers) {
         var result = _fetchData(data, this.converter, headers);
         deferred.resolve(result);
       });
       return deferred.promise;
     };
 
-      RESTAdapter.prototype.criteria = function() {
-        var criteria = null;
-        if (arguments && arguments.length > 0) {
-          criteria = {};
-          for (var i = 0; i < arguments.length; i++) {
-            var obj = arguments[i];
-            if (obj && typeof obj === 'object') {
-              for (var prop in obj) {
-                if (prop === 'page' && obj.page.number && obj.page.size)
-                  criteria.page = obj.page.number + ';' + obj.page.size;
-                else if (prop !== 'page' && obj[prop] !== null && obj[prop] !== undefined)
-                  criteria[prop] = obj[prop];
-              }
+    RESTAdapter.prototype.criteria = function() {
+      var criteria = null;
+      if (arguments && arguments.length > 0) {
+        criteria = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var obj = arguments[i];
+          if (obj && typeof obj === 'object') {
+            for (var prop in obj) {
+              if (prop === 'page' && obj.page.number && obj.page.size)
+                criteria.page = obj.page.number + ';' + obj.page.size;
+              else if (prop !== 'page' && obj[prop] !== null && obj[prop] !== undefined)
+                criteria[prop] = obj[prop];
             }
           }
         }
-        return criteria;
-      };
+      }
+      return criteria;
+    };
+
     RESTAdapter.prototype.delete = function(id) {
       var deferred = $q.defer();
       $http.delete(this.url + '/' + id).success(function(data, status, headers) {
@@ -140,56 +143,63 @@
       });
       return deferred.promise;
     };
+
     RESTAdapter.prototype.update = function(id, data) {
       return _put(this.url + '/' + id, data, this.converter);
     };
-    RESTAdapter.prototype.update = function(id, suffixUri, data) {
+
+    /*RESTAdapter.prototype.update = function(id, suffixUri, data) {
       return _put(this.url + '/' + id + '/' + suffixUri, data, this.converter);
-    };
-      RESTAdapter.prototype.find = function(parameters) {
-        if (parameters !== null && parameters !== undefined) {
-          if (typeof parameters === 'number' || typeof parameters === 'string') {
-            return this.findById(this.url, parameters);
-          } else if (parameters.url) {
-            if (parameters.criteria) {
-              return this.findByCriteria(parameters.url, parameters.criteria);
-            } else {
-              return _get(parameters.url, this.converter);
-            }
+    };*/
+
+    RESTAdapter.prototype.find = function(parameters) {
+      if (parameters !== null && parameters !== undefined) {
+        if (typeof parameters === 'number' || typeof parameters === 'string') {
+          return this.findById(this.url, parameters);
+        } else if (parameters.url) {
+          if (parameters.criteria) {
+            return this.findByCriteria(parameters.url, parameters.criteria);
           } else {
-            return this.findByCriteria(this.url, parameters);
+            return _get(parameters.url, this.converter);
           }
         } else {
-          return _get(this.url, this.converter);
+          return this.findByCriteria(this.url, parameters);
         }
-      };
-      RESTAdapter.prototype.findById = function(url, id) {
-        return _get(url + '/' + id, this.converter);
-      };
-      RESTAdapter.prototype.findByCriteria = function(url, criteria) {
-        if (!url) {
-          alert('[RESTAdapter#findByCriteria] URL undefined!');
-          return null;
-        }
-        var requestedUrl = url;
-        for (var param in criteria) {
-          if (criteria[param]) {
-            if (criteria[param] instanceof Array) {
-              for (var i = 0; i < criteria[param].length; i++) {
-                requestedUrl += (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param][i];
-              }
-            } else {
-              requestedUrl += (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param];
+      } else {
+        return _get(this.url, this.converter);
+      }
+    };
+
+    RESTAdapter.prototype.findById = function(url, id) {
+      return _get(url + '/' + id, this.converter);
+    };
+
+    RESTAdapter.prototype.findByCriteria = function(url, criteria) {
+      if (!url) {
+        alert('[RESTAdapter#findByCriteria] URL undefined!');
+        return null;
+      }
+      var requestedUrl = url;
+      for (var param in criteria) {
+        if (criteria[param]) {
+          if (criteria[param] instanceof Array) {
+            for (var i = 0; i < criteria[param].length; i++) {
+              requestedUrl +=
+                  (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param][i];
             }
+          } else {
+            requestedUrl +=
+                (requestedUrl.indexOf('?') < 0 ? '?' : '&') + param + '=' + criteria[param];
           }
         }
-        return _get(requestedUrl, this.converter);
-      };
+      }
+      return _get(requestedUrl, this.converter);
+    };
 
-      return {
-        get: function(url, converter) {
-          return new RESTAdapter(url, converter);
-        }
-      };
-    }]);
+    return {
+      get: function(url, converter) {
+        return new RESTAdapter(url, converter);
+      }
+    };
+  }]);
 })();
