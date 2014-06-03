@@ -226,7 +226,7 @@ function toggleContinuous(effect) {
                       <div id="nbAccessMaxArea" class="field threshold">
                         <label class="txtlibform" for="nbAccessMax"><fmt:message key="sharing.nbAccessMax"/></label>
                         <div class="champs">
-                          <input id="nbAccessMax" type="text" value="${maxAccessNb}" maxlength="5" size="5" name="nbAccessMax"/> <fmt:message key="sharing.nbAccessMax.info" bundle="${fsBundle}" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+                          <input id="nbAccessMax" type="text" value="${maxAccessNb}" maxlength="5" size="5" name="nbAccessMax"/> <fmt:message key="sharing.nbAccessMax.info" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
                         </div>
                       </div>
                     </div>
