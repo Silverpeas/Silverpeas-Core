@@ -86,6 +86,20 @@
             });
           }
         };
+
+        this.getExtended = function(userId) {
+          if (typeof userId === 'number' || typeof userId === 'string') {
+            var url = adapter.url + '/' + userId;
+            return adapter.find({
+              url : url,
+              criteria : adapter.criteria({extended : true}, defaultParameters)
+            });
+          } else {
+            window.console &&
+            window.console.log('User profile - ERROR - getting extended user data whithout specifying its id ...');
+            return {};
+          }
+        };
       };
     }]);
 
