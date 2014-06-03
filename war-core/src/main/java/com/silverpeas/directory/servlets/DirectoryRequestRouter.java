@@ -111,8 +111,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         destination = doPagination(request, users, directorySC);
       } else if (function.equalsIgnoreCase("searchByKey")) {
         String query = request.getParameter("key");
+        boolean globalSearch = request.getParameterAsBoolean("Global");
         if (StringUtil.isDefined(query)) {
-          users = directorySC.getUsersByQuery(query);
+          users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
         } else {
           destination = getDestination("tous", directorySC, request);
