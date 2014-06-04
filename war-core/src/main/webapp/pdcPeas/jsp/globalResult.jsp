@@ -96,10 +96,10 @@ void displayFacet(Facet facet, ResourcesWrapper resource, JspWriter out) throws 
 		    out.println("<li class=\""+lastClass+" "+entryClass+"\"><a href=\"javascript:"+jsAction+";\" title=\""+linkTitle+"\">"+displayComp+"</a></li>");
     	}
    		out.println("<input type=\"hidden\" name=\""+facet.getId()+"Filter\" id=\""+facetId+"FilterId\" value=\""+selectedEntryId+"\"/>");
-	 	if (displayToggle) {
+		out.println("</ul>");
+		if (displayToggle) {
 			out.println("<a href=\"#\" onclick=\"javascript:toggleFacet('facet-"+facetId+"')\" class=\"toggle more\"><span>"+resource.getString("pdcPeas.facet.toggle.show")+"</span></a>");
 		}
-		out.println("</ul>");
  		out.println("</div>");
  		out.println("</div>");
 	}
