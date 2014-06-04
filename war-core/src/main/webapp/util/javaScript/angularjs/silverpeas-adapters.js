@@ -51,7 +51,10 @@
     
       function _get(url, convert) {
         var deferred = $q.defer();
-        $http.get(url).error(_error).success(function(data, status, headers) {
+        $http.get(url).error(function(data, status, headers) {
+          _error(data, status, headers);
+          deferred.reject(data);
+        }).success(function(data, status, headers) {
           var result = (convert ? convert(data) : data);
           if (result instanceof Array) {
             var maxlength = headers('X-Silverpeas-Size');
