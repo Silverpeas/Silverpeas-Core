@@ -127,6 +127,8 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     result.append("<script type=\"text/javascript\">");
     result.append("var oMenu;");
+    result.append("var menuRenderedDeferred = new jQuery.Deferred();");
+    result.append("var menuRenderedPromise = menuRenderedDeferred.promise();");
     // Instantiate and render the menu when it is available in the DOM
     result
         .append("YAHOO.util.Event.onContentReady(\"menuwithgroups\", function () {");
@@ -172,7 +174,8 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     }
 
     // Once the menu is rendered this below event is triggered
-    result.append("$(document).trigger('menuRendered');");
+    result.append("setTimeout(applyTokenSecurityOnMenu, 0);");
+    result.append("menuRenderedDeferred.resolve();");
 
     result.append("});");
     result.append("</script>");

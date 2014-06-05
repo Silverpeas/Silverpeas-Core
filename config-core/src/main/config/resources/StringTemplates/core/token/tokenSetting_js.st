@@ -81,9 +81,13 @@ if (!window.XMLHttpRequest.prototype) {
   }
 }
 
-jQuery(document).bind('menuRendered', function(){
+function applyTokenSecurityOnMenu() {
   setTokens('#$CREATION_MENU_CONTAINER_ID$');
-});
+};
+
+function applyTokenSecurity() {
+  setTokens();
+}
 
 jQuery(document).ready(function() {
   try {
