@@ -151,6 +151,7 @@
     });
     -->
   </script>
+  <meta name="viewport" content="initial-scale=1.0"/>
 </head>
 <body>
 <form id="formLogin" action="<c:url value="/AuthenticationServlet" />" method="post" accept-charset="UTF-8">

@@ -97,7 +97,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     String alt = getMultilang().getString("GEF.operations.label", "Opérations");
 
-    result.append("<div align=\"right\"><span id=\"menutoggle\">").append(alt).append(
+    result.append("<div id='whatNextMenu' align=\"right\"'><span id=\"menutoggle\">").append(alt).append(
         "<img src=\"").append(getIconsPath()).append("/ptr.gif\" alt=\"").append(alt).append(
             "\"/></span></div>");
 
@@ -151,6 +151,11 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result
         .append(
             "YAHOO.util.Event.addListener(\"menutoggle\", \"mouseover\", oMenu.show, null, oMenu);");
+
+    result
+        .append(
+            "if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) ")
+        .append("$('#whatNextMenu').bind('touchstart', function() { oMenu.show(); });");
 
     if (highlightCreationItems()) {
       result.append("if ($('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
