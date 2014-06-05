@@ -129,7 +129,7 @@ public class JavascriptPluginInclusion {
    * @return
    */
   private static script script(String src) {
-    return new script().setType(JAVASCRIPT_TYPE).setSrc(src);
+    return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
   }
 
   /**
@@ -147,7 +147,7 @@ public class JavascriptPluginInclusion {
    * @return
    */
   private static link link(String href) {
-    return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
+    return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(appendVersion(href));
   }
 
   public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
@@ -365,5 +365,9 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeLang(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
     return xhtml;
+  }
+  
+  private static String appendVersion(String url) {
+    return URLManager.appendVersion(url);
   }
 }

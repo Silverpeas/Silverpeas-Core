@@ -44,6 +44,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import org.apache.commons.io.IOUtils;
@@ -75,7 +76,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     ResourceBundle silverpeasInitialisationSettings = FileUtil.loadBundle(
-        "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
+        "org.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
         new Locale("fr", ""));
 
     loadExternalJarLibraries();
@@ -117,6 +118,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
       }
 
     }
+    URLManager.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));
     springContextListener.contextInitialized(sce);
   }
 

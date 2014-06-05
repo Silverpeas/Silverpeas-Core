@@ -20,22 +20,24 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.SilverpeasToolContent;
-import com.silverpeas.util.ComponentHelper;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static com.silverpeas.util.StringUtil.isDefined;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import javax.servlet.http.HttpServletRequest;
+
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.SilverpeasToolContent;
+import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
@@ -105,6 +107,9 @@ public class URLManager {
   static Properties specialsURL = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
+  
+  private static String SILVERPEAS_VERSION = null; // ie 5.14.1-SNAPSHOT
+  private static String SILVERPEAS_VERSION_MIN = null;  // ie 5141SNAPSHOT
   
   private enum Permalink {
     Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
@@ -356,5 +361,22 @@ public class URLManager {
 
   public static boolean isPermalink(String url) {
     return Permalink.isCompliant(url);
+  }
+  
+  public static void setSilverpeasVersion(String version) {
+    SILVERPEAS_VERSION = version;
+    SILVERPEAS_VERSION_MIN = StringUtil.remove(StringUtil.remove(version, '.'), '-');
+  }
+  
+  public static String getSilverpeasVersion() {
+    return SILVERPEAS_VERSION;
+  }
+  
+  public static String getSilverpeasVersionMinify(){
+    return SILVERPEAS_VERSION_MIN;
+  }
+  
+  public static String appendVersion(String url) {
+    return url + "?v="+URLManager.getSilverpeasVersionMinify();
   }
 }
