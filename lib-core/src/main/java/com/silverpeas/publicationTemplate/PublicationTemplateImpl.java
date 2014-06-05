@@ -100,6 +100,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String updateTypeFile = "";
   private String fileName = "";
   private String externalId = "";
+  @XmlElement
   private String searchResultFileName = "";
   private RecordTemplate template = null;
   private RecordTemplate searchTemplate = null;
