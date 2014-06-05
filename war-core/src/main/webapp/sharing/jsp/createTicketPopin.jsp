@@ -262,7 +262,7 @@ function showInformation() {
       <label class="label-ui-dialog" for="users_name"><fmt:message key="GML.users"/></label>
       <span class="champ-ui-dialog">
         <input id="users" name="users" value="" type="hidden" />
-        <textarea id="users_name"  name="users$$name" cols="30" rows="2" ></textarea>&nbsp;
+        <textarea id="users_name"  name="users$$name" cols="30" rows="2" readonly></textarea>&nbsp;
         <a href="#" onclick="javascript:SP_openWindow( webContext + '/RselectionPeasWrapper/jsp/open?formName=ticketForm&amp;elementId=users&amp;elementName=users$$name&amp;selectedUsers=' + $('#users').val() + '&amp;selectionMultiple=true','selectUser',800,600,'');">
           <img src="<c:url value='${usersIcon}' />" alt="<fmt:message key='GML.users' />" title="<fmt:message key='GML.users' />" align="absmiddle" border="0" height="15" width="15" />
         </a>

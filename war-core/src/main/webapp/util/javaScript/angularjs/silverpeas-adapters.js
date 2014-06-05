@@ -132,9 +132,13 @@
       return criteria;
     };
 
-    RESTAdapter.prototype.delete = function(id) {
+    // IE8 does force to not use delete method as it is a forbidden keyword for itself...
+    // (delete = forbidden keyword)
+    RESTAdapter.prototype.remove = function(id) {
       var deferred = $q.defer();
-      $http.delete(this.url + '/' + id).success(function(data, status, headers) {
+      // IE8 does force to use of $http['delete'] instead of $http.delete...
+      // (delete = forbidden keyword)
+      $http['delete'](this.url + '/' + id).success(function(data, status, headers) {
         deferred.resolve(id);
         performMessage(headers);
       }).error(function(data, status, headers) {
@@ -147,10 +151,6 @@
     RESTAdapter.prototype.update = function(id, data) {
       return _put(this.url + '/' + id, data, this.converter);
     };
-
-    /*RESTAdapter.prototype.update = function(id, suffixUri, data) {
-      return _put(this.url + '/' + id + '/' + suffixUri, data, this.converter);
-    };*/
 
     RESTAdapter.prototype.find = function(parameters) {
       if (parameters !== null && parameters !== undefined) {
