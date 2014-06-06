@@ -38,6 +38,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.script;
 
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
@@ -118,8 +119,6 @@ public class GraphicElementFactory {
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
   public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
-  private static final String JAVASCRIPT_TAG_START = "<script type=\"text/javascript\" src=\"";
-  private static final String JAVASCRIPT_TAG_END = "\"></script>";
   private static final String STR_NEW_LINE = "\n";
 
   /**
@@ -312,12 +311,12 @@ public class GraphicElementFactory {
           if (component.isWorkflow()) {
             genericComponentName = "processManager";
           }
-          defaultComponentCSS = getCSSLinkTag(contextPath + "/" + genericComponentName
+          defaultComponentCSS = getCSSLinkTagWithVersion(contextPath + "/" + genericComponentName
               + "/jsp/styleSheets/" + genericComponentName + ".css");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
           if (StringUtil.isDefined(specificStyle)) {
-            specificComponentCSS = getCSSLinkTag(specificStyle);
+            specificComponentCSS = getCSSLinkTagWithVersion(specificStyle);
           }
 
           specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
@@ -325,10 +324,10 @@ public class GraphicElementFactory {
       }
 
       // append default global CSS
-      code.append(getCSSLinkTag(contextPath + STANDARD_CSS));
+      code.append(getCSSLinkTagWithVersion(contextPath + STANDARD_CSS));
 
       code.append("<!--[if IE]>\n");
-      code.append(getCSSLinkTag(contextPath + standardStyleForIE));
+      code.append(getCSSLinkTagWithVersion(contextPath + standardStyleForIE));
       code.append("<![endif]-->\n");
 
       // append default CSS of current component
@@ -350,17 +349,14 @@ public class GraphicElementFactory {
     // append javascript
     code.append("<script type=\"text/javascript\">var webContext='").append(contextPath)
         .append("';").append(STR_NEW_LINE).append(addGlobalJSVariable()).append("</script>\n");
+    
+    code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERY_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERYJSON_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERYJSON_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERYUI_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERY_i18N_JS));
 
-    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
-        "/util/javaScript/").append(SILVERPEAS_JS).append("\"></script>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERYJSON_JS).append("\"></script>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
     code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append(
         STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
@@ -370,13 +366,11 @@ public class GraphicElementFactory {
         STR_NEW_LINE);
 
     if (StringUtil.isDefined(specificJS)) {
-      code.append(JAVASCRIPT_TAG_START).append(specificJS).append(JAVASCRIPT_TAG_END)
-          .append(STR_NEW_LINE);
+      code.append(getJavaScriptTag(specificJS));
     }
 
     if (isComponentMainPage()) {
-      code.append(JAVASCRIPT_TAG_START).append(contextPath).append(
-          "/util/javaScript/jquery/jquery.cookie.js\"></script>").append(STR_NEW_LINE);
+      code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
     }
 
     if (getFavoriteLookSettings() != null
@@ -424,8 +418,7 @@ public class GraphicElementFactory {
         getSpaceLook(code, curSpace, spaceLookStyle);
         String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(this.spaceId);
         if (StringUtil.isDefined(css)) {
-          code.append("<link id=\"spaceCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"")
-              .append(css).append("\"/>\n");
+          code.append(getCSSLinkTagWithVersion(css));
         }
         return;
       }
@@ -443,8 +436,7 @@ public class GraphicElementFactory {
       setLook(spaceLookStyle);
       String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
       if (StringUtil.isDefined(lookStyle)) {
-        code.append("<link id=\"specificCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"");
-        code.append(lookStyle).append("\"/>\n");
+        code.append(getCSSLinkTagWithVersion(lookStyle));
       }
     } else {
       // Check the parent space look (recursive method)
@@ -505,12 +497,9 @@ public class GraphicElementFactory {
     code.append("    visibility:hidden;\n");
     code.append("    }\n");
     code.append("</style>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath);
-    code.append("/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath);
-    code.append("/util/yui/container/container_core-min.js\"></script>\n");
-    code.append(JAVASCRIPT_TAG_START).append(contextPath);
-    code.append("/util/yui/menu/menu-min.js\"></script>\n");
+    code.append(getJavaScriptTag(contextPath+"/util/yui/yahoo-dom-event/yahoo-dom-event.js"));
+    code.append(getJavaScriptTag(contextPath+"/util/yui/container/container_core-min.js"));
+    code.append(getJavaScriptTag(contextPath+"/util/yui/menu/menu-min.js"));
     return code.toString();
   }
 
@@ -980,5 +969,17 @@ public class GraphicElementFactory {
 
   private String getCSSLinkTag(String href) {
     return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + href + "\"/>\n";
+  }
+  
+  private String getCSSLinkTagWithVersion(String href) {
+    return getCSSLinkTag(URLManager.appendVersion(href));
+  }
+  
+  private String getJavaScriptTag(String src) {
+    return new script().setType("text/javascript").setSrc(src).toString()+STR_NEW_LINE;
+  }
+  
+  private String getJavaScriptTagWithVersion(String src) {
+    return getJavaScriptTag(URLManager.appendVersion(src));
   }
 }
