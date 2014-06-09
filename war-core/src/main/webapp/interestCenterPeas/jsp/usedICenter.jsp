@@ -25,14 +25,12 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkICenter.jsp" %>
  <HTML>
    <HEAD>
      <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-          <% out.println(gef.getLookStyleSheet()); %>
-
+     <view:looknfeel/>
  <script language="Javascript">
   // if user clicks cancel button - close popup window and set focus on edit field
     function sendCancel() {

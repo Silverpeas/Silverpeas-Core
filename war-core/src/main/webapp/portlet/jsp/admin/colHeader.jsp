@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");       //HTTP 1.0
@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 <html>
 <head>
 <title>Untitled Document</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<view:looknfeel/>
 <script language="JavaScript">
 <!--
 function OnResizeUpdate()
@@ -98,8 +98,6 @@ function validation() {
 
 //-->
 </script>
-
-<% out.println(gef.getLookStyleSheet()); %>
 <script language="javascript" src="../../util/javaScript/animation.js"></script>
 </head>
 

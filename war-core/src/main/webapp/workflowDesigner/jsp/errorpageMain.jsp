@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     if (response.isCommitted() == false)
         response.resetBuffer();
@@ -70,9 +70,7 @@
 <HTML>
 <HEAD>
 <TITLE><%= generalMessage.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </HEAD>
 
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>

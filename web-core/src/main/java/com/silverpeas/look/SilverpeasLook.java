@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.io.File;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -171,6 +172,34 @@ public class SilverpeasLook {
       }
     }
     return null;
+  }
+  
+  public String getCSSOfSpaceLook(String spaceId) {
+    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    Collections.reverse(path);
+    String cssURL = null;
+    for (SpaceInst space : path) {
+      if (StringUtil.isDefined(space.getLook())) {
+        cssURL = GraphicElementFactory.getCSSOfLook(space.getLook());
+      }
+      if (StringUtil.isDefined(cssURL)) {
+        break;
+      }
+    }
+    return cssURL;
+  }
+  
+  public String getSpaceLook(String spaceId) {
+    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    Collections.reverse(path);
+    String spaceLook = null;
+    for (SpaceInst space : path) {
+      spaceLook = space.getLook();
+      if (StringUtil.isDefined(space.getLook())) {
+        break;
+      }
+    }
+    return spaceLook;
   }
   
   private String getSpaceCSSURL(String spaceId) {

@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -106,8 +106,7 @@ ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <style type="text/css">
 <!--
 .eventCells {  padding-right: 3px; padding-left: 3px; vertical-align: top; background-color: #FFFFFF}

@@ -21,33 +21,21 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeAngular;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeNotifier;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeSecurityTokenizing;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeUserZoom;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeCkeditorAddOns;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.script;
-
-import com.silverpeas.look.SilverpeasLook;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
@@ -96,12 +84,9 @@ public class GraphicElementFactory {
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "");
-  private ResourceLocator lookSettings = null;
-  private ResourceLocator silverpeasLookSettings = null;
+  private static ResourceLocator lookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private final static String defaultLook = "org.silverpeas.util.viewGenerator.settings.Initial";
-  private final static ResourceLocator generalSettings = new ResourceLocator(
-      "org.silverpeas.general", I18NHelper.defaultLanguage);
   private final static String iconsPath = (URLManager.getApplicationURL() + settings
       .getString("IconsPath")).replaceAll("/$", "");
   private ResourceLocator multilang = null;
@@ -117,9 +102,16 @@ public class GraphicElementFactory {
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
-  private static final String SILVERPEAS_JS = "silverpeas.js";
   public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
-  private static final String STR_NEW_LINE = "\n";
+  
+  static {
+    lookSettings = new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "");
+    try {
+      lookSettings.getString("dummy");
+    } catch (MissingResourceException e) {
+      lookSettings = new ResourceLocator("org.silverpeas.util.viewGenerator.settings.defaultLookSettings", ""); 
+    }
+  }
 
   /**
    * Constructor declaration
@@ -132,10 +124,6 @@ public class GraphicElementFactory {
 
   public static String getIconsPath() {
     return iconsPath;
-  }
-
-  public static ResourceLocator getGeneralSettings() {
-    return generalSettings;
   }
 
   public ResourceLocator getMultilang() {
@@ -172,38 +160,7 @@ public class GraphicElementFactory {
   public ResourceLocator getLookSettings() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
         "root.MSG_GEN_ENTER_METHOD");
-    if (lookSettings == null) {
-      ResourceLocator silverpeasSettings = getSilverpeasLookSettings();
-      SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
-          "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
-      // get the customer lookSettings
-      try {
-        lookSettings =
-            new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
-                silverpeasSettings);
-      } catch (java.util.MissingResourceException e) {
-        // the customer lookSettings is undefined get the default silverpeas looks
-        lookSettings = silverpeasSettings;
-      }
-    }
-    SilverTrace.info("viewgenerator",
-        "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_EXIT_METHOD");
     return lookSettings;
-  }
-
-  /**
-   * Method declaration
-   * @return the default look settings ResourceLocator
-   * @see
-   */
-  public ResourceLocator getSilverpeasLookSettings() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getSilverpeasLookSettings()",
-        "root.MSG_GEN_ENTER_METHOD");
-    if (silverpeasLookSettings == null) {
-      silverpeasLookSettings = new ResourceLocator(
-          "org.silverpeas.util.viewGenerator.settings.defaultLookSettings", "");
-    }
-    return silverpeasLookSettings;
   }
 
   /**
@@ -220,38 +177,37 @@ public class GraphicElementFactory {
    * @param look
    * @see
    */
-  public final void setLook(String look) {
-    lookSettings = getLookSettings();
-    String selectedLook;
-
+  public final void setLook(String lookName) {
     // get the customer lookSettings
-    try {
-      selectedLook = lookSettings.getString(look, null);
-    } catch (java.util.MissingResourceException e) {
-      // the customer lookSettings is undefined
-      // get the default silverpeas looks
-      // lookSettings = null;
-      SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
-          "root.MSG_GEN_PARAM_VALUE", " customer lookSettings is undefined !");
-      lookSettings = getSilverpeasLookSettings();
-
-      selectedLook = silverpeasLookSettings.getString(look, null);
-      if (selectedLook == null) {
-        // ce look n'existe plus, look par defaut
-        selectedLook = defaultLook;
-      }
+    String selectedLook = lookSettings.getString(lookName, null);
+    if (selectedLook == null) {
+      // ce look n'existe plus, look par defaut
+      selectedLook = defaultLook;
     }
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
-        "root.MSG_GEN_PARAM_VALUE", " look = " + look
+        "root.MSG_GEN_PARAM_VALUE", " look = " + lookName
             + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
-    currentLookName = look;
+    currentLookName = lookName;
   }
 
   public String getCurrentLookName() {
     return currentLookName;
+  }
+  
+  public static String getCSSOfLook(String lookName) {
+    return getLookSettings(lookName).getString("StyleSheet");
+  }
+  
+  public static ResourceLocator getLookSettings(String lookName) {
+    String selectedLook = lookSettings.getString(lookName, null);
+    if (selectedLook == null) {
+      // ce look n'existe plus, look par defaut
+      selectedLook = defaultLook;
+    }
+    return new ResourceLocator(selectedLook, "");
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
@@ -277,230 +233,15 @@ public class GraphicElementFactory {
             + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
-
+  
   /**
-   * Method declaration
-   * @return
-   * @see
+   * Use {@link LookAndStyleTag} instead
+   * @return HTML header fragment
    */
+  @Deprecated
   public String getLookStyleSheet() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-        "root.MSG_GEN_ENTER_METHOD");
-    String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
-    String contextPath = getGeneralSettings().getString("ApplicationURL");
-    String charset = getGeneralSettings().getString("charset", CharEncoding.UTF_8);
-    StringBuilder code = new StringBuilder();
-    code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
-    code.append(charset);
-    code.append("\"/>\n");
-
-    String specificJS = null;
-
-    if (externalStylesheet == null) {
-      code.append(getCSSLinkTag(contextPath + "/util/styleSheets/jquery/" + JQUERYUI_CSS));
-
-      // define CSS(default and specific) and JS (specific) dedicated to current component
-      String defaultComponentCSS = null;
-      String specificComponentCSS = null;
-      if (StringUtil.isDefined(componentId) && mainSessionController != null) {
-        ComponentInstLight component = mainSessionController.getOrganisationController().
-            getComponentInstLight(componentId);
-        if (component != null) {
-          String componentName = component.getName();
-          String genericComponentName = getGenericComponentName(componentName);
-          if (component.isWorkflow()) {
-            genericComponentName = "processManager";
-          }
-          defaultComponentCSS = getCSSLinkTagWithVersion(contextPath + "/" + genericComponentName
-              + "/jsp/styleSheets/" + genericComponentName + ".css");
-
-          String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
-          if (StringUtil.isDefined(specificStyle)) {
-            specificComponentCSS = getCSSLinkTagWithVersion(specificStyle);
-          }
-
-          specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
-        }
-      }
-
-      // append default global CSS
-      code.append(getCSSLinkTagWithVersion(contextPath + STANDARD_CSS));
-
-      code.append("<!--[if IE]>\n");
-      code.append(getCSSLinkTagWithVersion(contextPath + standardStyleForIE));
-      code.append("<![endif]-->\n");
-
-      // append default CSS of current component
-      if (defaultComponentCSS != null) {
-        code.append(defaultComponentCSS);
-      }
-
-      // append specific global CSS
-      appendSpecificCSS(code);
-
-      // append specific CSS of current component
-      if (specificComponentCSS != null) {
-        code.append(specificComponentCSS);
-      }
-    } else {
-      code.append(getCSSLinkTag(externalStylesheet));
-    }
-
-    // append javascript
-    code.append("<script type=\"text/javascript\">var webContext='").append(contextPath)
-        .append("';").append(STR_NEW_LINE).append(addGlobalJSVariable()).append("</script>\n");
-    
-    code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERY_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERYJSON_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERYJSON_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERYUI_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" + JQUERY_i18N_JS));
-
-    code.append(includeAngular(new ElementContainer(), getLanguage()).toString()).append(
-        STR_NEW_LINE);
-    code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeCkeditorAddOns(new ElementContainer(), getLanguage()).toString()).append(
-        STR_NEW_LINE);
-
-    if (StringUtil.isDefined(specificJS)) {
-      code.append(getJavaScriptTag(specificJS));
-    }
-
-    if (isComponentMainPage()) {
-      code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
-    }
-
-    if (getFavoriteLookSettings() != null
-        && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
-      code.append(getYahooElements());
-      code.append(
-          JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), getLanguage())
-              .toString()).append(STR_NEW_LINE);
-      code.append(JavascriptPluginInclusion.includeMylinks(new ElementContainer()).toString())
-          .append(STR_NEW_LINE);
-    }
-
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-        "root.MSG_GEN_EXIT_METHOD");
-    return code.toString();
-  }
-
-  private String addGlobalJSVariable() {
-    StringBuilder globalJSVariableBuilder = new StringBuilder();
-    globalJSVariableBuilder.append("var userLanguage = '").append(getLanguage()).append("';")
-        .append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
-        .append(" }").append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("function getString(key) { return $.i18n.prop(key); }").append(
-        STR_NEW_LINE);
-    return globalJSVariableBuilder.toString();
-  }
-
-  /**
-   * Retrieve space look <br/>
-   * Look Style behavior algorithm is :
-   * <ul>
-   * <li>Use specific space look if defined</li>
-   * <li>else if use the user defined look settings</li>
-   * <li>else if use the default look settings</li>
-   * </ul>
-   * @param code the current state of the HTML produced for the header.
-   */
-  private void appendSpecificCSS(StringBuilder code) {
-    if (StringUtil.isDefined(this.spaceId)) {
-      SpaceInstLight curSpace = mainSessionController.getOrganisationController().
-          getSpaceInstLightById(this.spaceId);
-      if (curSpace != null) {
-        String spaceLookStyle = curSpace.getLook();
-        getSpaceLook(code, curSpace, spaceLookStyle);
-        String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(this.spaceId);
-        if (StringUtil.isDefined(css)) {
-          code.append(getCSSLinkTagWithVersion(css));
-        }
-        return;
-      }
-    }
-    appendDefaultLookCSS(code);
-  }
-
-  /**
-   * @param code the current state of the HTML produced for the header.
-   * @param curSpace
-   * @param spaceLookStyle
-   */
-  private void getSpaceLook(StringBuilder code, SpaceInstLight curSpace, String spaceLookStyle) {
-    if (StringUtil.isDefined(spaceLookStyle)) {
-      setLook(spaceLookStyle);
-      String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
-      if (StringUtil.isDefined(lookStyle)) {
-        code.append(getCSSLinkTagWithVersion(lookStyle));
-      }
-    } else {
-      // Check the parent space look (recursive method)
-      if (!curSpace.isRoot()) {
-        String fatherSpaceId = curSpace.getFatherId();
-        SpaceInstLight fatherSpace = mainSessionController.getOrganisationController().
-            getSpaceInstLightById(fatherSpaceId);
-        spaceLookStyle = fatherSpace.getLook();
-        getSpaceLook(code, fatherSpace, spaceLookStyle);
-      } else {
-        appendDefaultLookCSS(code);
-      }
-    }
-  }
-
-  /**
-   * Append the default look CSS.
-   * @param code the current state of the HTML produced for the header.
-   */
-  private void appendDefaultLookCSS(StringBuilder code) {
-    String userLookStyle = this.getDefaultLookName();
-    setLook(userLookStyle);
-    String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
-    if (StringUtil.isDefined(lookStyle)) {
-      code.append("<link id=\"specificCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"");
-      code.append(lookStyle).append("\"/>\n");
-    }
-  }
-
-  /**
-   * Some logical components have got the same technical component. For example, "toolbox" component
-   * is technically "kmelia"
-   * @return the "implementation" name of the given component
-   */
-  private String getGenericComponentName(String componentName) {
-    if ("toolbox".equalsIgnoreCase(componentName) || "kmax".equalsIgnoreCase(componentName)) {
-      return "kmelia";
-    }
-    if ("pollingstation".equalsIgnoreCase(componentName)) {
-      return "survey";
-    }
-    return componentName;
-  }
-
-  private String getYahooElements() {
-    String contextPath = getGeneralSettings().getString("ApplicationURL");
-    StringBuilder code = new StringBuilder();
-
-    code.append("<!-- CSS for Menu -->\n");
-    code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-    code.append(getSettings().getString("YUIMenuCss",
-        contextPath + "/util/yui/menu/assets/menu.css"));
-    code.append("\"/>\n");
-    code.append("<!-- Page-specific styles -->\n");
-    code.append("<style type=\"text/css\">\n");
-    code.append("    div.yuimenu {\n");
-    code.append("    position:dynamic;\n");
-    code.append("    visibility:hidden;\n");
-    code.append("    }\n");
-    code.append("</style>\n");
-    code.append(getJavaScriptTag(contextPath+"/util/yui/yahoo-dom-event/yahoo-dom-event.js"));
-    code.append(getJavaScriptTag(contextPath+"/util/yui/container/container_core-min.js"));
-    code.append(getJavaScriptTag(contextPath+"/util/yui/menu/menu-min.js"));
-    return code.toString();
+    return WebCommonLookAndFeel.getInstance().getCommonHeader(mainSessionController, getSpaceId(),
+        getComponentId());
   }
 
   /**
@@ -965,21 +706,5 @@ public class GraphicElementFactory {
       userLookStyle = defaultLookName;
     }
     return userLookStyle;
-  }
-
-  private String getCSSLinkTag(String href) {
-    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + href + "\"/>\n";
-  }
-  
-  private String getCSSLinkTagWithVersion(String href) {
-    return getCSSLinkTag(URLManager.appendVersion(href));
-  }
-  
-  private String getJavaScriptTag(String src) {
-    return new script().setType("text/javascript").setSrc(src).toString()+STR_NEW_LINE;
-  }
-  
-  private String getJavaScriptTagWithVersion(String src) {
-    return getJavaScriptTag(URLManager.appendVersion(src));
-  }
+  }  
 }

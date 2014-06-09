@@ -33,9 +33,7 @@
 %>
 <HTML>
 <HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript">
 function QuitAndRefresh()
 {

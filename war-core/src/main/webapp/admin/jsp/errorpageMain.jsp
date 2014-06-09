@@ -39,7 +39,7 @@ if (response.isCommitted() == false) {
 
 <%@ page isErrorPage="false" import="java.io.*" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -67,11 +67,8 @@ HomePageUtil.traceException(toDisplayException);
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%= generalMessage.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
-
 <body>
 <%
 Window window = gef.getWindow();

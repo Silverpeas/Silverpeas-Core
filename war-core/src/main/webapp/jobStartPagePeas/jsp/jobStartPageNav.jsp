@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
     DisplaySorted[] m_Spaces = (DisplaySorted[])request.getAttribute("Spaces");
@@ -39,7 +39,7 @@
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="JavaScript1.2">
 function viewSpace(){
     window.parent.startPageContent.location.href="StartPageInfo";

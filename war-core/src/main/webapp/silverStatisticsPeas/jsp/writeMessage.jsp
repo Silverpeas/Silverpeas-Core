@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
@@ -47,10 +47,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
 <script language="JavaScript">
 function validateUsers() {
 	document.EDform.submit();

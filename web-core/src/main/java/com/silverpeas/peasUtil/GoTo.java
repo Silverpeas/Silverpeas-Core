@@ -23,7 +23,6 @@ package com.silverpeas.peasUtil;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -158,6 +157,7 @@ public abstract class GoTo extends HttpServlet {
           helperSpaceId = helper.getSpaceId();
         }
         gef.setSpaceId(helperSpaceId);
+        gef.setComponentId(componentId);
       }
     }
   }

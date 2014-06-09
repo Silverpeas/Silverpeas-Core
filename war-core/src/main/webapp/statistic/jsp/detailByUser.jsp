@@ -25,17 +25,16 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.io.IOException,javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException,
                  java.rmi.RemoteException,javax.ejb.FinderException,java.util.Date"%>
 <%@ include file="checkStatistic.jsp" %>
 
 <html>
+	<head>
 	<title><%=generalMessage.getString("GML.popupTitle")%></title>
-	<%
-	    out.println(gef.getLookStyleSheet());
-	%>
-	<head></head>
+	<view:looknfeel/>
+	</head>
 	<body>
 	<%
 	    //initialisation des variables
