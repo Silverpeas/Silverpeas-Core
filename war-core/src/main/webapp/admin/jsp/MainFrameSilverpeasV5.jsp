@@ -201,7 +201,7 @@ border: none;
   	<frame src="frameBottomSilverpeasV5.jsp<%=frameBottomParams%>" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
   	<% if (helper.displayPDCFrame()) { %>
   		<!--  Content of this frame is processed when DomainsBar is initialized -->
-		<frame src="#" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+		<frame src="" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<% } %>
 	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
