@@ -26,7 +26,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.web.OnlineAttachment;
+import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileFactory;
+import org.silverpeas.file.SilverpeasFileDescriptor;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,11 +54,16 @@ public class OnlineFileServer extends AbstractFileSender {
   public void doPost(HttpServletRequest req, HttpServletResponse response)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverpeasFileFactory fileFactory = SilverpeasFileFactory.getFactory();
     String mimeType = req.getParameter("MimeType");
     String sourceFile = req.getParameter("SourceFile");
     String directory = req.getParameter("Directory");
     String componentId = req.getParameter("ComponentId");
-    OnlineFile onlineFile = new OnlineFile(mimeType, sourceFile, directory, componentId);
+    SilverpeasFileDescriptor ref =
+        new SilverpeasFileDescriptor(componentId).mimeType(mimeType).fileName(sourceFile)
+            .parentDirectory(directory);
+    SilverpeasFile onlineFile = fileFactory.getSilverpeasFile(ref);
+
     String attachmentId = req.getParameter("attachmentId");
     String language = req.getParameter("lang");
     if (StringUtil.isDefined(attachmentId)) {
@@ -64,7 +71,7 @@ public class OnlineFileServer extends AbstractFileSender {
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
           .searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
-        onlineFile = new OnlineAttachment(attachment);
+        onlineFile = fileFactory.getSilverpeasFile(attachment);
       }
     }
 
@@ -76,7 +83,7 @@ public class OnlineFileServer extends AbstractFileSender {
           versionPK, language);
 
       if (version != null) {
-        onlineFile = new OnlineAttachment(version);
+        onlineFile = fileFactory.getSilverpeasFile(version);
       }
     }
     sendFile(response, onlineFile);
