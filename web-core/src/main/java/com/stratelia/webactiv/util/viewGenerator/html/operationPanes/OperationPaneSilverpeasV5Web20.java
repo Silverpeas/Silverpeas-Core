@@ -97,8 +97,8 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     String alt = getMultilang().getString("GEF.operations.label", "Opérations");
 
-    result.append("<div id='whatNextMenu' align=\"right\"'><span id=\"menutoggle\">").append(alt).append(
-        "<img src=\"").append(getIconsPath()).append("/ptr.gif\" alt=\"").append(alt).append(
+    result.append("<div id='whatNextMenu' align='right'><span id='menutoggle'>").append(alt)
+        .append("<img src=\"").append(getIconsPath()).append("/ptr.gif\" alt=\"").append(alt).append(
             "\"/></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");

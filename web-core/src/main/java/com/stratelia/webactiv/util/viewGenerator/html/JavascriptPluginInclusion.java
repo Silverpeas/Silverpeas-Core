@@ -27,7 +27,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
@@ -350,10 +350,28 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  /**
+   * Two javascript methods are provided to apply security based on tokens:
+   * <ul>
+   * <li>applyTokenSecurity([optional jQuery selector]): all the DOM or the DOM under specified
+   * selector is set</li>
+   * <li>applyTokenSecurityOnMenu(): all the DOM that handles the menu is set.</li>
+   * </ul>
+   * @param xhtml
+   * @return
+   */
   public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
       xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
     }
+    StringBuilder sb = new StringBuilder();
+    String setTokensCondition = "if(typeof setTokens === 'function')";
+    sb.append("function applyTokenSecurity(targetContainerSelector){").append(setTokensCondition)
+        .append("{setTokens(targetContainerSelector);}}");
+    sb.append("function applyTokenSecurityOnMenu(){").append(setTokensCondition)
+        .append("{setTokens('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
+        .append("');}}");
+    xhtml.addElement(scriptContent(sb.toString()));
     return xhtml;
   }
 

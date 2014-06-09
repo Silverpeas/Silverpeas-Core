@@ -74,7 +74,6 @@
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
-<script type="text/javascript" src='<c:url value="/util/javaScript/silverpeas-sharing.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
   <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />

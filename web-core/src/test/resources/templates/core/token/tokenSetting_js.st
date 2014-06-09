@@ -67,7 +67,7 @@ function setTokens(targetContainerSelector) {
         _this.attr('href', stampURL(href));
       }
     }
-  })
+  });
 }
 
 if (!window.XMLHttpRequest.prototype) {
@@ -79,14 +79,6 @@ if (!window.XMLHttpRequest.prototype) {
       this.setRequestHeader("$SESSION_TOKEN_NAME$", "$SESSION_TOKEN_VALUE$");
     };
   }
-}
-
-function applyTokenSecurityOnMenu() {
-  setTokens('#$CREATION_MENU_CONTAINER_ID$');
-};
-
-function applyTokenSecurity() {
-  setTokens();
 }
 
 jQuery(document).ready(function() {

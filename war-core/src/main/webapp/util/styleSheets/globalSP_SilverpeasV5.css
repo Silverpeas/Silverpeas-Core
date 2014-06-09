@@ -2583,21 +2583,24 @@ ul#globalResultListDetails {
   background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
-silverpeas-toggle a.toggle {
+div.silverpeas-toggle {
+  display:inline;
+}
+.silverpeas-toggle a.toggle {
   text-align: right;
   display: block;
   color: #666;
 }
 
-silverpeas-toggle a.toggle.more {
+.silverpeas-toggle a.toggle.more {
   background: transparent url(../../util/icons/toggle/btn-toggle-more.png) center bottom no-repeat;
 }
 
-silverpeas-toggle a.toggle.less {
+.silverpeas-toggle a.toggle.less {
   background: transparent url(../../util/icons/toggle/btn-toggle-less.png) center bottom no-repeat;
 }
 
-silverpeas-toggle a.toggle span {
+.silverpeas-toggle a.toggle span {
   display: block;
   font-size: 10px;
   height: 19px;
@@ -6173,11 +6176,14 @@ form .forms .fields > li:nth-child(even) {
 }
 
 /**** Surchage plugin jquery rate it ****/
-silverpeas-rating .rateit .rateit-range,
-silverpeas-rating .rateit .rateit-preset,
-silverpeas-rating .rateit .rateit-preset-rtl,
-silverpeas-rating .rateit .rateit-selected,
-silverpeas-rating .rateit .rateit-hover {
+div.silverpeas-rating {
+  display:inline;
+}
+.silverpeas-rating .rateit .rateit-range,
+.silverpeas-rating .rateit .rateit-preset,
+.silverpeas-rating .rateit .rateit-preset-rtl,
+.silverpeas-rating .rateit .rateit-selected,
+.silverpeas-rating .rateit .rateit-hover {
        background-image: url(../icons/rateit/star.png) ;
 }
 

@@ -27,6 +27,8 @@
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
-<div ng-transclude class="{{originalClass}}"></div>
-<a href="#" ng-click="more()" class="toggle more"><span><fmt:message key="GML.toggle.showAll"/></span></a>
-<a href="#" ng-click="less()" class="toggle less" style="display: none"><span><fmt:message key="GML.toggle.minimize"/></span></a>
+<div class="silverpeas-toggle">
+  <div ng-transclude class="{{originalClass}}"></div>
+  <a href="#" ng-click="more()" class="toggle more"><span><fmt:message key="GML.toggle.showAll"/></span></a>
+  <a href="#" ng-click="less()" class="toggle less" style="display: none"><span><fmt:message key="GML.toggle.minimize"/></span></a>
+</div>

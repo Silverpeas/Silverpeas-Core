@@ -25,6 +25,7 @@ package org.silverpeas.sharing.notification;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -147,12 +148,9 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   @Override
   protected Collection<String> getUserIdsToNotify() {
     String selectedUsersStr = this.fileSharingParam.getSelectedUsers();
-    String[] selectedUsers = selectedUsersStr.split(COMMA_CHARACTER);
     List<String> listUsers = new ArrayList<String>();
-    if (selectedUsers != null) {
-      for (String selectedUserId : selectedUsers) {
-        listUsers.add(selectedUserId);
-      }
+    if (StringUtil.isDefined(selectedUsersStr)) {
+      Collections.addAll(listUsers, selectedUsersStr.split(COMMA_CHARACTER));
     }
     return listUsers;
   }

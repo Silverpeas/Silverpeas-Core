@@ -108,6 +108,9 @@ var Promise = angular.injector(['ng']).get('$q');
 var isCompileDirectiveBrowserCompatible = false;
 angular.module('silverpeas.directives').directive('compileDirective', function($compile) {
   return {
+    template: "<div class='compileDirectiveContainer' style='display: none'></div>",
+    replace: true,
+    restrict: 'AE',
     link : function postLink(scope, element, attr, controller) {
       isCompileDirectiveBrowserCompatible = true;
       scope.renderIn = function($target, html) {

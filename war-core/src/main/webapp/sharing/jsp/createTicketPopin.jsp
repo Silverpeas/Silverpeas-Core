@@ -284,3 +284,6 @@ function showInformation() {
 </div>
 <div id="sharingticket-error-content" style="display: none">
 </div>
+<script type="application/javascript">
+  applyTokenSecurity('#sharingticket-popup-content');
+</script>

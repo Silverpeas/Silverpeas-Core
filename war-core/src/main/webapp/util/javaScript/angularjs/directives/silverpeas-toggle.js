@@ -44,6 +44,7 @@
       scope : {
         originalClass : '@'
       },
+      replace: true,
       link : function postLink(scope, element, attrs) {
         $timeout(function() {
           scope.originalClass = attrs.originalclass;

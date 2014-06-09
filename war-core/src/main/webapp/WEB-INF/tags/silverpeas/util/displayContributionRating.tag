@@ -80,9 +80,9 @@
 <!-- ${raterRating.ratingAverage}: a little trick for table sorting -->
 <script type="text/javascript">var ${__raterRatingJsVarName} = ${raterRating.asJSonString};</script>
 
-<silverpeas-rating readonly="${_readOnly}"
+<div silverpeas-rating readonly="${_readOnly}"
                    forcedisplaywhennorating="${_forceDisplayWhenNoRating}"
                    shownbraterratings="${_showNbRaterRatings}"
                    starsize="${_starsize}"
                    canuserrating="${_canuserrating}"
-                   raterrating="${__raterRatingJsVarName}"></silverpeas-rating>
+                   raterrating="${__raterRatingJsVarName}"></div>

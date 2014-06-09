@@ -16,7 +16,7 @@
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
-  </function>  
+  </function>
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
