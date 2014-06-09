@@ -26,7 +26,7 @@
 
 <%@page import="org.apache.commons.io.FileUtils"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.io.*"%>
 <%@ include file="checkCommunicationUser.jsp" %>
 
@@ -40,9 +40,7 @@
 <html>
 <head>
 <TITLE><%=resources.getString("exportDiscussion")+" "+creationDate%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body bgcolor="#FFFFFF" leftmargin="1" topmargin="1" marginwidth="1" marginheight="1">
 <% 

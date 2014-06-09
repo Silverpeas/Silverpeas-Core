@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");       //HTTP 1.0
@@ -50,11 +50,8 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 </head>
-
-
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <center>
   <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#AFB8C9">

@@ -27,7 +27,7 @@
 <%@page import="com.silverpeas.session.SessionInfo"%>
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkSilverStatistics.jsp" %>
 
 <%
@@ -50,9 +50,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <!--[ JAVASCRIPT ]-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>

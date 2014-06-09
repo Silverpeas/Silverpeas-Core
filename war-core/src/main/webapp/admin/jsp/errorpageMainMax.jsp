@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%--
  % This page is invoked when an error happens at the server.  The
  % error details are available in the implicit 'exception' object.
@@ -58,9 +58,7 @@ String pile = (String) request.getParameter("pile");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%= generalMessage.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 <%

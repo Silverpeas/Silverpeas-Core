@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 List<Domain> allDomains = (List<Domain>)request.getAttribute("allDomains");
 Domain currentDomain = (Domain) request.getAttribute("CurrentDomain");
@@ -39,7 +39,7 @@ if (currentDomain != null) {
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="JavaScript1.2">
 function viewGroup(arg){
 	parent.domainContent.location = "groupSet?Idgroup="+arg;

@@ -71,9 +71,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("agenda.SynchroIcalCalendar") %></title>
-<%
-out.println(graphicFactory.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function synchroIcal() {

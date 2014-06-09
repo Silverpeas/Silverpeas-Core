@@ -377,6 +377,10 @@ public class URLManager {
   }
   
   public static String appendVersion(String url) {
-    return url + "?v="+URLManager.getSilverpeasVersionMinify();
+    String param = "v=" + URLManager.getSilverpeasVersionMinify();
+    if (url.indexOf('?') == -1) {
+      return url + "?" + param;
+    }
+    return url + "&" + param;
   }
 }

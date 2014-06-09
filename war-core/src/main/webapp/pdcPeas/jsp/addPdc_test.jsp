@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 
 <%@ page import="java.net.URLEncoder"%>
@@ -39,9 +39,7 @@
 %>
 <html>
 <head>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script language="JavaScript">
 function SP_openWindow(page,nom,largeur,hauteur,options) {
 	var top=(screen.height-hauteur)/2;

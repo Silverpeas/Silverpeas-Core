@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.GoogleTabsUtil"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
@@ -99,7 +99,7 @@ function OnLoad() {
 google.setOnLoadCallback(OnLoad);
 //]]>
 </script>
-<%=gef.getLookStyleSheet()%>
+<view:looknfeel/>
 <LINK REL="stylesheet" TYPE="text/css" HREF="<%=m_context%>/pdcPeas/jsp/css/google.css"/>
 <% if (StringUtil.isDefined(GoogleTabsUtil.getCss())) { %>
 	<LINK REL="stylesheet" TYPE="text/css" HREF="<%=GoogleTabsUtil.getCss()%>"/>

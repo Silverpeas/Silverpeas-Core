@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ include file="check.jsp" %>
 <%
@@ -62,9 +62,7 @@ browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <style type="text/css">
 .inlineMessage {
 	text-align: left;

@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.silverpeas.portlet.*"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
@@ -38,7 +38,6 @@
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	out.println(gef.getLookStyleSheet());
 %>
 <%@ page import="com.stratelia.silverpeas.portlet.*"%>
 <%@ page errorPage="../../admin/jsp/errorpagePopup.jsp"%>
@@ -46,12 +45,8 @@
 
 <HTML>
 <HEAD>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </HEAD>
-
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table border="0" cellspacing="0" cellpadding="0" bgcolor="#AFB8C9" width="100%">
   <tr>
