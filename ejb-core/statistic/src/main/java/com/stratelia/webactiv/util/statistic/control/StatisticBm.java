@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.util.ForeignPK;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -36,6 +37,8 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 public interface StatisticBm {
 
   public void addStat(String userId, ForeignPK foreignPK, int action, String objectType);
+  
+  public void addStat(String userId, SilverpeasContent content);
 
   public Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
       String objectType);
@@ -49,13 +52,21 @@ public interface StatisticBm {
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType, List<String> userIds);
 
-  public void deleteHistoryByAction(ForeignPK foreignPK, int action, String objectType);
+  public void deleteStats(ForeignPK foreignPK, String objectType);
+  
+  public void deleteStats(SilverpeasContent content);
+  
+  public void deleteStatsOfComponent(String componentId);
 
   public int getCount(List<ForeignPK> foreignPKs, int action, String objectType);
 
+  public int getCount(SilverpeasContent content, int action);
+  
   public int getCount(ForeignPK foreignPK, int action, String objectType);
 
   public int getCount(ForeignPK foreignPK, String objectType);
+  
+  public int getCount(SilverpeasContent content);
 
   public void moveStat(ForeignPK toForeignPK, int actionType, String objectType);
 

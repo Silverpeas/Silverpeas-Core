@@ -29,6 +29,7 @@ import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.util.ForeignPK;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,8 +47,7 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class StatisticBmEJB implements StatisticBm {
 
-  private final static String historyTableName = "SB_Statistic_History";
-  private final static int ACTION_ACCESS = 1;
+  public final static int ACTION_ACCESS = 1;
 
   public StatisticBmEJB() {
   }
@@ -63,23 +63,28 @@ public class StatisticBmEJB implements StatisticBm {
 
   @Override
   public void addStat(String userId, ForeignPK foreignPK, int actionType, String objectType) {
-    SilverTrace.info("statistic", "StatisticBmEJB.addObjectToHistory", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("statistic", "StatisticBmEJB.addStat", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      HistoryObjectDAO.add(con, historyTableName, userId, foreignPK, actionType, objectType);
+      HistoryObjectDAO.add(con, userId, foreignPK, actionType, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().addObjectToHistory()",
+      throw new StatisticRuntimeException("StatisticBmEJB().addStat()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
     } finally {
       DBUtil.close(con);
     }
+  }
+  
+  @Override
+  public void addStat(String userId, SilverpeasContent content) {
+    addStat(userId, getForeignPK(content), ACTION_ACCESS, content.getContributionType());
   }
 
   @Override
   public int getCount(List<ForeignPK> foreignPKs, int action, String objectType) {
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getCount(con, foreignPKs, action, historyTableName, objectType);
+      return HistoryObjectDAO.getCount(con, foreignPKs, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getCount()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
@@ -92,7 +97,7 @@ public class StatisticBmEJB implements StatisticBm {
   public int getCount(ForeignPK foreignPK, int action, String objectType) {
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getCount(con, foreignPK, action, historyTableName, objectType);
+      return HistoryObjectDAO.getCount(con, foreignPK, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getCount()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
@@ -100,10 +105,20 @@ public class StatisticBmEJB implements StatisticBm {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public int getCount(SilverpeasContent content, int action) {
+    return getCount(getForeignPK(content), content.getContributionType());
+  }
 
   @Override
   public int getCount(ForeignPK foreignPK, String objectType) {
     return getCount(foreignPK, ACTION_ACCESS, objectType);
+  }
+  
+  @Override
+  public int getCount(SilverpeasContent content) {
+    return getCount(getForeignPK(content), content.getContributionType());
   }
 
   @Override
@@ -112,7 +127,7 @@ public class StatisticBmEJB implements StatisticBm {
     SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getHistoryDetailByObject(con, historyTableName, foreignPK, objectType);
+      return HistoryObjectDAO.getHistoryDetailByObject(con, foreignPK, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getHistoryByAction()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
@@ -128,8 +143,7 @@ public class StatisticBmEJB implements StatisticBm {
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, historyTableName, foreignPK,
-          objectType, userId);
+      return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, foreignPK, objectType, userId);
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getHistoryByObjectAndUser()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
@@ -263,16 +277,33 @@ public class StatisticBmEJB implements StatisticBm {
   }
 
   @Override
-  public void deleteHistoryByAction(ForeignPK foreignPK, int action, String objectType) {
-    SilverTrace.info("statistic", "StatisticBmEJB.deleteHistoryByAction",
-        "root.MSG_GEN_ENTER_METHOD");
+  public void deleteStats(ForeignPK foreignPK, String objectType) {
+    SilverTrace.info("statistic", "StatisticBmEJB.deleteStat", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      HistoryObjectDAO.deleteHistoryByObject(con, historyTableName, foreignPK, objectType);
+      HistoryObjectDAO.deleteHistoryByObject(con, foreignPK, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().deleteHistoryByAction",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_DELETE_HISTORY_STATISTICS_PUBLICATION",
           e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  @Override
+  public void deleteStats(SilverpeasContent content) {
+    deleteStats(getForeignPK(content), content.getContributionType());
+  }
+  
+  @Override
+  public void deleteStatsOfComponent(String componentId) {
+    Connection con = getConnection();
+    try {
+      HistoryObjectDAO.deleteStatsOfComponent(con, componentId);
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().deleteStatsOfComponent",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_DELETE_HISTORY_STATISTICS", e);
     } finally {
       DBUtil.close(con);
     }
@@ -284,7 +315,7 @@ public class StatisticBmEJB implements StatisticBm {
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      HistoryObjectDAO.move(con, historyTableName, toForeignPK, actionType, objectType);
+      HistoryObjectDAO.move(con, toForeignPK, actionType, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().addObjectToHistory()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
@@ -340,9 +371,9 @@ public class StatisticBmEJB implements StatisticBm {
     int nb = 0;
     Connection con = getConnection();
     try {
-      List<Integer> objectIds = HistoryObjectDAO.getListObjectAccessByPeriod(con, primaryKeys,
+      List<String> objectIds = HistoryObjectDAO.getListObjectAccessByPeriod(con, primaryKeys,
           objectType, startDate, endDate);
-      Set<Integer> distinctObjectIds = new HashSet<Integer>(objectIds);
+      Set<String> distinctObjectIds = new HashSet<String>(objectIds);
       nb = distinctObjectIds.size();
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
@@ -359,10 +390,10 @@ public class StatisticBmEJB implements StatisticBm {
     int nb = 0;
     Connection con = getConnection();
     if (userIds != null && !userIds.isEmpty()) {
-      Set<Integer> distinctObjectIds = new HashSet<Integer>(userIds.size());
+      Set<String> distinctObjectIds = new HashSet<String>(userIds.size());
       try {
         for (String userId : userIds) {
-          List<Integer> objectIds = HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con,
+          List<String> objectIds = HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con,
               primaryKeys, objectType, startDate, endDate, userId);
           distinctObjectIds.addAll(objectIds);
         }
@@ -394,5 +425,9 @@ public class StatisticBmEJB implements StatisticBm {
     } finally {
       DBUtil.close(con);
     }
+  }
+  
+  private ForeignPK getForeignPK(SilverpeasContent content) {
+    return new ForeignPK(content.getId(), content.getComponentInstanceId());
   }
 }
