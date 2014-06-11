@@ -16,16 +16,16 @@
 <fmt:message var="ratingVoteYours" key="notation.vote.yours"></fmt:message>
 <fmt:message var="ratingVoteNone" key="notation.vote.yours.none"></fmt:message>
 
-<div class="silverpeas-rating">
-  <div class="labels" style="display: none"
+<span class="silverpeas-rating">
+  <span class="labels" style="display: none"
        label_RatingTooltips="${ratingTooltips}"
        label_RatingVote="${ratingVote}"
        label_RatingVotes="${ratingVotes}"
        label_RatingVoteDelete="${ratingVoteDelete}"
        label_RatingVoteYours="${ratingVoteYours}"
        label_RatingVoteNone="${ratingVoteNone}"
-       param_userAnonymous="${user.anonymous}"></div>
+       param_userAnonymous="${user.anonymous}"></span>
   <span class="spOverRating">
     <span class="spRating"></span> <span class="rating-contribution"><span class="rating-contribution-number">{{nbRaterRatings}}</span> {{ratingLabel}}</span>
   </span>
-</div>
+</span>
