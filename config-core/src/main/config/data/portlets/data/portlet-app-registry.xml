@@ -47,6 +47,8 @@
       <Collection name="supportsMap">
         <Collection name="text/html">
           <String value="VIEW"/>
+          <String value="EDIT"/>
+          <String value="HELP"/>
         </Collection>
       </Collection>
     </Properties>

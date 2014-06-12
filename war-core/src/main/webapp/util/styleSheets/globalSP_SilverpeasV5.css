@@ -5953,6 +5953,109 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 
 /*******************************/
+/***** portlet : News        ***/
+/*******************************/
+.portlet-content ul.listing-actuality-portlet {
+	list-style-type:none;
+	list-style-image:none;
+	padding:0;
+	margin:0;
+}
+.listing-actuality-portlet li{
+	clear:left;
+	position:relative;
+	margin-bottom:2em;
+}
+.listing-actuality-portlet h3 {
+	margin:0;
+	padding:0;
+}
+.listing-actuality-portlet h3 a{
+	font-size:11pt;
+}
+.listing-actuality-portlet p{
+	color:#8f8f8f;
+	padding:0;
+	margin:0.25em 0;
+}
+.listing-actuality-portlet .actuality-illustration {
+	width:210px;
+	float:left;
+	margin:0 0.5em 0.5em 0;
+}
+
+.listing-actuality-portlet .actuality-info-fonctionality {
+	background-color:#FFF;
+	position:absolute;
+	top:14px;
+	left:0;
+	display:inline;
+	padding:0.25em;
+}
+
+.listing-actuality-portlet .actuality-without-illustration .actuality-info-fonctionality {
+	position:relative;
+	top:inherit;
+	left:inherit;
+	display:inline;
+	padding:0.25em;
+	float:right;
+}
+.listing-actuality-portlet .actuality-info-fonctionality img{
+	vertical-align:bottom;
+}
+
+.portlet-content ul.slider-actuality-portlet  {
+	padding:0;
+	margin:0;
+	list-style-type:none;
+	text-align:center;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-illustration {
+	height:284px;
+	width:auto;
+	margin:0 auto;
+	float:none;
+	box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1);
+}
+.portlet-content ul.slider-actuality-portlet .actuality-date {
+	position:absolute;
+	top:298px;
+	left:10px;
+	color:#1c94d4
+}
+
+.portlet-content ul.slider-actuality-portlet .actuality-nb-commentaires {
+	position:absolute;
+	right:10px;
+	top:298px;
+}
+
+.portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-date,
+.portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-nb-commentaires {
+	top:10px;
+}
+
+.portlet-content ul.slider-actuality-portlet .actuality-title  {
+	padding:3em 10px 0em;
+	margin:0;
+	text-align:left;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-teasing  {
+	text-align:left;
+	color:#8f8f8f;
+	font-size:110%;
+	padding:0.5em 10px 1em;
+	margin:0 ;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-title  a{
+	font-size:120%;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-title  a:hover{
+	color:#1c94d4
+}
+
+/*******************************/
 /* Advanced search plugin */
 /*******************************/
 #advanced-search div.tableFrame {
