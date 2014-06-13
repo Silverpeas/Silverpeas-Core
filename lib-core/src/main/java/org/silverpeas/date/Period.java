@@ -53,9 +53,22 @@ public class Period implements Comparable, Serializable, Cloneable {
     knownPeriodTypes.remove(PeriodType.unknown);
   }
 
+  // Common immutable undefined period.
+  public static final Period UNDEFINED = new UndefinedPeriod();
+
   private PeriodType periodType = PeriodType.unknown;
   private DateTime beginDatable;
   private DateTime endDatable;
+
+  /**
+   * Checks if the specified period and returns the specified one if defined,
+   * or the common {@link Period#UNDEFINED} otherwise.
+   * @param period
+   * @return the specified period is defined, the common {@link Period#UNDEFINED} otherwise.
+   */
+  public static Period check(Period period) {
+    return (period != null && period.isDefined()) ? period : UNDEFINED;
+  }
 
   /**
    * Initialize a period from given dates.
@@ -195,6 +208,22 @@ public class Period implements Comparable, Serializable, Cloneable {
     this.beginDatable = beginDatable;
     this.endDatable = endDatable;
     inTimeZone(timeZone == null ? TimeZone.getDefault() : timeZone);
+  }
+
+  /**
+   * Indicates if one of begin date or end date is defined.
+   * @return true if period is defined, false otherwise.
+   */
+  public boolean isDefined() {
+    return getBeginDatable().isDefined() || getEndDatable().isDefined();
+  }
+
+  /**
+   * Indicates the opssite of {@link #isDefined()}.
+   * @return true if period is not defined, false otherwise.
+   */
+  public boolean isNotDefined() {
+    return !isDefined();
   }
 
   /**
@@ -424,7 +453,7 @@ public class Period implements Comparable, Serializable, Cloneable {
    * @return
    */
   public boolean isValid() {
-    return (getBeginDate() != null && getEndDate() != null &&
+    return isDefined() && (getBeginDate() != null && getEndDate() != null &&
         getBeginDate().compareTo(getEndDate()) <= 0);
   }
 

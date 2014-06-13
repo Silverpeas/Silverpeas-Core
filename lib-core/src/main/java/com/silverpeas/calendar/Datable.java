@@ -24,9 +24,10 @@
 
 package com.silverpeas.calendar;
 
+import com.stratelia.webactiv.util.DateUtil;
 import org.silverpeas.util.time.TimeData;
 
-import java.util.*;
+import java.util.TimeZone;
 
 /**
  * A datable object is an object that represents a date in Silverpeas, whatever it is. It can be a
@@ -296,6 +297,17 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
    * @return the new {@code Datable} with the amount added
    */
   T addMilliseconds(int amount);
-  
-  boolean isUndefined();
+
+  /**
+   * Indicates is the date is different from {@link DateUtil#MINIMUM_DATE} or
+   * {@link DateUtil#MAXIMUM_DATE}.
+   * @return true if the date is not equal to undifined one, false otherwise.
+   */
+  boolean isDefined();
+
+  /**
+   * Indicates the opposite of {@link #isDefined()}
+   * @return
+   */
+  boolean isNotDefined();
 }

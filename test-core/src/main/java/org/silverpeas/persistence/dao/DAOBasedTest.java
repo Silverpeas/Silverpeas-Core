@@ -25,6 +25,8 @@ package org.silverpeas.persistence.dao;
 
 import org.silverpeas.DataSetTest;
 
+import java.sql.Connection;
+
 /**
  * Abstract class for tests that are based on the behavior of a JPA repository. These tests are not
  * about the repository itself but on the persistence characteristics of a business object using a
@@ -35,5 +37,31 @@ public abstract class DAOBasedTest extends DataSetTest {
   @Override
   protected String getDataSourceInjectionBeanId() {
     return "dataSource";
+  }
+
+  /**
+   * Calling this method to perform a DAO test without handling the connection opening and closing.
+   * @param daoTest
+   * @throws Exception
+   */
+  protected void performDAOTest(DAOTest daoTest) throws Exception {
+    Connection connexion = getConnection();
+    try {
+      daoTest.test(connexion);
+    } finally {
+      connexion.close();
+    }
+  }
+
+  /**
+   * Interface that must be implemented to perform a DAO test.
+   */
+  protected interface DAOTest {
+
+    /**
+     * The method containing the test.
+     * @param connection the connection for the current test.
+     */
+    void test(Connection connection) throws Exception;
   }
 }

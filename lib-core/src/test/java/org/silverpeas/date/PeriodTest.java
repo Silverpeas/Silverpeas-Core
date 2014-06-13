@@ -23,6 +23,8 @@
  */
 package org.silverpeas.date;
 
+import com.silverpeas.calendar.DateTime;
+import com.stratelia.webactiv.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +36,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * User: Yohann Chastagnier
@@ -57,6 +59,70 @@ public class PeriodTest {
   public void tearDown() {
     MessageManager.clear(MessageManager.getRegistredKey());
     MessageManager.destroy();
+  }
+
+  @Test
+  public void check() {
+    assertThat(Period.check(null), sameInstance(Period.UNDEFINED));
+
+    assertThat(Period.check(periodReferenceTest), sameInstance(periodReferenceTest));
+    assertThat(Period.check(periodReferenceTest), not(sameInstance(Period.UNDEFINED)));
+
+    Period period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.getNow());
+    assertThat(Period.check(period), sameInstance(period));
+    assertThat(Period.check(period), not(sameInstance(Period.UNDEFINED)));
+
+    period = Period.from(DateUtil.getNow(), DateUtil.MAXIMUM_DATE);
+    assertThat(Period.check(period), sameInstance(period));
+    assertThat(Period.check(period), not(sameInstance(Period.UNDEFINED)));
+
+    period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
+    assertThat(Period.check(period), not(sameInstance(period)));
+    assertThat(Period.check(period), sameInstance(Period.UNDEFINED));
+  }
+
+  @Test
+  public void undefinedPeriod() {
+    Period period = Period.UNDEFINED;
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setDate(DateUtil.getNow(), PeriodType.day);
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setDate(DateUtil.getNow(), TimeZone.getDefault(), PeriodType.day);
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setDate(new DateTime(DateUtil.getNow()), PeriodType.day);
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setDates(DateUtil.getNow(), DateUtil.getNow());
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setDates(DateUtil.getNow(), DateUtil.getNow(), TimeZone.getDefault());
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setDates(new DateTime(DateUtil.getNow()), new DateTime(DateUtil.getNow()));
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    period.setPeriodType(PeriodType.day);
+
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.getPeriodType(), is(PeriodType.unknown));
+
+    assertThat(period.clone(), sameInstance(period));
   }
 
   /**
@@ -104,12 +170,36 @@ public class PeriodTest {
   }
 
   @Test
+  public void periodDefinedNotDefined() {
+    Period period = Period.from(Timestamp.valueOf("2013-11-28 00:00:00.000"),
+        Timestamp.valueOf("2013-11-29 00:00:00.000"));
+    assertThat(period.isDefined(), is(true));
+    assertThat(period.isNotDefined(), is(false));
+    period = Period.from(DateUtil.MINIMUM_DATE, Timestamp.valueOf("2013-11-29 00:00:00.000"));
+    assertThat(period.isDefined(), is(true));
+    assertThat(period.isNotDefined(), is(false));
+    period = Period.from(Timestamp.valueOf("2013-11-28 00:00:00.000"), DateUtil.MAXIMUM_DATE);
+    assertThat(period.isDefined(), is(true));
+    assertThat(period.isNotDefined(), is(false));
+    period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
+    assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+
+    assertThat(Period.UNDEFINED.isDefined(), is(false));
+    assertThat(Period.UNDEFINED.isNotDefined(), is(true));
+  }
+
+  @Test
   public void periodNotValid() {
     Period periodTest = Period.from(Timestamp.valueOf("2013-11-28 12:00:00.010"),
         Timestamp.valueOf("2013-11-28 12:00:00.009"));
     assertThat(periodTest.formatPeriodForTests(),
         is("Period(2013-11-28 12:00:00.010, 2013-11-28 12:00:00.009) -> elapsed time 0 day(s), " +
             "covered time 1 day(s), unknown type, is not valid"));
+
+    assertThat(Period.UNDEFINED.formatPeriodForTests(),
+        is("Period(1900-01-01 00:00:00.000, 2999-12-31 00:00:00.000) -> elapsed time 401 766 day" +
+            "(s), covered time 401 766 day(s), unknown type, is not valid"));
   }
 
   @Test

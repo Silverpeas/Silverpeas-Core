@@ -208,10 +208,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    */
   @Override
   public String toString() {
-    StringBuilder buffer = new StringBuilder(100);
-    buffer.append("(id = ").append(getId()).append(", instanceId = ").append(getComponentName())
-        .append(")");
-    return buffer.toString();
+    return "(id = " + getId() + ", instanceId = " + getInstanceId() + ")";
   }
 
 

@@ -20,16 +20,6 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.util.ComponentHelper;
@@ -38,6 +28,15 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -102,6 +101,7 @@ public class URLManager {
   public final static int URL_MESSAGE = 7;
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
+  public final static int URL_MEDIA = 10;
   private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL",
       "/silverpeas");
   static Properties specialsURL = null;
@@ -110,13 +110,14 @@ public class URLManager {
   
   private static String SILVERPEAS_VERSION = null; // ie 5.14.1-SNAPSHOT
   private static String SILVERPEAS_VERSION_MIN = null;  // ie 5141SNAPSHOT
-  
-  private enum Permalink {
+
+  public enum Permalink {
     Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
     Component(URL_COMPONENT, "/Component/"), Folder(URL_TOPIC, "/Topic/"),
     File(URL_FILE, "/File/"), Document(URL_DOCUMENT, "/Document/"),
     Version(URL_VERSION, "/Version/"), Survey(URL_SURVEY, "/Survey/"),
-    Question(URL_QUESTION, "/Question/"), ForumMessage(URL_MESSAGE, "/ForumsMessage/");
+    Question(URL_QUESTION, "/Question/"), ForumMessage(URL_MESSAGE, "/ForumsMessage/"),
+    Media(URL_MEDIA, "/Media/");
     private int type;
     private String urlPrefix;
 
@@ -357,6 +358,19 @@ public class URLManager {
       Logger.getLogger(URLManager.class.getSimpleName()).log(Level.WARNING, ex.getMessage());
     }
     return encodedUrl;
+  }
+
+  /**
+   * Gets the permalink according to the specified parameters.
+   * @param permalink the permalink type.
+   * @param resourceId the identifier of the resource.
+   * @return the permalink string.
+   */
+  public static String getPermalink(Permalink permalink, String resourceId) {
+    if (URLManager.displayUniversalLinks()) {
+      return getSimpleURL(permalink.getType(), resourceId);
+    }
+    return "";
   }
 
   public static boolean isPermalink(String url) {

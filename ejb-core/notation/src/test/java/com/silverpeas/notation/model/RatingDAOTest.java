@@ -84,15 +84,6 @@ public class RatingDAOTest extends DAOBasedTest {
     }
   }
 
-  /**
-   * Gets the database connection
-   * @return
-   * @throws java.sql.SQLException
-   */
-  private Connection getConnection() throws SQLException {
-    return getDataSource().getConnection();
-  }
-
   @Test
   public void createRating() throws Exception {
     UserDetail rater = aUser("26");

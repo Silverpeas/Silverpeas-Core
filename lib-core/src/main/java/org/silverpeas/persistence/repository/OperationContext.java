@@ -100,6 +100,14 @@ public class OperationContext {
   }
 
   /**
+   * Gets the user behind the operation.
+   * @return
+   */
+  public UserDetail getUser() {
+    return user;
+  }
+
+  /**
    * Put the current instance into a cache (thread cache (request cache exactly)) to be retrieved
    * from @PrePersist or @PreUpdate operations.
    * The call of this method is automatically done by technical JPA tools.
