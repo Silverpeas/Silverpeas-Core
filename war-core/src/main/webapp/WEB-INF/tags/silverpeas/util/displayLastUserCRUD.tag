@@ -57,6 +57,17 @@
   <c:set var="updatedBy" value="<%=UserDetail.getById(updatedById)%>"/>
 </c:if>
 
+<%-- Publisher --%>
+<%@ attribute name="publishDate" required="false" type="java.util.Date"
+              description="The date of publishing" %>
+<%@ attribute name="publishedBy" required="false" type="com.stratelia.webactiv.beans.admin.UserDetail"
+              description="The user who have published " %>
+<%@ attribute name="publishedById" required="false" type="java.lang.String"
+              description="The user id who have published" %>
+<c:if test="${publishedBy == null && silfn:isDefined(publishedById)}">
+  <c:set var="publishedBy" value="<%=UserDetail.getById(publishedById)%>"/>
+</c:if>
+
 <%@ attribute name="displayHour" required="false" type="java.lang.Boolean"
               description="Display the hour of the dates" %>
 <c:if test="${displayHour == null}">
@@ -70,6 +81,17 @@
 </c:if>
 
 <div class="bgDegradeGris" id="link-domain-content">
+  <c:if test="${publishDate != null && publishedBy != null}">
+    <div class="paragraphe" id="lastModificationInfo"><fmt:message key="GML.publishedAt" bundle="${generalBundle}"/><br>
+      <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(publishDate, _language)}</c:when><c:otherwise>${silfn:formatDate(publishDate, _language)}</c:otherwise></c:choose></b>
+      <fmt:message key="GML.by" bundle="${generalBundle}"/>
+      <view:username userId="${publishedBy.id}" zoom="${displayUserZoom}"/>
+      <div class="profilPhoto">
+        <img src='<c:url value="${publishedBy.avatar}" />' alt="" class="defaultAvatar"/>
+      </div>
+    </div>
+  </c:if>
+  
   <c:if test="${updateDate != null && updatedBy != null}">
     <div class="paragraphe" id="lastModificationInfo"><fmt:message key="GML.updatedAt" bundle="${generalBundle}"/><br>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(updateDate, _language)}</c:when><c:otherwise>${silfn:formatDate(updateDate, _language)}</c:otherwise></c:choose></b>
