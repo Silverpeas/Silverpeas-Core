@@ -148,11 +148,15 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
   
   public String getURL() {
     String image = getOriginalFileName();
+    if (image.startsWith("/")) {
+      // case of an image from 'gallery' app
+      return image; // + "&Size=133x100";
+    }
     if (getCropFileName() != null) {
       image = getCropFileName();
     }
-    return FileServerUtils.getUrl(getInstanceId(), "thumbnail",
-        image, getMimeType(), publicationSettings.getString("imagesSubDirectory"));
+    return FileServerUtils.getUrl(getInstanceId(), "thumbnail", image, getMimeType(),
+        publicationSettings.getString("imagesSubDirectory"));
   }
 
 }

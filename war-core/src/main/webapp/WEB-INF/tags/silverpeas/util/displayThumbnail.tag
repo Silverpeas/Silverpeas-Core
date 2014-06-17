@@ -1,4 +1,3 @@
-<%@ tag import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -22,7 +21,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-
+<%@tag import="java.util.ArrayList"%>
+<%@tag import="com.silverpeas.util.StringUtil"%>
+<%@tag import="org.silverpeas.core.admin.OrganisationControllerFactory"%>
+<%@tag import="org.silverpeas.core.admin.OrganisationController"%>
+<%@tag import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@tag import="java.util.List"%>
+<%@ tag import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -35,6 +40,19 @@
 <fmt:setLocale value="${_language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
+<%
+List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
+OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
+String[] compoIds = orgaController.getCompoId("gallery");
+for (String compoId : compoIds) {
+  if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
+    ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
+    galleries.add(gallery);
+  }
+}
+request.setAttribute("galleries", galleries);
+%>
+
 <%@ attribute name="thumbnail" required="true" type="com.silverpeas.thumbnail.model.ThumbnailDetail" description="The thumbnail to manage" %>
 <%@ attribute name="mandatory" required="true" type="java.lang.Boolean" description="If thumbnail is mandatory" %>
 <%@ attribute name="error" required="false" type="java.lang.String" description="Error" %>
@@ -42,8 +60,8 @@
 <%@ attribute name="objectId" required="true" type="java.lang.String" description="ID of object" %>
 <%@ attribute name="objectType" required="true" type="java.lang.Integer" description="Type of object" %>
 <%@ attribute name="backURL" required="true" type="java.lang.String" description="URL to go back after processing the request" %>
-<%@ attribute name="width" required="false" type="java.lang.String" description="Width of thumbnail" %>
-<%@ attribute name="height" required="false" type="java.lang.String" description="Height of thumbnail" %>
+<%@ attribute name="width" required="false" type="java.lang.Integer" description="Width of thumbnail" %>
+<%@ attribute name="height" required="false" type="java.lang.Integer" description="Height of thumbnail" %>
 <style>
 <!--
 <c:if test="${thumbnail == null}">
@@ -53,13 +71,15 @@ display: none;
 </c:if>
 -->
 </style>
+<c:url value="/util/javaScript/animation.js" var="jsAnimation"/>
+<script type="text/javascript" src="${jsAnimation}"></script>
 <script type="text/javascript">
 function updateThumbnail() {
   	$("#thumbnailInputs").css("display", "block");
   }
 
   function cropThumbnail() {
-  	$("#thumbnailDialog").dialog("option", "title", "<fmt:message key="GML.thumbnail.update"/>");
+  	$("#thumbnailDialog").dialog("option", "title", "<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>");
   	$("#thumbnailDialog").dialog("option", "width", 850);
   	<c:url value="/Thumbnail/jsp/thumbnailManager.jsp" var="myURL"><c:param name="Action" value="Update"/>
 	  <c:param name="modal" value="true"/>
@@ -74,13 +94,14 @@ function updateThumbnail() {
   }
 
   function deleteThumbnail() {
-    <c:url value="/Thumbnail/jsp/thumbnailManager.jsp" var="myURL"><c:param name="Action" value="Delete"/>
-  	  <c:param name="ComponentId" value="${componentId}"/>
-  	  <c:param name="ObjectId" value="${objectId}"/>
-  	  <c:param name="ObjectType" value="${objectType}"/>
-  	  <c:param name="BackUrl" value="${backURL}"/>
-  	</c:url>
-    jQuery('#genericForm').attr('action', "${myURL}").submit();
+    $.ajax(webContext+"/services/thumbnail/${componentId}/${objectType}/${objectId}", {
+   		 type: "DELETE",
+   		 async : false,
+   		 cache : false,
+   		 success : function(data){
+   			$("#thumbnailPreviewAndActions").hide();
+   		 }
+    });
   }
 
   function closeThumbnailDialog() {
@@ -117,6 +138,31 @@ function updateThumbnail() {
     return false;
   }
   
+  var galleryWindow = window;
+
+  function choixGallery(liste) {
+    index = liste.selectedIndex;
+    var componentId = liste.options[index].value;
+	if (index != 0) {
+      url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}";
+      windowName = "galleryWindow";
+      larg = "820";
+      haut = "600";
+      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+      if (!galleryWindow.closed && galleryWindow.name=="galleryWindow") {
+        galleryWindow.close();
+      }
+      galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+    }
+  }
+
+  function choixImageInGallery(url) {
+    $("#thumbnailPreviewAndActions").css("display", "block");
+    $("#thumbnailActions").css("display", "none");
+    $("#thumbnail").attr("src", url);
+    $("#valueImageGallery").attr("value", url);
+  }
+  
   $(document).ready(function(){
     var dialogOpts = {
             modal: true,
@@ -135,17 +181,25 @@ function updateThumbnail() {
 			</div>
 			<div id="thumbnailActions">
 				<c:if test="${thumbnail != null && thumbnail.cropable}">
-					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop"/></a>
+					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop" bundle="${generalBundle}"/></a>
 				</c:if>
 				<c:if test="${thumbnail != null && !mandatory}">
-					<a href="javascript:deleteThumbnail()"><img src="<c:url value="/util/icons/cross.png"/>" alt="<fmt:message key="GML.thumbnail.delete"/>" title="<fmt:message key="GML.thumbnail.delete"/>"/> <fmt:message key="GML.thumbnail.delete"/></a>
+					<a href="javascript:deleteThumbnail()"><img src="<c:url value="/util/icons/cross.png"/>" alt="<fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/>"/> <fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/></a>
 				</c:if>
 			</div>
 		</div>
 
 		<div id="thumbnailInputs">
-			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update"/>" title="<fmt:message key="GML.thumbnail.update"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
-			<!-- TODO : Galleries -->
+			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
+			<c:if test="${not empty galleries}">
+				<span class="txtsublibform"> <fmt:message key="GML.or" bundle="${generalBundle}"/> </span><input type="hidden" id="valueImageGallery" name="valueImageGallery"/>
+				<select id="galleries" name="galleries" onchange="choixGallery(this);this.selectedIndex=0;">
+					<option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
+				    <c:forEach items="${galleries}" var="gallery">
+				    	<option value="${gallery.id()}">${gallery.label}</option>
+					</c:forEach>
+               	</select>
+			</c:if>
           	<c:if test="${mandatory}">
 				<img src="<c:url value="/util/icons/mandatoryField.gif"/>" width="5" height="5" border="0" alt=""/>
 		    </c:if>

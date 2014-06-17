@@ -81,6 +81,7 @@
   <ctx:component-scan base-package="org.silverpeas.cache"/>
   <ctx:component-scan base-package="org.silverpeas.notification"/>
   <ctx:component-scan base-package="com.silverpeas.thumbnail"/>
+  <ctx:component-scan base-package="org.silverpeas.thumbnail"/>
   <ctx:component-scan base-package="org.silverpeas.rating"/>
   <ctx:component-scan base-package="org.silverpeas.persistence"/>
   <ctx:component-scan base-package="org.silverpeas.mylinks"/>
@@ -201,7 +202,7 @@
         factory-method="getInstance"/>
 
   <!-- the factory of thumbnail services.
-  It wraps and provides an access to different service instances relative to cache handling -->
+  It wraps and provides an access to different service instances relative to thumbnail handling -->
   <bean id="thumbnailServiceFactory" class="com.silverpeas.thumbnail.service.ThumbnailServiceFactory"
         factory-method="getInstance"/>
 
