@@ -37,16 +37,18 @@ import javax.servlet.http.HttpServletRequest;
  * Date: 10/09/13
  */
 public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthenticationVerifier {
+
   public static final String ERROR_USER_TOS_REFUSED = "Error_UserTosRefused";
   public static final String ERROR_USER_TOS_TIMEOUT = "Error_UserTosTimeout";
 
-  private static TermsOfServiceAcceptanceFrequency acceptanceFrequency;
+  private static TermsOfServiceAcceptanceFrequency globalAcceptanceFrequency;
+  private TermsOfServiceAcceptanceFrequency acceptanceFrequency;
 
   // In seconds, 10 minutes (60seconds x 10minutes)
   private final static int LIVE_10_MINUTES = 60 * 10;
 
   static {
-    acceptanceFrequency = TermsOfServiceAcceptanceFrequency
+    globalAcceptanceFrequency = TermsOfServiceAcceptanceFrequency
         .decode(settings.getString("termsOfServiceAcceptanceFrequency"));
   }
 
@@ -67,6 +69,13 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
   public String getDestination(HttpServletRequest request) {
     request.setAttribute("tosToken", tosToken);
     request.setAttribute("language", getUser().getUserPreferences().getLanguage());
+    String specificTemplateContent = "domain" + getUser().getDomainId()
+        + ".specificTemplateContent";
+    // Check if specific template content has to be used
+    if (settings.getBoolean(
+        specificTemplateContent, false)) {
+      request.setAttribute("templateDomainIdContent", "_" + getUser().getDomainId());
+    }
     return "/CredentialsServlet/TermsOfServiceRequest";
   }
 
@@ -90,6 +99,19 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    * @return true if the user must accept terms of service, false otherwise.
    */
   private synchronized boolean isTermsOfServiceAcceptanceDateIsExpired() {
+    String specificAcceptanceFrequencyKey = "domain" + getUser().getDomainId()
+        + ".termsOfServiceAcceptanceFrequency";
+    // Check if domain specific acceptance frequency is specified
+    if (settings.getString(
+        specificAcceptanceFrequencyKey) != null) {
+      // If it's specified, we use it
+      acceptanceFrequency = TermsOfServiceAcceptanceFrequency.decode(settings.getString(
+          specificAcceptanceFrequencyKey));
+    } else {
+      // If not, we use the global acceptance frequency
+      acceptanceFrequency = globalAcceptanceFrequency;
+    }
+
     return acceptanceFrequency.isActivated() && getUser() != null && acceptanceFrequency
         .isAcceptanceDateExpired(getUser().getTosAcceptanceDate(), I18NHelper.defaultLanguage);
   }
