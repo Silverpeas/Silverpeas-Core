@@ -38,7 +38,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: Yohann Chastagnier
@@ -125,8 +127,19 @@ public abstract class DataSetTest {
   }
 
   public TableRow getTableRowFor(ITable table, String columnName, Object value) throws Exception {
-    int index = getTableIndexFor(table, columnName, value);
-    return index >= 0 ? new TableRow(table, index) : null;
+    List<TableRow> rows = getTableRowsFor(table, columnName, value);
+    return rows.isEmpty() || rows.size() > 1 ? null : rows.get(0);
+  }
+
+  public List<TableRow> getTableRowsFor(ITable table, String columnName, Object value)
+      throws Exception {
+    List<TableRow> rows = new ArrayList<TableRow>();
+    for (int i = 0; i < table.getRowCount(); i++) {
+      if (value.equals(table.getValue(i, columnName))) {
+        rows.add(new TableRow(table, i));
+      }
+    }
+    return rows;
   }
 
   public int getTableIndexForId(ITable table, Object id) throws Exception {

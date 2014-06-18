@@ -38,15 +38,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DBUtil {
 
@@ -175,6 +167,14 @@ public class DBUtil {
       throw new UtilException("DBUtil.makeConnection",
           new MultilangMessage("util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
     }
+  }
+
+  /**
+   * Returns a new unique identifier of type string.
+   * @return a new unique string identifier.
+   */
+  public static String getUniqueId() {
+    return UUID.randomUUID().toString();
   }
 
   /**
@@ -425,6 +425,15 @@ public class DBUtil {
   }
 
   /**
+   * Indicates if the specified value is defined in point of view of SQL.
+   * @param sqlValue the value to verify.
+   * @return true if defined, false otherwise.
+   */
+  public static boolean isSqlDefined(String sqlValue) {
+    return StringUtil.isDefined(sqlValue) && !sqlValue.trim().equals("-1");
+  }
+
+  /**
    * Select count SQL query executor.
    * @param con
    * @param selectCountQuery
@@ -466,6 +475,69 @@ public class DBUtil {
   /**
    * Update query executor.
    * @param con
+   * @param updateQuery
+   * @param parameters
+   * @throws SQLException
+   */
+  @SuppressWarnings("unchecked")
+  public static <ROW_ENTITY> List<ROW_ENTITY> select(Connection con, String updateQuery,
+      Object parameters, SelectResultRowProcessor<ROW_ENTITY> rowProcess) throws SQLException {
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    try {
+      st = con.prepareStatement(updateQuery);
+      final Collection<Object> sqlParams;
+      if (parameters instanceof Object[]) {
+        sqlParams = Arrays.asList((Object[]) parameters);
+      } else if (parameters instanceof Collection) {
+        sqlParams = (Collection) parameters;
+      } else {
+        sqlParams = Arrays.asList(parameters);
+      }
+      DBUtil.setParameters(st, sqlParams);
+      rs = st.executeQuery();
+      List<ROW_ENTITY> entities = new ArrayList<ROW_ENTITY>();
+      while (rs.next()) {
+        ROW_ENTITY entity = rowProcess.read(rs);
+        if (entity != null) {
+          entities.add(entity);
+        }
+      }
+      return entities;
+    } finally {
+      DBUtil.close(rs, st);
+    }
+  }
+
+  /**
+   * Result Set Row Processor
+   * @param <ROW_ENTITY>
+   */
+  public static abstract class SelectResultRowProcessor<ROW_ENTITY> {
+    protected abstract ROW_ENTITY read(ResultSet rs) throws SQLException;
+  }
+
+  /**
+   * Gets from a entity list the unique entity expected.
+   * @param entities the entity list.
+   * @return the unique entity result.
+   * @throws IllegalArgumentException if it exists more than one entity in the specified
+   * list.
+   */
+  public static <ENTITY> ENTITY unique(List<ENTITY> entities) {
+    if (entities.isEmpty()) {
+      return null;
+    }
+    if (entities.size() == 1) {
+      return entities.get(0);
+    }
+    throw new IllegalArgumentException(
+        "wanted to get a unique entity from a list that contains more than one...");
+  }
+
+  /**
+   * Update query executor.
+   * @param con
    * @param updateQueries
    * @throws SQLException
    */
@@ -478,6 +550,11 @@ public class DBUtil {
     return nbUpdate;
   }
 
+  public static long executeUpdate(Connection con, String updateQuery, Object... parameters)
+      throws SQLException {
+    return executeUpdate(con, updateQuery, (Object) parameters);
+  }
+
   /**
    * Update query executor.
    * @param con
@@ -485,12 +562,21 @@ public class DBUtil {
    * @param parameters
    * @throws SQLException
    */
-  public static <O> long executeUpdate(Connection con, String updateQuery, List<O> parameters)
+  @SuppressWarnings("unchecked")
+  public static long executeUpdate(Connection con, String updateQuery, Object parameters)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateQuery);
-      DBUtil.setParameters(prepStmt, parameters);
+      final Collection<Object> sqlParams;
+      if (parameters instanceof Object[]) {
+        sqlParams = Arrays.asList((Object[]) parameters);
+      } else if (parameters instanceof Collection) {
+        sqlParams = (Collection) parameters;
+      } else {
+        sqlParams = Arrays.asList(parameters);
+      }
+      DBUtil.setParameters(prepStmt, sqlParams);
       return prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
