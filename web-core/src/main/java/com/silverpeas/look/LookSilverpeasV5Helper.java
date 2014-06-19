@@ -35,7 +35,6 @@ import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.date.Period;
 
@@ -873,29 +872,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return result;
   }
   
-  public Ticker getTicker() {
-    String appId = getSettings("ticker.appId", "");
-    if (StringUtil.isDefined(appId)) {
-      List<PublicationDetail> pubs = getValidPublications(new NodePK(NodePK.ROOT_NODE_ID, appId));
-      if (pubs != null && !pubs.isEmpty()) {
-        Ticker ticker = new Ticker(pubs, resources);
-        String labelParam = getSettings("ticker.label", "");
-        if (labelParam.equalsIgnoreCase("appname")) {
-          ComponentInstLight app = orga.getComponentInstLight(appId);
-          if (app != null) {
-            ticker.setLabel(app.getLabel(getLanguage()));
-          }
-        } else if (labelParam.equalsIgnoreCase("default")) {
-          ticker.setLabel(getString("lookSilverpeasV5.ticker.label"));
-        }
-        
-        String[] profiles = getOrganisationController().getUserProfiles(getUserId(), appId);
-        ticker.setManager(ArrayUtils.contains(profiles, SilverpeasRole.admin.name()));
-        
-        return ticker;
-      }
+  public TickerSettings getTickerSettings() {
+    TickerSettings tickerSettings = new TickerSettings(resources);
+    String labelParam = getSettings("ticker.label", "");
+    if (labelParam.equalsIgnoreCase("default")) {
+      tickerSettings.setLabel(getString("lookSilverpeasV5.ticker.label"));
     }
-    return null;
+    return tickerSettings;
   }
-  
 }

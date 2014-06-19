@@ -30,8 +30,6 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.silverpeas.look.TopItem"%>
-<%@ page import="com.silverpeas.look.Ticker"%>
-<%@ page import="com.silverpeas.look.TickerItem"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -55,8 +53,6 @@ if (goToFavoriteSpaceOnHomeLink) {
 
 List<TopItem> topItems = helper.getTopItems();
 
-Ticker ticker = helper.getTicker();
-boolean displayTicker = ticker != null;
 boolean isAnonymousAccess 	= helper.isAnonymousAccess();
 
 String wallPaper = helper.getSpaceWallPaper();
@@ -151,7 +147,7 @@ function getFooterHeight() {
     <div id="backHome">
         <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
     <div id="ticker">
-	  <viewTags:displayTicker ticker="<%=ticker%>" language="<%=language%>"/>
+	  <viewTags:displayTicker/>
 	</div>
 	    <div id="outils">
         	<% if (!isAnonymousAccess) { %>

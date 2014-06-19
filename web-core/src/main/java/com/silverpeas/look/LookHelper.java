@@ -130,5 +130,7 @@ public interface LookHelper {
   public abstract String getSpaceWithCSSToApply();
   
   public DefaultSpaceHomePage getSpaceHomePage(String spaceId);
+  
+  public TickerSettings getTickerSettings();
 
 }

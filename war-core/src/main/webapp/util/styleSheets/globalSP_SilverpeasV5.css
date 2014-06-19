@@ -1137,35 +1137,6 @@ td.browsebar a:hover {
   border-color: #FFFFFF;
 }
 
-/*#ticker {
-  position: absolute;
-  right: 5px;
-  height: 15px;
-  width: 100%;
-  bottom: 6px;
-  text-align: center;
-  color: #000000;
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 10px
-}*/
-
-.ticker, .ticker-wrapper.has-js {
-  width: 950px;   
-}
-
-.ticker-wrapper.has-js {
-  margin-top: 2px;
-  background-color: #FFF;
-}
-
-.ticker, .ticker-title, .ticker-content {
-  background-color: #FFF;
-}
-
-.ticker-title, .ticker-content {
-  padding-top: 1px;
-}
-
 #topBar #outils div.avatarName {
   display: inline;
   font-weight: bold;
@@ -6425,4 +6396,70 @@ div.user-card .field{
 
 #thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
 	vertical-align: middle;
+}
+
+/****** Ticker ******/
+#topBar #desktop-notifications-permission {
+	background: url('/silverpeas/util/icons/cog.png') no-repeat scroll 0 0 transparent;
+    line-height: 17px;
+    padding-left: 20px;
+	position: absolute;
+	right: 0;
+	top:1px;
+	padding-right:1em;
+	font-weight:bold;
+}
+
+#topBar #ticker {
+    height: 22px;
+    left: 250px;
+    position: absolute;
+    right: 150px;
+    top: 89px;
+    background-color: transparent;
+	z-index:1000;
+}
+
+#sp-ticker .ticker-wrapper.has-js {
+    background-color: transparent;
+    border-radius: 0;
+    display: block;
+    font-size: 0.75em;
+    height: 22px;
+    margin:0;
+    padding: 0;
+    width: 100%;
+}
+#sp-ticker {
+	display:block;
+}
+
+#sp-ticker .ticker {
+    background-color: transparent;
+    display: block;
+    height: 22px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+#sp-ticker .ticker-title {
+	padding-top: 2px;
+	padding-left:1em;
+	color: #333;
+	font-weight: bold;
+	background-color: transparent;
+	text-transform: uppercase;
+}
+#sp-ticker .ticker-content {
+	margin: 0px;
+	padding-top: 3px;
+	position: absolute;
+	color: #333;
+	font-weight: 100;
+	background-color: transparent;
+	overflow: hidden;
+	white-space: nowrap;
+	line-height: 1.2em;
+	padding-left:1em;
 }

@@ -581,3 +581,37 @@ color:#1C94D4;
 
 .btn-deploy-all-item, #dynamicalLoad, #displaying, #displaying a {width:auto}
 #displaying {width:228px;}
+
+/****** Ticker ******/
+#topBar #desktop-notifications-permission {
+	top:2px;
+	background-position:0 1px;
+}
+	
+#topBar #ticker {
+    height: 22px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 54px;
+    background-color: #fbf7aa;
+	border-top:2px solid #f9e98e;
+	border-bottom:2px solid #f9e98e;
+	display: none;
+}
+
+#sp-ticker .ticker-wrapper.has-js {
+    background-color: #fbf7aa;
+}
+
+#sp-ticker .ticker {
+    background-color: #fbf7aa;
+}
+
+#sp-ticker .ticker-title {
+	background-color: #fbf7aa;
+}
+#sp-ticker .ticker-content {
+	background-color: #fbf7aa;
+	line-height: 15px;
+}
