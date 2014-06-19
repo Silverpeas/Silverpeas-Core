@@ -498,6 +498,9 @@ public class DBUtil {
       rs = st.executeQuery();
       List<ROW_ENTITY> entities = new ArrayList<ROW_ENTITY>();
       while (rs.next()) {
+        if (rowProcess.limit > 0 && entities.size() >= rowProcess.limit) {
+          break;
+        }
         ROW_ENTITY entity = rowProcess.read(rs);
         if (entity != null) {
           entities.add(entity);
@@ -514,6 +517,16 @@ public class DBUtil {
    * @param <ROW_ENTITY>
    */
   public static abstract class SelectResultRowProcessor<ROW_ENTITY> {
+    private final int limit;
+
+    protected SelectResultRowProcessor() {
+      this(0);
+    }
+
+    protected SelectResultRowProcessor(int limit) {
+      this.limit = limit;
+    }
+
     protected abstract ROW_ENTITY read(ResultSet rs) throws SQLException;
   }
 
@@ -624,14 +637,32 @@ public class DBUtil {
    * @param parameters
    * @return
    */
-  public static <O> StringBuilder appendListOfParameters(StringBuilder sqlQuery,
-      Collection<O> parameters) {
+  public static StringBuilder appendListOfParameters(StringBuilder sqlQuery,
+      Collection<?> parameters) {
+    return appendListOfParameters(sqlQuery, parameters, null);
+  }
+
+  /**
+   * Centralization in order to build easily a SQL in clause.
+   * @param sqlQuery
+   * @param parameters
+   * @param allParameters
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static StringBuilder appendListOfParameters(StringBuilder sqlQuery,
+      Collection<?> parameters, Collection<?> allParameters) {
     StringBuilder params = new StringBuilder();
-    for (Object ignored : parameters) {
-      if (params.length() > 0) {
-        params.append(",");
+    if (parameters != null) {
+      for (Object ignored : parameters) {
+        if (params.length() > 0) {
+          params.append(",");
+        }
+        params.append("?");
       }
-      params.append("?");
+      if (allParameters != null) {
+        allParameters.addAll((Collection) parameters);
+      }
     }
     return sqlQuery.append("(").append(params.toString()).append(")");
   }

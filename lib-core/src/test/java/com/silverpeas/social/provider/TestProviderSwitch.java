@@ -139,7 +139,7 @@ public class TestProviderSwitch {
     list = switch1.getSocialInformationsList(SocialInformationType.PUBLICATION, null,
         null, begin, end);
     assertEquals("must be equal 3", list.size(), 3);
-    list = switch1.getSocialInformationsList(SocialInformationType.PHOTO, null,
+    list = switch1.getSocialInformationsList(SocialInformationType.MEDIA, null,
         null, begin, end);
     assertNotNull("must be not null", list);
     list = switch1.getSocialInformationsList(SocialInformationType.ALL, null,

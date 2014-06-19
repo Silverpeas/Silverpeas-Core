@@ -316,7 +316,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    */
   private String getIconUrl(SocialInformationType type) {
     String url = URLManager.getApplicationURL() + "/socialNetwork/jsp/icons/";
-    if (type.equals(SocialInformationType.PHOTO)) {
+    if (type.equals(SocialInformationType.MEDIA)) {
       url = URLManager.getApplicationURL();
     }
     return url;
