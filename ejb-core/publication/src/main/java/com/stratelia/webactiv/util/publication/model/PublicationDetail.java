@@ -506,13 +506,17 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public void setVisibilityPeriod(Period period) {
     if (period.isBeginUndefined()) {
       setBeginDate(null);
+      setBeginHour(null);
     } else {
       setBeginDate(period.getBeginDate());
+      setBeginHour(DateUtil.formatTime(period.getBeginDate()));
     }
     if (period.isEndUndefined()) {
       setEndDate(null);
+      setEndHour(null);
     } else {
       setEndDate(period.getEndDate());
+      setEndHour(DateUtil.formatTime(period.getEndDate()));
     }
   }
   
@@ -520,10 +524,14 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     Date begin = getBeginDate();
     if (begin == null) {
       begin = DateUtil.MINIMUM_DATE;
+    } else {
+      begin = DateUtil.getDate(begin, getBeginHour());
     }
     Date end = getEndDate();
     if (end == null) {
       end = DateUtil.MAXIMUM_DATE;
+    } else {
+      end = DateUtil.getDate(end, getEndHour());
     }
     return Period.from(begin, end);
   }
