@@ -305,8 +305,16 @@ public class HistoryObjectDAO {
       prepStmt.setString(1, primaryKey.getId());
       prepStmt.setString(2, primaryKey.getInstanceId());
       prepStmt.setString(3, objectType);
-      prepStmt.setString(4, DateUtil.date2SQLDate(startDate));
-      prepStmt.setString(5, DateUtil.date2SQLDate(endDate));
+      if (startDate != null) {
+        prepStmt.setString(4, DateUtil.date2SQLDate(startDate));
+      } else {
+        prepStmt.setString(4, DateUtil.date2SQLDate(DateUtil.MINIMUM_DATE));
+      }
+      if (endDate != null) {
+        prepStmt.setString(5, DateUtil.date2SQLDate(endDate));
+      } else {
+        prepStmt.setString(5, DateUtil.date2SQLDate(DateUtil.MAXIMUM_DATE));
+      }
       prepStmt.setString(6, userId);
       rs = prepStmt.executeQuery();
       if (rs.next()) {

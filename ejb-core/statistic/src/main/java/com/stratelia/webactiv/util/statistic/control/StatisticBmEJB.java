@@ -427,6 +427,21 @@ public class StatisticBmEJB implements StatisticBm {
     }
   }
   
+  public boolean isRead(SilverpeasContent content, String userId) {
+    Connection con = getConnection();
+    try {
+      int numberOfReading =
+          HistoryObjectDAO.getCountByPeriodAndUser(con, getForeignPK(content),
+              content.getContributionType(), null, null, userId);
+      return numberOfReading > 0;
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().isRead()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
   private ForeignPK getForeignPK(SilverpeasContent content) {
     return new ForeignPK(content.getId(), content.getComponentInstanceId());
   }

@@ -121,4 +121,6 @@ public interface StatisticBm {
    */
   public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
       int actionType, String objectType, int nbObjects);
+  
+  public boolean isRead(SilverpeasContent content, String userId);
 }
