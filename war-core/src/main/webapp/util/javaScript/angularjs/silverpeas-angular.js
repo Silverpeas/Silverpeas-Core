@@ -26,7 +26,7 @@
  * @module silverpeas
  * @summary The module silverpeas within the AngularJS framework.
  * @desc The AngularJS applications in an HTML/JSP page should be defined within this module and they
- * should define the constant 'context' with as properties thoses required both by
+ * should define the constant 'context' with as properties those required both by
  * the application itself and by its dependencies (other silverpeas modules).
  * When declaring an application as a module in silverpeas, usually it depends on
  * the module silverpeas.services in which are defined all the Silverpeas services at client side.

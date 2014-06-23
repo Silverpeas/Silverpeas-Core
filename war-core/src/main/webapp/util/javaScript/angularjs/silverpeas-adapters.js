@@ -25,8 +25,13 @@
 (function() {
   /**
    * An adapter to access the web resources published as a REST-based services.
-   * @param {Angular.Service} $http an HTTP client for AJAX requesting with a Promise support.
-   * @param {Angular.Service} $q a service to handle the Promises.
+   *
+   * @typedef RESTAdapter
+   * @desc The adapter, when instantiated, accepts as argument respectively the base URI of the
+   * targeted Web resource and the well-defined Javascript type into which all received JSON objects
+   * will be converted.
+   * @param {Angular.Service} $http - an HTTP client for AJAX requesting with a Promise support.
+   * @param {Angular.Service} $q - a service to handle the Promises.
    */
   angular.module('silverpeas.adapters').factory('RESTAdapter', ['$http', '$q', function($http, $q) {
 
@@ -84,11 +89,26 @@
       return deferred.promise;
     }
 
+    /**
+     * @constructor - the constructor of the type RESTAdapter.
+     * @param {string} url - the base URL at which the target web resource is located and from which
+     * all further requests will be sent.
+     * @param {function} converter - a function to convert a JSON representation of a resource to
+     * a well-typed object.
+     */
     var RESTAdapter = function(url, converter) {
       this.url = url;
       this.converter = converter;
     };
 
+    /**
+     * Posts the specified object in JSON either at the base URL for which this adapter was
+     * instantiated or at a specified URL.
+     * @param {string}[url] - optionally the URL at which the object has to be posted. If the URL is
+     * not passed as parameter, then the base URL defined in this adapter will be used.
+     * @param {object} - the object to push
+     * @returns {promise|a.fn.promise} - the new created resource.
+     */
     RESTAdapter.prototype.post = function() {
       var requestedUrl = this.url;
       var value = arguments[0];
@@ -113,6 +133,11 @@
       return deferred.promise;
     };
 
+    /**
+     * From the specified object, builds and returns the criteria to apply with a further request.
+     * The criteria will be used to build the query part of the request URL.
+     * @returns {hashtable} - a hash of key-values criterion
+     */
     RESTAdapter.prototype.criteria = function() {
       var criteria = null;
       if (arguments && arguments.length > 0) {
@@ -132,13 +157,21 @@
       return criteria;
     };
 
-    // IE8 does force to not use delete method as it is a forbidden keyword for itself...
-    // (delete = forbidden keyword)
+    /**
+     * Deletes the resource referred either by the specified identifier or by the specified URL.
+     * IE8 does force to not use delete method as it is a forbidden keyword for itself...
+     * (delete = forbidden keyword)
+     * @param {string} id - either a unique identifier or an URL at which the resource is located.
+     * @returns {promise|a.fn.promise} - the response of the remove operation.
+     */
     RESTAdapter.prototype.remove = function(id) {
       var deferred = $q.defer();
+      var uri = id.trim();
+      if (uri.indexOf('/') !== 0 && uri.indexOf('http') !== 0)
+        uri = this.url + '/' + uri;
       // IE8 does force to use of $http['delete'] instead of $http.delete...
       // (delete = forbidden keyword)
-      $http['delete'](this.url + '/' + id).success(function(data, status, headers) {
+      $http['delete'](uri).success(function(data, status, headers) {
         deferred.resolve(id);
         performMessage(headers);
       }).error(function(data, status, headers) {
@@ -148,10 +181,28 @@
       return deferred.promise;
     };
 
+    /**
+     * Updates the resource referred either by the specified identifier or by the specified URL with
+     * the data passed as second parameter.
+     * @param {string} id - either the unique identifier or the URI of the resource to update.
+     * @param {object} data - the data with which the resource has to be updated.
+     * @returns {promise|a.fn.promise} - the new state of the resource.
+     */
     RESTAdapter.prototype.update = function(id, data) {
-      return _put(this.url + '/' + id, data, this.converter);
+      var uri = id.trim();
+      if (uri.indexOf('/') !== 0 && uri.indexOf('http') !== 0)
+        uri = this.url + '/' + uri;
+      return _put(uri, data, this.converter);
     };
 
+    /**
+     * Finds the object(s) that match the specified parameters. This function acts as a front-end
+     * to the other find-kind methods (findByCriteria and findById).
+     * @param parameters - according to the type of the parameter, either an object of the specified
+     * identifier is searched, or the objects that match the specified criteria.
+     * @returns {promise|a.fn.promise} - either an object or an array of objects matching the
+     * parameters.
+     */
     RESTAdapter.prototype.find = function(parameters) {
       if (parameters !== null && parameters !== undefined) {
         if (typeof parameters === 'number' || typeof parameters === 'string') {
@@ -170,10 +221,23 @@
       }
     };
 
+    /**
+     * Finds an object from the specified identifier from the specified URL.
+     * @param {string} url - the base URL from which the object is looked for.
+     * @param {string|number} id - the unique identifier of the object.
+     * @returns {promise|a.fn.promise} - an object.
+     */
     RESTAdapter.prototype.findById = function(url, id) {
       return _get(url + '/' + id, this.converter);
     };
 
+    /**
+     * Finds the objects that satisfy the specified criteria. The criteria should be built from
+     * the criteria method of the adapter.
+     * @param {string} url - the base URL from which the objects are searched.
+     * @param {hashtable} criteria - the criteria to apply with the search.
+     * @returns {promise|a.fn.promise} - an array of objects matching the specified criteria.
+     */
     RESTAdapter.prototype.findByCriteria = function(url, criteria) {
       if (!url) {
         alert('[RESTAdapter#findByCriteria] URL undefined!');
@@ -197,7 +261,33 @@
     };
 
     return {
-      get: function(url, converter) {
+      /**
+       * Gets an instance of a RESTAdapter.
+       * @param {string} url - the base URL of the targeted web resource.
+       * @param {function} [type] - a function representing a Javascript type that will be used to
+       * create a new object for each received JSON data from the targeted web resource.
+       * @returns {RESTAdapter}
+       */
+      get: function(url, type) {
+        var newObjectFrom = function(properties) {
+          var object = new type.prototype.constructor();
+          for (var prop in properties) {
+            object[prop] = properties[prop];
+          }
+          return object;
+        };
+        var converter = function(data) {
+          var object;
+          if (data instanceof Array) {
+            object = [];
+            for (var i = 0; i < data.length; i++) {
+                object.push(newObjectFrom(data[i]));
+            }
+          } else {
+             object = newObjectFrom(data);
+          }
+          return object;
+        };
         return new RESTAdapter(url, converter);
       }
     };
