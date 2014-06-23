@@ -501,7 +501,7 @@ public class DBUtil {
         if (rowProcess.limit > 0 && entities.size() >= rowProcess.limit) {
           break;
         }
-        ROW_ENTITY entity = rowProcess.read(rs);
+        ROW_ENTITY entity = rowProcess.currentRow(, rs);
         if (entity != null) {
           entities.add(entity);
         }
@@ -527,7 +527,7 @@ public class DBUtil {
       this.limit = limit;
     }
 
-    protected abstract ROW_ENTITY read(ResultSet rs) throws SQLException;
+    protected abstract ROW_ENTITY currentRow(final int rowIndex, ResultSet rs) throws SQLException;
   }
 
   /**
