@@ -430,7 +430,8 @@ public class DBUtil {
    * @return true if defined, false otherwise.
    */
   public static boolean isSqlDefined(String sqlValue) {
-    return StringUtil.isDefined(sqlValue) && !sqlValue.trim().equals("-1");
+    return StringUtil.isDefined(sqlValue) && !sqlValue.trim().equals("-1") &&
+        !sqlValue.trim().equals("unknown");
   }
 
   /**
@@ -497,14 +498,16 @@ public class DBUtil {
       DBUtil.setParameters(st, sqlParams);
       rs = st.executeQuery();
       List<ROW_ENTITY> entities = new ArrayList<ROW_ENTITY>();
+      int i = 0;
       while (rs.next()) {
         if (rowProcess.limit > 0 && entities.size() >= rowProcess.limit) {
           break;
         }
-        ROW_ENTITY entity = rowProcess.currentRow(, rs);
+        ROW_ENTITY entity = rowProcess.currentRow(i, rs);
         if (entity != null) {
           entities.add(entity);
         }
+        i++;
       }
       return entities;
     } finally {
