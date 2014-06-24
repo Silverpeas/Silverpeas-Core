@@ -104,7 +104,7 @@ public class DateUtil {
    * @return A String representation of the date in the language specific format.
    */
   public static String dateToString(Date date, String language) {
-    if (date == null) {
+    if (isUndefined(date)) {
       return "";
     }
     FastDateFormat format = getDateOutputFormat(language);
@@ -112,9 +112,8 @@ public class DateUtil {
   }
 
   public static String getOutputDate(Date date, String language) {
-    String result = "";
-    if (date == null) {
-      return result;
+    if (isUndefined(date)) {
+      return "";
     }
     FastDateFormat formatter = getOutputFormatter(language);
     return formatter.format(date);
@@ -129,9 +128,8 @@ public class DateUtil {
   }
 
   public static String getOutputHour(Date date, String language) {
-    String result = "";
-    if (date == null) {
-      return result;
+    if (isUndefined(date)) {
+      return "";
     }
     FastDateFormat formatter = getHourOutputFormat(language);
     return formatter.format(date);
@@ -154,7 +152,7 @@ public class DateUtil {
   }
 
   public static String getOutputDateAndHour(Date date, String language) {
-    if (date == null) {
+    if (isUndefined(date)) {
       return "";
     }
     if (DateUtils.getFragmentInMilliseconds(date, Calendar.DAY_OF_MONTH) == 0L) {
@@ -170,13 +168,17 @@ public class DateUtil {
   }
 
   public static String getInputDate(Date date, String language) {
-    if (date == null) {
+    if (isUndefined(date)) {
       return "";
     }
     SimpleDateFormat parser = getInputFormatter(language);
     synchronized (parser) {
       return parser.format(date);
     }
+  }
+  
+  private static boolean isUndefined(Date date) {
+    return (date == null) || new com.silverpeas.calendar.Date(date).isUndefined();
   }
 
   public static String getInputDate(String dateDB, String language) throws ParseException {
