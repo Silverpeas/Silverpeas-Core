@@ -105,8 +105,20 @@ public class OperationContext {
    * creation. Indeed, in some cases, the creation of a resource into database is done by a
    * chaining of inserts and updates.
    */
-  public void setUpdatingInCaseOfCreation() {
-    this.updatingInCaseOfCreation = true;
+  public OperationContext setUpdatingInCaseOfCreation() {
+    return setUpdatingInCaseOfCreation(true);
+  }
+
+  /**
+   * Calling this method to indicates that the current data update is performed in a case of a
+   * creation or not. Indeed, in some cases, the creation of a resource into database is done by a
+   * chaining of inserts and updates.
+   * @param updatingInCaseOfCreation true to specify that the update is performed in a case of data
+   * creation.
+   */
+  public OperationContext setUpdatingInCaseOfCreation(boolean updatingInCaseOfCreation) {
+    this.updatingInCaseOfCreation = updatingInCaseOfCreation;
+    return this;
   }
 
   /**

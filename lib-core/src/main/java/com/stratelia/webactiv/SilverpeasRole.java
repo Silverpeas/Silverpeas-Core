@@ -31,7 +31,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public enum SilverpeasRole {
-  admin, Manager, publisher, writer, user, reader, supervisor, privilegedUser;
+  admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor;
 
   // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
   public static EnumSet<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);

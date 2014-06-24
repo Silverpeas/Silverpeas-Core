@@ -71,6 +71,18 @@ public class Period implements Comparable, Serializable, Cloneable {
   }
 
   /**
+   * Initialize a period from given dates (undefined dates are taken into account for null ones).
+   * The treatment is trying to identify the type of the period ({@link PeriodType}).
+   * @param beginDate the date of the beginning of the period.
+   * @param endDate the date of the ending of the period.
+   * @return
+   */
+  public static Period getPeriodWithUndefinedIfNull(Date beginDate, Date endDate) {
+    return from(beginDate != null ? new DateTime(beginDate) : DateUtil.MINIMUM_DATE,
+        endDate != null ? new DateTime(endDate) : DateUtil.MAXIMUM_DATE);
+  }
+
+  /**
    * Initialize a period from given dates.
    * The treatment is trying to identify the type of the period ({@link PeriodType}).
    * @param beginDate the date of the beginning of the period.
@@ -101,7 +113,7 @@ public class Period implements Comparable, Serializable, Cloneable {
    * @return
    */
   public static Period from(DateTime beginDatable, DateTime endDatable) {
-    Period period = new Period(beginDatable, endDatable);
+    Period period = check(new Period(beginDatable, endDatable));
     for (PeriodType periodToIdentify : knownPeriodTypes) {
       Period guessedPeriod = from(beginDatable, periodToIdentify, MessageManager.getLanguage());
       if (guessedPeriod.equals(period)) {

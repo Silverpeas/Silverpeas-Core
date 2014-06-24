@@ -46,6 +46,13 @@ public class ProcessList<C extends ProcessExecutionContext> {
   /**
    * Default constructor
    */
+  public ProcessList() {
+    // Nothing to do.
+  }
+
+  /**
+   * Default constructor
+   */
   public ProcessList(final SilverpeasProcess<C>... processes) {
     addAll(processes);
   }

@@ -31,6 +31,7 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
@@ -91,10 +92,24 @@ public interface ComponentSessionController {
 
   public String getComponentUrl();
 
+  /**
+   * Gets the roles the user has on the component.
+   * @return a list of user roles.
+   */
+  public Collection<SilverpeasRole> getSilverpeasUserRoles();
+
+  /**
+   * Gets the highest role the user has on the component.
+   * @return a user role.
+   */
+  public SilverpeasRole getHighestSilverpeasUserRole();
+
   /** Return the name of the user's roles */
+  @Deprecated
   public String[] getUserRoles();
 
   /** Return the higher user's role (admin, publisher or user) */
+  @Deprecated
   public String getUserRoleLevel();
 
   public UserPreferences getPersonalization();
