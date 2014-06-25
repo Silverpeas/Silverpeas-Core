@@ -768,6 +768,71 @@
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display a navigation item list.</description>
+    <name>navigationList</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The title of the navigation list</description>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The number of columns that must be displayed</description>
+      <name>nbCol</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a navigation item list.</description>
+    <name>navigationListItem</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListItemTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The label of the item of the navigation list</description>
+      <name>label</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The action that must be performed on HTML event (click for example)</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The number of elements the item can display</description>
+      <name>nbElem</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>The additional information</description>
+      <name>description</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The universal link associated to the item</description>
+      <name>universalLink</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Simple tag to display a window. A window can contain TabbedPane, Frames and Boards. It should be used after the BrowseBar and the OperationPane.</description>
     <name>window</name>
     <tag-class>
