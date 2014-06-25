@@ -30,18 +30,19 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,9 @@ import java.util.Map;
  * @see FieldDisplayer
  */
 public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
+
+  private static final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
@@ -111,7 +115,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     Map<String, String> parameters = template.getParameters(language);
     if (template.isReadOnly() && !template.isHidden()) {
       if (imageURL != null) {
-        displayImage(parameters, attachment, imageURL, out);
+        displayImage(parameters, imageURL, out);
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
 
@@ -122,11 +126,12 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
       String deleteImg = Util.getIcon("delete");
       String deleteLab = Util.getString("removeImage", language);
+      String thumbnailURL = FileUtil.getPathOfResizedImage(imageURL, "x50");
 
       out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");
       out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL
           + "\" target=\"_blank\">");
-      out.println("<img alt=\"\" align=\"top\" src=\"" + imageURL
+      out.println("<img alt=\"\" align=\"top\" src=\"" + thumbnailURL
           + "\" height=\"50\" id=\"" + fieldName + "Thumbnail\"/>&nbsp;");
       out.println("</a>");
       out.println("&nbsp;<a href=\"#\" onclick=\"javascript:"
@@ -167,43 +172,26 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     }
   }
   
-  private void displayImage(Map<String, String> parameters, SimpleDocument attachment, String imageURL, PrintWriter out) {
+  private void displayImage(Map<String, String> parameters, String imageURL, PrintWriter out) {
     String height = (parameters.containsKey("height") ? parameters.get("height") : "");
     String width = (parameters.containsKey("width") ? parameters.get("width") : "");
-    String paramHeight = "";
-    String paramWidth = "";
-    if (StringUtil.isDefined(width) && StringUtil.isDefined(height)) {
-      paramWidth = " width=\"" + width + "\" ";
-      paramHeight = " height=\"" + height + "\" ";
-    } else if (attachment != null) {
-      // un des 2 seulement est renseigné, calculer le second
-      if (StringUtil.isDefined(width)) {
-        String[] paramSize = ImageUtil.getWidthAndHeightByWidth(new File(attachment.
-            getAttachmentPath()), Integer.parseInt(width));
-        if (StringUtil.isDefined(paramSize[0])) {
-          paramWidth = " width=\"" + paramSize[0] + "\" ";
-        }
-        if (StringUtil.isDefined(paramSize[1])) {
-          paramHeight = " height=\"" + paramSize[1] + "\" ";
-        }
-      }
-      if (StringUtil.isDefined(height)) {
-        String[] paramSize = ImageUtil.getWidthAndHeightByHeight(new File(attachment.
-            getAttachmentPath()), Integer.parseInt(height));
-        if (StringUtil.isDefined(paramSize[0])) {
-          paramWidth = " width=\"" + paramSize[0] + "\" ";
-        }
-        if (StringUtil.isDefined(paramSize[1])) {
-          paramHeight = " height=\"" + paramSize[1] + "\" ";
-        }
-      }
+    String size = "";
+    if (StringUtil.isDefined(width)) {
+      size = width + "x";
+    }
+    if (StringUtil.isDefined(height)) {
+      size = (size.contains("x") ? size + height:"x" + height);
+    }
+    if (!StringUtil.isDefined(size)) {
+      size = settings.getString("image.size.form");
+    }
+    if (StringUtil.isDefined(size)) {
+      imageURL = FileUtil.getPathOfResizedImage(imageURL, size);
     }
 
     out.print("<img alt=\"\" src=\"");
     out.print(imageURL);
     out.print("\"");
-    out.print(paramHeight);
-    out.print(paramWidth);
     out.print("/>");
   }
 

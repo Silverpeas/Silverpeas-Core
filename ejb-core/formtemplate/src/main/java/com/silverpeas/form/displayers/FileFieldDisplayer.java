@@ -100,7 +100,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
             .append("\"/>&nbsp;");
         html.append("<a href=\"").append(webContext).append(attachment.getAttachmentURL()).
             append("\" target=\"_blank\">").append(attachment.getFilename()).append("</a>");
-        File attachmentFile = new File(attachment.getAttachmentPath());
+        File attachmentFile = attachment.getAttachmentFile();
         if (ViewerFactory.isPreviewable(attachmentFile)) {
           html.append("<img onclick=\"javascript:previewFormFile(this, '").
               append(attachment.getId()).append("');\" class=\"preview-file\" src=\"").

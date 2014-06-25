@@ -32,6 +32,14 @@ public class DimensionOption extends AbstractImageToolOption {
   private final int width;
   private final int height;
 
+  /**
+   * Creates a new option on the dimension from the specified width and height in pixels.
+   * @param width the width in pixels. If lesser than 0, the height will only be taken into account
+   * by ImageTool when resizing an image.
+   * @param height the height in pixels. If lesser than 0, the width will only be taken into account
+   * by ImageTool when resizing an image.
+   * @return an instance of {@code DimensionOption} type.
+   */
   public static DimensionOption widthAndHeight(final int width, final int height) {
     return new DimensionOption(width, height);
   }

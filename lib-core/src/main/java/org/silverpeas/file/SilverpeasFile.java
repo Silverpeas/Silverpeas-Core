@@ -2,6 +2,7 @@ package org.silverpeas.file;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.io.File;
 
