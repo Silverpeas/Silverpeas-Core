@@ -2,7 +2,6 @@ package org.silverpeas.file;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,16 +53,17 @@ public class SilverpeasFileProvider {
   }
 
   /**
-   * Accesses directly the file referred by the specified descriptor. In this case, no processing
-   * are performed and the file is returned as such. This method is mainly dedicated to perform
-   * file management in the Silverpeas APIs.
-   * @param descriptor a descriptor of a SilverpeasFile.
-   * @return the SilverpeasFile with the content of the file identified by the specified descriptor.
+   * Gets a {@code SilverpeasFile} instance for the file located at the specified absolute path.
+   * A chain of pre and post file processing will be performed against the file
+   * to retrieve; in this case, the returned file can be a modified version of the targeted file.
+   * This method is for delivering a file to the end-user.
+   * @param absolutePath the absolute path of a file.
+   * @return the SilverpeasFile with the content of the file located at the specified path and
+   * after filtering by pre and post file processing.
    */
-  public SilverpeasFile getDirectSilverpeasFile(SilverpeasFileDescriptor descriptor) {
-    String filePath = getFilePathFrom(descriptor);
-    return new SilverpeasFile(descriptor.getComponentInstanceId(), filePath,
-        descriptor.getMimeType());
+  public SilverpeasFile getSilverpeasFile(String absolutePath) {
+    String filePath = processPath(absolutePath);
+    return processSilverpeasFile(new SilverpeasFile("", filePath));
   }
 
   /**

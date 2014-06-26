@@ -36,7 +36,9 @@ jQuery(document).ready(function() {
 	        $(value).find('.userToZoom').text(user.firstName + ' ' + user.lastName);
 	        jQuery.each(user, function(key, val) {
 	          if (key == 'avatar') {
-	            $(value).find('.' + key + ' img:first').get(0).setAttribute('src', val);
+              var lastSepIdx = val.lastIndexOf("/");
+              var avatarUrl = val.substring(0, lastSepIdx + 1) + "60x" + val.substring(lastSepIdx);
+	            $(value).find('.' + key + ' img:first').get(0).setAttribute('src', avatarUrl);
 	          } else if (key == 'moreData') {
 	            jQuery.each(val, function(keyMore, valMore) {
 	              $(value).find('.' + keyMore).text(valMore);

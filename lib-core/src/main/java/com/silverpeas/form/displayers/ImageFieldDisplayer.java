@@ -41,6 +41,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.file.ImageResizingProcessor;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.PrintWriter;
@@ -126,13 +127,20 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
       String deleteImg = Util.getIcon("delete");
       String deleteLab = Util.getString("removeImage", language);
-      String thumbnailURL = FileUtil.getPathOfResizedImage(imageURL, "x50");
+      String size = settings.getString("image.size.xmlform.thumbnail");
+      if (!StringUtil.isDefined(size)) {
+        size = "x50";
+      }
+      String thumbnailURL = imageURL;
+      if (imageURL != null) {
+        thumbnailURL = FileServerUtils.getImageURL(imageURL, size);
+      }
 
       out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");
       out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL
           + "\" target=\"_blank\">");
       out.println("<img alt=\"\" align=\"top\" src=\"" + thumbnailURL
-          + "\" height=\"50\" id=\"" + fieldName + "Thumbnail\"/>&nbsp;");
+          + "\" id=\"" + fieldName + "Thumbnail\"/>&nbsp;");
       out.println("</a>");
       out.println("&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document.getElementById('" + fieldName + "ThumbnailArea').style.display='none';"
@@ -175,18 +183,12 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
   private void displayImage(Map<String, String> parameters, String imageURL, PrintWriter out) {
     String height = (parameters.containsKey("height") ? parameters.get("height") : "");
     String width = (parameters.containsKey("width") ? parameters.get("width") : "");
-    String size = "";
-    if (StringUtil.isDefined(width)) {
-      size = width + "x";
-    }
-    if (StringUtil.isDefined(height)) {
-      size = (size.contains("x") ? size + height:"x" + height);
-    }
-    if (!StringUtil.isDefined(size)) {
-      size = settings.getString("image.size.form");
+    String size = height + "x" + width;
+    if (size.length() <= 1) {
+      size = settings.getString("image.size.xmlform");
     }
     if (StringUtil.isDefined(size)) {
-      imageURL = FileUtil.getPathOfResizedImage(imageURL, size);
+      imageURL = FileServerUtils.getImageURL(imageURL, size);
     }
 
     out.print("<img alt=\"\" src=\"");

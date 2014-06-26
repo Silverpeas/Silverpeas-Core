@@ -24,16 +24,17 @@
 
 package com.silverpeas.directory.servlets;
 
+import com.silverpeas.util.FileUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.file.SilverpeasFileDescriptor;
+import org.silverpeas.file.SilverpeasFileProvider;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-
-import com.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class ImageProfil {
 
@@ -55,7 +56,7 @@ public class ImageProfil {
 
   /**
    * In case of unit upload
-   * @param image
+   * @param data
    * @throws IOException
    */
   public void saveImage(InputStream data) throws IOException {
@@ -78,11 +79,18 @@ public class ImageProfil {
   }
 
   public InputStream getImage() throws IOException {
-    File image = getImageFile();
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    SilverpeasFileDescriptor descriptor =
+        new SilverpeasFileDescriptor().fileName(getImagePath()).absolutePath();
+    File image = fileProvider.getSilverpeasFile(descriptor);
     return new FileInputStream(image);
   }
 
   private File getImageFile() {
-    return new File(FileRepositoryManager.getAvatarPath() + File.separatorChar + photoFileName);
+    return new File(getImagePath());
+  }
+
+  private String getImagePath() {
+    return FileRepositoryManager.getAvatarPath() + File.separatorChar + photoFileName;
   }
 }

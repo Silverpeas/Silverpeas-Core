@@ -240,7 +240,7 @@ $(document).ready(function() {
 							<div class="portlet-content">
 								<ul class="list-responsible-user">
 									<% for (UserDetail admin : admins) { %>
-									<li class="intfdcolor"><div class="content"><div class="profilPhoto"><img class="avatar" src="<%=URLManager.getApplicationURL()+admin.getAvatar()%>"/></div><div class="userName"><view:username userId="<%=admin.getId() %>"/></div></div></li>
+									<li class="intfdcolor"><div class="content"><div class="profilPhoto"><view:image css="avatar" src="<%=admin.getAvatar()%>" type="avatar"/></div><div class="userName"><view:username userId="<%=admin.getId() %>"/></div></div></li>
 									<% } %>
 								</ul>
 								<br clear="all" />

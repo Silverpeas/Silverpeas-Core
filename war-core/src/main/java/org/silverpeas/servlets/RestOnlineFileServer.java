@@ -36,18 +36,23 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileFactory;
+import org.silverpeas.file.SilverpeasFileDescriptor;
+import org.silverpeas.file.SilverpeasFileProvider;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 
+import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+
 /**
- * Class declaration
- * @author
+ * @deprecated this servlet is replaced by the SimpleDocumentResource REST service
+ * @see org.silverpeas.attachment.web.SimpleDocumentResource#getFileContent(String)
  */
+@Deprecated
 public class RestOnlineFileServer extends AbstractFileSender {
 
   private static final long serialVersionUID = 4039504051749955604L;
@@ -92,15 +97,21 @@ public class RestOnlineFileServer extends AbstractFileSender {
 
   protected SilverpeasFile getWantedAttachment(RestRequest restRequest) throws Exception {
     String componentId = restRequest.getElementValue("componentId");
-    SilverpeasFile file = null;
     String attachmentId = restRequest.getElementValue("attachmentId");
     String language = restRequest.getElementValue("lang");
+    String fileName = restRequest.getElementValue("name");
+    String size = restRequest.getElementValue("size");
+    SilverpeasFile file = SilverpeasFile.NO_FILE;
     if (StringUtil.isDefined(attachmentId)) {
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (null != attachment) {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
-          file = getSilverpeasFileFactory().getSilverpeasFile(attachment);
+          // an image of a given size is asked for.
+          if (StringUtil.isDefined(size)) {
+            attachment.setFilename(size + File.separatorChar + fileName);
+          }
+          file = getSilverpeasFile(attachment);
         } else {
           throw new IllegalAccessException("You can't access this file " + attachment.getFilename());
         }
@@ -111,21 +122,37 @@ public class RestOnlineFileServer extends AbstractFileSender {
 
   protected SilverpeasFile getWantedVersionnedDocument(RestRequest restRequest) throws Exception {
     String componentId = restRequest.getElementValue("componentId");
-    SilverpeasFile file = null;
     String documentId = restRequest.getElementValue("documentId");
+    String fileName = restRequest.getElementValue("name");
+    String size = restRequest.getElementValue("size");
+    SilverpeasFile file = SilverpeasFile.NO_FILE;
     if (StringUtil.isDefined(documentId)) {
       String versionId = restRequest.getElementValue("versionId");
       SimpleDocument version = AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(versionId), null);
       if (version != null) {
         if (isUserAuthorized(restRequest, componentId, version)) {
-          file = getSilverpeasFileFactory().getSilverpeasFile(version);
+          // an image of a given size is asked for.
+          if (StringUtil.isDefined(size)) {
+            version.setFilename(size + File.separatorChar + fileName);
+          }
+          file = getSilverpeasFile(version);
         } else {
           throw new IllegalAccessException("You can't access this file " + version.getFilename());
         }
       }
     }
     return file;
+  }
+
+  private SilverpeasFile getSilverpeasFile(final SimpleDocument document) {
+    SilverpeasFileProvider provider = SilverpeasFileProvider.getInstance();
+    SilverpeasFileDescriptor descriptor =
+        new SilverpeasFileDescriptor(document.getInstanceId())
+            .mimeType(document.getContentType())
+            .fileName(document.getAttachmentPath())
+            .absolutePath();
+    return provider.getSilverpeasFile(descriptor);
   }
 
   private boolean isUserAuthorized(RestRequest request, String componentId, Object object)
@@ -163,7 +190,4 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
   }
 
-  private SilverpeasFileFactory getSilverpeasFileFactory() {
-    return SilverpeasFileFactory.getFactory();
-  }
 }

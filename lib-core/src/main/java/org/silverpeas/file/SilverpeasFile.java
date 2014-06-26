@@ -2,9 +2,13 @@ package org.silverpeas.file;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A representation of a File in Silverpeas. This class abstracts the way the files are managed
@@ -61,4 +65,14 @@ public class SilverpeasFile extends File {
   public String getComponentInstanceId() {
     return instanceId;
   }
+
+  /**
+   * Opens and returns and input stream to this file.
+   * @return a buffered input stream to this file.
+   * @throws IOException if an error occurs while opening the input stream.
+   */
+  public InputStream inputStream() throws IOException {
+    return new BufferedInputStream(FileUtils.openInputStream(this));
+  }
+
 }

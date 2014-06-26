@@ -20,17 +20,16 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.URLUtils;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.silverpeas.util.URLUtils;
-
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * @author NEY
@@ -163,6 +162,33 @@ public class FileServerUtils {
         append("/lang/").append(URLUtils.encodePathSegment(language)).append("/name/").
         append(newLogicalName);
     return url.toString();
+  }
+
+  /**
+   * Gets the URL of the specified image with the specified size.
+   * <p/>
+   * Each image uploaded in Silverpeas are kept with their original size. From them, a set of
+   * resized images are computed. This method is to get the URL of the resized version of an
+   * uploaded image.
+   * @param originalImageURL the URL of the original, non-resized, image.
+   * @param size the size of the image to get.
+   * @return the URL of the image with the specified size.
+   */
+  public static String getImageURL(String originalImageURL, String size) {
+    String resizedImagePath = originalImageURL;
+    if (StringUtil.isDefined(size) && size.length() > 1 && size.contains("x")) {
+      int lastSepIndex = originalImageURL.lastIndexOf("/");
+      if (originalImageURL.contains("/attached_file/")) {
+        // asks for an image attached to a contribution (a form, a WYSIWYG, ...)
+        size = "size/" + size;
+        lastSepIndex = originalImageURL.substring(0, lastSepIndex).lastIndexOf("/");
+
+      }
+      resizedImagePath = (lastSepIndex == -1 ? size + "/" + originalImageURL :
+          originalImageURL.substring(0, lastSepIndex + 1) + size +
+              originalImageURL.substring(lastSepIndex));
+    }
+    return resizedImagePath;
   }
 
   public static String getAliasURL(String componentId, String logicalName, String attachmentId) {

@@ -11,6 +11,77 @@
 
   <tag>
     <description>
+      Tag to print out the img HTML tag with the path of the targeted image computed from the tag's
+      attributes. This tag is used to refer a dynamic resized version of an existing image; the
+      size of an image can be passed as such to the tag or can be computed from its type or using
+      context. The types of the images are defined in the
+      org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
+    </description>
+    <name>image</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.ImageTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        The relative path of the source image from the web context. The exact URL will be
+        computed by the tag itself.
+      </description>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A short description of the image as an alternative way to render it if the image cannot be
+        displayed for any reasons.
+      </description>
+      <name>alt</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        An explicit size of the targeted image. This attribute is applied over the type one. It is
+        predominant over the type attribute. The path of the image is then computed according to
+        this size. The size should be in the form of WIDTHxHEIGH with WIDTH the width in pixels of
+        the image and HEIGHT the height in pixels of the image; one of these parameters can be
+        omitted but the 'x' character must be present.
+      </description>
+      <name>size</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The type of the image. The types of an image are defined in the
+        org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
+        For example, the type avatar.original is defined by the key image.size.avatar.original. The
+        type of the image is used to fetch the size with which the targeted image is asked. The path
+        of the image is then computed according to this size. If the size attribute is also valued,
+        then only the size attribute will be taken into account.
+      </description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A name of a CSS class to apply to the img HTML tag. If this attribute isn't valued, then
+        the CSS class of the image is by default valued with the type of the image (see type
+        attribute) with each point replaced by a minus. If the attribute type isn't valued, then
+        no CSS class is provided.
+      </description>
+      <name>css</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
       Tag to print out the panel of management of the attachements for a given component instance
       and for a given resource.
     </description>

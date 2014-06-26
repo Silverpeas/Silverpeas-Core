@@ -20,31 +20,24 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.AccessControlOperation;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
-import org.silverpeas.file.SilverpeasFileFactory;
+import org.silverpeas.file.SilverpeasFileProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 
 import static com.stratelia.webactiv.util.FileServerUtils.*;
@@ -93,23 +86,22 @@ public class FileServer extends AbstractFileSender {
     String userId = req.getParameter(USER_ID_PARAMETER);
     String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
 
-    SilverpeasFileFactory fileFactory = SilverpeasFileFactory.getFactory();
-    SilverpeasFile file;
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    SilverpeasFileDescriptor descriptor =
+        new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
     if (typeUpload != null) {
-      file = fileFactory.getSilverpeasFile(componentId, sourceFile);
+      descriptor.absolutePath();
     } else {
-      SilverpeasFileDescriptor descriptor =
-          new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
       if (dirType != null) {
         if (dirType.equals(GeneralPropertiesManager.getString("RepositoryTypeTemp"))) {
-          descriptor = descriptor.temporary();
+          descriptor = descriptor.temporaryFile();
         }
       } else {
         String directory = req.getParameter(DIRECTORY_PARAMETER);
         descriptor = descriptor.parentDirectory(directory);
       }
-      file = fileFactory.getSilverpeasFile(descriptor);
     }
+    SilverpeasFile file = fileProvider.getSilverpeasFile(descriptor);
     sendFile(res, file);
 
     if (StringUtil.isDefined(archiveIt)) {

@@ -247,12 +247,14 @@
    * and with an interaction tool to communicate with him through Silverpeas.
    */
   function tooltip(target, user) {
+    var lastSepIdx = user.avatar.lastIndexOf("/");
+    var avatarUrl = user.avatar.substring(0, lastSepIdx + 1) + "60x" + user.avatar.substring(lastSepIdx);
     var userinfo = $('<div>').addClass('userzoom-tooltip').
             append($('<div>').addClass('userzoom-tooltip-profilPhoto profilPhoto').
                     append($('<a>', {
                       href: user.webPage
                     }).append($('<img>', {
-                      src: user.avatar,
+                      src: avatarUrl,
                       alt: 'viewUser'
                     }).addClass('avatar')))).
             append($('<div>').addClass('userzoom-tooltip-info').

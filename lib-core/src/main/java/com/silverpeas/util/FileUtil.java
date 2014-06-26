@@ -494,25 +494,4 @@ public class FileUtil implements MimeTypes {
     }
     return false;
   }
-
-  /**
-   * From the specified path of an image, get the path of the same image but with the specified
-   * size.
-   * @param path the path of the original image.
-   * @param size the size of the image for whom the path is returned.
-   * @return the path of the resized image.
-   */
-  public static String getPathOfResizedImage(String path, String size) {
-    String resizedImagePath;
-    int lastSep = path.lastIndexOf("/");
-    if (lastSep == -1) {
-      lastSep = path.lastIndexOf(File.separatorChar);
-    }
-    if (lastSep >= 0) {
-      resizedImagePath = path.substring(0, lastSep + 1) + size + path.substring(lastSep);
-    } else {
-      resizedImagePath = size + "/" + path;
-    }
-    return resizedImagePath;
-  }
 }
