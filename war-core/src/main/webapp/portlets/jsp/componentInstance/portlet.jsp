@@ -47,7 +47,7 @@ if (windowState.equals(WindowState.MAXIMIZED))
 String url = (String) pReq.getAttribute("URL");
 
 if (StringUtil.isDefined(url)) { %>
-	<iframe src="<%=m_sContext+url%>" frameborder="0" scrolling="auto" width="98%" height="<%=height%>"></iframe>
+	<iframe src="<%=m_sContext+url%>" frameborder="0" scrolling="auto" width="100%" height="<%=height%>"></iframe>
 <% } else { %>
 	<fmt:message key="portlets.portlet.componentInstance.error.accessForbidden"/>
 <% } %>

@@ -5922,6 +5922,13 @@ ul.tagit li.tagit-choice a.tagit-close {
   text-align:center;
   clear: both;
 }
+/*******************************/
+/***** portlet : Appl News        ***/
+/*******************************/
+
+#quickinfo-app-portlet {
+	background-color:transparent;
+} 
 
 /*******************************/
 /***** portlet : News        ***/
@@ -6006,6 +6013,13 @@ ul.tagit li.tagit-choice a.tagit-close {
 	position:absolute;
 	right:10px;
 	top:298px;
+}
+
+.portlet-content .actuality-nb-commentaires img {
+	border:0;
+	vertical-align:text-top;   
+	display: inline;
+    float: none;
 }
 
 .portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-date,
