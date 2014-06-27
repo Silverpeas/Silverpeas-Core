@@ -4303,6 +4303,13 @@ span.csv {
   /* float: left;*/
 }
 
+.inlineMessage a,
+.inlineMessage-ok a,
+.inlineMessage-nok a,
+.inlineMessage-waiting a {
+  text-decoration: underline;
+}
+
 .inlineMessage {
   background-color: #FBF7AA;
   border-color: #F9E98E;
@@ -4317,11 +4324,6 @@ span.csv {
   background-color: #F79992;
   border-color: #CE6F6F;
 }
-
-.inlineMessage-nok a {
-  text-decoration: underline;
-}
-
 
 .inlineMessage-waiting {
   background-color: #ffd49d;
