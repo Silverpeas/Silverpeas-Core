@@ -42,7 +42,8 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
           sourceImage = parameters.getSourceImage();
           File resizedImage = parameters.getDestinationImage();
           imagePath = resizedImage.getPath();
-          if (!resizedImage.exists() && sourceImage.exists()) {
+          if (sourceImage.exists() && (!resizedImage.exists() ||
+              sourceImage.lastModified() >= resizedImage.lastModified())) {
             if (!resizedImage.getParentFile().exists()) {
               resizedImage.getParentFile().mkdirs();
             }
