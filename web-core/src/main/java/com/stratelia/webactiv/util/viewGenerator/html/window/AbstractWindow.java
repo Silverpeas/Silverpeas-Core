@@ -290,6 +290,7 @@ public abstract class AbstractWindow implements Window {
         }
         final String viewMgrLabel, addFavLabel;
         final String viewMgrAction, addFavAction;
+        boolean addFavOperation = true;
         ResourceLocator bundle =
             GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage());
         if (OperationPaneType.space.equals(getOperationPane().getType())) {
@@ -308,9 +309,12 @@ public abstract class AbstractWindow implements Window {
                   "','" + getGEF().getComponentId() + "')";
           addFavLabel = bundle.getString("GML.favorite.application.add");
           addFavAction = "addFavoriteApp('" + getGEF().getComponentId() + "')";
+          addFavOperation = getGEF().isComponentMainPage();
         }
-        getOperationPane().addOperation("", addFavLabel, "javascript:" + addFavAction + ";",
-            "space-or-application-favorites-operation");
+        if (addFavOperation) {
+          getOperationPane().addOperation("", addFavLabel, "javascript:" + addFavAction + ";",
+              "space-or-application-favorites-operation");
+        }
         getOperationPane().addOperation("", viewMgrLabel, "javascript:" + viewMgrAction + ";",
             "space-or-component-responsibles-operation");
       }
