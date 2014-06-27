@@ -94,7 +94,7 @@ public class WebdavServiceTest {
         SimpleAttachment frDocumentContent = defaultFRContent();
         SimpleDocument document = defaultDocument("kmelia26", "foreignId38");
         document = createAttachmentForTest(document, frDocumentContent, "FR content");
-        document.setFile(defaultENContent());
+        document.setAttachment(defaultENContent());
         updateAttachmentForTest(document, "en", "EN content");
 
         assertThat(webdavService.getContentEditionLanguage(document), nullValue());

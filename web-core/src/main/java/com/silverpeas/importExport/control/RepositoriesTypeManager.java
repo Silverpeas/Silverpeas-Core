@@ -224,10 +224,10 @@ public class RepositoriesTypeManager {
         document = new SimpleDocument();
       }
       document.setPK(pk);
-      document.setFile(new SimpleAttachment());
+      document.setAttachment(new SimpleAttachment());
       document.setFilename(file.getName());
       document.setSize(fileSize);
-      document.getFile().setCreatedBy(userDetail.getId());
+      document.getAttachment().setCreatedBy(userDetail.getId());
       if (settings.useFileDates()) {
         document.setCreated(pubDetailToCreate.getCreationDate());
         if (pubDetailToCreate.getUpdateDate() != null) {

@@ -79,6 +79,15 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>
+        The HTML element identifier in the HTML DOM.
+      </description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>

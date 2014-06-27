@@ -252,7 +252,7 @@ public class DocumentRepository {
           if (!versions.isEmpty()) {
             SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
             if (!checkedLanguages.contains(firstVersion.getLanguage())) {
-              addContent(session, targetDoc.getPk(), firstVersion.getFile());
+              addContent(session, targetDoc.getPk(), firstVersion.getAttachment());
             }
           }
           checkedLanguages.add(language);
@@ -1100,7 +1100,7 @@ public class DocumentRepository {
    * @param document the document data from which all needed identifiers are retrieved.
    * @param restore true to restore the previous version if any.
    * @param skipContentMetadataUpdate false to update the metadata of the content {@link
-   * SimpleDocument#getFile()}.
+   * SimpleDocument#getAttachment()}.
    * @return the document updated.
    * @throws RepositoryException
    */

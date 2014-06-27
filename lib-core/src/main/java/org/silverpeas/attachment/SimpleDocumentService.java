@@ -463,7 +463,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
       boolean checkinRequired = repository.lock(session, document, owner);
       repository.updateDocument(session, document);
-      repository.addContent(session, document.getPk(), document.getFile());
+      repository.addContent(session, document.getPk(), document.getAttachment());
       repository.fillNodeName(session, document);
       SimpleDocument finalDocument = document;
       if (checkinRequired) {

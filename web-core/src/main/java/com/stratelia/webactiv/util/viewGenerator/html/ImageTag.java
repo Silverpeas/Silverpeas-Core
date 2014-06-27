@@ -4,7 +4,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.file.ImageResizingProcessor;
+import org.apache.ecs.xhtml.img;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
@@ -24,6 +24,7 @@ public class ImageTag extends SimpleTagSupport {
   private String type;
   private String size;
   private String css;
+  private String id;
 
   public String getSrc() {
     return src;
@@ -65,37 +66,56 @@ public class ImageTag extends SimpleTagSupport {
     this.css = css;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public void setId(final String id) {
+    this.id = id;
+  }
+
   @Override
   public void doTag() throws JspException, IOException {
     println(generateHtml());
   }
 
   public String generateHtml() {
-    String imageSrc = getSrc().trim();
+    String imageSrc = "";
+    if (StringUtil.isDefined(getSrc())) {
+      imageSrc = getSrc().trim();
+    }
     String cssClass = getCss();
+    String id = getId();
+    String type = getType();
     if (!imageSrc.contains("/jsp/") && !imageSrc.contains("/icons/")) {
       String imageSize = getSize();
-      if (!StringUtil.isDefined(imageSize)) {
-        String type = getType();
-        if (StringUtil.isDefined(type)) {
-          imageSize = settings.getString(IMAGE_SIZE_KEY_PREFIX + type.trim());
-        }
+      if (!StringUtil.isDefined(imageSize) && StringUtil.isDefined(type)) {
+        imageSize = settings.getString(IMAGE_SIZE_KEY_PREFIX + type.trim());
       }
       imageSrc = FileServerUtils.getImageURL(imageSrc, imageSize);
     }
     if (!imageSrc.startsWith(getWebContext())) {
       imageSrc = getWebContext() + imageSrc;
     }
+    img img = new img(imageSrc);
+    img.setAlt(getAlt());
 
     if (!StringUtil.isDefined(cssClass)) {
-      cssClass = getType();
-    }
-    if (StringUtil.isDefined(cssClass)) {
-      cssClass = "class='" + cssClass + "'";
+      if (StringUtil.isDefined(type)) {
+        img.setClass(type);
+      }
     } else {
-      cssClass = "";
+      img.setClass(cssClass);
     }
-    return "<img src='" + imageSrc + "' alt='" + getAlt() + "'" + cssClass + "/>";
+    if (StringUtil.isDefined(id)) {
+      img.setID(id);
+    }
+    return img.toString();
+  }
+
+  @Override
+  public String toString() {
+    return generateHtml();
   }
 
   protected void println(String txt) throws IOException {

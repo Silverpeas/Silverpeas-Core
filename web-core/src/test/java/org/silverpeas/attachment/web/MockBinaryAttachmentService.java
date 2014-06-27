@@ -178,7 +178,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
   @Override
   public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
     SimpleDocument doc = new SimpleDocument();
-    doc.setFile(new SimpleAttachment());
+    doc.setAttachment(new SimpleAttachment());
     doc.setFilename("Test.pdf");
     doc.setSize("Ceci est un test et ca marche".length());
     doc.setContentType(MimeTypes.PDF_MIME_TYPE);

@@ -233,8 +233,8 @@ class DocumentConverter extends AbstractJcrConverter {
       throws RepositoryException {
     setDocumentNodeProperties(document, documentNode);
     if (!skipAttachmentContent) {
-      Node attachmentNode = getAttachmentNode(document.getFile().getNodeName(), documentNode);
-      attachmentConverter.fillNode(document.getFile(), attachmentNode);
+      Node attachmentNode = getAttachmentNode(document.getAttachment().getNodeName(), documentNode);
+      attachmentConverter.fillNode(document.getAttachment(), attachmentNode);
     }
   }
 

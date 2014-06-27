@@ -99,8 +99,8 @@ public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
         getExpiry().equals(other.getExpiry()))) {
       return false;
     }
-    if (document.getFile() != other.getFile() && (document.getFile() == null || !document.getFile().
-        equals(other.getFile()))) {
+    if (document.getAttachment() != other.getAttachment() && (document.getAttachment() == null || !document.getAttachment().
+        equals(other.getAttachment()))) {
       return false;
     }
     if ((document.getForbiddenDownloadForRoles() == null &&

@@ -848,7 +848,7 @@ public class WysiwygManager {
               .removeLanguageFallbacks();
       for (SimpleDocument doc : documents) {
         if (!isEmptyWysiwygContent(doc, doc.getLanguage())) {
-          doc.getFile().setCreatedBy(userId);
+          doc.getAttachment().setCreatedBy(userId);
           if (copy == null) {
             SimpleDocumentPK pk =
                 AttachmentServiceFactory.getAttachmentService().copyDocument(doc, targetPk);

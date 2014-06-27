@@ -1836,8 +1836,8 @@ public class HistorisedDocumentRepositoryTest {
       createVersionedDocument(session, initialDocument, content);
       // French content before version
       initialDocument.setLanguage("fr");
-      initialDocument.setFile(createFrenchVersionnedAttachment());
-      creationDateByLanguage.put("fr", initialDocument.getFile().getCreated());
+      initialDocument.setAttachment(createFrenchVersionnedAttachment());
+      creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreated());
       documentRepository.updateDocument(session, initialDocument);
       session.save();
 
@@ -2992,8 +2992,8 @@ public class HistorisedDocumentRepositoryTest {
       createVersionedDocument(session, initialDocument, content);
       // French content before version
       initialDocument.setLanguage("fr");
-      initialDocument.setFile(createFrenchVersionnedAttachment());
-      creationDateByLanguage.put("fr", initialDocument.getFile().getCreated());
+      initialDocument.setAttachment(createFrenchVersionnedAttachment());
+      creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreated());
       documentRepository.updateDocument(session, initialDocument);
       session.save();
 
@@ -3328,8 +3328,8 @@ public class HistorisedDocumentRepositoryTest {
     }
 
     // Attachment
-    expectedBeanProperties = BeanUtils.describe(expected.getFile());
-    resultBeanProperties = BeanUtils.describe(result.getFile());
+    expectedBeanProperties = BeanUtils.describe(expected.getAttachment());
+    resultBeanProperties = BeanUtils.describe(result.getAttachment());
     for (String keyToRemove : toIgnoredBeanProperties) {
       expectedBeanProperties.remove(keyToRemove);
       resultBeanProperties.remove(keyToRemove);

@@ -117,20 +117,20 @@ public class SimpleDocument implements Serializable {
   public void setCloneId(String cloneId) {
     this.cloneId = cloneId;
   }
-  private SimpleAttachment file;
+  private SimpleAttachment attachment;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      SimpleAttachment file) {
-    this(pk, foreignId, order, versioned, null, file);
+      SimpleAttachment attachment) {
+    this(pk, foreignId, order, versioned, null, attachment);
   }
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      String editedBy, SimpleAttachment file) {
-    this(pk, foreignId, order, versioned, editedBy, null, null, null, null, file);
+      String editedBy, SimpleAttachment attachment) {
+    this(pk, foreignId, order, versioned, editedBy, null, null, null, null, attachment);
   }
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      Date reservation, Date alert, Date expiry, String comment, SimpleAttachment file) {
+      Date reservation, Date alert, Date expiry, String comment, SimpleAttachment attachment) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
@@ -139,7 +139,7 @@ public class SimpleDocument implements Serializable {
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
     this.comment = comment;
-    this.file = file;
+    this.attachment = attachment;
   }
 
   /**
@@ -153,11 +153,11 @@ public class SimpleDocument implements Serializable {
    * @param alert
    * @param expiry
    * @param comment
-   * @param file
+   * @param attachment
    */
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       String editedBy, Date reservation, Date alert, Date expiry, String comment,
-      SimpleAttachment file) {
+      SimpleAttachment attachment) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
@@ -167,7 +167,7 @@ public class SimpleDocument implements Serializable {
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
     this.comment = comment;
-    this.file = file;
+    this.attachment = attachment;
   }
 
   public SimpleDocument() {
@@ -196,83 +196,83 @@ public class SimpleDocument implements Serializable {
     this.comment = simpleDocument.getComment();
     this.documentType = simpleDocument.getDocumentType();
     this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
-    this.file = simpleDocument.getFile();
+    this.attachment = simpleDocument.getAttachment();
   }
 
   public String getFilename() {
-    return getFile().getFilename();
+    return getAttachment().getFilename();
   }
 
   public void setFilename(String filename) {
-    getFile().setFilename(filename);
+    getAttachment().setFilename(filename);
   }
 
   public String getLanguage() {
-    return getFile().getLanguage();
+    return getAttachment().getLanguage();
   }
 
   public void setLanguage(String language) {
-    getFile().setLanguage(language);
+    getAttachment().setLanguage(language);
   }
 
   public String getTitle() {
-    return getFile().getTitle();
+    return getAttachment().getTitle();
   }
 
   public void setTitle(String title) {
-    getFile().setTitle(title);
+    getAttachment().setTitle(title);
   }
 
   public String getDescription() {
-    return getFile().getDescription();
+    return getAttachment().getDescription();
   }
 
   public void setDescription(String description) {
-    getFile().setDescription(description);
+    getAttachment().setDescription(description);
   }
 
   public long getSize() {
-    return getFile().getSize();
+    return getAttachment().getSize();
   }
 
   public void setSize(long size) {
-    getFile().setSize(size);
+    getAttachment().setSize(size);
   }
 
   public String getContentType() {
-    return getFile().getContentType();
+    return getAttachment().getContentType();
   }
 
   public void setContentType(String contentType) {
-    getFile().setContentType(contentType);
+    getAttachment().setContentType(contentType);
   }
 
   public String getCreatedBy() {
-    return getFile().getCreatedBy();
+    return getAttachment().getCreatedBy();
   }
 
   public Date getCreated() {
-    return getFile().getCreated();
+    return getAttachment().getCreated();
   }
 
   public void setCreated(Date created) {
-    getFile().setCreated(created);
+    getAttachment().setCreated(created);
   }
 
   public String getUpdatedBy() {
-    return getFile().getUpdatedBy();
+    return getAttachment().getUpdatedBy();
   }
 
   public void setUpdatedBy(String updatedBy) {
-    getFile().setUpdatedBy(updatedBy);
+    getAttachment().setUpdatedBy(updatedBy);
   }
 
   public Date getUpdated() {
-    return getFile().getUpdated();
+    return getAttachment().getUpdated();
   }
 
   public void setUpdated(Date updated) {
-    getFile().setUpdated(updated);
+    getAttachment().setUpdated(updated);
   }
 
   public Date getReservation() {
@@ -429,11 +429,11 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getXmlFormId() {
-    return getFile().getXmlFormId();
+    return getAttachment().getXmlFormId();
   }
 
   public void setXmlFormId(String xmlFormId) {
-    getFile().setXmlFormId(xmlFormId);
+    getAttachment().setXmlFormId(xmlFormId);
   }
 
   public String getId() {
@@ -487,16 +487,16 @@ public class SimpleDocument implements Serializable {
     return versioned;
   }
 
-  public SimpleAttachment getFile() {
-    return file;
+  public SimpleAttachment getAttachment() {
+    return attachment;
   }
 
   public SimpleDocumentPK getPk() {
     return this.pk;
   }
 
-  public void setFile(SimpleAttachment file) {
-    this.file = file;
+  public void setAttachment(SimpleAttachment attachment) {
+    this.attachment = attachment;
   }
 
   public boolean isPublic() {
@@ -539,7 +539,7 @@ public class SimpleDocument implements Serializable {
    * @return the full JCR path to the file node (starting with /).
    */
   public String getFullJcrContentPath() {
-    return getFullJcrPath() + '/' + getFile().getNodeName();
+    return getFullJcrPath() + '/' + getAttachment().getNodeName();
   }
 
   /**
@@ -609,7 +609,7 @@ public class SimpleDocument implements Serializable {
     return "SimpleDocument{" + getNodeName() + " pk=" + getPk() + ", foreignId=" + getForeignId() +
         ", order=" + getOrder() + ", versioned=" + isVersioned() + ", editedBy=" + getEditedBy() +
         ", reservation=" + getReservation() + ", alert=" + getAlert() + ", expiry=" + getExpiry() +
-        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", file=" + getFile() +
+        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", file=" + getAttachment() +
         ", minorVersion=" + getMinorVersion() + ", majorVersion=" + getMajorVersion() +
         ", comment=" + getComment() + '}';
   }

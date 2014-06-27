@@ -156,7 +156,7 @@ public abstract class JcrTest {
     SimpleDocument document = getDocumentById(uuId, language);
     assertThat(document, notNullValue());
     final File physicalContent;
-    if (document.getFile() != null) {
+    if (document.getAttachment() != null) {
       physicalContent = new File(FileRepositoryManager.getAbsolutePath(document.getInstanceId()),
           document.getNodeName() + "/" +
               document.getMajorVersion() + "_" + document.getMinorVersion() + "/" + language + "/" +
@@ -169,10 +169,10 @@ public abstract class JcrTest {
       );
     }
     if (expectedContent == null) {
-      assertThat(document.getFile(), nullValue());
+      assertThat(document.getAttachment(), nullValue());
       assertThat(physicalContent.exists(), is(false));
     } else {
-      assertThat(document.getFile(), notNullValue());
+      assertThat(document.getAttachment(), notNullValue());
       assertThat(document.getLanguage(), is(language));
       assertThat(physicalContent.exists(), is(true));
       ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -191,7 +191,7 @@ public abstract class JcrTest {
           getDocumentRepository().findDocumentById(session, new SimpleDocumentPK(uuId), language);
       if (StringUtil.isDefined(language) && document != null &&
           !language.equals(document.getLanguage())) {
-        document.setFile(null);
+        document.setAttachment(null);
       }
       return document;
     } finally {
@@ -208,7 +208,7 @@ public abstract class JcrTest {
     SimpleDocument document = new SimpleDocument();
     document.setPK(new SimpleDocumentPK("-1", instanceId));
     document.setForeignId(foreignId);
-    document.setFile(file);
+    document.setAttachment(file);
     return document;
   }
 
@@ -254,7 +254,7 @@ public abstract class JcrTest {
    */
   public SimpleDocument createAttachmentForTest(SimpleDocument document,
       SimpleAttachment attachment, String content) throws Exception {
-    document.setFile(attachment);
+    document.setAttachment(attachment);
     return createDocumentIntoJcr(document, content);
   }
 

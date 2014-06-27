@@ -1402,8 +1402,8 @@ public class DocumentRepositoryTest {
     }
 
     // Attachment
-    expectedBeanProperties = BeanUtils.describe(expected.getFile());
-    resultBeanProperties = BeanUtils.describe(result.getFile());
+    expectedBeanProperties = BeanUtils.describe(expected.getAttachment());
+    resultBeanProperties = BeanUtils.describe(result.getAttachment());
     for (String keyToRemove : toIgnoredBeanProperties) {
       expectedBeanProperties.remove(keyToRemove);
       resultBeanProperties.remove(keyToRemove);

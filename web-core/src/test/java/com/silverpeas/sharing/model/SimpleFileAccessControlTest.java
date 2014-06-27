@@ -221,7 +221,7 @@ public class SimpleFileAccessControlTest {
     pk.setOldSilverpeasId(5);
     SimpleDocument attachment = new SimpleDocument();
     attachment.setPK(pk);
-    attachment.setFile(file);
+    attachment.setAttachment(file);
     attachment.setForeignId("12");
     return AttachmentServiceFactory.getAttachmentService().createAttachment(attachment,
         new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8)));

@@ -38,6 +38,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
 
 import static com.stratelia.webactiv.util.FileServerUtils.*;
@@ -85,6 +86,11 @@ public class FileServer extends AbstractFileSender {
     String dirType = req.getParameter(DIR_TYPE_PARAMETER);
     String userId = req.getParameter(USER_ID_PARAMETER);
     String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
+    String size = req.getParameter(SIZE_PARAMETER);
+
+    if (StringUtil.isDefined(size)) {
+      sourceFile = size + File.separatorChar + sourceFile;
+    }
 
     SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
     SilverpeasFileDescriptor descriptor =
