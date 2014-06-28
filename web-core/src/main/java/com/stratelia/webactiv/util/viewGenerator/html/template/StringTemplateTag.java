@@ -99,7 +99,8 @@ public class StringTemplateTag extends TagSupport {
       if (CORE_NAMESPACE.equals(nameSpace)) {
         pageContext.getOut().print(template.applyFileTemplate(templateName));
       } else {
-        pageContext.getOut().print(template.applyFileTemplateOnComponent(nameSpace, templateName));
+        pageContext.getOut()
+            .print(template.applyFileTemplateOnComponent(locationBase, templateName));
       }
     } catch (final IOException e) {
       throw new JspException("StringTemplate tag", e);

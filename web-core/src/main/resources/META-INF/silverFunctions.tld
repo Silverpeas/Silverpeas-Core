@@ -74,6 +74,22 @@
     </function-signature>
   </function>
   <function>
+    <description>Splits the provided text into an array, using whitespace as the separator.</description>
+    <name>split</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String[] split(java.lang.String,java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Splits the provided text into an array, using whitespace as the separator.</description>
+    <name>splitOnWhitespace</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String[] split(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that display the estimated download time.</description>
     <name>estimateDownload</name>
     <function-class>com.stratelia.webactiv.util.FileRepositoryManager</function-class>
@@ -203,11 +219,59 @@
     </example>
   </function>
   <function>
+    <description>Function to format a pagination.</description>
+    <name>formatPaginationFromFirstIndexOfItem</name>
+    <function-class>com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromFirstIndexOfItem(int,int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPagination(15,50,30)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a pagination.</description>
+    <name>formatPaginationFromCurrentPageIndex</name>
+    <function-class>com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromCurrentPageIndex(int,int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPagination(15,50,2)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to count the total number of pages to display.</description>
+    <name>countTotalNumberOfPagesOfPagination</name>
+    <function-class>com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>int countTotalNumberOfPages(int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:countTotalNumberOfPages(15,50)}">
+    </example>
+  </function>
+  <function>
+    <description>Function that return the Full URL of the application.</description>
+    <name>fullApplicationURL</name>
+    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-signature>
+      java.lang.String getFullApplicationURL(javax.servlet.http.HttpServletRequest)()
+    </function-signature>
+  </function>
+  <function>
     <description>Function that return the URL of the application.</description>
     <name>applicationURL</name>
     <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
     <function-signature>
       java.lang.String getApplicationURL()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the component URL of the specified component instance
+      identifier.
+    </description>
+    <name>componentURL</name>
+    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-signature>
+      java.lang.String getComponentInstanceURL(java.lang.String)
     </function-signature>
   </function>
   <function>

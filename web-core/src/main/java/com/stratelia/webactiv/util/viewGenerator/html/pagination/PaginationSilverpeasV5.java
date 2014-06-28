@@ -37,18 +37,8 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
 
   @Override
   public String printCounter() {
-    StringBuilder result = new StringBuilder();
-    if (getNbItems() <= getNbItemsPerPage()) {
-      result.append(getNbItems()).append(" ");
-    } else {
-      int end = getFirstItemIndex() + getNbItemsPerPage();
-      if (end > getNbItems()) {
-        end = getNbItems();
-      }
-      result.append(getFirstItemIndex() + 1).append(" - ").append(end).append(" / ").append(
-          getNbItems()).append(" ");
-    }
-    return result.toString();
+    return PaginationUtil.formatFromFirstIndexOfItem(getNbItemsPerPage(), getNbItems(),
+        getFirstItemIndex());
   }
 
   @Override

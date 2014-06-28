@@ -33,28 +33,23 @@ public class PaginationSP extends AbstractPagination {
     super();
   }
 
+  @Override
   public void init(int nbItems, int nbItemsPerPage, int firstItemIndex) {
     super.init(nbItems, nbItemsPerPage, firstItemIndex);
   }
 
+  @Override
   public String printCounter() {
-    StringBuilder result = new StringBuilder();
-    if (getNbItems() <= getNbItemsPerPage()) {
-      result.append(getNbItems()).append(" ");
-    } else {
-      int end = getFirstItemIndex() + getNbItemsPerPage();
-      if (end > getNbItems())
-        end = getNbItems();
-      result.append(getFirstItemIndex() + 1).append(" - ").append(end).append(
-          " / ").append(getNbItems()).append(" ");
-    }
-    return result.toString();
+    return PaginationUtil.formatFromFirstIndexOfItem(getNbItemsPerPage(), getNbItems(),
+        getFirstItemIndex());
   }
 
+  @Override
   public String printIndex() {
     return printIndex(null);
   }
 
+  @Override
   public String printIndex(String javascriptFunc) {
     StringBuilder result = new StringBuilder();
 
@@ -64,7 +59,6 @@ public class PaginationSP extends AbstractPagination {
 
       int nbPage = getNbPage();
       int currentPage = getCurrentPage();
-      int index = -1;
 
       if (displayTotalNumberOfPages() && nbPage > getNumberOfPagesAround()) {
         result.append("<div class=\"pageIndex\">");
@@ -88,7 +82,7 @@ public class PaginationSP extends AbstractPagination {
 
         // display previous page link
         result.append("<div class=\"pageOff\">");
-        index = getIndexForPreviousPage();
+        int index = getIndexForPreviousPage();
         result.append(getLink(javascriptFunc, index, getString("GEF.pagination.previousPage")));
         result.append("<img src=\"").append(getIconsPath()).append(
             "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
@@ -107,7 +101,7 @@ public class PaginationSP extends AbstractPagination {
           // display 10 pages (or less) before current page
           // display 10 pages (or less) after current page
           if (currentPage - nbDisplayPages <= i && i <= currentPage + nbDisplayPages) {
-            index = getIndexForDirectPage(i);
+            int index = getIndexForDirectPage(i);
             result.append("<div class=\"pageOff\">");
             result.append(getLink(javascriptFunc, index, getString("GEF.pagination.gotoPage") + i));
             result.append(i).append("</a>");
@@ -119,7 +113,7 @@ public class PaginationSP extends AbstractPagination {
       // display next link (or nothing if current page is last one)
       if (!isLastPage()) {
         // display next page link
-        index = getIndexForNextPage();
+        int index = getIndexForNextPage();
         result.append("<div class=\"pageOff\">");
         result.append(getLink(javascriptFunc, index, getString("GEF.pagination.nextPage")));
         result.append("<img src=\"").append(getIconsPath()).append(
@@ -224,6 +218,7 @@ public class PaginationSP extends AbstractPagination {
     return link.toString();
   }
 
+  @Override
   public String print() {
     return printIndex();
   }

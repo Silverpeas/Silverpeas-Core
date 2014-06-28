@@ -1379,7 +1379,7 @@ public class ClassifyEngine implements Cloneable {
       // Fetch the results
       List<ObjectValuePair> objectValuePairs = new ArrayList<ObjectValuePair>();
       while (resSet.next()) {
-        ObjectValuePair ovp = new ObjectValuePair(resSet.getInt(1), resSet.getString(2), resSet.
+        ObjectValuePair ovp = new ObjectValuePair(resSet.getString(1), resSet.getString(2), resSet.
             getString(3));
 
         objectValuePairs.add(ovp);

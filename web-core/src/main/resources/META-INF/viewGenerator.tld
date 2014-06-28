@@ -1133,7 +1133,7 @@
     <body-content>JSP</body-content>
     <attribute>
       <description>
-        Lien de l'action.
+        The action is a link or javascript method name with one parameter.
       </description>
       <name>action</name>
       <required>true</required>
@@ -1142,12 +1142,12 @@
     </attribute>
     <attribute>
       <description>
-        Total number of pages.
+        Lien de l'action.
       </description>
-      <name>nbPages</name>
-      <required>true</required>
+      <name>actionIsJsFunction</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Integer</type>
+      <type>java.lang.Boolean</type>
     </attribute>
     <attribute>
       <description>
@@ -1160,10 +1160,37 @@
     </attribute>
     <attribute>
       <description>
-        Param name to pass the page number (starting at 0) to be displayed.
+        Total number of items per page.
+      </description>
+      <name>nbItemsPerPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of handled items.
+      </description>
+      <name>totalNumberOfItems</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of pages.
+      </description>
+      <name>nbPages</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+      Param name to pass the page number (starting at 0) to be displayed.
       </description>
       <name>pageParam</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
@@ -1926,7 +1953,78 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
-
+  <tag>
+    <description>FORM HTML TAG OVERRIDE</description>
+    <name>form</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.FormTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>method</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>A HTML TAG OVERRIDE</description>
+    <name>a</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.ATag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
 
   <function>
     <description>Function that returns the value of a class constant.</description>

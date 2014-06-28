@@ -194,6 +194,10 @@ public class URLManager {
     return getURL(sComponentName, null, null);
   }
 
+  public static String getComponentInstanceURL(String sComponentId) {
+    return getURL(null, null, sComponentId);
+  }
+
   public static String getURL(String sSpace, String sComponentId) {
     return getURL(null, null, sComponentId);
   }

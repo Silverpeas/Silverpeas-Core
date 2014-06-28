@@ -2259,7 +2259,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     int treeId = axisHeader.getRootId();
 
     List<ObjectValuePair> objectValuePairs = null;
-    List<Integer> countedObjects = null;
 
     SilverTrace.info("Pdc", "PdcBmImpl.filterValues",
         "root.MSG_GEN_PARAM_VALUE", "apres getHeader()");
@@ -2340,14 +2339,12 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
                   searchContext, Integer.parseInt(axisId), joinStatement);
             }
 
-            countedObjects = new ArrayList<Integer>();
+            List<String> countedObjects = new ArrayList<String>();
 
             int nbObjects = 0;
-            Integer objectId = null;
-            String instanceId = null;
             for (ObjectValuePair ovp : objectValuePairs) {
-              objectId = ovp.getObjectId();
-              instanceId = ovp.getInstanceId();
+              String objectId = ovp.getObjectId();
+              String instanceId = ovp.getInstanceId();
               if (ovp.getValuePath().startsWith(descendantPath)
                   && !countedObjects.contains(objectId)) {
                 // check if object is available for user

@@ -27,6 +27,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 
 public class WindowTag extends NeedWindowTag {
@@ -54,7 +55,7 @@ public class WindowTag extends NeedWindowTag {
 
   @Override
   public int doEndTag() throws JspException {
-    Window window = (Window) pageContext.getAttribute(WINDOW_PAGE_ATT);
+    Window window = (Window) pageContext.getAttribute(WINDOW_PAGE_ATT, PageContext.REQUEST_SCOPE);
     window.setPopup(isPopup());
     try {
       pageContext.getOut().println(window.printAfter());
