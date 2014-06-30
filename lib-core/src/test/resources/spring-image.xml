@@ -34,6 +34,8 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.image"/>
-  <ctx:component-scan base-package="org.silverpeas.file"/>
+
+  <bean id="imageResizingProcessor" class="org.silverpeas.file.ImageResizingProcessor"/>
+  <bean id="fileExistenceCheckingProcessor" class="org.silverpeas.file.FileExistenceCheckingProcessor"/>
 
 </beans>

@@ -3,7 +3,7 @@ package org.silverpeas.file;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;

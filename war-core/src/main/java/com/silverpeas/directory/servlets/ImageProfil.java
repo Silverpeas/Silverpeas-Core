@@ -26,6 +26,7 @@ package com.silverpeas.directory.servlets;
 
 import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
 
@@ -60,34 +61,25 @@ public class ImageProfil {
    * @throws IOException
    */
   public void saveImage(InputStream data) throws IOException {
-    File image = getImageFile();
-    image.getParentFile().mkdir();// crée le répertoire avatar s'il n'existait pas déjà
-    FileUtil.writeFile(image, data);// ajoute l'image uploadée ou bien remplace l'image existante
-                                    // par l'image uploadée
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    fileProvider.writeSilverpeasFile(getImagePath(), data);
   }
 
   /**
    * remove existing image
    */
   public void removeImage() {
-    File image = getImageFile();
-    if (image.exists()) {
-      image.delete(); // supprime la dernière image uploadée
-      File avatarDirectory = new File(FileRepositoryManager.getAvatarPath());
-      avatarDirectory.delete();// supprime le répertoire avatar s'il ne contient plus de photo
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    SilverpeasFile image = fileProvider.deleteSilverpeasFile(getImagePath());
+    if (image != SilverpeasFile.NO_FILE) {
+      image.getParentFile().delete(); // remove the directory in the case of a last avatar
     }
   }
 
   public InputStream getImage() throws IOException {
     SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
-    SilverpeasFileDescriptor descriptor =
-        new SilverpeasFileDescriptor().fileName(getImagePath()).absolutePath();
-    File image = fileProvider.getSilverpeasFile(descriptor);
-    return new FileInputStream(image);
-  }
-
-  private File getImageFile() {
-    return new File(getImagePath());
+    SilverpeasFile image = fileProvider.getSilverpeasFile(getImagePath());
+    return image.inputStream();
   }
 
   private String getImagePath() {

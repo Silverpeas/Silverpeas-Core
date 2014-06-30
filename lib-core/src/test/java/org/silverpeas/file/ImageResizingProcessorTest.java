@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.silverpeas.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
+import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext.GETTING;
 
 public class ImageResizingProcessorTest {
 
@@ -61,7 +62,7 @@ public class ImageResizingProcessorTest {
    */
   @Test
   public void noResizingOccursIfTheImageAlreadyExists() throws Exception {
-    String actualPath = processor.processBefore(originalImage.getCanonicalPath());
+    String actualPath = processor.processBefore(originalImage.getCanonicalPath(), GETTING);
     assertThat(actualPath, is(originalImage.getCanonicalPath()));
   }
 
@@ -75,7 +76,7 @@ public class ImageResizingProcessorTest {
   public void noResizingOccursIfTheImageIsAlreadyResized() throws Exception {
     String expectedPath = copyOriginalImageInto(IMAGE_CACHE_PATH + File.separator + NEW_SIZE);
 
-    String actualPath = processor.processBefore(expectedPath);
+    String actualPath = processor.processBefore(expectedPath, GETTING);
     assertThat(actualPath, is(expectedPath));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -86,7 +87,7 @@ public class ImageResizingProcessorTest {
   @Test
   public void resizeAtCorrectDimension() throws Exception {
     String askedPath = pathForOriginalImageSize(NEW_SIZE);
-    String actualPath = processor.processBefore(askedPath);
+    String actualPath = processor.processBefore(askedPath, GETTING);
     assertThat(actualPath, not(is(askedPath)));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -97,7 +98,7 @@ public class ImageResizingProcessorTest {
   @Test
   public void resizeAtCorrectWidth() throws Exception {
     String askedPath = pathForOriginalImageSize(NEW_SIZE_WIDTH);
-    String actualPath = processor.processBefore(askedPath);
+    String actualPath = processor.processBefore(askedPath, GETTING);
     assertThat(actualPath, not(is(askedPath)));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -108,7 +109,7 @@ public class ImageResizingProcessorTest {
   @Test
   public void resizeAtCorrectHeight() throws Exception {
     String askedPath = pathForOriginalImageSize(NEW_SIZE_HEIGHT);
-    String actualPath = processor.processBefore(askedPath);
+    String actualPath = processor.processBefore(askedPath, GETTING);
     assertThat(actualPath, not(is(askedPath)));
 
     BufferedImage image = ImageIO.read(new File(actualPath));
@@ -119,7 +120,7 @@ public class ImageResizingProcessorTest {
   @Test
   public void noResizingIfNoSizeInThePath() throws Exception {
     String askedPath = pathForOriginalImageSize(NO_SIZE);
-    String actualPath = processor.processBefore(askedPath);
+    String actualPath = processor.processBefore(askedPath, GETTING);
 
     assertThat(actualPath, is(askedPath));
   }
@@ -127,7 +128,7 @@ public class ImageResizingProcessorTest {
   @Test
   public void noResizingIfInvalidSize() throws Exception {
     String askedPath = pathForOriginalImageSize(INVALID_SIZE);
-    String actualPath = processor.processBefore(askedPath);
+    String actualPath = processor.processBefore(askedPath, GETTING);
 
     assertThat(actualPath, is(askedPath));
   }

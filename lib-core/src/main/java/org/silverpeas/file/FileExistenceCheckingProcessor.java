@@ -1,5 +1,10 @@
 package org.silverpeas.file;
 
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerFactory;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 
@@ -21,16 +26,22 @@ public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor {
   }
 
   @Override
-  public String processBefore(final String path) {
+  public String processBefore(final String path, ProcessingContext context) {
     return path;
   }
 
   @Override
-  public SilverpeasFile processAfter(final SilverpeasFile file) {
+  public SilverpeasFile processAfter(final SilverpeasFile file, ProcessingContext context) {
     SilverpeasFile validatedFile = file;
-    if (!validatedFile.exists() && !validatedFile.isFile()) {
-      validatedFile = SilverpeasFile.NO_FILE;
+    switch (context) {
+      case GETTING:
+      case MOVING:
+        if (!validatedFile.exists() && !validatedFile.isFile()) {
+          validatedFile = SilverpeasFile.NO_FILE;
+        }
+        break;
     }
     return validatedFile;
   }
+
 }
