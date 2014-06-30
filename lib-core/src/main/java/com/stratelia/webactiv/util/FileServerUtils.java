@@ -49,6 +49,9 @@ public class FileServerUtils {
   public static final String PUBLICATION_ID_PARAMETER = "PubId";
   public static final String SIZE_PARAMETER = "Size";
 
+  private static final ResourceLocator lookSettings =
+      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+
   /**
    * Replace chars that have special meanings in url by their http substitute.
    *
@@ -172,30 +175,38 @@ public class FileServerUtils {
    * resized images are computed. This method is to get the URL of the resized version of an
    * uploaded image.
    * @param originalImageURL the URL of the original, non-resized, image.
-   * @param size the size of the image to get in the form of WIDTHxHEIGHT with WIDTH the width in
-   * pixels of the image and HEIGHT the height in pixels of the image. WIDTH or HEIGHT can be
-   * omitted but the 'x' character is required. If null, empty or or not well formed, the original
-   * image URL is then return.
+   * @param sizeParams the size of the image to get. The size can be specified either a key in the
+   * {@code org.silverpeas.lookAndFeel.generalLook} bundle or as a dimension. The keys of the
+   * properties indicating an image size are always prefixed by the 'image.size' term. The
+   * dimension of an image must be in the form of WIDTHxHEIGHT with WIDTH the width in pixels of
+   * the image and HEIGHT the height in pixels of the image. WIDTH or HEIGHT can be omitted but the
+   * 'x' character is required. If null, empty or or not well formed, the original image URL is
+   * then returned.
    * @return the URL of the image with the specified size.
    */
-  public static String getImageURL(String originalImageURL, String size) {
+  public static String getImageURL(String originalImageURL, String sizeParams) {
     String resizedImagePath = originalImageURL;
-    if (StringUtil.isDefined(originalImageURL) && StringUtil.isDefined(size) && size.length() > 1 &&
-        size.contains("x")) {
-      // image handled by the old FileServer service
-      if (originalImageURL.contains("/FileServer/")) {
-        resizedImagePath = originalImageURL + "&Size=" + size;
-      } else {
-        int lastSepIndex = originalImageURL.lastIndexOf("/");
-        if (originalImageURL.contains("/attached_file/")) {
-          // asks for an image attached to a contribution (a form, a WYSIWYG, ...)
-          size = "size/" + size;
-          lastSepIndex = originalImageURL.substring(0, lastSepIndex).lastIndexOf("/");
+    String size = sizeParams;
+    if (StringUtil.isDefined(originalImageURL) && StringUtil.isDefined(sizeParams)) {
+      if (sizeParams.startsWith("image.size.")) {
+        size = lookSettings.getString(sizeParams);
+      }
+      if (StringUtil.isDefined(size) && size.length() > 1 && size.contains("x")) {
+        // image handled by the old FileServer service
+        if (originalImageURL.contains("/FileServer/")) {
+          resizedImagePath = originalImageURL + "&Size=" + size;
+        } else {
+          int lastSepIndex = originalImageURL.lastIndexOf("/");
+          if (originalImageURL.contains("/attached_file/")) {
+            // asks for an image attached to a contribution (a form, a WYSIWYG, ...)
+            size = "size/" + size;
+            lastSepIndex = originalImageURL.substring(0, lastSepIndex).lastIndexOf("/");
 
+          }
+          resizedImagePath = (lastSepIndex == -1 ? size + "/" + originalImageURL :
+              originalImageURL.substring(0, lastSepIndex + 1) + size +
+                  originalImageURL.substring(lastSepIndex));
         }
-        resizedImagePath = (lastSepIndex == -1 ? size + "/" + originalImageURL :
-            originalImageURL.substring(0, lastSepIndex + 1) + size +
-                originalImageURL.substring(lastSepIndex));
       }
     }
     return resizedImagePath;

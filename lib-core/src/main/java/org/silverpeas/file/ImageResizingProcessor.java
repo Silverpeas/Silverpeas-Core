@@ -50,7 +50,7 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
             DimensionOption dimension =
                 DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
             imageTool
-                .convert(sourceImage, resizedImage, dimension, ImageToolDirective.GEOMETRY_SHRINK);
+                .convert(sourceImage, resizedImage, dimension);
           }
         }
       }
@@ -68,8 +68,8 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
     String parent = image.getParentFile().getName();
     if (parent.contains("x")) {
       String[] size = parent.split("x");
-      int width = -1;
-      int height = -1;
+      Integer width = null;
+      Integer height = null;
       try {
         if (StringUtil.isDefined(size[0])) {
           width = Integer.valueOf(size[0]);
@@ -79,7 +79,7 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
         }
         File imageSource =
             new File(image.getParentFile().getParent() + File.separator + image.getName());
-        if (imageSource.exists() && (width > -1 || height > -1)) {
+        if (imageSource.exists() && (width != null || height != null)) {
           File imageDestination =
               new File(IMAGE_CACHE_PATH + parent + File.separator + imageSource.getName());
           parameters = new ResizingParameters(imageSource, imageDestination, width, height);
@@ -94,23 +94,24 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
 
     private static ResizingParameters NO_RESIZING = new ResizingParameters(null, null, -1, -1);
 
-    private int width;
-    private int height;
+    private Integer width;
+    private Integer height;
     private File sourceImage;
     private File destinationImage;
 
-    public ResizingParameters(File sourceImage, File destinationImage, int width, int height) {
+    public ResizingParameters(File sourceImage, File destinationImage, Integer width,
+        Integer height) {
       this.height = height;
       this.width = width;
       this.sourceImage = sourceImage;
       this.destinationImage = destinationImage;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
       return width;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
       return height;
     }
 

@@ -183,7 +183,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
   private void displayImage(Map<String, String> parameters, String imageURL, PrintWriter out) {
     String height = (parameters.containsKey("height") ? parameters.get("height") : "");
     String width = (parameters.containsKey("width") ? parameters.get("width") : "");
-    String size = height + "x" + width;
+    String size = width + "x" + height;
     if (size.length() <= 1) {
       size = settings.getString("image.size.xmlform");
     }
