@@ -91,8 +91,7 @@ public class OnlineFileServer extends AbstractFileSender {
           .parentDirectory(directory);
     }
 
-    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
-    SilverpeasFile onlineFile = fileProvider.getSilverpeasFile(ref);
+    SilverpeasFile onlineFile = SilverpeasFileProvider.getFile(ref);
     sendFile(response, onlineFile);
   }
 

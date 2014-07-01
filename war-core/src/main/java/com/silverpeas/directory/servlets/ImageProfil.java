@@ -62,7 +62,8 @@ public class ImageProfil {
    */
   public void saveImage(InputStream data) throws IOException {
     SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
-    fileProvider.writeSilverpeasFile(getImagePath(), data);
+    SilverpeasFile image = SilverpeasFileProvider.newFile(getImagePath());
+    image.writeFrom(data);
   }
 
   /**
@@ -70,15 +71,15 @@ public class ImageProfil {
    */
   public void removeImage() {
     SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
-    SilverpeasFile image = fileProvider.deleteSilverpeasFile(getImagePath());
-    if (image != SilverpeasFile.NO_FILE) {
+    SilverpeasFile image = SilverpeasFileProvider.getFile(getImagePath());
+    if (image.exists()) {
+      image.delete();
       image.getParentFile().delete(); // remove the directory in the case of a last avatar
     }
   }
 
   public InputStream getImage() throws IOException {
-    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
-    SilverpeasFile image = fileProvider.getSilverpeasFile(getImagePath());
+    SilverpeasFile image = SilverpeasFileProvider.getFile(getImagePath());
     return image.inputStream();
   }
 
