@@ -76,7 +76,7 @@
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${updatedBy.id}" zoom="${displayUserZoom}"/>
       <div class="profilPhoto">
-        <img src='<c:url value="${updatedBy.avatar}" />' alt="" class="defaultAvatar"/>
+        <view:image src="${updatedBy.avatar}" alt="" type="avatar" css="defaultAvatar"/>
       </div>
     </div>
   </c:if>
@@ -87,7 +87,7 @@
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${createdBy.id}" zoom="${displayUserZoom}"/>
       <div class="profilPhoto">
-        <img src='<c:url value="${createdBy.avatar}"/>' alt="" class="defaultAvatar"/>
+        <view:image src="${createdBy.avatar}" alt="" type="avatar" css="defaultAvatar"/>
       </div>
     </div>
   </c:if>

@@ -29,78 +29,75 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 public class RestRequest {
-  public static final int UPDATE = 1;
-  public static final int DELETE = 2;
-  public static final int FIND = 3;
-  public static final int CREATE = 4;
 
-  public static final String UPDATE_ACTION = "put";
-  public static final String DELETE_ACTION = "delete";
+  public static enum Action {
+    UPDATE("put"),
+    DELETE("delete"),
+    FIND("get"),
+    CREATE("post");
+
+    private final String type;
+
+    private Action(String type) {
+      this.type = type;
+    }
+
+    public String type() {
+      return this.type;
+    }
+
+    public static Action fromType(String actionType) {
+      if (actionType.equalsIgnoreCase(UPDATE.type())) {
+        return UPDATE;
+      } else if (actionType.equalsIgnoreCase(DELETE.type())) {
+        return DELETE;
+      } else if (actionType.equalsIgnoreCase(FIND.type())) {
+        return FIND;
+      } else if (actionType.equalsIgnoreCase(CREATE.type())) {
+        return CREATE;
+      } else {
+        return null;
+      }
+    }
+  }
 
   private String id;
   private Map<String, String[]> elements;
-  private int action;
+  private Action action;
   private HttpServletRequest request;
 
   public RestRequest(HttpServletRequest request, String componentId) {
     this.request = request;
     elements = new HashMap<String, String[]>(10);
-    if ("POST".equalsIgnoreCase(request.getMethod())) {
-      action = CREATE;
-    } else if ("GET".equalsIgnoreCase(request.getMethod())) {
-      action = FIND;
-    } else if ("PUT".equalsIgnoreCase(request.getMethod())) {
-      action = UPDATE;
-    } else if ("DELETE".equalsIgnoreCase(request.getMethod())) {
-      action = DELETE;
-    }
-    String pathInfo = request.getRequestURI();
-    String context = request.getContextPath();
-    int startIndex = pathInfo.indexOf(context) + context.length();
-    pathInfo = pathInfo.substring(startIndex);
-    if (componentId != null) {
-      int routingIndex = pathInfo.indexOf(componentId);
-      if (routingIndex >= 0) {
-        pathInfo = pathInfo.substring(routingIndex + componentId.length());
-      }
-    }
-    // substring du context
-    if (pathInfo.startsWith("/")) {
-      pathInfo = pathInfo.substring(1);
-    }
 
+    String pathInfo = getPathInfo(request, componentId);
     SilverTrace.debug("util", "RestRequest()",
         "root.MSG_GEN_ENTER_METHOD", "Parsing:" + pathInfo);
-    StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/", false);
-    String element = tokenizer.nextToken();
-    this.id = tokenizer.nextToken();
-    if (DELETE_ACTION.equalsIgnoreCase(element)) {
-      action = DELETE;
-    } else if (UPDATE_ACTION.equalsIgnoreCase(element)) {
-      action = UPDATE;
-    } else {
-      this.id = element;
-      tokenizer = new StringTokenizer(pathInfo, "/", false);
-      tokenizer.nextToken();
-    }
-    boolean isKey = true;
-    String key = null;
-    String value = null;
-    while (tokenizer.hasMoreTokens()) {
-      value = tokenizer.nextToken();
-      if (isKey) {
-        key = value;
-        isKey = false;
+    String[] pathItems = pathInfo.split("/");
+    if (pathItems.length > 0) {
+      // first, parse the path for optionally an action and for an identifier
+      int itemParsingStartIndex;
+      this.action = Action.fromType(pathItems[0]);
+      if (action != null) {
+        this.id = pathItems[1];
+        itemParsingStartIndex = 2;
       } else {
-        this.elements.put(key, new String[] { value });
-        SilverTrace.debug("util", "RestRequest()",
-            "root.MSG_GEN_ENTER_METHOD", key + '=' + value);
-        isKey = true;
+        this.action = Action.fromType(request.getMethod());
+        this.id = pathItems[0];
+        itemParsingStartIndex = 1;
+      }
+      // last, parse the other path parts for key-value parameters
+      for (int i = itemParsingStartIndex; i < pathItems.length; i++) {
+        String key = pathItems[i++];
+        if (i < pathItems.length) {
+          String value = pathItems[i];
+          this.elements.put(key, new String[]{value});
+        }
       }
     }
+
     this.elements.putAll(request.getParameterMap());
   }
 
@@ -119,7 +116,7 @@ public class RestRequest {
     return this.elements.get(name);
   }
 
-  public int getAction() {
+  public Action getAction() {
     return action;
   }
 
@@ -129,6 +126,24 @@ public class RestRequest {
 
   public HttpServletRequest getWebRequest() {
     return this.request;
+  }
+
+  private static String getPathInfo(HttpServletRequest request, String componentId) {
+    String pathInfo = request.getRequestURI();
+    String context = request.getContextPath();
+    int startIndex = pathInfo.indexOf(context) + context.length();
+    pathInfo = pathInfo.substring(startIndex);
+    if (componentId != null) {
+      int routingIndex = pathInfo.indexOf(componentId);
+      if (routingIndex >= 0) {
+        pathInfo = pathInfo.substring(routingIndex + componentId.length());
+      }
+    }
+    // remove the first / if any for further parsing
+    if (pathInfo.startsWith("/")) {
+      pathInfo = pathInfo.substring(1);
+    }
+    return pathInfo;
   }
 
 }

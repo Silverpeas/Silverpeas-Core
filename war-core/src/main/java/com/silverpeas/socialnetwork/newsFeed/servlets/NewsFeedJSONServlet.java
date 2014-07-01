@@ -24,6 +24,26 @@
 
 package com.silverpeas.socialnetwork.newsFeed.servlets;
 
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
+import com.silverpeas.socialnetwork.myProfil.control.SocialNetworkService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.silverpeas.core.admin.OrganisationController;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -35,27 +55,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.silverpeas.socialnetwork.myProfil.control.SocialNetworkService;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.core.admin.OrganisationController;
 
 public class NewsFeedJSONServlet extends HttpServlet {
 
@@ -197,12 +196,15 @@ public class NewsFeedJSONServlet extends HttpServlet {
     UserDetail contactUser1 = oc.getUserDetail(information.getAuthor());
     if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
       UserDetail contactUser2 = oc.getUserDetail(information.getTitle());
+      String avatarURL = FileServerUtils
+          .getImageURL(URLManager.getApplicationURL() + contactUser2.getAvatar(),
+              "image.size.avatar");
       valueObj.put("type", information.getType());
       valueObj.put("author", userDetailToJSON(contactUser1));
       valueObj.put("title", userDetailToJSON(contactUser2));
       valueObj.put("hour", formatTime.format(information.getDate()));
       valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
-      valueObj.put("icon", URLManager.getApplicationURL() + contactUser2.getAvatar());
+      valueObj.put("icon", avatarURL);
       valueObj.put("label", multilang.getStringWithParam("newsFeed.relationShip.label",
           contactUser2.getDisplayedName()));
       return valueObj;
@@ -237,7 +239,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
 
   /**
    * convert the Map of socailInformation to JSONArray
-   * @param Map<Date, List<SocialInformation>> map
+   * @param map
    * @return JSONArray
    */
   private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganisationController oc,
@@ -294,20 +296,22 @@ public class NewsFeedJSONServlet extends HttpServlet {
 
   /**
    * convert the Map of SNContactUser to JSONArray
-   * @param Map<Date, List<SocialInformation>> map
+   * @param user
    * @return JSONArray
    */
   private JSONObject userDetailToJSON(UserDetail user) {
+    String avatarURL = FileServerUtils
+        .getImageURL(URLManager.getApplicationURL() + user.getAvatar(), "image.size.avatar");
     JSONObject userJSON = new JSONObject();
     userJSON.put("id", user.getId());
     userJSON.put("displayedName", user.getDisplayedName());
-    userJSON.put("profilPhoto", URLManager.getApplicationURL() + user.getAvatar());
+    userJSON.put("profilPhoto", avatarURL);
     return userJSON;
   }
 
   /**
    * return the url of icon
-   * @param SocialInformationType type
+   * @param type
    * @return String
    */
   private String getIconUrl(SocialInformationType type) {

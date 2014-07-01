@@ -58,7 +58,7 @@ public class ImageDisplay extends HttpServlet {
   }
 
   protected String getAvatar(HttpServletRequest req) {
-    int position = req.getPathInfo().lastIndexOf('/');
+    int position = req.getPathInfo().indexOf('/');
     return req.getPathInfo().substring(position + 1);
   }
 }

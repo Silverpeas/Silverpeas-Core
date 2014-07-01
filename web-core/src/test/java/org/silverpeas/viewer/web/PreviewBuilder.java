@@ -75,7 +75,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getFile()
+     * @see org.silverpeas.viewer.Preview#getAttachment()
      */
     @Override
     public File getPhysicalFile() {

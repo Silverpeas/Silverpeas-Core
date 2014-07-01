@@ -53,7 +53,7 @@ import static org.hamcrest.Matchers.*;
 public class FileHandlerTest extends AbstractHandledFileTest {
 
   /*
-   * getFile
+   * getAttachment
    */
 
   @Test(expected = NullPointerException.class)

@@ -163,8 +163,8 @@ public class DocumentConverterTest {
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
     expectedResult.setOldSilverpeasId(oldSilverpeasId);
-    expectedResult.getFile().setUpdated(updateDate);
-    expectedResult.getFile().setUpdatedBy(updatedBy);
+    expectedResult.getAttachment().setUpdated(updateDate);
+    expectedResult.getAttachment().setUpdatedBy(updatedBy);
     expectedResult.setMajorVersion(1);
     expectedResult.setMinorVersion(2);
     expectedResult.setNodeName("attach_" + oldSilverpeasId);
@@ -358,8 +358,8 @@ public class DocumentConverterTest {
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getFile().setUpdated(updateDate);
-    document.getFile().setUpdatedBy(updatedBy);
+    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setUpdatedBy(updatedBy);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
@@ -439,8 +439,8 @@ public class DocumentConverterTest {
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getFile().setUpdated(updateDate);
-    document.getFile().setUpdatedBy(updatedBy);
+    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setUpdatedBy(updatedBy);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
@@ -516,8 +516,8 @@ public class DocumentConverterTest {
     reservation.setTime(document.getReservation());
     document.setStatus(status);
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getFile().setUpdated(updateDate);
-    document.getFile().setUpdatedBy(updatedBy);
+    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setUpdatedBy(updatedBy);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
@@ -587,8 +587,8 @@ public class DocumentConverterTest {
     reservation.setTime(document.getReservation());
     document.setStatus(status);
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getFile().setUpdated(updateDate);
-    document.getFile().setUpdatedBy(updatedBy);
+    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setUpdatedBy(updatedBy);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
@@ -639,8 +639,8 @@ public class DocumentConverterTest {
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getFile().setUpdated(updateDate);
-    document.getFile().setUpdatedBy(updatedBy);
+    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setUpdatedBy(updatedBy);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);

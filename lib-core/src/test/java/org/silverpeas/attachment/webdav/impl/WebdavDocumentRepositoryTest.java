@@ -80,7 +80,7 @@ public class WebdavDocumentRepositoryTest {
         assertThat(listPathesFrom(webdavNode), contains(
             "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
-        document.setFile(defaultFRContent());
+        document.setAttachment(defaultFRContent());
         document = updateAttachmentForTest(document, "fr", "Whaou FR!");
 
         webdavRepository.createAttachmentNode(session, document);
@@ -124,7 +124,7 @@ public class WebdavDocumentRepositoryTest {
         assertThat(listPathesFrom(webdavNode), contains(
             "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
-        document.setFile(defaultFRContent());
+        document.setAttachment(defaultFRContent());
         document = updateAttachmentForTest(document, "fr", "Whaou FR!");
 
         webdavRepository.updateNodeAttachment(session, document);
@@ -283,7 +283,7 @@ public class WebdavDocumentRepositoryTest {
             contains("/webdav/attachments/targetInstanceId/" + document.getId() +
                 "/en/test.pdf/jcr:content"));
 
-        document.setFile(defaultFRContent());
+        document.setAttachment(defaultFRContent());
         document = updateAttachmentForTest(document, "fr", "FR content");
         webdavRepository.createAttachmentNode(session, document);
         assertContent(document.getId(), "fr", "FR content");
@@ -322,7 +322,7 @@ public class WebdavDocumentRepositoryTest {
             contains("/webdav/attachments/targetInstanceId/" + document.getId() +
                 "/en/test.pdf/jcr:content"));
 
-        document.setFile(defaultFRContent());
+        document.setAttachment(defaultFRContent());
         document = updateAttachmentForTest(document, "fr", "FR content");
         webdavRepository.createAttachmentNode(session, document);
         webdavNode = getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
@@ -345,7 +345,7 @@ public class WebdavDocumentRepositoryTest {
         SimpleAttachment frDocumentContent = defaultFRContent();
         SimpleDocument document = defaultDocument("kmelia26", "foreignId38");
         document = createAttachmentForTest(document, frDocumentContent, "FR content");
-        document.setFile(defaultENContent());
+        document.setAttachment(defaultENContent());
         document = updateAttachmentForTest(document, "en", "Whaou !");
         assertContent(document.getId(), "fr", "FR content");
         assertContent(document.getId(), "en", "Whaou !");
@@ -401,7 +401,7 @@ public class WebdavDocumentRepositoryTest {
         SimpleAttachment frDocumentContent = defaultFRContent();
         SimpleDocument document = defaultDocument("kmelia26", "foreignId38");
         document = createAttachmentForTest(document, frDocumentContent, "FR content");
-        document.setFile(defaultENContent());
+        document.setAttachment(defaultENContent());
         document = updateAttachmentForTest(document, "en", "Whaou !");
         assertContent(document.getId(), "fr", "FR content");
         assertContent(document.getId(), "en", "Whaou !");
@@ -537,7 +537,7 @@ public class WebdavDocumentRepositoryTest {
         document = assertContent(documentId, "en", "EN content");
         assertWebdavContent(session, document, "EN content", document.getWebdavJcrPath());
 
-        document.setFile(defaultFRContent());
+        document.setAttachment(defaultFRContent());
         document = updateAttachmentForTest(document, "fr", "FR content");
         SimpleDocument frDocument = assertContent(document.getId(), "fr", "FR content");
         SimpleDocument enDocument = assertContent(document.getId(), "en", "EN content");
@@ -547,7 +547,7 @@ public class WebdavDocumentRepositoryTest {
         assertThat(webdavRepository.getContentEditionLanguage(session, frDocument), is("fr"));
         assertThat(webdavRepository.getContentEditionLanguage(session, enDocument), is("fr"));
 
-        document.setFile(defaultENContent());
+        document.setAttachment(defaultENContent());
         updateAttachmentForTest(document, "en", "EN content updated");
         webdavRepository.createAttachmentNode(session, document);
         assertThat(listPathesFrom(webdavNode), contains(

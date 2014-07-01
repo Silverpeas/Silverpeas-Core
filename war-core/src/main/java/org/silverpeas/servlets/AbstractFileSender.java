@@ -23,15 +23,14 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
-import org.apache.tika.io.IOUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.file.SilverpeasFile;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -43,12 +42,9 @@ import java.io.StringReader;
  */
 public abstract class AbstractFileSender extends HttpServlet {
 
-  protected void sendFile(HttpServletResponse response, OnlineFile onlineFile) throws IOException {
-    sendFile(response, onlineFile.getContentFile());
-  }
 
-  protected void sendFile(HttpServletResponse response, File file) throws IOException {
-    response.setContentType(FileUtil.getMimeType(file.getName()));
+  protected void sendFile(HttpServletResponse response, SilverpeasFile file) throws IOException {
+    response.setContentType(file.getMimeType());
     response.setHeader("Content-Length", String.valueOf(file.length()));
     SilverTrace.debug("peasUtil", "AbstractFileSender.sendFile()", "root.MSG_GEN_ENTER_METHOD",
         " file: " + file.getAbsolutePath());
@@ -62,11 +58,6 @@ public abstract class AbstractFileSender extends HttpServlet {
           " file: " + file.getAbsolutePath(), e);
       displayWarningHtmlCode(response);
     }
-  }
-
-  protected void sendFile(HttpServletResponse response, String file) throws IOException {
-    File downloadedFile = new File(file);
-    sendFile(response, downloadedFile);
   }
 
   protected void displayWarningHtmlCode(HttpServletResponse res) throws IOException {

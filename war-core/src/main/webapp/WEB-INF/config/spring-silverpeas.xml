@@ -32,7 +32,6 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="
@@ -87,6 +86,7 @@
   <ctx:component-scan base-package="org.silverpeas.mylinks"/>
   <ctx:component-scan base-package="org.silverpeas.language"/>
   <ctx:component-scan base-package="org.silverpeas.preferences"/>
+  <ctx:component-scan base-package="org.silverpeas.file"/>
 
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>

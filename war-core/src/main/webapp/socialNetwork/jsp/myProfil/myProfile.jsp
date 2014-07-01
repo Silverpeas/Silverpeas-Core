@@ -273,7 +273,7 @@ function hideImageFile() {
 			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>
         </div>
         <div class="profilPhoto">
-			<img src="<c:url value='${currentUser.avatar}' />" alt="viewUser" class="avatar"/>
+			<view:image src="${currentUser.avatar}" type="avatar.profil" alt="viewUser" css="avatar"/>
         </div>
         <br clear="all" />
  	</div>
@@ -318,7 +318,7 @@ function hideImageFile() {
 		<!-- unContact  -->
      	<div class="unContact">
         	<div class="profilPhotoContact">
-            <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>"><img class="avatar" alt="viewUser" src="<c:url value='${contact.avatar}'/>" /></a>
+            <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>"><view:image css="avatar" alt="viewUser" type="avatar" src="${contact.avatar}" /></a>
         	</div>
               <a href="<c:url value='/Rprofil/jsp/Main'><c:param name='userId' value='${contact.id}'/></c:url>" class="contactName"><c:out value="${contact.displayedName}"/></a>
 	   	</div> <!-- /unContact  -->

@@ -206,7 +206,7 @@ public class SimpleDocumentListTest {
       document = new SimpleDocument();
     }
     document.setId(String.valueOf(id));
-    document.setFile(new SimpleAttachment());
+    document.setAttachment(new SimpleAttachment());
     document.setLanguage(language);
     if (id % 5 == 0) {
       document.setUpdated(lastUpdateDate);

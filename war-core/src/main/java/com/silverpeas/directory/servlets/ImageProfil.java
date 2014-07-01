@@ -24,16 +24,18 @@
 
 package com.silverpeas.directory.servlets;
 
+import com.silverpeas.util.FileUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileDescriptor;
+import org.silverpeas.file.SilverpeasFileProvider;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-
-import com.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class ImageProfil {
 
@@ -55,34 +57,32 @@ public class ImageProfil {
 
   /**
    * In case of unit upload
-   * @param image
+   * @param data
    * @throws IOException
    */
   public void saveImage(InputStream data) throws IOException {
-    File image = getImageFile();
-    image.getParentFile().mkdir();// crée le répertoire avatar s'il n'existait pas déjà
-    FileUtil.writeFile(image, data);// ajoute l'image uploadée ou bien remplace l'image existante
-                                    // par l'image uploadée
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    fileProvider.writeSilverpeasFile(getImagePath(), data);
   }
 
   /**
    * remove existing image
    */
   public void removeImage() {
-    File image = getImageFile();
-    if (image.exists()) {
-      image.delete(); // supprime la dernière image uploadée
-      File avatarDirectory = new File(FileRepositoryManager.getAvatarPath());
-      avatarDirectory.delete();// supprime le répertoire avatar s'il ne contient plus de photo
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    SilverpeasFile image = fileProvider.deleteSilverpeasFile(getImagePath());
+    if (image != SilverpeasFile.NO_FILE) {
+      image.getParentFile().delete(); // remove the directory in the case of a last avatar
     }
   }
 
   public InputStream getImage() throws IOException {
-    File image = getImageFile();
-    return new FileInputStream(image);
+    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+    SilverpeasFile image = fileProvider.getSilverpeasFile(getImagePath());
+    return image.inputStream();
   }
 
-  private File getImageFile() {
-    return new File(FileRepositoryManager.getAvatarPath() + File.separatorChar + photoFileName);
+  private String getImagePath() {
+    return FileRepositoryManager.getAvatarPath() + File.separatorChar + photoFileName;
   }
 }

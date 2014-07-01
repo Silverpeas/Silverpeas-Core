@@ -153,7 +153,7 @@ function getFooterHeight() {
         <div id="outils">
         	<% if (!isAnonymousAccess) { %>
 	        	<div class="avatarName">
-	        		<a href="<%=m_sContext%>/RMyProfil/jsp/Main" target="MyMain" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><img src="<%=m_sContext + helper.getUserDetail().getAvatar()%>" height="20px" alt="avatar"/> <%=helper.getUserFullName() %></a>
+				<a href="<%=m_sContext%>/RMyProfil/jsp/Main" target="MyMain" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
 	        	</div>
         	<% } %>
         	<div class="userNav">

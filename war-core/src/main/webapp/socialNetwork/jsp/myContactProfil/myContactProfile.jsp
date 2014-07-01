@@ -92,7 +92,7 @@
             <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
         <div class="profilPhoto">
-			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
+			<view:image src="<%=userFull.getAvatar()%>" alt="viewUser" type="avatar" css="avatar"/>
         </div>  
         <br clear="all" />
  	</div>
@@ -107,7 +107,7 @@
 		<!-- unContact  -->  
      	<div class="unContact">
         	<div class="profilPhotoContact">
-        		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
+			<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><view:image css="avatar" alt="viewUser" src="<%=contact.getAvatar() %>" type="avatar" /></a>
         	</div>
         	<view:username userId="<%=contact.getId() %>" />
 	   	</div> <!-- /unContact  -->
@@ -130,7 +130,7 @@
 		<!-- unContact  -->  
 	    <div class="unContact">
 	    	<div class="profilPhotoContact">
-        		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
+			<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><view:image css="avatar" alt="viewUser" src="<%=contact.getAvatar() %>" type="avatar" /></a>
         	</div>
 	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
 	    </div> <!-- /unContact  -->

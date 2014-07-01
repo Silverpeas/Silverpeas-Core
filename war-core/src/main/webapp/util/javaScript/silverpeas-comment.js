@@ -204,8 +204,10 @@
         var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
         var legende = $("<div>").addClass("legende");
         $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
-        if (settings.author && settings.author.avatar && settings.author.avatar.length > 0)
-          $("<img>").attr("src", settings.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
+        if (settings.author && settings.author.avatar && settings.author.avatar.length > 0) {
+          var avatarUrl = __computeAvatarUrl(settings.author.avatar);
+          $("<img>").attr("src", avatarUrl).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
+        }
         $("<textarea>").addClass("text").appendTo(editionBox).autoResize();
         $("<span>").html("&nbsp;").appendTo(editionBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
@@ -235,6 +237,16 @@
 
   };
 
+  function __computeAvatarUrl(url) {
+    if (url.indexOf("jsp") < 0) {
+      var lastSepIdx = url.lastIndexOf('/');
+      var avatarUrl = url.substring(0, lastSepIdx + 1) + '60x' + url.substring(lastSepIdx);
+    } else {
+      avatarUrl = url;
+    }
+    return avatarUrl;
+  }
+
   /**
    * A private method to print the specified comment.
    */
@@ -247,7 +259,8 @@
       commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").appendTo($("#list-box")));
     }
     var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
-    $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
+    var avatarUrl = __computeAvatarUrl(comment.author.avatar);
+    $("<img>").attr("src", avatarUrl).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
     if (settings.author && ((settings.author.id == comment.author.id) || settings.author.anonymous))
       $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
     else

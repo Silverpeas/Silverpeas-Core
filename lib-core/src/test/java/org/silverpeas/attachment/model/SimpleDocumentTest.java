@@ -74,7 +74,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetFullJcrContentPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -98,7 +98,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetFullJcrPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -121,7 +121,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetDisplayIcon() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("toto.docx");
     String result = instance.getDisplayIcon();
     assertThat(result, is("/silverpeas//util/icons/fileType/word2007.gif"));
@@ -139,7 +139,7 @@ public class SimpleDocumentTest {
   @Test
   public void testIsOpenOfficeCompatible() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("toto.docx");
     boolean result = instance.isOpenOfficeCompatible();
     assertThat(result, is(true));
@@ -162,7 +162,7 @@ public class SimpleDocumentTest {
 
       SimpleDocument document = new SimpleDocument();
       SimpleAttachment attachment = new SimpleAttachment();
-      document.setFile(attachment);
+      document.setAttachment(attachment);
       attachment.setFilename("file.mov");
 
       /*
@@ -223,7 +223,7 @@ public class SimpleDocumentTest {
 
       SimpleDocument document = new SimpleDocument();
       SimpleAttachment attachment = new SimpleAttachment();
-      document.setFile(attachment);
+      document.setAttachment(attachment);
       attachment.setFilename("file.mov");
 
       /*
@@ -270,7 +270,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetAttachmentPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -319,7 +319,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetAttachmentURL() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -343,8 +343,8 @@ public class SimpleDocumentTest {
     SimpleDocument instance = new SimpleDocument();
     String id = UUID.randomUUID().toString();
     instance.setPK(new SimpleDocumentPK(id, instanceId));
-    instance.setFile(new SimpleAttachment());
-    instance.getFile().setLanguage("en");
+    instance.setAttachment(new SimpleAttachment());
+    instance.getAttachment().setLanguage("en");
     String expResult = "/silverpeas/File/" + id + "?ContentLanguage=en";
     String result = instance.getUniversalURL();
     assertThat(result, is(expResult));
@@ -356,7 +356,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetOnlineURL() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -378,7 +378,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetAliasURL() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -400,7 +400,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetWebdavUrl() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("Mon fichier élève 2012 - fait à 80%.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -422,7 +422,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetWebdavJcrPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);

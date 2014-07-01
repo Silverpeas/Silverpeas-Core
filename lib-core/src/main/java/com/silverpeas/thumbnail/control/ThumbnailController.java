@@ -39,6 +39,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileProvider;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -197,16 +199,19 @@ public class ThumbnailController {
       if (thumbnail != null) {
         // move thumbnail on disk
         if (!thumbnail.getOriginalFileName().startsWith("/")) {
-          File file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getOriginalFileName());
-          File to = new File(getImageDirectory(toPK.getInstanceId()));
-          
-          // move original thumbnail
-          FileUtils.moveFileToDirectory(file, to, true);
-          
+          SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+          String path = getImageDirectory(fromPK.getInstanceId()) + File.separatorChar +
+              thumbnail.getOriginalFileName();
+          String destinationPath = getImageDirectory(toPK.getInstanceId());
+          SilverpeasFile file = fileProvider.getSilverpeasFile(path);
+          fileProvider.moveSilverpeasFile(file, destinationPath);
+
           // move cropped thumbnail
           if (thumbnail.getCropFileName() != null) {
-            file = new File(getImageDirectory(fromPK.getInstanceId()), thumbnail.getCropFileName());
-            FileUtils.moveFileToDirectory(file, to, true);
+            path = getImageDirectory(fromPK.getInstanceId()) + File.separatorChar +
+                thumbnail.getCropFileName();
+            file = fileProvider.getSilverpeasFile(path);
+            fileProvider.moveSilverpeasFile(file, destinationPath);
           }
         }
         
@@ -262,10 +267,8 @@ public class ThumbnailController {
   private static void deleteThumbnailFileOnServer(String componentId, String fileName) {
     String path = getImageDirectory(componentId) + fileName;
     try {
-      File d = new File(path);
-      if (d.exists()) {
-        FileUtils.forceDelete(d);
-      }
+      SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
+      fileProvider.deleteSilverpeasFile(path);
     } catch (Exception e) {
       SilverTrace.warn("thumbnail",
           "ThumbnailController.deleteThumbnailFileOnServer(String componentId, String fileName)",
