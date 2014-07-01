@@ -177,7 +177,7 @@ function updateThumbnail() {
 	<div class="field" id="thumb">
 		<div id="thumbnailPreviewAndActions">
 			<div id="thumbnailPreview">
-				<img src="<c:out value="${thumbnail.URL}"/>" id="thumbnail" alt=""/>
+				<view:image src="${thumbnail.URL}" type="vignette.thumbnail" id="thumbnail" alt=""/>
 			</div>
 			<div id="thumbnailActions">
 				<c:if test="${thumbnail != null && thumbnail.cropable}">

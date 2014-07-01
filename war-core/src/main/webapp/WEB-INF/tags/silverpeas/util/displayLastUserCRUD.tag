@@ -87,7 +87,7 @@
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${publishedBy.id}" zoom="${displayUserZoom}"/>
       <div class="profilPhoto">
-        <img src='<c:url value="${publishedBy.avatar}" />' alt="" class="defaultAvatar"/>
+      	<view:image src="${publishedBy.avatar}" alt="" type="avatar" css="defaultAvatar"/>
       </div>
     </div>
   </c:if>
