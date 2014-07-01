@@ -609,7 +609,7 @@ public class SimpleDocument implements Serializable {
     return "SimpleDocument{" + getNodeName() + " pk=" + getPk() + ", foreignId=" + getForeignId() +
         ", order=" + getOrder() + ", versioned=" + isVersioned() + ", editedBy=" + getEditedBy() +
         ", reservation=" + getReservation() + ", alert=" + getAlert() + ", expiry=" + getExpiry() +
-        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", file=" + getAttachment() +
+        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", attachment=" + getAttachment() +
         ", minorVersion=" + getMinorVersion() + ", majorVersion=" + getMajorVersion() +
         ", comment=" + getComment() + '}';
   }

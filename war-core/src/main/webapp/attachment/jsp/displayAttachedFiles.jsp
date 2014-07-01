@@ -270,13 +270,13 @@
                 </c:if>
                  - <view:formatDateTime value="${currentAttachment.updated}"/>
               <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
-                <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-attachment" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
+                <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
               </c:if>
               <c:if test="${silfn:isViewable(currentAttachment.attachmentPath)}">
-                <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-attachment" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
+                <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
               </c:if>
               <c:if test="${!currentAttachment.downloadAllowedForReaders}">
-                <img class="forbidden-download-attachment" src='<c:url value="/util/icons/forbidden-download.png"/>' alt="${forbiddenDownloadHelp}" title="${forbiddenDownloadHelp}"/>
+                <img class="forbidden-download-file" src='<c:url value="/util/icons/forbidden-download.png"/>' alt="${forbiddenDownloadHelp}" title="${forbiddenDownloadHelp}"/>
               </c:if>
             </span>
               <c:if test="${silfn:isDefined(currentAttachment.title) && showTitle}">
@@ -1072,7 +1072,7 @@
        $('#versioned_fields_attachment-update').show();
     } else {
       $('#versioned_fields_attachment-update').hide();
-      $('#fileName_label').text('<fmt:message key="GML.attachment"/>');
+      $('#fileName_label').text('<fmt:message key="GML.file"/>');
       $('#file_upload_label').text('<fmt:message key="fichierJoint" />');
     }
   }
@@ -1140,7 +1140,7 @@
           <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
           <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
         </c:if>
-        <label id="fileName_label" for="fileName" class="label-ui-dialog"><fmt:message key="GML.attachment" /></label>
+        <label id="fileName_label" for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
         <span id="fileName" class="champ-ui-dialog"></span>
 
         <label id="file_upload_label" for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>

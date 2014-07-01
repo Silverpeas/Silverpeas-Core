@@ -454,7 +454,7 @@
             </tr>
             <tr>
               <td align="center"><b><fmt:message key="type" /></b></td>
-              <td align="left"><b><fmt:message key="GML.attachment" /></b></td>
+              <td align="left"><b><fmt:message key="GML.file" /></b></td>
               <td align="left"><b><fmt:message key="Title" /></b></td>
               <td align="left"><b><fmt:message key="GML.description" /></b></td>
               <td align="left"><b><fmt:message key="GML.size" /></b></td>
@@ -573,7 +573,7 @@
 
 <div id="dialog-attachment-update" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
-    <label for="fileName"><fmt:message key="GML.attachment" /></label><br/>
+    <label for="fileName"><fmt:message key="GML.file" /></label><br/>
     <span id="fileName"></span><br/>
     <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
     <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
