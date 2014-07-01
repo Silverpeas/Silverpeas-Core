@@ -3,7 +3,6 @@ package org.silverpeas.file;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -66,13 +65,115 @@ public class SilverpeasFile extends File {
     return instanceId;
   }
 
+  @Override
+  public boolean exists() {
+    return this != NO_FILE && super.exists();
+  }
+
   /**
-   * Opens and returns and input stream to this file.
+   * @see java.io.File#delete()
+   * <p/>
+   * A chain of post-processors will be ran once this file deleted to perform possible additional
+   * treatments.
+   * @return true if the deletion succeed, false otherwise.
+   */
+  @Override
+  public boolean delete() {
+    boolean deleted = false;
+    if (exists()) {
+      deleted = super.delete();
+      SilverpeasFileProvider.processAfter(this, SilverpeasFileProcessor.ProcessingContext.DELETION);
+    }
+    return deleted;
+  }
+
+  /**
+   * Opens and returns an input stream to this file.
    * @return a buffered input stream to this file.
    * @throws IOException if an error occurs while opening the input stream.
    */
   public InputStream inputStream() throws IOException {
     return new BufferedInputStream(FileUtils.openInputStream(this));
+  }
+
+  /**
+   * Writes the content of the specified input stream into this file. If this file doesn't aleady
+   * exists, then it is created.
+   * <p/>
+   * A chain of post-processors will be ran once the content written in this file to perform
+   * possible additional treatments.
+   * @param stream the input stream from which the content to write is fetched.
+   * @throws java.io.IOException if an error occurs while writing the content from the specified
+   * input stream into this file.
+   */
+  public void writeFrom(final InputStream stream) throws IOException {
+    File parentFile = getParentFile();
+    if (parentFile != null) {
+      if (!parentFile.mkdirs() && !parentFile.isDirectory()) {
+        throw new IOException("The '" + parentFile + "' directory cannot be created!");
+      }
+    }
+    if (!exists()) {
+      this.createNewFile();
+    }
+    if (!canWrite()) {
+      throw new IOException("The file'" + getPath() + "' is read-only!");
+    }
+    if (!exists()) {
+      this.createNewFile();
+    }
+    FileUtils.copyInputStreamToFile(stream, this);
+    SilverpeasFileProvider.processAfter(this, SilverpeasFileProcessor.ProcessingContext.WRITING);
+  }
+
+  /**
+   * Moves this file into the specified directory. If the directory doesn't exist, it is then
+   * created before. Once the file is moved, it is not more existing. If the file doesn't exist,
+   * then nothing is done and {@code NO_FILE} is returned.
+   * <p/>
+   * A chain of post-processors will be ran once this file is moved to the directory to perform
+   * possible additional treatments on the the moved file.
+   * <p/>
+   * The moving operation will create a new file in the specified directory with the content of this
+   * file and then delete this file. Consequently, a chain of post-processors will be ran against
+   * the deleted file to perform additional treatments at file deletion.
+   * @param directoryPath the absolute path of the directory into which this file has to be moved.
+   * @return the SilverpeasFile located at the specified directory.
+   * @throws java.io.IOException if an error occurs while moving this file into the specified
+   * directory
+   */
+  public SilverpeasFile moveInto(String directoryPath) throws IOException {
+    SilverpeasFile movedFile = NO_FILE;
+    if (exists()) {
+      FileUtils.moveFileToDirectory(this, new File(directoryPath), true);
+      movedFile = new SilverpeasFile(getComponentInstanceId(),
+          directoryPath + File.separatorChar + getName(), getMimeType());
+      SilverpeasFileProvider
+          .processAfter(movedFile, SilverpeasFileProcessor.ProcessingContext.MOVING);
+    }
+    return movedFile;
+  }
+
+  /**
+   * Copies this file into the specified directory. If the directory doesn't exist, it is then
+   * created before.
+   * <p/>
+   * A chain of post-processors will be ran once this file is copied to the directory to perform
+   * possible additional treatments on the copied file.
+   * @param directoryPath the absolute path of the directory into which this file has to be moved.
+   * @throws java.io.IOException if an error occurs while copying this file into the specified
+   * directory
+   */
+  public SilverpeasFile copyInto(String directoryPath) throws IOException {
+    SilverpeasFile copiedFile = NO_FILE;
+    if (exists()) {
+      FileUtils.copyFileToDirectory(this, new File(directoryPath), true);
+      copiedFile = new SilverpeasFile(getComponentInstanceId(),
+          directoryPath + File.separatorChar + getName(), getMimeType());
+      SilverpeasFileProvider
+          .processAfter(copiedFile, SilverpeasFileProcessor.ProcessingContext.COPY);
+    }
+    return copiedFile;
   }
 
 }

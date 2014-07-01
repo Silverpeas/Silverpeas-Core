@@ -36,20 +36,17 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
   @Override
   public String processBefore(final String path, ProcessingContext context) {
     String imagePath = path;
-    switch (context) {
-      case GETTING:
-        imagePath = resizeImage(path);
-        break;
-      case DELETION:
-      case MOVING:
-        imagePath = removeResizedImages(path);
-        break;
+    if (context == ProcessingContext.GETTING) {
+      imagePath = resizeImage(path);
     }
     return imagePath;
   }
 
   @Override
   public SilverpeasFile processAfter(final SilverpeasFile file, ProcessingContext context) {
+    if (context == ProcessingContext.DELETION || context == ProcessingContext.MOVING) {
+      removeResizedImagesOf(file);
+    }
     return file;
   }
 
@@ -80,16 +77,15 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
     return parameters;
   }
 
-  private String removeResizedImages(final String path) {
-    List<String> resizedImagePaths = ImageCache.getImages(path);
+  private void removeResizedImagesOf(final File originaImage) {
+    List<String> resizedImagePaths = ImageCache.getImages(originaImage.getAbsolutePath());
     for (String resizedImage : resizedImagePaths) {
       if (!(new File(resizedImage)).delete()) {
         Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING,
             "The resized image {0} for the in deletion original image {1} cannot be deleted!",
-            new String[]{resizedImage, path});
+            new String[]{resizedImage, originaImage.getAbsolutePath()});
       }
     }
-    return path;
   }
 
   private String resizeImage(final String path) {

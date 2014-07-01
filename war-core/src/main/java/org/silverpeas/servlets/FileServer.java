@@ -92,7 +92,6 @@ public class FileServer extends AbstractFileSender {
       sourceFile = size + File.separatorChar + sourceFile;
     }
 
-    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
     SilverpeasFileDescriptor descriptor =
         new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
     if (typeUpload != null) {
@@ -107,7 +106,7 @@ public class FileServer extends AbstractFileSender {
         descriptor = descriptor.parentDirectory(directory);
       }
     }
-    SilverpeasFile file = fileProvider.getSilverpeasFile(descriptor);
+    SilverpeasFile file = SilverpeasFileProvider.getFile(descriptor);
     sendFile(res, file);
 
     if (StringUtil.isDefined(archiveIt)) {

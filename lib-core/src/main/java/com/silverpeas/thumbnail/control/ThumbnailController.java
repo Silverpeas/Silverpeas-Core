@@ -43,6 +43,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.servlet.FileUploadUtil;
 
@@ -74,22 +75,21 @@ public class ThumbnailController {
     boolean thumbnailChanged = false;
     String mimeType = null;
     String physicalName = null;
-    FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
-    if (file != null) {
-      String logicalName = file.getName().replace('\\', '/');
+    FileItem uploadedFile = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
+    if (uploadedFile != null) {
+      String logicalName = uploadedFile.getName().replace('\\', '/');
       if (StringUtil.isDefined(logicalName)) {
         logicalName = FilenameUtils.getName(logicalName);
         mimeType = FileUtil.getMimeType(logicalName);
         String type = FileRepositoryManager.getFileExtension(logicalName);
         if (FileUtil.isImage(logicalName)) {
           physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
-          File dir = new File(FileRepositoryManager.getAbsolutePath(pk.getInstanceId())
-              + publicationSettings.getString("imagesSubDirectory"));
-          if (!dir.exists()) {
-            dir.mkdirs();
-          }
-          File target = new File(dir, physicalName);
-          file.write(target);
+          SilverpeasFileDescriptor descriptor = new SilverpeasFileDescriptor(pk.getInstanceId())
+              .mimeType(mimeType)
+              .parentDirectory(publicationSettings.getString("imagesSubDirectory"))
+              .fileName(physicalName);
+          SilverpeasFile target = SilverpeasFileProvider.newFile(descriptor);
+          target.writeFrom(uploadedFile.getInputStream());
         } else {
           throw new ThumbnailRuntimeException("ThumbnailController.processThumbnail()",
               SilverpeasRuntimeException.ERROR, "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
@@ -270,15 +270,15 @@ public class ThumbnailController {
           String path = getImageDirectory(fromPK.getInstanceId()) + File.separatorChar +
               thumbnail.getOriginalFileName();
           String destinationPath = getImageDirectory(toPK.getInstanceId());
-          SilverpeasFile file = fileProvider.getSilverpeasFile(path);
-          fileProvider.moveSilverpeasFile(file, destinationPath);
+          SilverpeasFile image = fileProvider.getSilverpeasFile(path);
+          image.moveInto(destinationPath);
 
           // move cropped thumbnail
           if (thumbnail.getCropFileName() != null) {
             path = getImageDirectory(fromPK.getInstanceId()) + File.separatorChar +
                 thumbnail.getCropFileName();
-            file = fileProvider.getSilverpeasFile(path);
-            fileProvider.moveSilverpeasFile(file, destinationPath);
+            image = fileProvider.getSilverpeasFile(path);
+            image.moveInto(destinationPath);
           }
         }
         
@@ -334,8 +334,8 @@ public class ThumbnailController {
   private static void deleteThumbnailFileOnServer(String componentId, String fileName) {
     String path = getImageDirectory(componentId) + fileName;
     try {
-      SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
-      fileProvider.deleteSilverpeasFile(path);
+      SilverpeasFile image = SilverpeasFileProvider.getFile(path);
+      image.delete();
     } catch (Exception e) {
       SilverTrace.warn("thumbnail",
           "ThumbnailController.deleteThumbnailFileOnServer(String componentId, String fileName)",
