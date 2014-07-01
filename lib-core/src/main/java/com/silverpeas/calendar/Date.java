@@ -200,6 +200,11 @@ public class Date extends AbstractDateDatable<Date> {
     other.setTime(anotherDatable);
     return isInSameMonthInYear(self, other) && self.get(DAY_OF_MONTH) == other.get(DAY_OF_MONTH);
   }
+  
+  @Override
+  public boolean isUndefined() {
+    return isEqualTo(new Date(DateUtil.MINIMUM_DATE)) || isEqualTo(new Date(DateUtil.MAXIMUM_DATE));
+  }
 
   @Override
   public boolean equals(Object obj) {

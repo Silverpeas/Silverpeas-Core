@@ -28,6 +28,8 @@ import java.io.Serializable;
 
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
@@ -35,6 +37,8 @@ import com.silverpeas.util.StringUtil;
  */
 public class ThumbnailDetail implements Serializable, MimeTypes {
 
+  private static final ResourceLocator publicationSettings = new ResourceLocator(
+      "org.silverpeas.util.publication.publicationSettings", "fr");
   public static final int THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE = 1;
 
   private static final long serialVersionUID = 1L;
@@ -140,6 +144,19 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
 
   public boolean isCropable() {
     return StringUtil.isDefined(getOriginalFileName()) && !getOriginalFileName().startsWith("/");
+  }
+  
+  public String getURL() {
+    String image = getOriginalFileName();
+    if (image.startsWith("/")) {
+      // case of an image from 'gallery' app
+      return image; // + "&Size=133x100";
+    }
+    if (getCropFileName() != null) {
+      image = getCropFileName();
+    }
+    return FileServerUtils.getUrl(getInstanceId(), "thumbnail", image, getMimeType(),
+        publicationSettings.getString("imagesSubDirectory"));
   }
 
 }

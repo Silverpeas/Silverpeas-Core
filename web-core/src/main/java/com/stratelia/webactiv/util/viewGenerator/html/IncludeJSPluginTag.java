@@ -127,6 +127,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case lang:
           includeLang(xhtml);
           break;
+        case ticker:
+          includeTicker(xhtml);
       }
     } catch (IllegalArgumentException ex) {
       //ignore

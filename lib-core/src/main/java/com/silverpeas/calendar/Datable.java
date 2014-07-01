@@ -296,4 +296,6 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
    * @return the new {@code Datable} with the amount added
    */
   T addMilliseconds(int amount);
+  
+  boolean isUndefined();
 }

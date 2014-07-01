@@ -221,4 +221,10 @@ public class DateTime extends AbstractDateDatable<DateTime> {
   public Date toDate() {
     return new Date(this);
   }
+  
+  @Override
+  public boolean isUndefined() {
+    return isEqualTo(new DateTime(DateUtil.MINIMUM_DATE)) ||
+        isEqualTo(new DateTime(DateUtil.MAXIMUM_DATE));
+  }
 }
