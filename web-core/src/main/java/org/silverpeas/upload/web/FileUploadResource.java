@@ -30,14 +30,14 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.json.JSONObject;
+import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.util.Charsets;
 import org.silverpeas.util.UnitUtil;
 
 import javax.ws.rs.Consumes;
@@ -54,6 +54,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -93,17 +94,14 @@ public class FileUploadResource extends RESTWebService {
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.TEXT_HTML)
-  public Response uploadFiles(FormDataMultiPart multiPart) {
+  public Response uploadFiles() {
     try {
       String uploadId = UUID.randomUUID().toString();
       List<JSONObject> jsonFiles = new ArrayList<JSONObject>();
-      List<FormDataBodyPart> files = multiPart.getFields("file_upload");
-      int numFile = 0;
-      for (FormDataBodyPart file : files) {
-        jsonFiles.add(uploadFile((uploadId + "-" + (numFile++)),
-            file.getFormDataContentDisposition().getFileName(),
-            file.getValueAs(InputStream.class)));
-      }
+      UploadedRequestFile uploadedRequestFile =
+          RequestParameterDecoder.decode(getHttpRequest(), UploadedRequestFile.class);
+      jsonFiles.add(uploadFile(uploadId, uploadedRequestFile.getRequestFile().getName(),
+          uploadedRequestFile.getRequestFile().getInputStream()));
       return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFiles)).build();
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -133,11 +131,12 @@ public class FileUploadResource extends RESTWebService {
   @Produces(MediaType.TEXT_HTML)
   public Response uploadFile(InputStream inputStream) {
     try {
-      String fileName = getHttpServletRequest().getHeader(X_FILENAME);
-      if (!StringUtil.isDefined(fileName)) {
+      String brutFileName = getHttpServletRequest().getHeader(X_FILENAME);
+      if (!StringUtil.isDefined(brutFileName)) {
         throw new WebApplicationException(Response.Status.BAD_REQUEST);
       }
       String fileId = UUID.randomUUID().toString();
+      String fileName = URLDecoder.decode(brutFileName, Charsets.UTF_8.name());
       JSONObject jsonFile = uploadFile(fileId, fileName, inputStream);
       return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFile)).build();
     } catch (final WebApplicationException ex) {
@@ -153,7 +152,7 @@ public class FileUploadResource extends RESTWebService {
    * @param fileName
    * @param inputStream
    * @return a JSON representation of the uploaded file. (more informations on {@link
-   *         FileUploadResource#uploadFiles(com.sun.jersey.multipart.FormDataMultiPart)})
+   *         FileUploadResource#uploadFiles()})
    * @throws IOException
    */
   private JSONObject uploadFile(String fileId, String fileName, InputStream inputStream)
@@ -174,7 +173,7 @@ public class FileUploadResource extends RESTWebService {
    * @param fileId
    * @param file
    * @return a JSON representation of the uploaded file.(more informations on {@link
-   *         FileUploadResource#uploadFiles(com.sun.jersey.multipart.FormDataMultiPart)})
+   *         FileUploadResource#uploadFiles()})
    */
   private JSONObject toJSONObject(String fileId, File file) {
     JSONObject fileInfos = new JSONObject();

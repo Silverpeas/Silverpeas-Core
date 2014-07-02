@@ -1163,7 +1163,7 @@
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
       <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>

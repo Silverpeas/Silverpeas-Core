@@ -28,6 +28,14 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.NotImplementedException;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,13 +45,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.NotImplementedException;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -61,6 +62,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   private HttpRequest(HttpServletRequest request) {
     super(request);
+    // The decorated request is put into attributes in order to provide it to the REST web
+    // services that deals with proxies...
+    request.setAttribute(HttpRequest.class.getName(), this);
   }
 
   /**
@@ -335,6 +339,21 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a {@link RequestFile}.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as a {@link RequestFile}.
+   */
+  public RequestFile getParameterAsRequestFile(String parameterName) {
+    RequestFile requestFile = null;
+    FileItem fileItem = FileUploadUtil.getFile(getFileItems(), parameterName);
+    if (fileItem != null) {
+      requestFile = new RequestFile(fileItem);
+    }
+    return requestFile;
+  }
+
+  /**
    * Get a parameter value as a boolean.
    *
    * @param parameterName the name of the parameter.
@@ -352,6 +371,16 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public Long getParameterAsLong(String parameterName) {
     return asLong(getParameter(parameterName));
+  }
+
+  /**
+   * Get a parameter value as a Integer.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as an integer.
+   */
+  public Integer getParameterAsInteger(String parameterName) {
+    return asInteger(getParameter(parameterName));
   }
 
   /**
@@ -398,6 +427,22 @@ public class HttpRequest extends HttpServletRequestWrapper {
       String typedObject = (String) object;
       if (StringUtil.isLong(typedObject)) {
         return Long.valueOf(typedObject);
+      }
+      return null;
+    }
+    if (object != null) {
+      throw new NotImplementedException();
+    }
+    return null;
+  }
+
+  private <T> Integer asInteger(T object) {
+    if (object instanceof Number) {
+      return ((Number) object).intValue();
+    } else if (object instanceof String) {
+      String typedObject = (String) object;
+      if (StringUtil.isInteger(typedObject)) {
+        return Integer.valueOf(typedObject);
       }
       return null;
     }
