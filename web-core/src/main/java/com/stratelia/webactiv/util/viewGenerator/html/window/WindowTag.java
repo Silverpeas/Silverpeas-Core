@@ -34,6 +34,7 @@ public class WindowTag extends NeedWindowTag {
   private static final long serialVersionUID = -9075732954978662710L;
 
   private boolean browseBarVisible = true;
+  private boolean popup = false;
 
   public boolean isBrowseBarVisible() {
     return browseBarVisible;
@@ -43,9 +44,18 @@ public class WindowTag extends NeedWindowTag {
     this.browseBarVisible = browseBarVisible;
   }
 
+  public void setPopup(boolean popup) {
+    this.popup = popup;
+  }
+
+  public boolean isPopup() {
+    return popup;
+  }
+
   @Override
   public int doEndTag() throws JspException {
     Window window = (Window) pageContext.getAttribute(WINDOW_PAGE_ATT);
+    window.setPopup(isPopup());
     try {
       pageContext.getOut().println(window.printAfter());
     } catch (IOException e) {
@@ -58,6 +68,7 @@ public class WindowTag extends NeedWindowTag {
   public int doStartTag() throws JspException {
     Window window = getWindow();
     window.setBrowseBarVisibility(isBrowseBarVisible());
+    window.setPopup(isPopup());
     try {
       pageContext.getOut().println(window.printBefore());
     } catch (IOException e) {

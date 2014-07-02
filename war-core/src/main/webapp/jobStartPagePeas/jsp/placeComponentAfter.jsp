@@ -32,7 +32,7 @@
     ComponentInst[] brothers = (ComponentInst[]) request.getAttribute("brothers");
 	SpaceInst currentSpace = (SpaceInst) request.getAttribute("currentSpace");
     
-	browseBar.setClickable(false);
+	window.setPopup(true);
 	browseBar.setSpaceId(currentSpace.getId());
     browseBar.setComponentName(m_ComponentName);
     browseBar.setPath(resource.getString("JSPP.ComponentOrder"));

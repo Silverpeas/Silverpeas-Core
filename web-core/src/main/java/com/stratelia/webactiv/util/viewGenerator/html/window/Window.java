@@ -96,4 +96,8 @@ public interface Window extends SimpleGraphicElement {
    * otherwise.
    */
   public void setBrowseBarVisibility(boolean browseBarVisible);
+  
+  public boolean isPopup();
+    
+  public void setPopup(boolean popup);
 }

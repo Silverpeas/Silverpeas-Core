@@ -53,7 +53,7 @@
   </head>
   <body>
     <view:browseBar clickable="false" path="${childNode}"/>
-    <view:window browseBarVisible="true">
+    <view:window browseBarVisible="true" popup="true">
         <div id="header">
           <view:pdcPredefinedClassification componentId="${componentId}" nodeId="${nodeId}"/>
           &nbsp;

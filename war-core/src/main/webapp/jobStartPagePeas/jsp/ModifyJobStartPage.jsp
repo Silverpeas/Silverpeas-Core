@@ -31,8 +31,8 @@
 <%
 String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
+window.setPopup(true);
 browseBar.setSpaceId(spaceId);
-browseBar.setClickable(false);
 browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 
 	Integer m_firstPageType = (Integer)request.getAttribute("FirstPageType");

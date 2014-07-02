@@ -93,7 +93,7 @@
       <view:browseBarElt link="" label="${browseLabel}" />
       <view:browseBarElt link="" label="${msg.subject}" />
     </view:browseBar>
-    <view:window>
+    <view:window popup="true">
       <view:frame>
       <view:board>
               <table cellpadding="5" cellspacing="0" border="0" width="100%">
