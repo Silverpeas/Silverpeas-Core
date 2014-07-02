@@ -23,26 +23,15 @@
  */
 package org.silverpeas.attachment.web;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -54,18 +43,25 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.servlet.RequestParameterDecoder;
 
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
 
 /**
  *
@@ -81,22 +77,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
    * Create the document identified by the requested URI and from the content and some additional
    * parameters passed within the request.
    *
-   * @param uploadedInputStream the input stream from which the content of the file can be read.
-   * @param fileDetail detail about the uploaded file like the filename for example.
-   * @param xRequestedWith a parameter indicating from which the upload was performed. It is valued
-   * with the identifier of the HTML or javascript component at the origin of the uploading.
-   * According to his value, the expected response can be different.
-   * @param language the two-characters code of the language in which the document's content is
-   * written.
-   * @param fileTitle the title of the document as indicated by the user.
-   * @param description a short description of the document's content as indicated by the user.
-   * @param foreignId the identifier of the resource to which the document belong (a publication for
-   * example).
-   * @param indexIt flag meaning the indexation or not of the document's content.
-   * @param type the scope of the version (public or private) in the case of a versioned document.
-   * @param comment a comment about the upload.
-   * @param context the context in which the document is created: in the case of a file attachment,
-   * in the case of a WYSIWYG edition, ...
+   * A {@link SimpleDocumentUploadData} is extracted from request parameters.
+   *
    * @return an HTTP response embodied an entity in a format expected by the client (that is
    * identified by the <code>xRequestedWith</code> parameter).
    * @throws IOException if an error occurs while updating the document.
@@ -104,24 +86,14 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
   @POST
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public Response createDocument(final @FormDataParam("file_upload") InputStream uploadedInputStream,
-      final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
-      final @FormDataParam(X_REQUESTED_WITH) String xRequestedWith,
-      final @FormDataParam("fileLang") String language,
-      final @FormDataParam("fileTitle") String fileTitle,
-      final @FormDataParam("fileDescription") String description,
-      final @FormDataParam("foreignId") String foreignId,
-      final @FormDataParam("indexIt") String indexIt,
-      final @FormDataParam("versionType") String type,
-      final @FormDataParam("commentMessage") String comment,
-      final @FormDataParam("context") String context,
-      final @PathParam("filename") String filename) throws IOException {
+  public Response createDocument(final @PathParam("filename") String filename) throws IOException {
+    SimpleDocumentUploadData uploadData =
+        RequestParameterDecoder.decode(getHttpRequest(), SimpleDocumentUploadData.class);
 
     // Create the attachment
-    SimpleDocumentEntity entity = createSimpleDocument(uploadedInputStream, fileDetail, filename,
-        language, fileTitle, description, foreignId, indexIt, type, comment, context);
+    SimpleDocumentEntity entity = createSimpleDocument(uploadData, filename);
 
-    if (AJAX_IFRAME_TRANSPORT.equals(xRequestedWith)) {
+    if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
 
       // In case of file upload performed by Ajax IFrame transport way,
       // the expected response type is text/html
@@ -135,28 +107,28 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     }
   }
 
-  protected SimpleDocumentEntity createSimpleDocument(InputStream uploadedInputStream,
-      FormDataContentDisposition fileDetail, String filename, String language, String fileTitle,
-      String fileDescription,
-      String foreignId, String indexIt, String type, String comment, String context) throws
-      IOException {
+  protected SimpleDocumentEntity createSimpleDocument(SimpleDocumentUploadData uploadData,
+      String filename) throws IOException {
     try {
+      if (uploadData.getRequestFile() == null) {
+        return null;
+      }
       String uploadedFilename = filename;
       if (StringUtil.isNotDefined(filename)) {
-        uploadedFilename = fileDetail.getFileName();
+        uploadedFilename = uploadData.getRequestFile().getName();
       }
-      if (uploadedInputStream != null && fileDetail != null &&
-          StringUtil.isDefined(uploadedFilename)) {
+      InputStream uploadedInputStream = uploadData.getRequestFile().getInputStream();
+      if (uploadedInputStream != null && StringUtil.isDefined(uploadedFilename)) {
         File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
         FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
 
         //check the file
         checkUploadedFile(tempFile);
 
-        String lang = I18NHelper.checkLanguage(language);
-        String title = fileTitle;
-        String description = fileDescription;
-        if (!StringUtil.isDefined(fileTitle)) {
+        String lang = I18NHelper.checkLanguage(uploadData.getLanguage());
+        String title = uploadData.getTitle();
+        String description = uploadData.getDescription();
+        if (!StringUtil.isDefined(title)) {
           MetadataExtractor extractor = new MetadataExtractor();
           MetaData metadata = extractor.extractMetadata(tempFile);
           if (StringUtil.isDefined(metadata.getTitle())) {
@@ -173,34 +145,36 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         }
 
         DocumentType attachmentContext;
-        if (!StringUtil.isDefined(context)) {
+        if (!StringUtil.isDefined(uploadData.getContext())) {
           attachmentContext = DocumentType.attachment;
         } else {
-          attachmentContext = DocumentType.valueOf(context);
+          attachmentContext = DocumentType.valueOf(uploadData.getContext());
         }
         SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
         String userId = getUserDetail().getId();
         SimpleDocument document;
         boolean needCreation = true;
         boolean publicDocument = true;
-        if (StringUtil.isDefined(type) && StringUtil.isInteger(type)) {
+        if (uploadData.getVersionType() != null) {
           document = AttachmentServiceFactory.getAttachmentService()
               .findExistingDocument(pk, uploadedFilename,
-                  new ForeignPK(foreignId, getComponentId()), lang);
-          publicDocument = Integer.parseInt(type) == DocumentVersion.TYPE_PUBLIC_VERSION;
+                  new ForeignPK(uploadData.getForeignId(), getComponentId()), lang);
+          publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
           needCreation = document == null;
           if (document == null) {
-            document = new HistorisedDocument(pk, foreignId, 0, userId,
+            document = new HistorisedDocument(pk, uploadData.getForeignId(), 0, userId,
                 new SimpleAttachment(uploadedFilename, lang, title, description,
-                    fileDetail.getSize(), FileUtil.getMimeType(uploadedFilename), userId,
-                    new Date(), null));
+                    uploadData.getRequestFile().getSize(), FileUtil.getMimeType(tempFile.getPath()),
+                    userId, new Date(), null));
             document.setDocumentType(attachmentContext);
           }
           document.setPublicDocument(publicDocument);
-          document.setComment(comment);
+          document.setComment(uploadData.getComment());
         } else {
-          document = new SimpleDocument(pk, foreignId, 0, false, null, new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
-              FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
+          document = new SimpleDocument(pk, uploadData.getForeignId(), 0, false, null,
+              new SimpleAttachment(uploadedFilename, lang, title, description,
+                  uploadData.getRequestFile().getSize(), FileUtil.getMimeType(tempFile.getPath()),
+                  userId, new Date(), null));
           document.setDocumentType(attachmentContext);
         }
         document.setLanguage(lang);
@@ -210,13 +184,12 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
         if (needCreation) {
           document = AttachmentServiceFactory.getAttachmentService()
-              .createAttachment(document, content, StringUtil.getBooleanValue(indexIt),
-                  publicDocument);
+              .createAttachment(document, content, uploadData.getIndexIt(), publicDocument);
         } else {
           document.edit(userId);
           AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, lang);
           AttachmentServiceFactory.getAttachmentService()
-              .updateAttachment(document, content, StringUtil.getBooleanValue(indexIt), true);
+              .updateAttachment(document, content, uploadData.getIndexIt(), true);
           UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
           unlockContext.addOption(UnlockOption.UPLOAD);
           if (!publicDocument) {

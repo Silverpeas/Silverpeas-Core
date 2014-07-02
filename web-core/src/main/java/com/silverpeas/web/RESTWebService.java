@@ -30,18 +30,20 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Collection;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.token.Token;
+import org.silverpeas.web.token.SynchronizerTokenService;
+import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.notification.message.MessageManager;
-import org.silverpeas.token.Token;
-import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+import java.util.Collection;
 
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
@@ -62,7 +64,8 @@ public abstract class RESTWebService {
   @Context
   private UriInfo uriInfo;
   @Context
-  private HttpServletRequest httpRequest;
+  private HttpServletRequest httpServletRequest;
+  private HttpRequest httpRequest;
   @Context
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
@@ -148,6 +151,20 @@ public abstract class RESTWebService {
    * @return the HTTP servlet request.
    */
   public HttpServletRequest getHttpServletRequest() {
+    return httpServletRequest;
+  }
+
+  /**
+   * Gets the HTTP request mapped with the execution context of this web service.
+   * @return the HTTP request.
+   */
+  public HttpRequest getHttpRequest() {
+    if (httpRequest == null) {
+      httpRequest = (HttpRequest) getHttpServletRequest().getAttribute(HttpRequest.class.getName());
+      if (httpRequest == null) {
+        httpRequest = HttpRequest.decorate(getHttpServletRequest());
+      }
+    }
     return httpRequest;
   }
 

@@ -297,6 +297,7 @@
           <include>**/*.properties</include>
           <include>**/*.xml</include>
           <include>**/*.txt</include>
+          <include>**/*.gif</include>
         </includes>
         <excludes>
           <exclude>**/index/**/*</exclude>
