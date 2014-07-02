@@ -456,8 +456,7 @@ public class SimpleDocumentTest {
         new UserDetailWithRoles("admin_reader_user", SilverpeasRole.reader, SilverpeasRole.admin);
     UserDetailWithRoles readerUser = new UserDetailWithRoles("reader_user", SilverpeasRole.reader);
     UserDetailWithRoles readerAndPrivilegedUser =
-        new UserDetailWithRoles("reader_privileged_user", SilverpeasRole.reader,
-            SilverpeasRole.privilegedUser);
+        new UserDetailWithRoles("reader", SilverpeasRole.reader);
 
     SimpleDocument instance = new SimpleDocument();
     SimpleDocumentPK pk = new SimpleDocumentPK("dummyId", instanceId);

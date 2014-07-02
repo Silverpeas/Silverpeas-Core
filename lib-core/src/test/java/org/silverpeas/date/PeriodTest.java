@@ -77,7 +77,7 @@ public class PeriodTest {
     assertThat(Period.check(period), not(sameInstance(Period.UNDEFINED)));
 
     period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
-    assertThat(Period.check(period), not(sameInstance(period)));
+    assertThat(Period.check(period), sameInstance(period));
     assertThat(Period.check(period), sameInstance(Period.UNDEFINED));
   }
 
