@@ -36,6 +36,8 @@
 	operationPane.addOperation(resources.getIcon("communicationUser.chatroomClear"),resources.getString("clear"),"javascript:clear()");
 	operationPane.addOperation(resources.getIcon("communicationUser.chatroomSave"),resources.getString("save"),"javascript:save()");
 	operationPane.addOperation(resources.getIcon("communicationUser.chatroomLogout"),resources.getString("logout"),"javascript:logout()");
+	
+	window.setPopup(true);
 %>
 
 <html>

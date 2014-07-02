@@ -66,11 +66,9 @@
   </SCRIPT>
 
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
-<%
-  out.println(window.printBefore());
-  out.println(frame.printBefore());
-%>
+<BODY>
+<view:window popup="true">
+<view:frame>
 <CENTER>
   <%
 
@@ -114,9 +112,7 @@
         "refreshList") + "&nbsp;" + resources.getString("seconds") + "<br/>");
   %>
 </CENTER>
-<%
-  out.println(frame.printAfter());
-  out.println(window.printAfter());
-%>
+</view:frame>
+</view:window>
 </BODY>
 </HTML>

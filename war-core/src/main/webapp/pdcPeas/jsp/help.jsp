@@ -64,14 +64,9 @@ QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 <view:looknfeel/>
 </head>
 <body>
-<%
-  	browseBar.setDomainName(resource.getString("pdcPeas.SearchEngine"));
-  	browseBar.setComponentName(resource.getString("pdcPeas.AideContent"));
-
-  	out.println(window.printBefore());
-  	out.println(frame.printBefore());
-	out.println(board.printBefore());
-%>
+<view:browseBar path='<%=resource.getString("pdcPeas.SearchEngine") + " > " + resource.getString("pdcPeas.AideContent") %>'/>
+<view:window popup="true">
+<view:board>
 		<table border="0" width="100%"><tr><td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol1Header")%><br/><br/>
 		<%=resource.getString("pdcPeas.helpCol1Content1")%><br/>
@@ -96,10 +91,7 @@ QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 		<%=resource.getString("pdcPeas.helpCol3Content4")%><br/>
 		</td>
 		</tr></table>
-<%
-	out.println(board.printAfter());
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
+</view:board>
+</view:window>
 </body>
 </html>
