@@ -33,6 +33,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import org.apache.commons.io.FileUtils;
@@ -210,8 +211,10 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.field("fileTitle", "Upload test");
     form.field("fileDescription", "This test is trying to simulate the update of a content");
     String content = "This is a binary content";
-    FormDataBodyPart fdp = new FormDataBodyPart("content", new ByteArrayInputStream(content
-        .getBytes(Charsets.UTF_8)), MediaType.APPLICATION_OCTET_STREAM_TYPE);
+    FormDataBodyPart fdp = new FormDataBodyPart(FormDataContentDisposition.name("file_upload").
+        fileName("test.pdf").size(content.getBytes(Charsets.UTF_8).length).build(),
+        new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
+        MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
