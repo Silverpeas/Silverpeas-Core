@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.filter;
 
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DBUtil;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -62,7 +63,8 @@ public class MassiveWebSecurityFilter implements Filter {
       getSimpleName());
 
   private final static String WEB_SERVICES_URI_PREFIX =
-      UriBuilder.fromUri(URLManager.getApplicationURL()).path("services").build().toString();
+      UriBuilder.fromUri(URLManager.getApplicationURL())
+          .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).build().toString();
 
   private final static List<Pattern> SKIPED_PARAMETER_PATTERNS;
 
