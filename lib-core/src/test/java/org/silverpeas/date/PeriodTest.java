@@ -85,41 +85,81 @@ public class PeriodTest {
   public void undefinedPeriod() {
     Period period = Period.UNDEFINED;
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setDate(DateUtil.getNow(), PeriodType.day);
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setDate(DateUtil.getNow(), TimeZone.getDefault(), PeriodType.day);
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setDate(new DateTime(DateUtil.getNow()), PeriodType.day);
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setDates(DateUtil.getNow(), DateUtil.getNow());
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setDates(DateUtil.getNow(), DateUtil.getNow(), TimeZone.getDefault());
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setDates(new DateTime(DateUtil.getNow()), new DateTime(DateUtil.getNow()));
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     period.setPeriodType(PeriodType.day);
 
     assertThat(period.isDefined(), is(false));
+    assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     assertThat(period.getPeriodType(), is(PeriodType.unknown));
 
     assertThat(period.clone(), sameInstance(period));
@@ -175,15 +215,31 @@ public class PeriodTest {
         Timestamp.valueOf("2013-11-29 00:00:00.000"));
     assertThat(period.isDefined(), is(true));
     assertThat(period.isNotDefined(), is(false));
+    assertThat(period.isBeginDefined(), is(true));
+    assertThat(period.isBeginNotDefined(), is(false));
+    assertThat(period.isEndDefined(), is(true));
+    assertThat(period.isEndNotDefined(), is(false));
     period = Period.from(DateUtil.MINIMUM_DATE, Timestamp.valueOf("2013-11-29 00:00:00.000"));
     assertThat(period.isDefined(), is(true));
     assertThat(period.isNotDefined(), is(false));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(true));
+    assertThat(period.isEndNotDefined(), is(false));
     period = Period.from(Timestamp.valueOf("2013-11-28 00:00:00.000"), DateUtil.MAXIMUM_DATE);
     assertThat(period.isDefined(), is(true));
     assertThat(period.isNotDefined(), is(false));
+    assertThat(period.isBeginDefined(), is(true));
+    assertThat(period.isBeginNotDefined(), is(false));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
     period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
     assertThat(period.isDefined(), is(false));
     assertThat(period.isNotDefined(), is(true));
+    assertThat(period.isBeginDefined(), is(false));
+    assertThat(period.isBeginNotDefined(), is(true));
+    assertThat(period.isEndDefined(), is(false));
+    assertThat(period.isEndNotDefined(), is(true));
 
     assertThat(Period.UNDEFINED.isDefined(), is(false));
     assertThat(Period.UNDEFINED.isNotDefined(), is(true));

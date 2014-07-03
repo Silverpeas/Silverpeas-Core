@@ -504,14 +504,14 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
   
   public void setVisibilityPeriod(Period period) {
-    if (period.isBeginUndefined()) {
+    if (period.isBeginNotDefined()) {
       setBeginDate(null);
       setBeginHour(null);
     } else {
       setBeginDate(period.getBeginDate());
       setBeginHour(DateUtil.formatTime(period.getBeginDate()));
     }
-    if (period.isEndUndefined()) {
+    if (period.isEndNotDefined()) {
       setEndDate(null);
       setEndHour(null);
     } else {

@@ -298,9 +298,21 @@ public class Period implements Comparable, Serializable, Cloneable {
   public DateTime getBeginDatable() {
     return beginDatable;
   }
-  
-  public boolean isBeginUndefined() {
-    return beginDatable.isUndefined();
+
+  /**
+   * This method is a shortcut of {@link #isDefined()} call on {@link #getBeginDatable()}.
+   * @return true if {@link #getBeginDatable()} returns defined date, false otherwise.
+   */
+  public boolean isBeginDefined() {
+    return beginDatable.isDefined();
+  }
+
+  /**
+   * This method is a shortcut of {@link #isNotDefined()} call on {@link #getBeginDatable()}.
+   * @return true if {@link #getBeginDatable()} returns a not defined date, false otherwise.
+   */
+  public boolean isBeginNotDefined() {
+    return beginDatable.isNotDefined();
   }
 
   /**
@@ -311,9 +323,21 @@ public class Period implements Comparable, Serializable, Cloneable {
   public DateTime getEndDatable() {
     return endDatable;
   }
-  
-  public boolean isEndUndefined() {
-    return endDatable.isUndefined();
+
+  /**
+   * This method is a shortcut of {@link #isDefined()} call on {@link #getEndDatable()}.
+   * @return true if {@link #getEndDatable()} returns defined date, false otherwise.
+   */
+  public boolean isEndDefined() {
+    return endDatable.isDefined();
+  }
+
+  /**
+   * This method is a shortcut of {@link #isNotDefined()} call on {@link #getEndDatable()}.
+   * @return true if {@link #getEndDatable()} returns a not defined date, false otherwise.
+   */
+  public boolean isEndNotDefined() {
+    return endDatable.isNotDefined();
   }
 
   /**
