@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.EnumerationUtils;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class TickerSettings {
@@ -36,7 +37,10 @@ public class TickerSettings {
     return label;
   }
   
-  public String getParam(String key) {
+  public String getParam(String key, String defaultValue) {
+    if (!StringUtil.isDefined(params.get(key))) {
+      return defaultValue;
+    }
     return params.get(key);
   }
   

@@ -162,13 +162,13 @@ var tickerNews = [];
         
         //init the ticker plugin itself
         $('#js-news').ticker({
-      	    speed: ${settings.getParam('speed')},
-      	    pauseOnItems: ${settings.getParam('pauseOnItems')},
+      	    speed: ${settings.getParam('speed', '0.10')},
+      	    pauseOnItems: ${settings.getParam('pauseOnItems', '5000')},
       	    htmlFeed: true,
-      	    controls: ${settings.getParam('controls')},
-      	    displayType: '${settings.getParam('displayType')}',
-      	    fadeInSpeed: ${settings.getParam('fadeInSpeed')},
-      	    fadeOutSpeed: ${settings.getParam('fadeOutSpeed')},
+      	    controls: ${settings.getParam('controls', 'false')},
+      	    displayType: '${settings.getParam('displayType', 'fade')}',
+      	    fadeInSpeed: ${settings.getParam('fadeInSpeed', '600')},
+      	    fadeOutSpeed: ${settings.getParam('fadeOutSpeed', '300')},
       	    titleText: '${settings.label}'
   	  	});
       }
