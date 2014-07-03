@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -342,23 +343,22 @@ public class LDAPDriver extends AbstractDomainDriver {
       List<LDAPModification> modifications = new ArrayList<LDAPModification>();
 
       // update basic informations (first name, last name and email)
-      LDAPAttribute attribute = new LDAPAttribute(driverSettings.getUsersFirstNameField(), user
+      LDAPAttribute attribute = getLDAPAttribute(driverSettings.getUsersFirstNameField(), user
           .getFirstName());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
-      attribute = new LDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
+      attribute = getLDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
-      attribute = new LDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
+      attribute = getLDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
       // prepare properties update
       for (String propertyName : user.getPropertiesNames()) {
         DomainProperty property = user.getProperty(propertyName);
         if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser()) {
-          LDAPModification modification = new LDAPModification(LDAPModification.REPLACE,
-              new LDAPAttribute(property.getMapParameter(), user.getValue(propertyName)));
-          modifications.add(modification);
+          attribute = getLDAPAttribute(property.getMapParameter(), user.getValue(propertyName));
+          modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
         }
       }
 
@@ -380,7 +380,14 @@ public class LDAPDriver extends AbstractDomainDriver {
             "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
       }
     }
-
+  }
+  
+  private LDAPAttribute getLDAPAttribute(String name, String value) {
+    LDAPAttribute attribute = new LDAPAttribute(name);
+    if (StringUtil.isDefined(value)) {
+      attribute.addValue(value);
+    }
+    return attribute;
   }
 
   @Override
