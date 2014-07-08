@@ -62,6 +62,18 @@ public class FileUtilTest {
   public void tearDown() {
   }
 
+  @Test
+  public void testGetFilename() {
+    assertThat(FileUtil.getFilename(null), is(""));
+    assertThat(FileUtil.getFilename(""), is(""));
+    assertThat(FileUtil.getFilename("     "), is(""));
+    assertThat(FileUtil.getFilename(" /a\\b/c/file "), is("file "));
+    assertThat(FileUtil.getFilename(" /a\\b/c/file.txt.bat.jpg"), is("file.txt.bat.jpg"));
+    assertThat(FileUtil.getFilename(" /a\\b/c\\file.txt_zkw"), is("file.txt_zkw"));
+    assertThat(FileUtil.getFilename(" /a\\b/c\\file.txt"), is("file.txt"));
+    assertThat(FileUtil.getFilename(" file.txt"), is(" file.txt"));
+  }
+
   /**
    * Test of getMimeType method, of class FileUtil.
    */
