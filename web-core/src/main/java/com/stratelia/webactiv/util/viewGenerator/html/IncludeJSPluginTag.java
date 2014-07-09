@@ -55,6 +55,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
     try {
       SupportedJavaScriptPlugins jsPlugin = SupportedJavaScriptPlugins.valueOf(getName());
       switch (jsPlugin) {
+        case player:
+          includePlayer(xhtml);
+          break;
         case qtip:
           includeQTip(xhtml);
           break;

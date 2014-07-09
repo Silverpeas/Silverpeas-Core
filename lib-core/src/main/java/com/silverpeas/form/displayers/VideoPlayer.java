@@ -25,12 +25,13 @@
 package com.silverpeas.form.displayers;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import java.text.MessageFormat;
-import java.util.Random;
 import org.apache.ecs.ConcreteElement;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.script;
+
+import java.text.MessageFormat;
+import java.util.Random;
 
 /**
  * An (X)HTML video player with javascript. The video player is set up and rendered by using
@@ -39,7 +40,8 @@ import org.apache.ecs.xhtml.script;
 public class VideoPlayer {
 
   private static final String webContext = URLManager.getApplicationURL();
-  private static final String playerUrl = webContext + "/util/flash/flowplayer/flowplayer-3.2.7.swf";
+  private static final String playerUrl =
+      webContext + "/util/flash/flowplayer/flowplayer-3.2.7.swf";
   private static final Random randomGenerator = new Random();
   private static final String flowPlayerJS = webContext
       + "/util/javaScript/flowplayer/flowplayer-3.2.6.min.js";

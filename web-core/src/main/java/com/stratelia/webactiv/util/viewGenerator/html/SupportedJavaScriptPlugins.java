@@ -33,6 +33,10 @@ public enum SupportedJavaScriptPlugins {
    */
   jquery,
   /**
+   * JQuery plugin to play videos or musics.
+   */
+  player,
+  /**
    * JQuery plugin to print out tooltips.
    */
   qtip,
