@@ -35,6 +35,12 @@
 <fmt:setLocale value="${_language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
+<%-- Fragments --%>
+<%@ attribute name="beforeCommonContentBloc" required="false" fragment="true"
+              description="Bloc displayed before common elements" %>
+<%@ attribute name="afterCommonContentBloc" required="false" fragment="true"
+              description="Bloc displayed after common elements" %>
+
 <%-- Creator --%>
 <%@ attribute name="createDate" required="false" type="java.util.Date"
               description="The date of create" %>
@@ -68,6 +74,14 @@
   <c:set var="publishedBy" value="<%=UserDetail.getById(publishedById)%>"/>
 </c:if>
 
+<%-- Permalink --%>
+<%@ attribute name="permalink" required="false" type="java.lang.String"
+              description="A permalink to display" %>
+<%@ attribute name="permalinkHelp" required="false" type="java.lang.String"
+              description="The permalink help." %>
+<%@ attribute name="permalinkIconUrl" required="false" type="java.lang.String"
+              description="The permalink url." %>
+
 <%@ attribute name="displayHour" required="false" type="java.lang.Boolean"
               description="Display the hour of the dates" %>
 <c:if test="${displayHour == null}">
@@ -81,6 +95,8 @@
 </c:if>
 
 <div class="bgDegradeGris" id="link-domain-content">
+  <jsp:invoke fragment="beforeCommonContentBloc"/>
+
   <c:if test="${publishDate != null && publishedBy != null}">
     <div class="paragraphe" id="lastModificationInfo"><fmt:message key="GML.publishedAt" bundle="${generalBundle}"/><br>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(publishDate, _language)}</c:when><c:otherwise>${silfn:formatDate(publishDate, _language)}</c:otherwise></c:choose></b>
@@ -114,5 +130,15 @@
     </div>
   </c:if>
 
+  <c:if test="${not empty permalink}">
+    <p id="permalinkInfo">
+      <a title="${permalinkHelp}" href="${permalink}">
+        <img border="0" alt='${permalinkHelp}' title='${permalinkHelp}' src="${permalinkIconUrl}"/>
+      </a> <fmt:message key="GML.permalink" bundle="${generalBundle}"/> <br/>
+      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${permalink}" onfocus="select();" class="inputPermalink"/>
+    </p>
+  </c:if>
+
+  <jsp:invoke fragment="afterCommonContentBloc"/>
   <br clear="all"/>
 </div>
