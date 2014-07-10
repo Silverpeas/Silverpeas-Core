@@ -39,7 +39,7 @@ import org.apache.ecs.xhtml.script;
 public class VideoPlayer {
 
   private static final String webContext = URLManager.getApplicationURL();
-  private static final String playerUrl = webContext + "/util/flowplayer/flowplayer-3.2.7.swf";
+  private static final String playerUrl = webContext + "/util/flash/flowplayer/flowplayer-3.2.7.swf";
   private static final Random randomGenerator = new Random();
   private static final String flowPlayerJS = webContext
       + "/util/javaScript/flowplayer/flowplayer-3.2.6.min.js";
