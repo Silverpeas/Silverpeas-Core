@@ -120,7 +120,7 @@
   </c:if>
 
   <c:if test="${createDate != null && createdBy != null}">
-    <div class="paragraphe" id="lastModificationInfo"><fmt:message key="GML.createdAt" bundle="${generalBundle}"/><br>
+    <div class="paragraphe" id="createdInfo"><fmt:message key="GML.createdAt" bundle="${generalBundle}"/><br>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(createDate, _language)}</c:when><c:otherwise>${silfn:formatDate(createDate, _language)}</c:otherwise></c:choose></b>
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${createdBy.id}" zoom="${displayUserZoom}"/>

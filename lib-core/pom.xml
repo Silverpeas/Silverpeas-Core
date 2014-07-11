@@ -407,6 +407,10 @@
           <include>**/*.sql</include>
           <include>opendj/**</include>
           <include>**/*.tif</include>
+          <include>**/*.mp3</include>
+          <include>**/*.mp4</include>
+          <include>**/*.mov</include>
+          <include>**/*.flv</include>
           <include>**/*.msg</include>
           <include>**/*.eml</include>
         </includes>
@@ -428,6 +432,10 @@
           <exclude>**/*.sql</exclude>
           <exclude>opendj/**</exclude>
           <exclude>**/*.tif</exclude>
+          <exclude>**/*.mp3</exclude>
+          <exclude>**/*.mp4</exclude>
+          <exclude>**/*.mov</exclude>
+          <exclude>**/*.flv</exclude>
           <exclude>**/*.msg</exclude>
           <exclude>**/*.eml</exclude>
         </excludes>

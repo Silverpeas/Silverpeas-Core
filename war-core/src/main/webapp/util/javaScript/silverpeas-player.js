@@ -34,7 +34,7 @@
   }
 
   // Player URL
-  var playerURL = webContext + '/util/flowplayer/flowplayer-3.2.18.swf';
+  var videoPlayerURL = webContext + '/util/flash/flowplayer/flowplayer-3.2.18.swf';
 
   /**
    * The different player methods handled by the plugin.
@@ -42,9 +42,31 @@
   var methods = {
 
     /**
-     * Prepare UI and behavior
+     * Prepare UI and behavior for video playing
      */
     video : function(options) {
+      return __init($(this), options);
+    },
+
+    /**
+     * Prepare UI and behavior for audio playing
+     */
+    audio : function(options) {
+      var result = $.extend(options, {
+        plugins : {
+          controls : {
+            fullscreen : false,
+            autoHide : false
+          },
+          audio : {
+            url : 'flowplayer.audio-3.2.11.swf'
+          }
+        }
+      });
+      if (!options.clip) {
+        options.clip = {};
+      }
+      options.clip.provider = "audio";
       return __init($(this), options);
     }
   };
@@ -87,18 +109,18 @@
         },
         clip : {
           bufferLength : 10,
-          scaling : 'orig',
-          autoPlay : true,
-          autoBuffering : true
+          scaling : 'fit',
+          autoPlay : false,
+          autoBuffering : true,
+          metaData : false
         },
         play : {
-          label : "[Ajouter un bundle]",
-          replayLabel : "[Ajouter un bundle]"
+          label : "",
+          replayLabel : ""
         },
         canvas : {
-          background : '#000000',
-          backgroundGradient : 'none',
-          border : '#000000'
+          backgroundColor : 'transparent',
+          backgroundGradient : 'none'
         }
       };
       config = $.extend(config, defaultParams);
@@ -113,6 +135,12 @@
         if (options.clip) {
           $.extend(config.clip, options.clip);
         }
+        if (options.canvas) {
+          $.extend(config.canvas, options.canvas);
+        }
+        if (options.play) {
+          $.extend(config.play, options.play);
+        }
       } else {
         alert('Not yet implemented');
         return false;
@@ -121,8 +149,8 @@
       // Container configuration
       __configurePlayerContainer($container, config);
 
-      // Load (and start ?) the player
-      $f(this, playerURL, config)
+      // Load (and start ?) the player);
+      flowplayer(this, videoPlayerURL, config)
     });
   }
 
@@ -137,8 +165,8 @@
       $container.attr('id', __buildUniqueId());
     }
     $container.css('display', 'block');
-    $container.css('width', config.width);
-    $container.css('height', config.height);
+    $container.css('width', config.container.width);
+    $container.css('height', config.container.height);
 
     $container.on('closePlayer', function() {
       $f().close();

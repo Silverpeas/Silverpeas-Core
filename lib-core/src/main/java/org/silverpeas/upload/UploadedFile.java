@@ -181,7 +181,7 @@ public class UploadedFile {
     String title = getTitle();
     String description = getDescription();
     if (!StringUtil.isDefined(title)) {
-      MetadataExtractor extractor = new MetadataExtractor();
+      MetadataExtractor extractor = MetadataExtractor.getInstance();
       MetaData metadata = extractor.extractMetadata(getFile());
       if (StringUtil.isDefined(metadata.getTitle())) {
         title = metadata.getTitle();

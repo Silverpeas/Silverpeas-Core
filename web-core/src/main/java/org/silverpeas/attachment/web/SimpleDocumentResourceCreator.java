@@ -129,7 +129,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         String title = uploadData.getTitle();
         String description = uploadData.getDescription();
         if (!StringUtil.isDefined(title)) {
-          MetadataExtractor extractor = new MetadataExtractor();
+          MetadataExtractor extractor = MetadataExtractor.getInstance();
           MetaData metadata = extractor.extractMetadata(tempFile);
           if (StringUtil.isDefined(metadata.getTitle())) {
             title = metadata.getTitle();

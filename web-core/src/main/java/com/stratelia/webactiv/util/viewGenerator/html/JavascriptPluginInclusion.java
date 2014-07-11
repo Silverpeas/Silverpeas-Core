@@ -62,7 +62,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
   private static final String SILVERPEAS_PLAYER = "silverpeas-player.js";
-  private static final String FLOWPLAYER = "/flowplayer/flowplayer-3.2.13.min.js";
+  private static final String FLOWPLAYER = "flowplayer/flowplayer-3.2.13.min.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";

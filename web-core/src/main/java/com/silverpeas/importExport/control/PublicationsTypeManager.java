@@ -92,7 +92,7 @@ import static java.io.File.separator;
  */
 public class PublicationsTypeManager {
 
-  final static MetadataExtractor metadataExtractor = new MetadataExtractor();
+  final static MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
 
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications

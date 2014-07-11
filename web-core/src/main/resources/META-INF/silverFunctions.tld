@@ -26,6 +26,14 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that repeat x times a string to obtain the final string.</description>
+    <name>repeat</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String repeat(java.lang.String,int)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that replace regex text parts by a replacement text</description>
     <name>regexReplace</name>
     <function-class>com.silverpeas.util.StringUtil</function-class>
@@ -71,6 +79,14 @@
     <function-class>com.silverpeas.util.StringUtil</function-class>
     <function-signature>
       java.lang.String defaultStringIfNotDefined(java.lang.String,java.lang.String))
+    </function-signature>
+  </function>
+  <function>
+    <description>Truncate the specified text to the specified length if necessary.</description>
+    <name>truncate</name>
+    <function-class>com.silverpeas.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String truncate(java.lang.String,int)
     </function-signature>
   </function>
   <function>
@@ -134,6 +150,14 @@
     <function-class>org.silverpeas.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a time data the given long time value.</description>
+    <name>getTimeData</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      org.silverpeas.util.time.TimeData getTimeData(long)
     </function-signature>
   </function>
   <function>
