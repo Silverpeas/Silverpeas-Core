@@ -51,17 +51,18 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
  * @author
  */
 public class HistoryObjectDAO {
-  
+
   private final static String historyTableName = "SB_Statistic_History";
 
-  private static final String QUERY_STATISTIC_INSERT =
-      "INSERT INTO SB_Statistic_History VALUES (?, ?, ?, ?, ?, ?, ?)";
+  private static final String QUERY_STATISTIC_INSERT = "INSERT INTO SB_Statistic_History "
+      + "(dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType) "
+      + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   private static final String QUERY_STATISTIC_DELETE_BY_RESOURCE =
       "DELETE FROM SB_Statistic_History WHERE resourceId = ? AND componentId = ? AND resourceType = ?";
-  
+
   private static final String QUERY_STATISTIC_DELETE_BY_COMPONENT =
-    "DELETE FROM SB_Statistic_History WHERE componentId = ?";
+      "DELETE FROM SB_Statistic_History WHERE componentId = ?";
 
   private static final String QUERY_STATISTIC_COUNT =
       "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? AND resourceType = ?";
@@ -167,7 +168,7 @@ public class HistoryObjectDAO {
       stmt.setString(1, foreignPK.getId());
       stmt.setString(2, foreignPK.getInstanceId());
       stmt.setString(3, objectType);
-      
+
       rs = stmt.executeQuery();
       return getHistoryDetails(rs, componentName);
     } finally {
@@ -222,7 +223,7 @@ public class HistoryObjectDAO {
       DBUtil.close(prepStmt);
     }
   }
-  
+
   public static void deleteStatsOfComponent(Connection con, String componentId) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.deleteStatsOfComponent",
         "root.MSG_GEN_ENTER_METHOD");
@@ -236,7 +237,8 @@ public class HistoryObjectDAO {
     }
   }
 
-  public static int getCount(Connection con, Collection<ForeignPK> foreignPKs, String objectType) throws SQLException {
+  public static int getCount(Connection con, Collection<ForeignPK> foreignPKs, String objectType)
+      throws SQLException {
     int nb = 0;
     for (ForeignPK pk : foreignPKs) {
       nb = nb + getCount(con, pk, objectType);
@@ -244,7 +246,8 @@ public class HistoryObjectDAO {
     return nb;
   }
 
-  public static int getCount(Connection con, ForeignPK foreignPK, String objectType) throws SQLException {
+  public static int getCount(Connection con, ForeignPK foreignPK, String objectType)
+      throws SQLException {
     int nb = 0;
     SilverTrace.info("statistic", "HistoryObjectDAO.getCount", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
@@ -432,8 +435,8 @@ public class HistoryObjectDAO {
   }
 
   /**
-   * Gets the last history detail of each object associated to a user. The result is sorted on
-   * the date time from the youngest to the oldest
+   * Gets the last history detail of each object associated to a user. The result is sorted on the
+   * date time from the youngest to the oldest
    * @param con
    * @param userId
    * @param actionType
@@ -442,18 +445,19 @@ public class HistoryObjectDAO {
    * @return
    * @throws SQLException
    */
-  public static Collection<HistoryObjectDetail> getLastHistoryDetailOfObjectsForUser(Connection con,
+  public static Collection<HistoryObjectDetail> getLastHistoryDetailOfObjectsForUser(
+      Connection con,
       String userId, int actionType, String objectType, int nbObjects) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser",
         "root.MSG_GEN_ENTER_METHOD");
 
     String selectStatement =
         "select componentId, resourceId, datestat, heurestat"
-        + " from SB_Statistic_History"
-        + " where userId='" + userId + "'"
-        + " and actionType="+actionType
-        + " and resourceType='"+objectType+"'"
-        + " order by datestat desc, heurestat desc";
+            + " from SB_Statistic_History"
+            + " where userId='" + userId + "'"
+            + " and actionType=" + actionType
+            + " and resourceType='" + objectType + "'"
+            + " order by datestat desc, heurestat desc";
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -482,7 +486,8 @@ public class HistoryObjectDAO {
             // Then the hour is set
             date = DateUtil.getDate(date, rs.getString(4));
           } catch (java.text.ParseException e) {
-            throw new StatisticRuntimeException("HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser()",
+            throw new StatisticRuntimeException(
+                "HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser()",
                 SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
           }
           result.add(new HistoryObjectDetail(date, userId, foreignPK));
