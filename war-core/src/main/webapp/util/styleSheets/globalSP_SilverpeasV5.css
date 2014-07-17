@@ -5930,7 +5930,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 
 #quickinfo-app-portlet {
 	background-color:transparent;
-} 
+}
 
 /*******************************/
 /***** portlet : News        ***/
@@ -6019,7 +6019,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 
 .portlet-content .actuality-nb-commentaires img {
 	border:0;
-	vertical-align:text-top;   
+	vertical-align:text-top;
 	display: inline;
     float: none;
 }
@@ -6375,7 +6375,7 @@ div.user-card .userToZoom{
 	font-weight:bold;
 }
 
-div.user-card .field{	
+div.user-card .field{
 	color:#444;
 }
 
@@ -6400,7 +6400,7 @@ div.user-card .field{
 
 #thumbnailActions {
 	float: left;
-	margin-left: 4px;	
+	margin-left: 4px;
 }
 
 #thumbnailActions a {
@@ -6484,4 +6484,11 @@ div.user-card .field{
 	white-space: nowrap;
 	line-height: 1.2em;
 	padding-left:1em;
+}
+
+/*********************** advanced search help *********************/
+input[title] {
+  background-image:url(/silverpeas/util/icons/input-info.png);
+  background-position:top right;
+  background-repeat:no-repeat;
 }
