@@ -63,7 +63,8 @@ public abstract class GoTo extends HttpServlet {
       if (!StringUtil.isDefined(redirect)) {
         objectNotFound(req, res);
       } else {
-        if (!res.isCommitted()) { // The response was not previously sent
+        if (!res.isCommitted()) {
+          // The response was not previously sent
           if (redirect == null || !redirect.startsWith("http")) {
             redirect = URLManager.getApplicationURL() + "/autoRedirect.jsp?" + redirect;
           }
@@ -110,7 +111,8 @@ public abstract class GoTo extends HttpServlet {
   // check if the user is allowed to access the required component
   public boolean isUserAllowed(HttpServletRequest req, String componentId) {
     MainSessionController mainSessionCtrl = util.getMainSessionController(req);
-    if (componentId == null) { // Personal space
+    if (componentId == null) {
+      // Personal space
       return true;
     }
     return mainSessionCtrl.getOrganisationController().isComponentAvailable(componentId,
@@ -127,10 +129,11 @@ public abstract class GoTo extends HttpServlet {
     res.setContentType("text/html");
     OutputStream out = null;
     StringBuilder message = new StringBuilder(255);
-    message.append("<HTML>").append("<BODY>").append("</BODY>").append("</HTML>");
+    message.append("<html>").append("<body>").append("</body>").append("</html>");
     try {
       out = res.getOutputStream();
-      out.write(message.toString().getBytes(Charsets.UTF_8)); // writes bytes into the response
+      // writes bytes into the response
+      out.write(message.toString().getBytes(Charsets.UTF_8));
     } catch (IOException e) {
       SilverTrace.warn("peasUtil", "GoToFile.displayError", "root.EX_CANT_READ_FILE");
     } finally {
