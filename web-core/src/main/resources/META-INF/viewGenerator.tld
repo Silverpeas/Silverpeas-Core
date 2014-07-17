@@ -317,6 +317,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Indicates if the render of the error is by WEB way.</description>
+      <name>errorWebRender</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to print out javascript code to get the positions of a classification on the PdC
