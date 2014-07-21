@@ -37,7 +37,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -218,9 +217,19 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void delete(DataRecord record) throws FormException {
     if (record != null) {
+
+      ForeignPK foreignPK = new ForeignPK(record.getId(), recordTemplate.getInstanceId());
+
       // remove files managed by WYSIWYG fields
-      WysiwygFCKFieldDisplayer.removeContents(new ForeignPK(record.getId(), recordTemplate.getInstanceId()));
-      
+      WysiwygFCKFieldDisplayer.removeContents(foreignPK);
+
+      // remove form documents registred into JCR
+      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(foreignPK, DocumentType.form, null);
+      for (SimpleDocument doc : documents) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      }
+
       List<String> languages =
           getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, record.getId());
       for (String lang : languages) {
