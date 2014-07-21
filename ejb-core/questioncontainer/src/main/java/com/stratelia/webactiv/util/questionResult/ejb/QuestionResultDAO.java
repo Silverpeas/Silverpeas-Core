@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.question.model.QuestionPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResultPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeException;
