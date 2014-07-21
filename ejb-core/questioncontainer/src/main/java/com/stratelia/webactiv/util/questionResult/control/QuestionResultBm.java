@@ -26,6 +26,7 @@ import javax.ejb.Local;
 
 import com.silverpeas.util.ForeignPK;
 
+import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 @Local
@@ -98,4 +99,14 @@ public interface QuestionResultBm {
    * @param questionPK the question id
    */
   public void deleteQuestionResultsToQuestion(ForeignPK questionPK);
+  
+  /**
+   * Return result for a question and an answer of a user 
+   *
+   * @param userId the user id
+   * @param questionPK the question id
+   * @param answerPK the answer id
+   */
+  public QuestionResult getUserAnswerToQuestion(String userId,
+      ForeignPK questionPK, AnswerPK answerPK);
 }

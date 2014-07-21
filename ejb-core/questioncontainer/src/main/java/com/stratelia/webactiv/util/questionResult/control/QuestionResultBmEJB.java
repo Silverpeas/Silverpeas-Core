@@ -32,6 +32,7 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.questionResult.ejb.QuestionResultDAO;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
@@ -185,6 +186,24 @@ public class QuestionResultBmEJB implements QuestionResultBm {
       for (QuestionResult questionResult : results) {
         setQuestionResultToUser(questionResult);
       }
+    }
+  }
+  
+  @Override
+  public QuestionResult getUserAnswerToQuestion(String userId,
+      ForeignPK questionPK, AnswerPK answerPK) {
+    SilverTrace.info("questionResult", "QuestionResultBmEJB.getUserAnswerToQuestion()",
+        "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", questionPK =" + questionPK+", answerPK =" + answerPK);
+    Connection con = getConnection();
+    try {
+      return QuestionResultDAO.getUserAnswerToQuestion(con, userId, questionPK, answerPK);
+    } catch (Exception e) {
+      throw new QuestionResultRuntimeException(
+          "QuestionResultBmEJB.getUserAnswerToQuestion()",
+          SilverpeasRuntimeException.ERROR,
+          "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_FAILED", e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 
