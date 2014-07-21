@@ -1108,6 +1108,25 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     }
     return suggestions;
   }
+  
+  private QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK) {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getSuggestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK = " + questionPK + ", answerPK = " + answerPK);
+    QuestionResult suggestion;
+    QuestionResultBm questionResultBm = currentQuestionResultBm;
+
+    try {
+      suggestion = questionResultBm.getUserAnswerToQuestion(userId, new ForeignPK(
+          questionPK), answerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getSuggestion()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_SUGGESTIONS_FAILED", e);
+    }
+    return suggestion;
+  }
 
   private Collection<QuestionResult> getUserVotesToQuestionContainer(String userId,
       QuestionContainerPK questionContainerPK) {
@@ -1365,8 +1384,15 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
               Collection<String> users =
                   currentQuestionResultBm.getUsersByAnswer(answer.getPK().getId());
               for (String user : users) {
-                addCSVValue(csvRow, question.getLabel(), answer.getLabel(), orga.getUserDetail(
+                // suggestion
+                if(answer.isOpened()) {
+                  QuestionResult openAnswer = getSuggestion(user, question.getPK(), answer.getPK());
+                  addCSVValue(csvRow, question.getLabel(), answer.getLabel()+" : "+openAnswer.getOpenedAnswer(), 
+                      orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
+                } else {
+                  addCSVValue(csvRow, question.getLabel(), answer.getLabel(), orga.getUserDetail(
                     user).getDisplayedName(), addScore, answer.getNbPoints());
+                }
               }
             }
           }
