@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.question.model.QuestionPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResultPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeException;
@@ -320,9 +321,6 @@ public class QuestionResultDAO {
     }
   }
 
-  public static void setQuestionResultsToUser(Connection con, Collection results) {
-  }
-
   public static void deleteQuestionResultToQuestion(Connection con, ForeignPK questionPK)
       throws SQLException {
     SilverTrace.info("questionResult",
@@ -341,6 +339,46 @@ public class QuestionResultDAO {
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+  
+  public static QuestionResult getUserAnswerToQuestion(Connection con,
+      String userId,
+      ForeignPK questionPK,
+      AnswerPK answerPK)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.AnswerPK()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "userId = " + userId + ", questionPK =" + questionPK+", answerPK =" + answerPK);
+    ResultSet rs = null;
+    String tableName = "SB_Question_QuestionResult";
+
+    String selectStatement =
+        "select "
+        + QUESTIONRESULTCOLUMNNAMES
+        + " from "
+        + tableName
+        + " where questionId = ? "
+        + " and answerId = ? "
+        + " and userId = ? ";
+
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
+      prepStmt.setInt(2, Integer.parseInt(answerPK.getId()));
+      prepStmt.setString(3, userId);
+      rs = prepStmt.executeQuery();
+      QuestionResult result = null;
+      if (rs.next()) {
+        result = getQuestionResultFromResultSet(rs, questionPK);
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
     }
   }
 
