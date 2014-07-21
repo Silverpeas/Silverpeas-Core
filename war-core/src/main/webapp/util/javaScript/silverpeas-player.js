@@ -111,8 +111,7 @@
           bufferLength : 10,
           scaling : 'fit',
           autoPlay : false,
-          autoBuffering : true,
-          metaData : false
+          autoBuffering : true
         },
         play : {
           label : "",
