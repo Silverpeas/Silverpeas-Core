@@ -36,6 +36,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.AxisFilterNode;
+
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -671,7 +673,11 @@ public class TreeBmImpl implements TreeBm {
     List<TreeNodePersistence> nodes = null;
     List<TreeNode> result = null;
     try {
-      String whereClause = "name = '" + encode(nodeName) + "'";
+      String nameEncode = encode(nodeName);
+      String nameNoAccent = FileServerUtils.replaceAccentChars(nameEncode);
+      //search brut and case insensitive + search without accent and case insensitive
+      String whereClause = "LOWER(name) = LOWER('" + nameEncode + "') OR "+
+                            "LOWER(name) = LOWER('" + nameNoAccent + "')";
       nodes =
           (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK("useless"),
           whereClause);
