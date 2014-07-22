@@ -33,6 +33,7 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
@@ -827,7 +828,12 @@ public class ThesaurusBm {
     try {
       SilverpeasBeanDAO<Synonym> daoS = getSynonymDao();
       IdPK pk = new IdPK();
-      return daoS.findByWhereClause(pk, " idVoca=" + idVoca + " AND name='" + encode(name) + "'");
+      String nameEncode = encode(name);
+      String nameNoAccent = FileServerUtils.replaceAccentChars(nameEncode);
+      //search brut and case insensitive + search without accent and case insensitive
+      return daoS.findByWhereClause(pk, " idVoca=" + idVoca +" AND "+
+                                        "(LOWER(name) = LOWER('" + nameEncode + "') OR "+
+                                        "LOWER(name) = LOWER('" + nameNoAccent + "'))");
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getSynonyms(long idVoca, String name)",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_NAME", "", e);
