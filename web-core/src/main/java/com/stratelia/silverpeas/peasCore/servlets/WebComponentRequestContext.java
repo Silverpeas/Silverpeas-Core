@@ -41,10 +41,10 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,7 +66,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
 
   private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
   private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
-  private Set<SilverpeasRole> userRoles;
+  private Collection<SilverpeasRole> userRoles;
   private SilverpeasRole greaterUserRole;
 
   /**
@@ -183,9 +183,9 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return controller.getUserDetail();
   }
 
-  public Set<SilverpeasRole> getUserRoles() {
+  public Collection<SilverpeasRole> getUserRoles() {
     if (userRoles == null) {
-      userRoles = SilverpeasRole.from(controller.getUserRoles());
+      userRoles = controller.getSilverpeasUserRoles();
     }
     return userRoles;
   }
