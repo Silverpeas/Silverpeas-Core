@@ -20,7 +20,9 @@
  */
 package com.stratelia.webactiv.util.questionContainer.control;
 
+import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.question.model.Question;
+import com.stratelia.webactiv.util.question.model.QuestionPK;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
@@ -75,6 +77,18 @@ public interface QuestionContainerBm {
    * @see
    */
   public Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK);
+  
+  /**
+   * Return the suggestion of the user, for the question and the answer
+   *
+   * @param userId
+   * @param questionPK
+   * @param answerPK
+   * @return QuestionResult
+   * @
+   * @see
+   */
+  public QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK);
 
   /**
    * Method declaration
