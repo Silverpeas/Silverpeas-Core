@@ -75,7 +75,7 @@
       <view:browseBarElt link="#" label="${browseLabel}" />
       <view:browseBarElt link="#" label="${notif.title}" />
     </view:browseBar>
-    <view:window>
+    <view:window popup="true">
       <view:frame>
         <view:board>
               	<form name="silvermailForm" action="" method="post">

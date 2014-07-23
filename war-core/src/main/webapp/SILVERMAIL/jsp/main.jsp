@@ -76,7 +76,7 @@ function deleteAllMessages() {
 }
 
 function newMessage() {
-	SP_openWindow("<%=m_Context%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes", 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+	SP_openWindow("<%=m_Context%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=no,statusbar=no');
 }
 
 </script>
