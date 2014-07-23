@@ -1109,10 +1109,11 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return suggestions;
   }
   
-  private QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK) {
+  @Override
+  public QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK) {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getSuggestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK + ", answerPK = " + answerPK);
+        "userId="+userId+", questionPK = " + questionPK + ", answerPK = " + answerPK);
     QuestionResult suggestion;
     QuestionResultBm questionResultBm = currentQuestionResultBm;
 
