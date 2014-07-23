@@ -153,7 +153,6 @@ window.setPopup(true);
 <view:frame>
 <view:board>
 <form name="notificationSenderForm" action="" method="POST" accept-charset="UTF-8">
-<% out.println(board.printBefore()); %>
       <table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>
           <td class="txtlibform">
