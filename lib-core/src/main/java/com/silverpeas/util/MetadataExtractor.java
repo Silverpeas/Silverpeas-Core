@@ -63,7 +63,6 @@ public class MetadataExtractor {
 
   /**
    * Return Metadata of a document.
-   *
    * @param fileName
    * @return Metadata
    */
@@ -89,8 +88,8 @@ public class MetadataExtractor {
   }
 
   /**
-   * Additional extractions.
-   * After each tika upgrade, please verify if this treatment is necessary.
+   * Additional extractions. After each tika upgrade, please verify if this treatment is necessary.
+   * Only apply for mp4 or quicktime video (mp4|quicktime).
    * @param file
    * @param metadata
    */
@@ -117,36 +116,45 @@ public class MetadataExtractor {
       if (movieBox != null) {
         MovieHeaderBox movieHeaderBox = movieBox.getMovieHeaderBox();
         if (movieHeaderBox != null) {
-          BigDecimal duration = new BigDecimal(String.valueOf(movieHeaderBox.getDuration()));
-          if (duration.intValue() > 0) {
+          computeMp4Duration(metadata, movieHeaderBox);
+          computeMp4Dimension(metadata, movieBox, movieHeaderBox);
+        }
+      }
+    }
+  }
 
-            // Duration
-            duration = duration.divide(
-                new BigDecimal(String.valueOf((int) (movieHeaderBox.getTimescale() / 1000))), 10,
-                BigDecimal.ROUND_HALF_DOWN);
-            metadata.add(XMPDM.DURATION, duration.toString());
+  private void computeMp4Duration(Metadata metadata, MovieHeaderBox movieHeaderBox) {
+    BigDecimal duration = BigDecimal.valueOf(movieHeaderBox.getDuration());
+    if (duration.intValue() > 0) {
+      BigDecimal divisor = BigDecimal.valueOf(movieHeaderBox.getTimescale());
 
-            // If duration is set, it exists a TrackBox with right width and height definition.
-            List<TrackBox> trackBoxes = movieBox.getBoxes(TrackBox.class);
-            if (trackBoxes.size() > 0) {
-              TrackHeaderBox trackHeader = null;
-              for (TrackBox trackBox : trackBoxes) {
-                boolean isSameDuration =
-                    trackBox.getTrackHeaderBox().getDuration() == movieHeaderBox.getDuration();
-                if (isSameDuration || trackHeader == null) {
-                  trackHeader = trackBox.getTrackHeaderBox();
-                  if (isSameDuration) {
-                    break;
-                  }
-                }
-              }
-              if (trackHeader != null) {
-                metadata.set(Metadata.IMAGE_WIDTH, (int) trackHeader.getWidth());
-                metadata.set(Metadata.IMAGE_LENGTH, (int) trackHeader.getHeight());
-              }
-            }
+      // Duration
+      duration = duration.divide(divisor, 10, BigDecimal.ROUND_HALF_DOWN);
+      // get duration in ms
+      duration = duration.multiply(BigDecimal.valueOf(1000));
+      metadata.add(XMPDM.DURATION, duration.toString());
+    }
+  }
+
+  private void computeMp4Dimension(Metadata metadata, MovieBox movieBox,
+      MovieHeaderBox movieHeaderBox) {
+    // If duration is set, it exists a TrackBox with right width and height definition.
+    List<TrackBox> trackBoxes = movieBox.getBoxes(TrackBox.class);
+    if (trackBoxes.size() > 0) {
+      TrackHeaderBox trackHeader = null;
+      for (TrackBox trackBox : trackBoxes) {
+        boolean isSameDuration =
+            trackBox.getTrackHeaderBox().getDuration() == movieHeaderBox.getDuration();
+        if (isSameDuration || trackHeader == null) {
+          trackHeader = trackBox.getTrackHeaderBox();
+          if (isSameDuration) {
+            break;
           }
         }
+      }
+      if (trackHeader != null) {
+        metadata.set(Metadata.IMAGE_WIDTH, (int) trackHeader.getWidth());
+        metadata.set(Metadata.IMAGE_LENGTH, (int) trackHeader.getHeight());
       }
     }
   }
