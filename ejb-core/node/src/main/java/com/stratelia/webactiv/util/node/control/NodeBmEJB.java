@@ -40,7 +40,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -69,7 +68,6 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class NodeBmEJB implements NodeBm {
 
-  private static final long serialVersionUID = 1L;
   /**
    * Database name where is stored nodes
    */
@@ -132,6 +130,37 @@ public class NodeBmEJB implements NodeBm {
   @Override
   @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
   public NodeDetail getDetail(NodePK pk) {
+    try {
+      NodeDetail nodeDetail = findNode(pk);
+      if (!NodeDetail.FILE_LINK_TYPE.equals(nodeDetail.getType())) {
+        nodeDetail.setChildrenDetails(getChildrenDetails(pk));
+      }
+
+      // Add default translation
+      NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nodeDetail.getLanguage(),
+          nodeDetail.getName(), nodeDetail.getDescription());
+      nodeDetail.addTranslation(nodeI18NDetail);
+      List<NodeI18NDetail> translations = getTranslations(Integer.parseInt(pk.getId()));
+      for (int t = 0; translations != null && t < translations.size(); t++) {
+        nodeI18NDetail = translations.get(t);
+        nodeDetail.addTranslation(nodeI18NDetail);
+      }
+      return nodeDetail;
+    } catch (Exception re) {
+      throw new NodeRuntimeException("NodeBmEJB.getDetail()", SilverpeasRuntimeException.ERROR,
+          "node.GETTING_NODE_DETAIL_FAILED", "nodeId = " + pk.getId(), re);
+    }
+
+  }
+
+  /**
+   * Get the attributes of a node and of its children with transaction support
+   *
+   * @return a NodeDetail
+   */
+  @Override
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+  public NodeDetail getDetailTransactionally(NodePK pk) {
     try {
       NodeDetail nodeDetail = findNode(pk);
       if (!NodeDetail.FILE_LINK_TYPE.equals(nodeDetail.getType())) {
