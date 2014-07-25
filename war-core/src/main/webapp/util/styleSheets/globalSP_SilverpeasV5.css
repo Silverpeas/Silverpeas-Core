@@ -4363,6 +4363,7 @@ button {
   position:absolute;
   right:10px;
   top:4px;
+  cursor:pointer;
 }
 
 .pdc_position .edit {

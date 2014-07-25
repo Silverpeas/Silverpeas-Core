@@ -650,7 +650,6 @@ function removePosition(position, positions) {
         if (settings.update.activated) {
           positionLabel.append(
                   $('<a>', {
-            href: '#',
             title: settings.update.title + ' ' + (posindex + 1)
           }).addClass('edit').
                   append($('<img>', {
@@ -663,7 +662,6 @@ function removePosition(position, positions) {
 
         if (settings.deletion.activated) {
           positionLabel.append($('<a>', {
-            href: '#',
             title: settings.deletion.title + ' ' + (posindex + 1)
           }).addClass('delete').
                   append($('<img>', {
@@ -681,9 +679,7 @@ function removePosition(position, positions) {
       $('label[for="' + settings.id + '_allpositions"]').hide();
     }
     if (settings.addition.activated) {
-      $('<a>', {
-        href: '#'
-      }).addClass('add_position').html(settings.addition.title).click(function() {
+      $('<a>').addClass('add_position').html(settings.addition.title).click(function() {
         settings.onAddition();
       }).appendTo($("#" + settings.id + '_allpositions'));
     }
