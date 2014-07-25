@@ -933,7 +933,7 @@ behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 position:relative;
 }
 .fondPhoto {
-background-color:#FFF;
+background-color:transparent;
 padding:0 0 18px;
 background-position:bottom right;
 background-repeat:no-repeat;
@@ -978,6 +978,13 @@ border-radius:12px;
 -webkit-border-radius:12px;
 padding:0 0 8px 0;
 }
+
+.bgDegradeGris.header, .bgDegradeGris .header{
+border-radius:12px 12px 0 0 ;
+-moz-border-radius:12px 12px 0 0 ;
+-webkit-border-radius:12px 12px 0 0 ;
+}
+
 .btn-deploy-all-item.bgDegradeGris {
 padding:8px;
 }

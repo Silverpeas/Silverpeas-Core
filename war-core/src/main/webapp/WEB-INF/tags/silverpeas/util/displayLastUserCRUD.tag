@@ -94,22 +94,24 @@
   <c:set var="displayUserZoom" value="${true}"/>
 </c:if>
 
-<div class="bgDegradeGris" id="link-domain-content">
+<div class="bgDegradeGris crud-container" id="link-domain-content">
   <jsp:invoke fragment="beforeCommonContentBloc"/>
 
   <c:if test="${publishDate != null && publishedBy != null}">
-    <div class="paragraphe" id="lastModificationInfo"><fmt:message key="GML.publishedAt" bundle="${generalBundle}"/><br>
+    <div class="paragraphe" id="publishedAtInfo">
+      <fmt:message key="GML.publishedAt" bundle="${generalBundle}"/>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(publishDate, _language)}</c:when><c:otherwise>${silfn:formatDate(publishDate, _language)}</c:otherwise></c:choose></b>
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${publishedBy.id}" zoom="${displayUserZoom}"/>
       <div class="profilPhoto">
-      	<view:image src="${publishedBy.avatar}" alt="" type="avatar" css="defaultAvatar"/>
+        <view:image src="${publishedBy.avatar}" alt="" type="avatar" css="defaultAvatar"/>
       </div>
     </div>
   </c:if>
-  
+
   <c:if test="${updateDate != null && updatedBy != null}">
-    <div class="paragraphe" id="lastModificationInfo"><fmt:message key="GML.updatedAt" bundle="${generalBundle}"/><br>
+    <div class="paragraphe" id="lastModificationInfo">
+      <fmt:message key="GML.updatedAt" bundle="${generalBundle}"/>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(updateDate, _language)}</c:when><c:otherwise>${silfn:formatDate(updateDate, _language)}</c:otherwise></c:choose></b>
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${updatedBy.id}" zoom="${displayUserZoom}"/>
@@ -120,7 +122,8 @@
   </c:if>
 
   <c:if test="${createDate != null && createdBy != null}">
-    <div class="paragraphe" id="createdInfo"><fmt:message key="GML.createdAt" bundle="${generalBundle}"/><br>
+    <div class="paragraphe" id="createdInfo">
+      <fmt:message key="GML.createdAt" bundle="${generalBundle}"/>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(createDate, _language)}</c:when><c:otherwise>${silfn:formatDate(createDate, _language)}</c:otherwise></c:choose></b>
       <fmt:message key="GML.by" bundle="${generalBundle}"/>
       <view:username userId="${createdBy.id}" zoom="${displayUserZoom}"/>
@@ -134,8 +137,8 @@
     <p id="permalinkInfo">
       <a title="${permalinkHelp}" href="${permalink}">
         <img border="0" alt='${permalinkHelp}' title='${permalinkHelp}' src="${permalinkIconUrl}"/>
-      </a> <fmt:message key="GML.permalink" bundle="${generalBundle}"/> <br/>
-      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${permalink}" onfocus="select();" class="inputPermalink"/>
+      </a> <fmt:message key="GML.permalink" bundle="${generalBundle}"/>
+      <input type="text" value="${silfn:fullApplicationURL(pageContext.request)}${permalink}" onfocus="select();" class="inputPermalink"/>
     </p>
   </c:if>
 

@@ -1050,6 +1050,10 @@ td.browsebar a:hover {
   background-color: #666666;
 }
 
+.hide {
+  display: none;
+}
+
 /****************************************/
 /****** Look V5 - TopBar ****************/
 /****************************************/
@@ -6492,4 +6496,34 @@ input[title] {
   background-image:url(/silverpeas/util/icons/input-info.png);
   background-position:top right;
   background-repeat:no-repeat;
+}
+
+
+
+/*********************** COMMON CRUD CONTAINER *********************/
+.crud-container #createdInfo b {
+  display: inline;
+}
+
+.crud-container #createdInfo b:after {
+  content: ' ';
+  display: block;
+}
+
+.crud-container #lastModificationInfo b {
+  display: inline;
+}
+
+.crud-container #lastModificationInfo b:after {
+  content: ' ';
+  display: block;
+}
+
+.crud-container #publishedAtInfo b {
+  display: inline;
+}
+
+.crud-container #publishedAtInfo b:after {
+  content: ' ';
+  display: block;
 }

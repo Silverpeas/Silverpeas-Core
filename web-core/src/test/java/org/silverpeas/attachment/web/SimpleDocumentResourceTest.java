@@ -36,12 +36,10 @@ import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.silverpeas.attachment.AttachmentService;
@@ -56,7 +54,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Collections;
@@ -317,7 +314,6 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
             "\"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
   }
 
-  @Ignore
   @Test
   public void testSwitchDocumentVersionState() {
     String lang = "fr";
@@ -327,6 +323,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         "test.pdf", lang, "Test", "Ceci est un test.", 500L, MimeTypes.PDF_MIME_TYPE,
         USER_ID_IN_TEST, creationDate, null));
     Form form = new Form();
+    form.put("switch-version-comment", Collections.singletonList((String) null));
     AttachmentService service = mock(AttachmentService.class);
     when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
         thenReturn(document);
@@ -340,7 +337,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     assertThat(result, is(notNullValue()));
     assertThat(result, is(
         "{\"status\":true, \"id\":56, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
-    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), null);
+    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), "");
   }
 
   @Test

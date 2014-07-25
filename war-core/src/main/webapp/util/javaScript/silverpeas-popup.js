@@ -73,6 +73,12 @@
    */
   var methods = {
     /**
+     * Close the current popup
+     */
+    close : function() {
+      $(this).dialog('close');
+    },
+    /**
      * The modal free dialog : configure as you want your popup.
      */
     free: function(options) {
@@ -549,30 +555,42 @@
 
 /**
  * Load html from URL and display it in a popup.
+ * If this method is called several times from a same Page,
+ * the previous load is trashed and replaced by the new one.
  * @param url
  * @param options
+ * @return promise with the html data loaded.
  */
-function getHtmlAndDisplayInPopup(url, options) {
+function displaySingleFreePopupFrom(url, options) {
+  var deferred = new jQuery.Deferred();
   $.popup.showWaiting();
   $.ajax({
     url: url,
     type: 'GET',
     dataType: 'html',
-    cache: false,
-    async: false,
-    success: function(data, status, jqXHR) {
-      var $popup = $('#popupHelperContainer');
-      if ($popup.length == 0) {
-        $popup = $('<div>', {'id': 'popupHelperContainer', 'style': 'display: none'});
-        $popup.appendTo(document.body);
-      }
-      $popup.empty();
-      $popup.append(data);
-      $popup.popup('free', options);
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      alert(errorThrown);
+    cache : false
+  }).success(function(data, status, jqXHR) {
+    var $popup = $('#popupHelperContainer');
+    if ($popup.length == 0) {
+      $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+      $popup.appendTo(document.body);
     }
+    $popup.empty();
+    $popup.append(data);
+    $popup.popup('free', options);
+    deferred.resolve(data);
+  }).error(function(jqXHR, textStatus, errorThrown) {
+    notyError(errorThrown);
+    deferred.reject();
+  }).always(function(data, status, jqXHR) {
+    $.popup.hideWaiting();
   });
-  $.popup.hideWaiting();
+  return deferred.promise();
+}
+
+/**
+ * Closes the single free popup.
+ */
+function closeSingleFreePopup() {
+  $('#popupHelperContainer').popup('close');
 }
