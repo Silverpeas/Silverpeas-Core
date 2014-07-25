@@ -89,6 +89,9 @@ public class PaginationTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
+    GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
+        .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+
     if (actionIsJsFunction) {
       nbPages = PaginationUtil.countTotalNumberOfPages(nbItemsPerPage, totalNumberOfItems);
     }
@@ -108,6 +111,9 @@ public class PaginationTag extends TagSupport {
 
       // display previous link (or nothing if current page is first one)
       if (this.currentPage > 0) {
+        if (this.altPreviousAction == null && gef != null) {
+          this.altPreviousAction = gef.getMultilang().getString("GEF.pagination.previousPage");
+        }
 
         // display previous page link
         out.println("<div class=\"pageOff\">");
@@ -125,6 +131,9 @@ public class PaginationTag extends TagSupport {
           out.println(i+1);
           out.println("</div>");
         } else {
+          if (this.altGoToAction == null && gef != null) {
+            this.altGoToAction = gef.getMultilang().getString("GEF.pagination.gotoPage");
+          }
           out.println("<div class=\"pageOff\">");
           out.println(getUrl(action, this.altGoToAction + " " + (i + 1), (i)));
           out.println(i+1);
@@ -135,6 +144,9 @@ public class PaginationTag extends TagSupport {
 
       // display next link (or nothing if current page is last one)
       if ((this.currentPage + 1) < this.nbPages) {
+        if (this.altNextAction == null && gef != null) {
+          this.altNextAction = gef.getMultilang().getString("GEF.pagination.nextPage");
+        }
         // display next page link
         out.println("<div class=\"pageOff\">");
         out.println(getUrl(action, this.altNextAction, (this.currentPage + 1)));
