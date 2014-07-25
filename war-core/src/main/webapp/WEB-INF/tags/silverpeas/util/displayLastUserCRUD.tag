@@ -109,7 +109,7 @@
     </div>
   </c:if>
 
-  <c:if test="${updateDate != null && updatedBy != null}">
+  <c:if test="${updateDate != null && updatedBy != null && (createDate == null || fn:endsWith(createDate.time, '000') || createDate.time < updateDate.time)}">
     <div class="paragraphe" id="lastModificationInfo">
       <fmt:message key="GML.updatedAt" bundle="${generalBundle}"/>
       <b><c:choose><c:when test="${displayHour}">${silfn:formatDateAndHour(updateDate, _language)}</c:when><c:otherwise>${silfn:formatDate(updateDate, _language)}</c:otherwise></c:choose></b>

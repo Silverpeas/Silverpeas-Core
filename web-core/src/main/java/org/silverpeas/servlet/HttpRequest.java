@@ -262,8 +262,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
   public String[] getParameterValues(String name) {
     String[] values = super.getParameterValues(name);
     if (values == null && isContentInMultipart()) {
-      values = new String[]{FileUploadUtil.getParameter(getFileItems(), name, null,
-          getCharacterEncoding())};
+      List<String> listOfValues =
+          FileUploadUtil.getParameterValues(getFileItems(), name, getCharacterEncoding());
+      values = listOfValues.toArray(new String[listOfValues.size()]);
     }
     return values;
   }
