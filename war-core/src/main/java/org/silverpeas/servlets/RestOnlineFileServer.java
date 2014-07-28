@@ -146,13 +146,12 @@ public class RestOnlineFileServer extends AbstractFileSender {
   }
 
   private SilverpeasFile getSilverpeasFile(final SimpleDocument document) {
-    SilverpeasFileProvider provider = SilverpeasFileProvider.getInstance();
     SilverpeasFileDescriptor descriptor =
         new SilverpeasFileDescriptor(document.getInstanceId())
             .mimeType(document.getContentType())
             .fileName(document.getAttachmentPath())
             .absolutePath();
-    return provider.getSilverpeasFile(descriptor);
+    return SilverpeasFileProvider.getFile(descriptor);
   }
 
   private boolean isUserAuthorized(RestRequest request, String componentId, Object object)

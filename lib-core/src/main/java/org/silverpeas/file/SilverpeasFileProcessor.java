@@ -12,19 +12,23 @@ public interface SilverpeasFileProcessor {
 
   public static enum ProcessingContext {
     /**
-     * The processing is on the getting of a file.
+     * The processing is about the getting of a file.
      */
     GETTING,
     /**
-     * The processing is on the writing of the content of a file.
+     * The processing is about the writing of the content into a file.
      */
     WRITING,
     /**
-     * The processing is on the file deletion.
+     * The processing is about the deletion of a file.
      */
     DELETION,
     /**
-     * The processing is in the file moving.
+     * The processing is about the copy of a file.
+     */
+    COPY,
+    /**
+     * The processing is about the moving of a file.
      */
     MOVING
   }
