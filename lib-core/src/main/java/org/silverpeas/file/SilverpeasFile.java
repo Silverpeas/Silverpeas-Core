@@ -19,6 +19,7 @@ import java.io.InputStream;
  * @author mmoquillon
  */
 public class SilverpeasFile extends File {
+  private static final long serialVersionUID = -7236431331553364723L;
 
   /**
    * A SilverpeasFile representing a non existent file. It is better to work with it than taking
