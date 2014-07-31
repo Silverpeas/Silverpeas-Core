@@ -174,7 +174,7 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   * @param look
+   * @param lookName
    * @see
    */
   public final void setLook(String lookName) {
