@@ -23,20 +23,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeAngular;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeCkeditorAddOns;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeNotifier;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeSecurityTokenizing;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeUserZoom;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -45,6 +31,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
 
 public class WebCommonLookAndFeel {
 

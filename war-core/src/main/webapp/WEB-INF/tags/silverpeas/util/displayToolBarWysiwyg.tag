@@ -25,6 +25,7 @@
 <%@ tag language="java" pageEncoding="UTF-8" %>
 
 <%@ tag import="com.silverpeas.treeMenu.model.NodeType" %>
+<%@ tag import="org.silverpeas.wysiwyg.control.WysiwygController" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -39,79 +40,82 @@
 <view:setBundle basename="org.silverpeas.wysiwyg.multilang.wysiwygBundle" var="wysiwygBundle"/>
 
 <%@ attribute name="editorName" required="true" type="java.lang.String"
-              description="Name of the wysiwyg editor" %>              
+              description="Name of the wysiwyg editor" %>
 <%@ attribute name="componentId" required="true" type="java.lang.String"
               description="Id of current component" %>
 <%@ attribute name="objectId" required="true" type="java.lang.String"
-              description="Id of current object" %>        
+              description="Id of current object" %>
 <%@ attribute name="path" required="false" type="java.lang.String"
-              description="Path used in websites application" %>   
+              description="Path used in websites application" %>
 
 <c:set var="_context" value="${silfn:applicationURL()}"/>
+<c:set var="_webSites" value="<%=WysiwygController.WYSIWYG_WEBSITES%>"/>
 <c:choose>
-      <c:when test="${fn:startsWith(componentId, '<%=WysiwygController.WYSIWYG_WEBSITES%>')}">
-      	<c:set var="_specificURL">/website/${componentId}/${objectId}/</c:set>
-      	<c:set var="_tabImages" value="${silfn:webSiteImages(path, componentId)}"/>
-      </c:when>
+  <c:when test="${fn:startsWith(componentId, _webSites)}">
+    <c:set var="_specificURL">/website/${componentId}/${objectId}/</c:set>
+    <c:set var="_tabImages" value="${silfn:webSiteImages(path, componentId)}"/>
+  </c:when>
 
-      <c:otherwise>
-      	<c:set var="_specificURL" value="${_context}"/>
-      	<c:set var="_listImages" value="${silfn:attachmentImages(objectId, componentId)}"/>
-      </c:otherwise>
+  <c:otherwise>
+    <c:set var="_specificURL" value="${_context}"/>
+    <c:set var="_listImages" value="${silfn:attachmentImages(objectId, componentId)}"/>
+  </c:otherwise>
 </c:choose>
 <c:set var="_listComponentsFileStorage" value="${silfn:componentsFileStorage()}"/>
 <c:set var="_nodeType" value="<%=NodeType.COMPONENT%>"/>
 <c:set var="_listComponentsImageStorage" value="${silfn:componentsImageStorage()}"/>
-<c:set var="_isDynamicValueActivate" value="${silfn:isDynamicValueActivate()}"/>            
+<c:set var="_isDynamicValueActivate" value="${silfn:isDynamicValueActivate()}"/>
 
-	<!--  list of kmelia applications -->
-	<c:if test="${not empty _listComponentsFileStorage}">
-		<select id="storageFile" name="storageFile" onchange="openStorageFileManager('${editorName}', '${_context}', '${_nodeType}');this.selectedIndex=0">
-			<option value=""><fmt:message key="storageFile.select.title" bundle="${wysiwygBundle}"/></option>
-			<c:forEach var="componentFileStorage" items="${_listComponentsFileStorage}"  >
-			<option value="${componentFileStorage.id}">${componentFileStorage.label}</option>
-			</c:forEach>
-		</select>
-	</c:if>
+<!-- list of kmelia applications -->
+<c:if test="${not empty _listComponentsFileStorage}">
+  <select id="storageFile" name="storageFile" onchange="openStorageFileManager('${editorName}', '${_context}', '${_nodeType}');this.selectedIndex=0">
+    <option value="">
+      <fmt:message key="storageFile.select.title" bundle="${wysiwygBundle}"/></option>
+    <c:forEach var="componentFileStorage" items="${_listComponentsFileStorage}">
+      <option value="${componentFileStorage.id}">${componentFileStorage.label}</option>
+    </c:forEach>
+  </select>
+</c:if>
 
-	<!--  list of images already uploaded for the current object -->
-	<c:choose>
-		<c:when test="${fn:startsWith(componentId, '<%=WysiwygController.WYSIWYG_WEBSITES%>')}">
-			<c:if test="${not empty _tabImages}">
-				<select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
-					<option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
-					<c:forEach var="image" items="${_tabImages}">
-					<option value="${_specificURL}${image[0]}">${image[1]}</option>
-					</c:forEach>
-				</select>
-			</c:if>
-		</c:when>
+<!-- list of images already uploaded for the current object -->
+<c:choose>
+  <c:when test="${fn:startsWith(componentId, _webSites)}">
+    <c:if test="${not empty _tabImages}">
+      <select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
+        <option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
+        <c:forEach var="image" items="${_tabImages}">
+          <option value="${_specificURL}${image[0]}">${image[1]}</option>
+        </c:forEach>
+      </select>
+    </c:if>
+  </c:when>
 
-		<c:otherwise>
-			<c:if test="${not empty _listImages}">
-				<select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
-					<option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
-					<c:forEach var="image" items="${_listImages}"  >
-					<option value="${_specificURL}${image.attachmentURL}">${image.filename}</option>
-					</c:forEach>
-				</select>
-			</c:if>
-		</c:otherwise>
-	</c:choose>
-	
-	<!--  list of gallery applications -->
-	<c:if test="${not empty _listComponentsImageStorage}">
-		<select id="galleryFile" name="galleryFile" onchange="openGalleryFileManager('${editorName}', '${_context}', '${_language}');this.selectedIndex=0;">
-			<option selected="selected"><fmt:message key="GML.galleries" bundle="${generalBundle}"/></option>
-			<c:forEach var="componentImageStorage" items="${_listComponentsImageStorage}"  >
-			<option value="${componentImageStorage.id}">${componentImageStorage.label}</option>
-			</c:forEach>
-		</select>
-	</c:if>
-	
-	<!--  dynamic value -->
-	<c:if test="${_isDynamicValueActivate}">
-		<c:set var="_htmlListDynamicValue" value="${silfn:buildHtmlListDynamicValue(_language, 'default', editorName)}"/>
-		${_htmlListDynamicValue}
-	</c:if>
+  <c:otherwise>
+    <c:if test="${not empty _listImages}">
+      <select id="images" name="images" onchange="choixImage('${editorName}');this.selectedIndex=0">
+        <option selected="selected"><fmt:message key="Image" bundle="${wysiwygBundle}"/></option>
+        <c:forEach var="image" items="${_listImages}">
+          <option value="${_specificURL}${image.attachmentURL}">${image.filename}</option>
+        </c:forEach>
+      </select>
+    </c:if>
+  </c:otherwise>
+</c:choose>
+
+<!-- list of gallery applications -->
+<c:if test="${not empty _listComponentsImageStorage}">
+  <select id="galleryFile" name="galleryFile" onchange="openGalleryFileManager('${editorName}', '${_context}', '${_language}');this.selectedIndex=0;">
+    <option selected="selected">
+      <fmt:message key="GML.galleries" bundle="${generalBundle}"/></option>
+    <c:forEach var="componentImageStorage" items="${_listComponentsImageStorage}">
+      <option value="${componentImageStorage.id}">${componentImageStorage.label}</option>
+    </c:forEach>
+  </select>
+</c:if>
+
+<!-- dynamic value -->
+<c:if test="${_isDynamicValueActivate}">
+  <c:set var="_htmlListDynamicValue" value="${silfn:buildHtmlListDynamicValue(_language, 'default', editorName)}"/>
+  ${_htmlListDynamicValue}
+</c:if>
 

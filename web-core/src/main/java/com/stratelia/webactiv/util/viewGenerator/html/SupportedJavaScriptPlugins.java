@@ -37,6 +37,10 @@ public enum SupportedJavaScriptPlugins {
    */
   player,
   /**
+   * JQuery plugin to print out embed container for media playing.
+   */
+  embedPlayer,
+  /**
    * JQuery plugin to print out tooltips.
    */
   qtip,
