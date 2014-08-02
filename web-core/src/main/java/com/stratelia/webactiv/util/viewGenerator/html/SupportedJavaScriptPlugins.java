@@ -33,9 +33,13 @@ public enum SupportedJavaScriptPlugins {
    */
   jquery,
   /**
-   * JQuery plugin to play videos or musics.
+   * JQuery plugin to play musics.
    */
-  player,
+  audioPlayer,
+  /**
+   * JQuery plugin to play videos.
+   */
+  videoPlayer,
   /**
    * JQuery plugin to print out embed container for media playing.
    */

@@ -22,11 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /**
- * Silverpeas plugin build upon JQuery to manage media player.
+ * Silverpeas plugin build upon JQuery to manage video player.
  */
 (function($, undefined) {
+  document.createElement('video');
+  document.createElement('audio');
+  document.createElement('track');
 
   // Web Context
   if (!webContext) {
@@ -34,7 +36,7 @@
   }
 
   // Player URL
-  var videoPlayerURL = webContext + '/util/flash/flowplayer/flowplayer-3.2.18.swf';
+  var flashPlayerURL = webContext + '/util/flash/flowplayer/flowplayer-3.2.18.swf';
 
   /**
    * The different player methods handled by the plugin.
@@ -46,28 +48,6 @@
      */
     video : function(options) {
       return __init($(this), options);
-    },
-
-    /**
-     * Prepare UI and behavior for audio playing
-     */
-    audio : function(options) {
-      var result = $.extend(options, {
-        plugins : {
-          controls : {
-            fullscreen : false,
-            autoHide : false
-          },
-          audio : {
-            url : 'flowplayer.audio-3.2.11.swf'
-          }
-        }
-      });
-      if (!options.clip) {
-        options.clip = {};
-      }
-      options.clip.provider = "audio";
-      return __init($(this), options);
     }
   };
 
@@ -78,7 +58,7 @@
    *
    * Here the player namespace in JQuery.
    */
-  $.fn.player = function(method) {
+  $.fn.videoPlayer = function(method) {
     if (methods[method]) {
       return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
     } else if (typeof method === 'object' || !method) {
@@ -108,6 +88,9 @@
           height : '400px'
         },
         clip : {
+          url : undefined,
+          mimeType : undefined,
+          posterUrl : undefined,
           bufferLength : 10,
           scaling : 'fit',
           autoPlay : false,
@@ -149,7 +132,7 @@
       __configurePlayerContainer($container, config);
 
       // Load (and start ?) the player);
-      flowplayer(this, videoPlayerURL, config)
+      flowplayer(this, flashPlayerURL, config)
     });
   }
 
@@ -160,6 +143,7 @@
    * @private
    */
   function __configurePlayerContainer($container, config) {
+    $container.empty();
     if (!$container.attr('id')) {
       $container.attr('id', __buildUniqueId());
     }

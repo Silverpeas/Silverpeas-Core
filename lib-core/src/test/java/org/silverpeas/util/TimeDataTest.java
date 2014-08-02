@@ -91,7 +91,7 @@ public class TimeDataTest {
   @Test
   public void getFormattedDurationHMS() {
     TimeData timeData = createDefaultTimeData();
-    assertThat(timeData.getFormattedDurationAsHMS(), is("589874017:56:04"));
+    assertThat(timeData.getFormattedDurationAsHMS(), is("589874017:56:05"));
     timeData = new TimeData(0);
     assertThat(timeData.getFormattedDurationAsHMS(), is("00:00:00"));
     timeData = new TimeData(1);

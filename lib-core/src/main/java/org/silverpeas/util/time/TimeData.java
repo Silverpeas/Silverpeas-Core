@@ -24,6 +24,7 @@
 package org.silverpeas.util.time;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
+import org.silverpeas.util.UnitUtil;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -216,7 +217,10 @@ public class TimeData {
    * @see #getFormattedDuration(String)
    */
   public String getFormattedDurationAsHMS() {
-    return getFormattedDuration("HH:mm:ss");
+    TimeData roundedTimeData = UnitUtil
+        .getTimeData(getRoundedTimeConverted(TimeUnit.SEC).setScale(0, BigDecimal.ROUND_HALF_DOWN),
+            TimeUnit.SEC);
+    return roundedTimeData.getFormattedDuration("HH:mm:ss");
   }
 
   /**
