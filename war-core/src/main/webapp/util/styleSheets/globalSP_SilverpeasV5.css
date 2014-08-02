@@ -6527,3 +6527,8 @@ input[title] {
   content: ' ';
   display: block;
 }
+
+/*********************** MEDIA PLAYER *********************/
+iframe.embed {
+  overflow: hidden;
+}

@@ -134,9 +134,11 @@
   </c:if>
 
   <c:if test="${not empty permalink}">
+    <c:url value="/" var="applicationPrefix"/>
+    <c:set value="/${fn:replace(permalink, applicationPrefix, '')}" var="permalink"/>
     <p id="permalinkInfo">
-      <a title="${permalinkHelp}" href="${permalink}">
-        <img border="0" alt='${permalinkHelp}' title='${permalinkHelp}' src="${permalinkIconUrl}"/>
+      <a title="${permalinkHelp}" href="<c:url value="${permalink}"/>">
+      <img border="0" alt='${permalinkHelp}' title='${permalinkHelp}' src="${permalinkIconUrl}"/>
       </a> <fmt:message key="GML.permalink" bundle="${generalBundle}"/>
       <input type="text" value="${silfn:fullApplicationURL(pageContext.request)}${permalink}" onfocus="select();" class="inputPermalink"/>
     </p>

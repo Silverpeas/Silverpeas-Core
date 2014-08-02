@@ -61,8 +61,10 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
-  private static final String SILVERPEAS_PLAYER = "silverpeas-player.js";
-  private static final String FLOWPLAYER = "flowplayer/flowplayer-3.2.13.min.js";
+  private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
+  private static final String SILVERPEAS_AUDIO_PLAYER = "silverpeas-player-audio.js";
+  private static final String SILVERPEAS_VIDEO_PLAYER = "silverpeas-player-video.js";
+  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.13.min.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
@@ -169,9 +171,20 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includePlayer(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + FLOWPLAYER));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PLAYER));
+  public static ElementContainer includeEmbedPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_EMBED_PLAYER));
+    return xhtml;
+  }
+
+  public static ElementContainer includeAudioPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_AUDIO_PLAYER));
+    return xhtml;
+  }
+
+  public static ElementContainer includeVideoPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_VIDEO_PLAYER));
     return xhtml;
   }
 
@@ -216,7 +229,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
     return xhtml;
   }
-  
+
   public static ElementContainer includeTicker(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + TICKER_CSS));
     xhtml.addElement(script(jqueryPath + TICKER_JS));
@@ -400,7 +413,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
     return xhtml;
   }
-  
+
   private static String appendVersion(String url) {
     return URLManager.appendVersion(url);
   }
