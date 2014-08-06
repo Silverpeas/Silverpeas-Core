@@ -45,7 +45,7 @@ public class FFmpegUtilTest {
         FFmpegUtil.buildFFmpegThumbnailExtractorCommandLine(inputFile, outputFile, 30);
     assertThat(result, is(notNullValue()));
     assertThat(FilenameUtils.separatorsToUnix(result.toString()),
-        is("ffmpeg -ss 30 -i /silverpeas/video/movie.mp4 -vframes 1 /silverpeas/viewer/thumb.jpg"));
+        is("ffmpeg -ss 30 -i /silverpeas/video/movie.mp4 -vframes 1 -vf scale=600:-1 /silverpeas/viewer/thumb.jpg"));
   }
 
 }

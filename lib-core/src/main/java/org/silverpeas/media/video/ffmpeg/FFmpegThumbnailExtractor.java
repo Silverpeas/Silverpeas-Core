@@ -42,8 +42,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 @Named("videoThumbnailExtractor")
 public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
 
-  public static final String VIDEO_THUMBNAIL_FILE_PREFIX = "img";
-
   private static final FFmpegThumbnailExtractor instance = new FFmpegThumbnailExtractor();
 
   /**
@@ -66,10 +64,10 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
       TimeData timeData = metadata.getDuration();
       if (timeData != null) {
         File thumbnailDir = video.getParentFile();
-        for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.values()) {
+        for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
           double timePeriod = thumbPeriod.getPercent() * timeData.getTimeAsLong() / 1000;
-          FFmpegUtil.extractVideoThumb(video, new File(thumbnailDir,
-              VIDEO_THUMBNAIL_FILE_PREFIX + thumbPeriod.getIndex() + ".jpg"), (int) timePeriod);
+          FFmpegUtil.extractVideoThumbnail(video,
+              new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
         }
       } else {
         SilverTrace.warn("VideoTool", getClass().getSimpleName(),
