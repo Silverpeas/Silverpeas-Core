@@ -25,6 +25,7 @@ package org.silverpeas.process.io.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -372,16 +373,8 @@ public class HandledFile {
    * @param inputStream the input stream to write
    * @throws Exception
    */
-  public void writeInputStreamToFile(final InputStream inputStream) throws Exception {
-    BufferedInputStream bin = new BufferedInputStream(inputStream);
-    try {
-      byte buf[] = new byte[2048];
-      while ((bin.read(buf)) != -1) {
-        writeByteArrayToFile(buf, true);
-      }
-    } finally {
-      IOUtils.closeQuietly(bin);
-    }
+  public void copyInputStreamToFile(final InputStream inputStream) throws Exception {
+    fileHandler.copyInputStreamToFile(basePath, file, inputStream, false);
   }
 
   // -----------------------------------------------------------------------
