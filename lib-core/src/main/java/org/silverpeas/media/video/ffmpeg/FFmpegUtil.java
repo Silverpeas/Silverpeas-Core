@@ -39,7 +39,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * This class wrapp FFmpeg command line execution.
  *
  * <pre>
- * ffmpeg -ss $i*$interval -i /path/to/video.mov -vframes 1 /path/to/thumbnail_$i.jpg
+ * ffmpeg -ss $i*$interval -i /path/to/video.mov -vframes 1 -filter:v scale="600:-1" /path/to/thumbnail_$i.jpg
  * </pre>
  * @author ebonnet
  */
@@ -55,12 +55,17 @@ public class FFmpegUtil extends ExternalExecution {
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("ffmpeg");
+    // Time of extract in seconds
     commandLine.addArgument("-ss", false);
     commandLine.addArgument(Integer.toString(seconds), false);
     commandLine.addArgument("-i", false);
     commandLine.addArgument("${inputFile}", false);
+    // Only one frame
     commandLine.addArgument("-vframes", false);
     commandLine.addArgument("1", false);
+    // Resize/scale of output picture keeping aspect ratio
+    commandLine.addArgument("-vf", false);
+    commandLine.addArgument("scale=600:-1", false);
     commandLine.addArgument("${outputFile}", false);
     commandLine.setSubstitutionMap(files);
     return commandLine;
