@@ -79,8 +79,9 @@ public class SimulationElementConversionProcess extends AbstractFileProcess<Proc
       }
 
       // Convert elements and add each one converted to the file handler
-      for (DummyHandledFile dummyHandledFile : converter
-          .convert((List) typeElements.getValue(), targetPK, actionType)) {
+      List<DummyHandledFile> handledFiles =
+          converter.convert((List) typeElements.getValue(), targetPK, actionType);
+      for (DummyHandledFile dummyHandledFile : handledFiles) {
         fileHandler.addDummyHandledFile(dummyHandledFile);
       }
     }
