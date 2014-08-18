@@ -24,22 +24,19 @@
 package org.silverpeas.viewer.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecutionException;
 import org.silverpeas.viewer.SwfToolManager;
 import org.silverpeas.viewer.exception.PreviewException;
 
 import com.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import static org.apache.commons.io.FilenameUtils.*;
 
@@ -48,7 +45,7 @@ import static org.apache.commons.io.FilenameUtils.*;
  *
  * @author Yohann Chastagnier
  */
-public class SwfUtil {
+public class SwfUtil extends ExternalExecution {
 
   public static final String SWF_DOCUMENT_EXTENSION = "swf";
   public static final String PAGE_FILENAME_SEPARATOR = "-";
@@ -87,7 +84,11 @@ public class SwfUtil {
    * @param fileOut the image file
    */
   public static void fromSwfToImage(final File fileIn, final File fileOut) {
-    exec(buildSwfToImageCommandLine(fileIn, fileOut));
+    try {
+      exec(buildSwfToImageCommandLine(fileIn, fileOut));
+    } catch (ExternalExecutionException e) {
+      throw new PreviewException(e);
+    }
   }
 
   /**
@@ -132,7 +133,11 @@ public class SwfUtil {
       onePageFile.append(getExtension(fileOut.getPath()));
       outputFile = new File(onePageFile.toString());
     }
-    exec(buildPdfToSwfCommandLine(endingCommand, fileIn, outputFile));
+    try {
+      exec(buildPdfToSwfCommandLine(endingCommand, fileIn, outputFile));
+    } catch (ExternalExecutionException e) {
+      throw new PreviewException(e);
+    }
   }
 
   /**
@@ -142,7 +147,13 @@ public class SwfUtil {
    * @return
    */
   public static DocumentInfo getPdfDocumentInfo(final File pdfFile) {
-    return new DocumentInfo().addFromSwfToolsOutput(exec(buildPdfDocumentInfoCommandLine(pdfFile)));
+    List<String> execResult = null;
+    try {
+      execResult = exec(buildPdfDocumentInfoCommandLine(pdfFile));
+    } catch (ExternalExecutionException e) {
+      throw new ExternalExecutionException(e);
+    }
+    return new DocumentInfo().addFromSwfToolsOutput(execResult);
   }
 
   /**
@@ -154,63 +165,6 @@ public class SwfUtil {
   private static File changeFileExtension(final File file, final String fileExtension) {
     return new File(
         getFullPath(file.getPath()) + getBaseName(file.getPath()) + '.' + fileExtension);
-  }
-
-  /**
-   * Centralizing command exececution code
-   *
-   * @param commandLine
-   * @return
-   */
-  private static List<String> exec(final CommandLine commandLine) {
-    SilverTrace.info("util", "SwfUtil.exec", "Command " + commandLine);
-    final List<String> result = new LinkedList<String>();
-    final List<String> errors = new LinkedList<String>();
-    CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
-    final Process process;
-    try {
-      process = Runtime.getRuntime().exec(commandLine.toStrings());
-      final Thread errEater = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            errors.addAll(IOUtils.readLines(process.getErrorStream()));
-          } catch (final IOException e) {
-            throw new PreviewException(e);
-          }
-        }
-      });
-      errEater.start();
-      final Thread outEater = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            result.addAll(IOUtils.readLines(process.getInputStream()));
-          } catch (final IOException e) {
-            throw new PreviewException(e);
-          }
-        }
-      });
-      outEater.start();
-      process.waitFor();
-      int exitStatus = process.exitValue();
-      if (exitStatus != 0) {
-        throw new RuntimeException("Exit error status : " + exitStatus + " "
-            + logErrors.getMessage());
-      }
-    } catch (final IOException e) {
-      SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
-      throw new PreviewException(e);
-    } catch (final InterruptedException e) {
-      SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
-      throw new PreviewException(e);
-    } catch (final RuntimeException e) {
-      SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
-      throw new PreviewException(e);
-    } finally {
-      IOUtils.closeQuietly(logErrors);
-    }
-    return result;
   }
 
   static CommandLine buildPdfToSwfCommandLine(final String endingCommand, File inputFile,

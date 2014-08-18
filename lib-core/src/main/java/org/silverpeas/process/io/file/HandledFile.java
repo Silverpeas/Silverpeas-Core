@@ -23,7 +23,9 @@
  */
 package org.silverpeas.process.io.file;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -33,15 +35,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 /**
  * This class permits to manipulate files (read/write/delete/...) into transactional processes. It
  * encapsulates a <code>FileHandler</code> instance and knows the root path repository into that it
  * have to work. <code>FileHandler.getHandledFile</code> method has to be called to obtain a
- * <code>HandledFile</code> instance.
- * With <code>HandledFile</code> instance, file manipulations are easier and lighter due to the
- * hiding of internal mechanism.
+ * <code>HandledFile</code> instance. With <code>HandledFile</code> instance, file manipulations are
+ * easier and lighter due to the hiding of internal mechanism.
  * @author Yohann Chastagnier
  */
 public class HandledFile {
@@ -101,8 +103,8 @@ public class HandledFile {
   // -----------------------------------------------------------------------
 
   /**
-   * Gets a sub file from the current HandledFile.
-   * If no parameter is given, then the current HandledFile is returned.
+   * Gets a sub file from the current HandledFile. If no parameter is given, then the current
+   * HandledFile is returned.
    * @see FileUtils
    */
   public HandledFile getHandledFile(final String... names) {
@@ -113,8 +115,8 @@ public class HandledFile {
   }
 
   /**
-   * Gets a sub file from the parent of the current HandledFile.
-   * If no parameter is given, then the parent of current HandledFile is returned.
+   * Gets a sub file from the parent of the current HandledFile. If no parameter is given, then the
+   * parent of current HandledFile is returned.
    * @see FileUtils
    */
   public HandledFile getParentHandledFile(final String... names) {
@@ -364,6 +366,15 @@ public class HandledFile {
    */
   public void writeByteArrayToFile(final byte[] data, final boolean append) throws Exception {
     fileHandler.writeByteArrayToFile(basePath, file, data, append);
+  }
+
+  /**
+   * Use this method prior to writeByteArrayToFile in order to process very large file
+   * @param inputStream the input stream to write
+   * @throws Exception
+   */
+  public void copyInputStreamToFile(final InputStream inputStream) throws Exception {
+    fileHandler.copyInputStreamToFile(basePath, file, inputStream, false);
   }
 
   // -----------------------------------------------------------------------

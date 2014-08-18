@@ -40,9 +40,9 @@ import org.silverpeas.process.session.ProcessSession;
 
 /**
  * This is an handler that permits to perform transactional file manipulations. It has to be used
- * exclusively in classes that implements <code>SilverpeasProcess</code>.
- * In a standard use, <code>getHandledFile</code> method has to be called to obtain a
- * <code>HandledFile</code> instance (@see {@link HandledFile}).
+ * exclusively in classes that implements <code>SilverpeasProcess</code>. In a standard use,
+ * <code>getHandledFile</code> method has to be called to obtain a <code>HandledFile</code> instance
+ * (@see {@link HandledFile}).
  * @author Yohann Chastagnier
  */
 public class FileHandler extends AbstractFileHandler {
@@ -73,8 +73,7 @@ public class FileHandler extends AbstractFileHandler {
 
   /**
    * Gets a temporary file contained in session path. This file exists during the transaction and is
-   * deleted after commit or rollback.
-   * Otherwise it represents the file from the destination path.
+   * deleted after commit or rollback. Otherwise it represents the file from the destination path.
    */
   public File getSessionTemporaryFile(final String... names) {
     return FileUtils.getFile(getSessionTemporaryPath(), names);
@@ -82,8 +81,7 @@ public class FileHandler extends AbstractFileHandler {
 
   /**
    * Gets the handled file that represents the file in session path if exists or if the file doesn't
-   * exist into destination path.
-   * Otherwise it represents the file from the destination path.
+   * exist into destination path. Otherwise it represents the file from the destination path.
    * @param basePath
    * @param names relative path from basePath param
    */
@@ -93,8 +91,7 @@ public class FileHandler extends AbstractFileHandler {
 
   /**
    * Gets the handled file that represents the file in session path if exists or if the file doesn't
-   * exist into destination path.
-   * Otherwise it represents the file from the destination path.
+   * exist into destination path. Otherwise it represents the file from the destination path.
    * @param basePath
    * @param file the file or path whose the start of file path is equals to the root file path
    * defined by basePath param
@@ -261,9 +258,7 @@ public class FileHandler extends AbstractFileHandler {
 
   /**
    * The first given file is not handled. It have to exist in an other path than the one that is
-   * handled.
-   * The second given file is handled.
-   * Both files are handled
+   * handled. The second given file is handled. Both files are handled
    * @see FileUtils
    */
   protected boolean contentEquals(final File file1, final FileBasePath basePath, final File file2)
@@ -297,9 +292,7 @@ public class FileHandler extends AbstractFileHandler {
 
   /**
    * The first given file is not handled. It have to exist in an other path than the one that is
-   * handled.
-   * The second given file is handled.
-   * Both files are handled
+   * handled. The second given file is handled. Both files are handled
    * @see FileUtils
    */
   public void copyFile(final File srcFile, final HandledFile destFile) throws Exception {
@@ -508,6 +501,15 @@ public class FileHandler extends AbstractFileHandler {
     FileUtils.writeByteArrayToFile(getFileForWriting(basePath, file, append), data, append);
   }
 
+  /**
+   * @see FileUtils
+   */
+  protected void copyInputStreamToFile(final FileBasePath basePath, final File file,
+      final InputStream inputStream, final boolean append) throws Exception {
+    verify(basePath, file);
+    FileUtils.copyInputStreamToFile(inputStream, getFileForWriting(basePath, file, append));
+  }
+
   // -----------------------------------------------------------------------
 
   /**
@@ -580,9 +582,7 @@ public class FileHandler extends AbstractFileHandler {
 
   /**
    * The first given file is not handled. It have to exist in an other path than the one that is
-   * handled.
-   * The second given file is handled.
-   * Both files are handled
+   * handled. The second given file is handled. Both files are handled
    * @see FileUtils
    */
   public void moveFile(final File srcFile, final HandledFile destFile) throws Exception {
