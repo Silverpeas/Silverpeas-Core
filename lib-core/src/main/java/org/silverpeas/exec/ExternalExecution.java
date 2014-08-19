@@ -10,7 +10,6 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.media.video.VideoThumbnailExtractorException;
 import org.silverpeas.viewer.util.CollectingLogOutputStream;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
