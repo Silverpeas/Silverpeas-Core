@@ -26,6 +26,8 @@ package com.silverpeas.form;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.sharing.SharingContext;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
@@ -60,6 +62,7 @@ public class PagesContext {
   boolean creation = false;
   String serverURL;
   boolean designMode = false;
+  SharingContext sharingContext = null;
 
   public PagesContext() {
   }
@@ -84,6 +87,7 @@ public class PagesContext {
     setIgnoreDefaultValues(pc.isIgnoreDefaultValues());
     setUpdatePolicy(pc.getUpdatePolicy());
     setCreation(pc.isCreation());
+    setSharingContext(pc.getSharingContext());
   }
 
   public PagesContext(String formIndex, String language) {
@@ -337,4 +341,17 @@ public class PagesContext {
   public void setDesignMode(boolean designMode) {
     this.designMode = designMode;
   }
+
+  public SharingContext getSharingContext() {
+    return sharingContext;
+  }
+
+  public void setSharingContext(SharingContext sharingContext) {
+    this.sharingContext = sharingContext;
+  }
+  
+  public boolean isSharingContext() {
+    return sharingContext != null;
+  }
+  
 }

@@ -75,22 +75,28 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(
         nodePK, null, true);
 
-    String baseUri = getUriInfo().getAbsolutePath().toString();
-
     List<PublicationEntity> entities = new ArrayList<PublicationEntity>();
     for (PublicationDetail publication : publications) {
-      if (publication.isValid()) {
-        URI uri = getURI(publication, baseUri);
-        PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
-        if (withAttachments) {
-          Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
-              .listDocumentsByForeignKey(publication.getPK(), null);
-          entity.withAttachments(attachments);
-        }
+      PublicationEntity entity = getPublicationEntity(publication, withAttachments);
+      if (entity != null) {
         entities.add(entity);
       }
     }
     return entities;
+  }
+  
+  protected PublicationEntity getPublicationEntity(PublicationDetail publication, boolean withAttachments) {
+    if (publication.isValid()) {
+      URI uri = getURI(publication);
+      PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
+      if (withAttachments) {
+        Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKey(publication.getPK(), null);
+        entity.withAttachments(attachments);
+      }
+      return entity;
+    }
+    return null;
   }
   
   protected abstract boolean isNodeReadable(NodePK nodePK);
@@ -99,12 +105,13 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     return new NodePK(nodeId, getComponentId());
   }
   
-  private URI getURI(PublicationDetail publication, String baseUri) {
+  private URI getURI(PublicationDetail publication) {
+    String baseUri = getUriInfo().getAbsolutePath().toString();
     URI uri;
     try {
       uri = new URI(baseUri + "/publication/" + publication.getPK().getId());
     } catch (URISyntaxException e) {
-      Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(AbstractPublicationResource.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);
     }
     return uri;

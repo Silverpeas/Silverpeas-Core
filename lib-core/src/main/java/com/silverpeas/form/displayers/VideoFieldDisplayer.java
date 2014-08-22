@@ -122,6 +122,9 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
         if (attachment != null) {
           String webContext = FileServerUtils.getApplicationContext();
           videoURL = webContext + attachment.getAttachmentURL();
+          if (pageContext.isSharingContext()) {
+            videoURL = attachment.getSharedURI(pageContext.getSharingContext()).toString();
+          }
         }
       }
     }
@@ -140,9 +143,11 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
       final FieldTemplate template, final ElementContainer xhtmlContainer,
       final PagesContext pagesContext) {
     String videoURL = computeVideoURL(attachmentId, pagesContext);
-    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-    initVideoPlayer(videoPlayer, videoURL, parameters);
-    videoPlayer.renderIn(xhtmlContainer);
+    if (StringUtil.isDefined(videoURL)) {
+      Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+      initVideoPlayer(videoPlayer, videoURL, parameters);
+      videoPlayer.renderIn(xhtmlContainer);
+    }
   }
 
   /**

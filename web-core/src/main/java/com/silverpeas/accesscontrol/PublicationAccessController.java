@@ -24,68 +24,90 @@
 
 package com.silverpeas.accesscontrol;
 
+import java.util.Collection;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-
 import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
- * Check the access to an attachment for a user.
- * @author ehugonnet
+ * Check the access to a publication for a user.
+ * @author neysseric
  */
 @Named
-public class AttachmentAccessController extends AbstractAccessController<AttachmentDetail> {
+public class PublicationAccessController extends AbstractAccessController<PublicationPK> {
 
   @Inject
   private NodeAccessController accessController;
-  
-  @Inject
-  private PublicationAccessController publicationAccessController;
 
-  public AttachmentAccessController() {
+  public PublicationAccessController() {
   }
 
   /**
    * For test only.
    * @param accessController
    */
-  AttachmentAccessController(NodeAccessController accessController) {
+  PublicationAccessController(NodeAccessController accessController) {
     this.accessController = accessController;
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, AttachmentDetail object,
+  public boolean isUserAuthorized(String userId, PublicationPK object,
       final AccessControlContext context) {
-    if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
-      String foreignId = object.getForeignKey().getId();
-      if (StringUtil.isInteger(foreignId)) {
-        PublicationPK pubPK =
-            new PublicationPK(object.getForeignKey().getId(), object.getForeignKey()
-                .getInstanceId());
-        return publicationAccessController.isUserAuthorized(userId, pubPK, context);
-      } else if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
-        String nodeId = foreignId.substring("Node_".length());
-        return getNodeAccessController().isUserAuthorized(userId, new NodePK(nodeId, object.
-            getInstanceId()));
+    if (ComponentHelper.getInstance().isThemeTracker(object.getInstanceId())) {
+      String foreignId = object.getId();
+      try {
+        foreignId = getActualForeignId(foreignId, object.getInstanceId());
+      } catch (Exception e) {
+        SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+            "root.NO_EX_MESSAGE", e);
+        return false;
       }
+      try {
+        Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
+            object.getInstanceId()));
+        for (NodePK nodePk : nodes) {
+          if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
+            return true;
+          }
+        }
+      } catch (Exception ex) {
+        SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+            "root.NO_EX_MESSAGE", ex);
+        return false;
+      }
+      return false;
     }
     return true;
   }
 
-  private boolean isFileAttachedToWysiwygDescriptionOfNode(String foreignId) {
-    return StringUtil.isDefined(foreignId) && foreignId.startsWith("Node_");
-  }
-
   protected PublicationBm getPublicationBm() throws Exception {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  }
+
+  /**
+   * Return the 'real' id of the publication to which this file is attached to. In case of a clone
+   * publication we need the cloneId (that is the original publication).
+   * @param foreignId
+   * @param instanceId
+   * @return
+   * @throws Exception
+   */
+  private String getActualForeignId(String foreignId, String instanceId) throws Exception {
+    PublicationDetail pubDetail = getPublicationBm().getDetail(new PublicationPK(foreignId,
+        instanceId));
+    if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
+      return pubDetail.getCloneId();
+    }
+    return foreignId;
   }
 
   /**

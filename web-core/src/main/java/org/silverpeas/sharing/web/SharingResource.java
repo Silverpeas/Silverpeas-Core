@@ -23,12 +23,10 @@
  */
 package org.silverpeas.sharing.web;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.web.RESTWebService;
-import org.silverpeas.publication.web.PublicationResource;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,11 +35,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.web.RESTWebService;
 
 @Service
 @RequestScoped
@@ -66,8 +65,7 @@ public class SharingResource extends RESTWebService {
     }
     URI webApplicationRootUri = getWebApplicationRootUri(baseUri, ticket.getComponentId(),
         String.valueOf(ticket.getSharedObjectId()));
-    Date expiration = ticket.getEndDate();
-    return new SharingEntity(getUriInfo().getRequestUri(), webApplicationRootUri, expiration);
+    return new SharingEntity(getUriInfo().getRequestUri(), webApplicationRootUri, ticket);
   }
 
   private URI getWebApplicationRootUri(String baseUri, String componentId, String nodeId) {
@@ -75,7 +73,7 @@ public class SharingResource extends RESTWebService {
     try {
       uri = new URI(baseUri + "sharing/nodes/" + componentId + "/" + token + "/" + nodeId);
     } catch (URISyntaxException e) {
-      Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(SharingResource.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);
     }
     return uri;

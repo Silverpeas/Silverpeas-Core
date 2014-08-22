@@ -55,6 +55,7 @@ public abstract class Ticket implements Serializable {
   public static final String FILE_TYPE = "Attachment";
   public static final String VERSION_TYPE = "Versionned";
   public static final String NODE_TYPE = "Node";
+  public static final String PUBLICATION_TYPE = "Publication";
   private static final long serialVersionUID = -612174156104966079L;
   @Column(name = "shared_object_type", nullable = false, insertable = false, updatable = false)
   protected String sharedObjectType;
