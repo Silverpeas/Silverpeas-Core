@@ -21,44 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.sharing.web;
+package org.silverpeas.sharing;
 
-import java.net.URI;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
-public class SharingEntity implements Exposable {
-
-  private static final long serialVersionUID = 1L;
+public class SharingContext {
   
-  @XmlElement(defaultValue = "")
-  private URI uri;
-  @XmlElement(defaultValue = "")
-  private URI webApplicationRootUri;
-  @XmlElement(defaultValue = "")
-  private String expiration;
-  @XmlElement(defaultValue = "")
-  private String creationDate;
-  @XmlElement(defaultValue = "")
-  private String user;
-
-  @Override
-  public URI getURI() {
-    return uri;
+  private String baseURI;
+  private String token;
+  
+  public SharingContext(String baseURI, String token) {
+    this.baseURI = baseURI;
+    this.token = token;
   }
   
-  public SharingEntity(URI uri, URI webApplicationRootUri, Ticket ticket) {
-    this.uri = uri;
-    this.webApplicationRootUri = webApplicationRootUri;
-    if (ticket.getEndDate() != null) {
-      this.expiration = Long.toString(ticket.getEndDate().getTime());
-    }
-    this.creationDate = Long.toString(ticket.getCreationDate().getTime());
-    this.user = UserDetail.getById(ticket.getCreatorId()).getDisplayedName();
+  public String getBaseURI() {
+    return baseURI;
+  }
+  public void setBaseURI(String baseURI) {
+    this.baseURI = baseURI;
+  }
+  public String getToken() {
+    return token;
+  }
+  public void setToken(String token) {
+    this.token = token;
   }
 
 }

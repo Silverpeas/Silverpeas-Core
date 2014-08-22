@@ -32,6 +32,7 @@
 <script type="text/javascript" src="jquery.i18n.properties-min-1.0.9.js"></script>
 <script type="text/javascript" src="jquery.jstree.js"></script>
 <script type="text/javascript" src="smartpaginator.js"></script>
+<script type="text/javascript" src="sharing.js"></script>
 <style type="text/css">
 .ui-widget {
 	font-size: 11px;
@@ -127,7 +128,7 @@ $(function () {
 	}
 	
 	function displayPublications(nodeId, instanceId) {
-		var url = baseURL+"/silverpeas/services/sharing/publications/"+instanceId+"/"+token+"?node="+nodeId+"&withAttachments=true";
+		var url = baseURL+"/silverpeas/services/sharing/publications/"+token+"?node="+nodeId+"&withAttachments=true";
 		$.getJSON(url,
           function(data) {
             try {
@@ -221,23 +222,6 @@ $(function () {
 		$("#empty-folder").html(jQuery.i18n.prop("folder.empty"));
 	}
 	
-	function bytesToSize(bytes, precision) {
-		var sizes = [
-			jQuery.i18n.prop("file.size.bytes"),
-			jQuery.i18n.prop("file.size.Kb"),
-			jQuery.i18n.prop("file.size.Mb"),
-			jQuery.i18n.prop("file.size.Gb"),
-			jQuery.i18n.prop("file.size.Tb")
-			];
-		var posttxt = 0;
-		if (bytes == 0) return 'n/a';
-		while( bytes >= 1024 ) { 
-			posttxt++;
-			bytes = bytes / 1024;
-		}   
-		return bytes.toFixed(precision) + " " + sizes[posttxt];
-	}
-
 	$('#download-link').click(function processZip() {
 		// get ids of files checked
 		var ids = $(':checkbox:checked').map(function() {
@@ -299,12 +283,12 @@ function clickOnFile() {
 </head>
 <body>
 	<div id="header">
-		<h1>Gestion documentaire électronique partagée</h1>
+		<h1>Gestion documentaire ï¿½lectronique partagï¿½e</h1>
 	</div>
 	<div id="breadcrumb">
 		<span class="path"></span>
 		<span class="validityInfo"><span id="expirationLabel"></span> : <span class="expiration"></span></span>
-		<a class="silverpeasLink" href="http://www.silverpeas.com" title="Découvrir Silverpeas"><img src="generic-elts/sharedWithSilverpeas.png"></a>
+		<a class="silverpeasLink" href="http://www.silverpeas.com" title="Dï¿½couvrir Silverpeas"><img src="generic-elts/sharedWithSilverpeas.png"></a>
 	</div>
 	<div id="explorer" class="demo">
 	</div>
@@ -317,7 +301,7 @@ function clickOnFile() {
 			</div>
 		</div>
 	</div>
-	<a title="Télécharger les fichiers sélectionnés" id="download-link" href="#">Télécharger</a>
+	<a title="Tï¿½lï¿½charger les fichiers sï¿½lectionnï¿½s" id="download-link" href="#">Tï¿½lï¿½charger</a>
 	<div id="downloadZip-dialog" title="T&eacute;l&eacute;charger vos fichiers" style="display:none">
 		<p>
 			<a href="" target="_blank">Cliquez sur le lien pour t&eacute;l&eacute;charger le ZIP</a> - <span id="zipSize"></span>

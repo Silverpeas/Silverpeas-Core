@@ -40,11 +40,18 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.sharing.SharingContext;
 import org.silverpeas.util.URLUtils;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -52,6 +59,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
@@ -662,6 +671,23 @@ public class SimpleDocument implements Serializable {
   public String getUniversalURL() {
     return URLManager.getSimpleURL(URLManager.URL_FILE, getId()) + "?ContentLanguage=" +
         getLanguage();
+  }
+  
+  public URI getSharedURI(SharingContext context) {
+    URI sharedUri;
+    try {
+      sharedUri = new URI(context.getBaseURI() + "attachments/" + getInstanceId() + "/" + context.getToken() + "/"
+          + getId() + "/" + URLEncoder.encode(attachment.getFilename(),
+              CharEncoding.UTF_8));
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(SimpleDocument.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(SimpleDocument.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+
+    return sharedUri;
   }
 
   public String getOnlineURL() {
