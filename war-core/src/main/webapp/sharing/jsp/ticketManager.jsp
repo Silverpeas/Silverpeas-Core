@@ -176,8 +176,9 @@ function toggleContinuous(effect) {
                 <div id="ticketNameArea" class="field">
                   <label class="txtlibform" for="ticketName">
                     <c:choose>
-                      <c:when test="${sharedObjectType eq 'Node'}"><fmt:message key="sharing.nodeName"/> </c:when>
-                      <c:otherwise><fmt:message key="sharing.nameFile"/> </c:otherwise>
+                      <c:when test="${sharedObjectType eq 'Node'}"><fmt:message key="GML.theme"/> </c:when>
+                      <c:when test="${sharedObjectType eq 'Publication'}"><fmt:message key="GML.publication"/> </c:when>
+                      <c:otherwise><fmt:message key="GML.file"/> </c:otherwise>
                     </c:choose>
                   </label>
                   <div class="champs"><c:out value="${fileName}"/></div>

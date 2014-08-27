@@ -49,7 +49,9 @@ ul, li, p, h1, h2 {
      padding: 0px 12px;
      position: absolute;
      right: 133px;
-     top: 0px;
+	 text-align: center;
+    top: 0;
+    width: 232px;
 }
 
 #breadcrumb .sharingBy{
@@ -58,7 +60,7 @@ ul, li, p, h1, h2 {
      color: #FFFFFF;
      padding: 0px 12px;
      position: absolute;
-     right: 345px;
+     right: 390px;
      top: 0px;
 }
 
@@ -204,13 +206,9 @@ ul, li, p, h1, h2 {
 
 
 #publication {    
-	height: 100%;
-    left: 0;
-    overflow: auto;
-    position: fixed;
-    top: 155px;
-    width: 100%;
-	z-index:1000;
+    margin-top: 155px;
+	display:inline-block;
+	width:100%;
 }
 
 .publiName {
@@ -229,7 +227,7 @@ ul, li, p, h1, h2 {
 }
 
 #richContent {
-	margin:1em 0;
+	margin:1em 380px 1em 0;
 }
 
 #publication .container{    
@@ -277,7 +275,7 @@ ul, li, p, h1, h2 {
     font-weight: 100;
 }
 
-.attachments {
+#publication  .attachments {
 	float:right;
 	width:350px;
 }
@@ -318,4 +316,139 @@ ul, li, p, h1, h2 {
 }
 #publication .attachments ul span.size {
 	color:#2d2d2d;
+}
+
+
+/* Default forms look n feel */
+#richContent .forms .form-border {
+	border:1px solid #CCC;
+}
+
+#richContent .forms .form-title {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+    margin: 0 0 5px;
+    padding: 0;
+}
+
+#richContent .forms .legend {
+	padding: 10px 0px 0px 10px;
+}
+
+#richContent .forms .fields .fieldInput {
+	display:inline-block;
+}
+
+#richContent .forms .fields label {
+	display: inline-block;
+    float: inherit;
+    height: 20px;
+    padding-left: 15px;
+    width:180px;
+	float:left;
+	font-weight: bold;
+	color: #444;
+}
+
+#richContent .forms .field .fieldInput input,
+#richContent .forms .field .fieldInput textarea,
+#richContent .forms .field .fieldInput select {
+	width:auto;
+}
+
+#richContent .forms .fields {
+	margin:0 0 0 0;
+	padding:0 0 0 0;
+}
+#richContent .forms .fields > li{
+	padding:10px 0 5px 2%;
+	margin:0 0 0 0;
+	position:relative;
+	display:block;
+	float:inherit;
+	width:98%;
+	min-height: 28px;
+}
+
+/* design and edition modes */
+#richContent form .forms .fields > li:nth-child(odd) {
+	background-color:#fffce7;
+	border-bottom:1px solid #ccc;
+}
+#richContent  form .forms .fields > li:nth-child(even) {
+	background-color:#f6f6f6;
+	border-bottom:1px solid #ccc;
+}
+
+/* view mode */
+#richContent .forms .fields > li:nth-child(odd) {
+	background-color:#f9f9f9;
+	border-bottom:1px solid #ddd;
+}
+#richContent .forms .fields > li:nth-child(even) {
+	background-color:#f6f6f6;
+	border-bottom:1px solid #ddd;
+}
+
+#richContent .forms .field .actions {
+	position:absolute;
+	top:10px;
+	right:1%;
+}
+
+#richContent .forms .field ul.repeatable-field-list {
+	list-style-type: none;
+	padding-left: 0px;
+}
+
+#richContent .forms .actions img{
+	border:0;
+}
+
+#richContent .forms .field-occurrence-hidden {
+	display: none;
+}
+
+
+/*** Rich Content ******/
+#richContent ul, #richContent li, #richContent p, #richContent h1, #richContent h2 {
+     margin:inherit;
+     padding: inherit;
+}
+
+/*** Style WYSIWYG ******/
+
+#richContent  h2.wysiwyg-title1 {
+	border-left:3px solid #2a2a2a ;
+	color:#2a2a2a;
+	font-size:16px;
+	padding:0 6px;
+}
+#richContent h3.wysiwyg-title2{
+	border-left:3px solid #7eb73b ;
+	color:#7eb73b;
+	font-size:14px;
+	padding:0 6px;
+}
+
+#richContent strong.wysiwyg-focus {
+	background-color:#2a2a2a ;
+	color:#FFF;
+}
+
+#richContent p.wysiwyg-important{
+	background-color: #F5F5F5;
+	border-radius: 0 10px 0 10px;
+	padding: 9.5px;
+	border:1px solid #ebebeb;
+	font-size:110%;
+}
+
+#richContent blockquote {
+    border-left:1px solid #E4E4E4;
+    margin:0;
+    padding-left:1.5em;
+    font-style:italic;
+    color:#666;
 }

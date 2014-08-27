@@ -85,13 +85,13 @@ public class TicketFactory {
           AccessControllerProvider.getAccessController("nodeAccessController");
       return nodeAccessController.isUserAuthorized(creatorId,
           new NodePK(String.valueOf(sharedObjectId), componentId),
-              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     } else if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
       AccessController<PublicationPK> publicationAccessController =
           AccessControllerProvider.getAccessController("publicationAccessController");
       return publicationAccessController.isUserAuthorized(creatorId,
           new PublicationPK(String.valueOf(sharedObjectId), componentId),
-            AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+            AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     }
     return false;
   }

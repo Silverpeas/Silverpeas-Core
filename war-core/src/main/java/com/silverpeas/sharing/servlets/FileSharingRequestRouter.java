@@ -100,23 +100,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         String token = request.getParameter("token");
         fileSharingSC.deleteTicket(token);
         destination = getDestination("ViewTickets", fileSharingSC, request);
-      } else if ("NewTicket".equals(function)) {
-        // récupération des données venant de attachment ou versioning
-        String objectId = request.getParameter("objectId");
-        String componentId = request.getParameter("componentId");
-        String type = request.getParameter("type");
-        UserDetail creator = fileSharingSC.getUserDetail();
-        Ticket newTicket = TicketFactory.aTicket(Integer.parseInt(objectId), componentId, creator.
-            getId(), new Date(), new Date(), 1, type);
-        if (newTicket == null) {
-          throwHttpForbiddenError();
-        }
-        // passage des paramètres
-        request.setAttribute("Ticket", newTicket);
-        request.setAttribute("Creator", creator.getDisplayedName());
-        request.setAttribute("Url", newTicket.getUrl(request));
-        request.setAttribute("Action", "CreateTicket");
-        destination = rootDest + "ticketManager.jsp";
       } else if ("EditTicket".equals(function)) {
         String token = request.getParameter("token");
         Ticket ticket = fileSharingSC.getTicket(token);

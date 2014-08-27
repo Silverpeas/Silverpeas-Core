@@ -155,6 +155,7 @@ public class PublicationEntity implements Exposable {
     if (WysiwygController.haveGotWysiwygToDisplay(pubDetail.getInstanceId(), pubDetail.getId(),
         lang)) {
       content = WysiwygController.load(pubDetail.getInstanceId(), pubDetail.getId(), lang);
+      content = replaceURLs(content, context);
     } else if (!StringUtil.isInteger(pubDetail.getInfoId())) {
       PublicationTemplateImpl pubTemplate;
       try {
@@ -249,5 +250,24 @@ public class PublicationEntity implements Exposable {
     publication.setUpdateDate(updateDate);
     return publication;
   }
-  
+    
+  private String replaceURLs(String text, SharingContext context) {
+    int begin = 0;
+    int end;
+    String newStr = "";
+    String searched = "src=\"";
+
+    end = text.indexOf(searched, begin);
+    while (end != -1) {
+      int beginURL = end + searched.length();
+      newStr += text.substring(begin, beginURL);      
+      int endURL = text.indexOf("\"", beginURL);
+      String url = text.substring(beginURL, endURL);
+      newStr += SimpleDocument.convertURLToSharedOne(url, context);
+      begin = end + searched.length() + url.length();
+      end = text.indexOf(searched, begin);
+    }
+    newStr += text.substring(begin, text.length());
+    return newStr;
+  }
 }
