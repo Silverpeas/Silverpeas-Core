@@ -27,6 +27,7 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
@@ -689,6 +690,27 @@ public class SimpleDocument implements Serializable {
 
     return sharedUri;
   }
+  
+  /**
+   * URL looks like :
+   * http://localhost:8000/silverpeas/attached_file/componentId/kmelia144/attachmentId/7088b9d6
+   * -ec5a-4a9c-8c0e-dcb77eed704e/lang/fr/name/Penguins.jpg 
+   * must be converted into :
+   * http://localhost:8000
+   * /silverpeas/services/attachments/kmelia144/ca36bf15-8e52-4d53-8692-0090845ac409
+   * /7088b9d6-ec5a-4a9c-8c0e-dcb77eed704e/Penguins.jpg
+   * @param sharing
+   * @return
+   */
+  public static String convertURLToSharedOne(String url, SharingContext sharing) {
+    String[] parts = StringUtil.split(url, "/");
+    String name = parts[ArrayUtil.indexOf(parts, "name") + 1];
+    String id = parts[ArrayUtil.indexOf(parts, "attachmentId") + 1];
+    String instanceId = parts[ArrayUtil.indexOf(parts, "componentId") + 1];
+
+    return sharing.getBaseURI() + "attachments/" + instanceId + "/" + sharing.getToken() + "/" +
+        id + "/" + name;
+  }
 
   public String getOnlineURL() {
     String onlineUrl = FileServerUtils
@@ -996,5 +1018,5 @@ public class SimpleDocument implements Serializable {
    */
   public boolean isContentPdf() {
     return FileUtil.isPdf(getAttachmentPath());
-  }
+  } 
 }

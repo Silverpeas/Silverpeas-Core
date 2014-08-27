@@ -102,15 +102,13 @@
             <c:if test="${ticket.endDate ne null}">
               <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
             </c:if>
-            <c:if test="${ticket.nbAccessMax gt 0}">
+            <c:set var="accessCount" value="n/a"/>
+            <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax gt 0}">
               <c:set var="accessCount" value="${ticket.nbAccess} / ${ticket.nbAccessMax}"/>
             </c:if>
-            <c:if test="${ticket.nbAccessMax le 0}">
+            <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax le 0}">
               <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"></fmt:message>
               <c:set var="accessCount" value="${ticket.nbAccess} / ${sharingUnlimited}"/>
-            </c:if>
-            <c:if test="${ticket.sharedObjectType eq 'Node'}">
-              <c:set var="accessCount" value="n/a"/>
             </c:if>
             <view:arrayCellText text="${endDate}" />
             <view:arrayCellText text="${accessCount}" />

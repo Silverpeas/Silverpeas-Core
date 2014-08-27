@@ -25,6 +25,7 @@
 package com.silverpeas.accesscontrol;
 
 import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -67,7 +68,29 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
   @Override
   public boolean isUserAuthorized(String userId, NodePK nodePK,
       final AccessControlContext context) {
-    return isUserAuthorized(getUserRoles(context, userId, nodePK));
+    
+    boolean authorized = true;
+    boolean isRoleVerificationRequired = true;
+    
+    boolean sharingOperation = context.getOperations().contains(AccessControlOperation.sharing);
+    
+    if (sharingOperation) {
+      authorized =
+        StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
+            nodePK.getInstanceId(), "useFolderSharing"));
+      isRoleVerificationRequired = authorized;
+    }
+    
+    if (isRoleVerificationRequired) {
+      Set<SilverpeasRole> userRoles = getUserRoles(context, userId, nodePK);
+      if (sharingOperation) {
+        SilverpeasRole greaterUserRole = SilverpeasRole.getGreaterFrom(userRoles);
+        return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+      }
+      return isUserAuthorized(userRoles);
+    }
+    
+    return authorized;
   }
 
   public boolean isUserAuthorized(Set<SilverpeasRole> nodeUserRoles) {

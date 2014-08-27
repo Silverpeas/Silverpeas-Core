@@ -122,13 +122,20 @@ $(function () {
 				}
 				$("#breadcrumb .path").html(newPath);
 				
+				//open folder in treeview
+				var nodeId = $(data.rslt.obj).attr('id');
+				var idSelector = "#"+nodeId;
+				$.jstree._reference(idSelector).open_node(idSelector);
+				
+				hideZipPanel();
+				
 				// display publications
 				displayPublications(data.rslt.obj.attr("id"), data.rslt.obj.attr("componentId"));	
 			});		
 	}
 	
 	function displayPublications(nodeId, instanceId) {
-		var url = baseURL+"/silverpeas/services/sharing/publications/"+token+"?node="+nodeId+"&withAttachments=true";
+		var url = baseURL+"/silverpeas/services/sharing/publications/"+token+"/node/"+nodeId+"?withAttachments=true";
 		$.getJSON(url,
           function(data) {
             try {
@@ -193,9 +200,13 @@ $(function () {
 					label = attachment.title;
 				}
 				ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" target=\"_blank\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+label+"</a>";
-				ul += "<span class=\"size\">"+bytesToSize(attachment.size, 0)+"</span>";
-				if (attachment.info) {
-					ul += "<span class=\"description\">"+attachment.info+"</span>";
+				ul += "<span class=\"size\">"+bytesToSize(attachment.size, 0);
+				if (attachment.title) {
+  					ul += " - " + attachment.logicalName;
+				}
+				ul += "</span>";
+				if (attachment.description) {
+					ul += "<span class=\"description\">"+attachment.description+"</span>";
 				}
 				ul += "</li>";
 			}
@@ -270,13 +281,20 @@ function clickOnFile() {
 			} 
 		);
 		if(!leastOneCheck){
-			$('#download-link').animate({
-				right: '-=87'
-			  }, 300, function() {
-				  downloadlinkshow = false;
-			  });
+			hideZipPanel();
 		}
 	}
+}
+
+function hideZipPanel() {
+  leastOneCheck = false;
+  if(downloadlinkshow) {
+	  $('#download-link').animate({
+	    	right: '-=87'
+	    }, 300, function() {
+	    	downloadlinkshow = false;
+	    });
+  }
 }
 
 </script>

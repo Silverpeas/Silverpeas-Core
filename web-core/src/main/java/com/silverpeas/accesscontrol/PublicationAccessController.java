@@ -25,12 +25,18 @@
 package com.silverpeas.accesscontrol;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -47,6 +53,9 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
   @Inject
   private NodeAccessController accessController;
+  
+  @Inject
+  private OrganisationController controller;
 
   public PublicationAccessController() {
   }
@@ -62,7 +71,21 @@ public class PublicationAccessController extends AbstractAccessController<Public
   @Override
   public boolean isUserAuthorized(String userId, PublicationPK object,
       final AccessControlContext context) {
-    if (ComponentHelper.getInstance().isThemeTracker(object.getInstanceId())) {
+    boolean authorized = true;
+    boolean isRoleVerificationRequired = true;
+    
+    boolean sharingOperation = context.getOperations().contains(AccessControlOperation.sharing);
+    
+    // Verifying sharing is possible
+    if (sharingOperation) {
+      authorized =
+          StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
+              object.getInstanceId(), "usePublicationSharing"));
+      isRoleVerificationRequired = authorized;
+    }
+    
+    if (isRoleVerificationRequired &&
+        ComponentHelper.getInstance().isThemeTracker(object.getInstanceId())) {
       String foreignId = object.getId();
       try {
         foreignId = getActualForeignId(foreignId, object.getInstanceId());
@@ -75,8 +98,14 @@ public class PublicationAccessController extends AbstractAccessController<Public
         Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
             object.getInstanceId()));
         for (NodePK nodePk : nodes) {
-          if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
-            return true;
+          if (sharingOperation) {
+            Set<SilverpeasRole> userRoles = getNodeAccessController().getUserRoles(context, userId, nodePk);
+            SilverpeasRole greaterUserRole = SilverpeasRole.getGreaterFrom(userRoles);
+            return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+          } else {
+            if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
+              return true;
+            }
           }
         }
       } catch (Exception ex) {
@@ -86,7 +115,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
       return false;
     }
-    return true;
+    return authorized;
   }
 
   protected PublicationBm getPublicationBm() throws Exception {
@@ -119,5 +148,16 @@ public class PublicationAccessController extends AbstractAccessController<Public
       accessController = new NodeAccessController();
     }
     return accessController;
+  }
+  
+  /**
+   * Gets the organization controller used for performing its task.
+   * @return an organization controller instance.
+   */
+  private OrganisationController getOrganisationController() {
+    if (controller == null) {
+      controller = OrganisationControllerFactory.getOrganisationController();
+    }
+    return controller;
   }
 }
