@@ -34,8 +34,6 @@ import java.io.Serializable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import org.silverpeas.search.indexEngine.model.IndexEntry;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 
 public class PublicationSelection extends ClipboardSelection implements Serializable {
 
@@ -58,8 +56,6 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
   }
 
   private PublicationDetail m_pub;
-  private ModelDetail m_modelDetail;
-  private InfoDetail m_infoDetail;
 
   /**
    * --------------------------------------------------------------------------
@@ -74,8 +70,6 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
 
   public PublicationSelection(CompletePublication pub) {
     this(pub.getPublicationDetail());
-    m_modelDetail = pub.getModelDetail();
-    m_infoDetail = pub.getInfoDetail();
   }
 
   /**
@@ -89,13 +83,11 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (parFlavor.equals(PublicationDetailFlavor))
+      if (parFlavor.equals(PublicationDetailFlavor)) {
         transferedData = m_pub;
-      else if (parFlavor.equals(CompletePublicationFlavor))
-        transferedData = new CompletePublication(m_pub, m_modelDetail,
-            m_infoDetail);
-      else
+      } else {
         throw e;
+      }
     }
     return transferedData;
   }

@@ -37,7 +37,6 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.node.importexport.NodePositionType;
-import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -63,11 +62,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -882,41 +876,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       // Recuperation de l'objet PublicationDetail
       PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
 
-      InfoDetail infoDetail = pubComplete.getInfoDetail();
       PublicationContentType pubContent = null;
-      if (infoDetail != null && !(infoDetail.getInfoImageList().isEmpty() && infoDetail.
-          getInfoTextList().isEmpty())) {
-        // la publication a un contenu de type DBModel
-        pubContent = new PublicationContentType();
-        DBModelContentType dbModel = new DBModelContentType();
-        pubContent.setDBModelContentType(dbModel);
-
-        // Recuperation des textes
-        Collection<InfoTextDetail> listInfoText = infoDetail.getInfoTextList();
-        if (listInfoText != null && !listInfoText.isEmpty()) {
-          ArrayList<String> listTextParts = new ArrayList<String>();
-          for (InfoTextDetail infoText : listInfoText) {
-            listTextParts.add(infoText.getContent());
-          }
-          dbModel.setListTextParts(listTextParts);
-        }
-
-        // Recuperation des images
-        Collection<InfoImageDetail> listInfoImage = infoDetail.getInfoImageList();
-        if (listInfoImage != null && !listInfoImage.isEmpty()) {
-          ArrayList<String> listImageParts = new ArrayList<String>();
-          for (InfoImageDetail imageDetail : listInfoImage) {
-            String path = FileRepositoryManager.getAbsolutePath(componentId) + File.separator
-                + "images";
-            listImageParts.add(path + File.separator + imageDetail.getPhysicalName());
-          }
-          dbModel.setListImageParts(listImageParts);
-        }
-
-        // Recuperation du model
-        ModelDetail modelDetail = pubComplete.getModelDetail();
-        dbModel.setId(Integer.parseInt(modelDetail.getId()));
-      } else if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
+      if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
         // la publication a un contenu de type XMLTemplate (formTemplate)
         pubContent = new PublicationContentType();
         List<XMLField> xmlFields = getFormTemplateBm().getXMLFieldsForExport(publicationDetail.
@@ -984,10 +945,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     return listNodePk;
 
-  }
-
-  public ModelDetail getModelDetail(int idModelDetail) throws ImportExportException {
-    return getPublicationBm().getModelDetail(new ModelPK(String.valueOf(idModelDetail)));
   }
 
   /**

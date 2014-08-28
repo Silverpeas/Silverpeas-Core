@@ -24,8 +24,6 @@
 
 package com.silverpeas.importExport.report;
 
-import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -50,11 +48,9 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.importExport.model.PublicationType;
-import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -62,7 +58,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
@@ -73,26 +68,22 @@ public class HtmlExportPublicationGenerator {
 
   // Variables
   private final PublicationDetail publicationDetail;
-  private DBModelContentType dbModelContent;
   private XMLModelContentType xmlModelContent;
-  private ModelDetail modelDetail;
   private String wysiwygText;
   private List<AttachmentDetail> listAttDetail;
   private final String urlPub;
   private final int nbThemes;
 
-  public HtmlExportPublicationGenerator(PublicationType publicationType, ModelDetail modelDetail,
-      String wysiwygText, String urlPub, int nbThemes) {
+  public HtmlExportPublicationGenerator(PublicationType publicationType, String wysiwygText,
+      String urlPub, int nbThemes) {
     this.publicationDetail = publicationType.getPublicationDetail();
     if (publicationType.getPublicationContentType() != null) {
-      this.dbModelContent = publicationType.getPublicationContentType().getDBModelContentType();
       this.xmlModelContent = publicationType.getPublicationContentType().getXMLModelContentType();
     }
     this.nbThemes = nbThemes + 2;
     if (publicationType.getAttachmentsType() != null) {
       this.listAttDetail = publicationType.getAttachmentsType().getListAttachmentDetail();
     }
-    this.modelDetail = modelDetail;
     this.wysiwygText = wysiwygText;
     this.urlPub = StringEscapeUtils.escapeHtml(urlPub).replaceAll("#", "%23");
   }
@@ -162,50 +153,6 @@ public class HtmlExportPublicationGenerator {
     return xhtmlcontainer.toString();
   }
 
-  /**
-   * @return
-   */
-  private String toHtmlInfoModel() {
-    StringBuilder sb = new StringBuilder();
-    String toParse = modelDetail.getHtmlDisplayer();
-
-    List<String> textList = dbModelContent.getListTextParts();
-    List<String> imageList = dbModelContent.getListImageParts();
-
-    Iterator<String> textIterator = textList.iterator();
-    Iterator<String> imageIterator = imageList.iterator();
-
-    int posit = toParse.indexOf("%WA");
-    while (posit != -1) {
-      if (posit > 0) {
-        sb.append(toParse.substring(0, posit));
-        toParse = toParse.substring(posit);
-      }
-      if (toParse.startsWith("%WATXTDATA%")) {
-        if (textIterator.hasNext()) {
-          String textPart = textIterator.next();
-          sb.append(HtmlExportGenerator.encode(textPart));
-        }
-        toParse = toParse.substring(11);
-      } else if (toParse.startsWith("%WAIMGDATA%")) {
-        if (imageIterator.hasNext()) {
-          String imagePath = imageIterator.next();
-          String imageName = imagePath.substring(imagePath.lastIndexOf(File.separatorChar) + 1,
-              imagePath.length());
-          if (FileUtil.isImage(imageName)) {
-            sb.append("<img border='0' src='").append(imageName).append("' />");
-          } else {
-            sb.append("<b>FileNotImage</b>");
-          }
-        }
-        toParse = toParse.substring(11);
-      }
-      posit = toParse.indexOf("%WA");
-    }
-    sb.append(toParse);
-    return sb.toString();
-  }
-
   public String xmlFormToHTML() {
     PublicationTemplateImpl template;
     try {
@@ -253,9 +200,7 @@ public class HtmlExportPublicationGenerator {
     p description = new p();
     description.addElement(htmlPubDescription);
     content.addElement(description);
-    if (dbModelContent != null) {
-      content.addElement(toHtmlInfoModel());
-    } else if (wysiwygText != null) {
+    if (wysiwygText != null) {
       content.addElement(wysiwygText);
     } else if (xmlModelContent != null) {
       content.addElement(xmlFormToHTML());
