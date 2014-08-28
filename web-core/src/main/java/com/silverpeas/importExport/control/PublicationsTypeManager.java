@@ -37,7 +37,6 @@ import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
-import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
@@ -57,7 +56,6 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.io.FileUtils;
@@ -179,21 +177,10 @@ public class PublicationsTypeManager {
 
       // Copie des fichiers de contenu s'il en existe
       PublicationContentType pubContent = publicationType.getPublicationContentType();
-      ModelDetail modelDetail = null;
       if (pubContent != null) {
-        DBModelContentType dbModelContent = pubContent.getDBModelContentType();
         WysiwygContentType wysiwygContent = pubContent.getWysiwygContentType();
         XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
-        if (dbModelContent != null) {
-          List<String> listImageParts = dbModelContent.getListImageParts();
-          if (listImageParts != null && !listImageParts.isEmpty()) {
-            listImageParts = gedIE
-                .copyDBmodelImagePartsForExport(exportPublicationPath, listImageParts,
-                    exportPublicationRelativePath);
-            dbModelContent.setListImageParts(listImageParts);
-          }
-          modelDetail = gedIE.getModelDetail(dbModelContent.getId());
-        } else if (wysiwygContent != null) {
+        if (wysiwygContent != null) {
           wysiwygText = exportWysiwygContent(pubId, publicationDetail.getInstanceId(), gedIE,
               exportPublicationRelativePath, exportPublicationPath, wysiwygContent, publicationType.
               getPublicationDetail().getLanguage());
@@ -210,7 +197,7 @@ public class PublicationsTypeManager {
         nbThemes = getNbThemes(gedIE, publicationType, rootPK);
       }
       if (!writePublicationHtml(exportReport, wysiwygText, pubId, publicationType,
-          exportPublicationRelativePath, exportPublicationPath, modelDetail, nbThemes)) {
+          exportPublicationRelativePath, exportPublicationPath, nbThemes)) {
         return null;
       }
       wysiwygText = null;
@@ -244,10 +231,9 @@ public class PublicationsTypeManager {
 
   boolean writePublicationHtml(ExportReport exportReport, String wysiwygText, String pubId,
       PublicationType publicationType, String exportPublicationRelativePath,
-      String exportPublicationPath, ModelDetail modelDetail, int nbThemes) {
+      String exportPublicationPath, int nbThemes) {
     String htmlNameIndex = "index.html";
-    HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-        modelDetail, wysiwygText,
+    HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType, wysiwygText,
         exportPublicationRelativePath + separator + htmlNameIndex, nbThemes);
     exportReport.addHtmlIndex(pubId, s);
     File fileHTML = new File(exportPublicationPath + separator + htmlNameIndex);

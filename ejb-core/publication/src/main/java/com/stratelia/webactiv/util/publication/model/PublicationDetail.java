@@ -75,8 +75,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
 /**
  * This object contains the description of a publication
@@ -112,7 +110,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   private String iconUrl;
   private int explicitRank = -1;
   // added for the taglib
-  private InfoDetail infoDetail = null;
   private List<XMLField> xmlFields = null;
   // added for indexation
   private int indexOperation = IndexManager.ADD;
@@ -930,50 +927,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
           SilverpeasRuntimeException.ERROR,
           "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
     }
-  }
-
-  public InfoDetail getInfoDetail() {
-    if (infoDetail == null) {
-      try {
-        infoDetail = getPublicationBm().getInfoDetail(getPK());
-      } catch (Exception e) {
-        throw new PublicationRuntimeException("PublicationDetail.getInfoDetail()",
-            SilverpeasRuntimeException.ERROR, "publication.GETTING_CONTENT_FAILED", e);
-      }
-    }
-    return infoDetail;
-  }
-
-  public String getModelContent() {
-    StringBuilder buffer = new StringBuilder();
-    InfoDetail currentInfoSetail = getInfoDetail();
-    if (currentInfoSetail != null) {
-      Collection<InfoTextDetail> allInfoText = currentInfoSetail.getInfoTextList();
-      if (allInfoText != null) {
-        for (InfoTextDetail textDetail : allInfoText) {
-          buffer.append(textDetail.getContent());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  public String getModelContent(int fieldIndex) {
-    SilverTrace.info("publication", "PublicationDetail.getModelContent()",
-        "root.MSG_GEN_ENTER_METHOD", "fieldIndex = " + fieldIndex);
-    String fieldContent = "";
-    InfoDetail currentInfoDetail = getInfoDetail();
-    ArrayList<InfoTextDetail> allInfoText = null;
-    if (currentInfoDetail != null) {
-      allInfoText = (ArrayList<InfoTextDetail>) currentInfoDetail.getInfoTextList();
-    }
-
-    if (allInfoText != null) {
-      if (fieldIndex < allInfoText.size()) {
-        fieldContent = (allInfoText.get(fieldIndex)).getContent();
-      }
-    }
-    return fieldContent;
   }
 
   public PublicationBm getPublicationBm() {

@@ -28,12 +28,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 
 /**
- * This object contains the description of a complete publication (publication parameter, model
- * detail, info)
+ * This object contains the description of a complete publication (publication parameter, info)
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -42,8 +39,6 @@ public class CompletePublication implements Serializable {
   private static final long serialVersionUID = 7644813195325660580L;
 
   private PublicationDetail pubDetail;
-  private ModelDetail modelDetail;
-  private InfoDetail infoDetail;
 
   /**
    * The publications linked to the current publication
@@ -67,30 +62,11 @@ public class CompletePublication implements Serializable {
    * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    */
-  public CompletePublication(PublicationDetail pubDetail, ModelDetail modelDetail,
-      InfoDetail infoDetail, List<ForeignPK> linkList, List<ForeignPK> reverseLinkList) {
+  public CompletePublication(PublicationDetail pubDetail, List<ForeignPK> linkList,
+      List<ForeignPK> reverseLinkList) {
     this.pubDetail = pubDetail;
-    this.modelDetail = modelDetail;
-    this.infoDetail = infoDetail;
     this.linkList = linkList;
     this.reverseLinkList = reverseLinkList;
-  }
-
-  /**
-   * Create a new CompletePublication
-   * @param pubDetail
-   * @param modelDetail
-   * @param infoDetail
-   * @see com.stratelia.webactiv.util.publication.model.PulicationDetail
-   * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
-   * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
-   * @since 1.0
-   */
-  public CompletePublication(PublicationDetail pubDetail,
-      ModelDetail modelDetail, InfoDetail infoDetail) {
-    this.pubDetail = pubDetail;
-    this.modelDetail = modelDetail;
-    this.infoDetail = infoDetail;
   }
 
   /**
@@ -101,26 +77,6 @@ public class CompletePublication implements Serializable {
    */
   public PublicationDetail getPublicationDetail() {
     return pubDetail;
-  }
-
-  /**
-   * Get the model detail associated to the publication
-   * @return a ModelDetail
-   * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
-   * @since 1.0
-   */
-  public ModelDetail getModelDetail() {
-    return modelDetail;
-  }
-
-  /**
-   * Get the info detail associated to the publication
-   * @return a InfoDetail
-   * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
-   * @since 1.0
-   */
-  public InfoDetail getInfoDetail() {
-    return infoDetail;
   }
 
   /**

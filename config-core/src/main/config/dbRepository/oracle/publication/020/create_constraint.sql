@@ -1,38 +1,3 @@
-ALTER TABLE SB_Publication_Info ADD 
-	 CONSTRAINT PK_Publication_Info PRIMARY KEY   
-	(
-		infoId
-	)   
-;
-
-ALTER TABLE SB_Publication_InfoAttachment  ADD 
-	 CONSTRAINT PK_Publication_InfoAttachment PRIMARY KEY   
-	(
-		infoAttachmentId
-	)   
-;
-
-ALTER TABLE SB_Publication_InfoImage  ADD 
-	 CONSTRAINT PK_Publication_InfoImage PRIMARY KEY   
-	(
-		infoImageId
-	)   
-;
-
-ALTER TABLE SB_Publication_InfoLink  ADD 
-	 CONSTRAINT PK_Publication_InfoLink PRIMARY KEY   
-	(
-		infoLinkId
-	)   
-;
-
-ALTER TABLE SB_Publication_InfoText  ADD 
-	 CONSTRAINT PK_Publication_InfoText PRIMARY KEY   
-	(
-		infoTextId
-	)   
-;
-
 ALTER TABLE SB_Publication_Publi  ADD 
 	 CONSTRAINT PK_Publication_Publi PRIMARY KEY   
 	(
