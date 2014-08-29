@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.pdcPeas.model;
 
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -47,7 +48,6 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private boolean exportable = false;
   private boolean viewable = false;
   private boolean previewable = false;
-  private String attachmentId = null;
   private String attachmentFilename = null;
   private boolean versioned = false;
   private boolean selected = false;
@@ -249,12 +249,23 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     return previewable;
   }
 
-  public void setAttachmentId(String attachmentId) {
-    this.attachmentId = attachmentId;
-  }
-
   public String getAttachmentId() {
-    return attachmentId;
+    String id = getIndexEntry().getObjectType().substring(10); // object type is Attachment1245 or
+    // Attachment1245_en
+    if (id != null && id.indexOf('_') != -1) {
+      id = id.substring(0, id.indexOf('_'));
+    }
+    return id;
+  }
+  
+  public String getAttachmentLanguage() {
+    String id = getIndexEntry().getObjectType().substring(10); // object type is Attachment1245 or
+    // Attachment1245_en
+    String language = I18NHelper.defaultLanguage;
+    if (id != null && id.indexOf('_') != -1) {
+      language = id.substring(id.indexOf('_') + 1, id.length());
+    }
+    return language;
   }
   
   public String getAttachmentFilename() {
@@ -270,7 +281,8 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   }
 
   public boolean isAttachment() {
-    return StringUtil.isDefined(getAttachmentId());
+    return getIndexEntry().getObjectType().startsWith("Attachment") ||
+        getIndexEntry().getObjectType().startsWith("Versioning");
   }
 
   public boolean isUserAllowedToDownloadFile() {
