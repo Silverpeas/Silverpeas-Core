@@ -23,11 +23,13 @@
  */
 package org.silverpeas.attachment;
 
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Clean the JCR repository for all documents concerning the specified compoentId.
@@ -48,6 +50,9 @@ public class SimpleDocumentInstanciator {
       session = BasicDaoFactory.getSystemSession();
       session.getNode('/' + componentId).remove();
       session.save();
+    } catch(PathNotFoundException pnfe) {
+      SilverTrace.warn("attachment", "SimpleDocumentInstanciator.delete",
+          "root.DELETING_DATA_DIRECTORY_FAILED", "JCR Path '/" + componentId + "' does not exist");
     } catch (RepositoryException ex) {
       throw new InstanciationException(ex);
     } finally {

@@ -51,6 +51,7 @@ import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -63,6 +64,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
+import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.util.ListSlice;
@@ -1213,10 +1215,17 @@ public final class Admin {
    *
    * @param componentInst
    */
-  public void deleteComponentIndex(ComponentInst componentInst) {
-    String componentId = componentInst.getName().concat(componentInst.getId());
+  private void deleteComponentIndex(String componentId) {
     FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
+  }
+  
+  private void deleteComponentData(String componentId) {
+    // deleting all files associated to this component 
+    FileRepositoryManager.deleteAbsolutePath(null, componentId, "");
+    
+    // deleting index files
+    IndexFileManager.deleteComponentIndexFolder(componentId);
   }
 
   public String addComponentInst(String sUserId, ComponentInst componentInst)
@@ -1273,19 +1282,7 @@ public final class Admin {
       instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
           connectionProd);
 
-      // !!! Hard coded workaround !!!!!!!
-      if ("sources".equals(componentName) || "documentation".equals(componentName) || "infoTracker".
-          equals(componentName)) {
-        // Create the manager objects
-        ContainerManager containerManager = new ContainerManager();
-        ContentManager contentManager = new ContentManager();
-
-        // Call the register functions
-        containerManager.registerNewContainerInstance(connectionProd,
-            componentId, "containerPDC", "fileBoxPlus");
-        contentManager.registerNewContentInstance(connectionProd, componentId,
-            "containerPDC", "fileBoxPlus");
-      } else if (isContentManagedComponent(componentName)) {
+      if (isContentManagedComponent(componentName)) {
         // Create the manager objects
         ContainerManager containerManager = new ContainerManager();
         ContentManager contentManager = new ContentManager();
@@ -1425,19 +1422,7 @@ public final class Admin {
         // Delete the component
         componentManager.deleteComponentInst(componentInst, domainDriverManager);
 
-        // !!! Hard coded workaround !!!!!!!
-        if ("sources".equals(componentName) || "documentation".equals(componentName)
-            || "infoTracker".equals(componentName)) {
-          // Create the manager objects
-          ContainerManager containerManager = new ContainerManager();
-          ContentManager contentManager = new ContentManager();
-
-          // Call the unregister functions
-          containerManager.unregisterNewContainerInstance(connectionProd, componentId,
-              "containerPDC", "fileBoxPlus");
-          contentManager.unregisterNewContentInstance(connectionProd, componentId, "containerPDC",
-              "fileBoxPlus");
-        } else if (isContentManagedComponent(componentName)) {
+        if (isContentManagedComponent(componentName)) {
           // Create the manager objects
           ContainerManager containerManager = new ContainerManager();
           ContentManager contentManager = new ContentManager();
@@ -1458,8 +1443,10 @@ public final class Admin {
       cache.opRemoveComponent(componentInst);
       TreeCache.removeComponent(getDriverSpaceId(sFatherClientId), componentId);
 
-      // desindexation du composant
-      deleteComponentIndex(componentInst);
+      // unindex component
+      deleteComponentIndex(componentId);
+      
+      deleteComponentData(componentId);
 
       return componentId;
     } catch (Exception e) {
