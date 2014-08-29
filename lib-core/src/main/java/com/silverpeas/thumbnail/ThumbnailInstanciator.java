@@ -70,7 +70,7 @@ public class ThumbnailInstanciator extends SQLRequest implements ComponentsInsta
     }
 
     // 2 - delete directory where files are stored
-    String[] ctx = { "thumbnail" };
+    String[] ctx = { "images" };
     String path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
     try {
       FileFolderManager.deleteFolder(path);

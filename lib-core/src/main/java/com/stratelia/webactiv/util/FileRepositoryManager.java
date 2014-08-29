@@ -26,7 +26,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryUnit;
 
@@ -208,22 +207,12 @@ public class FileRepositoryManager {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
-  public static void createAbsoluteIndexPath(String particularSpace, String componentId) {
-    FileFolderManager.createFolder(IndexFileManager.getAbsoluteIndexPath(particularSpace,
-        componentId));
-  }
-
   public static void deleteAbsolutePath(String sSpaceId, String sComponentId, String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId) + sDirectoryName);
   }
 
   public static void deleteTempPath(String sSpaceId, String sComponentId, String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
-  }
-
-  public static void deleteAbsoluteIndexPath(String particularSpace, String sComponentId) {
-    FileFolderManager.deleteFolder(IndexFileManager.getAbsoluteIndexPath(particularSpace,
-        sComponentId));
   }
 
   public static String getFileIcon(boolean small, String extension) {
