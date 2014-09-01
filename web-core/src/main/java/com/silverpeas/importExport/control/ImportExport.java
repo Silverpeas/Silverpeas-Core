@@ -50,7 +50,6 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -69,6 +68,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -77,12 +77,14 @@ import java.io.Writer;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
@@ -99,7 +101,6 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 import static java.io.File.separator;
-
 import static org.silverpeas.util.Charsets.UTF_8;
 
 /**
@@ -107,7 +108,7 @@ import static org.silverpeas.util.Charsets.UTF_8;
  *
  * @author sDevolder.
  */
-public class ImportExport {
+public class ImportExport extends AbstractExportProcess {
 
   private static final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.importExport.settings.mapping", "");
@@ -1094,23 +1095,6 @@ public class ImportExport {
     return exportReport;
   }
 
-  /**
-   * Méthode générant le nom de l'export nommé: "exportAAAA-MM-JJ-hh'H'mm'm'ss's'_userId"
-   *
-   * @param userDetail - UserDetail de l'utilisateur
-   * @param name : nom du fichier final
-   * @return - la chaine représentant le nom généré du répertoire d'exportation
-   */
-  String generateExportDirName(UserDetail userDetail, String name) {
-    StringBuilder sb = new StringBuilder(name);
-    Date date = new Date();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
-    String dateFormatee = dateFormat.format(date);
-    sb.append(dateFormatee);
-    sb.append('_').append(userDetail.getId());
-    return sb.toString();
-  }
-
   public void writeImportToLog(ImportReport importReport, ResourcesWrapper resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
@@ -1194,36 +1178,5 @@ public class ImportExport {
     // Création du zip
     createZipFile(fileExportDir, exportReport);
     return exportReport;
-  }
-
-  private File createExportDir(UserDetail userDetail) throws ImportExportException {
-    String thisExportDir = generateExportDirName(userDetail, "export");
-    String tempDir = FileRepositoryManager.getTemporaryPath();
-    File fileExportDir = new File(tempDir + thisExportDir);
-    if (!fileExportDir.exists()) {
-      try {
-        FileFolderManager.createFolder(fileExportDir);
-      } catch (UtilException ex) {
-        throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
-      }
-    }
-    return fileExportDir;
-  }
-
-  private void createZipFile(File fileExportDir, ExportReport exportReport)
-      throws ImportExportException {
-    try {
-      String zipFileName = fileExportDir.getName() + ".zip";
-      String tempDir = FileRepositoryManager.getTemporaryPath();
-      long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-          + zipFileName);
-      exportReport.setZipFileName(zipFileName);
-      exportReport.setZipFileSize(zipFileSize);
-      exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
-
-      exportReport.setDateFin(new Date());
-    } catch (IOException ex) {
-      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-    }
   }
 }
