@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAIL
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
@@ -50,6 +51,7 @@ public class DeleteSendedNotification implements SILVERMAILRequestHandler {
    * @param componentSC
    * @param request
    * @return
+   * @throws NotificationManagerException 
    * @throws SILVERMAILException
    * @see
    */
@@ -61,8 +63,10 @@ public class DeleteSendedNotification implements SILVERMAILRequestHandler {
       silvermailScc.deleteSendedNotif(notifId);
       List<SendedNotificationDetail> sendedNotifs = silvermailScc.getUserMessageList();
       request.setAttribute("SendedNotifs", sendedNotifs);
-    } catch (NotificationManagerException e) {
-
+    } catch(NotificationManagerException e) {
+      throw new SILVERMAILException(
+          "DeleteSendedNotification.handleRequest()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return "/SILVERMAIL/jsp/sendedUserNotifications.jsp";
   }
