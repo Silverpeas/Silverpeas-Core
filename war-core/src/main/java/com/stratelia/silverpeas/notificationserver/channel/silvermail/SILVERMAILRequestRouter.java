@@ -105,9 +105,9 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
       // Return the URL of the view the RequestHandler instance
       // chooses after doing the work of processing the request
       destination = requestHandler.handleRequest(componentSC, request);
-    } catch (SILVERMAILException e) {
-      SilverTrace.error("silvermail",
-          "SILVERMAILRequestRouter.getDestination()", "root.EX_IGNORED", "", e);
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      destination = "/admin/jsp/errorpageMain.jsp";
     }
 
     return destination;

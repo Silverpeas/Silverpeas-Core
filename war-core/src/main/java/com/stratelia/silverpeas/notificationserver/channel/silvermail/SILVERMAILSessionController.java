@@ -127,7 +127,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       }
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
-          "NotificationSender.getUserMessageList()",
+          "SILVERMAILSessionController.getUserMessageList()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return sendedNotifByUser;
@@ -149,7 +149,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       sendedNotification.setSource(getSource(sendedNotification.getComponentId()));
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
-          "NotificationSender.getUserMessageList()",
+          "SILVERMAILSessionController.getSendedNotification()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return sendedNotification;
@@ -176,13 +176,31 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     return source;
   }
 
+  /**
+   * Delete the sended message notification
+   *
+   * @param notifId
+   * @throws NotificationManagerException 
+   */
   public void deleteSendedNotif(String notifId) throws NotificationManagerException {
+    int notificationId = -1;
+    SendedNotificationDetail notifDetail = null;
     try {
-      getNotificationInterface().deleteNotif(Integer.parseInt(notifId));
+      notificationId = Integer.parseInt(notifId);
+      notifDetail = getNotificationInterface().getNotification(notificationId);
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
-          "NotificationSender.deleteSendedNotif()",
+          "SILVERMAILSessionController.deleteSendedNotif()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    if(notifDetail != null && notificationId != -1) {
+      //check rights : check that the current user has the rights to delete the notification
+      if(Integer.parseInt(getUserId()) == notifDetail.getUserId()) {
+        getNotificationInterface().deleteNotif(notificationId); 
+      } else {
+        throw new NotificationManagerException("SILVERMAILSessionController.deleteSendedNotif()",
+            SilverpeasRuntimeException.ERROR, "silvermail.EX_NORIGHTS_DELETE_MESSAGE", notifId);
+      }
     }
   }
 
@@ -191,7 +209,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       getNotificationInterface().deleteNotifByUser(getUserId());
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
-          "NotificationSender.deleteAllSendedNotif()",
+          "SILVERMAILSessionController.deleteAllSendedNotif()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
@@ -203,7 +221,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       notificationInterface = new SendedNotificationInterfaceImpl();
     } catch (Exception e) {
       throw new NotificationManagerException(
-          "NotificationSender.getNotificationInterface()",
+          "SILVERMAILSessionController.getNotificationInterface()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return notificationInterface;
@@ -245,5 +263,33 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
     return getMessage(currentMessageId);
   }
-
+  
+  /**
+   * Delete the message notification
+   *
+   * @param notifId
+   * @throws SILVERMAILException 
+   */
+  public void deleteMessage(String notifId) throws SILVERMAILException {
+    long notificationId = -1;
+    SILVERMAILMessage message = null;
+    try {
+      notificationId = Long.parseLong(notifId);
+      message = SILVERMAILPersistence.getMessage(notificationId);
+    } catch (SILVERMAILException e) {
+      throw new SILVERMAILException(
+          "SILVERMAILSessionController.deleteMessage()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    
+    if(message != null && notificationId != -1) {
+      //check rights : check that the current user has the rights to delete the notification
+      if(Long.parseLong(getUserId()) == message.getUserId()) {
+        SILVERMAILPersistence.deleteMessage(notificationId); 
+      } else {
+        throw new SILVERMAILException("SILVERMAILSessionController.deleteMessage()",
+          SilverpeasRuntimeException.ERROR, "silvermail.EX_NORIGHTS_DELETE_MESSAGE", notifId);
+      }
+    }
+  }
 }
