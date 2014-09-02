@@ -53,8 +53,8 @@ public class DeleteAllMessages implements SILVERMAILRequestHandler {
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
     try {
-      SILVERMAILPersistence.deleteAllMessages(Integer.parseInt(componentSC
-          .getUserId()), request.getParameter("folder"));
+      SILVERMAILPersistence.deleteAllMessages(componentSC
+          .getUserId(), request.getParameter("folder"));
     } catch (NumberFormatException e) {
       SilverTrace.error("silvermail", "DeleteAllMessages.handleRequest()",
           "root.EX_IGNORED", "", e);

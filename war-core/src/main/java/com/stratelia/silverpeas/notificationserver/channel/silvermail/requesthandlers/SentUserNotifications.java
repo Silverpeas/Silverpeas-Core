@@ -24,7 +24,7 @@
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail;
+import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author
  * @version %I%, %G%
  */
-public class SendedUserNotifications implements SILVERMAILRequestHandler {
+public class SentUserNotifications implements SILVERMAILRequestHandler {
 
   /**
    * Method declaration
@@ -56,14 +56,14 @@ public class SendedUserNotifications implements SILVERMAILRequestHandler {
 
     // passer en paramètre la liste dans la request
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-    List<SendedNotificationDetail> sendedNotifs = new ArrayList<SendedNotificationDetail>();
+    List<SentNotificationDetail> sentNotifs = new ArrayList<SentNotificationDetail>();
     try {
-      sendedNotifs = silvermailScc.getUserMessageList();
+      sentNotifs = silvermailScc.getUserMessageList();
     } catch (NotificationManagerException e) {
 
     }
-    request.setAttribute("SendedNotifs", sendedNotifs);
-    return "/SILVERMAIL/jsp/sendedUserNotifications.jsp";
+    request.setAttribute("SentNotifs", sentNotifs);
+    return "/SILVERMAIL/jsp/sentUserNotifications.jsp";
   }
 
 }
