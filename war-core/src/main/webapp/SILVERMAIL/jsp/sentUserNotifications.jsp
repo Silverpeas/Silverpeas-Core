@@ -37,12 +37,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ include file="tabManager.jsp.inc" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="java.util.Date"%>
-<%@page import="com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail"%>
+<%@page import="com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-   List<SendedNotificationDetail> sentNotifs = (List<SendedNotificationDetail>) request.getAttribute("SendedNotifs");
+   List<SentNotificationDetail> sentNotifs = (List<SentNotificationDetail>) request.getAttribute("SentNotifs");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,20 +53,20 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <script type="text/javascript" src="<%=graphicPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function readMessage(id){
-	SP_openWindow("ReadSendedNotification.jsp?NotifId=" + id,"ReadSendedNotification","600","380","scrollable=yes,scrollbars=yes");
+	SP_openWindow("ReadSentNotification.jsp?NotifId=" + id,"ReadSentNotification","600","380","scrollable=yes,scrollbars=yes");
 }
 
 function deleteMessage(id, skipConfirmation) {
     if(skipConfirmation || window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
       var $form = jQuery('#genericForm');
       jQuery('#NotifId', $form).val(id);
-      $form.attr('action', "DeleteSendedNotification.jsp").submit();
+      $form.attr('action', "DeleteSentNotification.jsp").submit();
     }
 }
 
 function deleteAllMessages() {
-    if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteAllSendedNotif")%>")){
-      jQuery('#genericForm').attr('action', "DeleteAllSendedNotifications.jsp").submit();
+    if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteAllSentNotif")%>")){
+      jQuery('#genericForm').attr('action', "DeleteAllSentNotifications.jsp").submit();
     }
 }
 </script>
@@ -76,7 +76,7 @@ function deleteAllMessages() {
   Window window = gef.getWindow();
 
   OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperation(deleteAllNotif, silvermailScc.getString("DeleteAllSendedNotif"), "javascript:deleteAllMessages()");
+  operationPane.addOperation(deleteAllNotif, silvermailScc.getString("DeleteAllSentNotif"), "javascript:deleteAllMessages()");
 
   BrowseBar browseBar = window.getBrowseBar();
   browseBar.setComponentName(silvermailScc.getString("silverMail"));
@@ -85,7 +85,7 @@ function deleteAllMessages() {
   // Barre d'onglet
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(silvermailScc.getString("LireNotification"), "Main", false);
-  tabbedPane.addTab(silvermailScc.getString("SendedUserNotifications"), "SendedUserNotifications", true);
+  tabbedPane.addTab(silvermailScc.getString("SentUserNotifications"), "SentUserNotifications", true);
   tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "ParametrizeNotification", false);
 
   out.println(window.printBefore());
@@ -96,7 +96,7 @@ function deleteAllMessages() {
   out.println(frame.printBefore());
 
   // Arraypane
-  ArrayPane list = gef.getArrayPane( "silvermail", "SendedUserNotifications.jsp", request,session );
+  ArrayPane list = gef.getArrayPane( "silvermail", "SentUserNotifications.jsp", request,session );
   ArrayColumn col = list.addArrayColumn( silvermailScc.getString("date") );
   col.setSortable(true);
   col = list.addArrayColumn( silvermailScc.getString("source") );
@@ -106,7 +106,7 @@ function deleteAllMessages() {
   col = list.addArrayColumn( silvermailScc.getString("operation") );
   col.setSortable(false);
 
-  for (SendedNotificationDetail message : sentNotifs) {			
+  for (SentNotificationDetail message : sentNotifs) {			
     String link = "<a href=\"javascript:onclick=readMessage(" + message.getNotifId() + ");\">";
     ArrayLine line = list.addArrayLine();
 	Date notifDate = message.getNotifDate();

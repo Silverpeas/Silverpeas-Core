@@ -35,17 +35,17 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
  * Interface declaration
  * @author
  */
-public interface SendedNotificationInterface {
+public interface SentNotificationInterface {
 
   public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
       throws NotificationManagerException;
 
-  public List<SendedNotificationDetail> getAllNotifByUser(String userId)
+  public List<SentNotificationDetail> getAllNotifByUser(String userId)
       throws NotificationManagerException;
 
-  public SendedNotificationDetail getNotification(int notifId) throws NotificationManagerException;
+  public SentNotificationDetail getNotification(int notifId) throws NotificationManagerException;
 
-  public void deleteNotif(int notifId) throws NotificationManagerException;
+  public void deleteNotif(int notifId, String userId) throws NotificationManagerException;
 
   public void deleteNotifByUser(String userId) throws NotificationManagerException;
 }

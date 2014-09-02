@@ -39,13 +39,13 @@
 <c:set var="notifAddresses" value="${requestScope.notificationAddresses}"/>
 <c:url value="/util/javaScript/animation.js" var="animationJS"/>
 <c:url value="/RSILVERMAIL/jsp/Main" var="silvermailURL"/>
-<c:url value="/RSILVERMAIL/jsp/SendedUserNotifications" var="sendedNotificationsURL"/>
+<c:url value="/RSILVERMAIL/jsp/SentUserNotifications" var="sentNotificationsURL"/>
 <fmt:message key="MesNotifications" var="myNotifications"/>
 <fmt:message key="ParametrerNotification" var="parametrize"/>
 <fmt:message key="operationPane_addadress" var="addAddress"/>
 <fmt:message key="operationPane_paramnotif" var="op_parametrizeNotif"/>
 <fmt:message key="LireNotification" var="viewNotif"/>
-<fmt:message key="SendedUserNotifications" var="sendedNotif"/>
+<fmt:message key="SentUserNotifications" var="sentNotif"/>
 <fmt:message key="ParametrerNotification" var="parametrizeNotif"/>
 <fmt:message key="arrayPane_Default" var="defaultColumn"/>
 <fmt:message key="arrayPane_Nom" var="nameColumn"/>
@@ -141,7 +141,7 @@ function onChangeFrequency() {
 <view:window>
   <view:tabs>
     <view:tab label="${viewNotif}" action="${silvermailURL}" selected="false"/>
-    <view:tab label="${sendedNotif}" action="${sendedNotificationsURL}" selected="false"/>
+    <view:tab label="${sentNotif}" action="${sentNotificationsURL}" selected="false"/>
     <view:tab label="${parametrizeNotif}" action="ParametrizeNotification" selected="true"/>
   </view:tabs>
   

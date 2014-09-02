@@ -27,48 +27,43 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail;
+import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
  * @author
  * @version %I%, %G%
  */
-public class DeleteSendedNotification implements SILVERMAILRequestHandler {
+public class ReadSentNotification implements SILVERMAILRequestHandler {
 
   /**
    * Method declaration
    * @param componentSC
    * @param request
    * @return
-   * @throws NotificationManagerException 
    * @throws SILVERMAILException
    * @see
    */
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
+
+    SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
+    SentNotificationDetail sentNotification = null;
+    String notifId = request.getParameter("NotifId");
     try {
-      SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-      String notifId = (String) request.getParameter("NotifId");
-      silvermailScc.deleteSendedNotif(notifId);
-      List<SendedNotificationDetail> sendedNotifs = silvermailScc.getUserMessageList();
-      request.setAttribute("SendedNotifs", sendedNotifs);
-    } catch(NotificationManagerException e) {
-      throw new SILVERMAILException(
-          "DeleteSendedNotification.handleRequest()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      sentNotification = silvermailScc.getSentNotification(notifId);
+    } catch (NotificationManagerException e) {
+
     }
-    return "/SILVERMAIL/jsp/sendedUserNotifications.jsp";
+    request.setAttribute("SentNotification", sentNotification);
+    return "/SILVERMAIL/jsp/readSentNotification.jsp";
   }
 
 }

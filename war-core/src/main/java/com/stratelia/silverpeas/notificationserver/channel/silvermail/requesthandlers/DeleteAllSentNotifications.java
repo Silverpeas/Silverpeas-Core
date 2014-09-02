@@ -27,10 +27,12 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail;
+import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
@@ -41,7 +43,7 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
  * @author
  * @version %I%, %G%
  */
-public class ReadSendedNotification implements SILVERMAILRequestHandler {
+public class DeleteAllSentNotifications implements SILVERMAILRequestHandler {
 
   /**
    * Method declaration
@@ -53,17 +55,15 @@ public class ReadSendedNotification implements SILVERMAILRequestHandler {
    */
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
-
-    SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-    SendedNotificationDetail sendedNotification = null;
-    String notifId = request.getParameter("NotifId");
     try {
-      sendedNotification = silvermailScc.getSendedNotification(notifId);
+      SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
+      silvermailScc.deleteAllSentNotif();
+      List<SentNotificationDetail> sentNotifs = silvermailScc.getUserMessageList();
+      request.setAttribute("SentNotifs", sentNotifs);
     } catch (NotificationManagerException e) {
 
     }
-    request.setAttribute("SendedNotification", sendedNotification);
-    return "/SILVERMAIL/jsp/readSendedNotification.jsp";
+    return "/SILVERMAIL/jsp/sentUserNotifications.jsp";
   }
 
 }

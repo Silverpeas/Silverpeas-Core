@@ -32,7 +32,7 @@ import java.util.List;
  * Class declaration
  * @author
  */
-public class SendedNotificationDetail implements Serializable {
+public class SentNotificationDetail implements Serializable {
 
   /**
    * 
@@ -50,10 +50,10 @@ public class SendedNotificationDetail implements Serializable {
   private String body;
   private List<String> users;
 
-  public SendedNotificationDetail() {
+  public SentNotificationDetail() {
   }
 
-  public SendedNotificationDetail(int userId, int messageType, Date notifDate, String title,
+  public SentNotificationDetail(int userId, int messageType, Date notifDate, String title,
       String source, String link, String sessionId, String componentId, String body) {
     this.userId = userId;
     this.messageType = messageType;
