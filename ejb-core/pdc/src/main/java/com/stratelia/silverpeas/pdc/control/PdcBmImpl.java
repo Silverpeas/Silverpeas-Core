@@ -734,7 +734,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     } catch (Exception e) {
       rollbackTransaction(con);
       throw new PdcException("PdcBmImpl.insertMotherValue",
-          SilverpeasException.ERROR, "Pdc.Pdc.CANNOT_UPDATE_POSTION", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSTION", e);
     } finally {
       DBUtil.close(con);
     }

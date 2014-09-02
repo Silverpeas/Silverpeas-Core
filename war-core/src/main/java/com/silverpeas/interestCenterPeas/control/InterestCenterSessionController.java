@@ -104,7 +104,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
     for (String id : iDs) {
       pkToRemove.add(Integer.valueOf(id));
     }
-    icEjb.removeICByPK(pkToRemove);
+    icEjb.removeICByPK(pkToRemove, getUserId());
   }
 
   /**
