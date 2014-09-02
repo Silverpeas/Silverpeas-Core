@@ -40,9 +40,10 @@ public interface WebConnectionsInterface {
   /**
    * get the connection corresponding to connectionId
    * @param connectionId : String
+   * @param userId : String
    * @return connection : ConnectionDetail
    */
-  public ConnectionDetail getWebConnectionById(String connectionId);
+  public ConnectionDetail getWebConnectionById(String connectionId, String userId);
 
   /**
    * create a new connection
@@ -53,16 +54,18 @@ public interface WebConnectionsInterface {
   /**
    * delete the connection corresponding to connectionId
    * @param connectionId : String
+   * @param userId : String
    */
-  public void deleteWebConnection(String connectionId);
+  public void deleteWebConnection(String connectionId, String userId);
 
   /**
    * update the connection corresponding to connectionId, with login and password
    * @param connectionId : String
    * @param login : String
    * @param password : String
+   * @param userId : String
    */
-  public void updateWebConnection(String connectionId, String login, String password);
+  public void updateWebConnection(String connectionId, String login, String password, String userId);
 
   /**
    * get all connections for the user corresponding to userId
