@@ -66,7 +66,7 @@ public class InterestCenterDAO {
       DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.getICByUserID",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
 
     PreparedStatement prepStmt = null;
@@ -101,7 +101,7 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.getICByPK",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     PreparedStatement prepStmt = null;
     InterestCenter result = null;
@@ -155,8 +155,8 @@ public class InterestCenterDAO {
         ic.setBeforeDate(formatter.parse(beforeDate));
       }
     } catch (ParseException e) {
-      throw new DAOException("InterestCenterDAO.getICByUserID",
-          "InterestCenter.EX_CANNOT_PARSE_DATE", e);
+      throw new DAOException("InterestCenterDAO.getICformRS",
+          "root.EX_CANT_PARSE_DATE", e);
     }
 
     ic.setOwnerID(rs.getInt(9));
@@ -179,11 +179,11 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.createIC",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     if (interestCenter == null) {
       throw new DAOException("InterestCenterDAO.createIC",
-          "InterestCenter.EX_CANNOT_INSERT_NULL_IC");
+          "Pdc.CANNOT_CREATE_INTEREST_CENTER");
     }
     PreparedStatement prepStmt = null;
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
@@ -220,7 +220,7 @@ public class InterestCenterDAO {
       int result = prepStmt.executeUpdate();
       if (result < 1) {
         throw new DAOException("InterestCenterDAO.createIC",
-            "InterestCenter.WRONG_CREATED_ROW_NUMBER", "ID: " + newId
+            "Pdc.CANNOT_CREATE_INTEREST_CENTER", "ID: " + newId
             + ". DataObject: " + interestCenter);
       }
 
@@ -250,7 +250,7 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.updateIC",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     PreparedStatement prepStmt = null;
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
@@ -278,7 +278,7 @@ public class InterestCenterDAO {
       int result = prepStmt.executeUpdate();
       if (result < 1) {
         throw new DAOException("InterestCenterDAO.updateIC",
-            "InterestCenter.WRONG_UPDATED_ROW_NUMBER", interestCenter
+            "Pdc.CANNOT_UPDATE_INTEREST_CENTER", interestCenter
             .toString());
       }
 
@@ -314,7 +314,7 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.removeICByPK",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     PreparedStatement prepStmt = null;
 
@@ -325,7 +325,7 @@ public class InterestCenterDAO {
       int result = prepStmt.executeUpdate();
       if (result < 1) {
         throw new DAOException("InterestCenterDAO.removeICByPK",
-            "InterestCenter.WRONG_UPDATED_ROW_NUMBER", "ID=" + removeID);
+            "Pdc.CANNOT_DELETE_INTEREST_CENTER", "ID=" + removeID);
       }
 
       removePdcContext(con, removeID);
@@ -347,7 +347,7 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.loadPdcContext",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -389,7 +389,7 @@ public class InterestCenterDAO {
       int icId) throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.appendPdcContext",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     if (pdcContext == null) {
       return null;
@@ -420,7 +420,7 @@ public class InterestCenterDAO {
         int result = prepStmt.executeUpdate();
         if (result < 1) {
           throw new DAOException("InterestCenterDAO.appendPdcContext",
-              "InterestCenter.WRONG_CREATED_ROW_NUMBER", "Criteria: "
+              "Pdc.CANNOT_CREATE_INTEREST_CENTER_PDC", "Criteria: "
               + criteria + ". ID = " + newId + ". For InterestCenter ID = "
               + icId);
         }
@@ -443,11 +443,11 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.updatePdcContext",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     if (icId < 0) {
       throw new DAOException("InterestCenterDAO.updatePdcContext",
-          "InterestCenter.INCORRECT_ID_NUMBER", String.valueOf(icId));
+          "root.EX_INVALID_ARG", String.valueOf(icId));
     }
     removePdcContext(con, icId);
     appendPdcContext(con, list, icId);
@@ -467,7 +467,7 @@ public class InterestCenterDAO {
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.removePdcContext",
-          "InterestCenter.EX_NO_CONNECTION");
+          "root.EX_CONNECTION_OPEN_FAILED");
     }
     PreparedStatement prepStmt = null;
 
@@ -477,7 +477,7 @@ public class InterestCenterDAO {
 
       int result = prepStmt.executeUpdate();
 
-      SilverTrace.debug("InterestCenter", "InterestCenter.removePdcContext",
+      SilverTrace.debug("InterestCenter", "InterestCenterDAO.removePdcContext",
           "Number of deleted rows = ", String.valueOf(result));
 
     } finally {
