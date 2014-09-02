@@ -100,8 +100,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @return the connection : ConnectionDetail
    */
   public ConnectionDetail getConnectionById(String connectionId) {
-    ConnectionDetail connection = null;
-    connection = getWebConnectionsInterface().getWebConnectionById(connectionId);
+    ConnectionDetail connection = getWebConnectionsInterface().getWebConnectionById(connectionId, getUserId());
     if (connection != null) {
       addParamToConnection(connection);
     }
@@ -115,7 +114,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @param password : String
    */
   public void updateConnection(String connectionId, String login, String password) {
-    getWebConnectionsInterface().updateWebConnection(connectionId, login, password);
+    getWebConnectionsInterface().updateWebConnection(connectionId, login, password, getUserId());
   }
 
   /**
@@ -123,7 +122,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @param connectionId : String
    */
   public void deleteConnection(String connectionId) {
-    getWebConnectionsInterface().deleteWebConnection(connectionId);
+    getWebConnectionsInterface().deleteWebConnection(connectionId, getUserId());
   }
 
   /**
