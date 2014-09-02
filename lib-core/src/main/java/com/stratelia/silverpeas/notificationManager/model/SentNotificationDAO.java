@@ -38,12 +38,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.LongText;
 import com.stratelia.webactiv.util.DBUtil;
 
-public class SendedNotificationDAO {
+public class SentNotificationDAO {
 
   private static final String COLUMNS =
       "notifId, userId, messageType, notifDate, title, link, sessionId, componentId, body";
 
-  public static int saveNotifUser(Connection con, SendedNotificationDetail notif) {
+  public static int saveNotifUser(Connection con, SentNotificationDetail notif) {
     // Création de la sauvegarde de la notification envoyée
     PreparedStatement prepStmt = null;
     int notifId = 0;
@@ -81,10 +81,10 @@ public class SendedNotificationDAO {
     return notifId;
   }
 
-  public static List<SendedNotificationDetail> getAllNotifByUser(Connection con, String userId)
+  public static List<SentNotificationDetail> getAllNotifByUser(Connection con, String userId)
       throws SQLException {
     // récupérer toutes les notifications envoyées par un utilisateur
-    List<SendedNotificationDetail> notifs = new ArrayList<SendedNotificationDetail>();
+    List<SentNotificationDetail> notifs = new ArrayList<SentNotificationDetail>();
 
     String query =
         "select " + COLUMNS + " from ST_NotifSended where userId = ? order by notifDate desc";
@@ -95,7 +95,7 @@ public class SendedNotificationDAO {
       prepStmt.setInt(1, Integer.parseInt(userId));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        SendedNotificationDetail notif = recupNotif(rs);
+        SentNotificationDetail notif = recupNotif(rs);
         notifs.add(notif);
       }
     } finally {
@@ -125,10 +125,10 @@ public class SendedNotificationDAO {
     return users;
   }
 
-  public static SendedNotificationDetail getNotif(Connection con, int notifId)
+  public static SentNotificationDetail getNotif(Connection con, int notifId)
       throws SQLException {
 
-    SendedNotificationDetail notif = new SendedNotificationDetail();
+    SentNotificationDetail notif = new SentNotificationDetail();
 
     String query = "select " + COLUMNS + " from ST_NotifSended where notifId = ?";
     PreparedStatement prepStmt = null;
@@ -190,14 +190,14 @@ public class SendedNotificationDAO {
 
   public static void deleteNotifByUser(Connection con, String userId) throws SQLException {
     // rechercher toutes les notifications de cet utilisateur
-    List<SendedNotificationDetail> notifs = getAllNotifByUser(con, userId);
-    for (SendedNotificationDetail notif : notifs) {
+    List<SentNotificationDetail> notifs = getAllNotifByUser(con, userId);
+    for (SentNotificationDetail notif : notifs) {
       deleteNotif(con, notif.getNotifId());
     }
   }
 
-  protected static SendedNotificationDetail recupNotif(ResultSet rs) throws SQLException {
-    SendedNotificationDetail notif = new SendedNotificationDetail();
+  protected static SentNotificationDetail recupNotif(ResultSet rs) throws SQLException {
+    SentNotificationDetail notif = new SentNotificationDetail();
     notif.setNotifId(rs.getInt("notifId"));
     notif.setUserId(rs.getInt("userId"));
     notif.setMessageType(rs.getInt("messageType"));

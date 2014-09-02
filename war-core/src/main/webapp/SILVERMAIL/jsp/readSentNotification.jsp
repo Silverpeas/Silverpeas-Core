@@ -34,7 +34,7 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<c:set var="notif" value="${requestScope.SendedNotification}"/>
+<c:set var="notif" value="${requestScope.SentNotification}"/>
 <%
       response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
       response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -63,7 +63,7 @@
       {
       <c:choose>
         <c:when test="${'homePage' eq from}">window.opener.location.reload();</c:when>
-        <c:otherwise>window.opener.location="SendedUserNotifications.jsp";</c:otherwise>
+        <c:otherwise>window.opener.location="SentUserNotifications.jsp";</c:otherwise>
       </c:choose>
           window.close();
         }
