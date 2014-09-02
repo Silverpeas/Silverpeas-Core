@@ -61,8 +61,9 @@ public interface InterestCenterBm {
   /**
    * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
    * to be deleted
+   * @param userId - current user Id
    */
-  public void removeICByPK(List<Integer> pks);
+  public void removeICByPK(List<Integer> pks, String userId);
 
   /**
    * @param pk an id of <code>InterestCenter</code> to be deleted
