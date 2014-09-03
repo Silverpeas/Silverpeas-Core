@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
@@ -50,6 +51,13 @@ public class SpaceResponsiblesPortlet extends GenericPortlet implements FormName
 
     request.setAttribute("currentUserId", m_MainSessionCtrl.getUserId());
     request.setAttribute("spaceId", spaceId);
+    
+    PortletPreferences pref = request.getPreferences();
+    if ("checked".equalsIgnoreCase(pref.getValue("displayOnlySpaceManagers",""))) {
+      request.setAttribute("displayOnlySpaceManagers", "true");  
+    } else {
+      request.setAttribute("displayOnlySpaceManagers", "false");
+    }
 
     include(request, response, "portlet.jsp");
   }

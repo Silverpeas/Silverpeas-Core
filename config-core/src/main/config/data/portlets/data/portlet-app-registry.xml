@@ -132,7 +132,7 @@
       </Collection>
     </Properties>
   </PortletApp>
-    <PortletApp name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet">
+  <PortletApp name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
       <String name="title" value="Silverpeas My last accessed applications portlet"/>
@@ -392,6 +392,8 @@
       <Collection name="supportsMap">
         <Collection name="text/html">
           <String value="VIEW"/>
+          <String value="EDIT"/>
+          <String value="HELP"/>
         </Collection>
       </Collection>
     </Properties>

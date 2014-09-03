@@ -39,11 +39,15 @@
       platformResponsible: '',
       sendMessage: ''
     },
-    renderSpaceResponsibles: function(target, userId, spaceId) {
+    renderSpaceResponsibles: function(target, userId, spaceId, onlySpaceManagers) {
       __loadMissingPlugins(false);
       var data = __getResponsibles(true, spaceId);
       $(target).empty();
-      __prepareContent($(target), userId, true, data.usersAndGroupsRoles);
+      if (onlySpaceManagers === 'true') {
+    	  __prepareContent($(target), userId, true, data.usersAndGroupsRoles, true);
+      } else {
+    	  __prepareContent($(target), userId, true, data.usersAndGroupsRoles, false);
+      }
       __loadUserZoomPlugins();
     },
     displaySpaceResponsibles: function(userId, spaceId) {
@@ -84,7 +88,7 @@
     }
     $display = $('<div>', {id: 'responsible-popup-content'}).css('display',
             'none').appendTo(document.body);
-    __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles);
+    __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles, false);
     __loadUserZoomPlugins();
 
     // Popup
@@ -124,7 +128,7 @@
    * @param usersAndGroupsRoles
    * @private
    */
-  function __prepareContent($target, userId, isSpace, usersAndGroupsRoles) {
+  function __prepareContent($target, userId, isSpace, usersAndGroupsRoles, onlySpaceManagers) {
     var $newLine = null;
     $.each(['Manager', 'admin'], function(index, role) {
       var usersAndGroups = usersAndGroupsRoles[role];
@@ -144,7 +148,7 @@
         $newLine = $('<br/>');
       }
     });
-    if (isSpace) {
+    if (!onlySpaceManagers && isSpace) {
       User.get({
         accessLevel : ['ADMINISTRATOR']
       }).then(function(users) {
