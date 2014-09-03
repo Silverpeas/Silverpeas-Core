@@ -30,6 +30,7 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -56,6 +57,7 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.notification.AttachmentNotificationService;
 import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -343,7 +345,7 @@ public class SimpleDocumentService implements AttachmentService {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       deleteIndex(document, lang);
     }
-    if (document.isOpenOfficeCompatible() && !document.isReadOnly()) {
+    if (document.isOpenOfficeCompatible()) {
       webdavRepository.deleteAttachmentNode(session, document);
     }
     if (invokeCallback) {
@@ -376,7 +378,8 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -390,7 +393,8 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+      String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -422,7 +426,7 @@ public class SimpleDocumentService implements AttachmentService {
             webdavRepository.deleteAttachmentNode(session, oldAttachment);
             webdavRepository.createAttachmentNode(session, document);
           } else {
-            webdavRepository.updateAttachment(session, document);
+            webdavRepository.updateAttachmentBinaryContent(session, document);
           }
         }
       }
@@ -459,7 +463,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
       boolean checkinRequired = repository.lock(session, document, owner);
       repository.updateDocument(session, document);
-      repository.addContent(session, document.getPk(), document.getFile());
+      repository.addContent(session, document.getPk(), document.getAttachment());
       repository.fillNodeName(session, document);
       SimpleDocument finalDocument = document;
       if (checkinRequired) {
@@ -495,25 +499,39 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
-      repository.removeContent(session, document.getPk(), lang);
+      boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
-        webdavRepository.deleteAttachmentNode(session, document);
+        webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
       String userId = document.getCreatedBy();
       if ((userId != null) && (userId.length() > 0) && invokeCallback) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-            document.getInstanceId(), document.getForeignId());
+        if (existsOtherContents) {
+          CallBackManager callBackManager = CallBackManager.get();
+          callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
+              document.getInstanceId(), document.getForeignId());
+        } else {
+          AttachmentNotificationService.getService().notifyOnDeletionOf(document);
+        }
       }
       deleteIndex(document, document.getLanguage());
       session.save();
       SimpleDocument finalDocument = document;
       if (requireLock) {
-        finalDocument = repository.unlock(session, document, false);
-        repository.duplicateContent(document, finalDocument);
+        finalDocument = repository.unlockFromContentDeletion(session, document);
+        if (existsOtherContents) {
+          repository.duplicateContent(document, finalDocument);
+        }
       }
       finalDocument.setLanguage(lang);
-      FileUtils.deleteQuietly(new File(finalDocument.getAttachmentPath()));
+      final File fileToDelete;
+      if (!existsOtherContents) {
+        fileToDelete =
+            new File(finalDocument.getDirectoryPath(null)).getParentFile().getParentFile();
+      } else {
+        fileToDelete = new File(finalDocument.getAttachmentPath()).getParentFile();
+      }
+      FileUtils.deleteQuietly(fileToDelete);
+      FileUtil.deleteEmptyDir(fileToDelete.getParentFile());
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
@@ -647,12 +665,18 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
+    getBinaryContent(output, pk, lang, 0, -1);
+  }
+
+  @Override
+  public void getBinaryContent(final OutputStream output, final SimpleDocumentPK pk,
+      final String lang, final long contentOffset, final long contentLength) {
     Session session = null;
     InputStream in = null;
     try {
       session = BasicDaoFactory.getSystemSession();
       in = repository.getContent(session, pk, lang);
-      IOUtils.copy(in, output);
+      IOUtils.copyLarge(in, output, contentOffset, contentLength);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (RepositoryException ex) {
@@ -775,8 +799,24 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
+      String contentLanguage = I18NHelper.checkLanguage(context.getLang());
       SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
-          context.getAttachmentId()), context.getLang());
+          context.getAttachmentId()), contentLanguage);
+      contentLanguage = document.getLanguage();
+      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
+        // Verifying if the content language handled in WEBDAV repository is the same as the
+        // content language took from the context.
+        if (!contentLanguage.equals(StringUtil
+            .defaultStringIfNotDefined(document.getWebdavContentEditionLanguage(),
+                contentLanguage))) {
+          // The language handled into WEVDAV is different, SimpleDocument must be reloaded with
+          // the right content language.
+          contentLanguage = document.getWebdavContentEditionLanguage();
+          document = repository
+              .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
+                  contentLanguage);
+        }
+      }
       if (document.isOpenOfficeCompatible() && !context.isForce() && webdavRepository.isNodeLocked(
           session, document)) {
         return false;
@@ -797,7 +837,9 @@ public class SimpleDocumentService implements AttachmentService {
       document.setComment(context.getComment());
       SimpleDocument finalDocument = repository.unlock(session, document, context.isForce());
       if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
-        webdavRepository.updateAttachment(session, finalDocument);
+        webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
+        webdavRepository.deleteAttachmentNode(session, finalDocument);
+        repository.duplicateContent(document, finalDocument);
       } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
           isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, finalDocument);
@@ -921,14 +963,15 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-      DocumentType type, String lang) {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
+      WAPrimaryKey foreignKey, DocumentType type, String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      return repository.listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(),
-          foreignKey.
-          getId(), type, lang);
+      return repository
+          .listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
+                  getId(), type, lang
+          );
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -960,6 +1003,9 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
       SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
       repository.moveFullContent(document, moveDoc);
+      if (moveDoc.isOpenOfficeCompatible()) {
+        webdavRepository.moveNodeAttachment(session, document, destination.getInstanceId());
+      }
       session.save();
       return pk;
     } catch (RepositoryException ex) {

@@ -62,16 +62,6 @@ public class SubscriptionDaoTest extends DAOBasedTest {
   }
 
   /**
-   * Gets the database connection
-   *
-   * @return
-   * @throws SQLException
-   */
-  private Connection getConnection() throws SQLException {
-    return getDataSource().getConnection();
-  }
-
-  /**
    * Test of getSubscriptionsByResource method, of class SubscriptionDao.
    *
    * @throws Exception

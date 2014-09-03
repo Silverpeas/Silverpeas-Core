@@ -89,8 +89,15 @@ Selection.prototype.itemIdsAsString = function() {
 Selection.prototype.itemNamesAsString = function() {
   var names = '';
   for (var i = 0; i < this.items.length - 1; i++)
-    names += this.items[i].name + ',';
+    names += getName(this.items[i]) + ', ';
   if (this.items.length > 0)
-    names += this.items[this.items.length - 1].name;
+    names += getName(this.items[this.items.length - 1]);
   return names;
 };
+
+function getName(item) {
+  if (typeof item.name !== 'undefined') {
+    return item.name;
+  }
+  return item.fullName;
+}

@@ -28,6 +28,7 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionValidationContext;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
@@ -73,6 +74,7 @@ public class UserPriviledgeValidation {
   private AccessController<SimpleDocument> documentAccessController;
   @Inject
   private OrganisationController organisationController;
+
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. By the user
    * session key could be passed a user token to perform a HTTP request without opening a session.
@@ -89,6 +91,15 @@ public class UserPriviledgeValidation {
    * it offers better scalability.
    */
   public static final String HTTP_AUTHORIZATION = "Authorization";
+
+  /**
+   * This constant is used to specify into the request attributes if the registering of "the last
+   * access time" of the user must be skipped. Indeed, some REST services uses the user session
+   * validation process in order to get the user behind the request if any. But those services
+   * must not impact on "the last access time" of the user.
+   */
+  private static final String SKIP_LAST_USER_ACCESS_TIME_REGISTERING =
+      "SKIP_LAST_USER_ACCESS_TIME_REGISTERING";
 
   /**
    * Validates the authentication of the user at the origin of a web request.
@@ -111,7 +122,12 @@ public class UserPriviledgeValidation {
     SessionInfo userSession;
     String sessionKey = getUserSessionKey(request);
     if (isDefined(sessionKey)) {
-      userSession = validateUserSession(sessionKey);
+      SessionValidationContext sessionValidationContext =
+          SessionValidationContext.withSessionKey(sessionKey);
+      if (mustSkipLastUserAccessTimeRegistering(request)) {
+        sessionValidationContext.skipLastUserAccessTimeRegistering();
+      }
+      userSession = validateUserSession(sessionValidationContext);
     } else {
       userSession = authenticateUser(request);
     }
@@ -121,6 +137,29 @@ public class UserPriviledgeValidation {
 
     // Returning the user session
     return userSession;
+  }
+
+  /**
+   * Sets into the request attributes the {@link
+   * UserPriviledgeValidation#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute to true.
+   * @param request the current request performed.
+   * @return itself.
+   */
+  public UserPriviledgeValidation skipLastUserAccessTimeRegistering(
+      final HttpServletRequest request) {
+    request.setAttribute(SKIP_LAST_USER_ACCESS_TIME_REGISTERING, true);
+    return this;
+  }
+
+  /**
+   * Indicates if the last user access time registering must be skipped from the value of {@link
+   * UserPriviledgeValidation#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute contained into the
+   * request attributes.
+   * @param request the current request performed.
+   * @return true to skip, false otherwise.
+   */
+  private boolean mustSkipLastUserAccessTimeRegistering(final HttpServletRequest request) {
+    return request.getAttribute(SKIP_LAST_USER_ACCESS_TIME_REGISTERING) != null;
   }
 
   /**
@@ -266,13 +305,14 @@ public class UserPriviledgeValidation {
    * is accepted only if the anonymous access is activated; in this case, an anonymous session is
    * created for the circumstance.
    *
-   * @param sessionKey the user session key.
+   * @param context the context of the validation that contains at least the session key
    * @return the session identified by the specified session key. It can be either an opened HTTP
    * session or a session spawned only for the current request.
    */
-  private SessionInfo validateUserSession(String sessionKey) {
-    SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);
-    if (sessionInfo == null) {
+  private SessionInfo validateUserSession(SessionValidationContext context) {
+    String sessionKey = context.getSessionKey();
+    SessionInfo sessionInfo = sessionManagement.validateSession(context);
+    if (!sessionInfo.isDefined()) {
       // the key isn't a session identifier; is it then a user token?
       final PersistentResourceToken userToken = PersistentResourceToken.getToken(sessionKey);
       UserReference userRef = userToken.getResource(UserReference.class);

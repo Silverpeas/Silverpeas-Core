@@ -173,7 +173,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         request.setAttribute("type", SocialInformationType.ALL);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
       } else if (function.equalsIgnoreCase("MyPhotos")) {
-        request.setAttribute("type", SocialInformationType.PHOTO);
+        request.setAttribute("type", SocialInformationType.MEDIA);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
       } else if (function.equalsIgnoreCase("MyPubs")) {
         request.setAttribute("type", SocialInformationType.PUBLICATION);

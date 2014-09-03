@@ -40,6 +40,7 @@
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.ArrayList"%>
 <%@ include file="../check.jsp"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <html>
 <%
 	String domainLDAPId = null;
@@ -58,9 +59,7 @@
 
 <head>
 <title>Utilitaires Silverpeas</title>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
+<view:looknfeel/>
 	<script language="javascript">
 		function submit()
 		{

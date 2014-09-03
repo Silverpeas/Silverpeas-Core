@@ -26,11 +26,11 @@ package com.stratelia.silverpeas.classifyEngine;
 
 public class ObjectValuePair {
 
-  private Integer objectId = null;
+  private String objectId = null;
   private String instanceId = null;
   private String valuePath = null;
 
-  public ObjectValuePair(int objectId, String valuePath, String instanceId) {
+  public ObjectValuePair(String objectId, String valuePath, String instanceId) {
     this.objectId = objectId;
     this.valuePath = valuePath;
     this.instanceId = instanceId;
@@ -44,11 +44,11 @@ public class ObjectValuePair {
     this.instanceId = instanceId;
   }
 
-  public Integer getObjectId() {
+  public String getObjectId() {
     return objectId;
   }
 
-  public void setObjectId(int objectId) {
+  public void setObjectId(String objectId) {
     this.objectId = objectId;
   }
 

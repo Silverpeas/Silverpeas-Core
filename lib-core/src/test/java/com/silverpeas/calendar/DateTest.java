@@ -24,16 +24,21 @@
 
 package com.silverpeas.calendar;
 
-import java.util.Calendar;
+import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Calendar;
+
 import static com.silverpeas.calendar.DatableMatcher.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import static java.util.Calendar.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests on the Date objects.
@@ -219,5 +224,32 @@ public class DateTest {
 
     Date actual = new Date(aDate.getTime());
     assertThat(actual.isEqualTo(expected), is(true));
+  }
+
+  @Test
+  public void isDefinedNotDefined() {
+    Datable date = new Date(DateUtil.getNow());
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+
+    date = new Date(DateUtils.addMilliseconds(DateUtil.MINIMUM_DATE, -1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+    date = new Date(DateUtil.MINIMUM_DATE);
+    assertThat(date.isDefined(), is(false));
+    assertThat(date.isNotDefined(), is(true));
+    date = new Date(DateUtils.addMilliseconds(DateUtil.MINIMUM_DATE, 1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+
+    date = new Date(DateUtils.addMilliseconds(DateUtil.MAXIMUM_DATE, -1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+    date = new Date(DateUtil.MAXIMUM_DATE);
+    assertThat(date.isDefined(), is(false));
+    assertThat(date.isNotDefined(), is(true));
+    date = new Date(DateUtils.addMilliseconds(DateUtil.MAXIMUM_DATE, 1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
   }
 }

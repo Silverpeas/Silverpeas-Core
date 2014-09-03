@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 <%
 	String				toURL				= (String) request.getAttribute("ToURL");
@@ -42,9 +42,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script language="JavaScript">
 function redirect() {
 	window.location = "<%=windowLocation%>";

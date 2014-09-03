@@ -55,6 +55,15 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
     try {
       SupportedJavaScriptPlugins jsPlugin = SupportedJavaScriptPlugins.valueOf(getName());
       switch (jsPlugin) {
+        case embedPlayer:
+          includeEmbedPlayer(xhtml);
+          break;
+        case audioPlayer:
+          includeAudioPlayer(xhtml);
+          break;
+        case videoPlayer:
+          includeVideoPlayer(xhtml);
+          break;
         case qtip:
           includeQTip(xhtml);
           break;
@@ -124,6 +133,11 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case lightslideshow:
           includeLightweightSlideshow(xhtml);
           break;
+        case lang:
+          includeLang(xhtml);
+          break;
+        case ticker:
+          includeTicker(xhtml);
       }
     } catch (IllegalArgumentException ex) {
       //ignore

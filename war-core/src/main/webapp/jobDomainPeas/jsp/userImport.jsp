@@ -52,7 +52,7 @@
 %>
 <html>
 <head>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>

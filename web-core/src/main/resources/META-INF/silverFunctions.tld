@@ -16,13 +16,21 @@
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
-  </function>  
+  </function>
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
     <function-class>com.silverpeas.util.StringUtil</function-class>
     <function-signature>
       boolean getBooleanValue( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that repeat x times a string to obtain the final string.</description>
+    <name>repeat</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String repeat(java.lang.String,int)
     </function-signature>
   </function>
   <function>
@@ -74,6 +82,30 @@
     </function-signature>
   </function>
   <function>
+    <description>Truncate the specified text to the specified length if necessary.</description>
+    <name>truncate</name>
+    <function-class>com.silverpeas.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String truncate(java.lang.String,int)
+    </function-signature>
+  </function>
+  <function>
+    <description>Splits the provided text into an array, using whitespace as the separator.</description>
+    <name>split</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String[] split(java.lang.String,java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Splits the provided text into an array, using whitespace as the separator.</description>
+    <name>splitOnWhitespace</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String[] split(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that display the estimated download time.</description>
     <name>estimateDownload</name>
     <function-class>com.stratelia.webactiv.util.FileRepositoryManager</function-class>
@@ -118,6 +150,14 @@
     <function-class>org.silverpeas.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a time data the given long time value.</description>
+    <name>getTimeData</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      org.silverpeas.util.time.TimeData getTimeData(long)
     </function-signature>
   </function>
   <function>
@@ -201,5 +241,109 @@
     <example>
       &lt;c:out value="${silfn:formatStringDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
     </example>
+  </function>
+  <function>
+    <description>Function to format a pagination.</description>
+    <name>formatPaginationFromFirstIndexOfItem</name>
+    <function-class>com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromFirstIndexOfItem(int,int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPagination(15,50,30)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a pagination.</description>
+    <name>formatPaginationFromCurrentPageIndex</name>
+    <function-class>com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromCurrentPageIndex(int,int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPagination(15,50,2)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to count the total number of pages to display.</description>
+    <name>countTotalNumberOfPagesOfPagination</name>
+    <function-class>com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>int countTotalNumberOfPages(int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:countTotalNumberOfPages(15,50)}">
+    </example>
+  </function>
+  <function>
+    <description>Function that return the Full URL of the application.</description>
+    <name>fullApplicationURL</name>
+    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-signature>
+      java.lang.String getFullApplicationURL(javax.servlet.http.HttpServletRequest)()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the URL of the application.</description>
+    <name>applicationURL</name>
+    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-signature>
+      java.lang.String getApplicationURL()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the component URL of the specified component instance
+      identifier.
+    </description>
+    <name>componentURL</name>
+    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-signature>
+      java.lang.String getComponentInstanceURL(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the images attached to the path for the website application.</description>
+    <name>webSiteImages</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.lang.String[][] getWebsiteImages(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the images attached to an object in an application.</description>
+    <name>attachmentImages</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getImages(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the list of components kmelia (object com.stratelia.webactiv.beans.admin.ComponentInstLight) dedicated to file storage.</description>
+    <name>componentsFileStorage</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getStorageFile()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the list of components gallery (object com.stratelia.webactiv.beans.admin.ComponentInstLight) dedicated to image storage.</description>
+    <name>componentsImageStorage</name>
+    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getGalleries()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if the dynamic value functionality in wysiwyg is active.</description>
+    <name>isDynamicValueActivate</name>
+    <function-class>com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-signature>
+      boolean isActivate()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that return the html code of the list of dynamic value in wysiwyg.</description>
+    <name>buildHtmlListDynamicValue</name>
+    <function-class>com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-signature>
+      java.lang.String buildHTMLSelect(java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
   </function>
 </taglib>

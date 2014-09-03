@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -230,32 +231,44 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @throws DirectoryException
    * @see
    */
-  public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
+  public List<UserDetail> getUsersByQuery(String query, boolean globalSearch)
+      throws DirectoryException {
     setCurrentView("query");
     setCurrentQuery(query);
+    if (globalSearch) {
+      setCurrentDirectory(DIRECTORY_DEFAULT);
+    }
     if (!getCurrentSort().equals(SORT_PERTINENCE)) {
       setPreviousSort(getCurrentSort());
     }
     setCurrentSort(SORT_PERTINENCE);
-    lastListUsersCalled = new ArrayList<UserDetail>();
+    List<UserDetail> results = new ArrayList<UserDetail>();
 
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addSpaceComponentPair(null, "users");
     try {
       List<MatchingIndexEntry> plainSearchResults = SearchEngineFactory.getSearchEngine().search(
           queryDescription).getEntries();
-
-      for (MatchingIndexEntry result : plainSearchResults) {
-        String userId = result.getObjectId();
-        for (UserDetail varUd : lastAlllistUsersCalled) {
-          if (varUd.getId().equals(userId)) {
-            lastListUsersCalled.add(varUd);
+      
+      if (plainSearchResults != null && !plainSearchResults.isEmpty()) {
+        List<UserDetail> allUsers = lastAlllistUsersCalled;
+        if (globalSearch) {
+          // forcing to get all users to re-init list of visible users
+          allUsers = getUsers();
+        }
+        for (MatchingIndexEntry result : plainSearchResults) {
+          String userId = result.getObjectId();
+          for (UserDetail varUd : allUsers) {
+            if (varUd.getId().equals(userId)) {
+              results.add(varUd);
+            }
           }
         }
       }
     } catch (Exception e) {
       throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH", e);
     }
+    lastListUsersCalled = results;
     return lastListUsersCalled;
 
   }
@@ -520,10 +533,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String getAvatarFragment(Member member) {
     StringBuilder sb = new StringBuilder();
     String webcontext = URLManager.getApplicationURL();
+    ImageTag imageTag = new ImageTag();
+    imageTag.setType("avatar");
+    imageTag.setSrc(member.getUserDetail().getAvatar());
+    imageTag.setAlt("viewUser");
+    imageTag.setCss("avatar");
     sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
         member.getId()).append("\">");
-    sb.append("<img src=\"").append(webcontext).append(member.getUserDetail().getAvatar()).append(
-        "\" alt=\"viewUser\"").append(" class=\"avatar\"/></a>");
+
+    sb.append(imageTag.generateHtml());
     return sb.toString();
   }
 

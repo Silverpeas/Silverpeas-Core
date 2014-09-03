@@ -49,6 +49,7 @@ public abstract class AbstractWindow implements Window {
   private String body = null;
   private String width = null;
   private boolean browserBarDisplayable = true;
+  private boolean popup = false;
   String contextualDiv = null;
 
   /**
@@ -136,7 +137,7 @@ public abstract class AbstractWindow implements Window {
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
-      if (GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
+      if (!isPopup() && GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
           StringUtil.isDefined(getGEF().getComponentId())) {
         addOperationToSetupComponent();
       }
@@ -148,8 +149,9 @@ public abstract class AbstractWindow implements Window {
     MainSessionController msc = getGEF().getMainSessionController();
     if (msc.getOrganisationController().isComponentManageable(getGEF().getComponentId(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
-      String label = GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
-          .getString("GML.operations.setupComponent");
+      String label =
+          GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
+              .getString("GML.operations.setupComponent");
       String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
           "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
       this.operationPane.addOperation("useless", label, url);
@@ -180,6 +182,16 @@ public abstract class AbstractWindow implements Window {
   @Override
   public void setBrowseBarVisibility(boolean browseBarVisible) {
     this.browserBarDisplayable = browseBarVisible;
+  }
+  
+  @Override
+  public boolean isPopup() {
+    return popup;
+  }
+  
+  @Override
+  public void setPopup(boolean popup) {
+    this.popup = popup;
   }
 
   private String getWelcomeMessage(ComponentInstLight component, String language) {
@@ -253,7 +265,7 @@ public abstract class AbstractWindow implements Window {
         StringBuilder sb = new StringBuilder(300);
         ComponentInstLight component =
             getGEF().getMainSessionController().getOrganisationController()
-            .getComponentInstLight(componentId);
+                .getComponentInstLight(componentId);
         String language = getGEF().getMainSessionController().getFavoriteLanguage();
         if (component != null) {
           String message = getWelcomeMessage(component, language);
@@ -270,12 +282,16 @@ public abstract class AbstractWindow implements Window {
     }
     return "";
   }
-  
+
   /**
-   * Add an operation that permits to display responsibles for a space or an application.
+   * Add an operation that permits to
+   * <ul>
+   * <li>display space or application manager</li>
+   * <li>add space or application to user bookmarks</li>
+   * </ul>
    */
-  protected void addSpaceOrComponentResponsibleOperation() {
-    if (!getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
+  protected void addSpaceOrComponentOperations() {
+    if (!isPopup() && !getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
         !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
       if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
           StringUtil.isDefined(getGEF().getSpaceId())) ||
@@ -283,33 +299,45 @@ public abstract class AbstractWindow implements Window {
         if (getOperationPane().nbOperations() > 0) {
           getOperationPane().addLine();
         }
-        final String label;
-        final String action;
+        final String viewMgrLabel, addFavLabel;
+        final String viewMgrAction, addFavAction;
+        boolean addFavOperation = true;
         ResourceLocator bundle =
             GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage());
         if (OperationPaneType.space.equals(getOperationPane().getType())) {
-          label = bundle.getString("GML.space.responsibles", "Responsables").replaceAll("''", "'");
-          action = "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
-              "','" + getGEF().getSpaceId() + "')";
+          viewMgrLabel =
+              bundle.getString("GML.space.responsibles", "Responsables").replaceAll("''", "'");
+          viewMgrAction =
+              "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
+                  "','" + getGEF().getSpaceId() + "')";
+          addFavLabel = bundle.getString("GML.favorite.space.add");
+          addFavAction = "addFavoriteSpace('" + getGEF().getSpaceId() + "')";
         } else {
-          label =
+          viewMgrLabel =
               bundle.getString("GML.component.responsibles", "Responsables").replaceAll("''", "'");
-          action =
+          viewMgrAction =
               "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
                   "','" + getGEF().getComponentId() + "')";
+          addFavLabel = bundle.getString("GML.favorite.application.add");
+          addFavAction = "addFavoriteApp('" + getGEF().getComponentId() + "')";
+          addFavOperation = getGEF().isComponentMainPage();
         }
-        getOperationPane().addOperation("", label, "javascript:" + action + ";",
+        if (addFavOperation) {
+          getOperationPane().addOperation("", addFavLabel, "javascript:" + addFavAction + ";",
+              "space-or-application-favorites-operation");
+        }
+        getOperationPane().addOperation("", viewMgrLabel, "javascript:" + viewMgrAction + ";",
             "space-or-component-responsibles-operation");
       }
     }
   }
-  
+
   @Override
   public String printBefore() {
     StringBuilder result = new StringBuilder(200);
     String width = getWidth();
     int nbCols = 1;
-    addSpaceOrComponentResponsibleOperation();
+    addSpaceOrComponentOperations();
     if (getOperationPane().nbOperations() > 0) {
       nbCols = 2;
     }
@@ -322,6 +350,9 @@ public abstract class AbstractWindow implements Window {
     result.append("<table width=\"").append(width).append(
         "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
     if (isBrowseBarVisible()) {
+      if (isPopup()) {
+        getBrowseBar().setClickable(false);
+      }
       result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
       result.append(getBrowseBar().print());
       result.append("</td>");
@@ -342,32 +373,34 @@ public abstract class AbstractWindow implements Window {
         "<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
     return result.toString();
   }
-  
+
   @Override
   public String printAfter() {
     StringBuilder result = new StringBuilder(200);
     String iconsPath = getIconsPath();
     result.append("</td></tr></table></td></tr></table>");
     
-    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-    result.append("<tr><td class=\"basGaucheWindow\">");
-    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-    result.append("</td><td class=\"basMilieuWindow\">");
-    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-    result.append("</td><td class=\"basDroiteWindow\">");
-    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-    result.append("</td></tr></table>");
-    
-    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-    result.append("<tr><td>");
-    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
-        "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
-    result.append("</td><td width=\"100%\">");
-    result.append("&nbsp;");
-    result.append("</td><td>");
-    result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
-    result.append("</td></tr></table>");
+    if (!isPopup()) {
+      result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+      result.append("<tr><td class=\"basGaucheWindow\">");
+      result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
+      result.append("</td><td class=\"basMilieuWindow\">");
+      result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
+      result.append("</td><td class=\"basDroiteWindow\">");
+      result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
+      result.append("</td></tr></table>");
+  
+      result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+      result.append("<tr><td>");
+      result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
+          "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+      result.append("</td><td width=\"100%\">");
+      result.append("&nbsp;");
+      result.append("</td><td>");
+      result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
+          .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+      result.append("</td></tr></table>");
+    }
     if (StringUtil.isDefined(contextualDiv)) {
       result.append("</div>");
     }
@@ -376,7 +409,7 @@ public abstract class AbstractWindow implements Window {
 
     return result.toString();
   }
-  
+
   @Override
   public String print() {
     StringBuilder result = new StringBuilder(500);

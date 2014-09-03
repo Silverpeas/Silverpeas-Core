@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 	String[][] infos = (String[][])request.getAttribute("infos");
@@ -39,6 +39,7 @@
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script language="javascript">
 <!--
 function MM_reloadPage(init) {  //reloads the window if Nav4 resized
@@ -49,9 +50,6 @@ function MM_reloadPage(init) {  //reloads the window if Nav4 resized
 MM_reloadPage(true);
 //-->
 </script>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 </head>
 <BODY topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
 

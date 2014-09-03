@@ -157,9 +157,7 @@ browseBar.setPath(resource.getString("JSPP.creationInstance"));
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>

@@ -38,7 +38,7 @@ public class OrganisationControllerFactory {
   private static OrganisationControllerFactory instance = new OrganisationControllerFactory();
 
   @Inject
-  private OrganisationController organisationController ;
+  private OrganisationController organisationController;
 
   public static OrganisationControllerFactory getFactory() {
     return instance;

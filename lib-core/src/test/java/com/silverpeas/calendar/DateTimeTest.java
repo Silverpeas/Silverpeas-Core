@@ -26,6 +26,9 @@ package com.silverpeas.calendar;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -214,5 +217,32 @@ public class DateTimeTest {
 
   private String iCalInUTCText() {
     return "20110120T100020Z";
+  }
+
+  @Test
+  public void isDefinedNotDefined() {
+    Datable date = new DateTime(DateUtil.getNow());
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+
+    date = new DateTime(DateUtils.addMilliseconds(DateUtil.MINIMUM_DATE, -1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+    date = new DateTime(DateUtil.MINIMUM_DATE);
+    assertThat(date.isDefined(), is(false));
+    assertThat(date.isNotDefined(), is(true));
+    date = new DateTime(DateUtils.addMilliseconds(DateUtil.MINIMUM_DATE, 1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+
+    date = new DateTime(DateUtils.addMilliseconds(DateUtil.MAXIMUM_DATE, -1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
+    date = new DateTime(DateUtil.MAXIMUM_DATE);
+    assertThat(date.isDefined(), is(false));
+    assertThat(date.isNotDefined(), is(true));
+    date = new DateTime(DateUtils.addMilliseconds(DateUtil.MAXIMUM_DATE, 1));
+    assertThat(date.isDefined(), is(true));
+    assertThat(date.isNotDefined(), is(false));
   }
 }

@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
@@ -105,9 +105,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <html>
 <head>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -139,6 +137,7 @@ function SubmitWithAction(action,verifParams)
 <body onload="document.notificationSenderForm.txtTitle.focus();">
 <%
     Window window = gef.getWindow();
+window.setPopup(true);
 
     BrowseBar browseBar = window.getBrowseBar(); 
     browseBar.setComponentName(notificationScc.getString("MesNotifications"));
@@ -150,15 +149,10 @@ function SubmitWithAction(action,verifParams)
     }
 
     out.println(window.printBefore());
-    
-    Frame frame = gef.getFrame();
-    Board board = gef.getBoard();
-    out.println(frame.printBefore());
 %>
-
-<center>
+<view:frame>
+<view:board>
 <form name="notificationSenderForm" action="" method="POST" accept-charset="UTF-8">
-<% out.println(board.printBefore()); %>
       <table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>
           <td class="txtlibform">
@@ -219,9 +213,8 @@ function SubmitWithAction(action,verifParams)
 				<input type="hidden" name="popupMode" value="<%=popupMode%>"/>
 				<input type="hidden" name="editTargets" value="<%=editTargets%>"/> 
       </table>
-<% out.println(board.printAfter()); %>
 </form>
-<br />
+</view:board>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(notificationScc.getString("Envoyer"), "javascript:SubmitWithAction('sendNotif',true)", false));
@@ -229,9 +222,8 @@ function SubmitWithAction(action,verifParams)
 		
     out.println(buttonPane.print());
 %>
-</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

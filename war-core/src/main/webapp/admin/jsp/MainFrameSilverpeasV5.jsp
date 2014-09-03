@@ -94,7 +94,7 @@ if (m_MainSessionCtrl == null) {
 		frameBottomParams 	= "?SpaceId="+spaceId;
 	} else {
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
-		frameBottomParams 	= "?SpaceId=&amp;ComponentId="+componentIdFromRedirect;
+		frameBottomParams 	= "?SpaceId=&ComponentId="+componentIdFromRedirect;
 	}
 	
 	gef.setSpaceId(helper.getSubSpaceId());
@@ -102,11 +102,11 @@ if (m_MainSessionCtrl == null) {
 	if (login) {
 		frameBottomParams += "&amp;Login=1";
 	}
-
+	
 	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()) 
     && ! "/admin/jsp/MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame())) {
 		session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
-    String topLocation = gef.getLookFrame();
+	String topLocation = gef.getLookFrame();
     if(!topLocation.startsWith("/")) {
       topLocation = "/admin/jsp/" + topLocation;
     }
@@ -186,6 +186,7 @@ padding: 0px;
 border: none;
 }
 </style>
+<meta name="viewport" content="initial-scale=1.0"/>
 </head>
 <% if (attachmentId != null) {
    	session.setAttribute("RedirectToAttachmentId", null);
@@ -201,7 +202,7 @@ border: none;
   	<frame src="frameBottomSilverpeasV5.jsp<%=frameBottomParams%>" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
   	<% if (helper.displayPDCFrame()) { %>
   		<!--  Content of this frame is processed when DomainsBar is initialized -->
-		<frame src="#" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+		<frame src="" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<% } %>
 	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>

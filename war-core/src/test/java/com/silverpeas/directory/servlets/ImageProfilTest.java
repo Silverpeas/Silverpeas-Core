@@ -40,6 +40,7 @@ import com.silverpeas.util.PathTestUtil;
   public class ImageProfilTest {
   private static final String TEMP_DIRECTORY = PathTestUtil.TARGET_DIR + File.separatorChar + "temp" + File.separatorChar + "read";
   private static final String SOURCE_FILE = PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes" + File.separatorChar + "SilverAdmin.jpg";
+
   @BeforeClass
   public static void prepareDir() throws IOException {
     FileUtils.forceMkdir(new File(TEMP_DIRECTORY));
@@ -48,8 +49,9 @@ import com.silverpeas.util.PathTestUtil;
 
   @AfterClass
   public static void cleanDir() throws IOException {
-   // FileUtils.forceDelete(new File(TEMP_DIRECTORY));
+    FileUtils.forceDelete(new File(TEMP_DIRECTORY));
   }
+
 	@Test
 	public void testIsImage() {
 	  ImageProfil imageProfil = new ImageProfil("nidale.jpg");

@@ -33,6 +33,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import org.apache.commons.io.FileUtils;
@@ -103,6 +104,31 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
 
   private String getTranslationsUri(String id) {
     return RESOURCE_PATH + id + '/' + "translations";
+  }
+
+  @Test
+  @Override
+  public void gettingAResourceByAnUnauthorizedUser() {
+    denieAuthorizationToUsers();
+    try {
+      // prepare an existing document
+      SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+          "18", 10, false,
+          new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
+              MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+      AttachmentService service = mock(AttachmentService.class);
+      when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+          thenReturn(document);
+      getTestResources().setAttachmentService(service);
+
+      // perform the unauthorized request
+      getAt(getDocumentUri(DOCUMENT_ID, null), SimpleDocumentEntity.class);
+      fail("An unauthorized user shouldn't access the resource");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
   }
 
   /**
@@ -185,8 +211,10 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.field("fileTitle", "Upload test");
     form.field("fileDescription", "This test is trying to simulate the update of a content");
     String content = "This is a binary content";
-    FormDataBodyPart fdp = new FormDataBodyPart("content", new ByteArrayInputStream(content
-        .getBytes(Charsets.UTF_8)), MediaType.APPLICATION_OCTET_STREAM_TYPE);
+    FormDataBodyPart fdp = new FormDataBodyPart(FormDataContentDisposition.name("file_upload").
+        fileName("test.pdf").size(content.getBytes(Charsets.UTF_8).length).build(),
+        new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
+        MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
@@ -236,10 +264,28 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
     getTestResources().setAttachmentService(service);
     WebResource webResource = resource();
-    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock").header(
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock/fr").header(
         HTTP_SESSIONKEY, getSessionKey()).put(String.class);
     assertThat(result, is(notNullValue()));
     assertThat(result, is("{\"status\":true}"));
+  }
+
+  @Test
+  public void testLockDocumentWrongContentLanguage() {
+    String lang = "fr";
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+        "18", 10, false, new SimpleAttachment("test.pdf", lang, "Test", "Ceci est un test.", 500L,
+        MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+        thenReturn(document);
+    when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
+    getTestResources().setAttachmentService(service);
+    WebResource webResource = resource();
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock/en").header(
+        HTTP_SESSIONKEY, getSessionKey()).put(String.class);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is("{\"status\":false}"));
   }
 
   @Test
@@ -277,6 +323,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         "test.pdf", lang, "Test", "Ceci est un test.", 500L, MimeTypes.PDF_MIME_TYPE,
         USER_ID_IN_TEST, creationDate, null));
     Form form = new Form();
+    form.put("switch-version-comment", Collections.singletonList((String) null));
     AttachmentService service = mock(AttachmentService.class);
     when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
         thenReturn(document);
@@ -290,7 +337,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     assertThat(result, is(notNullValue()));
     assertThat(result, is(
         "{\"status\":true, \"id\":56, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
-    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), null);
+    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID), "");
   }
 
   @Test

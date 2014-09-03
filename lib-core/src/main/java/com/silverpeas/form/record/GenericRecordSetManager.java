@@ -387,7 +387,7 @@ public class GenericRecordSetManager {
             // le formulaire contient un champ de type File (fichier ou image)
             // Remplacement de l'ancien id par le nouveau
             String oldId = field.getStringValue();
-            if (oldId != null) {
+            if (oldId != null && fileIds != null) {
               String newId = fileIds.get(oldId);
               field.setStringValue(newId);
             }

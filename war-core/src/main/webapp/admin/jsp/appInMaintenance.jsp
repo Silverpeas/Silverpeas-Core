@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
@@ -49,9 +49,7 @@ UserDetail[] listAdmins = m_MainSessionCtrl.getOrganisationController().getUserD
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=message.getString("homePage.maintenanceOn")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 

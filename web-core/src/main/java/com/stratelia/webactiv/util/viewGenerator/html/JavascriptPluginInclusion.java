@@ -27,7 +27,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
@@ -42,13 +42,13 @@ import java.text.MessageFormat;
  * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
- *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
+  private static final String stylesheetPath = URLManager.getApplicationURL() +
+      "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
@@ -61,6 +61,10 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
+  private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
+  private static final String SILVERPEAS_AUDIO_PLAYER = "silverpeas-player-audio.js";
+  private static final String SILVERPEAS_VIDEO_PLAYER = "silverpeas-player-video.js";
+  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.13.min.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
@@ -98,6 +102,7 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static String JAVASCRIPT_CKEDITOR;
+  private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -112,9 +117,11 @@ public class JavascriptPluginInclusion {
   private static final String RATEIT_CSS = "rateit/rateit.css";
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
-  
   private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
-  
+  private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
+  private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
+  private static final String TICKER_JS = "ticker/jquery.ticker.js";
+  private static final String TICKER_CSS = "ticker/ticker-style.css";
 
   static {
     ResourceLocator wysiwygSettings = new ResourceLocator(
@@ -124,17 +131,15 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
-   *
    * @param src
    * @return
    */
   private static script script(String src) {
-    return new script().setType(JAVASCRIPT_TYPE).setSrc(src);
+    return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
   }
 
   /**
    * Centralization of script instantiation.
-   *
    * @param content
    * @return
    */
@@ -144,17 +149,16 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of link instantiation.
-   *
    * @param href
    * @return
    */
   private static link link(String href) {
-    return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(href);
+    return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(appendVersion(href));
   }
-  
+
   public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
-	  xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
-	  return xhtml;
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
+    return xhtml;
   }
 
   public static ElementContainer includeAngular(final ElementContainer xhtml, String language) {
@@ -164,6 +168,23 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(angularjsPath + SILVERPEAS_ANGULAR_JS));
     xhtml.addElement(script(angularjsPath + SILVERPEAS_ADAPTERS_ANGULAR_JS));
     xhtml.addElement(script(angularjsDirectivesPath + SILVERPEAS_BUTTON_ANGULAR_JS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeEmbedPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_EMBED_PLAYER));
+    return xhtml;
+  }
+
+  public static ElementContainer includeAudioPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_AUDIO_PLAYER));
+    return xhtml;
+  }
+
+  public static ElementContainer includeVideoPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_VIDEO_PLAYER));
     return xhtml;
   }
 
@@ -202,10 +223,16 @@ public class JavascriptPluginInclusion {
     }
     return xhtml;
   }
-  
+
   public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
     xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
     xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeTicker(final ElementContainer xhtml) {
+    xhtml.addElement(link(jqueryPath + TICKER_CSS));
+    xhtml.addElement(script(jqueryPath + TICKER_JS));
     return xhtml;
   }
 
@@ -261,7 +288,8 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
-    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));    
+    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(wysiwygPath + SILVERPEAS_WYSIWYG_TOOLBAR));
     return xhtml;
   }
 
@@ -271,10 +299,10 @@ public class JavascriptPluginInclusion {
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-        .getString("GML.platform.responsibles", "")).append("';");
+            .getString("GML.platform.responsibles", "")).append("';");
     responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-        .getString("GML.notification.send", "")).append("';");
+            .getString("GML.notification.send", "")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }
@@ -351,10 +379,42 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  /**
+   * Two javascript methods are provided to apply security based on tokens:
+   * <ul>
+   * <li>applyTokenSecurity([optional jQuery selector]): all the DOM or the DOM under specified
+   * selector is set</li>
+   * <li>applyTokenSecurityOnMenu(): all the DOM that handles the menu is set.</li>
+   * </ul>
+   * @param xhtml
+   * @return
+   */
   public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
       xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
     }
+    StringBuilder sb = new StringBuilder();
+    String setTokensCondition = "if(typeof setTokens === 'function')";
+    sb.append("function applyTokenSecurity(targetContainerSelector){").append(setTokensCondition)
+        .append("{setTokens(targetContainerSelector);}}");
+    sb.append("function applyTokenSecurityOnMenu(){").append(setTokensCondition)
+        .append("{setTokens('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
+        .append("');}}");
+    xhtml.addElement(scriptContent(sb.toString()));
     return xhtml;
+  }
+
+  public static ElementContainer includeMylinks(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_MYLINKS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeLang(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
+    return xhtml;
+  }
+
+  private static String appendVersion(String url) {
+    return URLManager.appendVersion(url);
   }
 }

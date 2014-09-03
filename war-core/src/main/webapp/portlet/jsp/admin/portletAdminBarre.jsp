@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");       //HTTP 1.0
@@ -35,14 +35,12 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 <%@ include file="language.jsp" %>
 
 <html>
-
 <head>
 <jsp:useBean id="spaceModel" scope="request" class="com.stratelia.silverpeas.portlet.SpaceModel">
   <jsp:setProperty name="spaceModel" property="*" />
 </jsp:useBean>
 <title></title>
-<meta http-equiv="Content-Type" content="text/html;">
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="javascript" src="../../util/javaScript/animation.js"></script>
 </head>
 

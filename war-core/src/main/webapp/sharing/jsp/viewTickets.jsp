@@ -49,9 +49,9 @@
         document.deleteForm.submit();
       }
     }
-    
+
     function go(url) {
-    	window.open(url);	
+    	window.open(url);
     }
   </script>
 </head>
@@ -82,7 +82,7 @@
           <c:set var="accessCount" value="${ticket.nbAccess}"/>
           <view:arrayLine>
             <c:choose>
-              <c:when test="${ticket.resource ne null && ticket.resource.URL ne null}"> 
+              <c:when test="${ticket.resource ne null && ticket.resource.URL ne null}">
                 <c:set var="lien" value="${ticket.resource.URL}"/>
               </c:when>
               <c:otherwise>
@@ -103,7 +103,11 @@
               <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
             </c:if>
             <c:if test="${ticket.nbAccessMax gt 0}">
-              <c:set var="accessCount" value="${ticket.nbAccess}/${ticket.nbAccessMax}"/>
+              <c:set var="accessCount" value="${ticket.nbAccess} / ${ticket.nbAccessMax}"/>
+            </c:if>
+            <c:if test="${ticket.nbAccessMax le 0}">
+              <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"></fmt:message>
+              <c:set var="accessCount" value="${ticket.nbAccess} / ${sharingUnlimited}"/>
             </c:if>
             <c:if test="${ticket.sharedObjectType eq 'Node'}">
               <c:set var="accessCount" value="n/a"/>

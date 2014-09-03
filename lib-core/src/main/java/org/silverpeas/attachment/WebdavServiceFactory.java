@@ -40,7 +40,7 @@ public class WebdavServiceFactory {
   }
   private static final WebdavServiceFactory factory = new WebdavServiceFactory();
 
-  public static final WebdavServiceFactory getInstance() {
+  public static WebdavServiceFactory getInstance() {
     return factory;
   }
 

@@ -391,6 +391,6 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
   private void setBrowseContextInRequest(PdcClassifySessionController pdcSC,
       HttpServletRequest request) {
     request.setAttribute("browseContext", new String[] { pdcSC.getSpaceLabel(),
-        pdcSC.getComponentLabel() });
+        pdcSC.getComponentLabel(), pdcSC.getSpaceId(), pdcSC.getCurrentComponentId() });
   }
 }

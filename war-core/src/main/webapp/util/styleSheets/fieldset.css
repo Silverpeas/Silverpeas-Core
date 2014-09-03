@@ -33,7 +33,7 @@ form {
 	padding:0;
 	height:100%;
 }
-	
+
 fieldset.skinFieldset {
 	position:relative;
 	margin:10px;
@@ -50,37 +50,37 @@ fieldset.skinFieldset {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
 	/* For Internet Explorer 8 */
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
-		
+
  }
- 
+
  .table {
 	display:table;
 	width:100%;
 	height:auto;
-	}	
+	}
 
  :root *> .table {
-	height:10%; 
-	}	
+	height:10%;
+	}
 
 .cell {
 	display:inline !ie;
 	float:left !ie;
 	width:49.9% !ie;
 	}
-	
+
 .cell {
 	display:table-cell;
 	height:100%;
 	}
 
-	
+
 * html .cell { width:49.4%; }
 
 .cell fieldset.skinFieldset{
 	height:80%;
 	}
- 
+
 .skinFieldset label {
 	color:#444;
 }
@@ -96,7 +96,7 @@ fieldset.skinFieldset {
 .skinFieldset legend.without-img {
 	padding: 0px 10px;
 }
- 
+
 .champs {
 	margin-left:180px;
 }
@@ -122,16 +122,16 @@ label.txtlibform {
 padding-right:0;
 }
 
-label {
+.field label {
 	width:180px;
 	float:left;
 }
 .row {
-	clear:both ; 
+	clear:both ;
 }
 
 .champs input, .champs select {
-	width:90%; 
+	width:90%;
 	margin:0;
 }
 
@@ -140,16 +140,23 @@ label {
 }
 
 #languageArea .champs select {
-	width:auto; 
+	width:auto;
 }
 
-input.dateToPick{
-	width:68px; 
+input.dateToPick,
+.ui-dialog .champ-ui-dialog input.dateToPick {
+	width:68px;
 	margin:0;
 }
 
+input.int-5,
+.ui-dialog .champ-ui-dialog input.int-5 {
+  width:36px;
+  margin:0;
+}
+
 input.inputHour{
-	width:48px; 
+	width:48px;
 	margin:0;
 }
 
@@ -173,4 +180,18 @@ input.inputHour{
 
 .forms .skinFieldset legend {
     padding-left: 10px;
+}
+
+
+
+/* form & CKeditor */
+.container-wysiwyg input,
+.container-wysiwyg select
+ {
+    width: auto;
+}
+
+.skinFieldset .champs .wysiwyg-fileStorage {
+	width:90%;
+	background-color:#FFF;
 }

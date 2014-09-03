@@ -23,6 +23,8 @@
  */
 package com.silverpeas.util.comparator;
 
+import com.silverpeas.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -140,6 +142,43 @@ public abstract class AbstractComplexComparator<C> extends
      */
     public List<Object> getValues() {
       return values;
+    }
+  }
+
+  /**
+   * Class that permits to put null or empty String value always at the bottom of a list.
+   */
+  public class StringWrapper implements Comparable<StringWrapper> {
+    final String string;
+    final boolean sort;
+    final boolean emptyAtEnd;
+
+    public StringWrapper(final String string, final boolean sort, final boolean emptyAtEnd) {
+      this.string = StringUtil.isNotDefined(string) ? null : string;
+      this.sort = sort;
+      this.emptyAtEnd = emptyAtEnd;
+    }
+
+    @Override
+    public int compareTo(final StringWrapper o) {
+
+      // Instance
+      int result = compareInstance(string, o.string);
+      if (result != 0) {
+        if (emptyAtEnd) {
+          return result * (sort ? -1 : 1);
+        } else {
+          return result * (sort ? 1 : -1);
+        }
+      }
+
+      // Value
+      if (areInstancesComparable(string, o.string)) {
+        return string.compareTo(o.string);
+      }
+
+      // Identical
+      return 0;
     }
   }
 }

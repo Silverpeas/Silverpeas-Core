@@ -33,6 +33,18 @@ public enum SupportedJavaScriptPlugins {
    */
   jquery,
   /**
+   * JQuery plugin to play musics.
+   */
+  audioPlayer,
+  /**
+   * JQuery plugin to play videos.
+   */
+  videoPlayer,
+  /**
+   * JQuery plugin to print out embed container for media playing.
+   */
+  embedPlayer,
+  /**
    * JQuery plugin to print out tooltips.
    */
   qtip,
@@ -138,5 +150,13 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Lightweight slideshow. Easy to use but not only a few features.
    */
-  lightslideshow
+  lightslideshow,
+  /**
+   * Silverpeas plugin to change user language
+   */
+  lang,
+  /**
+   * Ticker to display short text item one by one
+   */
+  ticker
 }

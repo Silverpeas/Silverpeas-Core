@@ -174,7 +174,7 @@ operations.addOperation("useless", message.getString("admin.reindex.op.agendas")
 <html>
 <head>
 <title>Navigation</title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript">
 function index(action, compo, space) {
 	var message = "<%=message.getString("admin.reindex.js.warn")%> ";

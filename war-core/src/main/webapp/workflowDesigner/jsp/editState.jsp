@@ -27,6 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 
 <%
@@ -50,7 +51,7 @@
 %>
 <HTML>
 <HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">

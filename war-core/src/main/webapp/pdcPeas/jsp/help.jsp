@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -61,19 +61,12 @@ QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
-<%
-  	browseBar.setDomainName(resource.getString("pdcPeas.SearchEngine"));
-  	browseBar.setComponentName(resource.getString("pdcPeas.AideContent"));
-
-  	out.println(window.printBefore());
-  	out.println(frame.printBefore());
-	out.println(board.printBefore());
-%>
+<view:browseBar path='<%=resource.getString("pdcPeas.SearchEngine") + " > " + resource.getString("pdcPeas.AideContent") %>'/>
+<view:window popup="true">
+<view:board>
 		<table border="0" width="100%"><tr><td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol1Header")%><br/><br/>
 		<%=resource.getString("pdcPeas.helpCol1Content1")%><br/>
@@ -98,10 +91,7 @@ out.println(gef.getLookStyleSheet());
 		<%=resource.getString("pdcPeas.helpCol3Content4")%><br/>
 		</td>
 		</tr></table>
-<%
-	out.println(board.printAfter());
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
+</view:board>
+</view:window>
 </body>
 </html>

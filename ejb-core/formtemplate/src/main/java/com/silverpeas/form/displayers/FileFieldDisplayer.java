@@ -20,14 +20,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.PrintWriter;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.viewer.ViewerFactory;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -36,14 +28,22 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.viewer.ViewerFactory;
+
+import java.io.File;
+import java.io.PrintWriter;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
  * retrieve via HTTP any file.
- *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -55,18 +55,20 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL> <LI>the field type is not a managed type. </UL>
-   *
+   * <UL>
+   * <LI>the field type is not a managed type.
+   * </UL>
    * @param out
    * @param field
-   * @param pagesContext
    * @param template
+   * @param pageContext
    * @throws FormException
    */
   public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId() + ", fieldType = " + field.getTypeName());
+        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId() +
+            ", fieldType = " + field.getTypeName());
     String language = pageContext.getContentLanguage();
     StringBuilder html = new StringBuilder(1024);
     Operation defaultOperation = Operation.ADD;
@@ -94,7 +96,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
     if (template.isReadOnly() && !template.isHidden()) {
       if (attachment != null) {
-        html.append("<img alt=\"\" src=\"").append(attachment.getDisplayIcon()).append("\"/>&nbsp;");
+        html.append("<img alt=\"\" src=\"").append(attachment.getDisplayIcon())
+            .append("\"/>&nbsp;");
         html.append("<a href=\"").append(webContext).append(attachment.getAttachmentURL()).
             append("\" target=\"_blank\">").append(attachment.getFilename()).append("</a>");
         File attachmentFile = new File(attachment.getAttachmentPath());
@@ -108,8 +111,20 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
         if (ViewerFactory.isViewable(attachmentFile)) {
           html.append("<img onclick=\"javascript:viewFormFile(this, '").append(attachment.getId()).
               append("');\" class=\"view-file\" src=\"").append(webContext).append(
-              "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", language)).append(
-              "\" title=\"").append(Util.getString("GML.view", language)).append("\"/>");
+                  "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", language))
+              .append(
+                  "\" title=\"").append(Util.getString("GML.view", language)).append("\"/>");
+        }
+        if (attachment.isSharingAllowedForRolesFrom(UserDetail.getById(pageContext.getUserId()))) {
+          html.append("<img onclick=\"javascript:createSharingTicketPopup({ componentId : '")
+              .append(attachment.getInstanceId()).append("',type : 'Attachment', id: '")
+              .append(attachment.getOldSilverpeasId()).append("', name : '")
+              .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
+              .append("'});\" class=\"share-file\" src=\"").append(webContext)
+              .append("/util/icons/share.png\" alt=\"")
+              .append(Util.getString("GML.share.file", language))
+              .append("\" title=\"").append(Util.getString("GML.share.file", language))
+              .append("\"/>");
         }
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
@@ -121,7 +136,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
       html.append("<input type=\"hidden\" id=\"").append(fieldName).
           append(OPERATION_KEY + "\" name=\"").append(fieldName).
           append(OPERATION_KEY + "\" value=\"").append(defaultOperation.name()).append("\"/>");
-      
+
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
         String deleteLab = Util.getString("removeFile", language);
@@ -136,11 +151,11 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
             append(fieldName).append("').style.display='none';" + "document.").
             append(pageContext.getFormName()).append(".").append(fieldName).
             append(OPERATION_KEY + ".value='").append(Operation.DELETION.name()).append(
-            "';" + "\">");
+                "';" + "\">");
         html.append("<img src=\"").append(deleteImg).
             append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).
             append("\" align=\"top\" title=\"").append(deleteLab).append(
-            "\"/></a>");
+                "\"/></a>");
         html.append("</span>");
       }
 
@@ -161,7 +176,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     sb.append("function previewFormFile(target, attachmentId) {\n");
     sb.append("$(target).preview(\"previewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId\n");
+    sb.append("attachmentId: attachmentId,\n");
+    sb.append("lang: '" + context.getContentLanguage() + "'\n");
     sb.append("});\n");
     sb.append("return false;");
     sb.append("}\n");
@@ -175,7 +191,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     sb.append("function viewFormFile(target, attachmentId) {\n");
     sb.append("$(target).view(\"viewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId\n");
+    sb.append("attachmentId: attachmentId,\n");
+    sb.append("lang: '" + context.getContentLanguage() + "'\n");
     sb.append("});\n");
     sb.append("return false;");
     sb.append("}\n");
@@ -185,7 +202,6 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
   /**
    * Method declaration
-   *
    * @return
    */
   @Override

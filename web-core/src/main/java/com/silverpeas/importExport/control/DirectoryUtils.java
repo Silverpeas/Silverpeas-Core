@@ -24,36 +24,12 @@
 
 package com.silverpeas.importExport.control;
 
-import java.io.File;
+import com.silverpeas.util.StringUtil;
 
 /**
  * @author sdevolder Méthodes à factoriser
  */
 public class DirectoryUtils {
-
-  /**
-   * Retourne une chaine ne contenant que des caractères autorisés pour le nommage des dossiers. en
-   * évitant de convertir les séparateurs de fichier. On suppose que ? ne pourra jamais être un
-   * séparateur de fichiers.
-   * @param directoryPath
-   * @return
-   */
-  public static String formatToDirectoryPathNamingCompliant(String directoryPath) {
-    String tempDir = directoryPath.trim();
-    tempDir = tempDir.replace('?', '_');
-    tempDir = tempDir.replace(File.separatorChar, '?');
-    tempDir = tempDir.replace('\\', '_');
-    tempDir = tempDir.replace('/', '_');
-    tempDir = tempDir.replace(':', '_');
-    tempDir = tempDir.replace('*', '_');
-    tempDir = tempDir.replace('\"', '_');
-    tempDir = tempDir.replace('<', '_');
-    tempDir = tempDir.replace('>', '_');
-    tempDir = tempDir.replace('|', '_');
-    tempDir = removeDots(tempDir);
-    tempDir = tempDir.replace('?', File.separatorChar);
-    return tempDir;
-  }
 
   /**
    * Retourne une chaine ne contenant que des caractères autorisés pour le nommage des dossiers y
@@ -63,15 +39,7 @@ public class DirectoryUtils {
    */
   public static String formatToDirectoryNamingCompliant(String directoryName) {
     String tempDir = directoryName.trim();
-    tempDir = tempDir.replace('?', '_');
-    tempDir = tempDir.replace('\\', '_');
-    tempDir = tempDir.replace('/', '_');
-    tempDir = tempDir.replace(':', '_');
-    tempDir = tempDir.replace('*', '_');
-    tempDir = tempDir.replace('\"', '_');
-    tempDir = tempDir.replace('<', '_');
-    tempDir = tempDir.replace('>', '_');
-    tempDir = tempDir.replace('|', '_');
+    tempDir = StringUtil.toAcceptableFilename(tempDir);
     tempDir = removeDots(tempDir);
     return tempDir;
   }

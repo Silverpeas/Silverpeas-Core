@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
 <%@ page import="com.silverpeas.thesaurus.*"%>
@@ -134,9 +134,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 <html>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 function listValues () {

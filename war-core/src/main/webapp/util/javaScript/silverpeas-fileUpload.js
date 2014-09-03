@@ -542,8 +542,9 @@
         __renderUploadFile(uploadContext, self, $(":file", $formUploadContainer).val(),
                 $waitingEndOfUploadContainer);
         // HTML4 upload way (use of jquery-iframe-transport.js plugin)
+        applyTokenSecurity('#' + uploadContext.containerOriginId);
         $("form", $formUploadContainer).iframeAjaxFormSubmit({
-          sendFilesOnly: true,
+          sendFilesOnly: false,
           complete: function(uploadedFilesAsJson) {
             $formUploadContainer.remove();
             self.sendComplete(uploadedFilesAsJson);

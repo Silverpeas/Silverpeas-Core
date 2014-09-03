@@ -42,6 +42,7 @@ import org.silverpeas.persistence.model.Entity;
 public class OperationContext {
 
   private static final String CACHE_KEY = OperationContext.class.getName();
+  private boolean updatingInCaseOfCreation = false;
 
   // The user
   private UserDetail user = null;
@@ -97,6 +98,43 @@ public class OperationContext {
   private OperationContext withUser(UserDetail user) {
     this.user = user;
     return this;
+  }
+
+  /**
+   * Calling this method to indicates that the current data update is performed in a case of a
+   * creation. Indeed, in some cases, the creation of a resource into database is done by a
+   * chaining of inserts and updates.
+   */
+  public OperationContext setUpdatingInCaseOfCreation() {
+    return setUpdatingInCaseOfCreation(true);
+  }
+
+  /**
+   * Calling this method to indicates that the current data update is performed in a case of a
+   * creation or not. Indeed, in some cases, the creation of a resource into database is done by a
+   * chaining of inserts and updates.
+   * @param updatingInCaseOfCreation true to specify that the update is performed in a case of data
+   * creation.
+   */
+  public OperationContext setUpdatingInCaseOfCreation(boolean updatingInCaseOfCreation) {
+    this.updatingInCaseOfCreation = updatingInCaseOfCreation;
+    return this;
+  }
+
+  /**
+   * Indicates if the date update is performed in a case of creation.
+   * @return
+   */
+  public boolean isUpdatingInCaseOfCreation() {
+    return updatingInCaseOfCreation;
+  }
+
+  /**
+   * Gets the user behind the operation.
+   * @return
+   */
+  public UserDetail getUser() {
+    return user;
   }
 
   /**

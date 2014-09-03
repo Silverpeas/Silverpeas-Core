@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -152,9 +152,8 @@ if (action != null) {
 <html>
 <head>
 <title>Navigation</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <!--link rel="stylesheet" href="styleSheets/admin.css"-->
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="JavaScript">
 function index(action, compo, space)
 {

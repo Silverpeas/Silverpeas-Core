@@ -20,13 +20,14 @@
  */
 package com.silverpeas.util;
 
+import org.junit.Test;
+import org.silverpeas.media.Definition;
+
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
 
-import org.junit.Test;
-
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -35,13 +36,16 @@ import static org.junit.Assert.assertThat;
  */
 public class MetadataExtractorTest {
 
-  private static final String docFile = TARGET_DIR + "test-classes" + SEPARATOR + "Liste_ECCA.doc";
-  private static final String docxFile = TARGET_DIR + "test-classes" + SEPARATOR + "Test.docx";
-  private static final String ooFile = TARGET_DIR + "test-classes" + SEPARATOR + "LibreOffice.odt";
-  private static final String tifFile = TARGET_DIR + "test-classes" + SEPARATOR
-      + "logo-silverpeas-2010.tif";
-  private static final String emptyPdfFile = TARGET_DIR + "test-classes" + SEPARATOR
-      + "20115061_FDS_Rubson SA2 Sanitaire 2 en 1 tous coloris MAJ 2012_HENKEL.pdf";
+  private static final File docFile = getDocumentNamed("/Liste_ECCA.doc");
+  private static final File docxFile = getDocumentNamed("/Test.docx");
+  private static final File ooFile = getDocumentNamed("/LibreOffice.odt");
+  private static final File tifFile = getDocumentNamed("/logo-silverpeas-2010.tif");
+  private static final File emptyPdfFile = getDocumentNamed(
+      "/20115061_FDS_Rubson SA2 Sanitaire 2 en 1 tous coloris MAJ 2012_HENKEL.pdf");
+  private static final File mp4File = getDocumentNamed("/video.mp4");
+  private static final File movFile = getDocumentNamed("/video.mov");
+  private static final File flvFile = getDocumentNamed("/video.flv");
+  private static final File mp3File = getDocumentNamed("/sound.mp3");
 
   public MetadataExtractorTest() {
   }
@@ -51,8 +55,8 @@ public class MetadataExtractorTest {
    */
   @Test
   public void testExtractMetadataFromOLE2WordDocument() {
-    MetadataExtractor instance = new MetadataExtractor();
-    File file = new File(docFile);
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = docFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Liste de taches"));
@@ -64,12 +68,16 @@ public class MetadataExtractorTest {
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1122998040000L));
     assertThat(result.getLastSaveDateTime().getTime(), is(1316063700000L));
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.NULL));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration(), nullValue());
   }
 
   @Test
   public void testExtractMetadataFrom2007WordDocument() {
-    MetadataExtractor instance = new MetadataExtractor();
-    File file = new File(docxFile);
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = docxFile;
     assertThat(file.exists(), is(true));
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -83,6 +91,10 @@ public class MetadataExtractorTest {
       assertThat(result.getSilverName(), is(nullValue()));
       assertThat(result.getCreationDate(), is(new Date(1315916400000L)));
       assertThat(result.getLastSaveDateTime().getTime(), is(1316001900000L));
+      assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+      assertThat(result.getDefinition(), is(Definition.NULL));
+      assertThat(result.getFramerate(), nullValue());
+      assertThat(result.getDuration(), nullValue());
     } else {
       System.out.println("testExtractMetadataFrom2007WordDocument is not working correctly");
     }
@@ -90,8 +102,8 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromOpenOfficeDocument() {
-    MetadataExtractor instance = new MetadataExtractor();
-    File file = new File(ooFile);
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = ooFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Test pour Tika"));
@@ -103,12 +115,16 @@ public class MetadataExtractorTest {
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1239874322000L));
     assertThat(result.getLastSaveDateTime(), is(nullValue()));
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.NULL));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration(), nullValue());
   }
 
   @Test
   public void testExtractMetadataFromTifImage() {
-    MetadataExtractor instance = new MetadataExtractor();
-    File file = new File(tifFile);
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = tifFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Logo Silverpeas"));
@@ -123,6 +139,10 @@ public class MetadataExtractorTest {
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1340963223000L));
     assertThat(result.getLastSaveDateTime(), is(nullValue()));
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.of(1942, 1309)));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration(), nullValue());
   }
 
   /**
@@ -130,8 +150,8 @@ public class MetadataExtractorTest {
    */
   @Test
   public void testExtractMetadataFromPdfWithoutMetadata() throws Exception {
-    File file = new File(emptyPdfFile);
-    MetadataExtractor instance = new MetadataExtractor();
+    File file = emptyPdfFile;
+    MetadataExtractor instance = MetadataExtractor.getInstance();
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is(
@@ -144,8 +164,12 @@ public class MetadataExtractorTest {
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1356623042000L));
     assertThat(result.getLastSaveDateTime().getTime(), is(1361543391000L));
-
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.NULL));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration(), nullValue());
   }
+
   /*
    private void loadPdfWithPdfBox(File file) throws Exception {
    PDDocument document = PDDocument.load(file);
@@ -162,4 +186,83 @@ public class MetadataExtractorTest {
    ivalue = istring.codePointAt(0);
    System.out.println(Integer.toHexString(ivalue));
    }*/
+
+  @Test
+  public void testExtractMetadataFromMp4Video() {
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = mp4File;
+    MetaData result = instance.extractMetadata(file);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getSilverId(), is(nullValue()));
+    assertThat(result.getSilverName(), is(nullValue()));
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.of(1280, 720)));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration().getTimeAsLong(), is(6040l));
+    assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:06.040"));
+    assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:06"));
+  }
+
+  @Test
+  public void testExtractMetadataFromMovVideo() {
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = movFile;
+    MetaData result = instance.extractMetadata(file);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getSilverId(), is(nullValue()));
+    assertThat(result.getSilverName(), is(nullValue()));
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.of(1280, 720)));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration().getTimeAsLong(), is(6040l));
+    assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:06.040"));
+    assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:06"));
+  }
+
+  @Test
+  public void testExtractMetadataFromFlvVideo() {
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = flvFile;
+    MetaData result = instance.extractMetadata(file);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getSilverId(), nullValue());
+    assertThat(result.getSilverName(), nullValue());
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.of(1280, 720)));
+    assertThat(result.getFramerate().intValue(), is(25));
+    assertThat(result.getDuration().getTimeAsLong(), is(6120l));
+    assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:06.120"));
+    assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:06"));
+  }
+
+  @Test
+  public void testExtractMetadataFromMp3Audio() {
+    MetadataExtractor instance = MetadataExtractor.getInstance();
+    File file = mp3File;
+    MetaData result = instance.extractMetadata(file);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getTitle(), isEmptyString());
+    assertThat(result.getSubject(), nullValue());
+    assertThat(result.getAuthor(), is("sound fishing bruitages"));
+    assertThat(result.getComments(), nullValue());
+    assertThat(result.getKeywords(), notNullValue());
+    assertThat(result.getKeywords().length, is(0));
+    assertThat(result.getSilverId(), nullValue());
+    assertThat(result.getSilverName(), nullValue());
+    assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
+    assertThat(result.getDefinition(), is(Definition.NULL));
+    assertThat(result.getFramerate(), nullValue());
+    assertThat(result.getDuration().getTimeAsLong(), is(4257l));
+    assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:04.257"));
+    assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:04"));
+  }
+
+  private static File getDocumentNamed(final String name) {
+    final URL documentLocation = MetadataExtractorTest.class.getResource(name);
+    try {
+      return new File(documentLocation.toURI());
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
 }

@@ -160,7 +160,7 @@ public class Util {
     String paramValue = parameters.containsKey(parameter) ? parameters.get(parameter) : "false";
     return Boolean.parseBoolean(paramValue);
   }
-  
+
   public static void printOneMoreInputSnippet(String fieldName, PagesContext pageContext,
       PrintWriter out) {
     out.println("<a href=\"#\" id=\"moreField-" + fieldName + "\" onclick=\"showOneMoreField('" +
@@ -169,7 +169,7 @@ public class Util {
     out.println(Util.getString("field.multivaluable.add", pageContext.getLanguage()));
     out.println("</a>");
   }
-  
+
   public static String getFieldOccurrenceName(String fieldName, int occurrence) {
     if (occurrence == 0) {
       return fieldName;

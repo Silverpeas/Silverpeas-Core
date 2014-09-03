@@ -55,6 +55,8 @@ public interface NodeBm {
    */
   public NodeDetail getDetail(NodePK pk);
 
+  public NodeDetail getDetailTransactionally(NodePK pk);
+
   public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId);
 
   public ArrayList<NodeDetail> getTree(NodePK pk);

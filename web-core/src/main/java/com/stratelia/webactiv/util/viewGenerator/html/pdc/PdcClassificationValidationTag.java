@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
 import javax.servlet.jsp.JspException;
+
 import org.apache.ecs.ElementContainer;
 
 /**
@@ -29,8 +30,8 @@ import org.apache.ecs.ElementContainer;
  */
 public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
 
-  private static final long serialVersionUID = 3377113335947703561L;
   private String errorMessager;
+  private boolean errorWebRender = false;
   private String errorCounter;
 
   public String getErrorCounter() {
@@ -49,14 +50,23 @@ public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
     this.errorMessager = errorMessage;
   }
 
+  public boolean isErrorWebRender() {
+    return errorWebRender;
+  }
+
+  public void setErrorWebRender(final boolean errorWebRender) {
+    this.errorWebRender = errorWebRender;
+  }
+
   @Override
   public void doTag() throws JspException {
     if (isPdcUsed()) {
       ElementContainer xhtmlcontainer = new ElementContainer();
-      String script = "if (!$('#" + getId() + "').pdcClassification('isClassificationValid')) { "
-          + getErrorMessager() + " += \" - " + getResources().getString("pdcPeas.theContent")
-          + " " + getResources().getString("pdcPeas.MustContainsMandatoryAxis") + "\\n\"; "
-          + getErrorCounter() + "++; }";
+      String script = "if (!$('#" + getId() + "').pdcClassification('isClassificationValid')) { " +
+          getErrorMessager() + " += \"" + (isErrorWebRender() ? "<li>" : " - ") +
+          getResources().getString("pdcPeas.theContent") + " " +
+          getResources().getString("pdcPeas.MustContainsMandatoryAxis") +
+          (isErrorWebRender() ? "</li>" : "\\n") + "\"; " + getErrorCounter() + "++; }";
       xhtmlcontainer.addElement(script);
       xhtmlcontainer.output(getOut());
     }

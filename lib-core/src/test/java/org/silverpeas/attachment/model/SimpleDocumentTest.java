@@ -29,6 +29,11 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.mock.WebdavServiceMockWrapper;
+import org.silverpeas.attachment.webdav.WebdavService;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
 import java.util.Set;
@@ -36,6 +41,9 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -66,7 +74,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetFullJcrContentPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -90,7 +98,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetFullJcrPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -113,7 +121,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetDisplayIcon() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("toto.docx");
     String result = instance.getDisplayIcon();
     assertThat(result, is("/silverpeas//util/icons/fileType/word2007.gif"));
@@ -131,7 +139,7 @@ public class SimpleDocumentTest {
   @Test
   public void testIsOpenOfficeCompatible() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("toto.docx");
     boolean result = instance.isOpenOfficeCompatible();
     assertThat(result, is(true));
@@ -143,13 +151,126 @@ public class SimpleDocumentTest {
     assertThat(result, is(false));
   }
 
+  @Test
+  public void testGetWebdavContentEditionLanguage() {
+    ClassPathXmlApplicationContext appContext =
+        new ClassPathXmlApplicationContext("spring-mock-webdav.xml");
+    try {
+      assertThat("Spring initialization failed", WebdavServiceFactory.getWebdavService(),
+          notNullValue());
+      WebdavService mock = appContext.getBean(WebdavServiceMockWrapper.class).getMock();
+
+      SimpleDocument document = new SimpleDocument();
+      SimpleAttachment attachment = new SimpleAttachment();
+      document.setAttachment(attachment);
+      attachment.setFilename("file.mov");
+
+      /*
+      Current file is not an open office compatible one
+       */
+
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      // Trying a test case that must never happen but that shows that the open office compatible
+      // condition is respected.
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      /*
+      Current file is now an open office compatible one
+       */
+      attachment.setFilename("file.odp");
+
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      reset(mock);
+      document.release();
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      reset(mock);
+      document.release();
+      ReflectionTestUtils.setField(document, "editedBy", "26");
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), is("fr"));
+
+    } finally {
+      appContext.close();
+    }
+  }
+
+  @Test
+  public void testGetWebdavContentEditionLanguageWithoutRelease() {
+    ClassPathXmlApplicationContext appContext =
+        new ClassPathXmlApplicationContext("spring-mock-webdav.xml");
+    try {
+      assertThat("Spring initialization failed", WebdavServiceFactory.getWebdavService(),
+          notNullValue());
+      WebdavService mock = appContext.getBean(WebdavServiceMockWrapper.class).getMock();
+
+      SimpleDocument document = new SimpleDocument();
+      SimpleAttachment attachment = new SimpleAttachment();
+      document.setAttachment(attachment);
+      attachment.setFilename("file.mov");
+
+      /*
+      Current file is not an open office compatible one
+       */
+
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      // Trying a test case that must never happen but that shows that the open office compatible
+      // condition is respected.
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      /*
+      Current file is now an open office compatible one
+       */
+      attachment.setFilename("file.odp");
+
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+      reset(mock);
+      when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+
+      // The result should be "fr", but as the getWebdavContentEditionLanguage method has a lazy
+      // behavior, the previous tests has already made the information loaded.
+      assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
+
+    } finally {
+      appContext.close();
+    }
+  }
+
   /**
    * Test of getAttachmentPath method, of class SimpleDocument.
    */
   @Test
   public void testGetAttachmentPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -198,7 +319,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetAttachmentURL() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -222,8 +343,8 @@ public class SimpleDocumentTest {
     SimpleDocument instance = new SimpleDocument();
     String id = UUID.randomUUID().toString();
     instance.setPK(new SimpleDocumentPK(id, instanceId));
-    instance.setFile(new SimpleAttachment());
-    instance.getFile().setLanguage("en");
+    instance.setAttachment(new SimpleAttachment());
+    instance.getAttachment().setLanguage("en");
     String expResult = "/silverpeas/File/" + id + "?ContentLanguage=en";
     String result = instance.getUniversalURL();
     assertThat(result, is(expResult));
@@ -235,7 +356,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetOnlineURL() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -257,7 +378,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetAliasURL() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -279,7 +400,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetWebdavUrl() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("Mon fichier élève 2012 - fait à 80%.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -301,7 +422,7 @@ public class SimpleDocumentTest {
   @Test
   public void testGetWebdavJcrPath() {
     SimpleDocument instance = new SimpleDocument();
-    instance.setFile(new SimpleAttachment());
+    instance.setAttachment(new SimpleAttachment());
     instance.setFilename("myFile.odt");
     String id = UUID.randomUUID().toString();
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
@@ -335,8 +456,7 @@ public class SimpleDocumentTest {
         new UserDetailWithRoles("admin_reader_user", SilverpeasRole.reader, SilverpeasRole.admin);
     UserDetailWithRoles readerUser = new UserDetailWithRoles("reader_user", SilverpeasRole.reader);
     UserDetailWithRoles readerAndPrivilegedUser =
-        new UserDetailWithRoles("reader_privileged_user", SilverpeasRole.reader,
-            SilverpeasRole.privilegedUser);
+        new UserDetailWithRoles("reader", SilverpeasRole.reader);
 
     SimpleDocument instance = new SimpleDocument();
     SimpleDocumentPK pk = new SimpleDocumentPK("dummyId", instanceId);

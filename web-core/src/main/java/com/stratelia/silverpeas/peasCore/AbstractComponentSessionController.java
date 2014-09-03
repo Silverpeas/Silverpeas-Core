@@ -24,20 +24,10 @@
 
 package com.stratelia.silverpeas.peasCore;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.List;
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.subscription.SubscriptionContext;
-
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
@@ -47,6 +37,15 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.subscription.SubscriptionContext;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.List;
 
 
 
@@ -457,6 +456,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @return an array with all the user role names.
    */
   @Override
+  @Deprecated
   public String[] getUserRoles() {
     return context.getCurrentProfile();
   }
@@ -466,6 +466,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @return the highest privileged role name of the current user.
    */
   @Override
+  @Deprecated
   public String getUserRoleLevel() {
     String[] profiles = getUserRoles();
     String flag = SilverpeasRole.user.toString();
@@ -480,6 +481,29 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       }
     }
     return flag;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Collection<SilverpeasRole> getSilverpeasUserRoles() {
+    String currentKey = getComponentId() + "_user_roles";
+    Collection<SilverpeasRole> roles =
+        (Collection<SilverpeasRole>) CacheServiceFactory.getRequestCacheService().get(currentKey);
+    if (roles == null) {
+      roles = SilverpeasRole.from(context.getCurrentProfile());
+      roles.remove(SilverpeasRole.Manager);
+      CacheServiceFactory.getRequestCacheService().put(currentKey, roles);
+    }
+    return roles;
+  }
+
+  @Override
+  public SilverpeasRole getHighestSilverpeasUserRole() {
+    SilverpeasRole highestUserRole = SilverpeasRole.getGreaterFrom(getSilverpeasUserRoles());
+    if (highestUserRole == null) {
+      highestUserRole = SilverpeasRole.reader;
+    }
+    return highestUserRole;
   }
 
   @Override

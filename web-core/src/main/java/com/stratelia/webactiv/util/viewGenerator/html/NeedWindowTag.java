@@ -26,6 +26,7 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class NeedWindowTag extends TagSupport {
@@ -35,13 +36,13 @@ public class NeedWindowTag extends TagSupport {
 
   protected Window getWindow() {
     Window window = (Window) pageContext
-        .getAttribute(WINDOW_PAGE_ATT);
+        .getAttribute(WINDOW_PAGE_ATT, PageContext.REQUEST_SCOPE);
     if (window == null) {
       GraphicElementFactory gef = (GraphicElementFactory) pageContext
           .getSession().getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       window = gef.getWindow();
-      pageContext.setAttribute(WINDOW_PAGE_ATT, window);
+      pageContext.setAttribute(WINDOW_PAGE_ATT, window, PageContext.REQUEST_SCOPE);
     }
     return window;
   }

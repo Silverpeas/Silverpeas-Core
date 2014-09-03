@@ -23,12 +23,18 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -95,11 +101,61 @@ public class URLManager {
   public final static int URL_MESSAGE = 7;
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
+  public final static int URL_MEDIA = 10;
   private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL",
       "/silverpeas");
   static Properties specialsURL = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
+  
+  private static String SILVERPEAS_VERSION = null; // ie 5.14.1-SNAPSHOT
+  private static String SILVERPEAS_VERSION_MIN = null;  // ie 5141SNAPSHOT
+
+  public enum Permalink {
+    Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
+    Component(URL_COMPONENT, "/Component/"), Folder(URL_TOPIC, "/Topic/"),
+    File(URL_FILE, "/File/"), Document(URL_DOCUMENT, "/Document/"),
+    Version(URL_VERSION, "/Version/"), Survey(URL_SURVEY, "/Survey/"),
+    Question(URL_QUESTION, "/Question/"), ForumMessage(URL_MESSAGE, "/ForumsMessage/"),
+    Media(URL_MEDIA, "/Media/");
+    private int type;
+    private String urlPrefix;
+
+    private Permalink(int type, String urlPrefix) {
+      this.type = type;
+      this.urlPrefix = urlPrefix;
+    }
+
+    public int getType() {
+      return type;
+    }
+
+    public String getURLPrefix() {
+      return urlPrefix;
+    }
+
+    public static Permalink fromType(int type) {
+      Permalink permalink = null;
+      for (Permalink aPermalink : values()) {
+        if (aPermalink.getType() == type) {
+          permalink = aPermalink;
+          break;
+        }
+      }
+      return permalink;
+    }
+
+    public static boolean isCompliant(String url) {
+      boolean compliant = false;
+      for (Permalink aPermalink : values()) {
+        if (url != null && url.contains(aPermalink.getURLPrefix())) {
+          compliant = true;
+          break;
+        }
+      }
+      return compliant;
+    }
+  }
 
   static {
     ResourceLocator resources = new ResourceLocator("com.stratelia.silverpeas.peasCore.URLManager",
@@ -136,6 +192,10 @@ public class URLManager {
   @Deprecated
   public static String getURL(String sComponentName) {
     return getURL(sComponentName, null, null);
+  }
+
+  public static String getComponentInstanceURL(String sComponentId) {
+    return getURL(null, null, sComponentId);
   }
 
   public static String getURL(String sSpace, String sComponentId) {
@@ -222,9 +282,10 @@ public class URLManager {
     if (appendContext) {
       url = getApplicationURL();
     }
-    switch (type) {
-      case URL_MESSAGE:
-        url += "/ForumsMessage/" + id + "?ForumId=" + forumId;
+    Permalink permalink = Permalink.fromType(type);
+    switch (permalink) {
+      case ForumMessage:
+        url += permalink.getURLPrefix() + id + "?ForumId=" + forumId;
         break;
     }
     return url;
@@ -240,40 +301,28 @@ public class URLManager {
     if (url.endsWith("/")) {
       url = url.substring(0, url.length() - 1);
     }
-    switch (type) {
-      case URL_SPACE:
+    Permalink permalink = Permalink.fromType(type);
+    switch (permalink) {
+      case Space:
         if (!id.startsWith(Admin.SPACE_KEY_PREFIX)) {
           id = Admin.SPACE_KEY_PREFIX + id;
         }
-        url += "/Space/" + id;
+        url += permalink.getURLPrefix() + id;
         break;
-      case URL_COMPONENT:
-        url += "/Component/" + id;
-        break;
-      case URL_PUBLI:
-        url += "/Publication/" + id;
+      case Publication:
+        url += permalink.getURLPrefix() + id;
         if (isDefined(componentId)) {
           url += "?ComponentId=" + componentId;
         }
         break;
-      case URL_TOPIC:
-        url += "/Topic/" + id + "?ComponentId=" + componentId;
+      case Folder:
+        url += permalink.getURLPrefix() + id;
+        if (isDefined(componentId)) {
+          url += "?ComponentId=" + componentId;
+        }
         break;
-      case URL_FILE:
-        url += "/File/" + id;
-        break;
-      case URL_SURVEY:
-        url += "/Survey/" + id;
-        break;
-      case URL_QUESTION:
-        url += "/Question/" + id;
-        break;
-      case URL_DOCUMENT:
-        url += "/Document/" + id;
-        break;
-      case URL_VERSION:
-        url += "/Version/" + id;
-        break;
+      default:
+        url += permalink.getURLPrefix() + id;
     }
     return url;
   }
@@ -296,5 +345,60 @@ public class URLManager {
           getContributionType() + "&Id=" + content.getId();
     }
     return url;
+  }
+
+  /**
+   * Translates a string into <code>application/x-www-form-urlencoded</code>
+   * format using a specific encoding scheme. The specified string is  expected to be in the UTF-8
+   * charset, otherwise it is returned as such.
+   * @param url an UTF-8 string representing an URL of a resource in Silverpeas.
+   * @return the encoded URL.
+   */
+  public static String encodeURL(String url) {
+    String encodedUrl = url;
+    try {
+      encodedUrl = URLEncoder.encode(url, "UTF-8");
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(URLManager.class.getSimpleName()).log(Level.WARNING, ex.getMessage());
+    }
+    return encodedUrl;
+  }
+
+  /**
+   * Gets the permalink according to the specified parameters.
+   * @param permalink the permalink type.
+   * @param resourceId the identifier of the resource.
+   * @return the permalink string.
+   */
+  public static String getPermalink(Permalink permalink, String resourceId) {
+    if (URLManager.displayUniversalLinks()) {
+      return getSimpleURL(permalink.getType(), resourceId);
+    }
+    return "";
+  }
+
+  public static boolean isPermalink(String url) {
+    return Permalink.isCompliant(url);
+  }
+  
+  public static void setSilverpeasVersion(String version) {
+    SILVERPEAS_VERSION = version;
+    SILVERPEAS_VERSION_MIN = StringUtil.remove(StringUtil.remove(version, '.'), '-');
+  }
+  
+  public static String getSilverpeasVersion() {
+    return SILVERPEAS_VERSION;
+  }
+  
+  public static String getSilverpeasVersionMinify(){
+    return SILVERPEAS_VERSION_MIN;
+  }
+  
+  public static String appendVersion(String url) {
+    String param = "v=" + URLManager.getSilverpeasVersionMinify();
+    if (url.indexOf('?') == -1) {
+      return url + "?" + param;
+    }
+    return url + "&" + param;
   }
 }

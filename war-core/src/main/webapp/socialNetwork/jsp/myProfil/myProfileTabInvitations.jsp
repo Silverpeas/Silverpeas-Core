@@ -203,7 +203,7 @@ function showEmptyListMessage() {
 		  	int id = invitation.getInvitation().getId();
 		%>
 			<div class="a_invitation" id="invitation-<%=id%>">
-	                 <div class="profilPhoto"><a href="<%=URLManager.getApplicationURL() %>/Rprofil/jsp/Main?userId=<%=senderId%>"><img class="defaultAvatar" alt="" src="<%=URLManager.getApplicationURL()+invitation.getUserDetail().getAvatar() %>" /></a></div>
+	                 <div class="profilPhoto"><a href="<%=URLManager.getApplicationURL() %>/Rprofil/jsp/Main?userId=<%=senderId%>"><view:image css="defaultAvatar" alt="" src="<%=invitation.getUserDetail().getAvatar() %>" type="avatar" /></a></div>
 	                 <div class="action">
 	                 		<% if (outbox) { %>
 	                 			<a class="link notification" href="#" onclick="confirmCancel(<%=id %>)"><fmt:message key="myProfile.invitations.cancel" /></a>

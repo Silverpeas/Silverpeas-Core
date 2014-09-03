@@ -16,16 +16,16 @@
 <fmt:message var="ratingVoteYours" key="notation.vote.yours"></fmt:message>
 <fmt:message var="ratingVoteNone" key="notation.vote.yours.none"></fmt:message>
 
-<script type="text/javascript">
- var label_RatingTooltips = [${ratingTooltips}];
- var label_RatingVote = '${ratingVote}';
- var label_RatingVotes = '${ratingVotes}';
- var label_RatingVoteDelete = '${ratingVoteDelete}';
- var label_RatingVoteYours = '${ratingVoteYours}';
- var label_RatingVoteNone = '${silfn:escapeJs(ratingVoteNone)}';
- var param_userAnonymous = ${user.anonymous};
-</script>
-
-<span class="spOverRating">
-<span class="spRating"></span> <span class="rating-contribution"><span class="rating-contribution-number">{{nbRaterRatings}}</span> {{ratingLabel}}</span>
+<span class="silverpeas-rating">
+  <span class="labels" style="display: none"
+       label_RatingTooltips="${ratingTooltips}"
+       label_RatingVote="${ratingVote}"
+       label_RatingVotes="${ratingVotes}"
+       label_RatingVoteDelete="${ratingVoteDelete}"
+       label_RatingVoteYours="${ratingVoteYours}"
+       label_RatingVoteNone="${ratingVoteNone}"
+       param_userAnonymous="${user.anonymous}"></span>
+  <span class="spOverRating">
+    <span class="spRating"></span> <span class="rating-contribution"><span class="rating-contribution-number">{{nbRaterRatings}}</span> {{ratingLabel}}</span>
+  </span>
 </span>

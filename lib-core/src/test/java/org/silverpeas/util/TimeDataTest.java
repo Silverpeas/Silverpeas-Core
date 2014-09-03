@@ -69,6 +69,55 @@ public class TimeDataTest {
   }
 
   @Test
+  public void getTimeAsLong() {
+    TimeData timeData = createDefaultTimeData();
+    assertThat(timeData.getTimeAsLong(), is(getDefaultTime().longValue()));
+  }
+
+  @Test
+  public void getFormattedDurationHMSM() {
+    TimeData timeData = createDefaultTimeData();
+    assertThat(timeData.getFormattedDurationAsHMSM(), is("589874017:56:04.987"));
+    timeData = new TimeData(0);
+    assertThat(timeData.getFormattedDurationAsHMSM(), is("00:00:00.000"));
+    timeData = new TimeData(1);
+    assertThat(timeData.getFormattedDurationAsHMSM(), is("00:00:00.001"));
+    timeData = new TimeData(1001);
+    assertThat(timeData.getFormattedDurationAsHMSM(), is("00:00:01.001"));
+    timeData = new TimeData(4589001);
+    assertThat(timeData.getFormattedDurationAsHMSM(), is("01:16:29.001"));
+  }
+
+  @Test
+  public void getFormattedDurationHMS() {
+    TimeData timeData = createDefaultTimeData();
+    assertThat(timeData.getFormattedDurationAsHMS(), is("589874017:56:05"));
+    timeData = new TimeData(0);
+    assertThat(timeData.getFormattedDurationAsHMS(), is("00:00:00"));
+    timeData = new TimeData(1);
+    assertThat(timeData.getFormattedDurationAsHMS(), is("00:00:00"));
+    timeData = new TimeData(1001);
+    assertThat(timeData.getFormattedDurationAsHMS(), is("00:00:01"));
+    timeData = new TimeData(4589001);
+    assertThat(timeData.getFormattedDurationAsHMS(), is("01:16:29"));
+  }
+
+  @Test
+  public void getFormattedDuration() {
+    String format = "H:mm:ss.S|";
+    TimeData timeData = createDefaultTimeData();
+    assertThat(timeData.getFormattedDuration(format), is("589874017:56:04.987|"));
+    timeData = new TimeData(0);
+    assertThat(timeData.getFormattedDuration(format), is("0:00:00.000|"));
+    timeData = new TimeData(1);
+    assertThat(timeData.getFormattedDuration(format), is("0:00:00.001|"));
+    timeData = new TimeData(1001);
+    assertThat(timeData.getFormattedDuration(format), is("0:00:01.001|"));
+    timeData = new TimeData(4589001);
+    assertThat(timeData.getFormattedDuration(format), is("1:16:29.001|"));
+  }
+
+  @Test
   public void getRoundedTimeConverted() {
     TimeData timeData = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<TimeUnit, String>();

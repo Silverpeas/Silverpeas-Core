@@ -443,8 +443,7 @@ public class FileUtil implements MimeTypes {
     if (!StringUtil.isDefined(fileName)) {
       return "";
     }
-    String logicalName = convertPathToServerOS(fileName);
-    return logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+    return FilenameUtils.getName(fileName);
   }
 
   private FileUtil() {

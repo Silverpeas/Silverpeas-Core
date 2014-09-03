@@ -78,10 +78,11 @@
 </c:choose>
 <c:set var="__raterRatingJsVarName" value="_raterRating_${__rating_count}"/>
 <!-- ${raterRating.ratingAverage}: a little trick for table sorting -->
-<script type="application/javascript">var ${__raterRatingJsVarName} = ${raterRating.asJSonString};</script>
-<silverpeas-rating readonly="${_readOnly}"
+<script type="text/javascript">var ${__raterRatingJsVarName} = ${raterRating.asJSonString};</script>
+
+<span silverpeas-rating readonly="${_readOnly}"
                    forcedisplaywhennorating="${_forceDisplayWhenNoRating}"
                    shownbraterratings="${_showNbRaterRatings}"
                    starsize="${_starsize}"
                    canuserrating="${_canuserrating}"
-                   raterrating="${__raterRatingJsVarName}"></silverpeas-rating>
+                   raterrating="${__raterRatingJsVarName}"></span>

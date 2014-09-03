@@ -1050,6 +1050,10 @@ td.browsebar a:hover {
   background-color: #666666;
 }
 
+.hide {
+  display: none;
+}
+
 /****************************************/
 /****** Look V5 - TopBar ****************/
 /****************************************/
@@ -1135,24 +1139,6 @@ td.browsebar a:hover {
   border-top-style: solid;
   border-left-style: solid;
   border-color: #FFFFFF;
-}
-
-#ticker {
-  position: absolute;
-  right: 5px;
-  height: 15px;
-  width: 100%;
-  bottom: 6px;
-  text-align: center;
-  color: #000000;
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 10px
-}
-
-#ticker div {
-  /*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
-  /*background-color: #FFFFFF;*/
-  width: 500px;
 }
 
 #topBar #outils div.avatarName {
@@ -2583,21 +2569,24 @@ ul#globalResultListDetails {
   background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
-silverpeas-toggle a.toggle {
+div.silverpeas-toggle {
+  display:inline;
+}
+.silverpeas-toggle a.toggle {
   text-align: right;
   display: block;
   color: #666;
 }
 
-silverpeas-toggle a.toggle.more {
+.silverpeas-toggle a.toggle.more {
   background: transparent url(../../util/icons/toggle/btn-toggle-more.png) center bottom no-repeat;
 }
 
-silverpeas-toggle a.toggle.less {
+.silverpeas-toggle a.toggle.less {
   background: transparent url(../../util/icons/toggle/btn-toggle-less.png) center bottom no-repeat;
 }
 
-silverpeas-toggle a.toggle span {
+.silverpeas-toggle a.toggle span {
   display: block;
   font-size: 10px;
   height: 19px;
@@ -3736,7 +3725,7 @@ caption {
   padding-left:20px;
 }
 
-#newsFeedProfil .txt .decoration-photo {
+#newsFeedProfil .txt .decoration-media {
   background-image:url(../icons/newsFeed_picture.gif);
   padding-left:20px;
 }
@@ -4012,6 +4001,12 @@ img.preview-file {
 }
 
 img.view-file {
+  cursor:pointer;
+  margin-left:5px;
+  margin-right:0px;
+}
+
+img.share-file {
   cursor:pointer;
   margin-left:5px;
   margin-right:0px;
@@ -4312,6 +4307,13 @@ span.csv {
   /* float: left;*/
 }
 
+.inlineMessage a,
+.inlineMessage-ok a,
+.inlineMessage-nok a,
+.inlineMessage-waiting a {
+  text-decoration: underline;
+}
+
 .inlineMessage {
   background-color: #FBF7AA;
   border-color: #F9E98E;
@@ -4326,11 +4328,6 @@ span.csv {
   background-color: #F79992;
   border-color: #CE6F6F;
 }
-
-.inlineMessage-nok a {
-  text-decoration: underline;
-}
-
 
 .inlineMessage-waiting {
   background-color: #ffd49d;
@@ -4370,6 +4367,7 @@ button {
   position:absolute;
   right:10px;
   top:4px;
+  cursor:pointer;
 }
 
 .pdc_position .edit {
@@ -5826,6 +5824,29 @@ ul.tagit li.tagit-choice a.tagit-close {
   width: 90%;
 }
 
+.ui-dialog .filedset-ui-dialog legend {
+  padding:0 0.5em;
+}
+
+.ui-dialog .filedset-ui-dialog.notification legend{
+  padding-left:30px;
+  background:transparent url(../icons/email.gif) 5px 0 no-repeat;
+}
+
+.ui-dialog .filedset-ui-dialog.validity legend {
+  padding-left:30px;
+	background: url("../icons/calendar_2.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+.ui-dialog .filedset-ui-dialog{
+  clear:both;
+  background-color:#f4f4f4;
+  border-radius:8px;
+  border:1px solid #c7c7c7;
+  margin:0 0 14px 0;
+  padding:1em;
+}
+
 /*******************************/
 /**       Responsibles        **/
 /*******************************/
@@ -5907,6 +5928,129 @@ ul.tagit li.tagit-choice a.tagit-close {
   margin:0 0 1em 0;
   text-align:center;
   clear: both;
+}
+/*******************************/
+/***** portlet : Appl News        ***/
+/*******************************/
+
+#quickinfo-app-portlet {
+	background-color:transparent;
+}
+
+/*******************************/
+/***** portlet : News        ***/
+/*******************************/
+.portlet-content ul.listing-actuality-portlet {
+	list-style-type:none;
+	list-style-image:none;
+	padding:0;
+	margin:0;
+}
+.listing-actuality-portlet li{
+	clear:left;
+	position:relative;
+	margin-bottom:2em;
+}
+.listing-actuality-portlet h3 {
+	margin:0;
+	padding:0;
+}
+.listing-actuality-portlet h3 a{
+	font-size:11pt;
+}
+.listing-actuality-portlet p{
+	color:#8f8f8f;
+	padding:0;
+	margin:0.25em 0;
+}
+.listing-actuality-portlet .actuality-illustration {
+	width:210px;
+	float:left;
+	margin:0 0.5em 0.5em 0;
+}
+
+.listing-actuality-portlet .actuality-info-fonctionality {
+	background-color:#FFF;
+	position:absolute;
+	top:14px;
+	left:0;
+	display:inline;
+	padding:0.25em;
+}
+
+.listing-actuality-portlet .actuality-without-illustration .actuality-info-fonctionality {
+	position:relative;
+	top:inherit;
+	left:inherit;
+	display:inline;
+	padding:0.25em;
+	float:right;
+}
+.listing-actuality-portlet .actuality-info-fonctionality img{
+	vertical-align:bottom;
+}
+
+.portlet-content ul.slider-actuality-portlet  {
+	padding:0;
+	margin:0;
+	list-style-type:none;
+	text-align:center;
+}
+.portlet-content ul.slider-actuality-portlet li div.content-actuality-illustration {
+	padding:0;
+	margin:0;
+	background-color:#bbbbbb;
+	text-align:center;
+	box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1);
+}
+.portlet-content ul.slider-actuality-portlet .actuality-illustration {
+	height:284px;
+	width:auto;
+	margin:0 auto;
+	float:none;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-date {
+	position:absolute;
+	top:298px;
+	left:10px;
+	color:#1c94d4
+}
+
+.portlet-content ul.slider-actuality-portlet .actuality-nb-commentaires {
+	position:absolute;
+	right:10px;
+	top:298px;
+}
+
+.portlet-content .actuality-nb-commentaires img {
+	border:0;
+	vertical-align:text-top;
+	display: inline;
+    float: none;
+}
+
+.portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-date,
+.portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-nb-commentaires {
+	top:10px;
+}
+
+.portlet-content ul.slider-actuality-portlet .actuality-title  {
+	padding:2.2em 10px 0em;
+	margin:0;
+	text-align:left;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-teasing  {
+	text-align:left;
+	color:#8f8f8f;
+	font-size:110%;
+	padding:0.5em 10px 1em;
+	margin:0 ;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-title  a{
+	font-size:120%;
+}
+.portlet-content ul.slider-actuality-portlet .actuality-title  a:hover{
+	color:#1c94d4
 }
 
 /*******************************/
@@ -6008,11 +6152,21 @@ blockquote {
   .rightContent {
     width: 230px;
   }
+  .attachments {
+    min-width: 230px;
+	}
+  .header h4 {
+    min-width: 210px;
+   }
   .rightContent .attachments {
     min-width:auto;
   }
   .principalContent {
     margin-right: 245px;
+  }
+   #directory .aff_colonnes li {
+	float:none;
+	width:auto;
   }
 }
 
@@ -6032,6 +6186,10 @@ blockquote {
   }
   .header h4 {
     min-width: auto;
+  }
+   #directory .aff_colonnes li {
+	float:none;
+	width:auto;
   }
 }
 
@@ -6130,11 +6288,14 @@ form .forms .fields > li:nth-child(even) {
 }
 
 /**** Surchage plugin jquery rate it ****/
-silverpeas-rating .rateit .rateit-range,
-silverpeas-rating .rateit .rateit-preset,
-silverpeas-rating .rateit .rateit-preset-rtl,
-silverpeas-rating .rateit .rateit-selected,
-silverpeas-rating .rateit .rateit-hover {
+div.silverpeas-rating {
+  display:inline;
+}
+.silverpeas-rating .rateit .rateit-range,
+.silverpeas-rating .rateit .rateit-preset,
+.silverpeas-rating .rateit .rateit-preset-rtl,
+.silverpeas-rating .rateit .rateit-selected,
+.silverpeas-rating .rateit .rateit-hover {
        background-image: url(../icons/rateit/star.png) ;
 }
 
@@ -6219,6 +6380,155 @@ div.user-card .userToZoom{
 	font-weight:bold;
 }
 
-div.user-card .field{	
+div.user-card .field{
 	color:#444;
+}
+
+/**** Thumbnail service */
+#thumbnailPreviewAndActions {
+	background-color:#EEEEEE;
+	border:1px solid #DDDDDD;
+	float:left;
+	margin-left:0;
+	padding:3px;
+	margin-bottom: 3px;
+}
+
+#thumbnailPreview {
+	float: left;
+}
+
+#thumbnailPreview #thumbnail {
+	height: 50px;
+	border:1px solid #DDDDDD;
+}
+
+#thumbnailActions {
+	float: left;
+	margin-left: 4px;
+}
+
+#thumbnailActions a {
+	margin-bottom: 5px;
+	display: block;
+}
+
+#thumbnailActions img {
+	vertical-align: middle;
+}
+
+#thumbnailInputs {
+	clear: both;
+}
+
+#thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
+	vertical-align: middle;
+}
+
+/****** Ticker ******/
+#topBar #desktop-notifications-permission {
+	background: url('/silverpeas/util/icons/cog.png') no-repeat scroll 0 0 transparent;
+    line-height: 17px;
+    padding-left: 20px;
+	position: absolute;
+	right: 0;
+	top:1px;
+	padding-right:1em;
+	font-weight:bold;
+}
+
+#topBar #ticker {
+    height: 22px;
+    left: 250px;
+    position: absolute;
+    right: 150px;
+    top: 89px;
+    background-color: transparent;
+	z-index:1000;
+}
+
+#sp-ticker .ticker-wrapper.has-js {
+    background-color: transparent;
+    border-radius: 0;
+    display: block;
+    font-size: 0.75em;
+    height: 22px;
+    margin:0;
+    padding: 0;
+    width: 100%;
+}
+#sp-ticker {
+	display:block;
+}
+
+#sp-ticker .ticker {
+    background-color: transparent;
+    display: block;
+    height: 22px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+#sp-ticker .ticker-title {
+	padding-top: 2px;
+	padding-left:1em;
+	color: #333;
+	font-weight: bold;
+	background-color: transparent;
+	text-transform: uppercase;
+}
+#sp-ticker .ticker-content {
+	margin: 0px;
+	padding-top: 3px;
+	position: absolute;
+	color: #333;
+	font-weight: 100;
+	background-color: transparent;
+	overflow: hidden;
+	white-space: nowrap;
+	line-height: 1.2em;
+	padding-left:1em;
+}
+
+/*********************** advanced search help *********************/
+input[title] {
+  background-image:url(/silverpeas/util/icons/input-info.png);
+  background-position:top right;
+  background-repeat:no-repeat;
+}
+
+
+
+/*********************** COMMON CRUD CONTAINER *********************/
+.crud-container #createdInfo b {
+  display: inline;
+}
+
+.crud-container #createdInfo b:after {
+  content: ' ';
+  display: block;
+}
+
+.crud-container #lastModificationInfo b {
+  display: inline;
+}
+
+.crud-container #lastModificationInfo b:after {
+  content: ' ';
+  display: block;
+}
+
+.crud-container #publishedAtInfo b {
+  display: inline;
+}
+
+.crud-container #publishedAtInfo b:after {
+  content: ' ';
+  display: block;
+}
+
+/*********************** MEDIA PLAYER *********************/
+iframe.embed {
+  overflow: hidden;
 }

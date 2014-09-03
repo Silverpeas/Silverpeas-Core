@@ -149,4 +149,14 @@ public abstract class AbstractDateDatable<T extends Datable<? super T>> extends 
   public T addMilliseconds(final int amount) {
     return newInstanceFrom(DateUtils.addMilliseconds(this, amount));
   }
+
+  @Override
+  public boolean isDefined() {
+    return compareTo(DateUtil.MINIMUM_DATE) != 0 && compareTo(DateUtil.MAXIMUM_DATE) != 0;
+  }
+
+  @Override
+  public boolean isNotDefined() {
+    return !isDefined();
+  }
 }

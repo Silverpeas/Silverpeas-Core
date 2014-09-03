@@ -24,22 +24,28 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
-import java.io.IOException;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import java.io.IOException;
 
 public class PaginationTag extends TagSupport {
 
   private static final long serialVersionUID = 7931703988418922022L;
   private int currentPage;
   private int nbPages;
+  private int nbItemsPerPage;
+  private int totalNumberOfItems;
   private String action;
+  boolean actionIsJsFunction = false;
   private String pageParam;
   private String altPreviousAction;
   private String altNextAction;
   private String altGoToAction;
+
+  boolean hasParam = false;
 
   public void setCurrentPage(Integer currentPage) {
     this.currentPage = currentPage;
@@ -49,8 +55,20 @@ public class PaginationTag extends TagSupport {
     this.nbPages = nbPages;
   }
 
+  public void setNbItemsPerPage(final int nbItemsPerPage) {
+    this.nbItemsPerPage = nbItemsPerPage;
+  }
+
+  public void setTotalNumberOfItems(final int totalNumberOfItems) {
+    this.totalNumberOfItems = totalNumberOfItems;
+  }
+
   public void setAction(String action) {
     this.action = action;
+  }
+
+  public void setActionIsJsFunction(final boolean actionIsJsFunction) {
+    this.actionIsJsFunction = actionIsJsFunction;
   }
 
   public void setAltPreviousAction(String altPreviousAction) {
@@ -71,10 +89,18 @@ public class PaginationTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
+    GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
+        .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+
+    if (actionIsJsFunction) {
+      nbPages = PaginationUtil.countTotalNumberOfPages(nbItemsPerPage, totalNumberOfItems);
+    }
     if (this.nbPages <= 1) {
       return EVAL_PAGE;
     }
-    boolean hasParam = action.indexOf('?') > 0;
+
+    hasParam = action.indexOf('?') > 0;
+
     JspWriter out = pageContext.getOut();
     try {
       out.println("<table id=\"pagination\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
@@ -85,11 +111,14 @@ public class PaginationTag extends TagSupport {
 
       // display previous link (or nothing if current page is first one)
       if (this.currentPage > 0) {
+        if (this.altPreviousAction == null && gef != null) {
+          this.altPreviousAction = gef.getMultilang().getString("GEF.pagination.previousPage");
+        }
 
         // display previous page link
         out.println("<div class=\"pageOff\">");
-        out.println(getUrl(action, hasParam, this.altPreviousAction, (this.currentPage - 1)));
-            out.println("<img src=\""+getIconsPath()+
+        out.println(getUrl(action, this.altPreviousAction, (this.currentPage - 1)));
+        out.println("<img src=\"" + getIconsPath() +
             "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""+
             this.altPreviousAction+"\"/></a>");
         out.println("</div>");
@@ -102,8 +131,11 @@ public class PaginationTag extends TagSupport {
           out.println(i+1);
           out.println("</div>");
         } else {
+          if (this.altGoToAction == null && gef != null) {
+            this.altGoToAction = gef.getMultilang().getString("GEF.pagination.gotoPage");
+          }
           out.println("<div class=\"pageOff\">");
-          out.println(getUrl(action, hasParam, this.altGoToAction + " " + (i+1), (i)));
+          out.println(getUrl(action, this.altGoToAction + " " + (i + 1), (i)));
           out.println(i+1);
           out.println("</a>");
           out.println("</div>");
@@ -112,9 +144,12 @@ public class PaginationTag extends TagSupport {
 
       // display next link (or nothing if current page is last one)
       if ((this.currentPage + 1) < this.nbPages) {
+        if (this.altNextAction == null && gef != null) {
+          this.altNextAction = gef.getMultilang().getString("GEF.pagination.nextPage");
+        }
         // display next page link
         out.println("<div class=\"pageOff\">");
-        out.println(getUrl(action, hasParam, this.altNextAction, (this.currentPage + 1)));
+        out.println(getUrl(action, this.altNextAction, (this.currentPage + 1)));
         out.println("<img src=\""+getIconsPath()+
             "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""+
             this.altNextAction+"\"/></a>");
@@ -133,16 +168,22 @@ public class PaginationTag extends TagSupport {
     }
   }
 
-  public String getUrl(String elAction, boolean hasParam, String title, int page) {
+  public String getUrl(String elAction, String title, int page) {
     StringBuilder buffer = new StringBuilder(200);
     buffer.append(" <a class=\"ArrayNavigation\"").append(" title=\"").append(title).append("\"");
-    buffer.append(" href=\"").append(elAction);
-    if (hasParam) {
-      buffer.append('&');
+    buffer.append(" href=\"");
+    if (!actionIsJsFunction) {
+      buffer.append(elAction);
+      if (hasParam) {
+        buffer.append('&');
+      } else {
+        buffer.append('?');
+      }
+      buffer.append(pageParam).append('=').append(page);
     } else {
-      buffer.append('?');
+      buffer.append("javascript:onClick=").append(elAction).append("(").append(page)
+          .append(")");
     }
-    buffer.append(pageParam).append('=').append(page);
     buffer.append("\">");
     return buffer.toString();
   }

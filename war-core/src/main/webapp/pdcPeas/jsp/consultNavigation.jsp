@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.lang.Math"%>
 <%@ include file="checkPdc.jsp"%>
 <%
@@ -56,9 +56,7 @@
 <html>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <SCRIPT type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
 <script type="text/javascript">
 <!--

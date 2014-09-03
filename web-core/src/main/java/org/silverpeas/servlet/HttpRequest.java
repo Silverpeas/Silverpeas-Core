@@ -65,6 +65,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   private HttpRequest(HttpServletRequest request) {
     super(request);
+    // The decorated request is put into attributes in order to provide it to the REST web
+    // services that deals with proxies...
+    request.setAttribute(HttpRequest.class.getName(), this);
   }
 
   /**
@@ -259,8 +262,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
   public String[] getParameterValues(String name) {
     String[] values = super.getParameterValues(name);
     if (values == null && isContentInMultipart()) {
-      values = new String[]{FileUploadUtil.getParameter(getFileItems(), name, null,
-          getCharacterEncoding())};
+      List<String> listOfValues =
+          FileUploadUtil.getParameterValues(getFileItems(), name, getCharacterEncoding());
+      values = listOfValues.toArray(new String[listOfValues.size()]);
     }
     return values;
   }
@@ -354,6 +358,21 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a {@link RequestFile}.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as a {@link RequestFile}.
+   */
+  public RequestFile getParameterAsRequestFile(String parameterName) {
+    RequestFile requestFile = null;
+    FileItem fileItem = FileUploadUtil.getFile(getFileItems(), parameterName);
+    if (fileItem != null) {
+      requestFile = new RequestFile(fileItem);
+    }
+    return requestFile;
+  }
+
+  /**
    * Get a parameter value as a boolean.
    *
    * @param parameterName the name of the parameter.
@@ -371,6 +390,16 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public Long getParameterAsLong(String parameterName) {
     return asLong(getParameter(parameterName));
+  }
+
+  /**
+   * Get a parameter value as a Integer.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as an integer.
+   */
+  public Integer getParameterAsInteger(String parameterName) {
+    return asInteger(getParameter(parameterName));
   }
 
   /**
@@ -417,6 +446,22 @@ public class HttpRequest extends HttpServletRequestWrapper {
       String typedObject = (String) object;
       if (StringUtil.isLong(typedObject)) {
         return Long.valueOf(typedObject);
+      }
+      return null;
+    }
+    if (object != null) {
+      throw new NotImplementedException();
+    }
+    return null;
+  }
+
+  private <T> Integer asInteger(T object) {
+    if (object instanceof Number) {
+      return ((Number) object).intValue();
+    } else if (object instanceof String) {
+      String typedObject = (String) object;
+      if (StringUtil.isInteger(typedObject)) {
+        return Integer.valueOf(typedObject);
       }
       return null;
     }

@@ -36,7 +36,7 @@ public class ImageDisplayTest {
   @Test
   public void getAvatarName() {
     HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(request.getPathInfo()).thenReturn("/display/avatar/nbourakbi.jpg");
+    Mockito.when(request.getPathInfo()).thenReturn("nbourakbi.jpg");
     ImageDisplay display = new ImageDisplay();
     String result = display.getAvatar(request);
     String expectedResult = "nbourakbi.jpg";

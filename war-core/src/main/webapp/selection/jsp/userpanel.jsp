@@ -114,7 +114,7 @@
               <ul id="group_list">
                 <li ng-repeat="group in groups" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
-                  <span class="name_group">{{ group.name }}</span><span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
+                  <span class="name_group"><a href="#" title="<fmt:message key='selection.group.goto'/>" ng-click="goToGroup(group)">{{ group.name }}</a></span><span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
                   <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
                   <a href="#" ng-show="selectedGroups.indexOf(group) < 0" ng-click="selectGroup(group)" id="{{ 'add_group_' + group.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add group"><fmt:message key="selection.AddToSelection"/></a>
                 </li>

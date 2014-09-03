@@ -26,6 +26,7 @@
 
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
     
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
@@ -68,7 +69,7 @@ boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("De
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <style type="text/css">
 .selection table, 
 .selection input {

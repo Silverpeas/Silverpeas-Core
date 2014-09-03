@@ -32,8 +32,8 @@
 	SpaceInst[] brothers = (SpaceInst[]) request.getAttribute("Brothers");
 	SpaceInst currentSpace = (SpaceInst) request.getAttribute("CurrentSpace");
 	
+	window.setPopup(true);
     browseBar.setSpaceId(currentSpace.getId());
-    browseBar.setClickable(false);
     browseBar.setPath(resource.getString("JSPP.SpaceOrder"));
 %>
 

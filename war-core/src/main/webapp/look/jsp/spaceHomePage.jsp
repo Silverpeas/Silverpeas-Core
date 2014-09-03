@@ -162,32 +162,46 @@ List<UserDetail> admins = homepage.getAdmins();
 
 .spaceHome #spaceQuiskInfo li.slide {
      list-style: none outside none;
-     margin: 0px;
-     min-height: 120px;
-     padding: 0px 0px 16px;
+     padding: 0px;
+     min-height: 180px;
+     margin: 0px 0px 5px;
 }
 
 .spaceHome #spaceQuiskInfo li.slide > h4 {
-     margin: 0px;
+     margin: 0 0 8px 0;
      padding: 0px;
+}
+
+.spaceHome #spaceQuiskInfo li.slide img {
+    float: left;
+    margin: 0.25em 0.5em 0 0;
+    width: 100px;
 }
 
 .spaceHome #spaceQuiskInfo li p {
      color: #666666;
      text-align: justify;
+	 padding:0;
+	 margin:0;
 }
 
 .spaceHome #spaceQuiskInfo .slides-pagination {
-     bottom: 4px;
-     left: 4px;
+     bottom: auto;
+     left: auto;
+	 position:relative;
      margin: 0px;
      padding: 0px;
 	 z-index:90;
 }
 
+.spaceHome #spaceQuiskInfo .slides-pagination li {
+    display: inline-block;
+}
+
 .spaceHome #spaceQuiskInfo .slides-pagination a {
      color: #FFFFFF;
      text-align: center;
+	 margin-bottom: 5px;
 }
 
 .spaceHome #spaceQuiskInfo .slideshow {
@@ -195,7 +209,7 @@ List<UserDetail> admins = homepage.getAdmins();
 }
 
 .spaceHome #admins #global-admins,
- .spaceHome #admins #space-admins h5 {
+.spaceHome #admins #space-admins h5 {
      display: none;
 }
 </style>
@@ -240,7 +254,7 @@ $(document).ready(function() {
 							<div class="portlet-content">
 								<ul class="list-responsible-user">
 									<% for (UserDetail admin : admins) { %>
-									<li class="intfdcolor"><div class="content"><div class="profilPhoto"><img class="avatar" src="<%=URLManager.getApplicationURL()+admin.getAvatar()%>"/></div><div class="userName"><view:username userId="<%=admin.getId() %>"/></div></div></li>
+									<li class="intfdcolor"><div class="content"><div class="profilPhoto"><view:image css="avatar" src="<%=admin.getAvatar()%>" type="avatar"/></div><div class="userName"><view:username userId="<%=admin.getId() %>"/></div></div></li>
 									<% } %>
 								</ul>
 								<br clear="all" />
@@ -252,16 +266,19 @@ $(document).ready(function() {
 						  <% if (news != null && !news.isEmpty()) { %>
 						  <!-- QuickInfo -->
 						  <div class="portlet" id="spaceQuiskInfo">
-                            <div class=" header">
+                            <div class="header">
                               <h2 class="portlet-title"><%=helper.getString("lookSilverpeasV5.homepage.space.news") %></h2>
                             </div>
-                            <div class="portlet-content slideshow"data-transition="crossfade" data-loop="true" data-skip="false">
+                            <div class="portlet-content slideshow" data-transition="crossfade" data-loop="true" data-skip="false">
 								<ul class="carousel">
 									<% for (PublicationDetail aNews : news) { %>
 										<li class="slide">
-                      <h4 class="title-quickInfo"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></h4>
+                      					<h4 class="title-quickInfo"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></h4>
+                      					<% if (aNews.getThumbnail() != null) { %>
+											<img src="<%=aNews.getThumbnail().getURL()%>" alt=""/>
+										<% } %>
 										<div class="content-quickInfo">
-											<p><%=aNews.getWysiwyg() %></p>
+											<p><%=aNews.getDescription() %></p>
 										</div>
 										</li>
 									<% } %>

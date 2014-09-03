@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.silverpeas.util.web.servlet.RestRequest.Action.*;
+
 public abstract class AbstractRestServlet extends HttpServlet {
 
   private static final long serialVersionUID = -8272551004360184500L;
@@ -48,16 +50,16 @@ public abstract class AbstractRestServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(request, getServletRequestPath());
     switch (restRequest.getAction()) {
-      case RestRequest.CREATE:
+      case CREATE:
         create(restRequest, response);
         break;
-      case RestRequest.UPDATE:
+      case UPDATE:
         update(restRequest, response);
         break;
-      case RestRequest.DELETE:
+      case DELETE:
         delete(restRequest, response);
         break;
-      case RestRequest.FIND:
+      case FIND:
       default:
         find(restRequest, response);
         break;

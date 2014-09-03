@@ -33,6 +33,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.settings.SilverpeasSettings;
 import org.silverpeas.token.Token;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
@@ -54,7 +56,8 @@ import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
  * the web services in Silverpeas like the user priviledge checking.
  */
 public abstract class RESTWebService {
-  public static final String REST_WEB_SERVICES_URI_BASE = "services";
+  public static final String REST_WEB_SERVICES_URI_BASE =
+      SilverpeasSettings.getRestWebServicesUriBase();
 
   /**
    * The HTTP header parameter that provides the real size of an array of resources. It is for
@@ -66,7 +69,8 @@ public abstract class RESTWebService {
   @Context
   private UriInfo uriInfo;
   @Context
-  private HttpServletRequest httpRequest;
+  private HttpServletRequest httpServletRequest;
+  private HttpRequest httpRequest;
   @Context
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
@@ -153,6 +157,20 @@ public abstract class RESTWebService {
    * @return the HTTP servlet request.
    */
   public HttpServletRequest getHttpServletRequest() {
+    return httpServletRequest;
+  }
+
+  /**
+   * Gets the HTTP request mapped with the execution context of this web service.
+   * @return the HTTP request.
+   */
+  public HttpRequest getHttpRequest() {
+    if (httpRequest == null) {
+      httpRequest = (HttpRequest) getHttpServletRequest().getAttribute(HttpRequest.class.getName());
+      if (httpRequest == null) {
+        httpRequest = HttpRequest.decorate(getHttpServletRequest());
+      }
+    }
     return httpRequest;
   }
 

@@ -40,7 +40,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -69,7 +68,6 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class NodeBmEJB implements NodeBm {
 
-  private static final long serialVersionUID = 1L;
   /**
    * Database name where is stored nodes
    */
@@ -153,6 +151,17 @@ public class NodeBmEJB implements NodeBm {
           "node.GETTING_NODE_DETAIL_FAILED", "nodeId = " + pk.getId(), re);
     }
 
+  }
+
+  /**
+   * Get the attributes of a node and of its children with transaction support
+   *
+   * @return a NodeDetail
+   */
+  @Override
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+  public NodeDetail getDetailTransactionally(NodePK pk) {
+    return getDetail(pk);
   }
 
   /**

@@ -54,8 +54,25 @@
             shownbraterratings : '@',
             raterrating : '='
           },
+          replace: true,
           link : function postLink(scope, element, attrs) {
             $timeout(function() {
+
+              /*
+              Labels & common parameters
+               */
+              var $labels = angular.element('.labels', element);
+              var label_RatingTooltips = $labels.attr('label_RatingTooltips').split(', ');
+              var label_RatingVote = $labels.attr('label_RatingVote');
+              var label_RatingVotes = $labels.attr('label_RatingVotes');
+              var label_RatingVoteDelete = $labels.attr('label_RatingVoteDelete');
+              var label_RatingVoteYours = $labels.attr('label_RatingVoteYours');
+              var label_RatingVoteNone = $labels.attr('label_RatingVoteNone');
+              var param_userAnonymous = eval($labels.attr('param_userAnonymous'));
+
+              /*
+              Treatments
+               */
               if (typeof scope.canuserrating === 'undefined') {
                 scope.canuserrating = "true";
               }

@@ -23,22 +23,27 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.silverpeas.ldap.CreateLdapServer;
 import org.silverpeas.ldap.OpenDJRule;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 @CreateLdapServer(ldifConfig = "opendj/config/config.ldif", serverHome = "opendj", ldifFile =
 "silverpeas-ldap.ldif")
@@ -46,21 +51,15 @@ public class LDAPDriverTest {
 
   @ClassRule
   public static OpenDJRule ldapRule = new OpenDJRule();
-  private static ResourceLocator settings;
   private String connectionId;
   private LDAPDriver driver = new LDAPDriver();
 
   public LDAPDriverTest() {
   }
 
-  @BeforeClass
-  public static void prepareSettings() throws Exception {
-    settings = new ResourceLocator("com.stratelia.silverpeas.domains.domainLDAP", "");
-  }
-
   @Before
   public void prepareConnection() throws Exception {
-    driver.initFromProperties(settings);
+    driver.init(0, "org.silverpeas.domains.domainLDAP", null);
     connectionId = LDAPUtility.openConnection(driver.driverSettings);
   }
 
@@ -102,6 +101,15 @@ public class LDAPDriverTest {
     assertThat(user.getFirstName(), is("Abahri"));
     assertThat(user.getLastName(), is("Abazari"));
   }
+  
+  @Test
+  public void getAUserFull() throws Exception {
+    UserFull user = driver.getUserFull("user.7");
+    assertThat(user, notNullValue());
+    assertThat(user.getFirstName(), is("Abahri"));
+    assertThat(user.getLastName(), is("Abazari"));
+    assertThat(user.getValue("city"), is("Hattiesburg"));
+  }
 
   @Test
   public void getAGroup() throws Exception {
@@ -110,4 +118,24 @@ public class LDAPDriverTest {
     assertThat(group.getName(), is("Groupe 1"));
     assertThat(group.getDescription(), is("Description du premier groupe"));
   }
+  
+  @Test
+  public void updateAUserFull() throws Exception {
+    String newCity = "Grenoble";
+    UserFull user = driver.getUserFull("user.7");
+    assertThat(user.getValue("city"), is("Hattiesburg"));
+    user.setValue("city", newCity);
+    user.setValue("matricule", "123");
+    user.setValue("homePhone", "");
+    driver.updateUserFull(user);
+    
+    user = driver.getUserFull("user.7");
+    // checks an updatable field is well updated
+    assertThat(user.getValue("city"), is(newCity));
+    // checks a non-updatable field is not updated
+    assertThat(user.getValue("matricule"), is("7"));
+    // checks reset is ok
+    assertThat(user.getValue("homePhone"), isEmptyOrNullString());
+  }
+  
 }

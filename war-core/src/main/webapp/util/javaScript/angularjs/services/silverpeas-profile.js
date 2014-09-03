@@ -42,48 +42,47 @@
         var defaultParameters = {};
         if (context) {
           defaultParameters = {
-            resource: context.resource,
-            domain: context.domain,
-            roles: context.roles
+            resource : context.resource,
+            domain : context.domain,
+            roles : context.roles
           };
         }
 
-        var adapter = RESTAdapter.get(webContext + '/services/profile/users', function(data) {
-          var users;
-          if (data instanceof Array) {
-            users = [];
-            for (var i = 0; i < data.length; i++) {
-              users.push(new User(data[i]));
-            }
-          } else {
-            users = new User(data);
-          }
-          return users;
-        });
-
         var User = function() {
-          if (arguments.length > 0) {
-            for (var prop in arguments[0]) {
-              this[prop] = arguments[0][prop];
-            }
-          }
+          this.relationships = function() {
+            return adapter.find({
+              url : this.contactsUri,
+              criteria : adapter.criteria(arguments[0], defaultParameters)
+            });
+          };
         };
-        User.prototype.relationships = function() {
-          return adapter.find({
-            url: this.contactsUri,
-            criteria: adapter.criteria(arguments[0], defaultParameters)
-          });
-        };
+
+        var adapter = RESTAdapter.get(webContext + '/services/profile/users',  User);
 
         this.get = function() {
-          if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
+          if (arguments.length === 1 &&
+              (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
             return adapter.find(arguments[0]);
           } else {
             var url = adapter.url + (context.component ? '/application/' + context.component : '');
             return adapter.find({
-              url: url,
-              criteria: adapter.criteria(arguments[0], defaultParameters)
+              url : url,
+              criteria : adapter.criteria(arguments[0], defaultParameters)
             });
+          }
+        };
+
+        this.getExtended = function(userId) {
+          if (typeof userId === 'number' || typeof userId === 'string') {
+            var url = adapter.url + '/' + userId;
+            return adapter.find({
+              url : url,
+              criteria : adapter.criteria({extended : true}, defaultParameters)
+            });
+          } else {
+            window.console &&
+            window.console.log('User profile - ERROR - getting extended user data whithout specifying its id ...');
+            return {};
           }
         };
       };
@@ -108,39 +107,26 @@
           };
         }
 
-        var adapter = RESTAdapter.get(webContext + '/services/profile/groups', function(data) {
-          var groups = [];
-          if (data instanceof Array)
-            for (var i = 0; i < data.length; i++) {
-              groups.push(new UserGroup(data[i]));
-            }
-          else
-            groups = new UserGroup(data);
-          return groups;
-        });
-
         var UserGroup = function() {
-          if (arguments.length > 0) {
-            for (var prop in arguments[0]) {
-              this[prop] = arguments[0][prop];
-            }
-          }
-        };
-        UserGroup.prototype.subgroups = function() {
-          return adapter.find({
-            url: this.childrenUri,
-            criteria: adapter.criteria(arguments[0])
-          });
+          this.subgroups = function() {
+            return adapter.find({
+              url: this.childrenUri,
+              criteria: adapter.criteria(arguments[0])
+            });
+          };
+
+          this.users = function() {
+            var params = {};
+            if (arguments.length === 1)
+              for (var p in arguments[0])
+                params[p] = arguments[0][p];
+            params.group = this.id;
+            return User.get(params);
+          };
+
         };
 
-        UserGroup.prototype.users = function() {
-          var params = {};
-          if (arguments.length === 1)
-            for (var p in arguments[0])
-              params[p] = arguments[0][p];
-          params.group = this.id;
-          return User.get(params);
-        };
+        var adapter = RESTAdapter.get(webContext + '/services/profile/groups', UserGroup);
 
         this.get = function() {
           if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {

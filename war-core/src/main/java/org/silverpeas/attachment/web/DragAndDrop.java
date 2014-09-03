@@ -123,7 +123,7 @@ public class DragAndDrop extends HttpServlet {
             File tempFile = File.createTempFile("silverpeas_", fileName);
             try {
               FileUploadUtil.saveToFile(tempFile, item);
-              MetadataExtractor extractor = new MetadataExtractor();
+              MetadataExtractor extractor = MetadataExtractor.getInstance();
               MetaData metadata = extractor.extractMetadata(tempFile);
               document.setSize(tempFile.length());
               document.setTitle(metadata.getTitle());

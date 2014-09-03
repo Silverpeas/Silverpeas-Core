@@ -26,7 +26,7 @@
  * @module silverpeas
  * @summary The module silverpeas within the AngularJS framework.
  * @desc The AngularJS applications in an HTML/JSP page should be defined within this module and they
- * should define the constant 'context' with as properties thoses required both by
+ * should define the constant 'context' with as properties those required both by
  * the application itself and by its dependencies (other silverpeas modules).
  * When declaring an application as a module in silverpeas, usually it depends on
  * the module silverpeas.services in which are defined all the Silverpeas services at client side.
@@ -105,19 +105,23 @@ var Promise = angular.injector(['ng']).get('$q');
  * 1 - put one times into the parent HTML DOM : <div compile-directive style="display: none"></div>
  * 2 - update the HTML DOM by using the method updateHtmlContainingAngularDirectives
  */
+var isCompileDirectiveBrowserCompatible = false;
 angular.module('silverpeas.directives').directive('compileDirective', function($compile) {
   return {
-    template : '<div id="compile-directive-identifier" style="display: none"></div>',
-    link : function(scope, element, attr) {
-      angular.element('#compile-directive-identifier').on('compile-directive-execute',
+    template: "<div class='compileDirectiveContainer' style='display: none'></div>",
+    replace: true,
+    restrict: 'AE',
+    link : function postLink(scope, element, attr, controller) {
+      isCompileDirectiveBrowserCompatible = true;
+      scope.renderIn = function($target, html) {
+        var el = $compile(html)(scope);
+        angular.element($target).empty();
+        angular.element($target).append(el);
+      };
+      angular.element(document.body).on('compile-directive-execute',
           function(event, $target, html) {
             scope.renderIn($target, html);
           });
-      scope.renderIn = function($target, html) {
-        var el = $compile(html)(scope);
-        angular.element($target).children().remove();
-        angular.element($target).append(el);
-      }
     }
   };
 });
@@ -128,5 +132,15 @@ angular.module('silverpeas.directives').directive('compileDirective', function($
  * @param html the HTML DOM to put into $target container.
  */
 function updateHtmlContainingAngularDirectives($target, html) {
-  angular.element('#compile-directive-identifier').trigger('compile-directive-execute', [$target, html]);
+  if (isCompileDirectiveBrowserCompatible) {
+    // Specified HTML content can be compiled.
+    angular.element(document.body).trigger('compile-directive-execute',
+        [$target, html]);
+  } else {
+    // Specified HTML content can not be compiled ...
+    angular.element($target).empty();
+    angular.element($target).append(html);
+    window.console &&
+    window.console.log('Silverpeas Angular - Compile directive has not been loaded, so the directives included into the result of HTML Ajax loading have not been performed...');
+  }
 }

@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
@@ -76,6 +77,7 @@ public class SimpleDocument implements Serializable {
   private String foreignId;
   private int order;
   private boolean versioned;
+  private String webdavContentEditionLanguage;
   private String editedBy;
   private Date reservation;
   private Date alert;
@@ -115,20 +117,20 @@ public class SimpleDocument implements Serializable {
   public void setCloneId(String cloneId) {
     this.cloneId = cloneId;
   }
-  private SimpleAttachment file;
+  private SimpleAttachment attachment;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      SimpleAttachment file) {
-    this(pk, foreignId, order, versioned, null, file);
+      SimpleAttachment attachment) {
+    this(pk, foreignId, order, versioned, null, attachment);
   }
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      String editedBy, SimpleAttachment file) {
-    this(pk, foreignId, order, versioned, editedBy, null, null, null, null, file);
+      String editedBy, SimpleAttachment attachment) {
+    this(pk, foreignId, order, versioned, editedBy, null, null, null, null, attachment);
   }
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      Date reservation, Date alert, Date expiry, String comment, SimpleAttachment file) {
+      Date reservation, Date alert, Date expiry, String comment, SimpleAttachment attachment) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
@@ -137,7 +139,7 @@ public class SimpleDocument implements Serializable {
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
     this.comment = comment;
-    this.file = file;
+    this.attachment = attachment;
   }
 
   /**
@@ -151,11 +153,11 @@ public class SimpleDocument implements Serializable {
    * @param alert
    * @param expiry
    * @param comment
-   * @param file
+   * @param attachment
    */
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       String editedBy, Date reservation, Date alert, Date expiry, String comment,
-      SimpleAttachment file) {
+      SimpleAttachment attachment) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
@@ -165,13 +167,13 @@ public class SimpleDocument implements Serializable {
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
     this.comment = comment;
-    this.file = file;
+    this.attachment = attachment;
   }
 
   public SimpleDocument() {
   }
 
-  protected SimpleDocument(SimpleDocument simpleDocument) {
+  public SimpleDocument(SimpleDocument simpleDocument) {
     this.repositoryPath = simpleDocument.getRepositoryPath();
     this.versionMaster = simpleDocument.getVersionMaster();
     this.versionIndex = simpleDocument.getVersionIndex();
@@ -179,6 +181,8 @@ public class SimpleDocument implements Serializable {
     this.foreignId = simpleDocument.getForeignId();
     this.order = simpleDocument.getOrder();
     this.versioned = simpleDocument.isVersioned();
+    // This below instruction is commented because of the lazy behavior of the get method.
+    // this.webdavContentEditionLanguage = simpleDocument.getWebdavContentEditionLanguage();
     this.editedBy = simpleDocument.getEditedBy();
     this.reservation = simpleDocument.getReservation();
     this.alert = simpleDocument.getAlert();
@@ -192,83 +196,83 @@ public class SimpleDocument implements Serializable {
     this.comment = simpleDocument.getComment();
     this.documentType = simpleDocument.getDocumentType();
     this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
-    this.file = simpleDocument.getFile();
+    this.attachment = simpleDocument.getAttachment();
   }
 
   public String getFilename() {
-    return getFile().getFilename();
+    return getAttachment().getFilename();
   }
 
   public void setFilename(String filename) {
-    getFile().setFilename(filename);
+    getAttachment().setFilename(filename);
   }
 
   public String getLanguage() {
-    return getFile().getLanguage();
+    return getAttachment().getLanguage();
   }
 
   public void setLanguage(String language) {
-    getFile().setLanguage(language);
+    getAttachment().setLanguage(language);
   }
 
   public String getTitle() {
-    return getFile().getTitle();
+    return getAttachment().getTitle();
   }
 
   public void setTitle(String title) {
-    getFile().setTitle(title);
+    getAttachment().setTitle(title);
   }
 
   public String getDescription() {
-    return getFile().getDescription();
+    return getAttachment().getDescription();
   }
 
   public void setDescription(String description) {
-    getFile().setDescription(description);
+    getAttachment().setDescription(description);
   }
 
   public long getSize() {
-    return getFile().getSize();
+    return getAttachment().getSize();
   }
 
   public void setSize(long size) {
-    getFile().setSize(size);
+    getAttachment().setSize(size);
   }
 
   public String getContentType() {
-    return getFile().getContentType();
+    return getAttachment().getContentType();
   }
 
   public void setContentType(String contentType) {
-    getFile().setContentType(contentType);
+    getAttachment().setContentType(contentType);
   }
 
   public String getCreatedBy() {
-    return getFile().getCreatedBy();
+    return getAttachment().getCreatedBy();
   }
 
   public Date getCreated() {
-    return getFile().getCreated();
+    return getAttachment().getCreated();
   }
 
   public void setCreated(Date created) {
-    getFile().setCreated(created);
+    getAttachment().setCreated(created);
   }
 
   public String getUpdatedBy() {
-    return getFile().getUpdatedBy();
+    return getAttachment().getUpdatedBy();
   }
 
   public void setUpdatedBy(String updatedBy) {
-    getFile().setUpdatedBy(updatedBy);
+    getAttachment().setUpdatedBy(updatedBy);
   }
 
   public Date getUpdated() {
-    return getFile().getUpdated();
+    return getAttachment().getUpdated();
   }
 
   public void setUpdated(Date updated) {
-    getFile().setUpdated(updated);
+    getAttachment().setUpdated(updated);
   }
 
   public Date getReservation() {
@@ -358,11 +362,40 @@ public class SimpleDocument implements Serializable {
     this.comment = comment;
   }
 
+  protected void setWebdavContentEditionLanguage(final String webdavContentEditionLanguage) {
+    this.webdavContentEditionLanguage = webdavContentEditionLanguage;
+  }
+
+  /**
+   * Gets the content language handled into webdav for the document.
+   * @return the content language if the document is currently handled into the webdav repository,
+   * empty string otherwise.
+   */
+  public String getWebdavContentEditionLanguage() {
+    if (webdavContentEditionLanguage == null) {
+      // To be handled into webdav repository, the document must be an open office compatible,
+      // and it must also be read only (reservation)
+      if (isOpenOfficeCompatible() && isReadOnly()) {
+        // The method has not been called yet.
+        // Firstly searching through Webdav services the information.
+        webdavContentEditionLanguage =
+            WebdavServiceFactory.getWebdavService().getContentEditionLanguage(getVersionMaster());
+      }
+      // If null, it indicates that the document does not exists into webdav repository.
+      // The class attribute is initialized to empty value.
+      if (webdavContentEditionLanguage == null) {
+        webdavContentEditionLanguage = StringUtil.EMPTY;
+      }
+    }
+    return webdavContentEditionLanguage;
+  }
+
   public String getEditedBy() {
     return editedBy;
   }
 
   public void edit(String currentEditor) {
+    setWebdavContentEditionLanguage(null);
     this.editedBy = currentEditor;
     setReservation(new Date());
     String day =
@@ -388,6 +421,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public void release() {
+    setWebdavContentEditionLanguage(null);
     this.editedBy = null;
     setReservation(null);
     setExpiry(null);
@@ -395,11 +429,11 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getXmlFormId() {
-    return getFile().getXmlFormId();
+    return getAttachment().getXmlFormId();
   }
 
   public void setXmlFormId(String xmlFormId) {
-    getFile().setXmlFormId(xmlFormId);
+    getAttachment().setXmlFormId(xmlFormId);
   }
 
   public String getId() {
@@ -453,16 +487,16 @@ public class SimpleDocument implements Serializable {
     return versioned;
   }
 
-  public SimpleAttachment getFile() {
-    return file;
+  public SimpleAttachment getAttachment() {
+    return attachment;
   }
 
   public SimpleDocumentPK getPk() {
     return this.pk;
   }
 
-  public void setFile(SimpleAttachment file) {
-    this.file = file;
+  public void setAttachment(SimpleAttachment attachment) {
+    this.attachment = attachment;
   }
 
   public boolean isPublic() {
@@ -474,6 +508,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public void unlock() {
+    setWebdavContentEditionLanguage(null);
     this.editedBy = null;
     setExpiry(null);
     setAlert(null);
@@ -504,7 +539,7 @@ public class SimpleDocument implements Serializable {
    * @return the full JCR path to the file node (starting with /).
    */
   public String getFullJcrContentPath() {
-    return getFullJcrPath() + '/' + getFile().getNodeName();
+    return getFullJcrPath() + '/' + getAttachment().getNodeName();
   }
 
   /**
@@ -574,7 +609,7 @@ public class SimpleDocument implements Serializable {
     return "SimpleDocument{" + getNodeName() + " pk=" + getPk() + ", foreignId=" + getForeignId() +
         ", order=" + getOrder() + ", versioned=" + isVersioned() + ", editedBy=" + getEditedBy() +
         ", reservation=" + getReservation() + ", alert=" + getAlert() + ", expiry=" + getExpiry() +
-        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", file=" + getFile() +
+        ", status=" + getStatus() + ", cloneId=" + getCloneId() + ", attachment=" + getAttachment() +
         ", minorVersion=" + getMinorVersion() + ", majorVersion=" + getMajorVersion() +
         ", comment=" + getComment() + '}';
   }
@@ -674,14 +709,14 @@ public class SimpleDocument implements Serializable {
   public String getWebdavJcrPath() {
     StringBuilder jcrPath = new StringBuilder(500);
     jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append('/').
-        append(getInstanceId()).append('/');
-    if (getId() != null) {
-      jcrPath.append(getId()).append('/');
+        append(getVersionMaster().getInstanceId()).append('/');
+    if (getVersionMaster().getId() != null) {
+      jcrPath.append(getVersionMaster().getId()).append('/');
     }
     if (getLanguage() != null) {
-      jcrPath.append(getLanguage()).append('/');
+      jcrPath.append(getVersionMaster().getLanguage()).append('/');
     }
-    jcrPath.append(StringUtil.escapeQuote(getFilename()));
+    jcrPath.append(StringUtil.escapeQuote(getVersionMaster().getFilename()));
     return jcrPath.toString();
   }
 
@@ -756,6 +791,20 @@ public class SimpleDocument implements Serializable {
 
   public String getFolder() {
     return getDocumentType().getFolderName();
+  }
+  
+  public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
+    if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
+      // In that case, from point of security view if no user data exists,
+      // then download is forbidden.
+      return false;
+    }
+    
+    // Access is verified for sharing context
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
 
   /**
@@ -874,5 +923,40 @@ public class SimpleDocument implements Serializable {
   public Set<SilverpeasRole> getForbiddenDownloadForRoles() {
     return (getVersionMaster().forbiddenDownloadForRoles != null) ?
         Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles) : null;
+  }
+  
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of image.
+   */
+  public boolean isContentImage() {
+    return FileUtil.isImage(getAttachmentPath());
+  }
+  
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of 3D.
+   */
+  public boolean isContentSpinfire() {
+    return FileUtil.isSpinfireDocument(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of archive.
+   */
+  public boolean isContentArchive() {
+    return FileUtil.isArchive(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of mail.
+   */
+  public boolean isContentMail() {
+    return FileUtil.isMail(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the file described by current {@link SimpleAttachment} is type of pdf.
+   */
+  public boolean isContentPdf() {
+    return FileUtil.isPdf(getAttachmentPath());
   }
 }

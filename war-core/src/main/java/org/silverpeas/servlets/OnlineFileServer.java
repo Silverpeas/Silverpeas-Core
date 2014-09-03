@@ -26,7 +26,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.web.OnlineAttachment;
+import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileDescriptor;
+import org.silverpeas.file.SilverpeasFileProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,33 +54,44 @@ public class OnlineFileServer extends AbstractFileSender {
   public void doPost(HttpServletRequest req, HttpServletResponse response)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     String mimeType = req.getParameter("MimeType");
     String sourceFile = req.getParameter("SourceFile");
     String directory = req.getParameter("Directory");
     String componentId = req.getParameter("ComponentId");
-    OnlineFile onlineFile = new OnlineFile(mimeType, sourceFile, directory, componentId);
     String attachmentId = req.getParameter("attachmentId");
     String language = req.getParameter("lang");
-    if (StringUtil.isDefined(attachmentId)) {
+    String documentId = req.getParameter("DocumentId");
+    SilverpeasFileDescriptor ref = null;
+
+    if (StringUtil.isDefined(documentId)) {
+      String versionId = req.getParameter("VersionId");
+      SimpleDocumentPK versionPK = new SimpleDocumentPK(versionId, componentId);
+      SimpleDocument version =
+          AttachmentServiceFactory.getAttachmentService().searchDocumentById(versionPK, language);
+
+      if (version != null) {
+        ref =
+            new SilverpeasFileDescriptor(version.getInstanceId()).mimeType(version.getContentType())
+                .fileName(version.getAttachmentPath()).absolutePath();
+      }
+    }
+    if (ref == null && StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
           .searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
-        onlineFile = new OnlineAttachment(attachment);
+        ref = new SilverpeasFileDescriptor(attachment.getInstanceId())
+            .mimeType(attachment.getContentType()).fileName(attachment.getAttachmentPath())
+            .absolutePath();
       }
     }
-
-    String documentId = req.getParameter("DocumentId");
-    if (StringUtil.isDefined(documentId)) {
-      String versionId = req.getParameter("VersionId");
-      SimpleDocumentPK versionPK = new SimpleDocumentPK(versionId, componentId);
-      SimpleDocument version = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-          versionPK, language);
-
-      if (version != null) {
-        onlineFile = new OnlineAttachment(version);
-      }
+    if (ref == null) {
+      ref = new SilverpeasFileDescriptor(componentId).mimeType(mimeType).fileName(sourceFile)
+          .parentDirectory(directory);
     }
+
+    SilverpeasFile onlineFile = SilverpeasFileProvider.getFile(ref);
     sendFile(response, onlineFile);
   }
 

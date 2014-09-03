@@ -62,7 +62,7 @@ public class SynchronizerTokenService {
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String UNPROTECTED_URI_RULE =
-      "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|services/password/)).*";
+      "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|blockingNews|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());

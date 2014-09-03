@@ -11,6 +11,86 @@
 
   <tag>
     <description>
+      Tag to print out the img HTML tag with the path of the targeted image computed from the tag's
+      attributes. This tag is used to refer a dynamic resized version of an existing image; the
+      size of an image can be passed as such to the tag or can be computed from its type or using
+      context. The types of the images are defined in the
+      org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
+    </description>
+    <name>image</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.ImageTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        The relative path of the source image from the web context. The exact URL will be
+        computed by the tag itself.
+      </description>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A short description of the image as an alternative way to render it if the image cannot be
+        displayed for any reasons.
+      </description>
+      <name>alt</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        An explicit size of the targeted image. This attribute is applied over the type one. It is
+        predominant over the type attribute. The path of the image is then computed according to
+        this size. The size should be in the form of WIDTHxHEIGH with WIDTH the width in pixels of
+        the image and HEIGHT the height in pixels of the image; one of these parameters can be
+        omitted but the 'x' character must be present.
+      </description>
+      <name>size</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The type of the image. The types of an image are defined in the
+        org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
+        For example, the type avatar.original is defined by the key image.size.avatar.original. The
+        type of the image is used to fetch the size with which the targeted image is asked. The path
+        of the image is then computed according to this size. If the size attribute is also valued,
+        then only the size attribute will be taken into account.
+      </description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A name of a CSS class to apply to the img HTML tag. If this attribute isn't valued, then
+        the CSS class of the image is by default valued with the type of the image (see type
+        attribute) with each point replaced by a minus. If the attribute type isn't valued, then
+        no CSS class is provided.
+      </description>
+      <name>css</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The HTML element identifier in the HTML DOM.
+      </description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
       Tag to print out the panel of management of the attachements for a given component instance
       and for a given resource.
     </description>
@@ -236,6 +316,13 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Indicates if the render of the error is by WEB way.</description>
+      <name>errorWebRender</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
   <tag>
@@ -688,6 +775,71 @@
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display a navigation item list.</description>
+    <name>navigationList</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The title of the navigation list</description>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The number of columns that must be displayed</description>
+      <name>nbCol</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a navigation item list.</description>
+    <name>navigationListItem</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListItemTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The label of the item of the navigation list</description>
+      <name>label</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The action that must be performed on HTML event (click for example)</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The number of elements the item can display</description>
+      <name>nbElem</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>The additional information</description>
+      <name>description</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The universal link associated to the item</description>
+      <name>universalLink</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Simple tag to display a window. A window can contain TabbedPane, Frames and Boards. It should be used after the BrowseBar and the OperationPane.</description>
     <name>window</name>
     <tag-class>
@@ -699,6 +851,15 @@
         true or false to indicate if the browse bar is displayed or not.
       </description>
       <name>browseBarVisible</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        true or false to indicate if the window is displayed in a popup page
+      </description>
+      <name>popup</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
@@ -979,7 +1140,7 @@
     <body-content>JSP</body-content>
     <attribute>
       <description>
-        Lien de l'action.
+        The action is a link or javascript method name with one parameter.
       </description>
       <name>action</name>
       <required>true</required>
@@ -988,12 +1149,12 @@
     </attribute>
     <attribute>
       <description>
-        Total number of pages.
+        Lien de l'action.
       </description>
-      <name>nbPages</name>
-      <required>true</required>
+      <name>actionIsJsFunction</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Integer</type>
+      <type>java.lang.Boolean</type>
     </attribute>
     <attribute>
       <description>
@@ -1006,10 +1167,37 @@
     </attribute>
     <attribute>
       <description>
-        Param name to pass the page number (starting at 0) to be displayed.
+        Total number of items per page.
+      </description>
+      <name>nbItemsPerPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of handled items.
+      </description>
+      <name>totalNumberOfItems</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of pages.
+      </description>
+      <name>nbPages</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+      Param name to pass the page number (starting at 0) to be displayed.
       </description>
       <name>pageParam</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
@@ -1455,6 +1643,55 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Id of current space</description>
+      <name>spaceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current space</description>
+      <name>spaceName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current component</description>
+      <name>componentId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current component</description>
+      <name>componentName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current object for browseBar</description>
+      <name>browseInfo</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current object</description>
+      <name>objectId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>False if the button to browse files has not to be displayed</description>
+      <name>displayFileBrowser</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that displays the available languages.</description>
@@ -1487,6 +1724,13 @@
     <attribute>
       <description>Include label before the input field/select</description>
       <name>includeLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>If true, only the language label of langCode attribute is displayed</description>
+      <name>readOnly</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
@@ -1716,7 +1960,78 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
-
+  <tag>
+    <description>FORM HTML TAG OVERRIDE</description>
+    <name>form</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.FormTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>method</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>A HTML TAG OVERRIDE</description>
+    <name>a</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.ATag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
 
   <function>
     <description>Function that returns the value of a class constant.</description>

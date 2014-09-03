@@ -56,6 +56,7 @@ import java.util.Date;
 public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
     IDENTIFIER_TYPE extends EntityIdentifier>
     extends AbstractEntity<ENTITY, IDENTIFIER_TYPE> {
+  private static final long serialVersionUID = 5862667014447543891L;
 
   @Transient
   private String tableName;

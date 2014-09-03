@@ -80,6 +80,16 @@ public class ComponentAccessController extends AbstractAccessController<String> 
     return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
         getComponentParameterValue(componentId, "coWriting"));
   }
+  
+  /**
+   * Indicates that the rights are set on node as well as the component.
+   * @param componentId
+   * @return
+   */
+  public boolean isSharingEnabled(String componentId) {
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
+        getComponentParameterValue(componentId, "useFileSharing"));
+  }
 
   private boolean isThemeTracker(String componentId) {
     return ComponentHelper.getInstance().isThemeTracker(componentId);

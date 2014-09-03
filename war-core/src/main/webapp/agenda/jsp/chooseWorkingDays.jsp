@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkAgenda.jsp.inc" %>
 <%!
 
@@ -142,9 +142,7 @@ List			 	holidays	= (List) request.getAttribute("HolidayDates");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-    out.println(graphicFactory.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function changeDateStatus(day, status)

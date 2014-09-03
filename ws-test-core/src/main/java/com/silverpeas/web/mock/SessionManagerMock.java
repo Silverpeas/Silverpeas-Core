@@ -22,6 +22,7 @@ package com.silverpeas.web.mock;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionValidationContext;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -60,10 +61,11 @@ public class SessionManagerMock implements SessionManagement {
 
   @Override
   public SessionInfo getSessionInfo(String sessionKey) {
-    if (noSession) {
-      return null;
+    SessionInfo session = SessionInfo.NoneSession;
+    if (!noSession && sessions.containsKey(sessionKey)) {
+      session = sessions.get(sessionKey);
     }
-    return sessions.get(sessionKey);
+    return session;
   }
 
   @Override
@@ -142,9 +144,17 @@ public class SessionManagerMock implements SessionManagement {
    */
   @Override
   public SessionInfo validateSession(String sessionKey) {
+    return validateSession(SessionValidationContext.withSessionKey(sessionKey));
+  }
+
+  @Override
+  public SessionInfo validateSession(final SessionValidationContext context) {
+    String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = getSessionInfo(sessionKey);
-    if (sessionInfo != null) {
-      sessionInfo.updateLastAccess();
+    if (!context.mustSkipLastUserAccessTimeRegistering()) {
+      if (sessionInfo.isDefined()) {
+        sessionInfo.updateLastAccess();
+      }
     }
     return sessionInfo;
   }

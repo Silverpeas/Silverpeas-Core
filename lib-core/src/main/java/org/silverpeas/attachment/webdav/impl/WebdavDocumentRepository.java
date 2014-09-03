@@ -31,6 +31,7 @@ import org.silverpeas.attachment.webdav.WebdavRepository;
 import javax.inject.Named;
 import javax.jcr.Binary;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -39,6 +40,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 
@@ -51,8 +55,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     Node rootNode = session.getRootNode();
     Node attachmentFolder = addFolder(rootNode, SimpleDocument.WEBDAV_FOLDER);
     attachmentFolder = addFolder(attachmentFolder, DocumentType.attachment.getFolderName());
-    Node componentFolder = addFolder(attachmentFolder, attachment.getInstanceId());
-    Node contextFolder = componentFolder;
+    Node contextFolder = addFolder(attachmentFolder, attachment.getInstanceId());
     if (attachment.getId() != null) {
       contextFolder = addFolder(contextFolder, attachment.getId());
     }
@@ -60,7 +63,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     if (!StringUtil.isDefined(lang)) {
       lang = I18NHelper.defaultLanguage;
     }
-    contextFolder = addFolder(contextFolder, lang);
+    contextFolder = addExclusiveFolder(contextFolder, lang);
     addFile(contextFolder, attachment);
   }
 
@@ -77,14 +80,132 @@ public class WebdavDocumentRepository implements WebdavRepository {
   }
 
   @Override
+  public void moveNodeAttachment(final Session session, final SimpleDocument attachment,
+      final String targetComponentInstanceId) throws RepositoryException, IOException {
+    if (attachment.getPk() != null && StringUtil.isDefined(targetComponentInstanceId) &&
+        !attachment.getInstanceId().equals(targetComponentInstanceId)) {
+      Node nodeToMove = getDocumentIdentifierNode(session, attachment);
+      if (nodeToMove != null) {
+        Node nodeToPurge = nodeToMove.getParent();
+        Node rootNode = session.getRootNode();
+        Node webdavNode = addFolder(rootNode, SimpleDocument.WEBDAV_FOLDER);
+        Node documentTypeNode = addFolder(webdavNode, DocumentType.attachment.getFolderName());
+        Node destinationNode = addFolder(documentTypeNode, targetComponentInstanceId);
+        session.save();
+        session.getWorkspace()
+            .move(nodeToMove.getPath(), destinationNode.getPath() + "/" + attachment.getId());
+        purgeWebdavFromNode(nodeToPurge);
+      }
+    }
+  }
+
+  /**
+   * Gets the webdav document identifier node from the specified attachment.
+   * @param session the JCR session.
+   * @param attachment the attachment from which the webdav document identifier JCR node is
+   * searched.
+   * @return the node if found, null otherwise.
+   */
+  protected Node getDocumentIdentifierNode(Session session, SimpleDocument attachment)
+      throws RepositoryException {
+    return getDocumentNode(session, attachment, null);
+  }
+
+  /**
+   * Gets the webdav document content language node from the specified attachment.
+   * @param session the JCR session.
+   * @param attachment the attachment from which the webdav document content language JCR node is
+   * searched.
+   * @param language the aimed content language.
+   * @return the node if found, null otherwise.
+   */
+  protected Node getDocumentContentLanguageNode(Session session, SimpleDocument attachment,
+      String language) throws RepositoryException {
+    Node documentContentLanguageNode = null;
+    if (StringUtil.isDefined(language)) {
+      documentContentLanguageNode = getDocumentNode(session, attachment, "/" + language);
+    }
+    return documentContentLanguageNode;
+  }
+
+  /**
+   * Gets the webdav document node from the specified attachment.
+   * It can retrieve all sub nodes from the one which contains the attachment JCR identfier.
+   * @param session the JCR session.
+   * @param attachment the attachment from which the webdav document identifier JCR node is
+   * searched.
+   * @param suffixPathPattern the relative path from the attachment JCR identifier node.
+   * @return the node if found, null otherwise.
+   */
+  private Node getDocumentNode(Session session, SimpleDocument attachment, String suffixPathPattern)
+      throws RepositoryException {
+    if (StringUtil.isDefined(attachment.getId())) {
+      Pattern pattern = Pattern.compile(
+          ".*/" + attachment.getId() + StringUtil.defaultStringIfNotDefined(suffixPathPattern, ""));
+      Matcher matcher = pattern.matcher(attachment.getWebdavJcrPath());
+      if (!matcher.find()) {
+        // This case should normally never happen.
+        return null;
+      }
+      String webdavPath = matcher.group();
+      try {
+        Node rootNode = session.getRootNode();
+        return rootNode.getNode(webdavPath);
+      } catch (PathNotFoundException pex) {
+        // Node does not exist.
+      }
+    }
+    return null;
+  }
+
+  @Override
   public void deleteAttachmentNode(Session session, SimpleDocument attachment) throws
       RepositoryException {
     Node rootNode = session.getRootNode();
     try {
-      Node fileNode = rootNode.getNode(attachment.getWebdavJcrPath());
+      /**
+       Two cases here because of the analysis of {@link SimpleDocument#getWebdavJcrPath()}...
+       */
+      Node fileNode = getDocumentIdentifierNode(session, attachment);
+      if (fileNode == null) {
+        fileNode = rootNode.getNode(attachment.getWebdavJcrPath());
+      }
+      Node parentNode = fileNode.getParent();
       fileNode.remove();
+      purgeWebdavFromNode(parentNode);
     } catch (PathNotFoundException pex) {
       // Since the node doesn't exist, deleting it has no effect.
+    }
+  }
+
+  @Override
+  public void deleteAttachmentContentNode(final Session session, final SimpleDocument attachment,
+      String language) throws RepositoryException {
+    Node fileNode = getDocumentContentLanguageNode(session, attachment, language);
+    if (fileNode != null) {
+      Node parentNode = fileNode.getParent();
+      fileNode.remove();
+      purgeWebdavFromNode(parentNode);
+    }
+  }
+
+  /**
+   * Purges all empty nodes from specified node to webdav node.
+   * @param parentNodeOfDeletedOne a deleted node.
+   */
+  private void purgeWebdavFromNode(Node parentNodeOfDeletedOne) throws RepositoryException {
+    //noinspection UnnecessaryLocalVariable
+    Node currentNode = parentNodeOfDeletedOne;
+    if (currentNode != null) {
+      while (!currentNode.hasNodes() &&
+          !SimpleDocument.WEBDAV_FOLDER.equals(currentNode.getName())) {
+        Node nodeToRemove = currentNode;
+        currentNode = currentNode.getParent();
+        nodeToRemove.remove();
+      }
+      if (!currentNode.hasNodes()) {
+        currentNode.remove();
+      }
     }
   }
 
@@ -100,8 +221,8 @@ public class WebdavDocumentRepository implements WebdavRepository {
   }
 
   @Override
-  public void updateAttachment(Session session, SimpleDocument attachment) throws
-      RepositoryException, IOException {
+  public void updateAttachmentBinaryContent(Session session, SimpleDocument attachment)
+      throws RepositoryException, IOException {
     Node rootNode = session.getRootNode();
     Node webdavFileNode = rootNode.getNode(attachment.getWebdavJcrPath());
     Binary webdavBinary = webdavFileNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
@@ -134,6 +255,32 @@ public class WebdavDocumentRepository implements WebdavRepository {
   }
 
   /**
+   * Adds a folder node into the repository and removes all others so that it exists only the
+   * folder named like specified.
+   * If the folder already exists, the existing is kept and no folder is created,
+   * but potential other existing folders are removed.
+   *
+   * @param parent the parent node
+   * @param name the name of the new node
+   * @return the created or already existing node.
+   * @throws RepositoryException
+   */
+  protected Node addExclusiveFolder(Node parent, String name) throws RepositoryException {
+    try {
+      NodeIterator nodeIt = parent.getNodes();
+      while (nodeIt.hasNext()) {
+        Node currentNode = nodeIt.nextNode();
+        if (!currentNode.getName().equals(name)) {
+          currentNode.remove();
+        }
+      }
+      return parent.getNode(name);
+    } catch (PathNotFoundException pnfex) {
+      return parent.addNode(name, NT_FOLDER);
+    }
+  }
+
+  /**
    * Add a file node into the repository
    *
    * @param folder the folder node containing the file node.
@@ -144,10 +291,11 @@ public class WebdavDocumentRepository implements WebdavRepository {
    */
   protected Node addFile(Node folder, SimpleDocument attachment) throws RepositoryException,
       IOException {
-    String escapedName = StringUtil.escapeQuote(attachment.getFilename());
-    if (folder.hasNode(escapedName)) {
-      folder.getNode(escapedName).remove();
+    NodeIterator fileNodeIt = folder.getNodes();
+    while (fileNodeIt.hasNext()) {
+      fileNodeIt.nextNode().remove();
     }
+    String escapedName = StringUtil.escapeQuote(attachment.getFilename());
     Node fileNode = folder.addNode(escapedName, NT_FILE);
     if (attachment.getEditedBy() != null) {
       fileNode.addMixin(SLV_OWNABLE_MIXIN);
@@ -159,12 +307,10 @@ public class WebdavDocumentRepository implements WebdavRepository {
     contentNode.setProperty(JCR_LAST_MODIFIED, Calendar.getInstance());
     setContent(fileNode, attachment);
     return fileNode;
-
   }
 
-  protected void setContent(Node fileNode, SimpleDocument attachment) throws RepositoryException,
-      IOException {
-
+  private void setContent(Node fileNode, SimpleDocument attachment)
+      throws RepositoryException, IOException {
     InputStream in = FileUtils.openInputStream(new File(attachment.getAttachmentPath()));
     try {
       Binary attachmentBinary = fileNode.getSession().getValueFactory().createBinary(in);
@@ -172,5 +318,36 @@ public class WebdavDocumentRepository implements WebdavRepository {
     } finally {
       IOUtils.closeQuietly(in);
     }
+  }
+
+  @Override
+  public String getContentEditionLanguage(final Session session, final SimpleDocument attachment)
+      throws RepositoryException {
+    String contentEditionLanguage = null;
+    if (StringUtil.isDefined(attachment.getId())) {
+      Pattern pattern = Pattern.compile("(?i).*/" + attachment.getId() + "/");
+      Matcher matcher = pattern.matcher(attachment.getWebdavJcrPath());
+      if (matcher.find()) {
+        Node rootNode = session.getRootNode();
+        try {
+          Node webdavNode = rootNode.getNode(matcher.group());
+          NodeIterator webdavNodeIt = webdavNode.getNodes();
+          Date creationDate = null;
+          while (webdavNodeIt.hasNext()) {
+            Node currentLanguageNode = webdavNodeIt.nextNode();
+            // Normaly, it must exist one filename node.
+            Node currentFileNode = currentLanguageNode.getNodes().nextNode();
+            if (creationDate == null ||
+                creationDate.before(currentFileNode.getProperty(JCR_CREATED).getDate().getTime())) {
+              creationDate = currentFileNode.getProperty(JCR_CREATED).getDate().getTime();
+              contentEditionLanguage = currentLanguageNode.getName();
+            }
+          }
+        } catch (PathNotFoundException pex) {
+          // Node does not exist.
+        }
+      }
+    }
+    return contentEditionLanguage;
   }
 }

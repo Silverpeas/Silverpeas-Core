@@ -29,6 +29,7 @@ import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionValidationContext;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -50,6 +51,13 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.servlets.LogoutServlet;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,12 +68,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.silverpeas.servlets.LogoutServlet;
 
 /**
  * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user
@@ -164,13 +166,21 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   @Override
-  public synchronized SessionInfo validateSession(String sessionKey) {
-    SessionInfo si = getSessionInfo(sessionKey);
-    if (si.isDefined()) {
-      si.updateLastAccess();
+  public SessionInfo validateSession(String sessionKey) {
+    return validateSession(SessionValidationContext.withSessionKey(sessionKey));
+  }
+
+  @Override
+  public synchronized SessionInfo validateSession(final SessionValidationContext context) {
+    String sessionKey = context.getSessionKey();
+    SessionInfo sessionInfo = getSessionInfo(sessionKey);
+    if (!context.mustSkipLastUserAccessTimeRegistering()) {
+      if (sessionInfo.isDefined()) {
+        sessionInfo.updateLastAccess();
+      }
+      userNotificationSessions.remove(sessionKey);
     }
-    userNotificationSessions.remove(sessionKey);
-    return si;
+    return sessionInfo;
   }
 
   /**

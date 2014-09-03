@@ -80,6 +80,14 @@ public class MemoryData {
   }
 
   /**
+   * Gets the size in bytes.
+   * @return a long value.
+   */
+  public Long getSizeAsLong() {
+    return getSize().longValue();
+  }
+
+  /**
    * Gets the size converted to desired unit.
    * @param to
    * @return

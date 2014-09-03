@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 <%
 String viewType = (String) request.getAttribute("ViewType"); // type d'axes � visualiser P(rimaire) ou S(econdaire)
@@ -38,9 +38,7 @@ ArrayLine arrayLine = null;
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </HEAD>
 <BODY>
 <%

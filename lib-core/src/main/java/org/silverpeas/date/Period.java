@@ -53,9 +53,34 @@ public class Period implements Comparable, Serializable, Cloneable {
     knownPeriodTypes.remove(PeriodType.unknown);
   }
 
+  // Common immutable undefined period.
+  public static final Period UNDEFINED = new UndefinedPeriod();
+
   private PeriodType periodType = PeriodType.unknown;
   private DateTime beginDatable;
   private DateTime endDatable;
+
+  /**
+   * Checks if the specified period and returns the specified one if defined,
+   * or the common {@link Period#UNDEFINED} otherwise.
+   * @param period
+   * @return the specified period is defined, the common {@link Period#UNDEFINED} otherwise.
+   */
+  public static Period check(Period period) {
+    return (period != null && period.isDefined()) ? period : UNDEFINED;
+  }
+
+  /**
+   * Initialize a period from given dates (undefined dates are taken into account for null ones).
+   * The treatment is trying to identify the type of the period ({@link PeriodType}).
+   * @param beginDate the date of the beginning of the period.
+   * @param endDate the date of the ending of the period.
+   * @return
+   */
+  public static Period getPeriodWithUndefinedIfNull(Date beginDate, Date endDate) {
+    return from(beginDate != null ? new DateTime(beginDate) : DateUtil.MINIMUM_DATE,
+        endDate != null ? new DateTime(endDate) : DateUtil.MAXIMUM_DATE);
+  }
 
   /**
    * Initialize a period from given dates.
@@ -88,7 +113,7 @@ public class Period implements Comparable, Serializable, Cloneable {
    * @return
    */
   public static Period from(DateTime beginDatable, DateTime endDatable) {
-    Period period = new Period(beginDatable, endDatable);
+    Period period = check(new Period(beginDatable, endDatable));
     for (PeriodType periodToIdentify : knownPeriodTypes) {
       Period guessedPeriod = from(beginDatable, periodToIdentify, MessageManager.getLanguage());
       if (guessedPeriod.equals(period)) {
@@ -198,6 +223,22 @@ public class Period implements Comparable, Serializable, Cloneable {
   }
 
   /**
+   * Indicates if one of begin date or end date is defined.
+   * @return true if period is defined, false otherwise.
+   */
+  public boolean isDefined() {
+    return getBeginDatable().isDefined() || getEndDatable().isDefined();
+  }
+
+  /**
+   * Indicates the opssite of {@link #isDefined()}.
+   * @return true if period is not defined, false otherwise.
+   */
+  public boolean isNotDefined() {
+    return !isDefined();
+  }
+
+  /**
    * The time zone for a period has no meaning.
    * @param timeZone the time zone to set to this period.
    */
@@ -259,12 +300,44 @@ public class Period implements Comparable, Serializable, Cloneable {
   }
 
   /**
+   * This method is a shortcut of {@link #isDefined()} call on {@link #getBeginDatable()}.
+   * @return true if {@link #getBeginDatable()} returns defined date, false otherwise.
+   */
+  public boolean isBeginDefined() {
+    return beginDatable.isDefined();
+  }
+
+  /**
+   * This method is a shortcut of {@link #isNotDefined()} call on {@link #getBeginDatable()}.
+   * @return true if {@link #getBeginDatable()} returns a not defined date, false otherwise.
+   */
+  public boolean isBeginNotDefined() {
+    return beginDatable.isNotDefined();
+  }
+
+  /**
    * Gets the end date of the period represented as a {@link com.silverpeas.calendar.Datable}.
    * (see {@link #getEndDate()} for more details).
    * @return
    */
   public DateTime getEndDatable() {
     return endDatable;
+  }
+
+  /**
+   * This method is a shortcut of {@link #isDefined()} call on {@link #getEndDatable()}.
+   * @return true if {@link #getEndDatable()} returns defined date, false otherwise.
+   */
+  public boolean isEndDefined() {
+    return endDatable.isDefined();
+  }
+
+  /**
+   * This method is a shortcut of {@link #isNotDefined()} call on {@link #getEndDatable()}.
+   * @return true if {@link #getEndDatable()} returns a not defined date, false otherwise.
+   */
+  public boolean isEndNotDefined() {
+    return endDatable.isNotDefined();
   }
 
   /**
@@ -416,7 +489,7 @@ public class Period implements Comparable, Serializable, Cloneable {
    * @return
    */
   public boolean isValid() {
-    return (getBeginDate() != null && getEndDate() != null &&
+    return isDefined() && (getBeginDate() != null && getEndDate() != null &&
         getBeginDate().compareTo(getEndDate()) <= 0);
   }
 

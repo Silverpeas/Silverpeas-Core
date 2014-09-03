@@ -88,8 +88,6 @@
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
   <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
-  <view:componentParam var="useFileSharingParam" componentId="${param.ComponentId}" parameter="useFileSharing" />
-  <c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' eq userProfile }" />
   <c:choose>
     <c:when test="${contextualMenuEnabled}">
       <c:set var="iconStyle" scope="page">style="cursor:move"</c:set>
@@ -226,7 +224,7 @@
           <c:if test="${contextualMenuEnabled}">
             <menu:simpleDocument attachment="${currentAttachment}" contentLanguage="${contentLanguage}"
                                  showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
-                                 useFileSharing="${useFileSharing}" useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
+                                 useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           </c:if>
           <span class="lineMain ${forbiddenDownloadClass}">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
@@ -557,13 +555,24 @@
       pageMustBeReloadingAfterSorting = true;
     }
 
-    function checkin(id, oldId, webdav, forceRelease, isVersioned) {
+    function checkin(id, oldId, webdav, forceRelease, isVersioned, webdavContentLanguageLabel) {
+      <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
+      var $checkinWebdavLanguageBlock = $('#webdav-attachment-checkin-language');
+      if (webdav === true) {
+        $checkinWebdavLanguageBlock.show();
+        $('#langCreate', $checkinWebdavLanguageBlock).html(webdavContentLanguageLabel);
+      } else {
+        $checkinWebdavLanguageBlock.hide();
+      }
+      </c:if>
+      var $attachmentCheckinBlock = $("#simple_fields_attachment-checkin");
+      var $versionedAttachmentCheckinBlock = $("#versioned_fields_attachment-checkin");
       if(isVersioned === true) {
-        $("#simple_fields_attachment-checkin").hide();
-        $("#versioned_fields_attachment-checkin").show();
+        $attachmentCheckinBlock.hide();
+        $versionedAttachmentCheckinBlock.show();
       }else {
-        $("#versioned_fields_attachment-checkin").hide();
-        $("#simple_fields_attachment-checkin").show();
+        $versionedAttachmentCheckinBlock.hide();
+        $attachmentCheckinBlock.css('display', 'inline-block');
       }
       $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
       pageMustBeReloadingAfterSorting = true;
@@ -1042,9 +1051,15 @@
       }
 
       function ShareAttachment(id) {
-        var url = '<c:url value="/RfileSharing/jsp/NewTicket"><c:param name="componentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /></c:url>&objectId=' + id;
-        SP_openWindow(url, "NewTicket", "700", "360", "scrollbars=no, resizable, alwaysRaised");
+        var sharingObject = {
+            componentId: "${param.ComponentId}",
+            type       : "Attachment",
+            id         : id,
+            name   : $("#url_" + id).text()
+        };
+        createSharingTicketPopup(sharingObject);
       }
+
   </c:if>
 
   function displayAttachment(attachment) {
@@ -1101,7 +1116,8 @@
   function preview(target, attachmentId) {
     $(target).preview("previewAttachment", {
       componentInstanceId: '<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />',
-      attachmentId: attachmentId
+      attachmentId: attachmentId,
+      lang: '${contentLanguage}'
     });
     return false;
   }
@@ -1109,10 +1125,12 @@
   function view(target, attachmentId) {
     $(target).view("viewAttachment", {
       componentInstanceId: "<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />",
-      attachmentId: attachmentId
+      attachmentId: attachmentId,
+      lang: '${contentLanguage}'
     });
     return false;
   }
+
 </script>
 
 <div id="dialog-attachment-update" style="display:none">
@@ -1150,7 +1168,7 @@
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
       <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
@@ -1206,6 +1224,16 @@
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
+    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
+      <div id="webdav-attachment-checkin-language" style="display: none">
+        <fmt:message var="tmpLabel" key="attachment.dialog.checkin.webdav.multilang.language.help"/>
+        <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+        <div class="champ-ui-dialog">
+          <span style="vertical-align: middle"><view:langSelect readOnly="${true}" elementId="langCreate" langCode="fr" includeLabel="false"/></span>
+          <img style="vertical-align: middle; margin-left: 20px" class="infoBulle" title="${tmpLabel}" src="<c:url value="/util/icons/help.png"/>" alt="info"/>
+        </div>
+      </div>
+    </c:if>
     <div id="versioned_fields_attachment-checkin" style="display:none">
       <label for="private" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
       <span class="champ-ui-dialog"><input value="false" type="radio" name="private" id="private" checked="checked"/><fmt:message key="attachment.version_public.label"/>
@@ -1214,9 +1242,11 @@
       <label for="comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
       <span class="champ-ui-dialog"><textarea name="comment" cols="60" rows="3" id="comment"></textarea></span>
     </div>
-    <div id="simple_fields_attachment-checkin" style="display:none"><fmt:message key="confirm.checkin.message" /></div>
+    <div id="simple_fields_attachment-checkin" style="display:none; text-wrap: none"><fmt:message key="confirm.checkin.message" /></div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
+
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 
 <view:progressMessage/>

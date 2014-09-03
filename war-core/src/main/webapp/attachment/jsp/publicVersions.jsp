@@ -131,7 +131,7 @@
       }
 
       String spinFire = "";
-      if (FileUtil.isSpinfireDocument(publicVersion.getFilename()) && spinfireViewerEnable &&
+      if (publicVersion.isContentSpinfire() && spinfireViewerEnable &&
           canUserDownloadFile) {
         spinFire = "<br><div id=\"switchView\" name=\"switchView\" style=\"display: none\">";
         spinFire += "<a title=\"Viewer SpinFire 3D\"href=\"#\" onClick=\"changeView3d(" +

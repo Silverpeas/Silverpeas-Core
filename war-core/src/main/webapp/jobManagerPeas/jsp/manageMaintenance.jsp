@@ -25,11 +25,12 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<view:looknfeel/>
 <%
  Board board = gef.getBoard(); 
  String checked_on = "checked";
@@ -41,8 +42,6 @@
      checked_on = "";
      checked_off = "checked";
  }    
-
- out.println(gef.getLookStyleSheet());
 %>
 </HEAD>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">

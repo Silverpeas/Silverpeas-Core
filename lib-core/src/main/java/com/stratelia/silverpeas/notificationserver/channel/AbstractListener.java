@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public abstract class AbstractListener implements INotificationServerChannel {
 
-  private static final long serialVersionUID = -5838215003969093865L;
   protected String channel;
   protected String payLoad;
 

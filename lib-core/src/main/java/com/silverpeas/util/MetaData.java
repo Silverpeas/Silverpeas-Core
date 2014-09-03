@@ -20,22 +20,33 @@
  */
 package com.silverpeas.util;
 
+import com.stratelia.webactiv.util.DateUtil;
+import org.apache.tika.metadata.HttpHeaders;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.OfficeOpenXMLCore;
+import org.apache.tika.metadata.Property;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.metadata.XMPDM;
+import org.silverpeas.media.Definition;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryData;
+import org.silverpeas.util.time.TimeData;
+import org.silverpeas.util.time.TimeUnit;
+
+import java.io.File;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.stratelia.webactiv.util.DateUtil;
-
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.Property;
-import org.apache.tika.metadata.TikaCoreProperties;
-
 public class MetaData {
 
+  private final File source;
   private final Metadata metadata;
 
-  MetaData(Metadata metadata) {
+  MetaData(final File source, Metadata metadata) {
+    this.source = source;
     this.metadata = metadata;
   }
 
@@ -62,7 +73,14 @@ public class MetaData {
    * @return String
    */
   public String getSubject() {
-    return cleanString(metadata.get(Metadata.SUBJECT));
+    String subject = metadata.get(metadata.get(Metadata.SUBJECT));
+    if (!StringUtil.isDefined(subject)) {
+      subject = metadata.get(OfficeOpenXMLCore.SUBJECT);
+    }
+    if (!StringUtil.isDefined(subject)) {
+      subject = metadata.get(TikaCoreProperties.KEYWORDS);
+    }
+    return cleanString(subject);
   }
 
   /**
@@ -71,11 +89,7 @@ public class MetaData {
    * @return String
    */
   public String getAuthor() {
-    String author = metadata.get(Metadata.AUTHOR);
-    if (author == null) {
-      author = metadata.get(Metadata.CREATOR);
-    }
-    return cleanString(author);
+    return cleanString(metadata.get(TikaCoreProperties.CREATOR));
   }
 
   /**
@@ -84,9 +98,9 @@ public class MetaData {
    * @return String
    */
   public String getComments() {
-    String comments = metadata.get(Metadata.COMMENTS);
+    String comments = metadata.get(TikaCoreProperties.COMMENTS);
     if (!StringUtil.isDefined(comments)) {
-      comments = metadata.get(Metadata.DESCRIPTION);
+      comments = metadata.get(TikaCoreProperties.DESCRIPTION);
     }
     return cleanString(comments);
   }
@@ -106,7 +120,7 @@ public class MetaData {
    * @return String
    */
   public String[] getKeywords() {
-    return cleanString(metadata.getValues(Metadata.KEYWORDS));
+    return cleanString(metadata.getValues(TikaCoreProperties.KEYWORDS));
   }
 
   /**
@@ -128,7 +142,7 @@ public class MetaData {
   }
 
   public Date getLastSaveDateTime() {
-    Date date = parseDate(Metadata.LAST_SAVED);
+    Date date = parseDate(TikaCoreProperties.MODIFIED);
     if (date == null) {
       return parseDate(Metadata.LAST_MODIFIED);
     }
@@ -149,12 +163,109 @@ public class MetaData {
     return result;
   }
 
+  /**
+   * Return the definition of the file.
+   */
+  public Definition getDefinition() {
+    Definition definition = Definition.fromZero();
+    Integer result = getInteger(Metadata.IMAGE_WIDTH);
+    if (result == null) {
+      result = getInteger(FLV.WIDTH);
+    }
+    if (result != null) {
+      definition.widthOf(result);
+    }
+    result = getInteger(Metadata.IMAGE_LENGTH);
+    if (result == null) {
+      result = getInteger(FLV.HEIGHT);
+    }
+    if (result != null) {
+      definition.heightOf(result);
+    }
+    return definition;
+  }
+
+  /**
+   * Return the duration of the file.
+   */
+  public BigDecimal getFramerate() {
+    BigDecimal result = getBigDecimal(XMPDM.VIDEO_FRAME_RATE);
+    if (result == null) {
+      result = getBigDecimal(FLV.FRAMERATE);
+    }
+    return result;
+  }
+
+  /**
+   * Return the duration of the file.
+   */
+  public TimeData getDuration() {
+    TimeData result = null;
+    BigDecimal duration = getBigDecimal(XMPDM.DURATION);
+    if (duration != null) {
+      result = UnitUtil.getTimeData(duration);
+    }
+    if (result == null) {
+      duration = getBigDecimal(FLV.DURATION);
+      if (duration != null) {
+        result = UnitUtil.getTimeData(duration, TimeUnit.SEC);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Return the memory data.
+   */
+  public MemoryData getMemoryData() {
+    Long result = getLong(HttpHeaders.CONTENT_LENGTH);
+    return result != null ? UnitUtil.getMemData(result) : null;
+  }
+
   protected Date getDate(Property property) {
     Date result = metadata.getDate(property);
     if (result == null) {
       return parseDate(property);
     }
     return result;
+  }
+
+  protected Integer getInteger(Property property) {
+    Integer result = metadata.getInt(property);
+    if (result == null) {
+      BigDecimal value = getBigDecimal(property);
+      if (value != null) {
+        result = value.intValue();
+      }
+    }
+    return result;
+  }
+
+  protected Long getLong(Property property) {
+    String result = cleanString(metadata.get(property));
+    try {
+      return Long.valueOf(result);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  protected Long getLong(String propertyName) {
+    String result = cleanString(metadata.get(propertyName));
+    try {
+      return Long.valueOf(result);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  protected BigDecimal getBigDecimal(Property property) {
+    String result = cleanString(metadata.get(property));
+    try {
+      return new BigDecimal(result);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   protected Date parseDate(Property property) {
@@ -182,5 +293,16 @@ public class MetaData {
       return value.replace("\u0000", "").replace("ï¿½ï¿½", "").trim();
     }
     return value;
+  }
+
+  private interface FLV {
+
+    Property WIDTH = Property.internalText("width");
+
+    Property HEIGHT = Property.internalText("height");
+
+    Property DURATION = Property.internalText("duration");
+
+    Property FRAMERATE = Property.internalText("framerate");
   }
 }

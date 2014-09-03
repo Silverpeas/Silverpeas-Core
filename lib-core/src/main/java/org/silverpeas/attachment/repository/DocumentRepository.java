@@ -37,6 +37,8 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.SimpleDocumentVersion;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.util.jcr.NodeIterable;
 import org.silverpeas.util.jcr.PropertyIterable;
 
@@ -103,7 +105,6 @@ public class DocumentRepository {
   }
 
   /**
-   * /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
    *
@@ -157,15 +158,22 @@ public class DocumentRepository {
     }
     VersionManager versionManager = session.getWorkspace().getVersionManager();
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
-    if (converter.isVersionedMaster(targetDocumentNode) && !targetDocumentNode.isCheckedOut()) {
-      versionManager.checkout(targetDocumentNode.getPath());
+    boolean mustCheckInVersion = true;
+    if (converter.isVersionedMaster(targetDocumentNode)) {
+      if (!targetDocumentNode.isCheckedOut()) {
+        versionManager.checkout(targetDocumentNode.getPath());
+      } else {
+        mustCheckInVersion = false;
+      }
     }
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
         getInstanceId());
     if (converter.isVersionedMaster(targetDocumentNode) && targetDocumentNode.isCheckedOut()) {
       session.save();
-      versionManager.checkin(targetDocumentNode.getPath());
+      if (mustCheckInVersion) {
+        versionManager.checkin(targetDocumentNode.getPath());
+      }
     }
     pk.setId(targetDocumentNode.getIdentifier());
     return pk;
@@ -201,8 +209,11 @@ public class DocumentRepository {
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     copy.setProperty(SLV_PROPERTY_INSTANCEID, destination.getInstanceId());
-    pk.setId(copy.getIdentifier());
-    return pk;
+    // The reservation is not copied.
+    targetDoc = converter.fillDocument(copy, null);
+    targetDoc.release();
+    converter.fillNode(targetDoc, copy);
+    return targetDoc.getPk();
   }
 
   /**
@@ -229,6 +240,25 @@ public class DocumentRepository {
     targetDoc.setUpdatedBy(null);
     targetDoc.computeNodeName();
     pk = createDocument(session, targetDoc);
+    if (I18NHelper.isI18nActivated()) {
+      // The first version can have several language contents.
+      Set<String> checkedLanguages = new HashSet<String>();
+      checkedLanguages.add(targetDoc.getLanguage());
+      for (String language : I18NHelper.getAllSupportedLanguages()) {
+        if (!checkedLanguages.contains(language)) {
+          HistorisedDocument temp =
+              (HistorisedDocument) findDocumentById(session, document.getPk(), language);
+          List<SimpleDocumentVersion> versions = temp.getHistory();
+          if (!versions.isEmpty()) {
+            SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
+            if (!checkedLanguages.contains(firstVersion.getLanguage())) {
+              addContent(session, targetDoc.getPk(), firstVersion.getAttachment());
+            }
+          }
+          checkedLanguages.add(language);
+        }
+      }
+    }
     unlock(session, targetDoc, false);
     VersionManager versionManager = session.getWorkspace().getVersionManager();
     String currentVersion = targetDoc.getVersion();
@@ -253,6 +283,8 @@ public class DocumentRepository {
       targetHistorisedDoc.setPK(pk);
       targetHistorisedDoc.setForeignId(destination.getId());
       targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
+      // The reservation is not copied.
+      targetHistorisedDoc.release();
       Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
       if (!currentVersion.equals(doc.getVersion())) {
         // In this case, a functional version is performed, so the common tools are used
@@ -543,8 +575,8 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsByForeignId(Session session, String instanceId,
-      String foreignId, String language) throws RepositoryException {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignId(Session session,
+      String instanceId, String foreignId, String language) throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
         DocumentType.attachment);
     return converter.convertNodeIterator(iter, language);
@@ -560,8 +592,8 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listAllDocumentsByForeignId(Session session, String instanceId,
-      String foreignId, String language) throws RepositoryException {
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignId(Session session,
+      String instanceId, String foreignId, String language) throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignId(session, instanceId, foreignId);
     return converter.convertNodeIterator(iter, language);
   }
@@ -577,8 +609,9 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsByForeignIdAndType(Session session, String instanceId,
-      String foreignId, DocumentType type, String language) throws RepositoryException {
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignIdAndType(Session session,
+      String instanceId, String foreignId, DocumentType type, String language)
+      throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId, type);
     return converter.convertNodeIterator(iter, language);
   }
@@ -980,28 +1013,33 @@ public class DocumentRepository {
       language = I18NHelper.defaultLanguage;
     }
     SimpleDocument document = converter.fillDocument(docNode, language);
-    return new BufferedInputStream(FileUtils.openInputStream(new File(document.getAttachmentPath())));
+    return new BufferedInputStream(
+        FileUtils.openInputStream(new File(document.getAttachmentPath())));
   }
 
   /**
    * Remove the content for the specified language.
+   * If no other content exists, then the document node is deleted.
    *
    * @param session the current JCR session.
    * @param documentPk the document which content is to be removed.
    * @param language the language of the content which is to be removed.
+   * @return false if the document has no child node after the content remove, true otherwise.
    * @throws RepositoryException
    */
-  public void removeContent(Session session, SimpleDocumentPK documentPk, String language) throws
-      RepositoryException {
+  public boolean removeContent(Session session, SimpleDocumentPK documentPk, String language)
+      throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersionedMaster(documentNode) && !documentNode.isCheckedOut()) {
       checkoutNode(documentNode, null);
     }
     converter.removeAttachment(documentNode, language);
     documentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (!documentNode.hasNodes()) {
+    boolean existsOtherContents = documentNode.hasNodes();
+    if (!existsOtherContents) {
       deleteDocumentNode(documentNode);
     }
+    return existsOtherContents;
   }
 
   /**
@@ -1026,16 +1064,48 @@ public class DocumentRepository {
   }
 
   /**
-   * Unlock a document if it is versionned to create a new version.
+   * Unlock a document if it is versionned to create a new version or to restore a previous one.
+   * By using this method, the metadata of the content are always updated.
    *
-   * @param session
-   * @param document
-   * @param restore
-   * @return
+   * @param session the current JCR open session to perform actions.
+   * @param document the document data from which all needed identifiers are retrieved.
+   * @param restore true to restore the previous version if any.
+   * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
    * @throws RepositoryException
    */
   public SimpleDocument unlock(Session session, SimpleDocument document, boolean restore)
       throws RepositoryException {
+    return unlock(session, document, restore, false);
+  }
+
+  /**
+   * Unlock a document if it is versionned from a context into which a language content has just
+   * been deleted. This method does not update the metadata of the content in order to obtain an
+   * efficient content deletion.
+   *
+   * @param session the current JCR open session to perform actions.
+   * @param document the document data from which all needed identifiers are retrieved.
+   * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
+   * @throws RepositoryException
+   */
+  public SimpleDocument unlockFromContentDeletion(Session session, SimpleDocument document)
+      throws RepositoryException {
+    return unlock(session, document, false, true);
+  }
+
+  /**
+   * Unlock a document if it is versionned to create a new version or to restore a previous one.
+   *
+   * @param session the current JCR open session to perform actions.
+   * @param document the document data from which all needed identifiers are retrieved.
+   * @param restore true to restore the previous version if any.
+   * @param skipContentMetadataUpdate false to update the metadata of the content {@link
+   * SimpleDocument#getAttachment()}.
+   * @return the document updated.
+   * @throws RepositoryException
+   */
+  private SimpleDocument unlock(Session session, SimpleDocument document, boolean restore,
+      boolean skipContentMetadataUpdate) throws RepositoryException {
     Node documentNode;
     try {
       documentNode = session.getNodeByIdentifier(document.getId());
@@ -1056,11 +1126,11 @@ public class DocumentRepository {
           return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
         }
       }
-      converter.fillNode(document, documentNode);
+      converter.fillNode(document, documentNode, skipContentMetadataUpdate);
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
     if (!document.isVersioned()) {
-      converter.fillNode(document, documentNode);
+      converter.fillNode(document, documentNode, skipContentMetadataUpdate);
       converter.releaseDocumentNode(documentNode, document.getLanguage());
       return converter.convertNode(documentNode, document.getLanguage());
     }

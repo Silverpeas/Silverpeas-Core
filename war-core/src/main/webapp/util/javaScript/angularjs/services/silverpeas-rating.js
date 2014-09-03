@@ -34,22 +34,19 @@
   silverpeas.factory('Rating', ['RESTAdapter', function(RESTAdapter) {
     return new function() {
 
-      var adapter = RESTAdapter.get(webContext + '/services/rating', function(data) {
-        var rating = new Rating(data);
-        return rating;
-      });
-
       var Rating = function() {
         if (arguments.length > 0) {
-          for (var prop in arguments[0]) {
+          for(var prop in arguments[0]) {
             this[prop] = arguments[0][prop];
           }
-        }
-      };
+        };
 
-      Rating.prototype.rate = function(value) {
-        return adapter.post(this.uri, value);
-      };
+        this.rate = function(value) {
+          return adapter.post(this.uri, value);
+        };
+      }
+
+      var adapter = RESTAdapter.get(webContext + '/services/rating', Rating);
 
       this.get = function(resourceContext) {
         return adapter.find({

@@ -61,8 +61,9 @@
     // Pass the options and a callback to execute if affirmative user response.
     var opts = new Defaults();
     $.extend(opts, options);
-
-    dlg.dialog('close');
+    if (dlg) {
+      dlg.dialog('close');
+    }
   }
 
   $.progressMessage.defaults = function (options) {

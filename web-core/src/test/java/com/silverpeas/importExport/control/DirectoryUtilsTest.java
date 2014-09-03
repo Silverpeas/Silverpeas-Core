@@ -39,35 +39,6 @@ public class DirectoryUtilsTest {
   }
 
   /**
-   * Test of formatToDirectoryPathNamingCompliant method, of class DirectoryUtils.
-   */
-  @Test
-  public void testFormatToDirectoryPathNamingCompliant() {
-    String fileName = "bart" + separatorChar + "simpson" + separatorChar + "well.txt";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName), is(fileName));
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "well well.txt";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName), is(fileName));
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName), is(fileName));
-
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "prn...txtT";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName),
-            is("bart" + separatorChar + "simpson" + separatorChar + "prn.txtT"));
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "test.T*T";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName),
-            is("bart" + separatorChar + "simpson" + separatorChar + "test.T_T"));
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "test|.TXT";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName),
-            is("bart" + separatorChar + "simpson" + separatorChar + "test_.TXT"));
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "te?st.TXT";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName),
-            is("bart" + separatorChar + "simpson" + separatorChar + "te_st.TXT"));
-    fileName = "bart" + separatorChar + "simpson" + separatorChar + "prn..TXT..";
-    assertThat(DirectoryUtils.formatToDirectoryPathNamingCompliant(fileName),
-            is("bart" + separatorChar + "simpson" + separatorChar + "prn.TXT."));
-  }
-
-  /**
    * Test of formatToDirectoryNamingCompliant method, of class DirectoryUtils.
    */
   @Test

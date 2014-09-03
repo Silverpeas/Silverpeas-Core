@@ -85,7 +85,7 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
               attachmentDetail = new SimpleDocument();
               attachmentDetail.setPK(attachmentPK);
               attachmentDetail.setOldSilverpeasId(Long.parseLong(attachmentPK.getId()));
-              attachmentDetail.setFile(new SimpleAttachment());
+              attachmentDetail.setAttachment(new SimpleAttachment());
               attachmentDetail.setFilename("originalFileName" + attachmentPK.getId());
             }
             return attachmentDetail;

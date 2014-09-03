@@ -23,6 +23,9 @@
  */
 package org.silverpeas.util.time;
 
+import org.apache.commons.lang.time.DurationFormatUtils;
+import org.silverpeas.util.UnitUtil;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -84,6 +87,14 @@ public class TimeData {
    */
   public BigDecimal getTime() {
     return getTimeConverted(TimeUnit.MILLI);
+  }
+
+  /**
+   * Gets the time in milliseconds.
+   * @return
+   */
+  public Long getTimeAsLong() {
+    return getTimeConverted(TimeUnit.MILLI).longValue();
   }
 
   /**
@@ -193,5 +204,29 @@ public class TimeData {
    */
   public String getFormattedValue(final TimeUnit to) {
     return getFormattedValue(to, false);
+  }
+
+  /**
+   * @see #getFormattedDuration(String)
+   */
+  public String getFormattedDurationAsHMSM() {
+    return getFormattedDuration("HH:mm:ss.SSS");
+  }
+
+  /**
+   * @see #getFormattedDuration(String)
+   */
+  public String getFormattedDurationAsHMS() {
+    TimeData roundedTimeData = UnitUtil
+        .getTimeData(getRoundedTimeConverted(TimeUnit.SEC).setScale(0, BigDecimal.ROUND_HALF_DOWN),
+            TimeUnit.SEC);
+    return roundedTimeData.getFormattedDuration("HH:mm:ss");
+  }
+
+  /**
+   * @see org.apache.commons.lang.time.DurationFormatUtils#formatDuration
+   */
+  public String getFormattedDuration(String format) {
+    return DurationFormatUtils.formatDuration(getTimeAsLong(), format);
   }
 }

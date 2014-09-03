@@ -99,7 +99,7 @@ public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
     if (technicalDocumentTypes.contains(document.getDocumentType())) {
       return document.getDocumentType().getName();
     }
-    return document.getFile().getContentType();
+    return document.getAttachment().getContentType();
   }
 
   @Override

@@ -20,9 +20,11 @@
  */
 package org.silverpeas.attachment.tag;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -45,7 +47,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   private SimpleDocument attachment;
   private boolean useXMLForm;
-  private boolean useFileSharing;
   private boolean useWebDAV;
   private String contentLanguage;
   private boolean showMenuNotif;
@@ -57,10 +58,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   public void setUseXMLForm(boolean useXMLForm) {
     this.useXMLForm = useXMLForm;
-  }
-
-  public void setUseFileSharing(boolean useFileSharing) {
-    this.useFileSharing = useFileSharing;
   }
 
   public void setUseWebDAV(boolean useWebDAV) {
@@ -93,10 +90,11 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       String favoriteLanguage = mainSessionController.getFavoriteLanguage();
       ResourceLocator messages = new ResourceLocator(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
-      String httpServerBase = URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
-      pageContext.getOut().print(prepareActions(attachment, useXMLForm, useFileSharing, useWebDAV,
-          mainSessionController.getUserId(), contentLanguage, messages, httpServerBase,
-          showMenuNotif, useContextualMenu));
+      String httpServerBase =
+          URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
+      pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
+          mainSessionController.getUserId(), contentLanguage, favoriteLanguage, messages,
+          httpServerBase, showMenuNotif, useContextualMenu));
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
       throw new JspException(ioex);
@@ -117,14 +115,16 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV) {
-    return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment);
+    return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment) &&
+        StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+            attachment.getLanguage()).equals(attachment.getLanguage());
   }
 
-  String prepareActions(SimpleDocument attachment, boolean useXMLForm,
-      boolean useFileSharing, boolean useWebDAV, String userId, String lang,
-      ResourceLocator resources, String httpServerBase, boolean showMenuNotif,
-      boolean useContextualMenu) throws UnsupportedEncodingException {
-    String language = I18NHelper.checkLanguage(lang);
+  String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
+      String userId, String contentLanguage, final String userLanguage, ResourceLocator resources,
+      String httpServerBase, boolean showMenuNotif, boolean useContextualMenu)
+      throws UnsupportedEncodingException {
+    String language = I18NHelper.checkLanguage(contentLanguage);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(2048);
@@ -136,11 +136,19 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + webDavOK + ");", resources.getString("checkOut"));
     prepareMenuItem(builder, "checkoutAndDownload('" + attachment.getId() + "'," + attachmentId
         + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
-    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId
-        + ");", resources.getString("attachment.checkOutAndEditOnline"));
-    prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + ','
-        + attachment.isOpenOfficeCompatible() + ", false ," + attachment.isVersioned() + ");",
-        resources.getString("checkIn"));
+    String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
+    String webdavContentEditionLanguageLabel = "";
+    if (I18NHelper.isI18nActivated()) {
+      webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
+          .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+              attachment.getLanguage()), userLanguage);
+      checkoutAndEditLabel += " (" + webdavContentEditionLanguageLabel + ")";
+    }
+    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ");",
+        checkoutAndEditLabel);
+    prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + "," +
+        attachment.isOpenOfficeCompatible() + ", false, " + attachment.isVersioned() + ", '" +
+        webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "updateAttachment('" + attachment.getId() + "','" + language + "');",
@@ -165,7 +173,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(
-        "attachment.share"));
+        "GML.share.file"));
 
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
@@ -213,7 +221,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       builder.append(configureCheckoutAndEdit(attachmentId, !useWebDAV || !attachment.
           isOpenOfficeCompatible()));
     }
-    builder.append(configureFileSharing(attachmentId, !useFileSharing));
+    builder.append(configureFileSharing(attachmentId,
+        !attachment.isSharingAllowedForRolesFrom(UserDetail.getById(userId))));
     builder.append(configureSwitchState(attachmentId, attachment.isReadOnly()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);

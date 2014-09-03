@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkCommunicationUser.jsp" %>
 
 <%
@@ -36,15 +36,14 @@
 	operationPane.addOperation(resources.getIcon("communicationUser.chatroomClear"),resources.getString("clear"),"javascript:clear()");
 	operationPane.addOperation(resources.getIcon("communicationUser.chatroomSave"),resources.getString("save"),"javascript:save()");
 	operationPane.addOperation(resources.getIcon("communicationUser.chatroomLogout"),resources.getString("logout"),"javascript:logout()");
+	
+	window.setPopup(true);
 %>
 
 <html>
 <head>
 <TITLE><%=resources.getString("currentDiscussion")+" <"+userName+" - "+userNameDest+">"%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>

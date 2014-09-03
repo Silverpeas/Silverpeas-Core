@@ -29,11 +29,39 @@ package org.silverpeas.image.option;
  */
 public class DimensionOption extends AbstractImageToolOption {
 
-  private final int width;
-  private final int height;
+  private final Integer width;
+  private final Integer height;
 
-  public static DimensionOption widthAndHeight(final int width, final int height) {
+  /**
+   * Creates a new option on the dimension from the specified width and height in pixels.
+   * @param width the width in pixels. If null, the height will only be taken into account
+   * by ImageTool when resizing an image.
+   * @param height the height in pixels. If null, the width will only be taken into account
+   * by ImageTool when resizing an image.
+   * @return an instance of {@code DimensionOption} type.
+   */
+  public static DimensionOption widthAndHeight(final Integer width, final Integer height) {
     return new DimensionOption(width, height);
+  }
+
+  /**
+   * Creates a new option on the dimension from the specified width in pixels. The height will be
+   * computed from the width to keep the same ratio than the original image.
+   * @param width the width in pixels.
+   * @return an instance of {@code DimensionOption} type.
+   */
+  public static DimensionOption width(final Integer width) {
+    return new DimensionOption(width, null);
+  }
+
+  /**
+   * Creates a new option on the dimension from the specified height in pixels. The width will be
+   * computed from the height to keep the same ratio than the original image.
+   * @param height the height in pixels.
+   * @return an instance of {@code DimensionOption} type.
+   */
+  public static DimensionOption height(final Integer height) {
+    return new DimensionOption(null, height);
   }
 
   /**
@@ -41,7 +69,7 @@ public class DimensionOption extends AbstractImageToolOption {
    * @param width
    * @param height
    */
-  private DimensionOption(final int width, final int height) {
+  private DimensionOption(final Integer width, final Integer height) {
     this.width = width;
     this.height = height;
   }
@@ -49,14 +77,14 @@ public class DimensionOption extends AbstractImageToolOption {
   /**
    * @return the width
    */
-  public int getWidth() {
+  public Integer getWidth() {
     return width;
   }
 
   /**
    * @return the height
    */
-  public int getHeight() {
+  public Integer getHeight() {
     return height;
   }
 }

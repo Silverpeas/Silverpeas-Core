@@ -334,7 +334,7 @@ function checkDates() {
 
 function editHelp()
 {
-	SP_openWindow('help.jsp', 'Aide', '700', '220','scrollbars=yes, resizable, alwaysRaised');
+	SP_openWindow('help.jsp', 'Aide', '700', '270','scrollbars=yes, resizable, alwaysRaised');
 }
 
 function callUserPanel()

@@ -101,7 +101,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
               getSocialEventsInterface().getSocialInformationsList(userId, classification, begin,
               end);
           break;
-        case PHOTO:
+        case MEDIA:
 
           listResult = getSocialGalleryInterface().getSocialInformationsList(userId, begin, end);
           break;
@@ -226,7 +226,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
               myContactsIds, begin, end);
           break;
 
-        case PHOTO:
+        case MEDIA:
           list = getSocialGalleryInterface().getSocialInformationsListOfMyContacts(myId,
               myContactsIds, begin, end);
           break;

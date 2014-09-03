@@ -22,9 +22,11 @@ package com.stratelia.webactiv.util;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.MultilangMessage;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -35,11 +37,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Timestamp;
+import java.util.*;
 
 public class DBUtil {
 
@@ -72,6 +71,7 @@ public class DBUtil {
   public static int getTextFieldLength() {
     return getInstance().textFieldLength;
   }
+
   private Connection connectionForTest;
 
   private DBUtil(Connection connectionForTest) {
@@ -106,6 +106,7 @@ public class DBUtil {
       dsStock.clear();
     }
   }
+
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
    */
@@ -115,7 +116,8 @@ public class DBUtil {
    */
   private volatile int textAreaLength = 2000;
   /**
-   * TextMaxiLength is the maximum length to store in db. This length is to use with fields that can
+   * TextMaxiLength is the maximum length to store in db. This length is to use with fields that
+   * can
    * contain a lot of information. This is the case of publication's model for exemple. TODO : In
    * the near future, these fields will have to be put in BLOB (Binary Large OBject).
    */
@@ -130,7 +132,6 @@ public class DBUtil {
 
   /**
    * fabrique une nouvelle connection
-   *
    * @param dbName le nom de la base de donnée
    * @return a new connection to the database.
    * @throws UtilException
@@ -156,21 +157,28 @@ public class DBUtil {
         dsStock.put(dbName, ds);
       }
     } catch (NamingException e) {
-      throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
-          "util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
+      throw new UtilException("DBUtil.makeConnection",
+          new MultilangMessage("util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
     }
 
     try {
       return ds.getConnection();
     } catch (SQLException e) {
-      throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
-          "util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
+      throw new UtilException("DBUtil.makeConnection",
+          new MultilangMessage("util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
     }
   }
 
   /**
+   * Returns a new unique identifier of type string.
+   * @return a new unique string identifier.
+   */
+  public static String getUniqueId() {
+    return UUID.randomUUID().toString();
+  }
+
+  /**
    * Return a new unique Id for a table.
-   *
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
@@ -197,8 +205,9 @@ public class DBUtil {
       if (privateConnection != null) {
         rollback(privateConnection);
       }
-      throw new UtilException("DBUtil.getNextId", new MultilangMessage(
-          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), ex);
+      throw new UtilException("DBUtil.getNextId",
+          new MultilangMessage("util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(),
+          ex);
     } finally {
       try {
         if (privateConnection != null && !testingMode) {
@@ -212,15 +221,14 @@ public class DBUtil {
 
   /**
    * Return a new unique Id for a table.
-   *
    * @param connection the JDBC connection.
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
    * @throws SQLException
    */
-  public static int getNextId(Connection connection, String tableName, String idName) throws
-      SQLException {
+  public static int getNextId(Connection connection, String tableName, String idName)
+      throws SQLException {
     return getMaxId(connection, tableName, idName);
   }
 
@@ -251,8 +259,8 @@ public class DBUtil {
       return max;
     } catch (Exception e) {
       // impossible de creer, on est en concurence, on reessaye l'update.
-      SilverTrace.debug("util", "DBUtil.getNextId",
-          "impossible de creer, if faut reessayer l'update", e);
+      SilverTrace
+          .debug("util", "DBUtil.getNextId", "impossible de creer, if faut reessayer l'update", e);
       rollback(privateConnection);
     } finally {
       close(createStmt);
@@ -262,14 +270,15 @@ public class DBUtil {
     return max;
   }
 
-  private static int updateMaxFromTable(Connection connection, String tableName) throws SQLException {
+  private static int updateMaxFromTable(Connection connection, String tableName)
+      throws SQLException {
     String table = tableName.toLowerCase(Locale.ROOT);
     int max = 0;
     PreparedStatement prepStmt = null;
     int count = 0;
     try {
-      prepStmt = connection.prepareStatement(
-          "UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
+      prepStmt =
+          connection.prepareStatement("UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
       prepStmt.setString(1, table);
       count = prepStmt.executeUpdate();
       connection.commit();
@@ -413,5 +422,314 @@ public class DBUtil {
       }
     }
     return tableNames;
+  }
+
+  /**
+   * Indicates if the specified value is defined in point of view of SQL.
+   * @param sqlValue the value to verify.
+   * @return true if defined, false otherwise.
+   */
+  public static boolean isSqlDefined(String sqlValue) {
+    return StringUtil.isDefined(sqlValue) && !sqlValue.trim().equals("-1") &&
+        !sqlValue.trim().equals("unknown");
+  }
+
+  /**
+   * Select count SQL query executor.
+   * @param con
+   * @param selectCountQuery
+   * @param idParam
+   * @throws SQLException
+   */
+  @SuppressWarnings("unchecked")
+  public static <O> long selectCount(Connection con, String selectCountQuery, O idParam)
+      throws SQLException {
+    return selectCount(con, selectCountQuery, Arrays.asList(idParam));
+  }
+
+  /**
+   * Select count SQL query executor.
+   * @param con
+   * @param selectCountQuery
+   * @param params
+   * @throws SQLException
+   */
+  public static <O> long selectCount(Connection con, String selectCountQuery, Collection<O> params)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(selectCountQuery);
+      DBUtil.setParameters(prepStmt, params);
+      rs = prepStmt.executeQuery();
+      rs.next();
+      long count = rs.getLong(1);
+      if (rs.next()) {
+        throw new IllegalArgumentException("select count execution error");
+      }
+      return count;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Update query executor.
+   * @param con
+   * @param updateQuery
+   * @param parameters
+   * @throws SQLException
+   */
+  @SuppressWarnings("unchecked")
+  public static <ROW_ENTITY> List<ROW_ENTITY> select(Connection con, String updateQuery,
+      Object parameters, SelectResultRowProcessor<ROW_ENTITY> rowProcess) throws SQLException {
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    try {
+      st = con.prepareStatement(updateQuery);
+      final Collection<Object> sqlParams;
+      if (parameters instanceof Object[]) {
+        sqlParams = Arrays.asList((Object[]) parameters);
+      } else if (parameters instanceof Collection) {
+        sqlParams = (Collection) parameters;
+      } else {
+        sqlParams = Arrays.asList(parameters);
+      }
+      DBUtil.setParameters(st, sqlParams);
+      rs = st.executeQuery();
+      List<ROW_ENTITY> entities = new ArrayList<ROW_ENTITY>();
+      int i = 0;
+      while (rs.next()) {
+        if (rowProcess.limit > 0 && entities.size() >= rowProcess.limit) {
+          break;
+        }
+        ROW_ENTITY entity = rowProcess.currentRow(i, rs);
+        if (entity != null) {
+          entities.add(entity);
+        }
+        i++;
+      }
+      return entities;
+    } finally {
+      DBUtil.close(rs, st);
+    }
+  }
+
+  /**
+   * Result Set Row Processor
+   * @param <ROW_ENTITY>
+   */
+  public static abstract class SelectResultRowProcessor<ROW_ENTITY> {
+    private final int limit;
+
+    protected SelectResultRowProcessor() {
+      this(0);
+    }
+
+    protected SelectResultRowProcessor(int limit) {
+      this.limit = limit;
+    }
+
+    protected abstract ROW_ENTITY currentRow(final int rowIndex, ResultSet rs) throws SQLException;
+  }
+
+  /**
+   * Gets from a entity list the unique entity expected.
+   * @param entities the entity list.
+   * @return the unique entity result.
+   * @throws IllegalArgumentException if it exists more than one entity in the specified
+   * list.
+   */
+  public static <ENTITY> ENTITY unique(List<ENTITY> entities) {
+    if (entities.isEmpty()) {
+      return null;
+    }
+    if (entities.size() == 1) {
+      return entities.get(0);
+    }
+    throw new IllegalArgumentException(
+        "wanted to get a unique entity from a list that contains more than one...");
+  }
+
+  /**
+   * Update query executor.
+   * @param con
+   * @param updateQueries
+   * @throws SQLException
+   */
+  public static <O> long executeUpdate(Connection con, List<Pair<String, List<O>>> updateQueries)
+      throws SQLException {
+    long nbUpdate = 0;
+    for (Pair<String, List<O>> updateQuery : updateQueries) {
+      nbUpdate += executeUpdate(con, updateQuery.getLeft(), updateQuery.getRight());
+    }
+    return nbUpdate;
+  }
+
+  public static long executeUpdate(Connection con, String updateQuery, Object... parameters)
+      throws SQLException {
+    return executeUpdate(con, updateQuery, (Object) parameters);
+  }
+
+  /**
+   * Update query executor.
+   * @param con
+   * @param updateQuery
+   * @param parameters
+   * @throws SQLException
+   */
+  @SuppressWarnings("unchecked")
+  public static long executeUpdate(Connection con, String updateQuery, Object parameters)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(updateQuery);
+      final Collection<Object> sqlParams;
+      if (parameters instanceof Object[]) {
+        sqlParams = Arrays.asList((Object[]) parameters);
+      } else if (parameters instanceof Collection) {
+        sqlParams = (Collection) parameters;
+      } else {
+        sqlParams = Arrays.asList(parameters);
+      }
+      DBUtil.setParameters(prepStmt, sqlParams);
+      return prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Centralization in order to populate the prepare statement parameters.
+   * @param sqlQuery
+   * @param paramName
+   * @param paramValue
+   * @param isInsert
+   * @param parameters
+   * @return
+   */
+  public static <O> StringBuilder appendSaveParameter(StringBuilder sqlQuery, String paramName,
+      O paramValue, final boolean isInsert, Collection<O> parameters) {
+    if (parameters.size() > 0) {
+      sqlQuery.append(", ");
+    }
+    sqlQuery.append(paramName);
+    if (!isInsert) {
+      sqlQuery.append(" = ?");
+    }
+    parameters.add(paramValue);
+    return sqlQuery;
+  }
+
+  /**
+   * Centralization in order to populate the prepare statement parameters.
+   * @param sqlQuery
+   * @param sqlPart
+   * @param parameters
+   * @return
+   */
+  public static <O> StringBuilder appendParameter(StringBuilder sqlQuery, String sqlPart,
+      O paramValue, Collection<O> parameters) {
+    parameters.add(paramValue);
+    return sqlQuery.append(sqlPart);
+  }
+
+  /**
+   * Centralization in order to build easily a SQL in clause.
+   * @param sqlQuery
+   * @param parameters
+   * @return
+   */
+  public static StringBuilder appendListOfParameters(StringBuilder sqlQuery,
+      Collection<?> parameters) {
+    return appendListOfParameters(sqlQuery, parameters, null);
+  }
+
+  /**
+   * Centralization in order to build easily a SQL in clause.
+   * @param sqlQuery
+   * @param parameters
+   * @param allParameters
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static StringBuilder appendListOfParameters(StringBuilder sqlQuery,
+      Collection<?> parameters, Collection<?> allParameters) {
+    StringBuilder params = new StringBuilder();
+    if (parameters != null) {
+      for (Object ignored : parameters) {
+        if (params.length() > 0) {
+          params.append(",");
+        }
+        params.append("?");
+      }
+      if (allParameters != null) {
+        allParameters.addAll((Collection) parameters);
+      }
+    }
+    return sqlQuery.append("(").append(params.toString()).append(")");
+  }
+
+  /**
+   * Centralization in order to sets the parameters on a prepare statement.
+   * @param preparedStatement
+   * @param parameters
+   * @throws SQLException
+   */
+  public static <O> void setParameters(PreparedStatement preparedStatement,
+      Collection<O> parameters) throws SQLException {
+    int paramIndex = 1;
+    for (Object parameter : parameters) {
+      if (parameter == null) {
+        preparedStatement.setObject(paramIndex, null);
+      } else if (parameter instanceof String) {
+        preparedStatement.setString(paramIndex, (String) parameter);
+      } else if (parameter instanceof Enum) {
+        preparedStatement.setString(paramIndex, ((Enum) parameter).name());
+      } else if (parameter instanceof Integer) {
+        preparedStatement.setInt(paramIndex, (Integer) parameter);
+      } else if (parameter instanceof Long) {
+        preparedStatement.setLong(paramIndex, (Long) parameter);
+      } else if (parameter instanceof Timestamp) {
+        preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
+      } else if (parameter instanceof Date) {
+        preparedStatement.setDate(paramIndex, new java.sql.Date(((Date) parameter).getTime()));
+      } else if (parameter instanceof UserDetail) {
+        preparedStatement.setString(paramIndex, ((UserDetail) parameter).getId());
+      } else {
+        throw new IllegalArgumentException(
+            "SQL parameter type not handled: " + parameter.getClass());
+      }
+      paramIndex++;
+    }
+  }
+
+  /**
+   * Gets a long value from a current result set.
+   * @param resultSet
+   * @param index
+   * @return the long value if it exists, null otherwise.
+   * @throws SQLException
+   */
+  public static Long getLong(ResultSet resultSet, int index) throws SQLException {
+    if (resultSet.getObject(index) != null) {
+      return resultSet.getLong(index);
+    }
+    return null;
+  }
+
+  /**
+   * Gets a Date value from a Long value from a current result set.
+   * @param resultSet
+   * @param index
+   * @return the Date value if it exists a long value, null otherwise.
+   * @throws SQLException
+   */
+  public static Date getDateFromLong(ResultSet resultSet, int index) throws SQLException {
+    Long dateIntoLongFormat = getLong(resultSet, index);
+    if (dateIntoLongFormat != null) {
+      return new Date(dateIntoLongFormat);
+    }
+    return null;
   }
 }

@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 <%
 	Axis axis = (Axis) request.getAttribute("Axis");
@@ -41,9 +41,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <style type="text/css">
 <!--
 
