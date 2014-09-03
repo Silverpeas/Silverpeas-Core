@@ -39,4 +39,4 @@
 
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
-<fmt:message key="portlets.portlet.myTodos.help"/>
+<fmt:message key="portlets.portlet.spaceResponsibles.help"/>
