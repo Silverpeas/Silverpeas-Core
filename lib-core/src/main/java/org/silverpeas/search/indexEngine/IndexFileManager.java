@@ -20,9 +20,12 @@
  */
 package org.silverpeas.search.indexEngine;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 import static java.io.File.separatorChar;
 
@@ -51,9 +54,10 @@ public class IndexFileManager {
     }
     return getIndexUpLoadPath() + sComponentId + separatorChar + "index";
   }
-
-  static public void createAbsoluteIndexPath(String particularSpace, String sComponentId) {
-    FileFolderManager.createFolder(getAbsoluteIndexPath(particularSpace, sComponentId));
+  
+  public static void deleteComponentIndexFolder(String componentId) {
+    File folder = new File(getIndexUpLoadPath(), componentId);
+    FileUtils.deleteQuietly(folder);
   }
 
   /**

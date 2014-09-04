@@ -30,15 +30,12 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
-import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class ThumbnailInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
-
-  private ThumbnailService thumbnailService = null;
 
   public ThumbnailInstanciator() {
   }
@@ -73,7 +70,7 @@ public class ThumbnailInstanciator extends SQLRequest implements ComponentsInsta
     }
 
     // 2 - delete directory where files are stored
-    String[] ctx = { "thumbnail" };
+    String[] ctx = { "images" };
     String path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
     try {
       FileFolderManager.deleteFolder(path);
