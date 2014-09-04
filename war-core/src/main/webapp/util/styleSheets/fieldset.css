@@ -106,7 +106,7 @@ fieldset.skinFieldset {
 	position:relative;
 	clear: both;
 	height:100%;
-	width:100%;
+	max-width:100%;
 }
 
 .field {
@@ -173,4 +173,19 @@ input.inputHour{
 
 .forms .skinFieldset legend {
     padding-left: 10px;
+}
+
+/* fieldset & Formulaire */
+
+.skinFieldset .forms .fields > li {
+  float:none;
+}
+
+.skinFieldset .forms .fields .fieldInput {
+  display: block;
+  margin-left: 195px;
+}
+
+.skinFieldset .forms .fields .fieldInput select{
+  max-width:200px;
 }
