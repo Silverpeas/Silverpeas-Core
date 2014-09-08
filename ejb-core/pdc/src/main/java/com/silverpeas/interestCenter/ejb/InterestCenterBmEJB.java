@@ -37,8 +37,6 @@ import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.LongText;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -129,10 +127,11 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     
     try {
       //check rights : check that the current user has the rights to delete the interest center
+      int userIdInt = Integer.parseInt(userId);
       for (Integer icPk : pks) {
         InterestCenter interestCenter = getICByID(icPk);
         
-        if(! userId.equals(interestCenter.getAuthorID())) {
+        if(userIdInt != interestCenter.getOwnerID()) {
           throw new ForbiddenRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
             SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "interest center id="+icPk+", userId="+userId);
         }
