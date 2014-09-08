@@ -21,7 +21,9 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
@@ -31,8 +33,9 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,22 +46,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+    .notification_receiver_groups;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+    .notification_receiver_users;
 
 /**
  * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
