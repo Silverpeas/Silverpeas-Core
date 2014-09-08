@@ -132,6 +132,34 @@
       </Collection>
     </Properties>
   </PortletApp>
+  <PortletApp name="silverpeas.MyContactsPortlet" portletName="silverpeas.MyContactsPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas My contacts portlet"/>
+      <String name="shortTitle" value="My contacts"/>
+      <String name="description" value="The contacts in my network"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Mes contacts"/>
+        <String name="en" value="My contacts"/>
+        <String name="de" value="My contacts"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="Mes contacts"/>
+        <String name="en" value="My contacts"/>
+        <String name="de" value="My contacts"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>
   <PortletApp name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
