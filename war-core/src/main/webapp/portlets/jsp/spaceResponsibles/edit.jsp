@@ -45,18 +45,6 @@
     RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
     RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
     PortletPreferences pref = pReq.getPreferences();
-    String error = pReq.getParameter(FormNames.ERROR_BAD_VALUE);
-%>
-    <!-- START error -->
-<%
-    if (error != null) {
-%>
-      <div class="portlet-msg-error" style="color: red">
-          <fmt:message key="portlets.portlet.nextEvents.error"/>
-      </div>
-      <br>
-<%
-        }
 %>
 
     <form name="inputForm" target="_self" method="POST" action="<%=actionURL.toString()%>">
