@@ -90,76 +90,47 @@ function validateSearch() {
 	}
 }
 
-var spaceWindow = window;
+var spWindow = window;
+function openWindow(url) {
+  windowName = "spWindow";
+  larg = "800";
+  haut = "600";
+  windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
+  if (!spWindow.closed && spWindow.name == "spWindow") {
+  	spaceWindow.close();
+  }
+  spWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+}
+
 function openSpace(spaceId) {
-	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenSpace?Espace='+spaceId;
-    windowName = "spaceWindow";
-	larg = "800";
-	haut = "800";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!spaceWindow.closed && spaceWindow.name == "spaceWindow") {
-        spaceWindow.close();
-	}
-    spaceWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+  var url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenSpace?Espace='+spaceId;
+  openWindow(url);
 }
 
-var subSpaceWindow = window;
 function openSubSpace(rootSpaceId, subSpaceId) {
-	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenSubSpace?Espace='+rootSpaceId+'&SousEspace='+subSpaceId;
-    windowName = "subSpaceWindow";
-	larg = "800";
-	haut = "800";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!subSpaceWindow.closed && subSpaceWindow.name == "subSpaceWindow") {
-        subSpaceWindow.close();
-	}
-    subSpaceWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+  var url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenSubSpace?Espace='+rootSpaceId+'&SousEspace='+subSpaceId;
+  openWindow(url);
 }
 
-var componentWindow = window;
 function openComponent(componentId) {
-	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenComponent?ComponentId='+componentId;
-    windowName = "componentWindow";
-	larg = "800";
-	haut = "800";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!componentWindow.closed && componentWindow.name == "componentWindow") {
-        componentWindow.close();
-	}
-    componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+  var url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenComponent?ComponentId='+componentId;
+  openWindow(url);
 }
 
 function openPublication(permalink) {
-	window.location.href = permalink;
+  window.location.href = permalink;
 }
 
-var groupWindow = window;
 function openGroup(groupId) {
-	url = '<%=m_context%>/RjobDomainPeas/jsp/groupOpen?groupId='+groupId;
-    windowName = "groupWindow";
-	larg = "800";
-	haut = "800";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!groupWindow.closed && groupWindow.name == "componentWindow") {
-        groupWindow.close();
-	}
-    groupWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+  var url = '<%=m_context%>/RjobDomainPeas/jsp/groupOpen?groupId='+groupId;
+  openWindow(url);
 }
 
-var userWindow = window;
 function openUser(userId) {
-	url = '<%=m_context%>/RjobDomainPeas/jsp/userOpen?userId='+userId;
-    windowName = "userWindow";
-	larg = "800";
-	haut = "800";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!userWindow.closed && userWindow.name == "componentWindow") {
-        userWindow.close();
-	}
-    userWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+  var url = '<%=m_context%>/RjobDomainPeas/jsp/userOpen?userId='+userId;
+  openWindow(url);
 }
 </script>
-
 </head>
 <body onload="document.SearchResultForm.SearchField.focus()">
 

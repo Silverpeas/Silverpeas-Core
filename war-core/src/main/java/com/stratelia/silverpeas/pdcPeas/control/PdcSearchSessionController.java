@@ -1103,8 +1103,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         if (resultType.startsWith("Attachment")) {
           if (!componentId.startsWith("webPages")) {
             try {
-              downloadLink =
-                  getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent(), result);
+              downloadLink = getAttachmentUrl(result);
             } catch (Exception e) {
               SilverTrace.warn("pdcPeas",
                   "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -1136,7 +1135,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
         } else if (resultType.startsWith("Versioning")) {
           try {
-            downloadLink = getVersioningUrl(resultType.substring(10), componentId, result);
+            downloadLink = getVersioningUrl(result);
           } catch (Exception e) {
             SilverTrace.error("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -1563,16 +1562,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return "";
   }
 
-  private String getAttachmentUrl(String objectType, String componentId, GlobalSilverResult gsr)
-      throws Exception {
-    String id = objectType.substring(10); // object type is Attachment1245 or
-    // Attachment1245_en
-    String language = I18NHelper.defaultLanguage;
-    if (id != null && id.indexOf('_') != -1) {
-      // extract attachmentId and language
-      language = id.substring(id.indexOf('_') + 1, id.length());
-      id = id.substring(0, id.indexOf('_'));
-    }
+  private String getAttachmentUrl(GlobalSilverResult gsr) throws Exception {
+    String componentId = gsr.getIndexEntry().getComponent();
+    String id = gsr.getAttachmentId();
+    String language = gsr.getAttachmentLanguage();
 
     SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
@@ -1585,7 +1578,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     gsr.setPreviewable(previewable);
     gsr.setViewable(viewable);
-    gsr.setAttachmentId(id);
     gsr.setVersioned(false);
     gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
     gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
@@ -1615,8 +1607,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return FileServerUtils.getApplicationContext() + urlAttachment;
   }
 
-  private String getVersioningUrl(String documentId, String componentId, GlobalSilverResult gsr)
-      throws Exception {
+  private String getVersioningUrl(GlobalSilverResult gsr) throws Exception {
+    String componentId = gsr.getIndexEntry().getComponent();
+    String documentId = gsr.getAttachmentId();
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
@@ -1631,7 +1624,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
       gsr.setPreviewable(previewable);
       gsr.setViewable(viewable);
-      gsr.setAttachmentId(documentId);
       gsr.setVersioned(true);
       gsr.setDownloadAllowedForReaders(document.isDownloadAllowedForReaders());
       gsr.setUserAllowedToDownloadFile(document.isDownloadAllowedForRolesFrom(getUserDetail()));
