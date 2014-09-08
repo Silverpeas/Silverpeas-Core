@@ -24,8 +24,8 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
-import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
+import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
+import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterfaceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -336,11 +336,11 @@ public class NotificationSender implements java.io.Serializable {
     getNotificationInterface().saveNotifUser(metaData, usersSet);
   }
 
-  private SendedNotificationInterface getNotificationInterface()
+  private SentNotificationInterface getNotificationInterface()
       throws NotificationManagerException {
-    SendedNotificationInterface notificationInterface = null;
+    SentNotificationInterface notificationInterface = null;
     try {
-      notificationInterface = new SendedNotificationInterfaceImpl();
+      notificationInterface = new SentNotificationInterfaceImpl();
     } catch (Exception e) {
       throw new NotificationManagerException(
           "NotificationSender.getNotificationInterface()",

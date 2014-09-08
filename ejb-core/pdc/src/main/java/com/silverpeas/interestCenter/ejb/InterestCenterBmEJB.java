@@ -33,11 +33,13 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * InterestCenterBm EJB implementation for detailed comments for each method see remote interface
@@ -59,10 +61,10 @@ public class InterestCenterBmEJB implements InterestCenterBm {
       return InterestCenterDAO.getICByUserID(con, userID);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
-          "InterestCenter.CANNOT_LOAD_IC", String.valueOf(userID), e);
+          "Pdc.CANNOT_GET_INTEREST_CENTERS", String.valueOf(userID), e);
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
-          "InterestCenter.CANNOT_LOAD_IC", String.valueOf(userID), e);
+          "Pdc.CANNOT_GET_INTEREST_CENTERS", String.valueOf(userID), e);
     } finally {
       DBUtil.close(con);
     }
@@ -92,10 +94,10 @@ public class InterestCenterBmEJB implements InterestCenterBm {
       return InterestCenterDAO.createIC(con, ic);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
-          "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
+          "Pdc.CANNOT_CREATE_INTEREST_CENTER", ic.toString(), e);
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
-          "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
+          "Pdc.CANNOT_CREATE_INTEREST_CENTER", ic.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -109,10 +111,10 @@ public class InterestCenterBmEJB implements InterestCenterBm {
       InterestCenterDAO.updateIC(con, ic);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
-          "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
+          "Pdc.CANNOT_UPDATE_INTEREST_CENTER", ic.toString(), e);
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
-          "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
+          "Pdc.CANNOT_UPDATE_INTEREST_CENTER", ic.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -120,16 +122,30 @@ public class InterestCenterBmEJB implements InterestCenterBm {
 
   @Override
   @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-  public void removeICByPK(List<Integer> pks) {
+  public void removeICByPK(List<Integer> pks, String userId) {
     Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
+    
     try {
+      //check rights : check that the current user has the rights to delete the interest center
+      int userIdInt = Integer.parseInt(userId);
+      for (Integer icPk : pks) {
+        InterestCenter interestCenter = getICByID(icPk);
+        
+        if(userIdInt != interestCenter.getOwnerID()) {
+          throw new ForbiddenRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
+            SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "interest center id="+icPk+", userId="+userId);
+        }
+      }
+    
+      //remove
       InterestCenterDAO.removeICByPK(con, pks);
+      
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
-          "InterestCenter.CANNOT_DELETE_IC", pks.toString(), e);
+          "Pdc.CANNOT_DELETE_INTEREST_CENTERS", pks.toString(), e);
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
-          "InterestCenter.CANNOT_DELETE_IC", pks.toString(), e);
+          "Pdc.CANNOT_DELETE_INTEREST_CENTERS", pks.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -143,10 +159,10 @@ public class InterestCenterBmEJB implements InterestCenterBm {
       InterestCenterDAO.removeICByPK(con, pk);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
-          "InterestCenter.CANNOT_DELETE_IC", String.valueOf(pk), e);
+          "Pdc.CANNOT_DELETE_INTEREST_CENTER", String.valueOf(pk), e);
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
-          "InterestCenter.CANNOT_DELETE_IC", String.valueOf(pk), e);
+          "Pdc.CANNOT_DELETE_INTEREST_CENTER", String.valueOf(pk), e);
     } finally {
       DBUtil.close(con);
     }

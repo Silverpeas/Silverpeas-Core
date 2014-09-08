@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
+import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.LongText;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -32,6 +33,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
@@ -137,7 +140,7 @@ public class SILVERMAILPersistence {
             body = LongText.getLongText(longTextId);
           } catch (Exception e) {
             SilverTrace.debug("silvermail",
-                "SILVERMAILListener.getMessageOfFolder()",
+                "SILVERMAILPersistence.getMessageOfFolder()",
                 "PB converting body id to LongText", "Message Body = "
                 + pmb.getBody());
             body = pmb.getBody();
@@ -187,7 +190,7 @@ public class SILVERMAILPersistence {
           longTextId = Integer.parseInt(smb.getBody());
           body = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace.debug("silvermail", "SILVERMAILListener.getMessage()",
+          SilverTrace.debug("silvermail", "SILVERMAILPersistence.getMessage()",
               "PB converting body id to LongText", "Message Body = "
               + smb.getBody());
           body = smb.getBody();
@@ -209,23 +212,30 @@ public class SILVERMAILPersistence {
   /**
    *
    */
-  public static void deleteMessage(long msgId) throws SILVERMAILException {
+  public static void deleteMessage(long msgId, String userId) throws SILVERMAILException {
     IdPK pk = new IdPK();
 
     try {
       SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO(
           "com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
       pk.setIdAsLong(msgId);
-      try {
-        int longTextId = -1;
-        SILVERMAILMessageBean toDel = (SILVERMAILMessageBean) dao.findByPrimaryKey(pk);
-        longTextId = Integer.parseInt(toDel.getBody());
-        LongText.removeLongText(longTextId);
-      } catch (Exception e) {
-        SilverTrace.debug("silvermail", "SILVERMAILListener.deleteMessage()",
-            "PB converting body id to LongText", "Message Body = " + msgId);
+      int longTextId = -1;
+      SILVERMAILMessageBean toDel = (SILVERMAILMessageBean) dao.findByPrimaryKey(pk);
+      
+      //check rights : check that the current user has the rights to delete the message notification
+      if(Long.parseLong(userId) == toDel.getUserId()) {
+        try {
+          longTextId = Integer.parseInt(toDel.getBody());
+          LongText.removeLongText(longTextId);
+        } catch (Exception e) {
+          SilverTrace.debug("silvermail", "SILVERMAILPersistence.deleteMessage()",
+              "PB converting body id to LongText", "Message Body = " + msgId);
+        }
+        dao.remove(pk);
+      } else {
+        throw new ForbiddenRuntimeException("SILVERMAILPersistence.deleteMessage()",
+          SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "notifId="+msgId+", userId="+userId);
       }
-      dao.remove(pk);
     } catch (Exception e) {
       throw new SILVERMAILException("SILVERMAILPersistence.deleteMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_DEL_MSG", "MsgId="
@@ -233,11 +243,12 @@ public class SILVERMAILPersistence {
     }
   }
 
-  public static void deleteAllMessages(int userId, String folderName)
+  public static void deleteAllMessages(String currentUserId, String folderName)
       throws SILVERMAILException {
+    int userId = Integer.parseInt(currentUserId);
     Collection<SILVERMAILMessage> messages = getMessageOfFolder(userId, folderName);
     for (SILVERMAILMessage message : messages) {
-      deleteMessage(message.getId());
+      deleteMessage(message.getId(), currentUserId);
     }
   }
 
