@@ -91,4 +91,7 @@
       </Collection>
     </Properties>
   </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyContactsPortlet" portletName="silverpeas.MyContactsPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

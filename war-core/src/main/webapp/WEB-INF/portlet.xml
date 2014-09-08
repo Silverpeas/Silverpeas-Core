@@ -304,4 +304,21 @@
         </portlet-info>
  </portlet>
   
+ <portlet>
+        <description>Mes contacts</description>
+        <portlet-name>MyContactsPortlet</portlet-name>
+        <display-name>MyContactsPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyContactsPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MContactsPortlet title</title>
+            <short-title>MyContactsPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+  
 </portlet-app>
