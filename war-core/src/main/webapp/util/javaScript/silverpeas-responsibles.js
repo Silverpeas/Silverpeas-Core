@@ -346,9 +346,10 @@
  * @param target
  * @param userId
  * @param spaceId
+ * @param onlySpaceManagers
  */
-function renderSpaceResponsibles(target, userId, spaceId) {
-  $.responsibles.renderSpaceResponsibles(target, userId, spaceId);
+function renderSpaceResponsibles(target, userId, spaceId, onlySpaceManagers) {
+  $.responsibles.renderSpaceResponsibles(target, userId, spaceId, onlySpaceManagers);
 }
 
 /**
