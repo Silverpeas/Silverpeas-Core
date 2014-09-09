@@ -93,5 +93,8 @@
   </PortletWindowPreference>
   <PortletWindowPreference name="silverpeas.MyContactsPortlet" portletName="silverpeas.MyContactsPortlet" userName="default">
     <Properties/>
+  </PortletWindowPreference>    
+  <PortletWindowPreference name="silverpeas.MyNewsFeedPortlet" portletName="silverpeas.MyNewsFeedPortlet" userName="default">
+	<Properties/>
   </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>

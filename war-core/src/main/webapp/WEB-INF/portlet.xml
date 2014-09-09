@@ -320,5 +320,22 @@
             <short-title>MyContactsPortlet shortTitle</short-title>
         </portlet-info>
  </portlet>
-  
+ 
+ <portlet>
+        <description>Mon fil d'informations</description>
+        <portlet-name>MyNewsFeedPortlet</portlet-name>
+        <display-name>MyNewsFeedPortlet</display-name>
+        <portlet-class>com.silverpeas.portlets.MyNewsFeedPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>          
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyNewsFeedPortlet title</title>
+            <short-title>MyNewsFeedPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
 </portlet-app>
