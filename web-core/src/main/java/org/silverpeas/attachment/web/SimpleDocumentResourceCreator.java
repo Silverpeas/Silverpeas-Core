@@ -60,11 +60,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
- *
  * @author ehugonnet
  */
 @Service
@@ -76,9 +74,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
   /**
    * Create the document identified by the requested URI and from the content and some additional
    * parameters passed within the request.
-   *
+   * <p/>
    * A {@link SimpleDocumentUploadData} is extracted from request parameters.
-   *
    * @return an HTTP response embodied an entity in a format expected by the client (that is
    * identified by the <code>xRequestedWith</code> parameter).
    * @throws IOException if an error occurs while updating the document.
@@ -90,20 +87,33 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     SimpleDocumentUploadData uploadData =
         RequestParameterDecoder.decode(getHttpRequest(), SimpleDocumentUploadData.class);
 
-    // Create the attachment
-    SimpleDocumentEntity entity = createSimpleDocument(uploadData, filename);
+    try {
 
-    if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
+      // Create the attachment
+      SimpleDocumentEntity entity = createSimpleDocument(uploadData, filename);
 
-      // In case of file upload performed by Ajax IFrame transport way,
-      // the expected response type is text/html
-      // (when FormData API doesn't exist on client side)
-      return Response.ok().type(MediaType.TEXT_HTML_TYPE)
-          .entity(packObjectToJSonDataWithHtmlContainer(entity)).build();
-    } else {
+      if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
 
-      // Otherwise JSON response type is expected
-      return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(entity).build();
+        // In case of file upload performed by Ajax IFrame transport way,
+        // the expected response type is text/html
+        // (when FormData API doesn't exist on client side)
+        return Response.ok().type(MediaType.TEXT_HTML_TYPE)
+            .entity(packObjectToJSonDataWithHtmlContainer(entity)).build();
+      } else {
+
+        // Otherwise JSON response type is expected
+        return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(entity).build();
+      }
+
+    } catch (WebApplicationException wae) {
+      if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith()) &&
+          wae.getResponse().getStatus() == Response.Status.PRECONDITION_FAILED.getStatusCode()) {
+
+        // In case of file upload performed by Ajax IFrame transport way,
+        // the exception must also be returned into a text/html response.
+        wae = createWebApplicationExceptionWithJSonErrorInHtmlContainer(wae);
+      }
+      throw wae;
     }
   }
 
@@ -199,10 +209,10 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         }
         content.close();
         FileUtils.deleteQuietly(tempFile);
-        
+
         // in the case the document is a CAD one, process it for Actify
         ActifyDocumentProcessor.getProcessor().process(document);
-        
+
         URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
             getLanguage()).build();
         return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);

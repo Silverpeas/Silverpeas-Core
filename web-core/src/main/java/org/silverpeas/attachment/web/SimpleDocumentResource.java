@@ -59,6 +59,8 @@ import java.util.List;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil
+    .createWebApplicationExceptionWithJSonErrorInHtmlContainer;
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packObjectToJSonDataWithHtmlContainer;
 
 @Service
@@ -129,20 +131,33 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     SimpleDocumentUploadData uploadData =
         RequestParameterDecoder.decode(getHttpRequest(), SimpleDocumentUploadData.class);
 
-    // Update the attachment
-    SimpleDocumentEntity entity = updateSimpleDocument(uploadData, filename);
+    try {
 
-    if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
+      // Update the attachment
+      SimpleDocumentEntity entity = updateSimpleDocument(uploadData, filename);
 
-      // In case of file upload performed by Ajax IFrame transport way,
-      // the expected response type is text/html
-      // (when FormData API doesn't exist on client side)
-      return Response.ok().type(MediaType.TEXT_HTML_TYPE)
-          .entity(packObjectToJSonDataWithHtmlContainer(entity)).build();
-    } else {
+      if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
 
-      // Otherwise JSON response type is expected
-      return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(entity).build();
+        // In case of file upload performed by Ajax IFrame transport way,
+        // the expected response type is text/html
+        // (when FormData API doesn't exist on client side)
+        return Response.ok().type(MediaType.TEXT_HTML_TYPE)
+            .entity(packObjectToJSonDataWithHtmlContainer(entity)).build();
+      } else {
+
+        // Otherwise JSON response type is expected
+        return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(entity).build();
+      }
+
+    } catch (WebApplicationException wae) {
+      if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith()) &&
+          wae.getResponse().getStatus() == Response.Status.PRECONDITION_FAILED.getStatusCode()) {
+
+        // In case of file upload performed by Ajax IFrame transport way,
+        // the exception must also be returned into a text/html response.
+        wae = createWebApplicationExceptionWithJSonErrorInHtmlContainer(wae);
+      }
+      throw wae;
     }
   }
 
