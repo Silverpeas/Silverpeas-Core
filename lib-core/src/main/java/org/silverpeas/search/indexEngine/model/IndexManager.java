@@ -392,8 +392,8 @@ public class IndexManager {
         if (indexEntry.getTitle(lang) != null) {
           doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getTitle(lang), NO, ANALYZED));
         }
-        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), NO,
-            NOT_ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), NO, NOT_ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), NO, ANALYZED));
       } else {
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
@@ -425,6 +425,7 @@ public class IndexManager {
           doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getTitle(lang), NO, ANALYZED));
         }
         doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), NO, NOT_ANALYZED));
+        doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), NO, ANALYZED));
       } else {
         doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(defaultLocale), NO, ANALYZED));
       }
