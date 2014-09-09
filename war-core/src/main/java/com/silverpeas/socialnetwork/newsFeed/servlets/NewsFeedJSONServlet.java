@@ -73,7 +73,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-    String view = request.getParameter("View"); // Wall || Feed
+    String view = request.getParameter("View"); // Wall || MyFeed || MyContactWall
     if (!StringUtil.isDefined(view)) {
       view = "Wall";
     }
@@ -100,7 +100,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
       String anotherUserId = request.getParameter("userId");
       if (StringUtil.isDefined(anotherUserId) && !anotherUserId.equals(userId)) {
-        view = "MyContactWall"; // forcing to display wall, ensuring to not display feed
+        view = "MyContactWall"; // forcing to display my contact wall, ensuring to not display feed
         RelationShipService rss = new RelationShipService();
         if (!rss.isInRelationShip(Integer.parseInt(m_MainSessionCtrl.getUserId()), Integer
             .parseInt(anotherUserId))) {
@@ -166,8 +166,10 @@ public class NewsFeedJSONServlet extends HttpServlet {
       map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
     } else if ("MyContactWall".equals(view)) {
       // get all data from my contact
-      map = socialNetworkService.getSocialInformationOfMyContact(anotherUserId, type, begin, end);
-    } else {
+      if(StringUtil.isDefined(anotherUserId)) {
+        map = socialNetworkService.getSocialInformationOfMyContact(anotherUserId, type, begin, end);
+      }
+    } else { // Wall
       // get all data from me
       map = socialNetworkService.getSocialInformation(type, begin, end);
     }
