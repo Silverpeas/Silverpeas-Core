@@ -23,6 +23,7 @@
  */
 package org.silverpeas.authentication.verifier;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
@@ -42,7 +43,6 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
   public static final String ERROR_USER_TOS_TIMEOUT = "Error_UserTosTimeout";
 
   private static TermsOfServiceAcceptanceFrequency globalAcceptanceFrequency;
-  private TermsOfServiceAcceptanceFrequency acceptanceFrequency;
 
   // In seconds, 10 minutes (60seconds x 10minutes)
   private final static int LIVE_10_MINUTES = 60 * 10;
@@ -69,12 +69,12 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
   public String getDestination(HttpServletRequest request) {
     request.setAttribute("tosToken", tosToken);
     request.setAttribute("language", getUser().getUserPreferences().getLanguage());
-    String specificTemplateContent = "domain" + getUser().getDomainId()
-        + ".specificTemplateContent";
     // Check if specific template content has to be used
-    if (settings.getBoolean(
-        specificTemplateContent, false)) {
-      request.setAttribute("templateDomainIdContent", "_" + getUser().getDomainId());
+    boolean specificTemplateContentActivated = settings.getBoolean(
+        "termsOfServiceAcceptanceSpecificTemplateContent." + "domain" + getUser().getDomainId(),
+        false);
+    if (specificTemplateContentActivated) {
+      request.setAttribute("templateDomainIdContent", "_domain" + getUser().getDomainId());
     }
     return "/CredentialsServlet/TermsOfServiceRequest";
   }
@@ -99,20 +99,24 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    * @return true if the user must accept terms of service, false otherwise.
    */
   private synchronized boolean isTermsOfServiceAcceptanceDateIsExpired() {
-    String specificAcceptanceFrequencyKey = "domain" + getUser().getDomainId()
-        + ".termsOfServiceAcceptanceFrequency";
+    if (getUser() == null) {
+      return false;
+    }
+
+    String specificAcceptanceFrequencyValue = settings
+        .getString("termsOfServiceAcceptanceFrequency." + "domain" + getUser().getDomainId(), null);
     // Check if domain specific acceptance frequency is specified
-    if (settings.getString(
-        specificAcceptanceFrequencyKey) != null) {
+    final TermsOfServiceAcceptanceFrequency acceptanceFrequency;
+    if (StringUtil.isDefined(specificAcceptanceFrequencyValue)) {
       // If it's specified, we use it
-      acceptanceFrequency = TermsOfServiceAcceptanceFrequency.decode(settings.getString(
-          specificAcceptanceFrequencyKey));
+      acceptanceFrequency =
+          TermsOfServiceAcceptanceFrequency.decode(specificAcceptanceFrequencyValue);
     } else {
       // If not, we use the global acceptance frequency
       acceptanceFrequency = globalAcceptanceFrequency;
     }
 
-    return acceptanceFrequency.isActivated() && getUser() != null && acceptanceFrequency
+    return acceptanceFrequency.isActivated() && acceptanceFrequency
         .isAcceptanceDateExpired(getUser().getTosAcceptanceDate(), I18NHelper.defaultLanguage);
   }
 
