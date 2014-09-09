@@ -486,22 +486,22 @@ public class AuthenticationService {
 
   private void storeAuthenticationKey(String login, String domainId, String sKey)
       throws AuthenticationException {
-    Statement stmt = null;
-    int key = Integer.parseInt(sKey);
+    PreparedStatement stmt = null;
 
     String query = "INSERT INTO " + m_KeyStoreTableName + "("
         + m_KeyStoreKeyColumnName + ", " + m_KeyStoreLoginColumnName + ", "
-        + m_KeyStoreDomainIdColumnName + ")" + " VALUES (" + key + ", '"
-        + login + "', " + domainId + ")";
+        + m_KeyStoreDomainIdColumnName + ")" + " VALUES (?, ?, ?)";
 
     Connection m_Connection = null;
     try {
       m_Connection = openConnection();
 
-      stmt = m_Connection.createStatement();
-      stmt.execute(query);
-      SilverTrace.info(module, "AuthenticationService.storeAuthenticationKey()",
-          "root.MSG_GEN_PARAM_VALUE", "query=" + query);
+      stmt = m_Connection.prepareStatement(query);
+      stmt.setInt(1, Integer.parseInt(sKey));
+      stmt.setString(2, login);
+      stmt.setInt(3, Integer.parseInt(domainId));
+      
+      stmt.executeUpdate();
     } catch (SQLException ex) {
       SilverTrace.error(module, "AuthenticationService.storeAuthenticationKey()",
           "authentication.EX_WRITE_KEY_ERROR", "User=" + login + " exception=" + ex.getSQLState());
