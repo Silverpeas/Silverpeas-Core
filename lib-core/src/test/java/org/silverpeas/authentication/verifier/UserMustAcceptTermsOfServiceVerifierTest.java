@@ -50,7 +50,6 @@ public class UserMustAcceptTermsOfServiceVerifierTest {
 
   @Test
   public void testNoUser() throws AuthenticationUserMustAcceptTermsOfService {
-    UserDetail user = createUser(DateUtil.getNow());
     new UserMustAcceptTermsOfServiceVerifier(null).verify();
   }
 
