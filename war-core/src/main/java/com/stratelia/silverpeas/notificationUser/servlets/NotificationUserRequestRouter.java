@@ -20,18 +20,15 @@
  */
 package com.stratelia.silverpeas.notificationUser.servlets;
 
-import com.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.notificationManager.GroupRecipient;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import org.silverpeas.servlet.HttpRequest;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationUser.Notification;
 import com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.servlet.HttpRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class declaration
@@ -94,116 +91,41 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
     try {
       request.setCharacterEncoding("UTF-8");
       if (function.startsWith("Main")) {
-        String[] selectedIdUsers = new String[0];
-        String[] selectedIdGroups = new String[0];
         String theTargetsUsers = request.getParameter("theTargetsUsers");
         String theTargetsGroups = request.getParameter("theTargetsGroups");
 
-        nuSC.resetNotification();
-        if (theTargetsUsers != null || theTargetsGroups != null) {// appel pour
-          // notifier les targets
-          String popupMode = request.getParameter("popupMode");
-          String editTargets = request.getParameter("editTargets");
-          selectedIdUsers = nuSC.initTargetsUsers(theTargetsUsers);
-          selectedIdGroups = nuSC.initTargetsGroups(theTargetsGroups);
-          destination = "/notificationUser/jsp/notificationSender.jsp?popupMode="
-              + popupMode + "&editTargets=" + editTargets;
-        } else {
-          // appel standard
-          destination = "/notificationUser/jsp/notificationSender.jsp";
+        Notification notification = nuSC.resetNotification();
+        if (theTargetsUsers != null || theTargetsGroups != null) {
+          // predefined targets are given
+          notification = nuSC.initTargets(theTargetsUsers, theTargetsGroups);
         }
-        request.setAttribute("SelectedIdUsers", selectedIdUsers);
-        request.setAttribute("SelectedIdGroups", selectedIdGroups);
+        request.setAttribute("Notification", notification);
+        
+        boolean popupMode = StringUtil.getBooleanValue(request.getParameter("popupMode"));
+        String param = request.getParameter("editTargets");
+        boolean editTargets = true;
+        if (StringUtil.isDefined(param)) {
+          editTargets = StringUtil.getBooleanValue(param);
+        }
+        request.setAttribute("popupMode", popupMode);
+        request.setAttribute("editTargets", editTargets);
+        
+        destination = "/notificationUser/jsp/notificationSender.jsp";
       } else if ("SetTarget".equals(function)) {
-        // récupération des is des objet selectionés
-        String[] idUsers = request.getParameterValues("selectedUsers");
-        String[] idGroups = request.getParameterValues("selectedGroups");
-        // paramètres jsp
         String popupMode = request.getParameter("popupMode");
-        String txtTitle = request.getParameter("txtTitle");
-        String txtMessage = request.getParameter("txtMessage");
-        String notificationId = request.getParameter("notificationId");
-        String priorityId = request.getParameter("priorityId");
-        nuSC.setTxtTitle(txtTitle);
-        nuSC.setTxtMessage(txtMessage);
-        nuSC.setNotificationId(notificationId);
-        nuSC.setPriorityId(priorityId);
+        nuSC.setNotification(request2Notification(request));
         StringBuilder paramValue = new StringBuilder("?popupMode=").append(popupMode);
-        // initialisation des paramètres d'initialisations de UserPanel/UserPanelPeas
-        destination = nuSC.initSelectionPeas(idUsers, idGroups, paramValue.toString());
+        destination = nuSC.initSelectionPeas(paramValue.toString());
       } else if (function.startsWith("GetTarget")) {
-        // récupération des objets sélélectionnés
-        String[] selectedIdUsers = nuSC.getTargetIdUsers();
-        String[] selectedIdGroups = nuSC.getTargetIdGroups();
-        // paramètres jsp
-        String popupMode = request.getParameter("popupMode");
-
-        request.setAttribute("txtTitle", nuSC.getTxtTitle());
-        request.setAttribute("txtMessage", nuSC.getTxtMessage());
-        request.setAttribute("notificationId", nuSC.getNotificationId());
-        request.setAttribute("priorityId", nuSC.getPriorityId());
-
-        StringBuilder paramValue = new StringBuilder("?popupMode=").append(popupMode);
-        request.setAttribute("SelectedIdUsers", selectedIdUsers);
-        request.setAttribute("SelectedIdGroups", selectedIdGroups);
-        destination = "/notificationUser/jsp/notificationSender.jsp" + paramValue.toString();
-      } else if (function.startsWith("sendNotif")) {
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
-        String[] selectedIdUsers = request.getParameterValues("selectedUsers");
-        List<UserRecipient> selectUserRecipients = null;
-        if (selectedIdUsers != null) {
-          selectUserRecipients = new ArrayList<UserRecipient>(selectedIdUsers.length);
-          for (String selectedIdUser : selectedIdUsers) {
-            selectUserRecipients.add(new UserRecipient(selectedIdUser));
-          }
-        }
-        String[] selectedIdGroups = request.getParameterValues("selectedGroups");
-        List<GroupRecipient> selectGroupRecipients = null;
-        if (selectedIdGroups != null) {
-          selectGroupRecipients = new ArrayList<GroupRecipient>(selectedIdGroups.length);
-          for (String selectedIdGroup : selectedIdGroups) {
-            selectGroupRecipients.add(new GroupRecipient(selectedIdGroup));
-          }
-        }
-
-        String popupMode = request.getParameter("popupMode");
-        String editTargets = request.getParameter("editTargets");
-        String txtTitle = request.getParameter("txtTitle");
-        String txtMessage = request.getParameter("txtMessage");
-        String notificationId = request.getParameter("notificationId");
-        String priorityId = request.getParameter("priorityId");
-
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "priorityId=" + priorityId);
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "txtMessage=" + txtMessage);
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "txtTitle=" + txtTitle);
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "popupMode=" + popupMode);
-        SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "editTargets=" + editTargets);
-        if (selectUserRecipients != null || selectGroupRecipients != null) {
-          nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage,
-              selectUserRecipients, selectGroupRecipients);
-        }
-        request.setAttribute("SelectedIdUsers", ArrayUtil.EMPTY_STRING_ARRAY);
-        request.setAttribute("SelectedIdGroups", ArrayUtil.EMPTY_STRING_ARRAY);
-        destination = "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&"
-            + "notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
-            + popupMode + "&editTargets=" + editTargets + "&compoId=";
-      } else if (function.startsWith("emptyAll")) {
-        request.setAttribute("SelectedIdUsers", ArrayUtil.EMPTY_STRING_ARRAY);
-        request.setAttribute("SelectedIdGroups", ArrayUtil.EMPTY_STRING_ARRAY);
-
-        String editTargets = request.getParameter("editTargets");
-        String popupMode = request.getParameter("popupMode");
-        destination = "/notificationUser/jsp/notificationSender.jsp?Action=emptyAll&notificationId"
-            + "=&priorityId=&txtTitle=&txtMessage=&popupMode="
-            + popupMode + "&editTargets=" + editTargets + "&compoId=";
+        boolean popupMode = StringUtil.getBooleanValue(request.getParameter("popupMode"));
+        request.setAttribute("popupMode", popupMode);
+        request.setAttribute("editTargets", true);
+        request.setAttribute("Notification", nuSC.getNotificationWithNewRecipients());
+        destination = "/notificationUser/jsp/notificationSender.jsp";
+      } else if (function.equals("SendNotif")) {
+        Notification notification = request2Notification(request);
+        nuSC.sendMessage(notification);
+        destination = "/peasCore/jsp/close.jsp";
       } else {
         destination = "/notificationUser/jsp/" + function;
       }
@@ -214,5 +136,16 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
     return destination;
+  }
+  
+  private Notification request2Notification(HttpRequest request) {
+    Notification notification = new Notification();
+    notification.setSubject(request.getParameter("txtTitle"));
+    notification.setBody(request.getParameter("txtMessage"));
+    notification.setChannel(request.getParameter("notificationId"));
+    notification.setPriority(request.getParameter("priorityId"));
+    notification.setUsers(StringUtil.split(request.getParameter("selectedUsers")));
+    notification.setGroups(StringUtil.split(request.getParameter("selectedGroups")));
+    return notification;
   }
 }
