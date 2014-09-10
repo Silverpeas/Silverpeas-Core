@@ -704,15 +704,20 @@
 
     var iframeSendComplete = function() {
       reloadIncludingPage();
-      $(this).dialog("close");
+    };
+
+    var iframeSendError = function() {
+      $.closeProgressMessage();
     };
 
     $('#update-attachment-form').iframeAjaxFormSubmit ({
-      complete : iframeSendComplete
+      complete : iframeSendComplete,
+      error : iframeSendError
     });
 
     $('#add-attachment-form').iframeAjaxFormSubmit ({
-      complete : iframeSendComplete
+      complete : iframeSendComplete,
+      error : iframeSendError
     });
 
     $('#checkin-attachment-form').iframeAjaxFormSubmit ({

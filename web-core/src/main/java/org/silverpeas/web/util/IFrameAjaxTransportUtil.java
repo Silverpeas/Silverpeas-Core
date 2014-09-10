@@ -31,8 +31,11 @@ import org.apache.ecs.xhtml.textarea;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.silverpeas.notification.message.MessageManager;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,6 +48,27 @@ public class IFrameAjaxTransportUtil {
 
   public static final String X_REQUESTED_WITH = "X-Requested-With";
   public static final String AJAX_IFRAME_TRANSPORT = "IFrame";
+
+  /**
+   * Packaging an Web Application Exception as JSon String and then as HTML to be performed by
+   * IFrame Ajax Transport Javascript Plugin.
+   * @param wae
+   * @return
+   */
+  public static WebApplicationException createWebApplicationExceptionWithJSonErrorInHtmlContainer(
+      WebApplicationException wae) throws IOException {
+    String messageKey = MessageManager.getRegistredKey();
+    final String errorEntity;
+    if (StringUtil.isDefined(messageKey)) {
+      errorEntity =
+          packJSonDataWithHtmlContainer(new JSONObject().put("iframeMessageKey", messageKey));
+    } else {
+      errorEntity = packObjectToJSonDataWithHtmlContainer(wae.getResponse().getEntity());
+    }
+    return new WebApplicationException(
+        Response.status(wae.getResponse().getStatus()).type(MediaType.TEXT_HTML_TYPE)
+            .entity(errorEntity).build());
+  }
 
   /**
    * Packaging an object as JSon String and then as HTML to be performed by IFrame Ajax Transport

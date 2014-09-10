@@ -77,8 +77,15 @@
         });
       }
       $.ajax($form.attr('action'), iframeAjaxTransportOptions).complete(function(uploadedFiles) {
-        if (options.complete) {
-          options.complete.call(_self, $.parseJSON(uploadedFiles.responseText));
+        var jsonObject = $.parseJSON(uploadedFiles.responseText);
+        if (jsonObject && typeof jsonObject.iframeMessageKey === 'string' &&
+            jsonObject.iframeMessageKey.length > 0) {
+          notyRegistredMessages(jsonObject.iframeMessageKey);
+          if (options.error) {
+            options.error.call(_self, "");
+          }
+        } else if (options.complete) {
+          options.complete.call(_self, jsonObject);
         }
       }).error(function(jqXHR, textStatus, errorThrown) {
             if (options.error) {
