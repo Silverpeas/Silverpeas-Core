@@ -106,8 +106,7 @@ public class DragAndDrop extends HttpServlet {
       for (FileItem item : items) {
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
-        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-            + item.getName() + "; " + item.getString(CharEncoding.UTF_8));
+        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName());
 
         if (!item.isFormField()) {
           String fileName = item.getName();
