@@ -20,15 +20,6 @@
  */
 package com.silverpeas.attachment.web;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.ZipManager;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,31 +41,33 @@ import javax.ws.rs.core.UriBuilderException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.ZipManager;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-@Service
-@RequestScoped
-@Path("attachments/{componentId}/{token}")
-public class AttachmentRessource extends RESTWebService {
+/**
+ * A REST Web resource providing access to attachments.
+ */
+public abstract class AbstractAttachmentResource extends RESTWebService {
 
   @PathParam("componentId")
-  private String componentId;
-  @PathParam("token")
-  private String token;
-
+  protected String componentId;
+  
   @Override
   public String getComponentId() {
     return componentId;
   }
-
+  
   @GET
   @Path("{id}/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(final @PathParam("id") String attachmentId) {
-    final SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
+    final SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+        .searchDocumentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
     if (!isFileReadable(attachment)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
@@ -82,8 +75,8 @@ public class AttachmentRessource extends RESTWebService {
       @Override
       public void write(OutputStream output) throws WebApplicationException {
         try {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(output, attachment.
-              getPk(), attachment.getLanguage());
+          AttachmentServiceFactory.getAttachmentService().getBinaryContent(
+              output, attachment.getPk(), attachment.getLanguage());
         } catch (Exception e) {
           throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
         }
@@ -97,8 +90,8 @@ public class AttachmentRessource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public ZipEntity zipFiles(@PathParam("ids") String attachmentIds) {
     StringTokenizer tokenizer = new StringTokenizer(attachmentIds, ",");
-    File folderToZip = FileUtils.getFile(FileRepositoryManager.getTemporaryPath(), UUID.randomUUID()
-        .toString());
+    File folderToZip = FileUtils.getFile(
+        FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
     while (tokenizer.hasMoreTokens()) {
       SimpleDocumentPK pk = new SimpleDocumentPK(tokenizer.nextToken());
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
@@ -109,7 +102,7 @@ public class AttachmentRessource extends RESTWebService {
       OutputStream out = null;
       try {
         out = FileUtils.openOutputStream(FileUtils.getFile(folderToZip, attachment.getFilename()));
-        AttachmentServiceFactory.getAttachmentService().getBinaryContent(out, pk, token);
+        AttachmentServiceFactory.getAttachmentService().getBinaryContent(out, pk, getToken());
       } catch (IOException e) {
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
       } finally {
@@ -119,7 +112,7 @@ public class AttachmentRessource extends RESTWebService {
     try {
       File zipFile = FileUtils.getFile(folderToZip.getPath() + ".zip");
       URI downloadUri = getUriInfo().getBaseUriBuilder().path("attachments").path(componentId).path(
-          token).path("zipcontent").path(zipFile.getName()).build();
+          getToken()).path("zipcontent").path(zipFile.getName()).build();
       long size = ZipManager.compressPathToZip(folderToZip, zipFile);
       return new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
     } catch (IllegalArgumentException e) {
@@ -155,14 +148,11 @@ public class AttachmentRessource extends RESTWebService {
         IOUtils.closeQuietly(in);
         IOUtils.closeQuietly(output);
       }
-
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private boolean isFileReadable(SimpleDocument attachment) {
-    ShareableAttachment attachmentResource = new ShareableAttachment(token, attachment);
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
-    return ticket != null && ticket.getAccessControl().isReadable(attachmentResource);
-  }
+  protected abstract boolean isFileReadable(SimpleDocument attachment);
+  
+  protected abstract String getToken();
+  
 }

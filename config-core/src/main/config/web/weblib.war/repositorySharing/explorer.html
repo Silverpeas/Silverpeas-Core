@@ -127,7 +127,7 @@ $(function () {
 	}
 	
 	function displayPublications(nodeId, instanceId) {
-		var url = baseURL+"/silverpeas/services/publications/"+instanceId+"/"+token+"?node="+nodeId+"&withAttachments=true";
+		var url = baseURL+"/silverpeas/services/sharing/publications/"+instanceId+"/"+token+"?node="+nodeId+"&withAttachments=true";
 		$.getJSON(url,
           function(data) {
             try {
@@ -245,7 +245,7 @@ $(function () {
 		}).get().join(',');
 		// generate zip file
 		var instanceId = $("#instanceId").val();
-		var url = baseURL+"/silverpeas/services/attachments/"+instanceId+"/"+token+"/"+ids+"/zip";
+		var url = baseURL+"/silverpeas/services/sharing/attachments/"+instanceId+"/"+token+"/"+ids+"/zip";
 		$.getJSON(url,
 			  function(zip) {
 				// display modal dialog to download zip

@@ -20,39 +20,46 @@
  */
 package org.silverpeas.publication.web;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
-
-import org.silverpeas.node.web.NodeEntity;
-
+import org.owasp.encoder.Encode;
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import org.apache.commons.lang3.CharEncoding;
-import org.owasp.encoder.Encode;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.silverpeas.attachment.model.SimpleDocument;
 
-public class PublicationEntity implements Exposable {
+/**
+ * Web entity representing a publication that can be serialized into a given media type (JSON, XML).
+ */
+public abstract class PublicationEntity implements Exposable {
 
   private static final long serialVersionUID = 7746081841765736096L;
+  
   @XmlElement(defaultValue = "")
   private URI uri;
+  @XmlElement(defaultValue = "")
+  private String id;
+  @XmlElement(required = true)
+  @NotNull
+  @Size(min = 2)
+  private String componentId;
   @XmlElement(defaultValue = "")
   private String name;
   @XmlElement(defaultValue = "")
   private String description;
+  @XmlElement(defaultValue = "")
+  private String keywords;
+  @XmlElement(defaultValue = "0")
+  private int importance = 0;
   @XmlElement
   private Date updateDate;
   @XmlElement
@@ -66,62 +73,62 @@ public class PublicationEntity implements Exposable {
   public URI getURI() {
     return uri;
   }
-
+  
   /**
-   * Creates a new publication entity from the specified publication.
+   * Gets the unique identifier of the publication.
    *
-   * @param publication the publication to entitify.
-   * @return the entity representing the specified node.
+   * @return the publication identifier.
    */
-  public static PublicationEntity fromPublicationDetail(final PublicationDetail publication, URI uri) {
-    return new PublicationEntity(publication, uri);
+  public String getId() {
+    return id;
   }
 
-  private PublicationEntity(final PublicationDetail publication, URI uri) {
+  /**
+   * Gets the identifier of the Silverpeas component instance which the publication belongs to.
+   *
+   * @return the silverpeas component instance identifier.
+   */
+  public String getComponentId() {
+    return componentId;
+  }
+
+  protected PublicationEntity() {
+    
+  }
+  
+  protected PublicationEntity(final PublicationDetail publication, URI uri) {
+    this.componentId = publication.getPK().getInstanceId();
+    this.id = publication.getPK().getId();
     this.setName(Encode.forHtml(publication.getName()));
     this.setDescription(Encode.forHtml(publication.getDescription()));
+    this.setKeywords(Encode.forHtml(publication.getKeywords()));
+    this.importance = publication.getImportance();
     this.setUri(uri);
     this.setUpdateDate(publication.getUpdateDate());
     this.creator = UserProfileEntity.fromUser(publication.getCreator());
     this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
   }
-
-  public PublicationEntity withAttachments(final Collection<SimpleDocument> attachmentDetails,
-      String baseURI, String token) {
+  
+  public PublicationEntity withAttachments(
+      Collection<SimpleDocument> attachmentDetails, String baseURI, String token) {
     if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
       for (SimpleDocument attachment : attachmentDetails) {
         SimpleDocument document = attachment.getLastPublicVersion();
         if (document != null) {
           AttachmentEntity entity = AttachmentEntity.fromAttachment(document);
-          URI sharedUri = getAttachmentSharedURI(attachment, baseURI, token);
+          URI sharedUri = getAttachmentURI(attachment, baseURI, token);
           entity.setSharedUri(sharedUri);
           entities.add(entity);
         }
-
       }
-      this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
+      setAttachments(entities.toArray(new AttachmentEntity[entities.size()]));
     }
     return this;
   }
-
-  private URI getAttachmentSharedURI(SimpleDocument attachment, String baseURI, String token) {
-    URI sharedUri;
-    try {
-      sharedUri = new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" + token + "/"
-          + attachment.getId() + "/" + URLEncoder.encode(attachment.getFilename(),
-              CharEncoding.UTF_8));
-    } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-
-    return sharedUri;
-  }
-
+  
+  protected abstract URI getAttachmentURI(SimpleDocument attachment, String baseURI, String token);
+  
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -141,6 +148,22 @@ public class PublicationEntity implements Exposable {
   public String getDescription() {
     return description;
   }
+  
+  public void setKeywords(String keywords) {
+    this.keywords = keywords;
+  }
+  
+  public String getKeywords() {
+    return keywords;
+  }
+
+  public int getImportance() {
+    return importance;
+  }
+
+  public void setImportance(int importance) {
+    this.importance = importance;
+  }
 
   public void setUpdateDate(Date updateDate) {
     this.updateDate = updateDate;
@@ -149,4 +172,22 @@ public class PublicationEntity implements Exposable {
   public Date getUpdateDate() {
     return updateDate;
   }
+
+  protected void setAttachments(AttachmentEntity[] attachments) {
+    this.attachments = attachments;
+  }
+  
+  public PublicationDetail toPublicationDetail() {
+    PublicationDetail publication = new PublicationDetail();
+    publication.setPk(new PublicationPK(id, componentId));
+    publication.setName(name);
+    publication.setDescription(description);
+    publication.setKeywords(keywords);
+    publication.setImportance(importance);
+    publication.setCreatorId(creator.getId());
+    publication.setUpdaterId(lastUpdater.getId());
+    publication.setUpdateDate(updateDate);
+    return publication;
+  }
+  
 }
