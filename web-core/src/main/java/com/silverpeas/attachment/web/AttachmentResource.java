@@ -18,46 +18,31 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.publication.web;
+package com.silverpeas.attachment.web;
 
-import java.net.URI;
 import javax.ws.rs.Path;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
- * A REST Web resource providing access to publications through private mode.
+ * A REST Web resource providing access to attachments through private mode.
  */
 @Service
 @RequestScoped
-@Path("private/publications/{componentId}")
+@Path("private/attachments/{componentId}")
 @Authorized
-public class PublicationResource extends AbstractPublicationResource {
-  
+public class AttachmentResource extends AbstractAttachmentResource {
+
   @Override
-  protected boolean isNodeReadable(NodePK nodePK) {
+  protected boolean isFileReadable(SimpleDocument attachment) {
     return true;
   }
 
   @Override
   protected String getToken() {
     return null;
-  }
-
-  @Override
-  protected PublicationEntity fromPublicationDetail(PublicationDetail publication, URI uri) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, uri);
-  }
-  
-  protected PublicationEntity asWebEntity(final PublicationDetail publication, URI publicationURI) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, publicationURI);
-  }
-  
-  protected URI identifiedBy(URI uri) {
-    return uri;
   }
 
 }

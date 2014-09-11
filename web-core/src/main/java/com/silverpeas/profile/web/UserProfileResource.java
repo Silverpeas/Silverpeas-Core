@@ -23,19 +23,6 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserFull;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
@@ -52,13 +39,24 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ListSlice;
-
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
 import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.web.RESTWebService.RESPONSE_HEADER_ARRAYSIZE;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -95,6 +93,22 @@ public class UserProfileResource extends RESTWebService {
    * Creates a new instance of UserProfileResource
    */
   public UserProfileResource() {
+  }
+  
+  /**
+   * @return The user entity corresponding to the token specified in the URI.
+   */
+  @GET
+  @Path("token")
+  @Produces(MediaType.APPLICATION_JSON)
+  public UserProfileEntity checkUserToken() {
+    try {
+      return UserProfileEntity.fromUser(getUserDetail()).withAsUri(getUriInfo().getRequestUri());
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
   }
 
   /**

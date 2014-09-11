@@ -18,46 +18,34 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.publication.web;
+package org.silverpeas.node.web;
 
-import java.net.URI;
 import javax.ws.rs.Path;
-import com.silverpeas.annotation.Authorized;
+import javax.ws.rs.PathParam;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableNode;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 /**
- * A REST Web resource providing access to publications through private mode.
+ * A REST Web resource providing access to a node through sharing mode.
  */
 @Service
 @RequestScoped
-@Path("private/publications/{componentId}")
-@Authorized
-public class PublicationResource extends AbstractPublicationResource {
-  
-  @Override
-  protected boolean isNodeReadable(NodePK nodePK) {
-    return true;
-  }
+@Path("sharing/nodes/{componentId}/{token}")
+public class SharedNodeResource extends AbstractNodeResource {
+
+  @PathParam("token")
+  private String token;
 
   @Override
-  protected String getToken() {
-    return null;
-  }
-
-  @Override
-  protected PublicationEntity fromPublicationDetail(PublicationDetail publication, URI uri) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, uri);
-  }
-  
-  protected PublicationEntity asWebEntity(final PublicationDetail publication, URI publicationURI) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, publicationURI);
-  }
-  
-  protected URI identifiedBy(URI uri) {
-    return uri;
+  @SuppressWarnings("unchecked")
+  protected boolean isNodeReadable(NodeDetail node) {
+    ShareableNode nodeResource = new ShareableNode(token, node);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
   }
 
 }

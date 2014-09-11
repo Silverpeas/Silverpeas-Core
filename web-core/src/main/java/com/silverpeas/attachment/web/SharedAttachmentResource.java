@@ -18,46 +18,39 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.publication.web;
+package com.silverpeas.attachment.web;
 
-import java.net.URI;
 import javax.ws.rs.Path;
-import com.silverpeas.annotation.Authorized;
+import javax.ws.rs.PathParam;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
- * A REST Web resource providing access to publications through private mode.
+ * A REST Web resource providing access to attachments through sharing mode.
  */
 @Service
 @RequestScoped
-@Path("private/publications/{componentId}")
-@Authorized
-public class PublicationResource extends AbstractPublicationResource {
+@Path("sharing/attachments/{componentId}/{token}")
+public class SharedAttachmentResource extends AbstractAttachmentResource {
+
+  @PathParam("token")
+  private String token;
   
   @Override
-  protected boolean isNodeReadable(NodePK nodePK) {
-    return true;
+  @SuppressWarnings("unchecked")
+  protected boolean isFileReadable(SimpleDocument attachment) {
+    ShareableAttachment attachmentResource = new ShareableAttachment(getToken(), attachment);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(getToken());
+    return ticket != null && ticket.getAccessControl().isReadable(attachmentResource);
   }
-
+  
   @Override
   protected String getToken() {
-    return null;
-  }
-
-  @Override
-  protected PublicationEntity fromPublicationDetail(PublicationDetail publication, URI uri) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, uri);
+    return token;
   }
   
-  protected PublicationEntity asWebEntity(final PublicationDetail publication, URI publicationURI) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, publicationURI);
-  }
-  
-  protected URI identifiedBy(URI uri) {
-    return uri;
-  }
-
 }
