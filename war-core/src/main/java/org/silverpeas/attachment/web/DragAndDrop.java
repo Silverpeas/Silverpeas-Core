@@ -20,16 +20,13 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -43,13 +40,14 @@ import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Servlet used whith the drag and drop applet to import non-versioned documents.
@@ -60,7 +58,6 @@ public class DragAndDrop extends HttpServlet {
 
   /**
    * Method declaration
-   *
    * @param req
    * @param res
    * @throws IOException
@@ -75,7 +72,6 @@ public class DragAndDrop extends HttpServlet {
 
   /**
    * Method declaration
-   *
    * @param req
    * @param res
    * @throws IOException
@@ -91,7 +87,7 @@ public class DragAndDrop extends HttpServlet {
       res.getOutputStream().println("SUCCESS");
       return;
     }
-    
+
     String userId = req.getParameter("UserId");
     try {
       request.setCharacterEncoding(CharEncoding.UTF_8);
@@ -104,9 +100,10 @@ public class DragAndDrop extends HttpServlet {
 
       List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
-        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-            + item.getFieldName());
-        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName());
+        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+            "item = " + item.getFieldName());
+        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+            "item = " + item.getName());
 
         if (!item.isFormField()) {
           String fileName = item.getName();
@@ -115,9 +112,10 @@ public class DragAndDrop extends HttpServlet {
             SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "item size = " + item.getSize());
             // create AttachmentDetail Object
-            SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
-                id, 0, false, new SimpleAttachment(fileName, lang, null, null, item.getSize(),
-                    mimeType, userId, new Date(), null));
+            SimpleDocument document =
+                new SimpleDocument(new SimpleDocumentPK(null, componentId), id, 0, false,
+                    new SimpleAttachment(fileName, lang, null, null, item.getSize(), mimeType,
+                        userId, new Date(), null));
             document.setDocumentType(determineDocumentType(request));
             File tempFile = File.createTempFile("silverpeas_", fileName);
             try {
@@ -127,8 +125,8 @@ public class DragAndDrop extends HttpServlet {
               document.setSize(tempFile.length());
               document.setTitle(metadata.getTitle());
               document.setDescription(metadata.getSubject());
-              document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-                  tempFile, bIndexIt);
+              document = AttachmentServiceFactory.getAttachmentService()
+                  .createAttachment(document, tempFile, bIndexIt);
             } finally {
               FileUtils.deleteQuietly(tempFile);
             }
