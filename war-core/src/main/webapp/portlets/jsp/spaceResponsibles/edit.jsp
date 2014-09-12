@@ -45,18 +45,6 @@
     RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
     RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
     PortletPreferences pref = pReq.getPreferences();
-    String error = pReq.getParameter(FormNames.ERROR_BAD_VALUE);
-%>
-    <!-- START error -->
-<%
-    if (error != null) {
-%>
-      <div class="portlet-msg-error" style="color: red">
-          <fmt:message key="portlets.portlet.nextEvents.error"/>
-      </div>
-      <br>
-<%
-        }
 %>
 
     <form name="inputForm" target="_self" method="POST" action="<%=actionURL.toString()%>">
@@ -64,8 +52,12 @@
 
             <!-- START "url" text box -->
             <tr>
-                <td><fmt:message key="portlets.portlet.nextEvents.pref.nbEvents" /> :</td>
-                <td><input class="portlet-form-input-field" name="<%=FormNames.TEXTBOX_NB_ITEMS%>" value="<%=pref.getValue("nbEvents","")%>" type="text" size="10"/></td>
+                <td class="txtlibform"><fmt:message key="portlets.portlet.spaceResponsibles.pref.displayOnlySpaceManagers" /> :</td>
+                <% if ("checked".equalsIgnoreCase(pref.getValue("displayOnlySpaceManagers",""))) { %>
+					<td><input name="displayOnlySpaceManagers" type="checkbox" value="<%=pref.getValue("displayOnlySpaceManagers","")%>" checked="checked"/></td>
+				<% } else { %>
+					<td><input name="displayOnlySpaceManagers" type="checkbox" value="checked" /></td>
+				<% } %>
             </tr>
 
             <!-- START "finished" and "cancel" buttons -->
