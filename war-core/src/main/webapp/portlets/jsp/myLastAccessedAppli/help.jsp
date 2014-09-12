@@ -26,17 +26,13 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="javax.portlet.RenderRequest" %>
-<%@ page import="javax.portlet.RenderResponse" %>
-<%@ page import="javax.portlet.PortletPreferences" %>
-<%@ page import="javax.portlet.PortletURL" %>
-
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
 
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
 <fmt:message key="portlets.portlet.myLastAccessedAppli.help"/>

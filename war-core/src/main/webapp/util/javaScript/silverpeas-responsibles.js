@@ -43,11 +43,7 @@
       __loadMissingPlugins(false);
       var data = __getResponsibles(true, spaceId);
       $(target).empty();
-      if (onlySpaceManagers === 'true') {
-    	  __prepareContent($(target), userId, true, data.usersAndGroupsRoles, true);
-      } else {
-    	  __prepareContent($(target), userId, true, data.usersAndGroupsRoles, false);
-      }
+      __prepareContent($(target), userId, true, data.usersAndGroupsRoles, onlySpaceManagers);
       __loadUserZoomPlugins();
     },
     displaySpaceResponsibles: function(userId, spaceId) {
@@ -126,6 +122,7 @@
    * @param userId
    * @param isSpace
    * @param usersAndGroupsRoles
+   * @param onlySpaceManagers
    * @private
    */
   function __prepareContent($target, userId, isSpace, usersAndGroupsRoles, onlySpaceManagers) {

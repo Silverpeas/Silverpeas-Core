@@ -44,7 +44,7 @@
       <script type="text/javascript">
         jQuery(document).ready(function() {
           renderSpaceResponsibles($('#responsibles-container'), '${requestScope.currentUserId}',
-              '${requestScope.spaceId}', '${requestScope.displayOnlySpaceManagers}');
+              '${requestScope.spaceId}', ${requestScope.displayOnlySpaceManagers});
         });
       </script>
     </c:when>
