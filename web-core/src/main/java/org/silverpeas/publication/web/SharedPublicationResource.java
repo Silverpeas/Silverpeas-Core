@@ -22,42 +22,44 @@ package org.silverpeas.publication.web;
 
 import java.net.URI;
 import javax.ws.rs.Path;
-import com.silverpeas.annotation.Authorized;
+import javax.ws.rs.PathParam;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableNode;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
- * A REST Web resource providing access to publications through private mode.
+ * A REST Web resource providing access to publications through sharing mode.
  */
 @Service
 @RequestScoped
-@Path("private/publications/{componentId}")
-@Authorized
-public class PublicationResource extends AbstractPublicationResource {
+@Path("sharing/publications/{componentId}/{token}")
+public class SharedPublicationResource extends AbstractPublicationResource {
+
+  @PathParam("token")
+  private String token;
   
   @Override
+  @SuppressWarnings("unchecked")
   protected boolean isNodeReadable(NodePK nodePK) {
-    return true;
+    NodeDetail node = getNodeBm().getDetail(nodePK);
+    ShareableNode nodeResource = new ShareableNode(token, node);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
   }
 
   @Override
   protected String getToken() {
-    return null;
+    return token;
   }
 
   @Override
   protected PublicationEntity fromPublicationDetail(PublicationDetail publication, URI uri) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, uri);
+    return SharedPublicationEntity.fromPublicationDetail(publication, uri);
   }
   
-  protected PublicationEntity asWebEntity(final PublicationDetail publication, URI publicationURI) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, publicationURI);
-  }
-  
-  protected URI identifiedBy(URI uri) {
-    return uri;
-  }
-
 }
