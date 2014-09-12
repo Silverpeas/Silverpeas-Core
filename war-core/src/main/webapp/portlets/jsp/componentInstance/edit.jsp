@@ -31,7 +31,6 @@
 <%@ page import="javax.portlet.PortletPreferences" %>
 <%@ page import="javax.portlet.PortletURL" %>
 <%@ page import="com.silverpeas.portlets.FormNames" %>
-<%@ page session="false" %>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -39,6 +38,7 @@
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
 <%

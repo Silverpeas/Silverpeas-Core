@@ -39,11 +39,11 @@
       platformResponsible: '',
       sendMessage: ''
     },
-    renderSpaceResponsibles: function(target, userId, spaceId) {
+    renderSpaceResponsibles: function(target, userId, spaceId, onlySpaceManagers) {
       __loadMissingPlugins(false);
       var data = __getResponsibles(true, spaceId);
       $(target).empty();
-      __prepareContent($(target), userId, true, data.usersAndGroupsRoles);
+      __prepareContent($(target), userId, true, data.usersAndGroupsRoles, onlySpaceManagers);
       __loadUserZoomPlugins();
     },
     displaySpaceResponsibles: function(userId, spaceId) {
@@ -84,7 +84,7 @@
     }
     $display = $('<div>', {id: 'responsible-popup-content'}).css('display',
             'none').appendTo(document.body);
-    __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles);
+    __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles, false);
     __loadUserZoomPlugins();
 
     // Popup
@@ -122,9 +122,10 @@
    * @param userId
    * @param isSpace
    * @param usersAndGroupsRoles
+   * @param onlySpaceManagers
    * @private
    */
-  function __prepareContent($target, userId, isSpace, usersAndGroupsRoles) {
+  function __prepareContent($target, userId, isSpace, usersAndGroupsRoles, onlySpaceManagers) {
     var $newLine = null;
     $.each(['Manager', 'admin'], function(index, role) {
       var usersAndGroups = usersAndGroupsRoles[role];
@@ -144,7 +145,7 @@
         $newLine = $('<br/>');
       }
     });
-    if (isSpace) {
+    if (!onlySpaceManagers && isSpace) {
       User.get({
         accessLevel : ['ADMINISTRATOR']
       }).then(function(users) {
@@ -342,9 +343,10 @@
  * @param target
  * @param userId
  * @param spaceId
+ * @param onlySpaceManagers
  */
-function renderSpaceResponsibles(target, userId, spaceId) {
-  $.responsibles.renderSpaceResponsibles(target, userId, spaceId);
+function renderSpaceResponsibles(target, userId, spaceId, onlySpaceManagers) {
+  $.responsibles.renderSpaceResponsibles(target, userId, spaceId, onlySpaceManagers);
 }
 
 /**
