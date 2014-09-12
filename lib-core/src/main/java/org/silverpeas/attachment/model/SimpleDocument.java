@@ -808,6 +808,18 @@ public class SimpleDocument implements Serializable {
   }
 
   /**
+   * Is the specified user can access this document?
+   * <p/>
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this document, false otherwise.
+   */
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(user.getId(), this);
+  }
+
+  /**
    * Indicates if the download of the document is allowed for the given user in relation to its
    * roles.
    * DON'T USE THIS METHOD IN CASE OF LARGE NUMBER OF ATTACHMENT TO PERFORM.
