@@ -84,7 +84,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         if (StringUtil.isDefined(sort)) {
           directorySC.setCurrentSort(sort);
         }
-
+        
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
         } else if (StringUtil.isDefined(groupIds)) {
@@ -102,8 +102,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         } else {
           users = directorySC.getAllUsers();
         }
-
-        destination = doPagination(request, users, directorySC);
+        
+        String view = request.getParameter("View");
+        if (StringUtil.isDefined(view) && "connected".equals(view)) {
+            destination = getDestination("connected", directorySC, request);
+        } else {
+          destination = doPagination(request, users, directorySC);
+        }
         request.setAttribute("ShowHelp", true);
       } else if ("CommonContacts".equals(function)) {
         String userId = request.getParameter("UserId");
