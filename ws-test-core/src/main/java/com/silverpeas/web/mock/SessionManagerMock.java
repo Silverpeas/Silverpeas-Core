@@ -61,10 +61,11 @@ public class SessionManagerMock implements SessionManagement {
 
   @Override
   public SessionInfo getSessionInfo(String sessionKey) {
-    if (noSession) {
-      return null;
+    SessionInfo session = sessions.get(sessionKey);
+    if (noSession || session == null) {
+      return SessionInfo.NoneSession;
     }
-    return sessions.get(sessionKey);
+    return session;
   }
 
   @Override
@@ -151,7 +152,7 @@ public class SessionManagerMock implements SessionManagement {
     String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = getSessionInfo(sessionKey);
     if (!context.mustSkipLastUserAccessTimeRegistering()) {
-      if (sessionInfo != null) {
+      if (sessionInfo.isDefined()) {
         sessionInfo.updateLastAccess();
       }
     }
