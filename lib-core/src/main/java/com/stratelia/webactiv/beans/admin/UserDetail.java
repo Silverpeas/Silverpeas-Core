@@ -59,6 +59,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       .getString("avatar.property", "login");
   private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString(
       "avatar.extension", "jpg");
+  public static final String AVATAR_BASEURI = "/display/avatar/";
   private static final ResourceLocator generalSettings = new ResourceLocator(
       "org.silverpeas.lookAndFeel.generalLook", "");
   private String id = null;
@@ -679,7 +680,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     String avatar = getAvatarFileName();
     File image = new File(FileRepositoryManager.getAvatarPath(), avatar);
     if (image.exists()) {
-      return "/display/avatar/" + avatar;
+      return AVATAR_BASEURI + avatar;
     }
     return "/directory/jsp/icons/avatar.png";
   }

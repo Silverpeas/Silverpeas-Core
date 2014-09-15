@@ -534,7 +534,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     StringBuilder sb = new StringBuilder();
     String webcontext = URLManager.getApplicationURL();
     ImageTag imageTag = new ImageTag();
-    imageTag.setType("avatar");
+    imageTag.setType("avatar.profil");
     imageTag.setSrc(member.getUserDetail().getAvatar());
     imageTag.setAlt("viewUser");
     imageTag.setCss("avatar");

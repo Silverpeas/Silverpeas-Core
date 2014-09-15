@@ -92,7 +92,7 @@
             <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
         <div class="profilPhoto">
-			<view:image src="<%=userFull.getAvatar()%>" alt="viewUser" type="avatar" css="avatar"/>
+			<view:image src="<%=userFull.getAvatar()%>" alt="viewUser" type="avatar.profil" css="avatar"/>
         </div>  
         <br clear="all" />
  	</div>

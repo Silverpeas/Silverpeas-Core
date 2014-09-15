@@ -84,7 +84,7 @@
 
         <!-- profilPhoto  -->  
 		<div class="profilPhoto">
-			<view:image src="<%=member.getUserDetail().getAvatar()%>" type="avatar" alt="viewUser" css="avatar"/>
+			<view:image src="<%=member.getUserDetail().getAvatar()%>" type="avatar.profil" alt="viewUser" css="avatar"/>
         </div>  
              
         <p class="statut">
