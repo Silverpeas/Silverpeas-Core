@@ -55,7 +55,6 @@ if(category == null) {
 <view:looknfeel />
 <title><%=resource.getString("GML.popupTitle")%></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {
 	 var errorMsg = "";

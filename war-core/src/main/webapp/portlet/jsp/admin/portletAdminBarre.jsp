@@ -41,9 +41,7 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 </jsp:useBean>
 <title></title>
 <view:looknfeel/>
-<script language="javascript" src="../../util/javaScript/animation.js"></script>
 </head>
-
 <body bgcolor="#ffffff" onLoad="MM_preloadImages('../../util/icons/portlet/addColOn.gif', '../../util/icons/portlet/saveFramesetOn.gif')" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor>
   <tr>

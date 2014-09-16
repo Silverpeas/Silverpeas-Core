@@ -74,10 +74,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 <!-- JAVASCRIPT LANGUAGE -->
-
 <script language="JavaScript">
 
 	// IE / Netscape compliant

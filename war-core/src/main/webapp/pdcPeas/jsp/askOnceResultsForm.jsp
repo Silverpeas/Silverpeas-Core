@@ -61,8 +61,6 @@
 <head>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 <SCRIPT Language="Javascript">
 	function calculateAction()
 	{

@@ -70,7 +70,6 @@
 <head>
 <view:looknfeel />
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <view:includePlugin name="messageme"/>
 <view:includePlugin name="password"/>

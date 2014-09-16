@@ -35,7 +35,6 @@
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<SCRIPT type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
 <script type="text/javascript">
 <!--
 function MM_reloadPage(init) {  //Updated by PVII. Reloads the window if Nav4 resized

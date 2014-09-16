@@ -47,9 +47,7 @@
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
-
 function init()
 {	
 	ajaxEngine.registerRequest('sendMessage', '<%=m_context%>/RAjaxCommunicationUserServlet/sendMessage');

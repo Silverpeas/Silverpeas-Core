@@ -61,7 +61,6 @@
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 	// This function open a silverpeas window

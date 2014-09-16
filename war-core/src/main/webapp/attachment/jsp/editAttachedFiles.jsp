@@ -98,7 +98,6 @@
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
 <c:choose>
   <c:when test="${view:booleanValue(isComponentVersioned)}">
 <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>

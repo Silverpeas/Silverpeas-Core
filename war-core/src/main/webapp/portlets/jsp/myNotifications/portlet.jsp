@@ -39,7 +39,6 @@
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
 
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function readMessage(id)
 {

@@ -62,7 +62,6 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 	function validerForm(){
 		if (checkForm()) {

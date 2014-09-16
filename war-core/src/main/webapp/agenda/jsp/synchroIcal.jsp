@@ -72,7 +72,6 @@
 <head>
 <title><%=resources.getString("agenda.SynchroIcalCalendar") %></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function synchroIcal() {
 	if (document.synchroIcalForm.UrlIcalendar.value.indexOf("http") == 0) {

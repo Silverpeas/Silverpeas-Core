@@ -46,3 +46,22 @@ if (!Array.prototype.indexOf)
   };
 }
 
+String.prototype.startsWith = function(str) {
+  return this.indexOf(str) === 0;
+};
+
+function SP_openWindow(page, name, width, height, options) {
+  var top = (screen.height - height) / 2;
+  var left = (screen.width - width) / 2;
+  if (screen.height - 20 <= height) {
+    top = 0;
+  }
+  if (screen.width - 10 <= width) {
+    left = 0;
+  }
+  return window.open(page, name, "top="+top+",left="+left+",width="+width+",height="+height+","+options);
+}
+
+function SP_openUserPanel(page, name, options) {
+  return SP_openWindow(page, name, '700', '730', options);
+}
