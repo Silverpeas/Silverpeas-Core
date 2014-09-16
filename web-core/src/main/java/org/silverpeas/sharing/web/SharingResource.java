@@ -73,7 +73,7 @@ public class SharingResource extends RESTWebService {
   private URI getWebApplicationRootUri(String baseUri, String componentId, String nodeId) {
     URI uri;
     try {
-      uri = new URI(baseUri + "nodes/" + componentId + "/" + token + "/" + nodeId);
+      uri = new URI(baseUri + "sharing/nodes/" + componentId + "/" + token + "/" + nodeId);
     } catch (URISyntaxException e) {
       Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);

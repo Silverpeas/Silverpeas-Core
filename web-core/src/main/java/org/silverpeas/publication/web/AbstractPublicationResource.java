@@ -20,6 +20,9 @@
  */
 package org.silverpeas.publication.web;
 
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -27,23 +30,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.GET;
+
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
 
 /**
  * A REST Web resource providing access to publications.
@@ -65,10 +65,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
    * @param withAttachments Indicated whether attachments related to publications are required.
    * @return An array of the nodes whose parent is the node matching the specified ID.
    */
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public PublicationEntity[] getPublications(@QueryParam("node") String nodeId,
-      @QueryParam("withAttachments") boolean withAttachments) {
+  protected List<PublicationEntity> getPublications(String nodeId, boolean withAttachments) {
 
     NodePK nodePK = getNodePK(nodeId);
     if (!isNodeReadable(nodePK)) {
@@ -84,24 +81,19 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     for (PublicationDetail publication : publications) {
       if (publication.isValid()) {
         URI uri = getURI(publication, baseUri);
-        PublicationEntity entity = fromPublicationDetail(publication, uri);
+        PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
         if (withAttachments) {
           Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
               .listDocumentsByForeignKey(publication.getPK(), null);
-          entity.withAttachments(attachments, getUriInfo().getBaseUri().toString(), getToken());
+          entity.withAttachments(attachments);
         }
         entities.add(entity);
       }
     }
-    return entities.toArray(new PublicationEntity[entities.size()]);
+    return entities;
   }
   
-  protected abstract String getToken();
-  
   protected abstract boolean isNodeReadable(NodePK nodePK);
-  
-  protected abstract PublicationEntity fromPublicationDetail(
-      final PublicationDetail publication, URI uri);
   
   private NodePK getNodePK(String nodeId) {
     return new NodePK(nodeId, getComponentId());

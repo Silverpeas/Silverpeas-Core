@@ -20,11 +20,18 @@
  */
 package com.silverpeas.attachment.web;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * A REST Web resource providing access to attachments through private mode.
@@ -34,15 +41,17 @@ import org.silverpeas.attachment.model.SimpleDocument;
 @Path("private/attachments/{componentId}")
 @Authorized
 public class AttachmentResource extends AbstractAttachmentResource {
-
-  @Override
-  protected boolean isFileReadable(SimpleDocument attachment) {
-    return true;
+  
+  @GET
+  @Path("{id}/{name}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response getFileContent(final @PathParam("id") String attachmentId) {
+    return super.getFileContent(attachmentId);
   }
 
   @Override
-  protected String getToken() {
-    return null;
+  protected boolean isFileReadable(SimpleDocument attachment) {
+    return attachment.canBeAccessedBy(getUserDetail());
   }
 
 }

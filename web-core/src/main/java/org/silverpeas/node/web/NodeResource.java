@@ -20,7 +20,12 @@
  */
 package org.silverpeas.node.web;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -34,10 +39,35 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 @Path("private/nodes/{componentId}")
 @Authorized
 public class NodeResource extends AbstractNodeResource {
-
+  
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity getRoot() {
+    return super.getRoot();
+  }
+  
+  @GET
+  @Path("{path: [0-9]+(/[0-9]+)*}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity getNode(@PathParam("path") String path) {
+    return super.getNode(path);
+  }
+  
+  /**
+   * Get all children of any node of the application.
+   *
+   * @return an array of NodeEntity representing children
+   */
+  @GET
+  @Path("{path: [0-9]+(/[0-9]+)*/children}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity[] getChildren(@PathParam("path") String path) {
+    return super.getChildren(path);
+  }
+  
   @Override
   protected boolean isNodeReadable(NodeDetail node) {
-    return true;
+    return node.canBeAccessedBy(getUserDetail());
   }
   
 }

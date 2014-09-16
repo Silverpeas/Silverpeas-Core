@@ -309,7 +309,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     return this.user;
   }
 
-  public UserProfileEntity() {
+  protected UserProfileEntity() {
     user = new UserDetail();
   }
 

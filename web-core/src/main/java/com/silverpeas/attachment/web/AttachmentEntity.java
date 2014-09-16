@@ -26,13 +26,21 @@ package com.silverpeas.attachment.web;
 
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
+
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.node.web.NodeEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author ehugonnet
@@ -106,7 +114,40 @@ public class AttachmentEntity implements Exposable {
     return this.uri;
   }
 
-  public void setSharedUri(URI sharedUri) {
+  public void withSharedUri(String baseURI, String token) {
+    URI sharedUri;
+    try {
+      sharedUri = string2URI(baseURI + "sharing/attachments/" + instanceId + "/"
+          + token + "/" + id + "/"
+          + URLEncoder.encode(logicalName, CharEncoding.UTF_8));
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
     this.sharedUri = sharedUri;
   }
+  
+  public void withUri(String baseURI) {
+    URI privateUri;
+    try {
+      privateUri = string2URI(baseURI + "private/attachments/" + instanceId + "/"
+          + id + "/" + URLEncoder.encode(logicalName, CharEncoding.UTF_8));
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+    this.uri = privateUri;
+  }
+  
+  private URI string2URI(String str) {
+    URI uri;
+    try {
+      uri = new URI(str);
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+    return uri;
+  }
+  
 }

@@ -40,7 +40,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 /**
  * Web entity representing a publication that can be serialized into a given media type (JSON, XML).
  */
-public abstract class PublicationEntity implements Exposable {
+public class PublicationEntity implements Exposable {
 
   private static final long serialVersionUID = 7746081841765736096L;
   
@@ -63,7 +63,7 @@ public abstract class PublicationEntity implements Exposable {
   @XmlElement
   private Date updateDate;
   @XmlElement
-  private AttachmentEntity[] attachments;
+  private List<AttachmentEntity> attachments;
   @XmlElement
   private UserProfileEntity creator;
   @XmlElement
@@ -92,11 +92,20 @@ public abstract class PublicationEntity implements Exposable {
     return componentId;
   }
 
-  protected PublicationEntity() {
+  private PublicationEntity() {
     
   }
   
-  protected PublicationEntity(final PublicationDetail publication, URI uri) {
+  /**
+    * Creates a new publication entity from the specified publication.
+    *
+    * @param publication the publication to entitify.
+    */
+  public static PublicationEntity fromPublicationDetail(final PublicationDetail publication, URI uri) {
+    return new PublicationEntity(publication, uri);
+  }
+  
+  private PublicationEntity(final PublicationDetail publication, URI uri) {
     this.componentId = publication.getPK().getInstanceId();
     this.id = publication.getPK().getId();
     this.setName(Encode.forHtml(publication.getName()));
@@ -109,26 +118,21 @@ public abstract class PublicationEntity implements Exposable {
     this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
   }
   
-  public PublicationEntity withAttachments(
-      Collection<SimpleDocument> attachmentDetails, String baseURI, String token) {
+  public PublicationEntity withAttachments(Collection<SimpleDocument> attachmentDetails) {
     if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
       for (SimpleDocument attachment : attachmentDetails) {
         SimpleDocument document = attachment.getLastPublicVersion();
         if (document != null) {
           AttachmentEntity entity = AttachmentEntity.fromAttachment(document);
-          URI sharedUri = getAttachmentURI(attachment, baseURI, token);
-          entity.setSharedUri(sharedUri);
           entities.add(entity);
         }
       }
-      setAttachments(entities.toArray(new AttachmentEntity[entities.size()]));
+      setAttachments(entities);
     }
     return this;
   }
-  
-  protected abstract URI getAttachmentURI(SimpleDocument attachment, String baseURI, String token);
-  
+    
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -173,8 +177,12 @@ public abstract class PublicationEntity implements Exposable {
     return updateDate;
   }
 
-  protected void setAttachments(AttachmentEntity[] attachments) {
+  protected void setAttachments(List<AttachmentEntity> attachments) {
     this.attachments = attachments;
+  }
+  
+  protected List<AttachmentEntity> getAttachments() {
+    return attachments;
   }
   
   public PublicationDetail toPublicationDetail() {

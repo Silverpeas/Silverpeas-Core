@@ -312,7 +312,7 @@ public class UserPriviledgeValidation {
   private SessionInfo validateUserSession(SessionValidationContext context) {
     String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = sessionManagement.validateSession(context);
-    if (sessionInfo == null || !sessionInfo.isDefined()) {
+    if (!sessionInfo.isDefined()) {
       // the key isn't a session identifier; is it then a user token?
       final PersistentResourceToken userToken = PersistentResourceToken.getToken(sessionKey);
       UserReference userRef = userToken.getResource(UserReference.class);

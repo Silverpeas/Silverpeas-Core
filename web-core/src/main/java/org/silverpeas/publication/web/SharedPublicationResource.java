@@ -20,17 +20,23 @@
  */
 package org.silverpeas.publication.web;
 
-import java.net.URI;
+import java.util.List;
+
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * A REST Web resource providing access to publications through sharing mode.
@@ -43,6 +49,28 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   @PathParam("token")
   private String token;
   
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<PublicationEntity> getPublications(@QueryParam("node") String nodeId,
+      @QueryParam("withAttachments") boolean withAttachments) {
+    List<PublicationEntity> publications = super.getPublications(nodeId, withAttachments);
+    setURIToAttachments(publications);
+    return publications;
+  }
+  
+  private void setURIToAttachments(List<PublicationEntity> publications) {
+    if (publications != null) {
+      for (PublicationEntity publication : publications) {
+        List<AttachmentEntity> attachments = publication.getAttachments();
+        if (attachments != null) {
+          for (AttachmentEntity attachment : attachments) {
+            attachment.withSharedUri(super.getUriInfo().getBaseUri().toString(), token);
+          }
+        }
+      }
+    }
+  }
+    
   @Override
   @SuppressWarnings("unchecked")
   protected boolean isNodeReadable(NodePK nodePK) {
@@ -50,16 +78,6 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     ShareableNode nodeResource = new ShareableNode(token, node);
     Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
     return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
-  }
-
-  @Override
-  protected String getToken() {
-    return token;
-  }
-
-  @Override
-  protected PublicationEntity fromPublicationDetail(PublicationDetail publication, URI uri) {
-    return SharedPublicationEntity.fromPublicationDetail(publication, uri);
   }
   
 }

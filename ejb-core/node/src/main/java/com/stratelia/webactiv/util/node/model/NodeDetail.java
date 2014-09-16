@@ -26,10 +26,11 @@ package com.stratelia.webactiv.util.node.model;
 import java.io.Serializable;
 import java.util.Collection;
 
-import com.silverpeas.util.StringUtil;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * This object contains the description of a node (own attributes and children attributes)
@@ -579,5 +580,17 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
       }
     }
     return isFather;
+  }
+  
+  /**
+   * Is the specified user can access this node?
+   * <p/>
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this node, false otherwise.
+   */
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<NodePK> accessController =
+        AccessControllerProvider.getAccessController("nodeAccessController");
+    return accessController.isUserAuthorized(user.getId(), this.getNodePK());
   }
 }

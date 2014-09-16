@@ -20,22 +20,21 @@
  */
 package org.silverpeas.node.web;
 
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 
 /**
  * A REST Web resource providing access to a node.
@@ -56,9 +55,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return the application root and its children
    */
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getRoot() {
+  protected NodeEntity getRoot() {
     NodeDetail node = getNodeDetail(NodePK.ROOT_NODE_ID);
     if (!isNodeReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
@@ -79,10 +76,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return NodeEntity representing asking node
    */
-  @GET
-  @Path("{path: [0-9]+(/[0-9]+)*}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getNode(@PathParam("path") String path) {
+  protected NodeEntity getNode(String path) {
     String nodeId = getNodeIdFromURI(path);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {
       return getRoot();
@@ -101,10 +95,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
    *
    * @return an array of NodeEntity representing children
    */
-  @GET
-  @Path("{path: [0-9]+(/[0-9]+)*/children}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] getChildren(@PathParam("path") String path) {
+  protected NodeEntity[] getChildren(String path) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodeDetail node = getNodeDetail(nodeId);
