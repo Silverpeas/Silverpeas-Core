@@ -89,7 +89,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 <link href="<%=m_sContext%>/util/styleSheets/jquery.loadmask.css" rel="stylesheet" type="text/css" />
 
 <!-- Add RICO javascript library -->
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>

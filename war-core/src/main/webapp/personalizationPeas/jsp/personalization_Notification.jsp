@@ -37,7 +37,6 @@
 <c:set var="testExplanation" value="${requestScope.testExplanation}"/>
 <c:set var="isMultiChannelNotif" value="${requestScope.multichannel}"/>
 <c:set var="notifAddresses" value="${requestScope.notificationAddresses}"/>
-<c:url value="/util/javaScript/animation.js" var="animationJS"/>
 <c:url value="/RSILVERMAIL/jsp/Main" var="silvermailURL"/>
 <c:url value="/RSILVERMAIL/jsp/SentUserNotifications" var="sentNotificationsURL"/>
 <fmt:message key="MesNotifications" var="myNotifications"/>
@@ -58,7 +57,6 @@
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel/>
-<script type="text/javascript" src="${animationJS}"></script>
 <script type="text/javascript">
 function editNotif(id){
 	SP_openWindow("editNotification.jsp?id=" + id,"addNotif","600","250","scrollbars=yes");

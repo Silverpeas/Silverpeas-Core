@@ -160,7 +160,6 @@ browseBar.setPath(resource.getString("JSPP.creationInstance"));
 <view:looknfeel/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript" src="javascript/messages.js"></script>

@@ -76,7 +76,6 @@ String 					m_context 			= GeneralPropertiesManager.getString("ApplicationURL");
     <c:forEach items="${list}" var="portlet">
         <c:out value="${portlet}" escapeXml="false" />
     </c:forEach>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
 <body id="portletPages">
 

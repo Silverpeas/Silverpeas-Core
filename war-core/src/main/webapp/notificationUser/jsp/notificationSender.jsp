@@ -106,7 +106,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function Submit(){

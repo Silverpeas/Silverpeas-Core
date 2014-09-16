@@ -76,7 +76,6 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 <head>
 <view:looknfeel/>
 <title></title>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
 function viewToDo(todoId) {

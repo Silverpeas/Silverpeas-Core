@@ -52,9 +52,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <!--[ JAVASCRIPT ]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-
 <script type="text/javascript">
 <!--
 	// This function open a silverpeas window

@@ -76,7 +76,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <%}%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas.js"></script>
 <Script language="JavaScript">
 var counter = 0;
 <%

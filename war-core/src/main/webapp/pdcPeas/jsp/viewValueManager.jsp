@@ -49,7 +49,6 @@ String 			displayLanguage = (String) request.getAttribute("DisplayLanguage");
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javaScript">
 
 function goToOperationInUserPanel(action) {

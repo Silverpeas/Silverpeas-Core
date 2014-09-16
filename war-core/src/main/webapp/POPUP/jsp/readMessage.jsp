@@ -63,8 +63,6 @@
     <head>
       <title><fmt:message key="GML.popupTitle"/></title>
       <view:looknfeel/>
-
-      <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
       <script type="text/javascript">
         window.opener.location =
             "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID=${popupMsgId}";

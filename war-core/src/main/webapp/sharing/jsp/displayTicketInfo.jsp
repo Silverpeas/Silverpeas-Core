@@ -48,8 +48,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
-
     <link href="<c:url value='/util/styleSheets/silverpeas_light_style.css'/>" type="text/css" rel="stylesheet" />
     <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet" />
 

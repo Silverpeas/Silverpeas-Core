@@ -50,7 +50,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=graphicPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function readMessage(id){
 	SP_openWindow("ReadSentNotification.jsp?NotifId=" + id,"ReadSentNotification","600","380","scrollable=yes,scrollbars=yes");

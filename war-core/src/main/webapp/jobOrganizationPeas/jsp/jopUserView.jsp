@@ -44,7 +44,6 @@
   <head>
     <title><%=resource.getString("GML.popupTitle")%></title>
     <view:looknfeel/>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script language="javascript">
       <!--
     function MM_reloadPage(init) {  //reloads the window if Nav4 resized

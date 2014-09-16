@@ -82,7 +82,6 @@ ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(ag
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <title><%=agenda.getString("trouverCreneau")%></title>
 <script type="text/javascript">
 

@@ -35,7 +35,6 @@
 <view:setBundle basename="com.silverpeas.sharing.settings.fileSharingIcons" var="icons" />
 <html>
 <head>
-<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
 <style type="text/css">
 td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
 </style>

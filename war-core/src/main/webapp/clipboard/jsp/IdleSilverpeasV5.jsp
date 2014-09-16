@@ -91,7 +91,7 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <%}%>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas.js"></script>
   <script type="text/javascript">
     var counter = 0;
     <%

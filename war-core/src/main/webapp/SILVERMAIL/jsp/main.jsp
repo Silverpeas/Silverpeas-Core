@@ -47,7 +47,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=graphicPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function readMessage(id){
 	SP_openWindow("ReadMessage.jsp?ID=" + id,"readMessage","600","380","scrollable=yes,scrollbars=yes");

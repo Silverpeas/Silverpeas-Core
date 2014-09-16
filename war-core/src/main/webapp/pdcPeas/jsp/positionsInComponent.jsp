@@ -114,10 +114,7 @@ PdcClassifySessionController createComponentSessionController(MainSessionControl
 	List				pathValues	= null;
 	String				path	    = null;
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 <!-- JAVASCRIPT LANGUAGE -->
-
 <script language="JavaScript">
 
 	// IE / Netscape compliant
