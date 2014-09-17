@@ -34,84 +34,82 @@
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <portlet:defineObjects/>
 
 <fmt:setLocale value="${sessionScope[SilverSessionController].favoriteLanguage}" />
-<view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle"/>
-<view:includePlugin name="messageme"/>
-<%
-    RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-    List<UserDetail> contactsConnected = (List<UserDetail>) pReq.getAttribute("ContactsConnected");
-    List<UserDetail> contactsNotConnected = (List<UserDetail>) pReq.getAttribute("ContactsNotConnected");
-%>
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle" var="portlets" />
+<view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" />
 
-<%
-if (contactsConnected.isEmpty() && contactsNotConnected.isEmpty()) { %>
-	<%=portletsBundle.getString("portlets.portlet.myContacts.none") %>
-<% } else {
-%>
+<view:includePlugin name="messageme"/>
+
+<c:set var="context" value="${pageContext.request.contextPath}"/>
+<c:set var="contactsConnected" value="${requestScope.ContactsConnected}" />
+<c:set var="contactsNotConnected" value="${requestScope.ContactsNotConnected}"/>
+
+<c:if test="${empty contactsConnected}">
+	<c:if test="${empty contactsNotConnected}">
+		<fmt:message key="portlets.portlet.myContacts.none" bundle="${portlets}" />
+	</c:if>
+</c:if>
+
 	<div id="portlet-myContact">
-	<ul id="listing-portlet-myContact" class="listing ">
-<% 
-	for (UserDetail contact : contactsConnected) {
-	  	Member member = new Member(contact);	
-%>			
-		<li class="user online">
-			<img class="avatar" alt="avatar" src="<%=m_sContext + contact.getAvatar() %>" />
-			
-      		<span class="userName">
-      			<%=(contact.getLastName() + " " + contact.getFirstName()).trim() %>
-      			<img src="<%=m_sContext %>/util/icons/connected.png" 
-      				alt="<fmt:message key="GML.user.online.for" /> <%=member.getDuration() %>" 
-      				title="<fmt:message key="GML.user.online.for" /> <%=member.getDuration() %>"/>
-      		</span>
-      		
-      		<div class="userStatut">
-      			<p title="<%=contact.getStatus() %>"><%=contact.getStatus() %></p>
-      		</div>
-      		
-      		<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification" 
-      			rel="<%=contact.getId() %>,<%=contact.getDisplayedName()%>">
-      			<img src="<%=m_sContext %>/util/icons/email.gif" 
-      				alt="<fmt:message key="ToContact" />"
-      				title="<fmt:message key="ToContact" />"/>
-      		</a>
-      		
-      		<a href="#" title="<fmt:message key="tchat" />"  class="accessTchat-user"
-      			onclick="javascript:window.open('<%=m_sContext %>/RcommunicationUser/jsp/OpenDiscussion?userId=<%=contact.getId() %>',
-   				'popupDiscussion<%=contact.getId() %>','menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=450')">
-      			<img src="<%=m_sContext %>/util/icons/talk2user.gif" 
-      				alt="<fmt:message key="tchat" />"
-      				title="<fmt:message key="tchat" />"/>
-      		</a>
-      	</li>
-<%  } 
-	
-	for (UserDetail contact : contactsNotConnected) {
-%>			
-		<li class="user offline">
-			<img class="avatar" alt="avatar" src="<%=m_sContext + contact.getAvatar() %>" />
-			
-			<span class="userName">
-      			<%=(contact.getLastName() + " " + contact.getFirstName()).trim() %>
-      		</span>
-      		
-      		<div class="userStatut">
-      			<p title="<%=contact.getStatus() %>"><%=contact.getStatus() %></p>
-      		</div>
-      		
-      		<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
-      			rel="<%=contact.getId() %>,<%=contact.getDisplayedName()%>">
-      			<img src="<%=m_sContext %>/util/icons/email.gif" 
-      				alt="<fmt:message key="ToContact" />"
-      				title="<fmt:message key="ToContact" />"/>
-      		</a>
-      	</li>
-<%  } 
-%>
-	</ul>
-	<br clear="all" />
+		<ul id="listing-portlet-myContact" class="listing">
+		
+			<c:forEach var="member" items="${contactsConnected}">
+				<li class="user online">
+					<img class="avatar" alt="avatar" src="${context}${member.userDetail.avatar}" />
+					
+		      		<span class="userName">
+		      			${member.lastName} ${member.firstName}
+		      			<img src="${context}/util/icons/connected.png" 
+		      				alt="<fmt:message key="GML.user.online.for" /> ${member.duration}"
+		      				title="<fmt:message key="GML.user.online.for" /> ${member.duration}"/>
+		      		</span>
+		      		
+		      		<div class="userStatut">
+		      			<p title="${member.status}">${member.status}</p>
+		      		</div>
+		      		
+		      		<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification" 
+		      			rel="${member.id},${member.userDetail.displayedName}">
+		      			<img src="${context}/util/icons/email.gif" 
+		      				alt="<fmt:message key="ToContact" />"
+		      				title="<fmt:message key="ToContact" />"/>
+		      		</a>
+		      		
+		      		<a href="#" title="<fmt:message key="tchat" />"  class="accessTchat-user"
+		      			onclick="javascript:window.open('${context}/RcommunicationUser/jsp/OpenDiscussion?userId=${member.id}',
+		   				'popupDiscussion${member.id}','menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=450')">
+		      			<img src="${context}/util/icons/talk2user.gif" 
+		      				alt="<fmt:message key="tchat" />"
+		      				title="<fmt:message key="tchat" />"/>
+		      		</a>
+		      	</li>
+	      	</c:forEach>
+
+			<c:forEach var="contact" items="${contactsNotConnected}">		
+				<li class="user offline">
+					<img class="avatar" alt="avatar" src="${context}${contact.avatar}" />
+					
+					<span class="userName">
+		      			${contact.lastName} ${contact.firstName}
+		      		</span>
+		      		
+		      		<div class="userStatut">
+		      			<p title="${contact.status}">${contact.status}</p>
+		      		</div>
+		      		
+		      		<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
+		      			rel="${contact.id},${contact.displayedName}">
+		      			<img src="${context}/util/icons/email.gif" 
+		      				alt="<fmt:message key="ToContact" />"
+		      				title="<fmt:message key="ToContact" />"/>
+		      		</a>
+		      	</li>
+			</c:forEach>
+
+		</ul>
+		<br clear="all" />
 	</div>
-<%  }
-%>

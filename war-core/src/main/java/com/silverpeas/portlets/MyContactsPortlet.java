@@ -24,6 +24,7 @@
 
 package com.silverpeas.portlets;
 
+import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -64,10 +65,11 @@ public class MyContactsPortlet extends GenericPortlet implements FormNames {
     }
     
     List<UserDetail> contactsConnected = new ArrayList<UserDetail>();
+    List<Member> contactsMemberConnected = new ArrayList<Member>();
     List<UserDetail> contactsNotConnected = new ArrayList<UserDetail>();
     if(listContactIds != null) {
       for(String userId : listContactIds) {
-        UserDetail userDetail = OrganisationControllerFactory.getOrganisationController().getUserDetail(userId);
+        UserDetail userDetail = UserDetail.getById(userId);
         
         if(userDetail.isConnected()) {
           contactsConnected.add(userDetail);
@@ -81,7 +83,11 @@ public class MyContactsPortlet extends GenericPortlet implements FormNames {
     Collections.sort(contactsConnected);
     Collections.sort(contactsNotConnected);
     
-    request.setAttribute("ContactsConnected", contactsConnected);
+    for(UserDetail contact : contactsConnected) {
+      contactsMemberConnected.add(new Member(contact));
+    }
+    
+    request.setAttribute("ContactsConnected", contactsMemberConnected);
     request.setAttribute("ContactsNotConnected", contactsNotConnected);
 
     include(request, response, "portlet.jsp");
