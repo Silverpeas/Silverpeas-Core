@@ -677,7 +677,7 @@ public class SimpleDocument implements Serializable {
   public URI getSharedURI(SharingContext context) {
     URI sharedUri;
     try {
-      sharedUri = new URI(context.getBaseURI() + "attachments/" + getInstanceId() + "/" + context.getToken() + "/"
+      sharedUri = new URI(context.getBaseURI() + "sharing/attachments/" + getInstanceId() + "/" + context.getToken() + "/"
           + getId() + "/" + URLEncoder.encode(attachment.getFilename(),
               CharEncoding.UTF_8));
     } catch (UnsupportedEncodingException ex) {
