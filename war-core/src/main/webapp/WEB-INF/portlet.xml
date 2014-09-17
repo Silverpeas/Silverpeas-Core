@@ -316,7 +316,7 @@
             <portlet-mode>HELP</portlet-mode>
         </supports>
         <portlet-info>
-            <title>MContactsPortlet title</title>
+            <title>MyContactsPortlet title</title>
             <short-title>MyContactsPortlet shortTitle</short-title>
         </portlet-info>
  </portlet>

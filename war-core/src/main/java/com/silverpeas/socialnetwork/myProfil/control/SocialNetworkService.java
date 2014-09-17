@@ -42,7 +42,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
- * @author Bensalem Nabil;
+ * @author Bensalem Nabil
  */
 public class SocialNetworkService {
 

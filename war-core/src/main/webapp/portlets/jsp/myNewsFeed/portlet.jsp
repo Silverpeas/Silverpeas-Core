@@ -50,7 +50,7 @@ String urlServlet = URLManager.getApplicationURL()+"/RnewsFeedJSONServlet?userId
 if("true".equals(notDisplayMyActivity)) {
 	urlServlet += "&View=MyContactWall";
 } else {
-  urlServlet += "&View=MyFeed";
+	urlServlet += "&View=MyFeed";
 }
 %>
 
@@ -69,12 +69,8 @@ $(document).ready(function(){
 });
 </script>
 
-<div id="newsFeedProfil">
-
-	<div class="newsFeed">
+	<div id="portlet-myFeed">
 		<div id="newsFeed-content"></div>
-    	<a class="linkMore" title="<fmt:message key="newsFeed.getNext" />" href="#" onclick="getNext(); return false;"><span><fmt:message key="newsFeed.getNext" /></span></a>
+		<a class="linkMore" title="<fmt:message key="newsFeed.getNext" />" href="#" onclick="getNext(); return false;"><span><fmt:message key="newsFeed.getNext" /></span></a>
     	<p class="inprogress"><span><fmt:message key="newsFeed.inProgress" /></span></p>
 	</div>
-
-</div>

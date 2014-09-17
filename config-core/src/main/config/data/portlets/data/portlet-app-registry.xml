@@ -408,7 +408,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mon fil d'information"/>
+        <String name="fr" value="Mon fil d'informations"/>
         <String name="en" value="My news feed"/>
         <String name="de" value="Meine Informationen Faden"/>
       </Collection>
