@@ -74,14 +74,9 @@ public class PublicationInstanciator extends SQLRequest {
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
 
-    deleteDataOfInstance(con, componentId, "InfoAttachment");
-    deleteDataOfInstance(con, componentId, "InfoImage");
-    deleteDataOfInstance(con, componentId, "InfoText");
-    deleteDataOfInstance(con, componentId, "InfoLink");
     deleteDataOfInstance(con, componentId, "publicationfather");
     deleteDataOfInstance(con, componentId, "Publication");
-    deleteDataOfInstance(con, componentId, "Info");
-
+    
     try {
       // Delete the attachments directory on the server disk
       deleteAttachmentsAndImagesDirectory(spaceId, componentId);

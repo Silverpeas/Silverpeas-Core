@@ -101,7 +101,8 @@ $(function () {
 				checkbox.appendTo(li);
 				
 				var img = $("<img>").attr("src", attachment.icon);
-				var a = $("<a>").attr("href", attachment.sharedUri).append(img);
+				var a = $("<a>").attr("href", attachment.sharedUri).attr("target", "_blank");
+				a.append(img);
 				var label = $("<span>").html(label);
 				label.appendTo(a);
 				a.appendTo(li);
@@ -155,7 +156,7 @@ $(function () {
 		}).get().join(',');
 		// generate zip file
 		var instanceId = $("#instanceId").val();
-		var url = baseURL+"/silverpeas/services/attachments/"+instanceId+"/"+token+"/"+ids+"/zip";
+		var url = baseURL+"/silverpeas/services/sharing/attachments/"+instanceId+"/"+token+"/"+ids+"/zip";
 		$.getJSON(url,
 			  function(zip) {
 				// display modal dialog to download zip
