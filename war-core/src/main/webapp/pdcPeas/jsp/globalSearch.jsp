@@ -149,7 +149,6 @@ QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 <view:includePlugin name="datepicker"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="javascript/formUtil.js"></script>
 <!--[if IE 6]>

@@ -53,8 +53,6 @@
     <title>___/ Silverpeas - Corporate Portal Organizer
       \________________________________________________________________________</title>
       <view:looknfeel />
-    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
-
     <script>
       function deleteMessage( pID )
       {

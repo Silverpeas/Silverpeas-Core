@@ -90,7 +90,6 @@
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 function goToOperationInAnotherWindow(action, larg, haut) {
 	url = action;

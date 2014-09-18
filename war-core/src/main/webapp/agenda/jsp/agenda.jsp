@@ -113,7 +113,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	<link rel="alternate" type="application/rss+xml" title="<%=resources.getString("agenda.agenda")%> : <%=resources.getString("agenda.rssNext")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
 <script type="text/javascript">
 function viewByYear()

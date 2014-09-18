@@ -40,10 +40,8 @@ Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "jav
     <HEAD>
     <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
     <view:looknfeel/>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-
     <script LANGUAGE="JavaScript" TYPE="text/javascript">
     function onLoad() {
      // this mode is for opening confirmation window

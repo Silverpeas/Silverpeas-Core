@@ -57,7 +57,6 @@
 <head>
 <title><%=resources.getString("agenda.ImportIcalCalendar") %></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function importIcal() {
 	if (document.importIcalForm.fileCalendar.value != "") {

@@ -54,7 +54,6 @@
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<SCRIPT type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script language="JavaScript">
 

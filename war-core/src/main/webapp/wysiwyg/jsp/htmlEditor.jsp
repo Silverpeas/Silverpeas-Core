@@ -269,7 +269,6 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 <head>
 <title>Silverpeas Wysiwyg Editor</title>
 <view:looknfeel/>
-<script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />'></script>
 <view:includePlugin name="wysiwyg"/>
 </head>
 <body>

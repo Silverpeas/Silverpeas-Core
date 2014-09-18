@@ -98,9 +98,7 @@ function validation() {
 
 //-->
 </script>
-<script language="javascript" src="../../util/javaScript/animation.js"></script>
 </head>
-
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" 
       onLoad="MM_preloadImages('../../util/icons/portlet/addPortletOk.gif')"
       onresize='javascript:OnResizeUpdate()'

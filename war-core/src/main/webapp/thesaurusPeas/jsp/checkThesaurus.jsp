@@ -103,7 +103,7 @@ String componentLabel = resource.getString("thesaurus.componentName");
 
 String language = scc.getLanguage();
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
@@ -118,6 +118,5 @@ String boardEnd   = "</td></tr></table>";
 String openBorder = "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"50%\" class=\"line\"><tr><td><table cellpadding=\"2\" cellspacing=\"1\" border=\"0\" width=\"100%\" ><tr><td class=\"intfdcolor\" align=\"center\" nowrap width=\"100%\" height=\"22\">";
 String closeBorder = "</td></tr></table></td></tr></table>";
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>

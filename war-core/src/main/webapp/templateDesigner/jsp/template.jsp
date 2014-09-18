@@ -42,7 +42,6 @@ PagesContext		context	= (PagesContext) request.getAttribute("context");
 <view:looknfeel/>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <% formUpdate.displayScripts(out, context); %>
 <script type="text/javascript">

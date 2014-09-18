@@ -37,7 +37,6 @@
 <html>
 <head>
   <view:looknfeel/>
-  <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />'></script>
   <script type="text/javascript">
     function editTicket(token) {
       location.href = "EditTicket?token=" + token;

@@ -76,10 +76,8 @@
 	<head>
 		<title></title>
 		<view:looknfeel/>
-		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
         <script type="text/javascript">
-            function displayPopup()
-            {
+            function displayPopup() {
                 SP_openWindow("<%=m_context%>/admin/jsp/popupError.jsp","popup","650","180","");
             }
         </script>

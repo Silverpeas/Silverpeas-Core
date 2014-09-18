@@ -45,7 +45,6 @@
 <head>
   <title><%=resource.getString("GML.popupTitle")%></title>
   <view:looknfeel/>
-  <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />'></script>
   <script Language="Javascript">
     function calculateAction() {
       var index = document.queryForm.searchDomainId.selectedIndex;

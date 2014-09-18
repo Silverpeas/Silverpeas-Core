@@ -49,7 +49,6 @@ Icon aspiIcon = null;
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 

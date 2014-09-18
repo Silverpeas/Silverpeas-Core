@@ -63,7 +63,6 @@
 <head>
   <title><%=title%></title>
   <view:looknfeel/>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script type="text/javascript">
     function notifyAdministrators(context, compoId, users, groups) {
       SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators',

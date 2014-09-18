@@ -90,7 +90,6 @@ body {
 	background-position: left top;
 }
 </style>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/connectedUsers.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>

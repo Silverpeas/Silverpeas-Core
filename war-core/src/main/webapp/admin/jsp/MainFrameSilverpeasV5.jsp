@@ -131,7 +131,7 @@ if (m_MainSessionCtrl == null) {
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/silverpeas.js"></script>
 <script type="text/javascript">
 <!--
 var columntype=""
