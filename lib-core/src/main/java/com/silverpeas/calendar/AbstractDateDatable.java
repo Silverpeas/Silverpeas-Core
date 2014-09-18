@@ -24,7 +24,7 @@
 package com.silverpeas.calendar;
 
 import com.stratelia.webactiv.util.DateUtil;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.time.TimeData;

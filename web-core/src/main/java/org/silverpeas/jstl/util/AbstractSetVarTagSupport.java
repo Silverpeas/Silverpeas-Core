@@ -23,12 +23,10 @@
  */
 package org.silverpeas.jstl.util;
 
+import com.silverpeas.util.StringUtil;
+
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.taglibs.standard.tag.common.core.Util;
-
-import com.silverpeas.util.StringUtil;
 
 /**
  * Abstract tag support class for implementing SimpleTag custom actions that specify
@@ -43,9 +41,17 @@ public abstract class AbstractSetVarTagSupport extends TagSupport {
     this.var = value;
   }
 
-  public void setScope(String value) {
-    if (StringUtil.isDefined(value)) {
-      scope = Util.getScope(value);
+  public void setScope(String scope) {
+    if (StringUtil.isDefined(scope)) {
+      if ("request".equalsIgnoreCase(scope)) {
+        this.scope = PageContext.REQUEST_SCOPE;
+      } else if ("session".equalsIgnoreCase(scope)) {
+        this.scope = PageContext.SESSION_SCOPE;
+      } else if ("application".equalsIgnoreCase(scope)) {
+        this.scope = PageContext.APPLICATION_SCOPE;
+      } else {
+        this.scope = PageContext.PAGE_SCOPE; // default
+      }
     }
   }
 

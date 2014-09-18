@@ -25,7 +25,7 @@
 package com.silverpeas.subscribe.web;
 
 import com.silverpeas.subscribe.SubscriptionSubscriber;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 

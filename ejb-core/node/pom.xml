@@ -40,11 +40,13 @@
       <artifactId>mockrunner-jdbc</artifactId>
       <classifier>jdk1.6-j2ee1.4</classifier>
     </dependency>
+    <!--
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
   </dependencies>
 
   <build>

@@ -143,11 +143,13 @@
       <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>compile</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
       <scope>compile</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -156,11 +158,13 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <scope>compile</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>

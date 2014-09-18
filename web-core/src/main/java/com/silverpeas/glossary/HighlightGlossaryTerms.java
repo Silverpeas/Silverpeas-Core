@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +91,7 @@ public class HighlightGlossaryTerms {
   String highlight(String term, String content, String definition, String className,
       boolean onlyFirst) {
     // escape HTML character
-    String escapedTerm = StringEscapeUtils.escapeHtml(term);
+    String escapedTerm = StringEscapeUtils.escapeHtml4(term);
     // regular expression which allows to search all the term except the HTML tag
     // Searches the exact term
     String regex = "((?i)\\b" + escapedTerm + "\\b)(?=[^>]*<(?!/a))";

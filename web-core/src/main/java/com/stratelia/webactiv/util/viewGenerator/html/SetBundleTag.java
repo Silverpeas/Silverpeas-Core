@@ -33,8 +33,6 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.taglibs.standard.tag.common.core.Util;
-
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -53,7 +51,17 @@ public class SetBundleTag extends TagSupport {
   }
 
   public void setScope(String scope) {
-    this.scope = Util.getScope(scope);
+    if (StringUtil.isDefined(scope)) {
+      if ("request".equalsIgnoreCase(scope)) {
+        this.scope = PageContext.REQUEST_SCOPE;
+      } else if ("session".equalsIgnoreCase(scope)) {
+        this.scope = PageContext.SESSION_SCOPE;
+      } else if ("application".equalsIgnoreCase(scope)) {
+        this.scope = PageContext.APPLICATION_SCOPE;
+      } else {
+        this.scope = PageContext.PAGE_SCOPE; // default
+      }
+    }
   }
 
   public void setBundle(ResourceBundle bundle) {

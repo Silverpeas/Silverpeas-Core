@@ -28,7 +28,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import com.stratelia.webactiv.util.DateUtil;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

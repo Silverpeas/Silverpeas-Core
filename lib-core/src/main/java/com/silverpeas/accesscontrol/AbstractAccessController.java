@@ -26,7 +26,6 @@ package com.silverpeas.accesscontrol;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.apache.commons.lang.NotImplementedException;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 import java.util.EnumSet;
@@ -76,7 +75,7 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, T object) {
     // This method must be overridden if needed
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -95,7 +94,7 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
       WAPrimaryKey pk = (WAPrimaryKey) object;
       cacheKey.append(pk.getId()).append("|").append(pk.getInstanceId());
     } else if (object != null) {
-      throw new NotImplementedException();
+      throw new UnsupportedOperationException();
     }
     EnumSet<AccessControlOperation> orderedOperations = EnumSet.copyOf(context.getOperations());
     cacheKey.append("@#@").append("OPERATIONS")

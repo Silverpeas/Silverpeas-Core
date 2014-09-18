@@ -27,7 +27,6 @@ import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.silverpeas.util.i18n.I18NHelper;
-import org.apache.commons.lang.NotImplementedException;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.util.ArrayList;
@@ -188,7 +187,7 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
                 simpleDocument.getCreated()), orderBy.isAscending());
             break;
           default:
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
       }
       return valueBuffer;

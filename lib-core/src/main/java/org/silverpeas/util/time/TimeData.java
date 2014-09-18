@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.time;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.util.UnitUtil;
 
 import java.math.BigDecimal;

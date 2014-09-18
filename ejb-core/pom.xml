@@ -19,10 +19,12 @@
       <artifactId>lib-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>

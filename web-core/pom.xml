@@ -41,8 +41,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
@@ -72,16 +72,20 @@
       <groupId>com.sun.portal.portletcontainer</groupId>
       <artifactId>portlet-container</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <scope>provided</scope>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
       <scope>provided</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
@@ -256,10 +260,12 @@
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>com.lowagie</groupId>
       <artifactId>itext</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>

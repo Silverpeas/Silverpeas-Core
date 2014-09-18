@@ -29,7 +29,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.NotImplementedException;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 
@@ -434,7 +433,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
       return StringUtil.getBooleanValue(typedObject);
     }
     if (object != null) {
-      throw new NotImplementedException();
+      throw new IllegalArgumentException();
     }
     return false;
   }
@@ -450,7 +449,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
       return null;
     }
     if (object != null) {
-      throw new NotImplementedException();
+      throw new IllegalArgumentException();
     }
     return null;
   }
@@ -466,7 +465,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
       return null;
     }
     if (object != null) {
-      throw new NotImplementedException();
+      throw new IllegalArgumentException();
     }
     return null;
   }
@@ -481,7 +480,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
       return null;
     }
     if (date != null) {
-      throw new NotImplementedException();
+      throw new IllegalArgumentException();
     }
     return null;
   }

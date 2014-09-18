@@ -23,8 +23,8 @@
  */
 package com.silverpeas.notification.model;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

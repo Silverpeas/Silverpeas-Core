@@ -23,7 +23,7 @@
  */
 package org.silverpeas.termsOfService.constant;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import java.sql.Timestamp;

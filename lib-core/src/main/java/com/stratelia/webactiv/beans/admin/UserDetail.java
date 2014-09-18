@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.beanutils.BeanUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.cache.service.CacheServiceFactory;
@@ -43,6 +42,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -700,7 +700,10 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public String getAvatarFileName() {
     String propertyValue = getLogin();
     try {
-      propertyValue = BeanUtils.getSimpleProperty(this, AVATAR_PROPERTY);
+      String getterName = "get" + Character.toUpperCase(AVATAR_PROPERTY.charAt(0)) +
+          AVATAR_PROPERTY.substring(1);
+      Method getter = getClass().getMethod(getterName);
+      propertyValue = getter.invoke(this).toString();
     } catch (IllegalAccessException e) {
       SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
     } catch (NoSuchMethodException e) {

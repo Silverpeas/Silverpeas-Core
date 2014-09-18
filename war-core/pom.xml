@@ -60,17 +60,19 @@
       <artifactId>jsp-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
@@ -213,16 +215,20 @@
       <groupId>org.aspectj</groupId>
       <scope>provided</scope>
     </dependency>
+    <!--
     <dependency>
       <artifactId>commons-httpclient</artifactId>
       <groupId>commons-httpclient</groupId>
       <scope>provided</scope>
     </dependency>
+    -->
+    <!--
     <dependency>
       <artifactId>commons-codec</artifactId>
       <groupId>commons-codec</groupId>
       <scope>provided</scope>
     </dependency>
+    -->
     <dependency>
       <artifactId>rome</artifactId>
       <groupId>rome</groupId>

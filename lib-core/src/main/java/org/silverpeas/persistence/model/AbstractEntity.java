@@ -26,7 +26,6 @@ package org.silverpeas.persistence.model;
 import com.silverpeas.util.AssertArgument;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -69,7 +68,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
    */
   @Override
   public String getComponentInstanceId() {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   /**

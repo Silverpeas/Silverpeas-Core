@@ -28,7 +28,7 @@ import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.util.persistence.TypedParameter;
 import com.silverpeas.util.persistence.TypedParameterUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import javax.persistence.EntityManager;

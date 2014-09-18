@@ -24,7 +24,6 @@
 package org.silverpeas.servlet;
 
 import com.silverpeas.util.StringUtil;
-import org.apache.commons.lang.NotImplementedException;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
@@ -139,7 +138,7 @@ public class RequestParameterDecoder {
     } else if (parameterClass.getName().equals("boolean")) {
       value = request.getParameterAsBoolean(parameterName);
     } else {
-      throw new NotImplementedException(
+      throw new UnsupportedOperationException(
           "The type " + parameterClass.getName() + " is not handled...");
     }
     return value;

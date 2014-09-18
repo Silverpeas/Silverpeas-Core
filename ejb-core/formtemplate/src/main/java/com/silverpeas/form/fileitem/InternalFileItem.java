@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 /**
  * File item created manually, without being retrieved from an HTTP request. Used to update an
@@ -48,10 +49,12 @@ public class InternalFileItem implements FileItem {
     setValue(value);
   }
 
+  @Override
   public void setFieldName(String fieldName) {
     this.fieldName = fieldName;
   }
 
+  @Override
   public String getFieldName() {
     return fieldName;
   }
@@ -60,54 +63,76 @@ public class InternalFileItem implements FileItem {
     this.value = value;
   }
 
+  @Override
   public String getString() {
     return value;
   }
 
+  @Override
   public void setFormField(boolean formField) {
 
   }
 
+  @Override
   public boolean isFormField() {
     return true;
   }
 
+  @Override
   public void delete() {
   }
 
+  @Override
   public byte[] get() {
     return null;
   }
 
+  @Override
   public String getContentType() {
     return null;
   }
 
+  @Override
   public InputStream getInputStream() throws IOException {
     return null;
   }
 
+  @Override
   public String getName() {
     return null;
   }
 
+  @Override
   public OutputStream getOutputStream() throws IOException {
     return null;
   }
 
+  @Override
   public long getSize() {
     return 0;
   }
 
+  @Override
   public String getString(String arg0) throws UnsupportedEncodingException {
     return getString();
   }
 
+  @Override
   public boolean isInMemory() {
     return false;
   }
 
+  @Override
   public void write(File arg0) throws Exception {
   }
 
+  @Override
+  public FileItemHeaders getHeaders() {
+    return null;
+  }
+
+  @Override
+  public void setHeaders(final FileItemHeaders fileItemHeaders) {
+
+  }
 }

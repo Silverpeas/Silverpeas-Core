@@ -22,7 +22,7 @@ package com.silverpeas.admin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 
