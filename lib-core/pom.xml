@@ -453,9 +453,11 @@
         </excludes>
       </testResource>
     </testResources>
+    <!--
     <filters>
       <filter>${basedir}/src/test/filters/filters.properties</filter>
     </filters>
+    -->
     <plugins>
       <plugin>
         <groupId>de.jflex</groupId>

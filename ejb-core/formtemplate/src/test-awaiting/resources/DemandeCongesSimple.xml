@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<!-- PROCEDURE : DEMANDE DE CONGES SIMPLIFIEE -->
+<processModel name="DemandeCongesSimple"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:noNamespaceSchemaLocation="processModel.xsd">
+
+	<label>Demande de conges simplifiee</label>
+
+	<!-- DESCRIPTION DES ROLES -->
+	<roles>
+		<role name="Employe">
+			<label>Demandeur</label>
+		</role>
+		<role name="Responsable">
+			<label>Responsable</label>
+		</role>
+		<role name="supervisor">
+			<label>Superviseur</label>
+		</role>
+	</roles>
+
+	<!-- DEFINITION DES DONNEES UTILISATEUR -->
+	<userInfos>
+		<item name="responsable">
+			<label>Responsable</label>
+			<type>user</type>
+		</item>
+	</userInfos>
+
+	<!-- DEFINITION DU DOSSIER -->
+	<dataFolder>
+		<item name="nature">
+			<label>Type de cong�s</label>
+			<type>text</type>
+			<param name="keys" value="Cong�s pay�s##RTT##Cong�s sans solde##R�cup�ration##Autre"/>
+		</item>
+		<item name="natureAutre">
+			<label>Autre type de cong�s</label>
+			<type>text</type>
+		</item>
+		<item name="duree">
+			<label>Nombre de jours</label>
+			<type>text</type>
+		</item>
+		<item name="dateDebut">
+			<label>Date de d�but</label>
+			<type>date</type>
+		</item>
+		<item name="dateFin">
+			<label>Date de fin (inclus)</label>
+			<type>date</type>
+		</item>
+		<item name="debutJourneeOuDemi">
+			<label>D�but (Journ�e/Matin�e/Apr�s-midi)</label>
+			<type>text</type>
+			<param name="keys" value="Journ�e##Matin�e##Apr�s-midi"/>
+			<param name="cols" value="3"/>
+		</item>
+		<item name="finJourneeOuDemi">
+			<label>Fin (Journ�e/Matin�e/Apr�s-midi)</label>
+			<type>text</type>
+			<param name="keys" value="Journ�e##Matin�e##Apr�s-midi"/>
+			<param name="cols" value="3"/>
+		</item>
+		<item name="motifRefus">
+			<label>Motif du refus</label>
+			<type>text</type>
+		</item>
+		<item name="commentaires">
+			<label>Commentaires</label>
+			<type>text</type>
+		</item>
+	</dataFolder>
+
+	<!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<presentation>
+		<title role="Employe">Cong�s du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})</title>
+		<title role="Responsable">Demande de ${action.Creation.actor}</title>
+		<title role="supervisor">Demande de ${action.Creation.actor}</title>
+		<columns>
+			<column item="nature"/>
+			<column item="duree"/>
+		</columns>
+	</presentation>
+
+	<!-- DESCRIPTION DES PARTICIPANTS -->
+	<participants>
+		<participant name="Demandeur" state="" role="Employe">
+			<label>Demandeur</label>
+		</participant>
+	</participants>
+
+	<!-- DESCRIPTION DES �TATS -->
+	<states>
+		<state name="AttenteValidation">
+			<label>En attente d'acceptation par responsable</label>
+			<workingUsers role="Responsable">
+				<relatedUser participant="Demandeur" relation="responsable"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Employe"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Accepter"/>
+				<allow action="Refuser"/>
+			</allowedActions>
+		</state>
+
+		<state name="Acceptee">
+			<label>Accept�e</label>
+			<workingUsers role="Employe">
+				<relatedUser participant="Demandeur"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Employe"/>
+				<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
+			</interestedUsers>
+			<!--<allowedActions>
+				<allow action="Valider"/>
+				<allow action="Refuser"/>
+			</allowedActions>-->
+		</state>
+
+		<state name="Refusee">
+			<label>Refus�e</label>
+			<workingUsers role="Employe">
+				<relatedUser participant="Demandeur"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Employe"/>
+				<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
+			</interestedUsers>
+			<!--<allowedActions>
+				<allow action="Supprimer"/>
+			</allowedActions>-->
+		</state>
+
+	</states>
+
+	<!-- DESCRIPTION DES ACTIONS -->
+	<actions>
+		<action name="Creation" form="creation" kind="create">
+			<label>Cr�ation</label>
+			<description>Cr�ation d'une nouvelle demande.</description>
+			<allowedUsers>
+				<userInRole name="Employe"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="AttenteValidation"/>
+					<notify message="Merci de valider les cong�s de ${action.Creation.actor} du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})">
+						<relatedUser participant="Demandeur" relation="responsable"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Accepter" form="acceptation">
+			<label>Accepter</label>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Acceptee"/>
+					<notify message="Merci de valider les cong�s de ${action.Creation.actor} du ${folder.dateDebut} au ${folder.dateFin}">
+						<relatedUser participant="Demandeur"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Refuser" form="refus">
+			<label>Refuser</label>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Refusee"/>
+					<notify message="Votre demande de cong�s du ${folder.dateDebut} au ${folder.dateFin} a �t� refus�e pour le motif suivant : ${folder.motifRefus}">
+						<relatedUser participant="Demandeur"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+	</actions>
+
+	<!-- DEFINITION DES FORMULAIRES -->
+	<forms>
+		<form name="presentationForm">
+			<title>Demande de cong�s</title>
+		   <input value="${action.Creation.actor}" displayerName="simpletext">
+			   <label>Demandeur</label>
+			</input>
+			<input value="${action.Creation.date}" displayerName="simpletext">
+			   <label>Date de la demande</label>
+			</input>
+			<input item="nature" displayerName="simpletext"/>
+			<input item="natureAutre" displayerName="simpletext"/>
+			<input item="dateDebut" displayerName="simpletext"/>
+			<input item="debutJourneeOuDemi" displayerName="radio"/>
+			<input item="dateFin" displayerName="simpletext"/>
+			<input item="finJourneeOuDemi" displayerName="radio"/>
+			<input item="duree" displayerName="simpletext"/>
+		   <input value="${action.Accepter.date}" displayerName="simpletext">
+			   <label>Cong�s accept�s le</label>
+			</input>
+			<input value="${action.Refuser.date}" displayerName="simpletext">
+			   <label>Cong�s refus�s le</label>
+			</input>
+		   <input item="motifRefus" displayerName="simpletext"/>
+		</form>
+
+		<form name="printForm" HTMLFileName="/weblib/processManager/DemandeConges/DemandeConges.html">
+		</form>
+
+		<!-- Formulaire de cr�ation -->
+		<form name="creation">
+			<title>Demande de cong�s</title>
+			<input item="nature" displayerName="listbox" mandatory="true"/>
+			<input item="natureAutre"/>
+			<input item="dateDebut" mandatory="true"/>
+			<input item="debutJourneeOuDemi" displayerName="radio" mandatory="true" />
+			<input item="dateFin" mandatory="true"/>
+			<input item="finJourneeOuDemi" displayerName="radio" mandatory="true" />
+			<input item="duree" mandatory="true"/>
+		</form>
+
+		<!-- Formulaire de validation du responsable -->
+		<form name="acceptation">
+			<title>Acceptation de la demande</title>
+			<input item="commentaires" displayerName="textarea"/>
+		</form>
+
+		<!-- Formulaire de refus du responsable -->
+		<form name="refus">
+			<title>Refus de la demande</title>
+			<input item="motifRefus" displayerName="textarea"/>
+		</form>
+	</forms>
+</processModel>

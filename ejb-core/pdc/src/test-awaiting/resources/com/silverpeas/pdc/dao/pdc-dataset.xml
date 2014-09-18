@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+
+  <PdcAxisValue valueId="0" axisId="1"/>
+  <PdcAxisValue valueId="1" axisId="1"/>
+  <PdcAxisValue valueId="2" axisId="1"/>
+  <PdcAxisValue valueId="3" axisId="1"/>
+
+  <PdcAxisValue valueId="4" axisId="2"/>
+  <PdcAxisValue valueId="5" axisId="2"/>
+  <PdcAxisValue valueId="6" axisId="2"/>
+
+  <PdcAxisValue valueId="7" axisId="3"/>
+  <PdcAxisValue valueId="8" axisId="3"/>
+  <PdcAxisValue valueId="9" axisId="3"/>
+  <PdcAxisValue valueId="10" axisId="3"/>
+  <PdcAxisValue valueId="11" axisId="3"/>
+  <PdcAxisValue valueId="12" axisId="3"/>
+
+  <pdcClassification id="0" contentId="[NULL]" instanceId="kmelia2" modifiable="false" nodeId="[NULL]"/>
+  <pdcClassification id="1" contentId="[NULL]" instanceId="kmelia2" modifiable="true" nodeId="3"/>
+  <pdcClassification id="2" contentId="[NULL]" instanceId="kmelia2" modifiable="false" nodeId="4"/>
+  <pdcClassification id="3" contentId="1" instanceId="kmelia2" modifiable="true" nodeId="[NULL]"/>
+  <pdcClassification id="4" contentId="[NULL]" instanceId="kmelia1" modifiable="false" nodeId="[NULL]"/>
+
+  <pdcPosition id="0"/>
+  <pdcPosition id="1"/>
+  <pdcPosition id="2"/>
+  <pdcPosition id="3"/>
+  <pdcPosition id="4"/>
+  <pdcPosition id="5"/>
+
+  <PdcClassification_PdcPosition PdcClassification_id="0" positions_id="0"/>
+  <PdcClassification_PdcPosition PdcClassification_id="0" positions_id="1"/>
+  <PdcClassification_PdcPosition PdcClassification_id="1" positions_id="2"/>
+  <PdcClassification_PdcPosition PdcClassification_id="2" positions_id="3"/>
+  <PdcClassification_PdcPosition PdcClassification_id="3" positions_id="4"/>
+  <PdcClassification_PdcPosition PdcClassification_id="4" positions_id="5"/>
+
+  <!--
+    predefined classification 0 : kmelia2
+      position 0 :  Géographie: France/Rhône-Alpes/Isère,
+                    Période historique: Epoque contemporaine/Révolution industrielle
+      position 1 :  Religion: Christianisme/Catholicisme
+  -->
+  <PdcPosition_PdcAxisValue PdcPosition_id="0" axisValues_valueId="2" axisValues_axisId="1" />
+  <PdcPosition_PdcAxisValue PdcPosition_id="0" axisValues_valueId="5" axisValues_axisId="2"/>
+  <PdcPosition_PdcAxisValue PdcPosition_id="1" axisValues_valueId="8" axisValues_axisId="3"/>
+
+  <!--
+    predefined classification 1 : kmelia2, node 3
+      position 2 :  Géographie: France/Rhône-Alpes/Isère/Grenoble
+  -->
+  <PdcPosition_PdcAxisValue PdcPosition_id="2" axisValues_valueId="3" axisValues_axisId="1" />
+
+  <!--
+    predefined classification 2 : kmelia2, node 4
+      position 3 :  Période historique: Epoque contemporaine/Entre-deux-guerres
+  -->
+  <PdcPosition_PdcAxisValue PdcPosition_id="3" axisValues_valueId="6" axisValues_axisId="2" />
+
+  <!--
+    classification 3 : content 1 in kmelia 2
+      position 4 :  Géographie: France/Rhône-Alpes/Isère
+  -->
+  <PdcPosition_PdcAxisValue PdcPosition_id="4" axisValues_valueId="2" axisValues_axisId="1" />
+
+  <!--
+    predefined classification 4 : kmelia 1
+      position 5 :  Géographie: France,
+                    Période historique: Epoque contemporaine
+  -->
+  <PdcPosition_PdcAxisValue PdcPosition_id="5" axisValues_valueId="0" axisValues_axisId="1" />
+  <PdcPosition_PdcAxisValue PdcPosition_id="5" axisValues_valueId="4" axisValues_axisId="2" />
+
+  <uniqueId maxId="5" tablename="PdcClassification"/>
+  <uniqueId maxId="6" tablename="PdcPosition"/>
+</dataset>
