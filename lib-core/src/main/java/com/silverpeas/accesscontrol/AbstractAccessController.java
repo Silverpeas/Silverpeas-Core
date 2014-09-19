@@ -23,6 +23,7 @@
  */
 package com.silverpeas.accesscontrol;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.lang.NotImplementedException;
@@ -53,7 +54,7 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
    */
   @SuppressWarnings("unchecked")
   public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId, T object) {
-    String cacheKey = buildUserRoleCacheKey(userId, object);
+    String cacheKey = buildUserRoleCacheKey(context, userId, object);
     Set<SilverpeasRole> userRoles =
         CacheServiceFactory.getRequestCacheService().get(cacheKey, Set.class);
     if (userRoles == null) {
@@ -84,7 +85,7 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
    * @param object
    * @return
    */
-  private String buildUserRoleCacheKey(String userId, T object) {
+  private String buildUserRoleCacheKey(AccessControlContext context, String userId, T object) {
     StringBuilder cacheKey = new StringBuilder(getClass().getName()).append("@#@");
     cacheKey.append("USERID").append(userId).append("@#@");
     cacheKey.append("OBJECTID");
@@ -96,6 +97,9 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     } else if (object != null) {
       throw new NotImplementedException();
     }
+    EnumSet<AccessControlOperation> orderedOperations = EnumSet.copyOf(context.getOperations());
+    cacheKey.append("@#@").append("OPERATIONS")
+        .append(StringUtil.join(orderedOperations.toArray(), "|"));
     return cacheKey.toString();
   }
 }

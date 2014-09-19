@@ -100,7 +100,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
             .append("\"/>&nbsp;");
         String url = webContext + attachment.getAttachmentURL();
         if (pageContext.isSharingContext()) {
-          url = attachment.getSharedURI(pageContext.getSharingContext()).toString();
+          url = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
         }
         html.append("<a href=\"").append(url).append("\" target=\"_blank\">")
             .append(attachment.getFilename()).append("</a>");

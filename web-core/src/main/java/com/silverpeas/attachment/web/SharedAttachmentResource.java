@@ -20,25 +20,6 @@
  */
 package com.silverpeas.attachment.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.StringTokenizer;
-import java.util.UUID;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilderException;
-import javax.ws.rs.core.Response.Status;
-
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
@@ -47,13 +28,30 @@ import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilderException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.StringTokenizer;
+import java.util.UUID;
 
 /**
  * A REST Web resource providing access to attachments through sharing mode.
@@ -81,16 +79,17 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     File folderToZip = FileUtils.getFile(
         FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
     while (tokenizer.hasMoreTokens()) {
-      SimpleDocumentPK pk = new SimpleDocumentPK(tokenizer.nextToken());
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-          searchDocumentById(pk, null);
+          searchDocumentById(new SimpleDocumentPK(tokenizer.nextToken()), null)
+          .getLastPublicVersion();
       if (!isFileReadable(attachment)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
       OutputStream out = null;
       try {
         out = FileUtils.openOutputStream(FileUtils.getFile(folderToZip, attachment.getFilename()));
-        AttachmentServiceFactory.getAttachmentService().getBinaryContent(out, pk, null);
+        AttachmentServiceFactory.getAttachmentService()
+            .getBinaryContent(out, attachment.getPk(), null);
       } catch (IOException e) {
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
       } finally {

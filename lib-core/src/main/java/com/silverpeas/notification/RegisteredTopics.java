@@ -31,7 +31,8 @@ public enum RegisteredTopics {
    * way to categorize in a hierarchical way information.
    */
   NODE_TOPIC("node"), ADMIN_SPACE_TOPIC("admin/space"), ATTACHMENT_TOPIC("attachment"),
-  COMMENT_TOPIC("comment"), ADMIN_COMPONENT_TOPIC("admin/component"), PUBLICATION_TOPIC("publication");
+  COMMENT_TOPIC("comment"), ADMIN_COMPONENT_TOPIC("admin/component"),
+  PUBLICATION_TOPIC("publication");
 
   public String getTopicName() {
     return topicName;

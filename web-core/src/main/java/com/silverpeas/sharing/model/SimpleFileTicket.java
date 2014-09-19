@@ -76,7 +76,7 @@ public class SimpleFileTicket extends Ticket {
     SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
         null);
     if (doc != null) {
-      return new ShareableAttachment(getToken(), doc);
+      return new ShareableAttachment(getToken(), doc.getLastPublicVersion());
     }
     return null;
   }

@@ -99,17 +99,16 @@ public class RestOnlineFileServer extends AbstractFileSender {
     String componentId = restRequest.getElementValue("componentId");
     String attachmentId = restRequest.getElementValue("attachmentId");
     String language = restRequest.getElementValue("lang");
-    String fileName = restRequest.getElementValue("name");
     String size = restRequest.getElementValue("size");
     SilverpeasFile file = SilverpeasFile.NO_FILE;
     if (StringUtil.isDefined(attachmentId)) {
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
-      if (null != attachment) {
+      if (attachment != null) {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
           // an image of a given size is asked for.
           if (StringUtil.isDefined(size)) {
-            attachment.setFilename(size + File.separatorChar + fileName);
+            attachment.setFilename(size + File.separatorChar + attachment.getFilename());
           }
           file = getSilverpeasFile(attachment);
         } else {

@@ -23,8 +23,24 @@
  */
 package org.silverpeas.sharing;
 
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class SharingContext {
-  
+
+  private static Pattern REGEXPR_SHARED_ATTACHMENT =
+      Pattern.compile("(?i)src=\"(.+/attachmentId/[^\"]+)");
+
   private String baseURI;
   private String token;
   
@@ -46,4 +62,60 @@ public class SharingContext {
     this.token = token;
   }
 
+  /**
+   * This method reads a text content in order to identify all attachment URIs and to transform
+   * them into shared attachment URIs.
+   * @param text the text content to modify
+   * @return the text containing all attachment URI conversions.
+   */
+  public String applyOn(String text) {
+    Matcher matcher;
+    String newStr = text;
+    while ((matcher = REGEXPR_SHARED_ATTACHMENT.matcher(newStr)).find()) {
+      String currentURL = matcher.group(1);
+      newStr = matcher.replaceFirst("src=\"" + convertURLToSharedOne(currentURL));
+    }
+    return newStr;
+  }
+
+  /**
+   * URL looks like :
+   * http://localhost:8000/silverpeas/attached_file/componentId/kmelia144/attachmentId/7088b9d6
+   * -ec5a-4a9c-8c0e-dcb77eed704e/lang/fr/name/Penguins.jpg
+   * must be converted into :
+   * http://localhost:8000
+   * /silverpeas/services/attachments/kmelia144/ca36bf15-8e52-4d53-8692-0090845ac409
+   * /7088b9d6-ec5a-4a9c-8c0e-dcb77eed704e/Penguins.jpg
+   * @return
+   */
+  private String convertURLToSharedOne(String url) {
+    String[] parts = StringUtil.split(url, "/");
+    String name = parts[ArrayUtil.indexOf(parts, "name") + 1];
+    String id = parts[ArrayUtil.indexOf(parts, "attachmentId") + 1];
+    String instanceId = parts[ArrayUtil.indexOf(parts, "componentId") + 1];
+    return getBaseURI() + "sharing/attachments/" + instanceId + "/" + getToken() +
+        "/" + id + "/" + name;
+  }
+
+  /**
+   * Gets the shared URI of the given attachments according to the sharing context.
+   * @param attachment the attachment for which the shared URI will be computed.
+   * @return the shared URI of the given attachment.
+   */
+  public URI getSharedUriOf(SimpleDocument attachment) {
+    URI sharedUri;
+    try {
+      sharedUri =
+          URI.create(getBaseURI() + "sharing/attachments/" + attachment.getInstanceId() + "/" +
+              getToken() + "/" + attachment.getId() + "/" +
+              URLEncoder.encode(attachment.getFilename(), CharEncoding.UTF_8));
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(SharingContext.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    } catch (Exception ex) {
+      Logger.getLogger(SharingContext.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+    return sharedUri;
+  }
 }

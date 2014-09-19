@@ -69,7 +69,8 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     
     String baseUri = getUriInfo().getBaseUri().toString();
     SharingContext context = new SharingContext(baseUri, token);
-    PublicationEntity entity = super.getPublicationEntity(publication, true).withContent(context);
+    PublicationEntity entity = super.getPublicationEntity(publication, true).withSharedContent(
+        context);
     setSharedURIToAttachments(entity);
     return entity;
   }

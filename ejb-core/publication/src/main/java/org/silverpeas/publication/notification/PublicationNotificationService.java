@@ -33,8 +33,8 @@ import com.silverpeas.notification.NotificationPublisher;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
- * A service to notify about the creation or the deletion of publications. It provides an easy access to
- * the underlying messaging system used in the notification.
+ * A service to notify about the creation or the deletion of publications. It provides an easy
+ * access to the underlying messaging system used in the notification.
  */
 public class PublicationNotificationService {
 
@@ -42,7 +42,7 @@ public class PublicationNotificationService {
 
   /**
    * Gets an instance of the service.
-   * @return a NodeNotificationService instance.
+   * @return a PublicationNotificationService instance.
    */
   public static PublicationNotificationService getService() {
     return instance;
@@ -52,8 +52,8 @@ public class PublicationNotificationService {
   private NotificationPublisher publisher;
 
   /**
-   * Notifies the registered beans a given node (with and its children) comes to be deleted.
-   * @param nodes the nodes that are deleted.
+   * Notifies the registered beans that a given publication comes to be deleted.
+   * @param pk the primary key of the publication that is deleted.
    */
   public void notifyOnDeletionOf(final PublicationPK pk) {
     PublicationDeletionNotification deletion = new PublicationDeletionNotification(pk);

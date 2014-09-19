@@ -123,7 +123,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
           String webContext = FileServerUtils.getApplicationContext();
           videoURL = webContext + attachment.getAttachmentURL();
           if (pageContext.isSharingContext()) {
-            videoURL = attachment.getSharedURI(pageContext.getSharingContext()).toString();
+            videoURL = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
           }
         }
       }

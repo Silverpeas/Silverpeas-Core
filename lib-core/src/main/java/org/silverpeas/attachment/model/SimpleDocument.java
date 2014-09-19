@@ -27,7 +27,6 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
@@ -41,18 +40,11 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.sharing.SharingContext;
 import org.silverpeas.util.URLUtils;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -60,8 +52,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
@@ -673,44 +663,6 @@ public class SimpleDocument implements Serializable {
     return URLManager.getSimpleURL(URLManager.URL_FILE, getId()) + "?ContentLanguage=" +
         getLanguage();
   }
-  
-  public URI getSharedURI(SharingContext context) {
-    URI sharedUri;
-    try {
-      sharedUri = new URI(context.getBaseURI() + "sharing/attachments/" + getInstanceId() + "/" + context.getToken() + "/"
-          + getId() + "/" + URLEncoder.encode(attachment.getFilename(),
-              CharEncoding.UTF_8));
-    } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(SimpleDocument.class.getName()).log(Level.SEVERE, null, ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(SimpleDocument.class.getName()).log(Level.SEVERE, null, ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-
-    return sharedUri;
-  }
-  
-  /**
-   * URL looks like :
-   * http://localhost:8000/silverpeas/attached_file/componentId/kmelia144/attachmentId/7088b9d6
-   * -ec5a-4a9c-8c0e-dcb77eed704e/lang/fr/name/Penguins.jpg 
-   * must be converted into :
-   * http://localhost:8000
-   * /silverpeas/services/attachments/kmelia144/ca36bf15-8e52-4d53-8692-0090845ac409
-   * /7088b9d6-ec5a-4a9c-8c0e-dcb77eed704e/Penguins.jpg
-   * @param sharing
-   * @return
-   */
-  public static String convertURLToSharedOne(String url, SharingContext sharing) {
-    String[] parts = StringUtil.split(url, "/");
-    String name = parts[ArrayUtil.indexOf(parts, "name") + 1];
-    String id = parts[ArrayUtil.indexOf(parts, "attachmentId") + 1];
-    String instanceId = parts[ArrayUtil.indexOf(parts, "componentId") + 1];
-
-    return sharing.getBaseURI() + "attachments/" + instanceId + "/" + sharing.getToken() + "/" +
-        id + "/" + name;
-  }
 
   public String getOnlineURL() {
     String onlineUrl = FileServerUtils
@@ -756,7 +708,8 @@ public class SimpleDocument implements Serializable {
 
   public String getWebdavJcrPath() {
     StringBuilder jcrPath = new StringBuilder(500);
-    jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append('/').
+    jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append(
+        '/').
         append(getVersionMaster().getInstanceId()).append('/');
     if (getVersionMaster().getId() != null) {
       jcrPath.append(getVersionMaster().getId()).append('/');
@@ -840,14 +793,14 @@ public class SimpleDocument implements Serializable {
   public String getFolder() {
     return getDocumentType().getFolderName();
   }
-  
+
   public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
     if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
       // In that case, from point of security view if no user data exists,
       // then download is forbidden.
       return false;
     }
-    
+
     // Access is verified for sharing context
     AccessController<SimpleDocument> accessController =
         AccessControllerProvider.getAccessController("simpleDocumentAccessController");
@@ -984,14 +937,14 @@ public class SimpleDocument implements Serializable {
     return (getVersionMaster().forbiddenDownloadForRoles != null) ?
         Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles) : null;
   }
-  
+
   /**
    * Indicates if the file described by current {@link SimpleAttachment} is type of image.
    */
   public boolean isContentImage() {
     return FileUtil.isImage(getAttachmentPath());
   }
-  
+
   /**
    * Indicates if the file described by current {@link SimpleAttachment} is type of 3D.
    */
@@ -1018,5 +971,5 @@ public class SimpleDocument implements Serializable {
    */
   public boolean isContentPdf() {
     return FileUtil.isPdf(getAttachmentPath());
-  } 
+  }
 }

@@ -29,11 +29,14 @@ import com.silverpeas.sharing.model.PublicationTicket;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.ServletException;
@@ -41,9 +44,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleDocument;
 
 import static com.silverpeas.sharing.servlets.FileSharingConstants.*;
 
@@ -65,20 +65,28 @@ public class GetInfoFromKeyServlet extends HttpServlet {
       String url = getURLForSharedObject(request, ticket);
       response.sendRedirect(url);
     } else {
+      SimpleDocument document = null;
       if (ticket instanceof SimpleFileTicket) {
-        SimpleDocument attachment = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
-        request.setAttribute("fileIcon", attachment.getDisplayIcon());
-        request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(attachment.getSize()));
+        document = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
       } else if (ticket instanceof VersionFileTicket) {
-        HistorisedDocument document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
-        SimpleDocument version = document.getPublicVersions().iterator().next();
-        request.setAttribute("fileIcon", version.getDisplayIcon());
-        request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(version.getSize()));
+        document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
       }
-      request.setAttribute(ATT_WALLPAPER, getWallpaperFor(ticket));
-      request.setAttribute(ATT_KEYFILE, token);
-      getServletContext().getRequestDispatcher("/sharing/jsp/displayTicketInfo.jsp").forward(
-          request, response);
+      if (document != null) {
+        SimpleDocument lastPublicVersion = document.getLastPublicVersion();
+        ShareableResource<SimpleDocument> lastPublicVersionResource =
+            new ShareableAttachment(ticket.getToken(), lastPublicVersion);
+        request.setAttribute(ATT_TICKET + "Resource", lastPublicVersionResource);
+        request.setAttribute("fileIcon", lastPublicVersion.getDisplayIcon());
+        request.setAttribute("fileSize",
+            FileRepositoryManager.formatFileSize(lastPublicVersion.getSize()));
+        request.setAttribute(ATT_WALLPAPER, getWallpaperFor(ticket));
+        request.setAttribute(ATT_KEYFILE, token);
+        getServletContext().getRequestDispatcher("/sharing/jsp/displayTicketInfo.jsp")
+            .forward(request, response);
+      } else {
+        getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
+            .forward(request, response);
+      }
     }
   }
 

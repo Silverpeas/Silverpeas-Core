@@ -104,7 +104,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
           if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
             imageURL = "file:" + attachment.getAttachmentPath();
           } else if (pageContext.isSharingContext()) {
-            imageURL = attachment.getSharedURI(pageContext.getSharingContext()).toString();
+            imageURL = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
           } else {
             imageURL = URLManager.getApplicationURL() + attachment.getAttachmentURL();
           }

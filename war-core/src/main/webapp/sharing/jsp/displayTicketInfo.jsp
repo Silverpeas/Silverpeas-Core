@@ -36,7 +36,6 @@
 <view:setBundle basename="com.silverpeas.sharing.multilang.fileSharingBundle"/>
 <view:setBundle basename="com.silverpeas.sharing.settings.fileSharingIcons" var="icons" />
 
-<c:set var="documentVersion" value="${requestScope.attDocumentVersion}" />
 <c:set var="key" value="${requestScope.Key}" />
 <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
 <c:set var="ticket" value="${requestScope.attTicket}"/>

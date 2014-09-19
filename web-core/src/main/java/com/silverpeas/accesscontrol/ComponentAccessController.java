@@ -131,7 +131,8 @@ public class ComponentAccessController extends AbstractAccessController<String> 
       userRoles.add(SilverpeasRole.user);
       if (!CollectionUtils
           .containsAny(AccessControlOperation.PERSIST_ACTIONS, context.getOperations()) &&
-          !context.getOperations().contains(AccessControlOperation.download)) {
+          !context.getOperations().contains(AccessControlOperation.download) &&
+          !context.getOperations().contains(AccessControlOperation.sharing)) {
         // In that case, it is not necessary to check deeper the user rights
         return;
       }

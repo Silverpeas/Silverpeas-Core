@@ -20,21 +20,6 @@
  */
 package org.silverpeas.publication.web;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
-
-import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.sharing.SharingContext;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -49,6 +34,21 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.owasp.encoder.Encode;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.sharing.SharingContext;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Web entity representing a publication that can be serialized into a given media type (JSON, XML).
@@ -56,7 +56,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public class PublicationEntity implements Exposable {
 
   private static final long serialVersionUID = 7746081841765736096L;
-  
+
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -149,26 +149,24 @@ public class PublicationEntity implements Exposable {
     }
     return this;
   }
-  
-  public PublicationEntity withContent(SharingContext context) {
+
+  public PublicationEntity withSharedContent(SharingContext context) {
     String lang = null;
-    if (WysiwygController.haveGotWysiwygToDisplay(pubDetail.getInstanceId(), pubDetail.getId(),
-        lang)) {
+    if (WysiwygController
+        .haveGotWysiwygToDisplay(pubDetail.getInstanceId(), pubDetail.getId(), lang)) {
       content = WysiwygController.load(pubDetail.getInstanceId(), pubDetail.getId(), lang);
-      content = replaceURLs(content, context);
+      content = context.applyOn(content);
     } else if (!StringUtil.isInteger(pubDetail.getInfoId())) {
       PublicationTemplateImpl pubTemplate;
       try {
-        pubTemplate =
-            (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
-                .getPublicationTemplate(
-                    pubDetail.getPK().getInstanceId() + ":" + pubDetail.getInfoId());
+        pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+            .getPublicationTemplate(
+                pubDetail.getPK().getInstanceId() + ":" + pubDetail.getInfoId());
 
         Form formView = pubTemplate.getViewForm();
         // get displayed language
-        String language = null;
         RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getRecord(pubDetail.getId(), language);
+        DataRecord data = recordSet.getRecord(pubDetail.getId(), lang);
         if (data != null) {
           PagesContext formContext = new PagesContext();
           formContext.setComponentId(pubDetail.getInstanceId());
@@ -179,8 +177,8 @@ public class PublicationEntity implements Exposable {
         }
       } catch (Exception e) {
         content = "Error while getting content !";
-        SilverTrace.error("kmelia", "PublicationEntity.withContent", "root.EX_IGNORED", "pk = " +
-            pubDetail.getPK().toString(), e);
+        SilverTrace.error("kmelia", "PublicationEntity.withContent", "root.EX_IGNORED",
+            "pk = " + pubDetail.getPK().toString(), e);
       }
     }
     return this;
@@ -249,25 +247,5 @@ public class PublicationEntity implements Exposable {
     publication.setUpdaterId(lastUpdater.getId());
     publication.setUpdateDate(updateDate);
     return publication;
-  }
-    
-  private String replaceURLs(String text, SharingContext context) {
-    int begin = 0;
-    int end;
-    String newStr = "";
-    String searched = "src=\"";
-
-    end = text.indexOf(searched, begin);
-    while (end != -1) {
-      int beginURL = end + searched.length();
-      newStr += text.substring(begin, beginURL);      
-      int endURL = text.indexOf("\"", beginURL);
-      String url = text.substring(beginURL, endURL);
-      newStr += SimpleDocument.convertURLToSharedOne(url, context);
-      begin = end + searched.length() + url.length();
-      end = text.indexOf(searched, begin);
-    }
-    newStr += text.substring(begin, text.length());
-    return newStr;
   }
 }
