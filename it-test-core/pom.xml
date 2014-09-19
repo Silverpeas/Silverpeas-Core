@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.silverpeas</groupId>
+    <groupId>org.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.15-SNAPSHOT</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.silverpeas.core</groupId>
+  <groupId>org.silverpeas.core</groupId>
   <artifactId>it-test-core</artifactId>
-  <version>5.15-SNAPSHOT</version>
+  <version>6.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Integration Test Core - ${project.version}</name>
   <description>
@@ -19,13 +19,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
