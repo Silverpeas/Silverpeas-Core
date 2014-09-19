@@ -28,7 +28,6 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileServerUtils;
 
 import org.owasp.encoder.Encode;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -344,11 +343,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   }
 
   private String getAvatarURI() {
-    String avatarURI = this.user.getAvatar();
-    if (avatarURI.startsWith(UserDetail.AVATAR_BASEURI)) {
-      // it's a real avatar, not the default one
-      avatarURI = FileServerUtils.getImageURL(avatarURI, "image.size.avatar.profil");
-    }
+    String avatarURI = this.user.getSmallAvatar();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
       avatarURI = context.getServletContext().getContextPath() + avatarURI;

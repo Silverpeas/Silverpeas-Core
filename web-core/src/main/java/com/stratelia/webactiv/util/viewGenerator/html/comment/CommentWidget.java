@@ -230,7 +230,7 @@ public abstract class CommentWidget extends TagSupport {
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
         + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
-        + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
+        + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getSmallAvatar()
         + "', id: '" + getUserId() + "', anonymous: " + currentUser.isAnonymous() + "}, "
         + "update: { activated: function( comment ) {"
         + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
