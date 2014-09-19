@@ -33,7 +33,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -196,9 +195,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     UserDetail contactUser1 = oc.getUserDetail(information.getAuthor());
     if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
       UserDetail contactUser2 = oc.getUserDetail(information.getTitle());
-      String avatarURL = FileServerUtils
-          .getImageURL(URLManager.getApplicationURL() + contactUser2.getAvatar(),
-              "image.size.avatar");
+      String avatarURL = URLManager.getApplicationURL() + contactUser2.getSmallAvatar();
       valueObj.put("type", information.getType());
       valueObj.put("author", userDetailToJSON(contactUser1));
       valueObj.put("title", userDetailToJSON(contactUser2));
@@ -300,12 +297,10 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @return JSONArray
    */
   private JSONObject userDetailToJSON(UserDetail user) {
-    String avatarURL = FileServerUtils
-        .getImageURL(URLManager.getApplicationURL() + user.getAvatar(), "image.size.avatar");
     JSONObject userJSON = new JSONObject();
     userJSON.put("id", user.getId());
     userJSON.put("displayedName", user.getDisplayedName());
-    userJSON.put("profilPhoto", avatarURL);
+    userJSON.put("profilPhoto", URLManager.getApplicationURL() + user.getSmallAvatar());
     return userJSON;
   }
 
