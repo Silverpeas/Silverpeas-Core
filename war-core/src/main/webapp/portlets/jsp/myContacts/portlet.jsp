@@ -59,7 +59,7 @@
 		
 			<c:forEach var="member" items="${contactsConnected}">
 				<li class="user online">
-					<img class="avatar" alt="avatar" src="${context}${member.userDetail.avatar}" />
+					<view:image type="avatar" css="avatar" alt="avatar" src="${member.userDetail.avatar}" />
 					
 		      		<span class="userName">
 		      			${member.lastName} ${member.firstName}
@@ -81,7 +81,7 @@
 		      		
 		      		<a href="#" title="<fmt:message key="tchat" />"  class="accessTchat-user"
 		      			onclick="javascript:window.open('${context}/RcommunicationUser/jsp/OpenDiscussion?userId=${member.id}',
-		   				'popupDiscussion${member.id}','menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=450')">
+		   				'popupDiscussion${member.id}','menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=450');return false;">
 		      			<img src="${context}/util/icons/talk2user.gif" 
 		      				alt="<fmt:message key="tchat" />"
 		      				title="<fmt:message key="tchat" />"/>
@@ -91,7 +91,7 @@
 
 			<c:forEach var="contact" items="${contactsNotConnected}">		
 				<li class="user offline">
-					<img class="avatar" alt="avatar" src="${context}${contact.avatar}" />
+					<view:image type="avatar" css="avatar" alt="avatar" src="${contact.avatar}" />
 					
 					<span class="userName">
 		      			${contact.lastName} ${contact.firstName}

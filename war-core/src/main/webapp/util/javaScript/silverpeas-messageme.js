@@ -68,6 +68,7 @@
       $.messageMe.currentElement = target;
       $("#notificationDialog").dialog("option", "title", user.fullName);
       $("#notificationDialog").dialog("open");
+      return false;
     });
   }
 
@@ -83,13 +84,12 @@
         'id': 'notificationDialog'
       }).append($('<form>').append($('<table>').append($('<tr>').
               append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.subject') + '&nbsp;:')).
-              append($('<td>').append($('<input>', {
+              append($('<td>').append($('<input size="50">', {
                 'type': 'text',
                 'name': 'textSubject',
                 'id': 'notification-subject',
                 'maxlength': '1023',
-                'size': '50',
-                'value': ''
+                'value': 'fdffdgfdd'
               })).append('&nbsp;').append($('<img>', {
                 'src': webContext + '/util/icons/mandatoryField.gif',
                 'width': '5',
