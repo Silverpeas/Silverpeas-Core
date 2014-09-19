@@ -2288,6 +2288,81 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /*- [ portlet LastApplication END] --------------------------- */
 
+
+/*- [ portlet MyContact BEGIN] --------------------------- */
+
+#portlet-myContact  .listing {
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	list-style-image:none;
+}
+
+#portlet-myContact  .listing li{
+	float:left;
+	width:48.5%;
+	margin-left:1%;
+	margin-bottom:1%;
+	background-color:#FFF;
+	position:relative;
+	border:1px solid #f0f0f0
+}
+
+#portlet-myContact  .listing li.offline{
+	opacity:0.6
+}
+
+#portlet-myContact  .listing li img.avatar{
+	float:left;
+	margin:2%;
+	width:25px
+}
+
+#portlet-myContact  .listing li .userName{
+	font-size:115%;
+	overflow:hidden;
+	position:absolute;
+	white-space:nowrap;
+	top:3px;
+	left:33px;
+	right:43px;
+}
+#portlet-myContact  .listing li .userStatut {
+	overflow:hidden;
+	height:16px;
+	position:absolute;
+	top:21px;
+	left:33px;
+	right:10px;
+}
+#portlet-myContact  .listing li .userStatut p{
+	color:#9f9f9f;
+	font-style:italic;
+	padding:0;
+	margin:0;
+	font-size:92%;
+}
+
+#portlet-myContact  .listing li .contact-user {
+	overflow:hidden;
+	position:absolute;
+	top:3px;
+	right:5px;
+}
+#portlet-myContact  .listing li .accessTchat-user {
+	overflow:hidden;
+	position:absolute;
+	top:3px;
+	right:26px;
+}
+#portlet-myContact  .listing li .contact-user img,
+#portlet-myContact  .listing li .accessTchat-user img{
+	width:12px;
+	border:0
+}
+/*- [ portlet MyContact END] --------------------------- */
+
+
 #browseBar {
   float:left;
   width: 100%;

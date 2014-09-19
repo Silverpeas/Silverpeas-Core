@@ -161,4 +161,13 @@
                <String name="row" value="7"/>
           </Properties>
      </PortletWindow>
+     <PortletWindow lang="" name="silverpeas.MyContactsPortlet" portletName="silverpeas.MyContactsPortlet" remote="false">
+          <Properties>
+               <String name="title" value="portlet.MyContactsPortlet.title"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|MyContactsPortlet"/>
+               <String name="row" value="7"/>
+          </Properties>
+     </PortletWindow>
 </PortletWindowRegistry>
