@@ -53,11 +53,11 @@ public class SocialNetworkService {
   }
 
   /**
-   * get the List of social Information of my according the type of social information and the
-   * UserId
+   * get my wall : the List of my social information according to the type of social information
+   * @param type
+   * @param beginDate
+   * @param endDate
    * @return: Map<Date, List<SocialInformation>
-   * @param:SocialInformationType socialInformationType, String userId,String classification, int
-   * limit ,int offset
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
       Date begin, Date end) {
@@ -97,11 +97,11 @@ public class SocialNetworkService {
   }
 
   /**
-   * get the List of social Information of my contatc according the type of social information and
-   * the UserId
+   * get my feed : the List of my social information and those of my contacts, according to the type of social information
+   * @param type
+   * @param beginDate
+   * @param endDate
    * @return: Map<Date, List<SocialInformation>
-   * @param:SocialInformationType socialInformationType, String userId,String classification, int
-   * limit ,int offset
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
       SocialInformationType type, Date begin, Date end) {
@@ -109,7 +109,7 @@ public class SocialNetworkService {
     com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
     com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
 
-    List<String> myContactIds = getMyContactsIds();
+    List<String> myContactIds = getMyContactsIds(); // my contacts
     myContactIds.add(myId); // add myself
 
     List<SocialInformation> socialInformationsFull =
@@ -123,14 +123,21 @@ public class SocialNetworkService {
     return processResults(socialInformationsFull);
   }
 
+  /**
+   * get my contact wall : the List of social information of the contacts of user in parameter, according to the type of social information
+   * @param myContactId
+   * @param type
+   * @param beginDate
+   * @param endDate
+   * @return: Map<Date, List<SocialInformation>
+   */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
       SocialInformationType type, Date begin, Date end) {
 
     com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
     com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
 
-    List<String> myContactIds = new ArrayList<String>();
-    myContactIds.add(myContactId);
+    List<String> myContactIds = getTheContactsIds(myContactId); // the contacts
 
     List<SocialInformation> socialInformationsFull =
         new ProviderService().getSocialInformationsListOfMyContact(type, myId,
@@ -171,6 +178,15 @@ public class SocialNetworkService {
       return new RelationShipService().getMyContactsIds(Integer.parseInt(myId));
     } catch (SQLException ex) {
       SilverTrace.error("socialNetworkService", "SocialNetworkService.getMyContactsIds", "", ex);
+    }
+    return new ArrayList<String>();
+  }
+  
+  public List<String> getTheContactsIds(String myContactId) {
+    try {
+      return new RelationShipService().getMyContactsIds(Integer.parseInt(myContactId));
+    } catch (SQLException ex) {
+      SilverTrace.error("socialNetworkService", "SocialNetworkService.getTheContactsIds", "", ex);
     }
     return new ArrayList<String>();
   }

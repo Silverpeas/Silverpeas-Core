@@ -41,11 +41,11 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 public class SocialPublications implements SocialPublicationsInterface {
 
   /**
-   * get the my SocialInformationPublication according to number of Item and the first Index
+   * get my SocialInformationPublication
    *
    * @param userId
-   * @param limit
-   * @param offset
+   * @param beginDate
+   * @param endDate
    * @return List
    * @throws SilverpeasException
    */
@@ -59,31 +59,35 @@ public class SocialPublications implements SocialPublicationsInterface {
     try {
       return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getPublicationHome()",
+      throw new PublicationRuntimeException("SocialPublications.getEJB()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   /**
-   * get the SocialInformationPublication of my contatcs according to number of Item and the first
-   * Index
+   * get the SocialInformationPublication of my contacts
    *
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param beginDate
+   * @param endDate
    * @return List
    * @throws SilverpeasException
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-    // getting all components allowed to me and my contacts
+    // getting all components allowed to me
     OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
     List<String> options = new ArrayList<String>();
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmax")));
+    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
+    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
+    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "newsEdito")));
+    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "bookmark")));
+    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "webSites")));
     return getEJB().getSocialInformationsListOfMyContacts(myContactsIds, options, begin, end);
   }
 }

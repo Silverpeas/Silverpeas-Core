@@ -105,6 +105,33 @@
       </Collection>
     </Properties>
   </PortletApp>  
+  <PortletApp name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas IFramePortlet"/>
+      <String name="shortTitle" value="Silverpeas IFramePortlet"/>
+      <String name="description" value="Silverpeas IFramePortlet"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Portlet IFrame"/>
+        <String name="en" value="IFrame portlet"/>
+        <String name="de" value="IFrame Portlet"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="IFramePortlet"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+          <String value="EDIT"/>
+          <String value="HELP"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp> 
   <PortletApp name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -370,23 +397,25 @@
       </Collection>
     </Properties>
   </PortletApp>
-  <PortletApp name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet">
+  <PortletApp name="silverpeas.MyNewsFeedPortlet" portletName="silverpeas.MyNewsFeedPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
-      <String name="title" value="Silverpeas IFramePortlet"/>
-      <String name="shortTitle" value="Silverpeas IFramePortlet"/>
-      <String name="description" value="Silverpeas IFramePortlet"/>
+      <String name="title" value="Silverpeas My News Feed Portlet"/>
+      <String name="shortTitle" value="Silverpeas My News Feed Portlet"/>
+      <String name="description" value="Silverpeas My News Feed Portlet"/>
       <String name="archiveName" value="war-ic-exp.war"/>
       <Collection name="supportedContentTypes">
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Portlet IFrame"/>
-        <String name="en" value="IFrame portlet"/>
-        <String name="de" value="IFrame Portlet"/>
+        <String name="fr" value="Mon fil d'informations"/>
+        <String name="en" value="My news feed"/>
+        <String name="de" value="Meine Informationen Faden"/>
       </Collection>
       <Collection name="descriptionMap">
-        <String name="fr" value="IFramePortlet"/>
+        <String name="fr" value="MyNewsFeedPortlet"/>
+        <String name="en" value="MyNewsFeedPortlet"/>
+        <String name="de" value="MyNewsFeedPortlet"/>
       </Collection>
       <Collection name="supportsMap">
         <Collection name="text/html">
@@ -396,7 +425,7 @@
         </Collection>
       </Collection>
     </Properties>
-  </PortletApp> 
+  </PortletApp>  
   <PortletApp name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet">
     <Properties>
       <String name="archiveType" value="war"/>

@@ -2362,6 +2362,94 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 /*- [ portlet MyContact END] --------------------------- */
 
+/*- [ portlet MyFeed BEGIN] --------------------------- */
+#portlet-myFeed {
+	 max-height: 350px;
+    overflow: auto;
+}
+
+#portlet-myFeed .profilPhoto img{
+	width:25px;
+}
+#portlet-myFeed .profilPhoto{
+	width:25px;
+	max-height:30px;
+	overflow:hidden;
+	float:left;
+	margin-right:7px;
+	background-color:#FFF;
+}
+
+#portlet-myFeed .detail{
+	display:none;
+}
+
+
+#portlet-myFeed .a_new {
+    min-height: 35px;
+}
+
+#portlet-myFeed hr{
+	margin:0 0 3px ;
+	height:0;
+	line-height:0;
+	padding:0;
+}
+#portlet-myFeed p{
+	margin:0;
+	padding:5px 0 7px;
+	line-height:100%;
+}
+
+#portlet-myFeed .status {
+  background:transparent url(../icons/newsFeed_statut.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+#portlet-myFeed .status .detail{
+	display:inline;
+	font-weight:bold;
+}
+#portlet-myFeed .relationship {
+	position:relative;
+}
+#portlet-myFeed .relationship.detail{
+	display:block;
+	position:absolute;
+	top:3px;
+	right:0;
+	padding:0;
+}
+#portlet-myFeed .relationship.detail .profilPhoto{ 
+	width:16px;
+}
+#portlet-myFeed .relationship.detail .profilPhoto img{ 
+	width:16px;
+}
+
+#portlet-myFeed .publication {
+  background:transparent url(../icons/newsFeed_publication.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+#portlet-myFeed .event,
+#portlet-myFeed .lastevent {
+  background:transparent url(../icons/newsFeed_event.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+#portlet-myFeed .media {
+  background:transparent url(../icons/newsFeed_picture.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+
+/*- [ portlet MyFeed END] --------------------------- */
+
 
 #browseBar {
   float:left;
