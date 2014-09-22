@@ -2363,7 +2363,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 /*- [ portlet MyContact END] --------------------------- */
 
 /*- [ portlet MyFeed BEGIN] --------------------------- */
-
+#portlet-myFeed {
+	 max-height: 350px;
+    overflow: auto;
+}
 
 #portlet-myFeed .profilPhoto img{
 	width:25px;
@@ -2394,7 +2397,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 #portlet-myFeed p{
 	margin:0;
-	padding:7px 0;
+	padding:5px 0 7px;
 	line-height:100%;
 }
 
@@ -2402,6 +2405,27 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   background:transparent url(../icons/newsFeed_statut.gif) right 7px no-repeat;
   padding-right:20px;
   margin-right:7px;
+}
+
+#portlet-myFeed .status .detail{
+	display:inline;
+	font-weight:bold;
+}
+#portlet-myFeed .relationship {
+	position:relative;
+}
+#portlet-myFeed .relationship.detail{
+	display:block;
+	position:absolute;
+	top:3px;
+	right:0;
+	padding:0;
+}
+#portlet-myFeed .relationship.detail .profilPhoto{ 
+	width:16px;
+}
+#portlet-myFeed .relationship.detail .profilPhoto img{ 
+	width:16px;
 }
 
 #portlet-myFeed .publication {
