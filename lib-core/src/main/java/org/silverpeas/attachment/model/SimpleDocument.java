@@ -708,7 +708,8 @@ public class SimpleDocument implements Serializable {
 
   public String getWebdavJcrPath() {
     StringBuilder jcrPath = new StringBuilder(500);
-    jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append('/').
+    jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append(
+        '/').
         append(getVersionMaster().getInstanceId()).append('/');
     if (getVersionMaster().getId() != null) {
       jcrPath.append(getVersionMaster().getId()).append('/');
@@ -792,14 +793,14 @@ public class SimpleDocument implements Serializable {
   public String getFolder() {
     return getDocumentType().getFolderName();
   }
-  
+
   public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
     if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
       // In that case, from point of security view if no user data exists,
       // then download is forbidden.
       return false;
     }
-    
+
     // Access is verified for sharing context
     AccessController<SimpleDocument> accessController =
         AccessControllerProvider.getAccessController("simpleDocumentAccessController");
@@ -936,14 +937,14 @@ public class SimpleDocument implements Serializable {
     return (getVersionMaster().forbiddenDownloadForRoles != null) ?
         Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles) : null;
   }
-  
+
   /**
    * Indicates if the file described by current {@link SimpleAttachment} is type of image.
    */
   public boolean isContentImage() {
     return FileUtil.isImage(getAttachmentPath());
   }
-  
+
   /**
    * Indicates if the file described by current {@link SimpleAttachment} is type of 3D.
    */

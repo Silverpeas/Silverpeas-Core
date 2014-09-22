@@ -20,22 +20,35 @@
  */
 package org.silverpeas.publication.web;
 
+import com.silverpeas.attachment.web.AttachmentEntity;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.profile.web.UserProfileEntity;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.owasp.encoder.Encode;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.sharing.SharingContext;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
-import org.owasp.encoder.Encode;
-import com.silverpeas.attachment.web.AttachmentEntity;
-import com.silverpeas.profile.web.UserProfileEntity;
-import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.attachment.model.SimpleDocument;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Web entity representing a publication that can be serialized into a given media type (JSON, XML).
@@ -43,7 +56,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 public class PublicationEntity implements Exposable {
 
   private static final long serialVersionUID = 7746081841765736096L;
-  
+
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -68,6 +81,9 @@ public class PublicationEntity implements Exposable {
   private UserProfileEntity creator;
   @XmlElement
   private UserProfileEntity lastUpdater;
+  private PublicationDetail pubDetail;
+  @XmlElement
+  private String content;
 
   @Override
   public URI getURI() {
@@ -112,6 +128,7 @@ public class PublicationEntity implements Exposable {
     this.setDescription(Encode.forHtml(publication.getDescription()));
     this.setKeywords(Encode.forHtml(publication.getKeywords()));
     this.importance = publication.getImportance();
+    this.pubDetail = publication;
     this.setUri(uri);
     this.setUpdateDate(publication.getUpdateDate());
     this.creator = UserProfileEntity.fromUser(publication.getCreator());
@@ -132,7 +149,41 @@ public class PublicationEntity implements Exposable {
     }
     return this;
   }
-    
+
+  public PublicationEntity withSharedContent(SharingContext context) {
+    String lang = null;
+    if (WysiwygController
+        .haveGotWysiwygToDisplay(pubDetail.getInstanceId(), pubDetail.getId(), lang)) {
+      content = WysiwygController.load(pubDetail.getInstanceId(), pubDetail.getId(), lang);
+      content = context.applyOn(content);
+    } else if (!StringUtil.isInteger(pubDetail.getInfoId())) {
+      PublicationTemplateImpl pubTemplate;
+      try {
+        pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+            .getPublicationTemplate(
+                pubDetail.getPK().getInstanceId() + ":" + pubDetail.getInfoId());
+
+        Form formView = pubTemplate.getViewForm();
+        // get displayed language
+        RecordSet recordSet = pubTemplate.getRecordSet();
+        DataRecord data = recordSet.getRecord(pubDetail.getId(), lang);
+        if (data != null) {
+          PagesContext formContext = new PagesContext();
+          formContext.setComponentId(pubDetail.getInstanceId());
+          formContext.setObjectId(pubDetail.getId());
+          formContext.setBorderPrinted(false);
+          formContext.setSharingContext(context);
+          content = formView.toString(formContext, data);
+        }
+      } catch (Exception e) {
+        content = "Error while getting content !";
+        SilverTrace.error("kmelia", "PublicationEntity.withContent", "root.EX_IGNORED",
+            "pk = " + pubDetail.getPK().toString(), e);
+      }
+    }
+    return this;
+  }
+
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -197,5 +248,4 @@ public class PublicationEntity implements Exposable {
     publication.setUpdateDate(updateDate);
     return publication;
   }
-  
 }

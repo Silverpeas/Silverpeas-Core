@@ -61,30 +61,22 @@ public class GetLinkFileServlet extends HttpServlet {
       String fileType = null;
       String fileName = null;
       long fileSize = 0;
+      SimpleDocument document = null;
       if (ticket instanceof SimpleFileTicket) {
-        SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
-        pk.setOldSilverpeasId(ticket.getSharedObjectId());
-        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-            searchDocumentById(pk, null);
-        filePath = document.getAttachmentPath();
-        fileType = document.getContentType();
-        fileName = document.getFilename();
-        fileSize = document.getSize();
+        document = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
       } else if (ticket instanceof VersionFileTicket) {
-        SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
-        pk.setOldSilverpeasId(ticket.getSharedObjectId());
-        HistorisedDocument versionedDocument = (HistorisedDocument) AttachmentServiceFactory.
-            getAttachmentService().searchDocumentById(pk, null);
-        SimpleDocument document = versionedDocument.getLastPublicVersion();
+        document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
+      }
+      if (document != null) {
         filePath = document.getAttachmentPath();
         fileType = document.getContentType();
         fileName = document.getFilename();
         fileSize = document.getSize();
       }
-      File realFile = new File(filePath);
       BufferedInputStream input = null;
       OutputStream out = response.getOutputStream();
       try {
+        File realFile = new File(filePath);
         response.setContentType(fileType);
         response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
         response.setHeader( "Content-Length", String.valueOf(fileSize));

@@ -24,20 +24,18 @@
 
 package com.silverpeas.accesscontrol;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Collection;
 
 /**
  * Check the access to an attachment for a user.
@@ -48,6 +46,9 @@ public class AttachmentAccessController extends AbstractAccessController<Attachm
 
   @Inject
   private NodeAccessController accessController;
+  
+  @Inject
+  private PublicationAccessController publicationAccessController;
 
   public AttachmentAccessController() {
   }
@@ -66,27 +67,10 @@ public class AttachmentAccessController extends AbstractAccessController<Attachm
     if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
       String foreignId = object.getForeignKey().getId();
       if (StringUtil.isInteger(foreignId)) {
-        try {
-          foreignId = getActualForeignId(foreignId, object.getInstanceId());
-        } catch (Exception e) {
-          SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
-              "root.NO_EX_MESSAGE", e);
-          return false;
-        }
-        try {
-          Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
-              object.getInstanceId()));
-          for (NodePK nodePk : nodes) {
-            if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
-              return true;
-            }
-          }
-        } catch (Exception ex) {
-          SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
-              "root.NO_EX_MESSAGE", ex);
-          return false;
-        }
-        return false;
+        PublicationPK pubPK =
+            new PublicationPK(object.getForeignKey().getId(), object.getForeignKey()
+                .getInstanceId());
+        return publicationAccessController.isUserAuthorized(userId, pubPK, context);
       } else if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
         String nodeId = foreignId.substring("Node_".length());
         return getNodeAccessController().isUserAuthorized(userId, new NodePK(nodeId, object.
@@ -102,23 +86,6 @@ public class AttachmentAccessController extends AbstractAccessController<Attachm
 
   protected PublicationBm getPublicationBm() throws Exception {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
-  }
-
-  /**
-   * Return the 'real' id of the publication to which this file is attached to. In case of a clone
-   * publication we need the cloneId (that is the original publication).
-   * @param foreignId
-   * @param instanceId
-   * @return
-   * @throws Exception
-   */
-  private String getActualForeignId(String foreignId, String instanceId) throws Exception {
-    PublicationDetail pubDetail = getPublicationBm().getDetail(new PublicationPK(foreignId,
-        instanceId));
-    if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
-      return pubDetail.getCloneId();
-    }
-    return foreignId;
   }
 
   /**

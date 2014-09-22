@@ -18,29 +18,33 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.sharing.model;
 
-package com.stratelia.webactiv.util.publication.info.model;
+import org.silverpeas.attachment.model.SimpleDocument;
 
-import java.io.Serializable;
+import com.silverpeas.sharing.security.AbstractShareableAccessControl;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
-public class InfoTextDetail extends InfoItemDetail implements Serializable {
+/**
+ * Access control to shared publications and their content
+ */
+public class PublicationAccessControl<R>
+    extends AbstractShareableAccessControl<PublicationTicket, R> {
 
-  private static final long serialVersionUID = -3018181028926009431L;
-  private String content = null;
-
-  public InfoTextDetail(InfoPK infoPK, String order, String id, String content) {
-    super(infoPK, order, id);
-    this.content = content;
+  PublicationAccessControl() {
+    super();
   }
 
-  public String getContent() {
-    if ((content != null) && (!"null".equalsIgnoreCase(content))) {
-      return content;
+  @Override
+  protected boolean isReadable(PublicationTicket ticket, R accessedObject) throws Exception {
+    if (accessedObject instanceof SimpleDocument) {
+      SimpleDocument attachment = (SimpleDocument) accessedObject;
+      return attachment.getForeignId().equals(String.valueOf(ticket.getSharedObjectId()));
     }
-    return "";
-  }
-
-  public void setContent(String content) {
-    this.content = content;
+    if (accessedObject instanceof PublicationDetail) {
+      PublicationDetail publication = (PublicationDetail) accessedObject;
+      return ticket.getResource().getAccessedObject().equals(publication);
+    }
+    return false;
   }
 }

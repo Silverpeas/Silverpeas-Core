@@ -20,29 +20,7 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.util.Charsets;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import au.id.jericho.lib.html.Source;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -64,6 +42,26 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -166,6 +164,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
     code = getContent(pageContext.getComponentId(), pageContext.getObjectId(), template.
         getFieldName(), code, contentLanguage);
+
+    if (pageContext.isSharingContext()) {
+      code = pageContext.getSharingContext().applyOn(code);
+    }
 
     if (template.isDisabled() || template.isReadOnly()) {
       // dynamic value functionality

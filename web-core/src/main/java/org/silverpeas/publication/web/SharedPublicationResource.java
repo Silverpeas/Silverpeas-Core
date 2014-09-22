@@ -27,7 +27,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+
+import org.silverpeas.sharing.SharingContext;
 
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -37,47 +41,87 @@ import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * A REST Web resource providing access to publications through sharing mode.
  */
 @Service
 @RequestScoped
-@Path("sharing/publications/{componentId}/{token}")
+@Path("sharing/publications/{token}")
 public class SharedPublicationResource extends AbstractPublicationResource {
 
   @PathParam("token")
   private String token;
   
+  private Ticket ticket;
+  
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<PublicationEntity> getPublications(@QueryParam("node") String nodeId,
+  public PublicationEntity getPublication() {
+    ticket = checkTicket(token);
+    
+    PublicationPK pk =
+        new PublicationPK(String.valueOf(ticket.getSharedObjectId()), ticket.getComponentId());
+    
+    PublicationDetail publication = getPublicationBm().getDetail(pk);
+    
+    String baseUri = getUriInfo().getBaseUri().toString();
+    SharingContext context = new SharingContext(baseUri, token);
+    PublicationEntity entity = super.getPublicationEntity(publication, true).withSharedContent(
+        context);
+    setSharedURIToAttachments(entity);
+    return entity;
+  }
+  
+  @GET
+  @Path("node/{node}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<PublicationEntity> getPublications(@PathParam("node") String nodeId,
       @QueryParam("withAttachments") boolean withAttachments) {
+    
+    this.ticket = checkTicket(token);
+
     List<PublicationEntity> publications = super.getPublications(nodeId, withAttachments);
-    setURIToAttachments(publications);
+    setSharedURIToAttachments(publications);
     return publications;
   }
   
-  private void setURIToAttachments(List<PublicationEntity> publications) {
+  private void setSharedURIToAttachments(List<PublicationEntity> publications) {
     if (publications != null) {
       for (PublicationEntity publication : publications) {
-        List<AttachmentEntity> attachments = publication.getAttachments();
-        if (attachments != null) {
-          for (AttachmentEntity attachment : attachments) {
-            attachment.withSharedUri(super.getUriInfo().getBaseUri().toString(), token);
-          }
-        }
+        setSharedURIToAttachments(publication);
+      }
+    }
+  }
+  
+  private void setSharedURIToAttachments(PublicationEntity publication) {
+    List<AttachmentEntity> attachments = publication.getAttachments();
+    if (attachments != null) {
+      for (AttachmentEntity attachment : attachments) {
+        attachment.withSharedUri(super.getUriInfo().getBaseUri().toString(), token);
       }
     }
   }
     
-  @Override
   @SuppressWarnings("unchecked")
   protected boolean isNodeReadable(NodePK nodePK) {
+    nodePK.setComponentName(ticket.getComponentId());
     NodeDetail node = getNodeBm().getDetail(nodePK);
     ShareableNode nodeResource = new ShareableNode(token, node);
+    return ticket.getAccessControl().isReadable(nodeResource);
+  }
+  
+  private Ticket checkTicket(String token) {
     Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
-    return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
+    if (ticket != null) {
+      componentId = ticket.getComponentId();
+    }
+    if (ticket == null || !ticket.isValid()) {
+      throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
+    return ticket;
   }
   
 }

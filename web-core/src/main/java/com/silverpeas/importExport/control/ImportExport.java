@@ -911,7 +911,7 @@ public class ImportExport extends AbstractExportProcess {
           pub_Typ_Mger.fillPublicationType(gedIE, publicationType, null);
           int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType, null);
           HtmlExportPublicationGenerator unbalanced = new HtmlExportPublicationGenerator(
-              publicationType, null, null, publicationFileNameRelativePath, nbThemes);
+              publicationType, null, publicationFileNameRelativePath, nbThemes);
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
           fileWriter = null;
           try {
@@ -1063,7 +1063,7 @@ public class ImportExport extends AbstractExportProcess {
               + separator + "index.html";
           int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType, null);
           HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-              null, null, publicationFileNameRelativePath, nbThemes);
+              null, publicationFileNameRelativePath, nbThemes);
           exportReport.addHtmlIndex(pubId, s);
 
           for (String filePositions : filesPositionsHTMLToFill) {

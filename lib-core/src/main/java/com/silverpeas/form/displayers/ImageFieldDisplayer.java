@@ -20,6 +20,15 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -30,23 +39,12 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.file.ImageResizingProcessor;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -105,6 +103,8 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
           originalOperation = Operation.UPDATE;
           if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
             imageURL = "file:" + attachment.getAttachmentPath();
+          } else if (pageContext.isSharingContext()) {
+            imageURL = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
           } else {
             imageURL = URLManager.getApplicationURL() + attachment.getAttachmentURL();
           }
@@ -116,7 +116,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     Map<String, String> parameters = template.getParameters(language);
     if (template.isReadOnly() && !template.isHidden()) {
       if (imageURL != null) {
-        displayImage(parameters, imageURL, out);
+        displayImage(parameters, imageURL, out, pageContext.isSharingContext());
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
 
@@ -180,15 +180,17 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     }
   }
   
-  private void displayImage(Map<String, String> parameters, String imageURL, PrintWriter out) {
-    String height = (parameters.containsKey("height") ? parameters.get("height") : "");
-    String width = (parameters.containsKey("width") ? parameters.get("width") : "");
-    String size = width + "x" + height;
-    if (size.length() <= 1) {
-      size = settings.getString("image.size.xmlform");
-    }
-    if (StringUtil.isDefined(size)) {
-      imageURL = FileServerUtils.getImageURL(imageURL, size);
+  private void displayImage(Map<String, String> parameters, String imageURL, PrintWriter out, boolean useOriginalDimension) {
+    if (!useOriginalDimension) {
+      String height = (parameters.containsKey("height") ? parameters.get("height") : "");
+      String width = (parameters.containsKey("width") ? parameters.get("width") : "");
+      String size = width + "x" + height;
+      if (size.length() <= 1) {
+        size = settings.getString("image.size.xmlform");
+      }
+      if (StringUtil.isDefined(size)) {
+        imageURL = FileServerUtils.getImageURL(imageURL, size);
+      }
     }
 
     out.print("<img alt=\"\" src=\"");

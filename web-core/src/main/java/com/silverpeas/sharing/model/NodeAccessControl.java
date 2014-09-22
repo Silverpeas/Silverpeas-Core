@@ -20,6 +20,14 @@
  */
 package com.silverpeas.sharing.model;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.CreateException;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.sharing.security.AbstractShareableAccessControl;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -30,16 +38,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.apache.commons.collections.CollectionUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.versioning.Document;
-
-import javax.ejb.CreateException;
-import java.rmi.RemoteException;
-import java.util.Collection;
 
 /**
  * Access control to shared nodes and their content.
@@ -58,20 +57,10 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
     NodePK nodePk = new NodePK(String.valueOf(ticket.getSharedObjectId()), ticket.getComponentId());
     Collection<NodePK> autorizedNodes = getNodeDescendants(nodePk);
     autorizedNodes.add(nodePk);
-    if (accessedObject instanceof AttachmentDetail) {
-      AttachmentDetail attachment = (AttachmentDetail) accessedObject;
-      return isPublicationReadable(attachment.getForeignKey(), nodePk.getInstanceId(),
-          autorizedNodes);
-    }
     if (accessedObject instanceof SimpleDocument) {
       SimpleDocument attachment = (SimpleDocument) accessedObject;
       return isPublicationReadable(new ForeignPK(attachment.
           getForeignId(), attachment.getInstanceId()), nodePk.getInstanceId(), autorizedNodes);
-    }
-    if (accessedObject instanceof Document) {
-      Document document = (Document) accessedObject;
-      return isPublicationReadable(document.getForeignKey(), nodePk.getInstanceId(),
-          autorizedNodes);
     }
     if (accessedObject instanceof NodeDetail) {
       NodeDetail node = (NodeDetail) accessedObject;

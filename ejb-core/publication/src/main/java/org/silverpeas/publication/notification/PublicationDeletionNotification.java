@@ -22,56 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.publication.importExport;
+package org.silverpeas.publication.notification;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.notification.NotificationSource;
+import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.SilverpeasNotificationCause;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-public class DBModelContentType {
+/**
+ * Notification about the deletion of a publication in a given component instance.
+ */
+public class PublicationDeletionNotification extends SilverpeasNotification {
 
-  private int id = -1;
-  private List<String> listTextParts = new ArrayList<String>();
-  private List<String> listImageParts = new ArrayList<String>();
+  private static final long serialVersionUID = -5651929204480502420L;
 
-  /**
-   * @return
-   */
-  public int getId() {
-    return id;
+  protected PublicationDeletionNotification(final PublicationPK pk) {
+    super(new NotificationSource().withComponentInstanceId(pk.getInstanceId()),
+        SilverpeasNotificationCause.DELETION, pk);
   }
 
-  /**
-   * @param i
-   */
-  public void setId(int i) {
-    id = i;
-  }
-
-  /**
-   * @return Returns the listImageParts.
-   */
-  public List<String> getListImageParts() {
-    return listImageParts;
-  }
-
-  /**
-   * @param listImageParts The listImageParts to set.
-   */
-  public void setListImageParts(List<String> listImageParts) {
-    this.listImageParts = listImageParts;
-  }
-
-  /**
-   * @return Returns the listTextParts.
-   */
-  public List<String> getListTextParts() {
-    return listTextParts;
-  }
-
-  /**
-   * @param listTextParts The listTextParts to set.
-   */
-  public void setListTextParts(List<String> listTextParts) {
-    this.listTextParts = listTextParts;
+  public PublicationPK getPublicationPK() {
+    return (PublicationPK) getObject();
   }
 }

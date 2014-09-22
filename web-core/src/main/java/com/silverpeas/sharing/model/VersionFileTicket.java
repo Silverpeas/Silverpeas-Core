@@ -80,7 +80,8 @@ public class VersionFileTicket extends Ticket {
       HistorisedDocument doc = (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(pk, null);
       if(doc != null) {
-        return new ShareableVersionDocument(getToken(), doc);
+        return new ShareableVersionDocument(getToken(),
+            (HistorisedDocument) doc.getLastPublicVersion());
       }
     } catch (AttachmentException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);

@@ -31,7 +31,8 @@ public enum RegisteredTopics {
    * way to categorize in a hierarchical way information.
    */
   NODE_TOPIC("node"), ADMIN_SPACE_TOPIC("admin/space"), ATTACHMENT_TOPIC("attachment"),
-  COMMENT_TOPIC("comment"), ADMIN_COMPONENT_TOPIC("admin/component");
+  COMMENT_TOPIC("comment"), ADMIN_COMPONENT_TOPIC("admin/component"),
+  PUBLICATION_TOPIC("publication");
 
   public String getTopicName() {
     return topicName;
@@ -63,6 +64,9 @@ public enum RegisteredTopics {
     }
     if (ADMIN_COMPONENT_TOPIC.getTopicName().equals(name)) {
       return ADMIN_COMPONENT_TOPIC;
+    }
+    if (PUBLICATION_TOPIC.getTopicName().equals(name)) {
+      return PUBLICATION_TOPIC;
     }
     throw new IllegalArgumentException(name + " is not a valid topic name");
   }
