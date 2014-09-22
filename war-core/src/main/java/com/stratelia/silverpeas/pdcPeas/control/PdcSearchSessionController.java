@@ -1186,7 +1186,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
           if (userDetail != null) {
-            result.setThumbnailURL(userDetail.getAvatar());
+            result.setThumbnailURL(userDetail.getSmallAvatar());
           }
           titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().
               getObjectId() + "');";

@@ -30,6 +30,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.beanutils.BeanUtils;
@@ -59,6 +60,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       .getString("avatar.property", "login");
   private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString(
       "avatar.extension", "jpg");
+  private static final String AVATAR_BASEURI = "/display/avatar/";
   private static final ResourceLocator generalSettings = new ResourceLocator(
       "org.silverpeas.lookAndFeel.generalLook", "");
   private String id = null;
@@ -677,11 +679,18 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public String getAvatar() {
     String avatar = getAvatarFileName();
-    File image = new File(FileRepositoryManager.getAvatarPath(), avatar);
-    if (image.exists()) {
-      return "/display/avatar/" + avatar;
+    if (isAvatarPersonnalized()) {
+      return AVATAR_BASEURI + avatar;
     }
     return "/directory/jsp/icons/avatar.png";
+  }
+  
+  public String getSmallAvatar() {
+    String avatar = getAvatar();
+    if (avatar.startsWith(AVATAR_BASEURI)) {
+      return FileServerUtils.getImageURL(avatar, "image.size.avatar.profil");
+    }
+    return avatar;
   }
 
   public boolean isAvatarPersonnalized() {
