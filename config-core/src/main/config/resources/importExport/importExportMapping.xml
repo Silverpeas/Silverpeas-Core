@@ -257,26 +257,11 @@
   </castor:class>
   <castor:class name="com.silverpeas.publication.importExport.PublicationContentType">
     <castor:map-to xml="publicationContent" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="dBModelContentType" type="com.silverpeas.publication.importExport.DBModelContentType">
-      <castor:bind-xml name="sp:dbModel" node="element"/>
-    </castor:field>
     <castor:field name="wysiwygContentType" type="com.silverpeas.wysiwyg.importExport.WysiwygContentType">
       <castor:bind-xml name="sp:wysiwyg" node="element"/>
     </castor:field>
     <castor:field name="xMLModelContentType" type="com.silverpeas.publication.importExport.XMLModelContentType">
       <castor:bind-xml name="sp:xmlModel" node="element"/>
-    </castor:field>
-  </castor:class>
-  <castor:class name="com.silverpeas.publication.importExport.DBModelContentType">
-    <castor:map-to xml="dbModel" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="id">
-      <castor:bind-xml name="id" node="attribute"/>
-    </castor:field>
-    <castor:field name="listTextParts" type="string" collection="arraylist">
-      <castor:bind-xml name="sp:dbModelText" node="element"/>
-    </castor:field>
-    <castor:field name="listImageParts" type="string" collection="arraylist">
-      <castor:bind-xml name="sp:dbModelImagePath" node="element"/>
     </castor:field>
   </castor:class>
   <castor:class name="com.silverpeas.publication.importExport.XMLModelContentType">

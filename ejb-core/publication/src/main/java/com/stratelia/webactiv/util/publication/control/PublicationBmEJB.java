@@ -56,15 +56,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.info.InfoDAO;
 import com.stratelia.webactiv.util.publication.info.SeeAlsoDAO;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoLinkDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoPK;
-import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.NodeTree;
@@ -74,6 +66,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.publication.notification.PublicationDeletionNotification;
+import org.silverpeas.publication.notification.PublicationNotificationService;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -320,18 +314,16 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       PublicationDetail publi = PublicationDAO.loadRow(con, pk);
       // delete links from another publication to removed publication
-      InfoPK infoPK = new InfoPK(publi.getInfoId(), pk);
-      InfoDAO.deleteInfoLinkByTargetLink(con, infoPK, pk.getId());
       SeeAlsoDAO.deleteLinksByObjectId(con, pk);
       SeeAlsoDAO.deleteLinksByTargetId(con, pk);
-      // delete all info associated from database
-      InfoDAO.deleteInfoDetailByInfoPK(con, infoPK);
       // delete translations
       PublicationI18NDAO.removeTranslations(con, pk);
 
       deleteRating(pk);
 
       deleteIndex(pk);
+      
+      PublicationNotificationService.getService().notifyOnDeletionOf(pk);
       
       // delete publication from database
       PublicationDAO.deleteRow(con, pk);
@@ -987,168 +979,6 @@ public class PublicationBmEJB implements PublicationBm {
     }
   }
 
-  @Override
-  public Collection<ModelDetail> getAllModelsDetail() {
-    Connection con = getConnection();
-    try {
-      return InfoDAO.getAllModelsDetail(con);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getAllModelsDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_MODELS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public ModelDetail getModelDetail(ModelPK modelPK) {
-    Connection con = getConnection();
-    try {
-      return InfoDAO.getModelDetail(con, modelPK);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getModelDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_MODEL_FAILED", "modelPK = "
-          + modelPK, e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos) {
-    SilverTrace.info("publication", "PublicationEJB.createInfoDetail()",
-        "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
-    Connection con = getConnection();
-    PublicationDetail detail = getDetail(pubPK);
-    try {
-      InfoPK iPK = InfoDAO.createInfo(con, modelPK, pubPK);
-      if (infos != null) {
-        infos.setPK(iPK);
-        InfoDAO.addInfoItems(con, infos);
-        detail.setUpdateDate(new Date());
-      }
-      detail.setInfoId(iPK.getId());
-      PublicationDAO.storeRow(con, detail);
-      if (infos != null) {
-        createIndex(pubPK, false, infos.getIndexOperation());
-      }
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.createInfoDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.CREATING_PUBLICATION_DETAIL_FAILED",
-          "pubId = " + pubPK.getId() + ", modelPK = " + modelPK + ", infos = " + infos, e);
-    } finally {
-      DBUtil.close(con);
-    }
-
-  }
-
-  @Override
-  public void createInfoModelDetail(PublicationPK pk, ModelPK modelPK, InfoDetail infos) {
-    SilverTrace.info("publication", "PublicationEJB.createInfoDetail()",
-        "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
-    Connection con = getConnection();
-    try {
-      InfoPK iPK = InfoDAO.createInfo(con, modelPK, pk);
-      PublicationDetail publi = PublicationDAO.loadRow(con, pk);
-      if (infos != null) {
-        infos.setPK(iPK);
-        InfoDAO.addInfoItems(con, infos);
-        publi.setUpdateDate(new Date());
-      }
-      publi.setInfoId(iPK.getId());
-      PublicationDAO.storeRow(con, publi);
-      if (infos != null) {
-        createIndex(pk, false, infos.getIndexOperation());
-      }
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.createInfoModelDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.CREATING_PUBLICATION_DETAIL_FAILED",
-          "pubId = " + pk.getId() + ", modelPK = " + modelPK + ", infos = " + infos, e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public InfoDetail getInfoDetail(PublicationPK pubPK) {
-    SilverTrace.info("publication", "PublicationEJB.getInfoDetail()", "root.MSG_GEN_ENTER_METHOD");
-    Connection con = getConnection();
-    PublicationDetail detail = getDetail(pubPK);
-    try {
-      InfoDetail result = InfoDAO.getInfoDetailByInfoPK(con, new InfoPK(detail.getInfoId(), detail
-          .getPK()));
-      return result;
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getInfoDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_DETAIL_FAILED",
-          "pubId = " + pubPK.getId(), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos) {
-    Connection con = getConnection();
-    try {
-      PublicationDetail detail = getDetail(pubPK);
-      InfoPK infoPK = new InfoPK(detail.getInfoId(), pubPK);
-      if (StringUtil.isInteger(detail.getInfoId()) && !"0".equals(detail.getInfoId())) {
-        SilverTrace.info("publication", "PublicationEJB.updateInfoDetail()",
-            "root.MSG_GEN_ENTER_METHOD");
-        InfoDetail old = getInfoDetail(pubPK);
-        List<InfoTextDetail> newText = new ArrayList<InfoTextDetail>();
-        List<InfoTextDetail> oldText = new ArrayList<InfoTextDetail>();
-        InfoDetail.selectToCreateAndToUpdateItems(infos.getInfoTextList(), old.getInfoTextList(),
-            newText, oldText);
-
-        List<InfoImageDetail> newImage = new ArrayList<InfoImageDetail>();
-        List<InfoImageDetail> oldImage = new ArrayList<InfoImageDetail>();
-        InfoDetail.selectToCreateAndToUpdateItems(infos.getInfoImageList(), old.getInfoImageList(),
-            newImage, oldImage);
-
-        List<InfoLinkDetail> newLink = new ArrayList<InfoLinkDetail>();
-        List<InfoLinkDetail> oldLink = new ArrayList<InfoLinkDetail>();
-        InfoDetail.selectToCreateAndToUpdateItems(infos.getInfoLinkList(), old.getInfoLinkList(),
-            newLink, oldLink);
-        if ("0".equals(detail.getInfoId())) {
-          createInfoDetail(pubPK, new ModelPK("0", pubPK), new InfoDetail(infoPK, newText, newImage,
-              newLink, ""));
-        } else {
-          InfoDAO.updateInfoItems(con, new InfoDetail(infoPK, oldText, oldImage, oldLink, ""),
-              infoPK);
-          InfoDAO.addInfoItems(con, new InfoDetail(infoPK, newText, newImage, newLink, ""));
-          detail.setUpdateDate(new Date());
-          PublicationDAO.storeRow(con, detail);
-        }
-
-        if (infos != null) {
-          createIndex(pubPK, false, infos.getIndexOperation());
-        }
-      } else {
-        // XML Template
-        // Only infoLinks are used
-        Collection<InfoLinkDetail> links = infos.getInfoLinkList();
-        if (links != null && !links.isEmpty()) {
-          for (InfoLinkDetail link : links) {
-            PublicationPK targetPK = new PublicationPK(link.getTargetId(), pubPK.getInstanceId());
-            SeeAlsoDAO.addLink(con, pubPK, targetPK);
-          }
-        }
-      }
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.updateInfoDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
-          "pubId = " + pubPK.getId(), e);
-    } catch (UtilException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.updateInfoDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
-          "pubId = " + pubPK.getId(), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
   /**
    * Removes links between publications and the specified publication
    *
@@ -1184,13 +1014,9 @@ public class PublicationBmEJB implements PublicationBm {
       if (I18NHelper.isI18N) {
         setTranslations(con, detail);
       }
-      InfoPK infoPK = new InfoPK(detail.getInfoId(), pubPK);
-      InfoDetail infoDetail = InfoDAO.getInfoDetailByInfoPK(con, infoPK);
-      ModelDetail modelDetail = InfoDAO.getModelDetail(con, infoPK);
       List<ForeignPK> links = SeeAlsoDAO.getLinks(con, pubPK);
       List<ForeignPK> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
-      CompletePublication cp = new CompletePublication(detail, modelDetail, infoDetail, links,
-          reverseLinks);
+      CompletePublication cp = new CompletePublication(detail, links, reverseLinks);
       cp.setValidationSteps(getValidationSteps(pubPK));
       return cp;
     } catch (SQLException e) {

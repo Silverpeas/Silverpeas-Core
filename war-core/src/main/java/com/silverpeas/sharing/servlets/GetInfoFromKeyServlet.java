@@ -25,6 +25,7 @@ package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.sharing.model.NodeTicket;
+import com.silverpeas.sharing.model.PublicationTicket;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
@@ -60,8 +61,8 @@ public class GetInfoFromKeyServlet extends HttpServlet {
     if (ticket == null || !ticket.isValid()) {
       getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp").forward(
           request, response);
-    } else if (ticket instanceof NodeTicket) {
-      String url = getURLForFolderSharing(request, token);
+    } else if (ticket instanceof NodeTicket || ticket instanceof PublicationTicket) {
+      String url = getURLForSharedObject(request, ticket);
       response.sendRedirect(url);
     } else {
       if (ticket instanceof SimpleFileTicket) {
@@ -95,11 +96,14 @@ public class GetInfoFromKeyServlet extends HttpServlet {
         getDomainFatherId());
   }
 
-  private String getURLForFolderSharing(HttpServletRequest request, String token) {
+  private String getURLForSharedObject(HttpServletRequest request, Ticket ticket) {
     String url = settings.getString("sharing.folder.webapp");
+    if (ticket instanceof PublicationTicket) {
+      url = settings.getString("sharing.publication.webapp");
+    }
     if (!url.startsWith("http")) {
       url = URLManager.getServerURL(request) + url;
     }
-    return url + "?" + token;
+    return url + "?" + ticket.getToken();
   }
 }

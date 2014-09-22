@@ -36,6 +36,7 @@ import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  *
@@ -57,6 +58,10 @@ public class TicketFactory {
       if(Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
         return new NodeTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
                 nbAccessMax);
+      }
+      if(Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
+        return new PublicationTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
+            nbAccessMax);
       }
     }
     return null;
@@ -80,7 +85,13 @@ public class TicketFactory {
           AccessControllerProvider.getAccessController("nodeAccessController");
       return nodeAccessController.isUserAuthorized(creatorId,
           new NodePK(String.valueOf(sharedObjectId), componentId),
-              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+    } else if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
+      AccessController<PublicationPK> publicationAccessController =
+          AccessControllerProvider.getAccessController("publicationAccessController");
+      return publicationAccessController.isUserAuthorized(creatorId,
+          new PublicationPK(String.valueOf(sharedObjectId), componentId),
+            AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     }
     return false;
   }

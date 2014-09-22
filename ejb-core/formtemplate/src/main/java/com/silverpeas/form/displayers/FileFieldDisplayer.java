@@ -98,33 +98,39 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
       if (attachment != null) {
         html.append("<img alt=\"\" src=\"").append(attachment.getDisplayIcon())
             .append("\"/>&nbsp;");
-        html.append("<a href=\"").append(webContext).append(attachment.getAttachmentURL()).
-            append("\" target=\"_blank\">").append(attachment.getFilename()).append("</a>");
-        File attachmentFile = new File(attachment.getAttachmentPath());
-        if (ViewerFactory.isPreviewable(attachmentFile)) {
-          html.append("<img onclick=\"javascript:previewFormFile(this, '").
-              append(attachment.getId()).append("');\" class=\"preview-file\" src=\"").
-              append(webContext).append("/util/icons/preview.png\" alt=\"").
-              append(Util.getString("GML.preview", language)).append("\" title=\"").
-              append(Util.getString("GML.preview", language)).append("\"/>");
+        String url = webContext + attachment.getAttachmentURL();
+        if (pageContext.isSharingContext()) {
+          url = attachment.getSharedURI(pageContext.getSharingContext()).toString();
         }
-        if (ViewerFactory.isViewable(attachmentFile)) {
-          html.append("<img onclick=\"javascript:viewFormFile(this, '").append(attachment.getId()).
-              append("');\" class=\"view-file\" src=\"").append(webContext).append(
-                  "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", language))
-              .append(
-                  "\" title=\"").append(Util.getString("GML.view", language)).append("\"/>");
-        }
-        if (attachment.isSharingAllowedForRolesFrom(UserDetail.getById(pageContext.getUserId()))) {
-          html.append("<img onclick=\"javascript:createSharingTicketPopup({ componentId : '")
-              .append(attachment.getInstanceId()).append("',type : 'Attachment', id: '")
-              .append(attachment.getOldSilverpeasId()).append("', name : '")
-              .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
-              .append("'});\" class=\"share-file\" src=\"").append(webContext)
-              .append("/util/icons/share.png\" alt=\"")
-              .append(Util.getString("GML.share.file", language))
-              .append("\" title=\"").append(Util.getString("GML.share.file", language))
-              .append("\"/>");
+        html.append("<a href=\"").append(url).append("\" target=\"_blank\">")
+            .append(attachment.getFilename()).append("</a>");
+        if (!pageContext.isSharingContext()) {
+          File attachmentFile = new File(attachment.getAttachmentPath());
+          if (ViewerFactory.isPreviewable(attachmentFile)) {
+            html.append("<img onclick=\"javascript:previewFormFile(this, '").
+                append(attachment.getId()).append("');\" class=\"preview-file\" src=\"").
+                append(webContext).append("/util/icons/preview.png\" alt=\"").
+                append(Util.getString("GML.preview", language)).append("\" title=\"").
+                append(Util.getString("GML.preview", language)).append("\"/>");
+          }
+          if (ViewerFactory.isViewable(attachmentFile)) {
+            html.append("<img onclick=\"javascript:viewFormFile(this, '").append(attachment.getId()).
+                append("');\" class=\"view-file\" src=\"").append(webContext).append(
+                    "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", language))
+                .append(
+                    "\" title=\"").append(Util.getString("GML.view", language)).append("\"/>");
+          }
+          if (attachment.isSharingAllowedForRolesFrom(UserDetail.getById(pageContext.getUserId()))) {
+            html.append("<img onclick=\"javascript:createSharingTicketPopup({ componentId : '")
+                .append(attachment.getInstanceId()).append("',type : 'Attachment', id: '")
+                .append(attachment.getOldSilverpeasId()).append("', name : '")
+                .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
+                .append("'});\" class=\"share-file\" src=\"").append(webContext)
+                .append("/util/icons/share.png\" alt=\"")
+                .append(Util.getString("GML.share.file", language))
+                .append("\" title=\"").append(Util.getString("GML.share.file", language))
+                .append("\"/>");
+          }
         }
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {

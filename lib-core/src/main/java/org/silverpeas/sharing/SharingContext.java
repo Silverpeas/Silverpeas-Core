@@ -21,57 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.sharing;
 
-package com.silverpeas.publication.importExport;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class DBModelContentType {
-
-  private int id = -1;
-  private List<String> listTextParts = new ArrayList<String>();
-  private List<String> listImageParts = new ArrayList<String>();
-
-  /**
-   * @return
-   */
-  public int getId() {
-    return id;
+public class SharingContext {
+  
+  private String baseURI;
+  private String token;
+  
+  public SharingContext(String baseURI, String token) {
+    this.baseURI = baseURI;
+    this.token = token;
+  }
+  
+  public String getBaseURI() {
+    return baseURI;
+  }
+  public void setBaseURI(String baseURI) {
+    this.baseURI = baseURI;
+  }
+  public String getToken() {
+    return token;
+  }
+  public void setToken(String token) {
+    this.token = token;
   }
 
-  /**
-   * @param i
-   */
-  public void setId(int i) {
-    id = i;
-  }
-
-  /**
-   * @return Returns the listImageParts.
-   */
-  public List<String> getListImageParts() {
-    return listImageParts;
-  }
-
-  /**
-   * @param listImageParts The listImageParts to set.
-   */
-  public void setListImageParts(List<String> listImageParts) {
-    this.listImageParts = listImageParts;
-  }
-
-  /**
-   * @return Returns the listTextParts.
-   */
-  public List<String> getListTextParts() {
-    return listTextParts;
-  }
-
-  /**
-   * @param listTextParts The listTextParts to set.
-   */
-  public void setListTextParts(List<String> listTextParts) {
-    this.listTextParts = listTextParts;
-  }
 }

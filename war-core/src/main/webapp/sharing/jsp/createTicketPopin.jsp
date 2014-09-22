@@ -50,22 +50,22 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 
 <script type="text/javascript">
-
-$(window).load(function () {
-  toggleContinuous();
-});
-
 function createSharingTicketPopup(sharingParam) {
+  cleanForm();
   $("#hiddenType").val(sharingParam.type);
   $("#hiddenComponentId").val(sharingParam.componentId);
   $("#displayNameId").text(sharingParam.name);
   $("#hiddenObjectId").val(sharingParam.id);
+  
+  toggleContinuous();
 
   if (sharingParam.type == 'Node') {
-    $("#objectName").text("<fmt:message key="sharing.nodeName" bundle="${fsBundle}" />")
+    $("#objectName").text("<fmt:message key="GML.theme" />")
+  } else if (sharingParam.type == 'Publication') {
+    $("#objectName").text("<fmt:message key="GML.publication" />")
   } else {
     //Attachment
-    $("#objectName").text("<fmt:message key="sharing.nameFile" bundle="${fsBundle}" />")
+    $("#objectName").text("<fmt:message key="GML.file" />")
   }
 
   $('#sharingticket-popup-content').popup('validation', {
@@ -87,12 +87,14 @@ function createSharingTicketPopup(sharingParam) {
 
 function toggleContinuous(effect) {
   var continuousTicket = $("#validity").val() == "0";
-  var isNodeSharing = $("#hiddenType").val() == 'Node';
+  var nbAccessShown = $("#hiddenType").val() === 'Attachment';
   if (continuousTicket) {
     $('.threshold').hide(effect);
   } else {
     $('.threshold').show(effect);
-    if (isNodeSharing) {
+    if (nbAccessShown) {
+      $("#nbAccessMaxArea").show();
+    } else {
       $("#nbAccessMaxArea").hide();
     }
   }
@@ -105,15 +107,15 @@ function isCorrectForm() {
   var nb  = $("#nbAccessMax").val();
   var nbMin = 0;
   var endDate = $("#endDate").val();
-  var isNodeSharing = $("#hiddenType").val() == 'Node';
+  var nbAccessShown = $("#hiddenType").val() === 'Attachment';
 
   if($("#validity").val() == "1")
   {
-    if (!isNodeSharing && isWhitespace(nb)) {
+    if (nbAccessShown && isWhitespace(nb)) {
       errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustBeFilled'/>\n";
       errorNb++;
     }
-    if (!isNodeSharing && !isInteger(nb)) {
+    if (nbAccessShown && !isInteger(nb)) {
       errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax' bundle='${fsBundle}'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
       errorNb++;
     }

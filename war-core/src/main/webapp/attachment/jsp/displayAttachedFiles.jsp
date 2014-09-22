@@ -1252,6 +1252,4 @@
   </form>
 </div>
 
-<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
-
 <view:progressMessage/>

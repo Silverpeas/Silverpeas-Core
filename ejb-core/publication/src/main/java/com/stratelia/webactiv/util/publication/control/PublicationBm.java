@@ -30,9 +30,6 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.NodeTree;
@@ -201,38 +198,6 @@ public interface PublicationBm {
    */
   public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       PublicationPK pk, String status, int nbPubs, String fatherId);
-
-  /**
-   *
-   */
-  public Collection<ModelDetail> getAllModelsDetail();
-
-  /**
-   *
-   */
-  public ModelDetail getModelDetail(ModelPK modelPK);
-
-  /**
-   *
-   */
-  public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos);
-
-  /**
-   *
-   */
-  public void createInfoModelDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos);
-
-  /**
-   *
-   */
-  public InfoDetail getInfoDetail(PublicationPK pubPK);
-
-  /**
-   * @param pubPK
-   * @param infos
-   * @
-   */
-  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos);
 
   public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links);
 

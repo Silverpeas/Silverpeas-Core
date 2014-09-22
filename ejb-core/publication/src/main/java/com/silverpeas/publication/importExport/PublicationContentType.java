@@ -38,7 +38,6 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
  */
 public class PublicationContentType {
 
-  private DBModelContentType dBModelContentType;
   private WysiwygContentType wysiwygContentType;
   private XMLModelContentType xmlModelContentType;
 
@@ -48,20 +47,6 @@ public class PublicationContentType {
 
   public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
     this.xmlModelContentType = xmlModelContentType;
-  }
-
-  /**
-   * @return
-   */
-  public DBModelContentType getDBModelContentType() {
-    return dBModelContentType;
-  }
-
-  /**
-   * @param type
-   */
-  public void setDBModelContentType(DBModelContentType type) {
-    dBModelContentType = type;
   }
 
   /**

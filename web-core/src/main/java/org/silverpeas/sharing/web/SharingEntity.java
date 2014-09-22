@@ -24,11 +24,12 @@
 package org.silverpeas.sharing.web;
 
 import java.net.URI;
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.web.Exposable;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class SharingEntity implements Exposable {
 
@@ -40,18 +41,24 @@ public class SharingEntity implements Exposable {
   private URI webApplicationRootUri;
   @XmlElement(defaultValue = "")
   private String expiration;
+  @XmlElement(defaultValue = "")
+  private String creationDate;
+  @XmlElement(defaultValue = "")
+  private String user;
 
   @Override
   public URI getURI() {
     return uri;
   }
   
-  public SharingEntity(URI uri, URI webApplicationRootUri, Date expiration) {
+  public SharingEntity(URI uri, URI webApplicationRootUri, Ticket ticket) {
     this.uri = uri;
     this.webApplicationRootUri = webApplicationRootUri;
-    if (expiration != null) {
-      this.expiration = Long.toString(expiration.getTime());
+    if (ticket.getEndDate() != null) {
+      this.expiration = Long.toString(ticket.getEndDate().getTime());
     }
+    this.creationDate = Long.toString(ticket.getCreationDate().getTime());
+    this.user = UserDetail.getById(ticket.getCreatorId()).getDisplayedName();
   }
 
 }

@@ -46,10 +46,13 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
       "sharing.notification.message.subject.file";
   private static final String FOLDER_SHARING_BUNDLE_SUBJECT_KEY =
       "sharing.notification.message.subject.folder";
+  private static final String PUBLICATION_SHARING_BUNDLE_SUBJECT_KEY =
+    "sharing.notification.message.subject.publication";
 
   private static final String FILE_SHARING_TEMPLATE_PATH = "fileSharing";
   private static final String FILE_SHARING_TEMPLATE_FILE_NAME = "fileSharing";
   private static final String NODE_SHARING_TEMPLATE_FILE_NAME = "nodeSharing";
+  private static final String PUBLI_SHARING_TEMPLATE_FILE_NAME = "publiSharing";
 
   private static final String COMMA_CHARACTER = ",";
 
@@ -69,6 +72,8 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     String sharedObjectType = getResource().getSharedObjectType();
     if (Ticket.NODE_TYPE.equals(sharedObjectType)) {
       return FOLDER_SHARING_BUNDLE_SUBJECT_KEY;
+    } else if (Ticket.PUBLICATION_TYPE.equals(sharedObjectType)) {
+      return PUBLICATION_SHARING_BUNDLE_SUBJECT_KEY;
     }
     //else FILE_TYPE or VERSION_TYPE
     return FILE_SHARING_BUNDLE_SUBJECT_KEY;
@@ -120,6 +125,8 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     String sharedObjectType = getResource().getSharedObjectType();
     if (Ticket.NODE_TYPE.equals(sharedObjectType)) {
       return NODE_SHARING_TEMPLATE_FILE_NAME;
+    } else if (Ticket.PUBLICATION_TYPE.equals(sharedObjectType)) {
+      return PUBLI_SHARING_TEMPLATE_FILE_NAME;
     }
     //else FILE_TYPE or VERSION_TYPE
     return FILE_SHARING_TEMPLATE_FILE_NAME;

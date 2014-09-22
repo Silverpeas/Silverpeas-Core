@@ -22,25 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.publication.info.model;
+package org.silverpeas.publication.notification;
 
-import java.io.Serializable;
+import com.silverpeas.notification.NotificationSource;
+import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.SilverpeasNotificationCause;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-public class InfoLinkDetail extends InfoItemDetail implements Serializable {
+/**
+ * Notification about the deletion of a publication in a given component instance.
+ */
+public class PublicationDeletionNotification extends SilverpeasNotification {
 
-  private static final long serialVersionUID = -907732789489953847L;
-  private String targetId = null;
+  private static final long serialVersionUID = -5651929204480502420L;
 
-  public InfoLinkDetail(InfoPK infoPK, String order, String id, String targetId) {
-    super(infoPK, order, id);
-    this.targetId = targetId;
+  protected PublicationDeletionNotification(final PublicationPK pk) {
+    super(new NotificationSource().withComponentInstanceId(pk.getInstanceId()),
+        SilverpeasNotificationCause.DELETION, pk);
   }
 
-  public String getTargetId() {
-    return targetId;
-  }
-
-  public void setTargetId(String targetId) {
-    this.targetId = targetId;
+  public PublicationPK getPublicationPK() {
+    return (PublicationPK) getObject();
   }
 }
