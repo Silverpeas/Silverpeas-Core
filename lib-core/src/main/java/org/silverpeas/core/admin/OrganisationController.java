@@ -1,9 +1,9 @@
 package org.silverpeas.core.admin;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;
+import com.silverpeas.admin.components.WAComponent;
+import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.util.ListSlice;
 
 public interface OrganisationController extends java.io.Serializable {
@@ -253,6 +253,14 @@ public interface OrganisationController extends java.io.Serializable {
    * Return all administrators ids
    */
   String[] getAdministratorUserIds(String fromUserId);
+  
+  /**
+   * Return the number of users belonging to the domain whose identifier is given as parameter.
+   * 
+   * @param domainId the unique identifier of the domain.
+   * @return the domain users count.
+   */
+  int getDomainUsersCount(String domainId);
 
   /**
    * Return the Group of the group with the given Id

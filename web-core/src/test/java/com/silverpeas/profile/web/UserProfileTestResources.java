@@ -23,11 +23,6 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.profile.web.mock.RelationShipServiceMock;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.web.TestResources;
-import com.stratelia.webactiv.beans.admin.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
@@ -37,6 +32,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import com.silverpeas.profile.web.mock.RelationShipServiceMock;
+import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.web.TestResources;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
@@ -310,6 +314,7 @@ public class UserProfileTestResources extends TestResources {
     actualUsers[actualUsers.length - 1] = user;
     OrganisationController mock = getOrganizationControllerMock();
     when(mock.getAllUsers()).thenReturn(actualUsers);
+    updateDomainUsersCounts(user.getDomainId(), actualUsers);
     return super.registerUser(user);
   }
 
@@ -416,6 +421,18 @@ public class UserProfileTestResources extends TestResources {
     group.setDomainId(domainId);
     return group;
   }
+  
+  private void updateDomainUsersCounts(String domainId, UserDetail[] actualUsers) {
+    OrganisationController mock = getOrganizationControllerMock();
+    int domainUserCount = 0;
+    for (UserDetail actualUser : actualUsers) {
+      if (actualUser.getDomainId().equals(domainId)) {
+        domainUserCount++;
+      }
+    }
+    when(mock.getDomainUsersCount(domainId)).thenReturn(domainUserCount);
+    when(mock.getDomainUsersCount(null)).thenReturn(actualUsers.length);
+  }
 
   public String[] getUserIds(final UserDetail... users) {
     String[] ids = new String[users.length];
@@ -432,4 +449,5 @@ public class UserProfileTestResources extends TestResources {
     }
     return ids;
   }
+  
 }

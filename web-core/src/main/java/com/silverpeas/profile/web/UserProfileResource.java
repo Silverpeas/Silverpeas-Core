@@ -84,6 +84,11 @@ public class UserProfileResource extends RESTWebService {
    * only the users part of a user group will be fetched.
    */
   public static final String QUERY_ALL_GROUPS = "all";
+  /**
+   * Specific identifier of a user domain meaning all the user domains in Silverpeas.
+   */
+  public static final String QUERY_ALL_DOMAINS = "all";
+  
   @Inject
   private UserProfileService profileService;
   @Inject
@@ -254,6 +259,25 @@ public class UserProfileResource extends RESTWebService {
         asWebEntity(users, locatedAt(usersUri))).
         header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, users.getOriginalListSize()).build();
+  }
+  
+  /**
+   * Get the number of users belonging to the domain which ID is given as parameter.
+   * 
+   * @param domainId the unique identifier of the domain whose users have to be counted. The
+   * specific identifier "all" give the count of all domains' users.
+   * @return the JSON serialization of the count of users belonging to the specified domain.
+   */
+  @GET
+  @Path("count/domain/{domainId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public UserCountEntity getDomainUsersCount(@PathParam("domainId") String domainId) {
+    Integer count = getOrganisationController().getDomainUsersCount(
+        QUERY_ALL_DOMAINS.equals(domainId) ? null : domainId);
+    UserCountEntity userCountEntity = new UserCountEntity(count);
+    final URI uri = identifiedBy(getUriInfo().getAbsolutePath());
+    userCountEntity.withAsUri(uri);
+    return userCountEntity;
   }
 
   /**

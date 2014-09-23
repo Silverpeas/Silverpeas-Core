@@ -26,25 +26,23 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
 
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
-
 import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
-
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
 /**
@@ -636,6 +634,18 @@ public class OrganizationController implements OrganisationController {
           "admin.MSG_ERR_GET_ALL_ADMIN_IDS", e);
       return EMPTY_STRING_ARRAY;
     }
+  }
+  
+  @Override
+  public int getDomainUsersCount(String domainId) {
+    int usersNumber = -1;
+    try {
+      usersNumber = getAdminService().getUsersNumberOfDomain(domainId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getDomainUsersCount",
+          "admin.MSG_ERR_GET_DOMAIN_USERS_COUNT", "domainId=" + domainId, e);
+    }
+    return usersNumber;
   }
 
   // -------------------------------------------------------------------
