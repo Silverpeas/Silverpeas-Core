@@ -74,8 +74,11 @@ public interface SocialInformation extends Comparable<SocialInformation> {
   public String getIcon();
 
   /**
-   * return if this socialInfo was updtated or not
+   * return if this socialInfo was updated or not
    * @return boolean
    */
-  public boolean isUpdeted();
+  public boolean isUpdated();
+  
+  public void setUpdated(boolean updated);
+  
 }

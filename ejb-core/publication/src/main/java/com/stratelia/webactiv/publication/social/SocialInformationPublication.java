@@ -24,114 +24,42 @@
 
 package com.stratelia.webactiv.publication.social;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
-import java.util.Date;
 
-public class SocialInformationPublication implements SocialInformation {
-
-  private final String type = SocialInformationType.PUBLICATION.toString();
-  private PublicationWithStatus publication;
-  private String author;
-  private Date date;
-  private String url;
+public class SocialInformationPublication extends AbstractSocialInformation {
 
   /**
    * Constructor with one param
    * @param publication
    */
   public SocialInformationPublication(PublicationWithStatus publication) {
-    this.publication = publication;
     if (publication.isUpdate()) {
-      this.author = publication.getPublication().getUpdaterId();
-      this.date = publication.getPublication().getUpdateDate();
+      setAuthor(publication.getPublication().getUpdaterId());
+      setDate(publication.getPublication().getUpdateDate());
     } else {
-      this.author = publication.getPublication().getCreatorId();
-      this.date = publication.getPublication().getCreationDate();
+      setAuthor(publication.getPublication().getCreatorId());
+      setDate(publication.getPublication().getCreationDate());
     }
-    this.url =
-        URLManager.getURL("kmelia", null,
-        publication.getPublication().getPK().getInstanceId()) +
-        publication.getPublication().getURL();
-
-  }
-
-  /**
-   * return the icon of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getIcon() {
-    if (isUpdeted()) {
-      return type + "_update.gif";
+    String instanceId = publication.getPublication().getInstanceId();
+    SocialInformationType type = SocialInformationType.PUBLICATION;
+    if (instanceId.startsWith("blog")) {
+      type = SocialInformationType.POST;
+    } else if (instanceId.startsWith("quickinfo")) {
+      type = SocialInformationType.NEWS;
+    } else if (instanceId.startsWith("bookmark")) {
+      type = SocialInformationType.BOOKMARK;
+    } else if (instanceId.startsWith("webSites")) {
+      type = SocialInformationType.SITE;
     }
-    return type + "_new.gif";
-  }
-
-  /**
-   * return the type of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getType() {
-    // TODO Auto-generated method stub
-    return type;
-  }
-
-  /**
-   * return the Title of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getTitle() {
-    return publication.getPublication().getTitle();
-  }
-
-  /**
-   * return the Description of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getDescription() {
-    return publication.getPublication().getDescription();
-  }
-
-  /**
-   * return the Author of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getAuthor() {
-    return author;
-  }
-
-  /**
-   * return the Url of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getUrl() {
-    return url;
-  }
-
-  /**
-   * return the Date of this SocialInfo
-   * @return
-   */
-  @Override
-  public Date getDate() {
-    return date;
-  }
-
-  /**
-   * return if this socialInfo was updtated or not
-   * @return boolean
-   */
-  @Override
-  public boolean isUpdeted() {
-    return publication.isUpdate();
+    setType(type.toString());
+    setUrl(URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getPublication().getId(),
+        instanceId, false));
+    setUpdated(publication.isUpdate());
+    setTitle(publication.getPublication().getTitle());
+    setDescription(publication.getPublication().getDescription());
   }
 
   /**
@@ -178,15 +106,5 @@ public class SocialInformationPublication implements SocialInformation {
     hash = 43 * hash + (this.date != null ? this.date.hashCode() : 0);
     hash = 43 * hash + (this.url != null ? this.url.hashCode() : 0);
     return hash;
-  }
-
-  /**
-   *Indicates whether some other SocialInformation date is befor the date of this one.
-   *@param obj the reference object with which to compare.
-   * @return int
-   */
-  @Override
-  public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate()) * -1;
   }
 }

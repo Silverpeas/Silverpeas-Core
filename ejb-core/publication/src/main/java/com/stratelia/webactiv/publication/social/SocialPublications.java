@@ -85,7 +85,6 @@ public class SocialPublications implements SocialPublicationsInterface {
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmax")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "newsEdito")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "bookmark")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "webSites")));
     return getEJB().getSocialInformationsListOfMyContacts(myContactsIds, options, begin, end);

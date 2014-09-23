@@ -24,94 +24,20 @@
 
 package com.silverpeas.socialnetwork.status;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 
-public class SocialInformationStatus implements SocialInformation {
-
-  private final SocialInformationType type = SocialInformationType.STATUS;
-  private String title;
-  private String description;
-  private String author;
-  private Timestamp date;
-  private String url;
-  private String icon;
+public class SocialInformationStatus extends AbstractSocialInformation {
 
   public SocialInformationStatus(Status status) {
-
-    this.description = status.getDescription();
-    this.author = Integer.toString(status.getUserId());
-    this.title = author;
-    this.date = new java.sql.Timestamp(status.getCreationDate().getTime());
-    this.url = "#";
-    this.icon = type.toString() + ".gif";
-  }
-
-  /**
-   * return the Author of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getAuthor() {
-    return author;
-  }
-
-  /**
-   * return the Date of this SocialInfo
-   * @return
-   */
-  @Override
-  public Date getDate() {
-    return date;
-  }
-
-  /**
-   * return the Description of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public String getIcon() {
-    return icon;
-  }
-
-  /**
-   * return if this socialInfo was updtated or not
-   * @return boolean
-   */
-  @Override
-  public boolean isUpdeted() {
-    return false;
-  }
-
-  /**
-   * return the Title of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * return the Url of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getUrl() {
-    return url;
-  }
-
-  @Override
-  public String getType() {
-    return type.toString();
+    setDescription(status.getDescription());
+    setAuthor(Integer.toString(status.getUserId()));
+    setTitle(Integer.toString(status.getUserId()));
+    setDate(status.getCreationDate());
+    setUrl("#");
+    setIcon(SocialInformationType.STATUS.toString() + ".gif");
+    setType(SocialInformationType.STATUS.toString());
+    setUpdated(false);
   }
 
   /*
@@ -199,15 +125,5 @@ public class SocialInformationStatus implements SocialInformation {
       return false;
     }
     return true;
-  }
-
-  /**
-   *Indicates whether some other SocialInformation date is befor the date of this one.
-   *@param obj the reference object with which to compare.
-   * @return int
-   */
-  @Override
-  public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate()) * -1;
   }
 }

@@ -37,6 +37,8 @@ public abstract class AbstractSocialInformation implements SocialInformation {
   protected String url;
   protected Date date;
   protected boolean socialInformationWasupdated;
+  protected String type;
+  protected String icon;
 
   @Override
   public String getTitle() {
@@ -64,8 +66,55 @@ public abstract class AbstractSocialInformation implements SocialInformation {
   }
 
   @Override
-  public boolean isUpdeted() {
+  public boolean isUpdated() {
     return socialInformationWasupdated;
+  }
+  
+  public void setUpdated(boolean updated) {
+    socialInformationWasupdated = updated;
+  }
+  
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setAuthor(String author) {
+    this.author = author;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+  
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+  
+  @Override
+  public String getIcon() {
+    if (icon != null) {
+      return icon;
+    }
+    if (isUpdated()) {
+      return type + "_update.gif";
+    }
+    return type + "_new.gif";
+  }
+
+  public void setIcon(String icon) {
+    this.icon = icon;
   }
 
   @Override
@@ -106,5 +155,15 @@ public abstract class AbstractSocialInformation implements SocialInformation {
     hash = 71 * hash + (this.url != null ? this.url.hashCode() : 0);
     hash = 71 * hash + (this.date != null ? this.date.hashCode() : 0);
     return hash;
+  }
+  
+  /**
+   *Indicates whether some other SocialInformation date is before the date of this one.
+   * @param obj the reference object with which to compare.
+   * @return int
+   */
+  @Override
+  public int compareTo(SocialInformation o) {
+    return getDate().compareTo(o.getDate()) * -1;
   }
 }

@@ -23,26 +23,21 @@ package com.stratelia.webactiv.calendar.socialnetwork;
 
 import java.util.Date;
 
+import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.calendar.model.Schedulable;
 import com.stratelia.webactiv.util.DateUtil;
 
-import static com.silverpeas.socialnetwork.model.SocialInformationType.EVENT;
-import static com.silverpeas.socialnetwork.model.SocialInformationType.LASTEVENT;
-
 /**
  * @author Bensalem Nabil
  */
-public class SocialInformationEvent implements SocialInformation {
+public class SocialInformationEvent extends AbstractSocialInformation {
 
   private String classification = "public";
-  private SocialInformationType type = EVENT;
   private Schedulable schedulable = null;
-  private boolean isMyEvent = true;
-
+  
   /**
    * Constructor with on Param
    *
@@ -52,11 +47,11 @@ public class SocialInformationEvent implements SocialInformation {
     this.schedulable = schedulable;
     this.classification = schedulable.getClassification().getString();
     if (schedulable.getEndDate().after(new Date())) {
-      type = EVENT;
+      setType(SocialInformationType.EVENT.toString());
     } else {
-      type = LASTEVENT;
+      setType(SocialInformationType.LASTEVENT.toString());
     }
-
+    setUpdated(true);
   }
 
   /**
@@ -66,24 +61,14 @@ public class SocialInformationEvent implements SocialInformation {
    * @param isMyEvent
    */
   public SocialInformationEvent(Schedulable schedulable, boolean isMyEvent) {
-    this.isMyEvent = isMyEvent;
     this.schedulable = schedulable;
     this.classification = schedulable.getClassification().getString();
     if (schedulable.getEndDate().after(new Date())) {
-      type = EVENT;
+      setType(SocialInformationType.EVENT.toString());
     } else {
-      type = LASTEVENT;
+      setType(SocialInformationType.LASTEVENT.toString());
     }
-  }
-
-  /**
-   * return the type of this SocialInformation
-   *
-   * @return String
-   */
-  @Override
-  public String getType() {
-    return type.toString();
+    setUpdated(isMyEvent);
   }
 
   /**
@@ -136,7 +121,7 @@ public class SocialInformationEvent implements SocialInformation {
    */
   @Override
   public String getUrl() {
-    if (isMyEvent) {
+    if (isUpdated()) {
       return URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "SelectDay?Day=" + DateUtil
           .getInputDate(getDate(), "FR");
     }
@@ -155,16 +140,6 @@ public class SocialInformationEvent implements SocialInformation {
   }
 
   /**
-   * return if this socialInfo was updtated or not
-   *
-   * @return boolean
-   */
-  @Override
-  public boolean isUpdeted() {
-    return isMyEvent;
-  }
-
-  /**
    * Indicates whether some other SocialInformation date is befor or after the date of this one.
    *
    * @param obj the reference object with which to compare.
@@ -172,10 +147,10 @@ public class SocialInformationEvent implements SocialInformation {
    */
   @Override
   public int compareTo(SocialInformation si) {
-    if (SocialInformationType.LASTEVENT == type)// event in the passe
-    {
+    if (SocialInformationType.LASTEVENT.toString().equals(getType())) {
+      // event in the past
       return getDate().compareTo(si.getDate()) * -1;
     }
-    return getDate().compareTo(si.getDate());// futer Event
+    return getDate().compareTo(si.getDate());// future event
   }
 }

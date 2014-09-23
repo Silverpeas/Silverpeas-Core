@@ -82,15 +82,23 @@ public class SocialNetworkService {
     LinkedHashMap<Date, List<SocialInformation>> hashtable =
         new LinkedHashMap<Date, List<SocialInformation>>();
     List<SocialInformation> lsi = new ArrayList<SocialInformation>();
+    SocialInformation lastInfoAdded = null;
 
     for (SocialInformation information : socialInformationsFull) {
       if (DateUtil.formatDate(information.getDate()).equals(date)) {
-        lsi.add(information);
+        if (!information.equals(lastInfoAdded)) {
+          lsi.add(information);
+          lastInfoAdded = information;
+        } else {
+          // change action of last info added
+          lsi.get(lsi.size()-1).setUpdated(false);
+        }
       } else {
         date = DateUtil.formatDate(information.getDate());
         lsi = new ArrayList<SocialInformation>();
         lsi.add(information);
         hashtable.put(information.getDate(), lsi);
+        lastInfoAdded = information;
       }
     }
     return hashtable;

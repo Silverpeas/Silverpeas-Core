@@ -203,7 +203,6 @@ public class NewsFeedJSONServlet extends HttpServlet {
       valueObj.put("title", userDetailToJSON(contactUser2));
       valueObj.put("hour", formatTime.format(information.getDate()));
       valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
-      valueObj.put("icon", avatarURL);
       valueObj.put("label", multilang.getStringWithParam("newsFeed.relationShip.label",
           contactUser2.getDisplayedName()));
       return valueObj;
@@ -228,10 +227,8 @@ public class NewsFeedJSONServlet extends HttpServlet {
       valueObj.put("hour", formatTime.format(information.getDate()));
     }
     valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
-    valueObj.put("icon",
-        getIconUrl(SocialInformationType.valueOf(information.getType())) + information.getIcon());
     valueObj.put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
-        ".updated." + information.isUpdeted()));
+        ".updated." + information.isUpdated()));
 
     return valueObj;
   }
@@ -278,9 +275,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     valueObj.put("author", userDetailToJSON(contactUser));
     valueObj.put("hour", formatTime.format(event.getDate()));
     valueObj.put("url", URLManager.getApplicationURL() + event.getUrl());
-    valueObj.put("icon",
-        getIconUrl(SocialInformationType.valueOf(event.getType())) + event.getIcon());
-    if (!event.isUpdeted() && event.getIcon().startsWith(event.getType() + "_private")) {
+    if (!event.isUpdated() && event.getIcon().startsWith(event.getType() + "_private")) {
       valueObj.put("title", multilang.getString("profil.icon.private.event"));
       valueObj.put("description", "");
     } else {
@@ -304,19 +299,6 @@ public class NewsFeedJSONServlet extends HttpServlet {
     userJSON.put("displayedName", user.getDisplayedName());
     userJSON.put("profilPhoto", URLManager.getApplicationURL() + user.getSmallAvatar());
     return userJSON;
-  }
-
-  /**
-   * return the url of icon
-   * @param type
-   * @return String
-   */
-  private String getIconUrl(SocialInformationType type) {
-    String url = URLManager.getApplicationURL() + "/socialNetwork/jsp/icons/";
-    if (type.equals(SocialInformationType.MEDIA)) {
-      url = URLManager.getApplicationURL();
-    }
-    return url;
   }
 
 }

@@ -24,111 +24,25 @@
 
 package com.silverpeas.socialnetwork.relationShip;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-
-import java.util.Date;
 
 /**
  * @author Bensalem Nabil
  */
-public class SocialInformationRelationShip implements SocialInformation {
-
-  private String title;
-  private String author;
-  private String url;
-  private Date date;
+public class SocialInformationRelationShip extends AbstractSocialInformation {
 
   /**
    * @param relationShip
    */
   public SocialInformationRelationShip(RelationShip relationShip) {
-    author = relationShip.getUser1Id() + "";// myFriend
-    title = relationShip.getUser2Id() + "";// Friend of my Friend
-    date = relationShip.getAcceptanceDate();
-    this.url = "/Rprofil/jsp/Main?userId=" + relationShip.getUser2Id();
-
-  }
-
-  /**
-   * return the Title of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * return the Description of this SocialInformation
-   * @return String
-   */
-  @Override
-  public String getDescription() {
-    return "";
-  }
-
-  /**
-   * return the Author of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getAuthor() {
-    return author;
-  }
-
-  /**
-   * return the Url of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getUrl() {
-    return url;
-  }
-
-  /**
-   * return the Date of this SocialInfo
-   * @return
-   */
-  @Override
-  public Date getDate() {
-    return date;
-  }
-
-  /**
-   * return the Type of this SocialInfo
-   * @return
-   */
-  @Override
-  public String getType() {
-    return SocialInformationType.RELATIONSHIP.toString();
-  }
-
-  /**
-   * return icon name of this SocialInfo
-   * @return String
-   */
-  @Override
-  public String getIcon() {
-    return "Photo_profil.jpg";
-  }
-
-  /**
-   * return if this socialInfo was updtated or not
-   * @return boolean
-   */
-  @Override
-  public boolean isUpdeted() {
-    return false;
-  }
-
-  /**
-   *Indicates whether some other SocialInformation date is befor the date of this one.
-   *@param obj the reference object with which to compare.
-   * @return int
-   */
-  @Override
-  public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate()) * -1;
+    setAuthor(Integer.toString(relationShip.getUser1Id()));// myFriend
+    setTitle(Integer.toString(relationShip.getUser2Id()));// Friend of my Friend
+    setDate(relationShip.getAcceptanceDate());
+    setUrl("/Rprofil/jsp/Main?userId=" + relationShip.getUser2Id());
+    setDescription("");
+    setType(SocialInformationType.RELATIONSHIP.toString());
+    setIcon("Photo_profil.jpg");
+    setUpdated(false);
   }
 }

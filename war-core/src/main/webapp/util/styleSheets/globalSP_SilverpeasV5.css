@@ -2434,6 +2434,30 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   margin-right:7px;
 }
 
+#portlet-myFeed .post {
+  background:transparent url(../icons/newsFeed_blog.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+#portlet-myFeed .news {
+  background:transparent url(../icons/newsFeed_news.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+#portlet-myFeed .bookmark {
+  background:transparent url(../icons/newsFeed_bookmark.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
+#portlet-myFeed .site {
+  background:transparent url(../icons/newsFeed_site.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
 #portlet-myFeed .event,
 #portlet-myFeed .lastevent {
   background:transparent url(../icons/newsFeed_event.gif) right 7px no-repeat;
@@ -3879,6 +3903,26 @@ caption {
 
 #newsFeedProfil .txt .decoration-publication {
   background-image:url(../icons/newsFeed_publication.gif);
+  padding-left:20px;
+}
+
+#newsFeedProfil .txt .decoration-post {
+  background-image:url(../icons/newsFeed_blog.gif);
+  padding-left:20px;
+}
+
+#newsFeedProfil .txt .decoration-news {
+  background-image:url(../icons/newsFeed_news.gif);
+  padding-left:20px;
+}
+
+#newsFeedProfil .txt .decoration-bookmark {
+  background-image:url(../icons/newsFeed_bookmark.gif);
+  padding-left:20px;
+}
+
+#newsFeedProfil .txt .decoration-site {
+  background-image:url(../icons/newsFeed_site.gif);
   padding-left:20px;
 }
 
