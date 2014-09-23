@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.node.control.dao;
+package com.stratelia.webactiv.node.control.dao;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import org.junit.Before;
@@ -33,8 +33,8 @@ import com.mockrunner.jdbc.PreparedStatementResultSetHandler;
 import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.JDBCMockObjectFactory;
 import com.mockrunner.mock.jdbc.MockResultSet;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;

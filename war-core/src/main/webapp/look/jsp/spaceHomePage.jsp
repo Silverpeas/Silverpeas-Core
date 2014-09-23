@@ -36,7 +36,7 @@
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@page import="com.silverpeas.look.DefaultSpaceHomePage"%>
-<%@page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
+<%@page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.look.LookHelper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>

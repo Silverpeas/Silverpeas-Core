@@ -25,7 +25,6 @@
 package com.silverpeas.sharing.model;
 
 import com.silverpeas.sharing.mock.NodeSharingTicketService;
-import com.silverpeas.sharing.model.NodeAccessControl;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
@@ -33,12 +32,12 @@ import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.Alias;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;

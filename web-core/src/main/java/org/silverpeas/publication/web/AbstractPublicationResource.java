@@ -40,10 +40,10 @@ import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
  * A REST Web resource providing access to publications.

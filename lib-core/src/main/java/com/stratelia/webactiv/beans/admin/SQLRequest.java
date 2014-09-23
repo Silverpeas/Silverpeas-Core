@@ -92,7 +92,7 @@ public class SQLRequest {
   }
 
   public SQLRequest() {
-    this("com.stratelia.webactiv.util.node", "default");
+    this("com.stratelia.webactiv.node", "default");
   }
 
   //

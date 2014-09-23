@@ -27,7 +27,7 @@
  */
 package com.silverpeas.node.importexport;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor

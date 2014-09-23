@@ -38,7 +38,7 @@ public class QuestionContainerInstanciator extends SQLRequest {
   }
 
   public QuestionContainerInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.util.questionContainer");
+    super("com.stratelia.webactiv.questionContainer");
   }
 
   public void create(Connection con, String spaceId, String componentId,

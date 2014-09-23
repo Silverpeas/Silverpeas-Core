@@ -24,7 +24,7 @@
 package com.silverpeas.look;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public class TickerItem {
 

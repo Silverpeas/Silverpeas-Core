@@ -27,7 +27,7 @@ package com.silverpeas.node.notification;
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.notification.SilverpeasNotificationCause;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * Notification about the deletion of a nodes in a given component instance.

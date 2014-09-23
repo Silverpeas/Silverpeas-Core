@@ -32,9 +32,9 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.node.control.AnonymousMethodOnNode;
-import com.stratelia.webactiv.util.node.control.NodeDeletion;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.AnonymousMethodOnNode;
+import com.stratelia.webactiv.node.control.NodeDeletion;
+import com.stratelia.webactiv.node.model.NodePK;
 
 public class NodeInstanciator extends SQLRequest {
 
@@ -47,7 +47,7 @@ public class NodeInstanciator extends SQLRequest {
   }
 
   public NodeInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.util.node");
+    super("com.stratelia.webactiv.node");
   }
 
   public void create(Connection con, String spaceId, String componentId, String userId) throws

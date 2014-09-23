@@ -31,7 +31,7 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 /**
  * A REST Web resource providing access to a node through sharing mode.

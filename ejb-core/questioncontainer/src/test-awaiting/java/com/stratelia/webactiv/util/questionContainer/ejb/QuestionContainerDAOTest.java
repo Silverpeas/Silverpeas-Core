@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.questionContainer.ejb;
+package com.stratelia.webactiv.questionContainer.ejb;
 
 import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
@@ -52,8 +52,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 /**
  * @author ebonnet

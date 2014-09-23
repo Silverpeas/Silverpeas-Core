@@ -34,8 +34,8 @@ import com.silverpeas.web.RESTWebService;
 
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodePK;
 
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 

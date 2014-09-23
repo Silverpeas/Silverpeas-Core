@@ -28,14 +28,14 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
-import com.stratelia.webactiv.util.publication.control.PublicationDAO;
+import com.stratelia.webactiv.publication.control.PublicationDAO;
 import java.util.Collection;
 import java.util.Calendar;
 import java.util.List;
 import java.sql.Connection;
 import com.silverpeas.components.model.AbstractTestDao;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import java.util.Arrays;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import static org.junit.Assert.*;

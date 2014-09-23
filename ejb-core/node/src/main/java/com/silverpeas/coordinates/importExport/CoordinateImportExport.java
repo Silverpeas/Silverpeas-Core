@@ -31,14 +31,14 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.util.coordinates.model.CoordinateRuntimeException;
+import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.coordinates.model.CoordinateRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * Classe gerant la manipulation des axes de coordinates pour le module d'importExport.
@@ -185,7 +185,7 @@ public class CoordinateImportExport {
    */
   public List<NodeDetail> getAxis(String componentId) {
     ResourceLocator nodeSettings = new ResourceLocator(
-        "org.silverpeas.util.node.nodeSettings", "");
+        "org.silverpeas.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     List<NodeDetail> axis = new ArrayList<NodeDetail>();
@@ -218,7 +218,7 @@ public class CoordinateImportExport {
       boolean includeUnclassified,
       boolean takeAxisInChildrenList) {
     ResourceLocator nodeSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.node.nodeSettings", "");
+        "com.stratelia.webactiv.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     List<NodeDetail> axis = new ArrayList<NodeDetail>();
@@ -251,7 +251,7 @@ public class CoordinateImportExport {
    */
   public List getAxisChildren(NodePK nodePK, boolean takeAxisInChildrenList) {
     ResourceLocator nodeSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.node.nodeSettings", "");
+        "com.stratelia.webactiv.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     List<NodeDetail> children = new ArrayList<NodeDetail>();

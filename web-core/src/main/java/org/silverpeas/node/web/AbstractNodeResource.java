@@ -32,9 +32,9 @@ import javax.ws.rs.core.Response.Status;
 
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * A REST Web resource providing access to a node.

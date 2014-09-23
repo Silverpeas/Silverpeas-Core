@@ -29,7 +29,7 @@ import java.util.List;
 import com.silverpeas.importExport.control.ImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 public class ExportXMLThread extends ExportThread {
 

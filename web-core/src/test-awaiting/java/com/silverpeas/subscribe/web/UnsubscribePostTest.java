@@ -33,7 +33,7 @@ import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.web.RESTWebServiceTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Before;

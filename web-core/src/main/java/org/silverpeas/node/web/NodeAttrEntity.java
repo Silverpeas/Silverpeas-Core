@@ -23,7 +23,7 @@ package org.silverpeas.node.web;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;

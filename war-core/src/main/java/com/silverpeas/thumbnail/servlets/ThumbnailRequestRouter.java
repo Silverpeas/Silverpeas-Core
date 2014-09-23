@@ -49,7 +49,7 @@ import org.silverpeas.servlet.HttpRequest;
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "org.silverpeas.util.publication.publicationSettings", "fr");
+      "org.silverpeas.publication.publicationSettings", "fr");
   private static final long serialVersionUID = -2685660972761271210L;
 
   @Override

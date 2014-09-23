@@ -29,8 +29,8 @@ import java.util.List;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public interface LookHelper {
 

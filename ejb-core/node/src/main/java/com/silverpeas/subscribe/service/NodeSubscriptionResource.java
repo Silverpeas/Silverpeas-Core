@@ -24,7 +24,7 @@
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * User: Yohann Chastagnier

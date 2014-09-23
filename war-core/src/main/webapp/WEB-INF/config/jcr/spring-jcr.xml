@@ -80,8 +80,8 @@
 
   <!-- Node -->
   <!--
-    <bean id="jcrNodeDao" class="com.stratelia.webactiv.util.node.ejb.jcr.impl.JcrNodeDao" /> <bean
-    id="jcrNodeTranslationDao" class="com.stratelia.webactiv.util.node.ejb.jcr.impl.JcrNodeTranslationDao" />
+    <bean id="jcrNodeDao" class="com.stratelia.webactiv.node.ejb.jcr.impl.JcrNodeDao" /> <bean
+    id="jcrNodeTranslationDao" class="com.stratelia.webactiv.node.ejb.jcr.impl.JcrNodeTranslationDao" />
   -->
   <!-- Publications -->
   <!--

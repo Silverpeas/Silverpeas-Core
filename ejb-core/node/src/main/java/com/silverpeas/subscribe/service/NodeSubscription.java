@@ -27,7 +27,7 @@ package com.silverpeas.subscribe.service;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 import java.util.Date;
 

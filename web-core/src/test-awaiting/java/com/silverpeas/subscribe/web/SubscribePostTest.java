@@ -34,7 +34,7 @@ import com.silverpeas.web.RESTWebServiceTest;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.MediaType;

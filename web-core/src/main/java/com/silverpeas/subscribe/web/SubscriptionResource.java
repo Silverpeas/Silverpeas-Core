@@ -37,7 +37,7 @@ import com.silverpeas.subscribe.service.SubscribeRuntimeException;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

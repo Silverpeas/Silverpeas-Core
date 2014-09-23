@@ -67,7 +67,7 @@
     <castor:field name="componentId" type="string">
       <castor:bind-xml name="componentId" node="attribute"/>
     </castor:field>
-    <castor:field name="publicationDetail" type="com.stratelia.webactiv.util.publication.model.PublicationDetail">
+    <castor:field name="publicationDetail" type="com.stratelia.webactiv.publication.model.PublicationDetail">
       <castor:bind-xml name="sp:publicationHeader" node="element"/>
     </castor:field>
     <castor:field name="publicationContentType" type="com.silverpeas.publication.importExport.PublicationContentType">
@@ -89,7 +89,7 @@
       <castor:bind-xml name="sp:coordinatesPositions" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.stratelia.webactiv.util.publication.model.PublicationDetail">
+  <castor:class name="com.stratelia.webactiv.publication.model.PublicationDetail">
     <castor:map-to xml="publicationHeader" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="name" type="string">
       <castor:bind-xml name="sp:name" node="element"/>
@@ -323,11 +323,11 @@
     <castor:field name="componentId" type="string">
       <castor:bind-xml name="componentId" node="attribute"/>
     </castor:field>
-    <castor:field name="nodeDetail" type="com.stratelia.webactiv.util.node.model.NodeDetail">
+    <castor:field name="nodeDetail" type="com.stratelia.webactiv.node.model.NodeDetail">
       <castor:bind-xml name="sp:topic" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.stratelia.webactiv.util.node.model.NodeDetail">
+  <castor:class name="com.stratelia.webactiv.node.model.NodeDetail">
     <castor:map-to xml="topic" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="id">
       <castor:bind-xml name="id" node="attribute"/>
@@ -350,7 +350,7 @@
     <castor:field name="status" type="string">
         <castor:bind-xml name="sp:status" node="element"/>
     </castor:field>-->
-    <castor:field name="childrenDetails" type="com.stratelia.webactiv.util.node.model.NodeDetail" collection="arraylist">
+    <castor:field name="childrenDetails" type="com.stratelia.webactiv.node.model.NodeDetail" collection="arraylist">
       <castor:bind-xml name="sp:topic" node="element"/>
     </castor:field>
   </castor:class>
@@ -410,12 +410,12 @@
     <castor:field name="createEnable" type="boolean">
       <castor:bind-xml name="createEnable" node="attribute"/>
     </castor:field>
-    <castor:field name="coordinatesPositions" type="com.stratelia.webactiv.util.coordinates.model.Coordinate" collection="arraylist">
+    <castor:field name="coordinatesPositions" type="com.stratelia.webactiv.coordinates.model.Coordinate" collection="arraylist">
       <castor:bind-xml name="sp:coordinatePosition" node="element"/>
     </castor:field>
   </castor:class>
   
-  <castor:class name="com.stratelia.webactiv.util.coordinates.model.Coordinate">
+  <castor:class name="com.stratelia.webactiv.coordinates.model.Coordinate">
     <castor:map-to xml="coordinatePosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="coordinatePoints" type="com.silverpeas.coordinates.importExport.CoordinatePointType" collection="arraylist">
       <castor:bind-xml name="sp:coordinateAxis" node="element"/>

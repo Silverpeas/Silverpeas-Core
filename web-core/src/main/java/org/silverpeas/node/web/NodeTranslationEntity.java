@@ -26,7 +26,7 @@ package org.silverpeas.node.web;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 @XmlRootElement
 public class NodeTranslationEntity {

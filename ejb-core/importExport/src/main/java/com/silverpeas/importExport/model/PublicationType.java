@@ -32,7 +32,7 @@ import com.silverpeas.node.importexport.NodePositionsType;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public class PublicationType {
 

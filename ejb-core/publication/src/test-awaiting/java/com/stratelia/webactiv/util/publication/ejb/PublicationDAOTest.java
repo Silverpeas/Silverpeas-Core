@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
-import com.stratelia.webactiv.util.publication.control.PublicationDAO;
+import com.stratelia.webactiv.publication.control.PublicationDAO;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,10 +37,10 @@ import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationWithStatus;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

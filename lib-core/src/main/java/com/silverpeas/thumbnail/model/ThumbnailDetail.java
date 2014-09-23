@@ -38,7 +38,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class ThumbnailDetail implements Serializable, MimeTypes {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "org.silverpeas.util.publication.publicationSettings", "fr");
+      "org.silverpeas.publication.publicationSettings", "fr");
   public static final int THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE = 1;
 
   private static final long serialVersionUID = 1L;

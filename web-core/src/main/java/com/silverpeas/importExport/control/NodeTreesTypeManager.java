@@ -28,7 +28,7 @@ import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 import java.util.Collection;
 import java.util.List;
 import org.silverpeas.core.admin.OrganisationControllerFactory;

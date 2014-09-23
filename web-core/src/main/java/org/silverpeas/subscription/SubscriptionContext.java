@@ -27,7 +27,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 import java.util.ArrayList;
 import java.util.Collection;

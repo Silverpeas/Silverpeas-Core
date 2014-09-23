@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.coordinates.ejb;
+package com.stratelia.webactiv.coordinates.ejb;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -47,9 +47,9 @@ import org.junit.Test;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.*;

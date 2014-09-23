@@ -34,7 +34,7 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.attachment.web.AttachmentEntity;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * A REST Web resource providing access to publications through private mode.

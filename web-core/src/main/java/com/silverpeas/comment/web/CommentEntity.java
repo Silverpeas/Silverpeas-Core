@@ -30,7 +30,7 @@ import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;
 
 import javax.validation.constraints.NotNull;

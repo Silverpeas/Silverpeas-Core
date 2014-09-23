@@ -24,14 +24,12 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.node.notification.NodeDeletionNotification;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 import javax.inject.Inject;
 import javax.inject.Named;

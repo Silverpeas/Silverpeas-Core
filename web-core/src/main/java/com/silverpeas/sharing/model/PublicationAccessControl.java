@@ -23,7 +23,7 @@ package com.silverpeas.sharing.model;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.sharing.security.AbstractShareableAccessControl;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
  * Access control to shared publications and their content

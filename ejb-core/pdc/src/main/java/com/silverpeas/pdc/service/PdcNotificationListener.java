@@ -28,7 +28,7 @@ import com.silverpeas.node.notification.NodeDeletionNotification;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import javax.inject.Inject;
 import javax.inject.Named;
 import static com.silverpeas.notification.NotificationTopic.onTopic;

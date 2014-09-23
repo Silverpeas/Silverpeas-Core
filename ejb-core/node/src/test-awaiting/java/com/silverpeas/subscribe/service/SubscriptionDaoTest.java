@@ -29,12 +29,11 @@ import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import org.junit.Test;
 import org.silverpeas.persistence.dao.DAOBasedTest;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;

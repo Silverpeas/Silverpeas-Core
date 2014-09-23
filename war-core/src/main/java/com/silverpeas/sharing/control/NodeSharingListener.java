@@ -30,7 +30,7 @@ import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import javax.inject.Inject;
 import javax.inject.Named;
 

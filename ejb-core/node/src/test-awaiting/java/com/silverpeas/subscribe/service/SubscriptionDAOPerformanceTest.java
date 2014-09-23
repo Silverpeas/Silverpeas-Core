@@ -32,7 +32,7 @@ import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 import org.dbunit.database.IDatabaseConnection;
 import org.hamcrest.Matcher;

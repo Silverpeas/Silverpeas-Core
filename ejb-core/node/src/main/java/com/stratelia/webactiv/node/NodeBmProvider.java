@@ -27,7 +27,7 @@ import javax.inject.Named;
 
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeBm;
 
 /**
  * The NodeBm provider encapsulates the way the NodeBm service is accessed. It's managed by the IoC

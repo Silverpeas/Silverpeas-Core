@@ -37,13 +37,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class QuestionInstanciator extends SQLRequest {
   private static ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.util.question.questionSettings", "fr");
+      "com.stratelia.webactiv.question.questionSettings", "fr");
 
   public QuestionInstanciator() {
   }
 
   public QuestionInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.util.question");
+    super("com.stratelia.webactiv.question");
   }
 
   public void create(Connection con, String spaceId, String componentId,

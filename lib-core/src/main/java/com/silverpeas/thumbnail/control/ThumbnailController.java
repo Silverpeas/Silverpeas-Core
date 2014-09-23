@@ -58,7 +58,7 @@ import java.util.List;
 public class ThumbnailController {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "org.silverpeas.util.publication.publicationSettings", "fr");
+      "org.silverpeas.publication.publicationSettings", "fr");
 
   /**
    * the constructor.

@@ -27,7 +27,7 @@ package org.silverpeas.publication.notification;
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.notification.SilverpeasNotificationCause;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 /**
  * Notification about the deletion of a publication in a given component instance.

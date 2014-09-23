@@ -43,10 +43,10 @@
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.homepage.*"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK, com.stratelia.webactiv.util.node.control.*, com.stratelia.webactiv.util.node.model.*, com.stratelia.webactiv.util.exception.* "%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK, com.stratelia.webactiv.node.control.*, com.stratelia.webactiv.node.model.*, com.stratelia.webactiv.util.exception.* "%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>

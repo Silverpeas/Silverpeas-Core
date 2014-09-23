@@ -32,8 +32,8 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.sharing.SharingContext;
@@ -47,8 +47,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Web entity representing a publication that can be serialized into a given media type (JSON, XML).

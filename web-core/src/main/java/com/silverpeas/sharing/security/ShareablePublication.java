@@ -24,7 +24,7 @@
 package com.silverpeas.sharing.security;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
 * Publication being accessed through some shared object.

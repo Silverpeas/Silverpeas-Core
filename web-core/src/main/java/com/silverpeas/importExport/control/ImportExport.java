@@ -60,14 +60,14 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeRuntimeException;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,7 +75,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.xml.parsers.ParserConfigurationException;

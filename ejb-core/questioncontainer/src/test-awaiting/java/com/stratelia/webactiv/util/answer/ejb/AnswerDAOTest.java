@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.answer.ejb;
+package com.stratelia.webactiv.answer.ejb;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,8 +49,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.answer.model.Answer;
-import com.stratelia.webactiv.util.answer.model.AnswerPK;
+import com.stratelia.webactiv.answer.model.Answer;
+import com.stratelia.webactiv.answer.model.AnswerPK;
 
 /**
  * @author ebonnet

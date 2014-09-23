@@ -29,7 +29,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;

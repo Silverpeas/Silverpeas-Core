@@ -39,10 +39,10 @@ import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 /**
  * A REST Web resource providing access to publications through sharing mode.

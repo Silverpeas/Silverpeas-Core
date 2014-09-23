@@ -30,7 +30,7 @@ import static com.silverpeas.notification.RegisteredTopics.PUBLICATION_TOPIC;
 import javax.inject.Inject;
 
 import com.silverpeas.notification.NotificationPublisher;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 /**
  * A service to notify about the creation or the deletion of publications. It provides an easy

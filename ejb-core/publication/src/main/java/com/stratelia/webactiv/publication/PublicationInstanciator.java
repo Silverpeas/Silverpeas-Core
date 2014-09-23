@@ -45,7 +45,7 @@ import java.sql.Statement;
 
 public class PublicationInstanciator extends SQLRequest {
   private static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.util.publication.publicationSettings", "fr");
+      "org.silverpeas.publication.publicationSettings", "fr");
 
 
   public PublicationInstanciator(String fullPathName) {

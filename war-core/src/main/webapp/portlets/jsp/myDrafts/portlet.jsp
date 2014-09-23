@@ -27,7 +27,7 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail" %>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

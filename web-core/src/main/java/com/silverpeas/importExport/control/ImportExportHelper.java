@@ -26,7 +26,7 @@ import com.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 

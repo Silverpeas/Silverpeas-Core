@@ -41,7 +41,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.subscription.SubscriptionContext;
 
 import java.util.ArrayList;
