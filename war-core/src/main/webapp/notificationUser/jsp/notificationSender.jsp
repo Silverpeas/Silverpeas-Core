@@ -76,6 +76,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <head>
 <view:looknfeel/>
 <view:includePlugin name="tags" />
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function Submit(){
@@ -92,7 +93,7 @@ function sendNotification() {
     
     var errorMsg = "";
     if (isWhitespace(title)) { 
-       errorMsg = "<fmt:message key="GML.thefield"/> <fmt:message key="name"/> <fmt:message key="GML.isRequired"/>";
+       errorMsg = "<fmt:message key="GML.thefield"/> <fmt:message key="GML.notification.subject"/> <fmt:message key="GML.isRequired"/>";
     }
     if (errorMsg == "") {
 		document.notificationSenderForm.action = "SendNotif";
@@ -107,7 +108,7 @@ function processRecipients() {
   var groupIds = "";
   
   <% if (editTargets) { %>
-  var tags = $("#dest").tagit("tags");
+  var tags = $("#recipients").tagit("tags");
   for (var i in tags) {
     var value = tags[i].value;
     if (value.charAt(0) === "u") {
@@ -117,7 +118,7 @@ function processRecipients() {
     }
   }
   <% } else { %>
-  	$(".readonlyUser").each(function(index) {
+  	$(".tagit-readonly").each(function(index) {
     	userIds += $(this).attr("data-value") + " ";
     });
   <% } %>
@@ -126,7 +127,7 @@ function processRecipients() {
 }
 $(function () {
   <% if (editTargets) { %>
-	$('#dest').tagit({allowNewTags:false});
+	$('#recipients').tagit({allowNewTags:false});
   <% } %>
 });
 </script>
@@ -135,60 +136,58 @@ $(function () {
 <fmt:message key="GML.notification.send" var="msgAction"/>
 <view:browseBar extraInformations="${msgAction}"/>
 <view:window popup="true">
-<view:frame>
-<view:board>
+
 <form name="notificationSenderForm" action="" method="post" accept-charset="UTF-8">
-      <table cellpadding="5" cellspacing="0" border="0" width="100%">
-      	<tr>
-          <td valign="top" class="txtlibform"><fmt:message key="addressees"/> :</td>
-          <td>
-          	<% if (editTargets) { %>
-             <ul id="dest" data-name="dest">
-             	<% for (UserDetail user : notification.getUsers()) { %>
-             	<li data-value="u<%=user.getId()%>"><%=user.getDisplayedName() %></li>
-             	<% } %>
-             	<% for (Group group : notification.getGroups()) { %>
-             	<li data-value="g<%=group.getId()%>"><%=group.getName() %> (<%=group.getNbUsers() %>)</li>
-             	<% } %>
-             </ul>
-             <a href="#" onclick="javascript:Submit()" title="<fmt:message key="Opane_addressees"/>"><img src="<%=m_context %>/util/icons/notification_assign.gif" alt="<fmt:message key="Opane_addressees"/>"/></a>
-             <% } else { %>
-             	<% for (UserDetail user : notification.getUsers()) { %>
-             		<span data-value="<%=user.getId()%>" class="readonlyUser"><%=user.getDisplayedName() %></span>
-             	<% } %>
-             <% } %>
-          </td>
-        </tr>
-        <tr>
-          <td class="txtlibform"><fmt:message key="GML.notification.subject"/> :</td>
-          <td>
-           <input type="text" name="txtTitle" size="90" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=EncodeHelper.javaStringToHtmlString(notification.getSubject())%>"/>
-			 <img src="<%=mandatoryField%>" width="5" height="5"/>
-          </td>
-        </tr>
-        <tr>
-          <td class="txtlibform" valign="top"><fmt:message key="GML.notification.message"/> :</td>
-          <td>
-			<textarea name="txtMessage" cols="90" rows="6"><%=EncodeHelper.javaStringToHtmlString(notification.getBody())%></textarea>
-          </td>
-        </tr>
-        <tr> 
-          <td colspan="2"> (<img src="<%=mandatoryField%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>)</td>
-        </tr>
-				<input type="hidden" name="selectedUsers" id="selectedUsers" value=""/>
-				<input type="hidden" name="selectedGroups" id="selectedGroups" value=""/>
-				<input type="hidden" name="popupMode" value="<%=popupMode%>"/>
-				<input type="hidden" name="editTargets" value="<%=editTargets%>"/> 
-      </table>
+<input type="hidden" name="selectedUsers" id="selectedUsers" value=""/>
+<input type="hidden" name="selectedGroups" id="selectedGroups" value=""/>
+<input type="hidden" name="popupMode" value="<%=popupMode%>"/>
+<input type="hidden" name="editTargets" value="<%=editTargets%>"/> 
+      <fieldset class="skinFieldset" id="send-notification">
+        <legend>Notification</legend>
+        <div class="fields">
+          <div id="recipientsArea" class="field">
+            <label class="txtlibform"><fmt:message key="addressees"/></label>
+            <div class="champs">
+            <% if (editTargets) { %>
+            	<ul id="recipients" data-name="recipients">
+	        	<% for (UserDetail user : notification.getUsers()) { %>
+	        		<li data-value="u<%=user.getId()%>"><%=user.getDisplayedName() %></li>
+	        	<% } %>
+	        	<% for (Group group : notification.getGroups()) { %>
+	        		<li data-value="g<%=group.getId()%>"><%=group.getName() %> (<%=group.getNbUsers() %>)</li>
+	        	<% } %>
+        		</ul>
+        		<a href="#" onclick="javascript:Submit()" title="<fmt:message key="Opane_addressees"/>"><img src="<%=m_context %>/util/icons/create-action/add-existing-group.png" alt="<fmt:message key="Opane_addressees"/>"/></a>
+            <% } else { %>
+            	<% for (UserDetail user : notification.getUsers()) { %>
+       			<span data-value="<%=user.getId()%>" class="tagit-readonly"><%=user.getDisplayedName() %></span> 
+       			<% } %>
+            <% } %>
+            </div>
+          </div>
+          <div id="subjectArea" class="field">
+            <label class="txtlibform"><fmt:message key="GML.notification.subject"/></label>
+            <div class="champs">
+            	<input id="subject" type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=EncodeHelper.javaStringToHtmlString(notification.getSubject())%>"/>
+              <img src="<%=mandatoryField%>" width="5" height="5"/>
+            </div>
+          </div>
+          <div id="messageArea" class="field">
+            <label class="txtlibform"><fmt:message key="GML.notification.message"/></label>
+            <div class="champs">
+              <textarea id="message" name="txtMessage" cols="49" rows="9"><%=EncodeHelper.javaStringToHtmlString(notification.getBody())%></textarea>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 </form>
-</view:board>
+
 <view:buttonPane>
 <fmt:message key="Envoyer" var="msgSend"/>
 <fmt:message key="GML.cancel" var="msgCancel"/>
 <view:button label="${msgSend}" action="javascript:sendNotification()"/>
 <view:button label="${msgCancel}" action="javascript:window.close()"/>
 </view:buttonPane>
-</view:frame>
 </view:window>
 </body>
 </html>

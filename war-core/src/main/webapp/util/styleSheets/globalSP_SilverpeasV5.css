@@ -6744,3 +6744,63 @@ input[title] {
 iframe.embed {
   overflow: hidden;
 }
+
+/*********************** Style pour les éléments en lecture seule de type tagit *********************/
+.tagit-readonly {
+  background: #e7e7e7;
+  background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0.32,#e7e7e7),color-stop(0.66,#f9f9f9),color-stop(0.83, #f9f9f9));
+  background: -moz-linear-gradient(center top , #f9f9f9, #e7e7e7) repeat scroll 0 0 #f9f9f9;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#e7e7e7');
+  border: 1px solid #999999;
+  border-radius: 0 6px;
+  cursor: default;
+  padding: 2px 4px 3px;
+  margin:0 4px 4px 0;
+  color:#737373;
+  white-space:nowrap;
+  display:inline-block;
+}
+
+/*********************** Présentation pop up des notifications *********************/
+.popup-read-notification {
+  padding:15px;
+}
+.popup-read-notification .entete {
+  border-radius:8px;
+  padding:4px 1em;
+  background-color:#f7f7f7;
+  border:1px solid #bbb;
+  position:relative;
+}
+.popup-read-notification .entete .date {
+  position:absolute;
+  top:4px;
+  right:1em;
+  font-size:11pt;
+}
+.popup-read-notification .entete .from {
+  font-size:11pt;
+  padding-right:100px;
+}
+.popup-read-notification .source {
+  padding:1em 0.5em;
+  border-bottom:1px solid #e7e7e7;
+  color:#b3b2b2;
+}
+.popup-read-notification .source .label {
+  color:#000;
+}
+.popup-read-notification .link {
+  padding:1em 0.5em;
+  border-bottom:1px solid #e7e7e7;
+}
+.popup-read-notification .link a {
+  color:#1c94d4;
+  text-decoration:underline;
+  background:transparent url(../icons/component/bookmarkSmall.gif) top right no-repeat;
+  display:block;
+  line-height:16px;
+}
+.popup-read-notification .content-notification {
+  margin-bottom:1em;
+}

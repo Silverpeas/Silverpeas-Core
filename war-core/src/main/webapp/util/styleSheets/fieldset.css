@@ -210,3 +210,26 @@ input.inputHour{
 .skinFieldset .forms .fields .fieldInput select{
   max-width:200px;
 }
+
+/* Notifications  */
+#send-notification legend {
+  background: url("../icons/email.gif") no-repeat scroll 11px 1px transparent;
+}
+#send-notification #recipientsArea, #subjectArea, #messageArea {
+  clear: both;
+  display: block;
+  float: none;
+  width: 98%;
+}
+#send-notification #recipientsArea ul.tagit {
+	width:90%;
+	display:inline-block;
+	margin-bottom:0;
+}
+#send-notification #recipientsArea img {
+  vertical-align:baseline;
+  border:0;
+}
+#send-notification #messageArea textarea {
+  width:95%;
+}

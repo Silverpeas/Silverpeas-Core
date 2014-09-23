@@ -45,17 +45,13 @@
       response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="com.stratelia.webactiv.util.DateUtil"%>
-<%@ page import="java.util.Date"%>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>___/ Silverpeas - Corporate Portal Organizer
-      \________________________________________________________________________</title>
-      <view:looknfeel />
-    <script>
-      function deleteMessage( pID )
-      {
+    <title></title>
+    <view:looknfeel />
+    <script type="text/javascript">
+      function deleteMessage( pID ) {
         if (window.opener.deleteMessage) {
           window.opener.deleteMessage(pID, true, '${param.SpaceId}', '${from}');
           window.close();
@@ -69,14 +65,12 @@
         }
       }
 
-      function goTo()
-      {
+      function goTo() {
         window.opener.top.location = "<c:url value="${msg.url}" />";
         window.close();
       }
 
-      function closeWindow()
-      {
+      function closeWindow() {
       <c:choose>
         <c:when test="${'homePage' eq from}">window.opener.location.reload();</c:when>
         <c:otherwise>window.opener.location = "Main.jsp";</c:otherwise>
@@ -85,60 +79,40 @@
         }
     </script>
   </head>
-  <body>
-    <fmt:message key="silverMail" var="browseLabel" />
+<body>
+	<fmt:message key="silverMail" var="browseLabel" />
     <view:browseBar>
       <view:browseBarElt link="" label="${browseLabel}" />
       <view:browseBarElt link="" label="${msg.subject}" />
     </view:browseBar>
     <view:window popup="true">
-      <view:frame>
-      <view:board>
-              <table cellpadding="5" cellspacing="0" border="0" width="100%">
-                <tr>
-                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="date" /> :</td>
-                  <td><view:formatDate value="${msg.date}" /></td>
-                </tr>
-                <tr>
-                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="source" /> :</td>
-                  <td><c:out value="${msg.source}" /></td>
-                </tr>
-                <tr>
-                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="from" /> :</td>
-                  <td><c:out value="${msg.senderName}" /></td>
-                </tr>
-                <tr>
-                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="url" /> :</td>
-                  <td>
-                    <c:if test="${!empty msg.url}">
-                      <fmt:message key="silvermail.link" bundle="${icons}" var="icon_url" />
-                      <a href="javaScript:goTo();"><img src="<c:url value="${icon_url}"/>" border="0"/></a>
-                      </c:if>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="subject" /> :&nbsp;</td>
-                  <td>${msg.subject}</td>
-                </tr>
-                <tr>
-                  <td class="txtlibform"></td>
-                  <td>${msg.body}</td>
-                </tr>
-              </table>
-        </view:board>
-        <br/>
-        	<center>
-          <view:buttonPane>
-                <fmt:message var="closeLabel" key="close" />
-                <fmt:message var="deleteLabel" key="delete" />
-                <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${sessionController.currentMessageId}"/>);</c:set>
-                <view:button label="${deleteLabel}" action="${deleteAction}"/>
-                <view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/>
-          </view:buttonPane>
-        </center>
-      </view:frame>
+    <div class="popup-read-notification">
+    <div class="entete">
+        <div class="from">
+          <span class="label"><fmt:message key="from" /> : </span>
+          <c:out value="${msg.senderName}" /></div>
+        <div class="date"><view:formatDateTime value="${msg.date}" /></div>
+      </div>
+      <c:if test="${!empty msg.source}">
+      <div class="source"> <span class="label"><fmt:message key="source" /> :</span> <c:out value="${msg.source}" /> </div>
+      </c:if>
+      <c:if test="${!empty msg.url}">
+      	<div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /></a> </div>
+      </c:if>
+      <div class="content-notification">
+        ${msg.body}
+      </div>
+        
+      <view:buttonPane>
+            <fmt:message var="closeLabel" key="close" />
+            <fmt:message var="deleteLabel" key="delete" />
+            <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${sessionController.currentMessageId}"/>);</c:set>
+            <view:button label="${deleteLabel}" action="${deleteAction}"/>
+            <view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/>
+      </view:buttonPane>
+    </div>
     </view:window>
-    <form id="genericForm" action="" method="POST">
+    <form id="genericForm" action="" method="post">
       <input id="ID" name="ID" type="hidden"/>
       <input id="folder" name="folder" type="hidden"/>
       <input id="SpaceId" name="SpaceId" type="hidden"/>
