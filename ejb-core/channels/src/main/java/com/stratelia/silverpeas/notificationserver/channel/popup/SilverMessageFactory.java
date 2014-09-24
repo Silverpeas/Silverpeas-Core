@@ -29,7 +29,7 @@ import java.util.Date;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.LongText;
+import org.silverpeas.util.LongText;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;

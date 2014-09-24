@@ -25,7 +25,7 @@
 package com.silverpeas.search;
 
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 
 /**
  * This class encapsulates all the data used to create a ResultDisplayer implementation.

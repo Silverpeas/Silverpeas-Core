@@ -41,7 +41,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
 <%@ page import="com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController"%>

@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.LongText;
+import org.silverpeas.util.LongText;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.SilverpeasBean;

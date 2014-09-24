@@ -34,7 +34,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.silverpeas.util.EncodeHelper;
 import com.silverpeas.workflow.api.model.ContextualDesignation;
 import com.silverpeas.workflow.api.model.ContextualDesignations;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;

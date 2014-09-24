@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.PairObject" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

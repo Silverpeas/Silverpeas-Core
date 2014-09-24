@@ -29,7 +29,7 @@
     pageEncoding="UTF-8"%>
 
 <%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>

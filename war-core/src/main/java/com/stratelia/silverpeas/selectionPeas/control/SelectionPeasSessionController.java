@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.selectionPeas.*;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.PairObject;
+import org.silverpeas.util.PairObject;
 import java.util.*;
 
 /**

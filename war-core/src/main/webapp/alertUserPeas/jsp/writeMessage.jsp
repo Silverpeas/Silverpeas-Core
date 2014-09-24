@@ -33,6 +33,7 @@
 %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@ page import="org.silverpeas.util.PairObject" %>
 
 <%@ include file="check.jsp" %>
 

@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.alertUser;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.util.PairObject;
+import org.silverpeas.util.PairObject;
 
 public class AlertUser {
   protected String m_hostSpaceName;

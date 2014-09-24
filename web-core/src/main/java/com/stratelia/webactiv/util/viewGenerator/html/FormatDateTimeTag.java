@@ -27,7 +27,7 @@ import java.util.Date;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 
 import static org.silverpeas.util.StringUtil.isDefined;

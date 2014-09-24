@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
-import com.stratelia.silverpeas.util.JoinStatement;
+import org.silverpeas.util.JoinStatement;
 
 import java.util.List;
 

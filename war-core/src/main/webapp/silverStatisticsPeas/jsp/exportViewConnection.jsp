@@ -24,7 +24,7 @@
 
 --%>
 
-<%@ page import="javax.servlet.*,javax.servlet.http.*,javax.servlet.jsp.*,java.io.PrintWriter,java.io.IOException,java.io.FileInputStream,java.io.ObjectInputStream,java.util.*,java.lang.Boolean,com.stratelia.webactiv.util.*,com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="javax.servlet.*,javax.servlet.http.*,javax.servlet.jsp.*,java.io.PrintWriter,java.io.IOException,java.io.FileInputStream,java.io.ObjectInputStream,java.util.*,java.lang.Boolean,com.stratelia.webactiv.util.*,org.silverpeas.util.ResourcesWrapper"%>
 <% ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
 Collection cResultData = (Collection)request.getAttribute("ResultData");
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1

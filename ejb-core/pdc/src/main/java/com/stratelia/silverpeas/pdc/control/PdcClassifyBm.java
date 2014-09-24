@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.util.JoinStatement;
+import org.silverpeas.util.JoinStatement;
 
 public interface PdcClassifyBm {
 

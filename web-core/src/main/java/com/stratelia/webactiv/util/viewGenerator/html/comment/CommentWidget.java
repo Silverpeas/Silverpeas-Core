@@ -23,7 +23,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.comment;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;

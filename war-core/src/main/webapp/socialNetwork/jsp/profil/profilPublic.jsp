@@ -37,7 +37,7 @@
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
-<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

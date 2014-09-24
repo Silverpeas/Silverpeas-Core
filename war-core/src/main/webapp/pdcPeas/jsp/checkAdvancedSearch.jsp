@@ -48,7 +48,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <!-- import PDC -->
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
@@ -79,7 +79,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.CompoSpace"%>
 <%@ page import="java.text.NumberFormat"%>
-<%@ page import="com.stratelia.silverpeas.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 
 <!-- common -->
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>

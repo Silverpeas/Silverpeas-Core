@@ -42,6 +42,7 @@
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.ResourcesWrapper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>

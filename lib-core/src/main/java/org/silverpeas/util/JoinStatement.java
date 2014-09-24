@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.util;
+package org.silverpeas.util;
 
 import java.util.List;
 

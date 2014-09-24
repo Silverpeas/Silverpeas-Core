@@ -21,7 +21,7 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 import java.io.IOException;

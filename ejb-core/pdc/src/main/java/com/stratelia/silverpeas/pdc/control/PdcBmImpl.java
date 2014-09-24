@@ -45,7 +45,7 @@ import com.stratelia.silverpeas.treeManager.control.TreeBm;
 import com.stratelia.silverpeas.treeManager.control.TreeBmImpl;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
-import com.stratelia.silverpeas.util.JoinStatement;
+import org.silverpeas.util.JoinStatement;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;

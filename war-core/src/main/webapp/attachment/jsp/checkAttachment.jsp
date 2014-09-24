@@ -38,7 +38,7 @@
 <%@page import="java.util.Date" %>
 <%@ page import="com.stratelia.webactiv.util.DateUtil" %>
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
 

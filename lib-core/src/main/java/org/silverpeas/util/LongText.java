@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.util;
+package org.silverpeas.util;
 
 /**
  * Title: userPanelPeas
- * Description: this is an object pair of pair object 
+ * Description: this is an object pair of pair object
  * Copyright:    Copyright (c) 2002
  * Company:      Silverpeas
  * @author J-C Groccia

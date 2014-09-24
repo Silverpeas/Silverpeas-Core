@@ -38,7 +38,7 @@ import org.silverpeas.util.ConfigurationClassLoader;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourceBundleWrapper;
+import org.silverpeas.util.ResourceBundleWrapper;
 
 public class ResourceLocator implements Serializable {
 

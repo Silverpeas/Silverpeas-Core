@@ -38,7 +38,7 @@
 <%@ page import="
 				 com.stratelia.silverpeas.peasCore.MainSessionController,
                  com.stratelia.silverpeas.peasCore.URLManager,
-                 com.stratelia.silverpeas.util.ResourcesWrapper,
+                 org.silverpeas.util.ResourcesWrapper,
                  com.stratelia.webactiv.util.FileRepositoryManager,
                  com.stratelia.webactiv.util.FileServerUtils,
                  com.stratelia.webactiv.util.ResourceLocator,

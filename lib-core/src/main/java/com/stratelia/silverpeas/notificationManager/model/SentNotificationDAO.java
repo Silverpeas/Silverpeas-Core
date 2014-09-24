@@ -35,7 +35,7 @@ import java.util.List;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.LongText;
+import org.silverpeas.util.LongText;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class SentNotificationDAO {

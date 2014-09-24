@@ -32,7 +32,7 @@ response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager,
                  com.stratelia.silverpeas.peasCore.MainSessionController,
                  com.stratelia.webactiv.util.ResourceLocator"%>

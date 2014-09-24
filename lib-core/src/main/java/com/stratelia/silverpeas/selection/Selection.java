@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.selection;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.PairObject;
+import org.silverpeas.util.PairObject;
 import java.util.Collection;
 
 public final class Selection {

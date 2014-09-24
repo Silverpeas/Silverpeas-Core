@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.PairObject" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -51,7 +52,7 @@
 
 	boolean          toPopup = ((Boolean)request.getAttribute("ToPopup")).booleanValue();
 
-    PairObject       hostComponentName = (PairObject)request.getAttribute("HostComponentName");
+    PairObject hostComponentName = (PairObject)request.getAttribute("HostComponentName");
     String           hostSpaceName = (String)request.getAttribute("HostSpaceName");
 	PairObject[]     hostPath = (PairObject[])request.getAttribute("HostPath");
 

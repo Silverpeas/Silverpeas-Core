@@ -30,7 +30,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 
 import javax.servlet.jsp.JspTagException;

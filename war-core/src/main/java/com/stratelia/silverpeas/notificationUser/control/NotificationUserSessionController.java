@@ -20,6 +20,7 @@
  */
 package com.stratelia.silverpeas.notificationUser.control;
 
+import org.silverpeas.util.PairObject;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -33,7 +34,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.PairObject;
 
 import java.util.ArrayList;
 import java.util.Properties;

@@ -33,7 +33,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.silverpeas.workflow.api.model.RelatedUser;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;

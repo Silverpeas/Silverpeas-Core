@@ -29,7 +29,7 @@
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 
