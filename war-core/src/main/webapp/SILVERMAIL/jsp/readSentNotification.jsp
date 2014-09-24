@@ -75,38 +75,19 @@
       <view:browseBarElt link="#" label="${notif.title}" />
     </view:browseBar>
     <view:window popup="true">
-      <view:frame>
-        <view:board>
-              	<form name="silvermailForm" action="" method="post">
-                <table cellpadding="5" cellspacing="0" border="0" width="100%">
-                    <tr>
-                      <td class="txtlibform"><fmt:message key="date"/></td>
-                      <td><fmt:formatDate value="${notif.notifDate}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
-                    </tr>
-                    <tr>
-                      <td class="txtlibform"><fmt:message key="source"/></td>
-                      <td><c:out value="${notif.source}" /></td>
-                    </tr>
-                    <tr>
-                      <td class="txtlibform"><fmt:message key="url"/></td>
-                      <td>
-                        <c:if test="${!empty notif.link}">
-                          <fmt:message key="silvermail.link" bundle="${icons}" var="icon_url" />
-                          <a href="javaScript:goTo();"><img src="<c:url value="${icon_url}"/>" border="0"/></a>
-                          </c:if>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="txtlibform"><fmt:message key="title"/></td>
-                      <td>${notif.title}</td>
-                    </tr>
-                    <tr>
-                      <td class="txtlibform"></td>
-                      <td>${notif.body}</td>
-                    </tr>
-                </table>
-                </form>
-           </view:board>
+    <div class="popup-read-notification">
+    <div class="entete">
+    	<div class="from"><span class="label">&nbsp;</span></div>
+        <div class="date"><view:formatDateTime value="${notif.notifDate}" /></div>
+      </div>
+      <div class="source">
+        <span class="label"><fmt:message key="source" /> :</span> <c:out value="${notif.source}" /> </div>
+      <c:if test="${!empty notif.link}">
+      	<div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /> </a> </div>
+      </c:if>
+      <div class="content-notification">
+        ${notif.body}
+      </div>
            <view:buttonPane>
                 <fmt:message var="deleteLabel" key="delete" />
                 <c:set var="deleteAction">javascript:onclick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
@@ -115,7 +96,7 @@
            		<fmt:message var="closeLabel" key="close" />
            		<view:button label="${closeLabel}" action="javascript:onclick=closeWindow();"/>
            </view:buttonPane>
-      </view:frame>
+		</div>
     </view:window>
   </body>
 </html>

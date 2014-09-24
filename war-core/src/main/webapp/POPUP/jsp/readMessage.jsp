@@ -59,7 +59,8 @@
     <c:set var="senderName" value="${popupMsg.senderName}"/>
     <c:set var="answerAllowed" value="${popupMsg.answerAllowed}"/>
 
-    <html>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <title><fmt:message key="GML.popupTitle"/></title>
       <view:looknfeel/>
@@ -78,70 +79,23 @@
           $('#messageAux').focus();
         });
       </script>
-
     </head>
     <body>
     <view:browseBar path="<fmt:message key='message' />"/>
     <view:window>
-      <view:frame>
-        <view:board>
-
-          <form name="popupForm" Action="ToAlert" Method="POST">
-            <div style="text-align: center;">
-              <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                <input type="hidden" name="theUserId" value="${senderId}">
-                <c:if test="${answerAllowed}">
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td align=left valign="baseline">
-              <span class="txtlibform"><fmt:message key="messageFrom"/>
-                  ${senderName}</span><span> - ${silfn:formatStringDate(popupMsgDate, language)}
-              <fmt:message key="messageAt"/> ${popupMsgTime}</span>
-                    </td>
-                  </tr>
-                </c:if>
-                <tr>
-                  <td>&nbsp;</td>
-                  <td align=left valign="baseline">
-                    <table class="">
-                      <tr>
-                        <td>${popupMsgBody}</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <c:if test="${answerAllowed}">
-                  <tr>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td align=left valign="baseline" class="txtlibform" style="font-weight: bold;">
-                      <fmt:message key="answer"/> :
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td align=left valign="baseline">
-                      <textarea id="messageAux" rows="5" cols="80" name="messageAux"></textarea>
-                    </td>
-                  </tr>
-                </c:if>
-              </table>
-            </div>
-          </form>
-        </view:board>
-        <view:buttonPane>
-          <c:if test="${answerAllowed}">
-            <fmt:message key='send' var="label"/>
-            <view:button label="${label}" action="javascript:onClick=answerMessage();" disabled="false"/>
-          </c:if>
-          <fmt:message key='close' var="label"/>
-          <view:button label="${label}" action="javascript:onClick=closeWindow();" disabled="false"/>
-        </view:buttonPane>
-      </view:frame>
+    <div class="popup-read-notification">
+    <div class="entete">
+        <div class="from">
+          <span class="label"><fmt:message key="from" /> : </span>
+          <c:out value="${senderName}" /></div>
+        <div class="date">${silfn:formatStringDate(popupMsgDate, language)} ${popupMsgTime}</div>
+      </div>
+      <div class="content-notification">
+        ${popupMsgBody}
+      </div>
+     </div>
     </view:window>
-    </BODY>
-    </HTML>
+    </body>
+    </html>
   </c:otherwise>
 </c:choose>

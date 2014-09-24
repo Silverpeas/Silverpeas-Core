@@ -37,6 +37,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType;
+import org.apache.ecs.xhtml.script;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 /**
  * @author neysseri
@@ -400,6 +402,19 @@ public abstract class AbstractWindow implements Window {
       result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
           .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
       result.append("</td></tr></table>");
+    } else {
+      Object includePopupResizeJsDone =
+          CacheServiceFactory.getRequestCacheService().get("@includePopupResizeJsDone@");
+      if (includePopupResizeJsDone == null) {
+        StringBuilder popupResizeJs = new StringBuilder();
+        popupResizeJs.append("$(document.body).ready(");
+        popupResizeJs.append("function(){");
+        popupResizeJs.append("currentPopupResize();");
+        popupResizeJs.append("});");
+        result.append(new script().setType("text/javascript").addElement(popupResizeJs.toString())
+            .toString());
+        CacheServiceFactory.getRequestCacheService().put("@includePopupResizeJsDone@", true);
+      }
     }
     if (StringUtil.isDefined(contextualDiv)) {
       result.append("</div>");

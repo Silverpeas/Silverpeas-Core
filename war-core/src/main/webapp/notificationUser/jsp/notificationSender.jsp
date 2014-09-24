@@ -24,8 +24,13 @@
 
 --%>
 
+<%@page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="com.stratelia.silverpeas.notificationUser.Notification"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
@@ -43,13 +48,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import=" com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
  
 <%
 	NotificationUserSessionController notificationScc = (NotificationUserSessionController) request.getAttribute("notificationUser");
@@ -57,174 +62,132 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 	// Ze graffik factory
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-	String m_context        = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context        = URLManager.getApplicationURL();
 	String mandatoryField    = m_context + "/util/icons/mandatoryField.gif";
 
-   String action = request.getParameter("Action");
+   Notification notification = (Notification) request.getAttribute("Notification");
 	
-   String notificationId = EncodeHelper.htmlStringToJavaString((String) request.getAttribute("notificationId"));
-   String priorityId = (String) request.getAttribute("priorityId");
-   String txtTitle = EncodeHelper.htmlStringToJavaString((String) request.getAttribute("txtTitle"));
-   String txtMessage = EncodeHelper.htmlStringToJavaString((String) request.getAttribute("txtMessage"));
-   String popupMode = request.getParameter("popupMode");
-   String editTargets = request.getParameter("editTargets");
-
-	String[] selectedIdUsers = (String[])request.getAttribute("SelectedIdUsers");
-	String[] selectedIdGroups = (String[])request.getAttribute("SelectedIdGroups");
-
-   if (action == null) {
-       action = "NotificationView";
-   }
-   if (notificationId == null) {
-       notificationId = "";
-   }
-   if (priorityId == null) {
-       priorityId = "";
-   }
-   if (txtTitle == null) {
-       txtTitle = "";
-   }
-   if (txtMessage == null) {
-       txtMessage = "";
-   }
-   if (popupMode == null) {
-       popupMode = "No";
-   }
-   if (editTargets == null) { 
-       editTargets = "Yes";
-   }
-
-   if ((action.equals("sendNotif") || action.equals("emptyAll")) && popupMode.equals("Yes"))
-   { 
+   boolean popupMode = (Boolean) request.getAttribute("popupMode");
+   boolean editTargets = (Boolean) request.getAttribute("editTargets");
+   
 %>
-    <html>
-      <body onload="javascript:window.close()"> 
-      </body>
-    </html> 
-<% } else { %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
+<view:includePlugin name="tags" />
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function Submit(){
+  	processRecipients();
 	SP_openUserPanel('about:blank', 'OpenUserPanel', 'menubar=no,scrollbars=no,statusbar=no');
-	document.notificationSenderForm.action = "<%=m_context+URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER)%>SetTarget";
+	document.notificationSenderForm.action = "SetTarget";
 	document.notificationSenderForm.target = "OpenUserPanel";
 	document.notificationSenderForm.submit();
 }
-function SubmitWithAction(action,verifParams)  
-{
+function sendNotification() {
     var title = stripInitialWhitespace(document.notificationSenderForm.txtTitle.value);
+    
+    processRecipients();
+    
     var errorMsg = "";
-
-    if (verifParams) {
-         if (isWhitespace(title)) { 
-            errorMsg = "<% out.print(notificationScc.getString("missingFieldStart")+notificationScc.getString("name")+notificationScc.getString("missingFieldEnd")); %>";
-         }
+    if (isWhitespace(title)) { 
+       errorMsg = "<fmt:message key="GML.thefield"/> <fmt:message key="GML.notification.subject"/> <fmt:message key="GML.isRequired"/>";
     }
     if (errorMsg == "") {
-		document.notificationSenderForm.action = "<%=m_context+URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER)%>"+ action;
+		document.notificationSenderForm.action = "SendNotif";
 		document.notificationSenderForm.submit();
     } else {
         window.alert(errorMsg);
     }
 }
+
+function processRecipients() {
+  var userIds = "";
+  var groupIds = "";
+  
+  <% if (editTargets) { %>
+  var tags = $("#recipients").tagit("tags");
+  for (var i in tags) {
+    var value = tags[i].value;
+    if (value.charAt(0) === "u") {
+      userIds += value.substring(1, value.length) + " ";
+    } else {
+      groupIds += value.substring(1, value.length) + " ";
+    }
+  }
+  <% } else { %>
+  	$(".tagit-readonly").each(function(index) {
+    	userIds += $(this).attr("data-value") + " ";
+    });
+  <% } %>
+  $("#selectedUsers").val(userIds);
+  $("#selectedGroups").val(groupIds);
+}
+$(function () {
+  <% if (editTargets) { %>
+	$('#recipients').tagit({allowNewTags:false});
+  <% } %>
+});
 </script>
 </head>
 <body onload="document.notificationSenderForm.txtTitle.focus();">
-<%
-    Window window = gef.getWindow();
-window.setPopup(true);
+<fmt:message key="GML.notification.send" var="msgAction"/>
+<view:browseBar extraInformations="${msgAction}"/>
+<view:window popup="true">
 
-    BrowseBar browseBar = window.getBrowseBar(); 
-    browseBar.setComponentName(notificationScc.getString("MesNotifications"));
-	browseBar.setPath(notificationScc.getString("domainName"));
-
-    if (editTargets.equals("Yes")) {
-        OperationPane operationPane = window.getOperationPane();
-		operationPane.addOperation(m_context + "/util/icons/notification_assign.gif", notificationScc.getString("Opane_addressees"),"javascript:Submit()");
-    }
-
-    out.println(window.printBefore());
-%>
-<view:frame>
-<view:board>
-<form name="notificationSenderForm" action="" method="POST" accept-charset="UTF-8">
-      <table cellpadding="5" cellspacing="0" border="0" width="100%">
-        <tr>
-          <td class="txtlibform">
-            <%=notificationScc.getString("name")%> :&nbsp;
-          </td>
-          <td valign="baseline">
-           <input type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=EncodeHelper.javaStringToHtmlString(txtTitle)%>"/>
-			 <img src="<%=mandatoryField%>" width="5" height="5">
-          </td>
-        </tr>
-        <tr>
-          <td class="txtlibform" valign="top"><%=notificationScc.getString("description")%> :</td>
-          <td valign="top" class="txtnav">
-			<textarea name="txtMessage" cols="49" rows="4"><%=EncodeHelper.javaStringToHtmlString(txtMessage)%></textarea>
-          </td>
-        </tr>
-	    <tr>			
-          <td class="txtlibform"><%=notificationScc.getString("method")%> :</td>
-          <td>
-            <select name="notificationId">
-               <% out.println(notificationScc.buildOptions(notificationScc.getDefaultAddresses(), notificationId, notificationScc.getString("DefaultMedia"))); %>
-            </select>
-	      </td>
-        </tr>
-        <tr>			
-          <td valign="top" class="txtlibform">
-            <%=notificationScc.getString("users_dest")%> :&nbsp;
-          </td>
-          <td valign="top" class="txtnote">
-               <select name="displaySelectedUsers" multiple="multiple" size="3">
-                 <% out.println(notificationScc.buildOptions(notificationScc.getSelectedUsers(selectedIdUsers), "", null)); %>
-               </select>
-          </td>
-        </tr>
-        <% if (editTargets.equals("Yes") || (selectedIdGroups != null && selectedIdGroups.length > 0)) { %>
-	        <tr>
-	          <td valign="top" class="txtlibform">
-	            <%=notificationScc.getString("groups_dest")%> :&nbsp;
-	          </td>
-	          <td valign="top" class="txtnote">
-	               <select name="displaySelectedGroups" multiple="multiple" size="3">
-	                 <% out.println(notificationScc.buildOptions(notificationScc.getSelectedGroups(selectedIdGroups), "", null)); %>
-	               </select>
-	          </td>
-	        </tr>
-        <% } %>
-	<tr> 
-          <td colspan="2">
-	    (<img src="<%=mandatoryField%>" width="5" height="5"> : <%=notificationScc.getString("requiredFields")%>)
-          </td>
-        </tr>
-				<% for (int i=0; i<selectedIdUsers.length; i++ ) { %>
-					<input type="hidden" name="selectedUsers" value="<%=selectedIdUsers[i]%>"/>
-				<% } %> 
-   				<% for (int i=0; i<selectedIdGroups.length; i++) {  %>
-					<input type="hidden" name="selectedGroups" value="<%=selectedIdGroups[i]%>"/>
-				<% } %>
-				<input type="hidden" name="popupMode" value="<%=popupMode%>"/>
-				<input type="hidden" name="editTargets" value="<%=editTargets%>"/> 
-      </table>
+<form name="notificationSenderForm" action="" method="post" accept-charset="UTF-8">
+<input type="hidden" name="selectedUsers" id="selectedUsers" value=""/>
+<input type="hidden" name="selectedGroups" id="selectedGroups" value=""/>
+<input type="hidden" name="popupMode" value="<%=popupMode%>"/>
+<input type="hidden" name="editTargets" value="<%=editTargets%>"/> 
+      <fieldset class="skinFieldset" id="send-notification">
+        <legend>Notification</legend>
+        <div class="fields">
+          <div id="recipientsArea" class="field">
+            <label class="txtlibform"><fmt:message key="addressees"/></label>
+            <div class="champs">
+            <% if (editTargets) { %>
+            	<ul id="recipients" data-name="recipients">
+	        	<% for (UserDetail user : notification.getUsers()) { %>
+	        		<li data-value="u<%=user.getId()%>"><%=user.getDisplayedName() %></li>
+	        	<% } %>
+	        	<% for (Group group : notification.getGroups()) { %>
+	        		<li data-value="g<%=group.getId()%>"><%=group.getName() %> (<%=group.getNbUsers() %>)</li>
+	        	<% } %>
+        		</ul>
+        		<a href="#" onclick="javascript:Submit()" title="<fmt:message key="Opane_addressees"/>"><img src="<%=m_context %>/util/icons/create-action/add-existing-group.png" alt="<fmt:message key="Opane_addressees"/>"/></a>
+            <% } else { %>
+            	<% for (UserDetail user : notification.getUsers()) { %>
+       			<span data-value="<%=user.getId()%>" class="tagit-readonly"><%=user.getDisplayedName() %></span> 
+       			<% } %>
+            <% } %>
+            </div>
+          </div>
+          <div id="subjectArea" class="field">
+            <label class="txtlibform"><fmt:message key="GML.notification.subject"/></label>
+            <div class="champs">
+            	<input id="subject" type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=EncodeHelper.javaStringToHtmlString(notification.getSubject())%>"/>
+              <img src="<%=mandatoryField%>" width="5" height="5"/>
+            </div>
+          </div>
+          <div id="messageArea" class="field">
+            <label class="txtlibform"><fmt:message key="GML.notification.message"/></label>
+            <div class="champs">
+              <textarea id="message" name="txtMessage" cols="49" rows="9"><%=EncodeHelper.javaStringToHtmlString(notification.getBody())%></textarea>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 </form>
-</view:board>
-<%
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(gef.getFormButton(notificationScc.getString("Envoyer"), "javascript:SubmitWithAction('sendNotif',true)", false));
-	buttonPane.addButton(gef.getFormButton(notificationScc.getString("Cancel"), "javascript:SubmitWithAction('emptyAll',false)", false));
-		
-    out.println(buttonPane.print());
-%>
-</view:frame>
-<%
-out.println(window.printAfter());
-%>
+
+<view:buttonPane>
+<fmt:message key="Envoyer" var="msgSend"/>
+<fmt:message key="GML.cancel" var="msgCancel"/>
+<view:button label="${msgSend}" action="javascript:sendNotification()"/>
+<view:button label="${msgCancel}" action="javascript:window.close()"/>
+</view:buttonPane>
+</view:window>
 </body>
 </html>
-<% } %>
