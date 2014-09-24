@@ -24,8 +24,8 @@
 
 package com.silverpeas.accesscontrol;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;

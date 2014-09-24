@@ -24,8 +24,8 @@
 package org.silverpeas.password.service;
 
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.password.constant.PasswordRuleType;

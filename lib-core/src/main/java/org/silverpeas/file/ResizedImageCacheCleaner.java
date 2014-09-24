@@ -5,8 +5,7 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.silverpeas.scheduler.trigger.TimeUnit;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 import javax.annotation.PostConstruct;
@@ -15,8 +14,6 @@ import javax.inject.Named;
 import java.io.File;
 import java.text.ParseException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A scheduled job to clean up all the resized images for non existent original images.

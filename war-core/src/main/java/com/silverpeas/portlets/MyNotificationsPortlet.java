@@ -37,7 +37,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

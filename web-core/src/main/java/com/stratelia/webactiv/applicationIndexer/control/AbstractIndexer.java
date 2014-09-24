@@ -22,7 +22,7 @@ package com.stratelia.webactiv.applicationIndexer.control;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;

@@ -24,8 +24,8 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;

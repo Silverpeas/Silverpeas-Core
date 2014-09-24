@@ -55,7 +55,7 @@ import org.springmodules.jcr.RepositoryFactoryBean;
 import org.xml.sax.InputSource;
 
 import org.silverpeas.util.Charsets;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files.

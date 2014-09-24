@@ -20,10 +20,9 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.wysiwyg.WysiwygException;

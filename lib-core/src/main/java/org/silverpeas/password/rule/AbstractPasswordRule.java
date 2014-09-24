@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * User: Yohann Chastagnier

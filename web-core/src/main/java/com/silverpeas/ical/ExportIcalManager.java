@@ -26,7 +26,7 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;

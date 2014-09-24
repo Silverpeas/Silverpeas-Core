@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.selection;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.PairObject;
 import java.util.Collection;
 

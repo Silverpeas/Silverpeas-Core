@@ -1,6 +1,6 @@
 package com.silverpeas.thumbnail.control;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ActionType;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;

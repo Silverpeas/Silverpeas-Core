@@ -27,18 +27,14 @@ package com.stratelia.silverpeas.peasCore;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author ehugonnet

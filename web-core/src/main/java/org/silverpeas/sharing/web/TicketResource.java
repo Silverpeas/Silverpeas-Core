@@ -51,7 +51,7 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.silverpeas.web.UserPriviledgeValidationFactory;

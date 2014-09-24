@@ -27,7 +27,7 @@ package org.silverpeas.search.indexEngine.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.search.indexEngine.DateFormatter;
 
 /**

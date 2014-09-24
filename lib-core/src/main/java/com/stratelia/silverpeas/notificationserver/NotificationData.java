@@ -24,7 +24,7 @@ package com.stratelia.silverpeas.notificationserver;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

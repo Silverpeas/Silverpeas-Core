@@ -23,7 +23,7 @@
  ---*/
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;

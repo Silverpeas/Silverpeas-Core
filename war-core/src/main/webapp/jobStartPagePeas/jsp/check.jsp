@@ -62,14 +62,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.jobStartPagePeas.*"%>
 <%@ page import="com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController"%>
 <%@ page import="java.util.*"%>
 
-<%@ page import="com.silverpeas.util.i18n.*"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.i18n.*"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

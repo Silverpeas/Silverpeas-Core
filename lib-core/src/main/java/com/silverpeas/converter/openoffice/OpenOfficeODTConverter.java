@@ -30,7 +30,7 @@ import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.ODTConverter;
 import javax.inject.Named;
 import static com.silverpeas.converter.DocumentFormat.*;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * Implementation of the ODTConverter interface by using the OpenOffice API to perform its job.

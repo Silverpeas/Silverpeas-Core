@@ -24,7 +24,7 @@
 package org.silverpeas.attachment.repository;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 

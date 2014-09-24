@@ -49,7 +49,7 @@ import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.GenericRecordTemplate;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 

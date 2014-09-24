@@ -24,7 +24,7 @@
 
 package org.silverpeas.authentication.password;
 
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.ResourceLocator;

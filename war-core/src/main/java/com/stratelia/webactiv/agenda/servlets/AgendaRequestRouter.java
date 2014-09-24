@@ -23,7 +23,7 @@ package com.stratelia.webactiv.agenda.servlets;
 import com.silverpeas.ical.ImportIcalManager;
 import com.silverpeas.ical.PasswordEncoder;
 import com.silverpeas.ical.StringUtils;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

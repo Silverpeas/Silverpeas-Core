@@ -25,7 +25,7 @@ package org.silverpeas.password.rule;
 
 import org.silverpeas.password.constant.PasswordRuleType;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Maximum length of a password : 8 by default.

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.silverpeas.search.searchEngine.model.SearchCompletion;
 
-import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 
 /**
  *

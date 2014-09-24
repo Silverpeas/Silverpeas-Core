@@ -57,7 +57,7 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;

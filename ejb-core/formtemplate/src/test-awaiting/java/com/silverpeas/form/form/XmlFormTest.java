@@ -42,8 +42,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static org.silverpeas.util.PathTestUtil.SEPARATOR;
+import static org.silverpeas.util.PathTestUtil.TARGET_DIR;
 import static org.mockito.Mockito.*;
 
 /**

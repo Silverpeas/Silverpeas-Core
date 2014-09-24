@@ -53,8 +53,8 @@ import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.silverpeas.web.ResourceGettingTest;
 

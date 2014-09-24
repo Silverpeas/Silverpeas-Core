@@ -24,8 +24,7 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**

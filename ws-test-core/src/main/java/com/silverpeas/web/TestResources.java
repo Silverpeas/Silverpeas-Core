@@ -24,7 +24,7 @@
 package com.silverpeas.web;
 
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.mock.AccessControllerMock;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
@@ -57,7 +57,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 

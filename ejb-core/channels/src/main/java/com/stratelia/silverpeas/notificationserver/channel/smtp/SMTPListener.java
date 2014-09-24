@@ -20,9 +20,9 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
@@ -48,7 +48,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.CharEncoding;
 
-import static com.silverpeas.util.MailUtil.*;
+import static org.silverpeas.util.MailUtil.*;
 
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SECURE_TRANSPORT;
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SIMPLE_TRANSPORT;

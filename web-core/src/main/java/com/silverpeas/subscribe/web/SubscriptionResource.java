@@ -35,7 +35,7 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.node.model.NodePK;
 

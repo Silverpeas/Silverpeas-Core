@@ -25,8 +25,8 @@
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.AxisPK;

@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util;
 
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.model;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import org.silverpeas.search.searchEngine.model.QueryDescription;

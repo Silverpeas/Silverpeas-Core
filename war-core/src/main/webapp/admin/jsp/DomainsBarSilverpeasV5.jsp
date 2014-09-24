@@ -29,8 +29,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>

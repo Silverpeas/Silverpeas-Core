@@ -27,8 +27,8 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -43,7 +43,7 @@ import org.silverpeas.util.ListSlice;
 
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
-import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+import static org.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 

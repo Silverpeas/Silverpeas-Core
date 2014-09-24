@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.owasp.encoder.Encode;
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.clipboard.ClipboardException;
-import com.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardSelection;
 
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessage;
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory;

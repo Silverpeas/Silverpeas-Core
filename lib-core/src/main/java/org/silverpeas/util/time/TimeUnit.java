@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * User: Yohann Chastagnier

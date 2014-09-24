@@ -24,7 +24,7 @@
 
 package com.silverpeas.pdc.model;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;

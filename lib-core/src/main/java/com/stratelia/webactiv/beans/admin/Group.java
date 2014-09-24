@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 public class Group implements Serializable, Comparable<Group> {
 

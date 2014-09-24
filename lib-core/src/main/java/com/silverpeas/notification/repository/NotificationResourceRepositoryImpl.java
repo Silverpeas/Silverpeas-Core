@@ -24,8 +24,8 @@
 package com.silverpeas.notification.repository;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.persistence.TypedParameter;
-import com.silverpeas.util.persistence.TypedParameterUtil;
+import org.silverpeas.util.persistence.TypedParameter;
+import org.silverpeas.util.persistence.TypedParameterUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

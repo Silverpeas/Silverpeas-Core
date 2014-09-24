@@ -23,8 +23,8 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.LdapConfiguration;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.beans.admin.AdminException;

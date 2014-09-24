@@ -23,7 +23,7 @@ package com.silverpeas.form.fieldType;
 import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationControllerFactory;

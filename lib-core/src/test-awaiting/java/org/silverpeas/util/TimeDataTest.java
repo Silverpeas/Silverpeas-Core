@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

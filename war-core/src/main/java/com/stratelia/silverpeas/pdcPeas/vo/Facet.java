@@ -23,7 +23,7 @@ package com.stratelia.silverpeas.pdcPeas.vo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class Facet {
   

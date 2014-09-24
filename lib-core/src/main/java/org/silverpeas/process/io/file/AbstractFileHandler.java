@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.io.file;
 
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

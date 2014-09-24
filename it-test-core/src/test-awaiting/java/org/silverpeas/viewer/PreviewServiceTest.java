@@ -1,6 +1,6 @@
 package org.silverpeas.viewer;
 
-import com.silverpeas.util.ImageUtil;
+import org.silverpeas.util.ImageUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;

@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;

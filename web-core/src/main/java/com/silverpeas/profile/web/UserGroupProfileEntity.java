@@ -24,7 +24,7 @@
 package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.*;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 

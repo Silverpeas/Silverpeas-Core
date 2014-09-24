@@ -26,7 +26,7 @@ package org.silverpeas.servlet;
 
 import java.io.File;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.io.IOUtils;

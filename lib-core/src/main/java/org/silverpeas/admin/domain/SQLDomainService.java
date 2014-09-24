@@ -24,9 +24,9 @@
 
 package org.silverpeas.admin.domain;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;

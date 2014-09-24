@@ -23,8 +23,8 @@
  */
 package org.silverpeas.persistence.model;
 
-import com.silverpeas.util.AssertArgument;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.AssertArgument;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

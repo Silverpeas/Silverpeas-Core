@@ -38,7 +38,7 @@ import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;

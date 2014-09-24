@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;

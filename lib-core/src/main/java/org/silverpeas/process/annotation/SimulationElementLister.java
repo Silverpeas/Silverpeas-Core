@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.annotation;
 
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 import com.stratelia.webactiv.util.ActionType;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 

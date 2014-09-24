@@ -27,7 +27,7 @@ import java.util.List;
 import javax.ejb.Local;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.statistic.model.HistoryByUser;

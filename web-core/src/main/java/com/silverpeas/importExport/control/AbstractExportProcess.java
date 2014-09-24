@@ -7,7 +7,7 @@ import java.util.Date;
 
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ExportReport;
-import com.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;

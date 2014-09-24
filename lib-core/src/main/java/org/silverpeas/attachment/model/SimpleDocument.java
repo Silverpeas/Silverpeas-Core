@@ -27,10 +27,10 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -53,7 +53,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
 
 /**

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.synchronizer;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

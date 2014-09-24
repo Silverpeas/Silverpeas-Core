@@ -32,9 +32,9 @@ import static com.silverpeas.notification.jms.SilverpeasMessageListener.mapMessa
 
 import com.silverpeas.notification.jms.access.ConnectionFailureListener;
 import com.silverpeas.notification.jms.access.JMSAccessObject;
-import com.silverpeas.util.ExecutionAttempts;
+import org.silverpeas.util.ExecutionAttempts;
 
-import static com.silverpeas.util.ExecutionAttempts.retry;
+import static org.silverpeas.util.ExecutionAttempts.retry;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

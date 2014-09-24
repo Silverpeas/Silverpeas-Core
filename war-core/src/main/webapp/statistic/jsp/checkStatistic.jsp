@@ -50,7 +50,7 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.util.ForeignPK"%>
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>

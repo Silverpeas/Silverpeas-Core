@@ -37,8 +37,8 @@ import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -58,7 +58,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
-import static com.silverpeas.util.i18n.I18NHelper.defaultLocale;
+import static org.silverpeas.util.i18n.I18NHelper.defaultLocale;
 import static org.apache.lucene.document.Field.Index.ANALYZED;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.apache.lucene.document.Field.Store.NO;

@@ -24,7 +24,7 @@
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.node.model.NodePK;
 
 /**

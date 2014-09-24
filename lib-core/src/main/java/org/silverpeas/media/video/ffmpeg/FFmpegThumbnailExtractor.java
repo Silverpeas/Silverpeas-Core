@@ -31,8 +31,8 @@ import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
 import org.silverpeas.util.time.TimeData;
 
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**

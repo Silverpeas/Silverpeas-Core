@@ -48,7 +48,7 @@ import com.silverpeas.form.record.ParameterValue;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 

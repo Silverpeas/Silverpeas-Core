@@ -20,7 +20,7 @@
  */
 package com.silverpeas.servlets.upload;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;

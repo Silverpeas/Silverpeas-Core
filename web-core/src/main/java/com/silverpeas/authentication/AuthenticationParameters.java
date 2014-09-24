@@ -28,7 +28,7 @@ import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;

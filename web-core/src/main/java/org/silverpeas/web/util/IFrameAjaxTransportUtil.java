@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.util;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;

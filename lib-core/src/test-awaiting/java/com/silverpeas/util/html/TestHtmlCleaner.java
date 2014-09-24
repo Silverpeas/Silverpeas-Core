@@ -27,6 +27,7 @@ package com.silverpeas.util.html;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.silverpeas.util.html.HtmlCleaner;
 
 
 public class TestHtmlCleaner {

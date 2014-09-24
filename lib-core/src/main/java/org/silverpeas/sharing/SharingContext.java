@@ -23,8 +23,8 @@
  */
 package org.silverpeas.sharing;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.SimpleDocument;
 

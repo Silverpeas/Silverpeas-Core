@@ -23,7 +23,7 @@
  */
 package org.silverpeas.silverstatistics.volume;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.filefilter.AndFileFilter;

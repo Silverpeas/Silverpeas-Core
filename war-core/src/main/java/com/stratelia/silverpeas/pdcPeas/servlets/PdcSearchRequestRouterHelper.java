@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;

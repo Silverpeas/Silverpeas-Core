@@ -33,7 +33,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 

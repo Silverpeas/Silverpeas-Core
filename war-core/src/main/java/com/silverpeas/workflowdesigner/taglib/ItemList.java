@@ -31,7 +31,7 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import com.silverpeas.workflow.api.model.DataFolder;
 import com.silverpeas.workflow.api.model.Item;
 import com.stratelia.silverpeas.util.ResourcesWrapper;

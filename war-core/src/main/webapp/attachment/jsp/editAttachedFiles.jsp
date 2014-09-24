@@ -35,11 +35,12 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
-<%@ page import="com.silverpeas.util.ForeignPK" %>
+<%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%@ include file="checkAttachment.jsp"%>
-<view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
+<view:setConstant var="spinfire" constant="org.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
 <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
 <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
 <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
@@ -73,7 +74,7 @@
   </c:otherwise>
 </c:choose>
 <c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
-<c:set var="i18n"><%=com.silverpeas.util.i18n.I18NHelper.isI18N%></c:set>
+<c:set var="i18n"><%=I18NHelper.isI18N%></c:set>
 <c:set var="i18n" value="${view:booleanValue(i18n) && !view:booleanValue(param.notI18n)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().

@@ -50,7 +50,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static com.silverpeas.pdc.model.PdcAxisValue.aPdcAxisValueFromTreeNode;
 import static com.silverpeas.pdc.model.PdcModelHelper.*;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

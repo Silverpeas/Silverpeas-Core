@@ -51,7 +51,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the

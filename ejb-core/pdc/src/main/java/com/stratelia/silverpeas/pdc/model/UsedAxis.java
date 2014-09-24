@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import java.util.List;

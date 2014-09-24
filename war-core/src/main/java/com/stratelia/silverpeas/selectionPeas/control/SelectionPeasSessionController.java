@@ -23,7 +23,7 @@
 */
 package com.stratelia.silverpeas.selectionPeas.control;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;

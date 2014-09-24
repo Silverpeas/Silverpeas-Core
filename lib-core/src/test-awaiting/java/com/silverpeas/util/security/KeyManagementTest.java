@@ -1,6 +1,6 @@
 package com.silverpeas.util.security;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.io.File;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -10,6 +10,7 @@ import org.silverpeas.util.crypto.CipherFactory;
 import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+import org.silverpeas.util.security.EncryptionContentIterator;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;

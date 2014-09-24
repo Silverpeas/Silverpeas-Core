@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

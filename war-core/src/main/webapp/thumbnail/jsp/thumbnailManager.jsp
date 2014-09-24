@@ -27,7 +27,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="java.net.URLEncoder"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="java.util.List"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page import="com.stratelia.webactiv.util.FileServerUtils"%>

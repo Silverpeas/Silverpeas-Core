@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;

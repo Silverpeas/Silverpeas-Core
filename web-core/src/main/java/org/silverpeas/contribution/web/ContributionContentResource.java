@@ -30,7 +30,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

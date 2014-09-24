@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriInfo;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * Base URIs from which the REST-based ressources representing look entities are defined.

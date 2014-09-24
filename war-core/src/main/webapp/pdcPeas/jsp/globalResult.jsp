@@ -28,8 +28,8 @@
 
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag"%>

@@ -33,10 +33,10 @@ import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailExtractor;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;

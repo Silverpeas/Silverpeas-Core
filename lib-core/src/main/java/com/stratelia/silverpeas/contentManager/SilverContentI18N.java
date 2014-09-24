@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 
 /**
  * This class allows the result jsp page of the global search to show all features (name,

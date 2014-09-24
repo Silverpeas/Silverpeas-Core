@@ -20,8 +20,8 @@
  */
 package org.silverpeas.attachment.tag;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static com.silverpeas.util.StringUtil.newline;
+import static org.silverpeas.util.StringUtil.newline;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 /**

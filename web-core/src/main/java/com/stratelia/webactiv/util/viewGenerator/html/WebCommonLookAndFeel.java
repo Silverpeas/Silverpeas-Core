@@ -24,7 +24,7 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.silverpeas.look.SilverpeasLook;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

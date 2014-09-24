@@ -26,7 +26,7 @@ package org.silverpeas.attachment.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 
 /**
  *

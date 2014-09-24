@@ -26,8 +26,8 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.accesscontrol.ComponentAccessController;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.RestRequest;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -45,8 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-
-import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 
 /**
  * @deprecated this servlet is replaced by the SimpleDocumentResource REST service

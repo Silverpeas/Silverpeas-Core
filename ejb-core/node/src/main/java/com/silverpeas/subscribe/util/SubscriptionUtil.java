@@ -25,7 +25,7 @@ package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 
 import java.util.Collection;
 import java.util.HashMap;

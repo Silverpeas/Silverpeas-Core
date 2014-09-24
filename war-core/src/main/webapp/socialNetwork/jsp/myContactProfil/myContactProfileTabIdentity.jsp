@@ -29,8 +29,8 @@
     
 <%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
     
 <%
 ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");

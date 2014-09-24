@@ -22,7 +22,7 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Collections;

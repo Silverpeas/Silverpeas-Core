@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.html.HtmlCleaner;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;

@@ -23,7 +23,7 @@
  ---*/
 package com.stratelia.silverpeas.genericPanel;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
 public class GenericPanel {

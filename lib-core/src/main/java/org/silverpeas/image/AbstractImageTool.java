@@ -31,7 +31,7 @@ import java.util.Set;
 
 import org.silverpeas.image.option.AbstractImageToolOption;
 
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 import static java.util.Collections.singleton;
 

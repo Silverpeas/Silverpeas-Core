@@ -23,8 +23,8 @@ package com.stratelia.silverpeas.silverpeasinitialize;
 import java.io.File;
 import java.util.Locale;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 
 public final class SilverpeasInitializer {
 

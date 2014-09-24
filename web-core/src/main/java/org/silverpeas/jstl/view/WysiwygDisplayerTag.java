@@ -29,8 +29,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.silverpeas.glossary.HighlightGlossaryTerms;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 
 /**

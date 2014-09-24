@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
 
 import org.silverpeas.search.indexEngine.parser.tika.TikaParser;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.servlets.credentials;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**

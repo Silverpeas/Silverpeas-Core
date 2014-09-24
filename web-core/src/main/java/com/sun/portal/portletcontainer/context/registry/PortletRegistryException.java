@@ -23,7 +23,7 @@
  */
 package com.sun.portal.portletcontainer.context.registry;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.MissingResourceException;

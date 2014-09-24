@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment.model;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 

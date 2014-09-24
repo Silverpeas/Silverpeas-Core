@@ -33,12 +33,12 @@ import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
-import com.silverpeas.util.clipboard.ClipboardException;
-import com.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardSelection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import static com.silverpeas.util.clipboard.ClipboardSelection.IndexFlavor;
+import static org.silverpeas.util.clipboard.ClipboardSelection.IndexFlavor;
 
 /**
  * Stateful EJB to maintain the status of the clipboard of Silverpeas content.

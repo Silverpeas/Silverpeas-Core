@@ -32,7 +32,7 @@ import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
 
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**

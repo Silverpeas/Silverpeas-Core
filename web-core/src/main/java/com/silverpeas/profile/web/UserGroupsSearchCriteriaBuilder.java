@@ -27,7 +27,7 @@ import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A builder of search criteria on user groups.

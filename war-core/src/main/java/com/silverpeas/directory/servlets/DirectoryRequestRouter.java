@@ -26,7 +26,7 @@ package com.silverpeas.directory.servlets;
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.control.DirectorySessionController;
 import com.silverpeas.directory.model.Member;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;

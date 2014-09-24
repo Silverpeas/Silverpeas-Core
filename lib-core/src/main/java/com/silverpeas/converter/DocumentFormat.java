@@ -24,7 +24,7 @@
 
 package com.silverpeas.converter;
 
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 
 /**
  * Enumeration of the different formats of documents supported in Silverpeas.

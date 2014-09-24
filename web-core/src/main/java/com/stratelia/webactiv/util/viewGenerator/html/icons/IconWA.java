@@ -21,7 +21,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * Class declaration

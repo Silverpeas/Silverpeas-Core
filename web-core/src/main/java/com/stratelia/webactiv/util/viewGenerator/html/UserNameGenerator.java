@@ -2,7 +2,7 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import org.apache.ecs.xhtml.span;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class UserNameGenerator {

@@ -24,7 +24,7 @@
 
 package org.silverpeas.admin.domain.repository;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Named;
 import javax.sql.DataSource;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 

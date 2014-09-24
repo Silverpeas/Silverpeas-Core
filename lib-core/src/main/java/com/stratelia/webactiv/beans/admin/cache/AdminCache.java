@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;

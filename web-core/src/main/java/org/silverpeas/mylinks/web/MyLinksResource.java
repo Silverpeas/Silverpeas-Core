@@ -53,7 +53,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;

@@ -32,7 +32,7 @@ import org.silverpeas.search.indexEngine.model.ExternalComponent;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

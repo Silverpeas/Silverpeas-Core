@@ -26,7 +26,7 @@ package com.silverpeas.form;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 import java.util.Map;
 

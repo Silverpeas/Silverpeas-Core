@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;

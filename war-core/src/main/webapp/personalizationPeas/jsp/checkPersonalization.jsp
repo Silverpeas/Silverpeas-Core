@@ -37,7 +37,7 @@
 <%@ page import="java.util.Properties"%>
 <%@ page import="java.util.Iterator"%>
 
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>

@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -86,7 +87,7 @@ if ( actions != null )
                               "javascript:confirmRemove('RemoveAction?action=" 
                               + URLEncoder.encode(strActionName, UTF8) + "', '"
                               + resource.getString("workflowDesigner.confirmRemoveJS")
-                              + " " + EncodeHelper.javaStringToJsString( strActionName ) + " ?');" );
+                              + " " + EncodeHelper.javaStringToJsString(strActionName) + " ?');" );
         
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
                                  resource.getString("GML.modify"),

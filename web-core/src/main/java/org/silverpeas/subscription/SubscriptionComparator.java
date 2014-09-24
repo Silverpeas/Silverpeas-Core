@@ -23,7 +23,7 @@
  */
 package org.silverpeas.subscription;
 
-import com.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.subscription.bean.AbstractSubscriptionBean;
 
 /**

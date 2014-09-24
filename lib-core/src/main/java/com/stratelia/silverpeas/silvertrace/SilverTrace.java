@@ -47,8 +47,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SMTPAppender;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * SilverTrace is the trace tool used in silverpeas to trace debug, running infos and errors. This

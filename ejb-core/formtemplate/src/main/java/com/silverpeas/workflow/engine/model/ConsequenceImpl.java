@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
 import com.silverpeas.workflow.api.model.Consequence;
 import com.silverpeas.workflow.api.model.QualifiedUsers;

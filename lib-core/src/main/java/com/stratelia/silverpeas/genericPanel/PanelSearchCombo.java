@@ -23,7 +23,7 @@
  ---*/
 package com.stratelia.silverpeas.genericPanel;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 public class PanelSearchCombo extends PanelSearchToken {
 

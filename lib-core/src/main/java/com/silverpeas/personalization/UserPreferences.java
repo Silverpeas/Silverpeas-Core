@@ -30,7 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 @Entity
 @Table(name = "personalization")

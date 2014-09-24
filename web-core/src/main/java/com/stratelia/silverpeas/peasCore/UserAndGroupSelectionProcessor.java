@@ -23,8 +23,8 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import static com.silverpeas.util.StringUtil.getBooleanValue;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.getBooleanValue;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.selection.Selection;
 import javax.servlet.http.HttpServletRequest;
 

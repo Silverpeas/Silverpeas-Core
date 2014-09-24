@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.util.DBUtil;

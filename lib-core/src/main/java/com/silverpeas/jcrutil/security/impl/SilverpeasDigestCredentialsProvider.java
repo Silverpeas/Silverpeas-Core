@@ -35,7 +35,7 @@ import org.apache.jackrabbit.webdav.DavConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * @author ehugonnet

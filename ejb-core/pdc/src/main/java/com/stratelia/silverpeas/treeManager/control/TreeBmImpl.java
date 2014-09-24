@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.treeManager.control;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.model.TreeManagerException;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;

@@ -27,7 +27,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A tag that renders the classification of a content on the PdC configured for the Silverpeas

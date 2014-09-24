@@ -34,7 +34,7 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class QaptchaServlet extends HttpServlet {
 

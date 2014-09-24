@@ -30,6 +30,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.util.ZipManager;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

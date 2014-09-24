@@ -37,6 +37,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.i18n.I18NBean;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.Translation;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;

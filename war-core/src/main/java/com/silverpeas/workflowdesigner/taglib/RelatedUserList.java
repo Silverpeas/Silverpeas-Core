@@ -24,7 +24,7 @@
 
 package com.silverpeas.workflowdesigner.taglib;
 
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;

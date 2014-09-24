@@ -27,7 +27,7 @@ package com.stratelia.webactiv.contact.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**

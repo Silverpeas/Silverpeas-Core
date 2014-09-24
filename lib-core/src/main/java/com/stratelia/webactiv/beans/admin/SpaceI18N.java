@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 import com.stratelia.webactiv.organization.SpaceI18NRow;
 
 public class SpaceI18N extends Translation {

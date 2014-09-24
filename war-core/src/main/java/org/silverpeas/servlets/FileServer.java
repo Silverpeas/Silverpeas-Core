@@ -20,8 +20,8 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

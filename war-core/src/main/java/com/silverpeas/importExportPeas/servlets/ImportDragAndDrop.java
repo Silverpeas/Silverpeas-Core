@@ -33,9 +33,9 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -55,7 +55,7 @@ import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration

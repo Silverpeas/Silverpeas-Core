@@ -24,15 +24,6 @@
 package com.silverpeas.subscribe.web;
 
 
-import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.silverpeas.util.StringUtil;
-
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Base URIs from which the REST-based ressources representing subscription/subscriber entities are
  * defined.

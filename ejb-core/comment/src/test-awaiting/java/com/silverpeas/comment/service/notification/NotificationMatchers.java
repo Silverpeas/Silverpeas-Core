@@ -21,8 +21,8 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import java.util.Map;
 import java.util.Set;

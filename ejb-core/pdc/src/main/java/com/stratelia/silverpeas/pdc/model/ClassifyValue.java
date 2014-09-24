@@ -23,7 +23,7 @@
 package com.stratelia.silverpeas.pdc.model;
 
 import java.util.List;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Nicolas EYSSERIC

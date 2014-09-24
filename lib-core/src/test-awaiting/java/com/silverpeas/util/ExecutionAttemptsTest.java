@@ -23,8 +23,8 @@
  */
 package com.silverpeas.util;
 
-import com.silverpeas.util.ExecutionAttempts.Job;
-import static com.silverpeas.util.ExecutionAttempts.retry;
+import org.silverpeas.util.ExecutionAttempts.Job;
+import static org.silverpeas.util.ExecutionAttempts.retry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;

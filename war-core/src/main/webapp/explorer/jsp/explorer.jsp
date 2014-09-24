@@ -40,7 +40,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

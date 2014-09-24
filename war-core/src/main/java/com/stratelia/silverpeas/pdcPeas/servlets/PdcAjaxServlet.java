@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 
 /**
  * Servlet used in Ajax mode to update the positions of a PDC field.

@@ -31,7 +31,7 @@ import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.springframework.stereotype.Service;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 

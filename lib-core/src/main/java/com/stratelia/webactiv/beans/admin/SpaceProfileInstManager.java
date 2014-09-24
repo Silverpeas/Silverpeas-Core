@@ -23,7 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.organization.SpaceUserRoleRow;

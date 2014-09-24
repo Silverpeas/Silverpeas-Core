@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.component.constant;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**

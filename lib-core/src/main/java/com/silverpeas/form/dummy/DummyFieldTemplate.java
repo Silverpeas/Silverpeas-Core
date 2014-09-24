@@ -29,7 +29,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.form.record.Parameter;
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -20,8 +20,7 @@
  */
 package com.silverpeas.pdc.web.beans;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;

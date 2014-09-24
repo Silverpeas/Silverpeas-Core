@@ -26,8 +26,8 @@ package com.silverpeas.thumbnail.model;
 
 import java.io.Serializable;
 
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 

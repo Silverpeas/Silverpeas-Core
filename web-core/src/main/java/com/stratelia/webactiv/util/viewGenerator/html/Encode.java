@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 
 /**
  * Util class to encode special string or characters

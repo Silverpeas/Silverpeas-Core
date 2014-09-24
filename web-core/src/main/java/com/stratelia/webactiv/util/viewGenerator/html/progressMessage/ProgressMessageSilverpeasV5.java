@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.progressMessage;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;

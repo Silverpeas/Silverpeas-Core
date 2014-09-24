@@ -25,7 +25,7 @@ package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

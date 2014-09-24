@@ -29,7 +29,7 @@
 
 package com.silverpeas.portlets.context.window.impl;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 class Base64 {
 

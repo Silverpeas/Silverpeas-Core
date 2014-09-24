@@ -24,7 +24,7 @@
 
 package com.silverpeas.portlets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 import javax.portlet.ActionRequest;

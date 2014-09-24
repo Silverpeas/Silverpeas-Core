@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
+import org.silverpeas.util.CollectionUtil;
 
 /**
  * @author Yohann Chastagnier

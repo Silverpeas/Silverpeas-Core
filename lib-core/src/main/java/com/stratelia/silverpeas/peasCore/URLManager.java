@@ -22,8 +22,8 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -36,7 +36,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration

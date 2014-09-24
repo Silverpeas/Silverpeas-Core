@@ -20,15 +20,14 @@
  */
 package com.stratelia.silverpeas.notificationUser.servlets;
 
-import org.silverpeas.servlet.HttpRequest;
-
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationUser.Notification;
+import org.silverpeas.servlet.HttpRequest;
 import com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.StringUtil;
 
 /**
  * Class declaration

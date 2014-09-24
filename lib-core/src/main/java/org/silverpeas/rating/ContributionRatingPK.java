@@ -1,6 +1,6 @@
 package org.silverpeas.rating;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 import java.io.Serializable;
 

@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;

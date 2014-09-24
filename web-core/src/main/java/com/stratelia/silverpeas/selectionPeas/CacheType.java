@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public enum CacheType {
   CM_SET(0), CM_ELEMENT(1), CM_NBTOT(2);

@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.pdcPeas.control;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GoogleSite;
 import com.stratelia.silverpeas.pdcPeas.model.GoogleTab;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

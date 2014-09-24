@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.personalizationPeas.servlets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * The different actions a user can do when parametrizing its notification reception.

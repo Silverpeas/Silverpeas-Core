@@ -27,7 +27,7 @@ import org.silverpeas.password.constant.PasswordRuleType;
 
 import java.util.regex.Pattern;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Sequential character forbidden in password.

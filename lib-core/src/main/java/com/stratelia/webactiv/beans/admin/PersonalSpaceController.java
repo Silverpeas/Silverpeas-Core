@@ -23,7 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.text.MessageFormat;
 import java.util.ArrayList;

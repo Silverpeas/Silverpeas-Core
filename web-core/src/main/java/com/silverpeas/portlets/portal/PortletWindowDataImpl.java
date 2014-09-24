@@ -24,7 +24,7 @@
 
 package com.silverpeas.portlets.portal;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;

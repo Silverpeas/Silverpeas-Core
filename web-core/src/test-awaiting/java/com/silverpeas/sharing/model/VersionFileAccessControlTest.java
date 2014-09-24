@@ -30,7 +30,7 @@ import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.services.JpaSharingTicketService;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;

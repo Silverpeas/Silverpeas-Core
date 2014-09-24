@@ -33,7 +33,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.silverpeas.util.PathTestUtil;
-import static com.silverpeas.util.template.SilverpeasTemplate.*;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
+import static org.silverpeas.util.template.SilverpeasTemplate.*;
 
 public class SilverpeasTemplateTest {
   private static String rootDir = PathTestUtil.TARGET_DIR +

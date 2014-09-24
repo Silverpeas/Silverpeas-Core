@@ -23,7 +23,7 @@
  */
 package org.silverpeas.image.imagemagick;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;

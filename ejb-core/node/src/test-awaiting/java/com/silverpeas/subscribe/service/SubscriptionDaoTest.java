@@ -27,7 +27,7 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.junit.Test;

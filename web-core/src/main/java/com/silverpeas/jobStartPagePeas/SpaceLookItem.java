@@ -27,7 +27,7 @@ package com.silverpeas.jobStartPagePeas;
 import java.io.File;
 import java.io.Serializable;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 

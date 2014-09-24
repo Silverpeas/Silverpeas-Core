@@ -27,7 +27,7 @@ package com.silverpeas.external.webConnections.servlets;
 import com.silverpeas.external.webConnections.control.WebConnectionsSessionController;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;

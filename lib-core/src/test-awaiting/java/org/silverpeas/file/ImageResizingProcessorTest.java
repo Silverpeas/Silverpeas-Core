@@ -1,6 +1,6 @@
 package org.silverpeas.file;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

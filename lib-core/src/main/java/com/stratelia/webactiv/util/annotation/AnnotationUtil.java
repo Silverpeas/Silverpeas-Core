@@ -25,8 +25,8 @@ package com.stratelia.webactiv.util.annotation;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@ include file="includeParamsField.jsp.inc" %>
 	<script type="text/javascript">
 		function isCorrectForm()  {

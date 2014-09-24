@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeBefore;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;

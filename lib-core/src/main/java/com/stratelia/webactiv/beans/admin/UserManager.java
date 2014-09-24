@@ -21,9 +21,9 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.X509Factory;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.security.X509Factory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;

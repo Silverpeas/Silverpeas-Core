@@ -58,7 +58,7 @@ import org.xml.sax.InputSource;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordSetManager;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.DataFolder;

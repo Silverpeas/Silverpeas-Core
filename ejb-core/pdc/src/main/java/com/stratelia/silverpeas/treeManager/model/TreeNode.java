@@ -27,8 +27,8 @@
 
 package com.stratelia.silverpeas.treeManager.model;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;

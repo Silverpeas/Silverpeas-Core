@@ -43,8 +43,8 @@ import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
 
-import static com.silverpeas.util.StringUtil.getBooleanValue;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.getBooleanValue;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
 

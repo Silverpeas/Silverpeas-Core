@@ -32,12 +32,13 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%@ page import="com.silverpeas.util.ForeignPK" %>
+<%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -77,7 +78,7 @@
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
   <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
-  <view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
+  <view:setConstant var="spinfire" constant="org.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
   <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
   <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
   <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
@@ -1199,7 +1200,7 @@
     <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
       <div id="attachment-delete-select-lang" style="display:none">
         <div id="languages">
-          <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
+          <c:forEach items="<%=I18NHelper.I18NHelperAllSupportedLanguages()%>" var="supportedLanguage">
             <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
           </c:forEach>
         </div>

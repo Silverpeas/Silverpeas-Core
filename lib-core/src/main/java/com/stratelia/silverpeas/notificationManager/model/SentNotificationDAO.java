@@ -33,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.LongText;
 import com.stratelia.webactiv.util.DBUtil;

@@ -27,7 +27,7 @@
 
 package com.stratelia.silverpeas.treeManager.model;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 
 public class TreeNodeI18N extends Translation implements java.io.Serializable {

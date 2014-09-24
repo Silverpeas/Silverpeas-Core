@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.publication.model;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 
 import java.io.Serializable;
 

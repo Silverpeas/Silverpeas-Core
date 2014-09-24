@@ -25,13 +25,10 @@ import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.util.web.servlet.RestRequest;
+import org.silverpeas.util.web.servlet.RestRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

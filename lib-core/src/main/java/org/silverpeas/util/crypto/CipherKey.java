@@ -1,6 +1,6 @@
 package org.silverpeas.util.crypto;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.io.File;
 import java.text.ParseException;
 

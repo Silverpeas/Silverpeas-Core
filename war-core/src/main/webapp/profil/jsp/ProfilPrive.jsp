@@ -30,7 +30,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 

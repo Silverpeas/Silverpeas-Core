@@ -43,12 +43,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.silverpeas.util.clipboard.*"%>
+<%@ page import="org.silverpeas.util.clipboard.*"%>
 <%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 
 <%@ include file="checkClipboard.jsp.inc" %>
 
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.util.clipboard.ClipboardSelection" %>
 <HTML>
 <HEAD>
 <TITLE>Presse-papier</TITLE>
@@ -156,7 +157,7 @@ function view(url)
 		  Collection 			infos 		= clipboardSC.getObjects();          
           Iterator 				infosI		= infos.iterator();
 		  int 					index 		= 0;
-		  ClipboardSelection 	clipObject 	= null;
+		  ClipboardSelection clipObject 	= null;
 		  IndexEntry 			indexEntry 	= null;
 		  ArrayLine 			line 		= null;
 		  String				icon		= null;

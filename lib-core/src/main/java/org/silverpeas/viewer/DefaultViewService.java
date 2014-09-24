@@ -36,7 +36,7 @@ import org.silverpeas.viewer.util.SwfUtil;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 
 /**
  * @author Yohann Chastagnier

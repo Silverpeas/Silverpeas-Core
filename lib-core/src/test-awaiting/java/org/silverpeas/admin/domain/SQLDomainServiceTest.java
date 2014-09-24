@@ -21,8 +21,8 @@
 package org.silverpeas.admin.domain;
 
 import com.silverpeas.util.PathTestUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriver;

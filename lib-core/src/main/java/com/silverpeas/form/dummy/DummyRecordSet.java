@@ -32,7 +32,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 /**
  * A dummy record set.

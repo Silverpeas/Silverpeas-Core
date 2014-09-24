@@ -26,6 +26,7 @@
 
 <%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.IOException;
 import java.util.HashMap;

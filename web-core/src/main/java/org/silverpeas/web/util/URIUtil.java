@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.util;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;

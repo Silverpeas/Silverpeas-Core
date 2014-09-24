@@ -23,14 +23,13 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DBUtil;

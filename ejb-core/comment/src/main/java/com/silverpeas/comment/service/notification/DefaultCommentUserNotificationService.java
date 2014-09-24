@@ -31,7 +31,7 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentUserNotification;
 import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The default implementation of the user notification about events on the comments.

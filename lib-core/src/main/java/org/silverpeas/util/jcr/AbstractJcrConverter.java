@@ -54,9 +54,9 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
 
 import com.silverpeas.jcrutil.converter.ConverterUtil;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.FileUtil;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;

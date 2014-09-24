@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.silverpeas.viewer.DocumentView;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**

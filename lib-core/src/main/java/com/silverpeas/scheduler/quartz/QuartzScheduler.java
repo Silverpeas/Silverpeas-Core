@@ -42,7 +42,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import static com.silverpeas.scheduler.SchedulerFactory.*;
-import static com.silverpeas.util.AssertArgument.*;
+import static org.silverpeas.util.AssertArgument.*;
 
 /**
  * A scheduler implementation using Quartz as scheduling backend. It wraps a Quartz scheduler and

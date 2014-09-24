@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.contact.control;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.contact.info.InfoDAO;

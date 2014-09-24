@@ -47,7 +47,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;

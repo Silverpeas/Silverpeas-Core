@@ -25,6 +25,8 @@
 package com.silverpeas.util;
 
 import org.junit.Test;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.MapUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

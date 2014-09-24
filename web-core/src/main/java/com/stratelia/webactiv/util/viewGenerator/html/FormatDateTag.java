@@ -28,7 +28,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.*;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * A tag to print out a localized date and time according to the language of the user.

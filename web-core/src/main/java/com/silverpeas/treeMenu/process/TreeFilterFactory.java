@@ -27,7 +27,7 @@ package com.silverpeas.treeMenu.process;
 import com.silverpeas.treeMenu.model.MenuRuntimeException;
 import com.silverpeas.treeMenu.model.TreeFilter;
 import com.silverpeas.treeMenu.model.TreeFilterDefault;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 

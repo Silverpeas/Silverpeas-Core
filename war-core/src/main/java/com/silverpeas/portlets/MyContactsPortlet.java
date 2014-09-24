@@ -26,7 +26,7 @@ package com.silverpeas.portlets;
 
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -37,8 +37,6 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;

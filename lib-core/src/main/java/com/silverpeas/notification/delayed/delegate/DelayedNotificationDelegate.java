@@ -42,12 +42,12 @@ import com.silverpeas.notification.delayed.synthese.DelayedNotificationSyntheseD
 import com.silverpeas.notification.delayed.synthese.SyntheseResource;
 import com.silverpeas.notification.delayed.synthese.SyntheseResourceNotification;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.MapUtil;
-import com.silverpeas.util.comparator.AbstractComplexComparator;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.MapUtil;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import com.stratelia.silverpeas.notificationManager.AbstractNotification;
 import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;

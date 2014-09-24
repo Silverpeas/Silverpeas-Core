@@ -31,6 +31,7 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

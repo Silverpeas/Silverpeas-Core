@@ -23,7 +23,7 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.persistence.repository.Parameters;
 
 import javax.persistence.Query;

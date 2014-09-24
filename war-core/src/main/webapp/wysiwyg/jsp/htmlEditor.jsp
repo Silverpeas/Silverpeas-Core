@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@page import="com.silverpeas.util.i18n.I18NHelper"%>
+<%@page import="org.silverpeas.util.i18n.I18NHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -46,8 +46,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="org.silverpeas.wysiwyg.*"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="javax.servlet.http.*"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.persistence.repository;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * Criteria is a simplified representation of conditions the entities targeted by a query have to

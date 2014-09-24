@@ -24,7 +24,7 @@
 package com.silverpeas.bundle.web;
 
 import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;

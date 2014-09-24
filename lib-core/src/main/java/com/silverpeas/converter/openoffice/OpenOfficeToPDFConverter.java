@@ -32,7 +32,7 @@ import javax.inject.Named;
 
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.ToPDFConverter;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 
 /**
  * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.

@@ -27,15 +27,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.ExternalRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;

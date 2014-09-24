@@ -29,7 +29,7 @@ import java.util.HashSet;
 
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * User notification from "My Diary" application.
@@ -189,7 +189,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
    * (non-Javadoc)
    * @see
    * com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#performTemplateData
-   * (java.lang.String, java.lang.Object, com.silverpeas.util.template.SilverpeasTemplate)
+   * (java.lang.String, java.lang.Object, org.silverpeas.util.template.SilverpeasTemplate)
    */
   @Override
   protected void performTemplateData(final String language, final JournalHeader resource,

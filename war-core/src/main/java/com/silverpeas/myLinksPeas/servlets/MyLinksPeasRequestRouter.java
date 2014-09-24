@@ -30,7 +30,7 @@ import org.silverpeas.servlet.HttpRequest;
 
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;

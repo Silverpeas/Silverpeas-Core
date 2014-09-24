@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;

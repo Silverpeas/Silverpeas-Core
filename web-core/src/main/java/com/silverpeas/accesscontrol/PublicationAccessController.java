@@ -33,8 +33,8 @@ import javax.inject.Named;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.EJBUtilitaire;

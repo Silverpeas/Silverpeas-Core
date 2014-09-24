@@ -34,7 +34,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 
 /**

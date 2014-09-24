@@ -25,11 +25,9 @@
 package com.silverpeas.form;
 
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;

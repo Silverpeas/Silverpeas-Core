@@ -24,8 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 
 public class SilverContent extends AbstractI18NBean<SilverContentI18N>
     implements SilverContentInterface {

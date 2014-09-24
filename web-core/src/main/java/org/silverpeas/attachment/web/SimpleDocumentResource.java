@@ -23,10 +23,10 @@ package org.silverpeas.attachment.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.UserPriviledgeValidation;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.AJAX_IFRAME_TRANSPORT;
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil
     .createWebApplicationExceptionWithJSonErrorInHtmlContainer;

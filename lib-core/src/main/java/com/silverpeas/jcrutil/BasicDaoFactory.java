@@ -23,8 +23,8 @@ package com.silverpeas.jcrutil;
 
 import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.apache.commons.io.IOUtils;

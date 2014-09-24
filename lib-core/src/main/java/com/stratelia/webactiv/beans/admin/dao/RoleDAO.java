@@ -32,7 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.UserRoleRow;
 import com.stratelia.webactiv.util.DBUtil;
 

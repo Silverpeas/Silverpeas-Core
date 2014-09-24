@@ -26,7 +26,7 @@ package org.silverpeas.web.token;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.io.IOException;

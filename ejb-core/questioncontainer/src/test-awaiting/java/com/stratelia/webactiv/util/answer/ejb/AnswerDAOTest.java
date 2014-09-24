@@ -47,7 +47,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;

@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.node.control.dao;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import com.mockrunner.mock.jdbc.MockConnection;

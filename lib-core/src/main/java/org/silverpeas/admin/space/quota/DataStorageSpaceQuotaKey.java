@@ -26,7 +26,7 @@ package org.silverpeas.admin.space.quota;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.constant.QuotaType;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;

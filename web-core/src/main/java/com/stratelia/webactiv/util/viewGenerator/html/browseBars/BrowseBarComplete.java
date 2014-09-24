@@ -20,9 +20,9 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.html.HtmlCleaner;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;

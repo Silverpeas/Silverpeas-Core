@@ -22,7 +22,7 @@ package org.silverpeas.search.indexEngine;
 
 import java.io.File;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

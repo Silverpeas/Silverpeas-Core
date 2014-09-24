@@ -27,7 +27,7 @@ package com.silverpeas.calendar;
 import com.silverpeas.annotation.constraint.DateRange;
 import java.io.Serializable;
 import java.net.URL;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * The event in a calendar. An event in the calendar is described by a starting and an ending date

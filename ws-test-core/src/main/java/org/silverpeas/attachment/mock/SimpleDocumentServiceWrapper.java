@@ -25,7 +25,7 @@ package org.silverpeas.attachment.mock;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.util.Default;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentException;

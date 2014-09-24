@@ -32,7 +32,7 @@ import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.ThumbnailSessionController;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;

@@ -30,7 +30,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.RESOURCES_KEY;
 
 /**

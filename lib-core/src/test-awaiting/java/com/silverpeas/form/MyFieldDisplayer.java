@@ -28,7 +28,7 @@ import java.util.List;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 import com.silverpeas.form.displayers.AbstractFieldDisplayer;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 import org.apache.commons.fileupload.FileItem;
 

@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Date;
 

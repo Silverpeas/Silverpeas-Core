@@ -24,9 +24,9 @@
 
 package com.silverpeas.accesscontrol;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;

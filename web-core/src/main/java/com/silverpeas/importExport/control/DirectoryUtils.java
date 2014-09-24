@@ -24,7 +24,7 @@
 
 package com.silverpeas.importExport.control;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * @author sdevolder Méthodes à factoriser

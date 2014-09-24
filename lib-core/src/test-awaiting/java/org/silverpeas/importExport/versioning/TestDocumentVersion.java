@@ -20,7 +20,7 @@
  */
 package org.silverpeas.importExport.versioning;
 
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import org.junit.Test;
 
 import java.util.Date;

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;

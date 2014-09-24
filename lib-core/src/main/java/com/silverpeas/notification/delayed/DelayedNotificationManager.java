@@ -48,8 +48,8 @@ import com.silverpeas.notification.delayed.repository.DelayedNotificationReposit
 import com.silverpeas.notification.delayed.repository.DelayedNotificationUserSettingRepository;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.notification.repository.NotificationResourceRepository;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;

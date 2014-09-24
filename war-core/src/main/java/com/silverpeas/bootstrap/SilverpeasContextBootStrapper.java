@@ -40,9 +40,9 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -134,17 +134,17 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
   void registerSSLSocketFactory() throws GeneralSecurityException {
     System.setProperty("mail.imap.ssl.enable", "true");
     System.setProperty("mail.imap.ssl.socketFactory.class",
-        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.smtp.ssl.socketFactory.class",
-        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.smtps.ssl.socketFactory.class",
-        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.pop3.ssl.socketFactory.class",
-        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.pop3s.ssl.socketFactory.class",
-        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.imaps.ssl.socketFactory.class",
-        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.imap.ssl.socketFactory.fallback", "false");
   }
 

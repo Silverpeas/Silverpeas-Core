@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;

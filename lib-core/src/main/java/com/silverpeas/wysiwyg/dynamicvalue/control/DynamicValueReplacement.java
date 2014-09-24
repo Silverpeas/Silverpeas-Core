@@ -24,7 +24,7 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue.control;
 
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;

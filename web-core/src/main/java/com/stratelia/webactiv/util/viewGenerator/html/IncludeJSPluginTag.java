@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;

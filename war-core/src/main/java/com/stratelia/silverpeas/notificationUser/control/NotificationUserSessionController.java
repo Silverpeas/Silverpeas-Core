@@ -20,10 +20,7 @@
  */
 package com.stratelia.silverpeas.notificationUser.control;
 
-import java.util.ArrayList;
-import java.util.Properties;
-
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -37,6 +34,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * @author tleroi
@@ -92,7 +92,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   }
 
   /**
-   * @param Notification
+   * @param notification
    * @throws NotificationManagerException
    */
   public void sendMessage(Notification notification) throws NotificationManagerException {

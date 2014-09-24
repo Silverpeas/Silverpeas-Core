@@ -24,7 +24,7 @@
 package org.silverpeas.util.mail;
 
 import com.silverpeas.converter.DocumentFormatConverterFactory;
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;

@@ -32,7 +32,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.exception.QuotaException;
 

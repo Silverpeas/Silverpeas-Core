@@ -67,7 +67,7 @@
 package org.silverpeas.authentication.encryption;
 
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import org.apache.commons.codec.digest.Crypt;
 import org.silverpeas.util.Charsets;
 

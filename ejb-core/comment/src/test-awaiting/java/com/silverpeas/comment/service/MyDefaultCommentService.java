@@ -28,7 +28,7 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import java.util.List;
 import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationController;

@@ -74,13 +74,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%@ page import="com.stratelia.silverpeas.pdc.model.*"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
 
 <%@ page import="com.stratelia.silverpeas.containerManager.ContainerWorkspace"%>
@@ -90,8 +86,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
 
-<%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

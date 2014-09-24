@@ -23,8 +23,8 @@
  */
 package org.silverpeas.authentication.verifier;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationException;

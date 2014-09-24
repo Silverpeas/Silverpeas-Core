@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

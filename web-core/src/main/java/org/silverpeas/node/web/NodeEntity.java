@@ -20,7 +20,7 @@
  */
 package org.silverpeas.node.web;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeI18NDetail;

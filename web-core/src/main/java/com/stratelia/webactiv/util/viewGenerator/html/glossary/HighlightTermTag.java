@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.util.viewGenerator.html.glossary;
 
 import com.silverpeas.glossary.HighlightGlossaryTerms;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.io.IOException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyContent;

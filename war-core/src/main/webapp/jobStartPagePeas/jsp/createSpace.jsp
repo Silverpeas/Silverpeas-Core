@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

@@ -29,8 +29,8 @@ package com.stratelia.webactiv.util.fileFolder;
  * @version
  */
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ImageUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.apache.commons.io.FileUtils;

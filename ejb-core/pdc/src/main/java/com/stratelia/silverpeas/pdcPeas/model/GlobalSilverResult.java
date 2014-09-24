@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.pdcPeas.model;
 
-import com.silverpeas.util.ImageUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.ImageUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.util.FileRepositoryManager;

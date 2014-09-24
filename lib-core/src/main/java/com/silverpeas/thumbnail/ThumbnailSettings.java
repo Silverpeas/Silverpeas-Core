@@ -22,7 +22,7 @@ package com.silverpeas.thumbnail;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class ThumbnailSettings {
   

@@ -26,7 +26,7 @@ import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

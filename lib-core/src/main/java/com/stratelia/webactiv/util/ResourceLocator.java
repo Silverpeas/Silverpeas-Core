@@ -34,8 +34,8 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import com.silverpeas.util.ConfigurationClassLoader;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ConfigurationClassLoader;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourceBundleWrapper;

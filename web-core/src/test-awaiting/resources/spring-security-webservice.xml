@@ -33,7 +33,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.util.security"/>
+  <ctx:component-scan base-package="org.silverpeas.util.security"/>
   <ctx:component-scan base-package="org.silverpeas.security.web"/>
 
   <import resource="spring-webservice.xml" />

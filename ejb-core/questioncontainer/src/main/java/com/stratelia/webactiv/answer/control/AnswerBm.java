@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import javax.ejb.Local;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;

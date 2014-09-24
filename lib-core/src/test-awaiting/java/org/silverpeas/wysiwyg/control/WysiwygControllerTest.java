@@ -20,10 +20,10 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

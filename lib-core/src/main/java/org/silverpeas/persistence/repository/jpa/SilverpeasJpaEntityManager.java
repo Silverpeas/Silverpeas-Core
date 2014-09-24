@@ -23,8 +23,8 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
 import org.hibernate.ejb.QueryImpl;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;

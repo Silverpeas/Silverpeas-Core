@@ -24,7 +24,7 @@
 
 package org.silverpeas.search.indexEngine.model;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.Serializable;
 

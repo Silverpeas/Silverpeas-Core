@@ -28,7 +28,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A conjonction of criteria in the search of user groups.

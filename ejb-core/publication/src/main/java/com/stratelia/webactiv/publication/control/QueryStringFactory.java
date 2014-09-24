@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.publication.control;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class QueryStringFactory {
 

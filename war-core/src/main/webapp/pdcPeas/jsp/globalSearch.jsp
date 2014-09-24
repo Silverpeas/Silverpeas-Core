@@ -28,12 +28,12 @@
 
 <%@page import="com.stratelia.silverpeas.pdc.control.PdcBm"%>
 <%@page import="com.silverpeas.pdc.PdcServiceFactory"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="java.util.List"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
 <%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>

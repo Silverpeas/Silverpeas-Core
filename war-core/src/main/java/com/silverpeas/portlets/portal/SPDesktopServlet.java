@@ -20,7 +20,7 @@
  */
 package com.silverpeas.portlets.portal;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -67,8 +67,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 public class SPDesktopServlet extends HttpServlet {
 

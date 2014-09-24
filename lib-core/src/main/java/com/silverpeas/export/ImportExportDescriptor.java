@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * An import export descriptor is an object that provides useful information to exporters and

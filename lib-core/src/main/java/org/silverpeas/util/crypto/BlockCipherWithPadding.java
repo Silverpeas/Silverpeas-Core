@@ -1,6 +1,6 @@
 package org.silverpeas.util.crypto;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.Charsets;
 
 import javax.crypto.spec.IvParameterSpec;

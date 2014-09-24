@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The profile of a user that is exposable in the WEB. It is a web entity representing the profile

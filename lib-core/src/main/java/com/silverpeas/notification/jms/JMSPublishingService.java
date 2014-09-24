@@ -38,9 +38,9 @@ import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.notification.jms.access.JMSAccessObject;
-import com.silverpeas.util.ExecutionAttempts;
+import org.silverpeas.util.ExecutionAttempts;
 
-import static com.silverpeas.util.ExecutionAttempts.retry;
+import static org.silverpeas.util.ExecutionAttempts.retry;
 
 /**
  * Service for publishing an event by using a JMS system. This service is managed by the IoC

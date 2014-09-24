@@ -45,7 +45,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;

@@ -24,8 +24,8 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 
 import java.util.Iterator;

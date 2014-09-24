@@ -26,9 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;

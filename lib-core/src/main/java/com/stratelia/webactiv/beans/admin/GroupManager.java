@@ -20,8 +20,8 @@
 */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;

@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.questionContainer.model;
 
-import com.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.score.model.ScoreDetail;

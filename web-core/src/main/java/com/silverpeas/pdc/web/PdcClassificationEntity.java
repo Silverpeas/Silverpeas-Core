@@ -27,7 +27,7 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.thesaurus.ThesaurusException;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.sun.jersey.api.json.JSONConfiguration;

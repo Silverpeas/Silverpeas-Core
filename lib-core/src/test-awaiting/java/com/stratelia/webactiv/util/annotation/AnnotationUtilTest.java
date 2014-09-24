@@ -23,8 +23,8 @@
  */
 package com.stratelia.webactiv.util.annotation;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ForeignPK;
 import org.junit.Test;
 
 import javax.inject.Inject;

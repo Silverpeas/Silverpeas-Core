@@ -37,7 +37,7 @@ import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It defines the base class of a widget for the rendering and handling of comments in Silverpeas.

@@ -21,7 +21,7 @@
 package org.silverpeas.servlets;
 
 import com.silverpeas.peasUtil.GoTo;
-import com.silverpeas.util.security.ComponentSecurity;
+import org.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ClientBrowserUtil;

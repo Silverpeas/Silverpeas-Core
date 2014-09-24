@@ -53,7 +53,7 @@ import com.sun.portal.container.WindowRequestReader;
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
 import com.sun.portal.portletcontainer.invoker.WindowInvoker;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * PortletWindowInvoker, is dervied from the abstract base class WindowInvoker.

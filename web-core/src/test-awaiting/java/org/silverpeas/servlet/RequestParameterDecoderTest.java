@@ -23,7 +23,7 @@
  */
 package org.silverpeas.servlet;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;

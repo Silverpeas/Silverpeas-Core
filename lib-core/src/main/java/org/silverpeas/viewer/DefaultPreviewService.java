@@ -23,14 +23,14 @@
  */
 package org.silverpeas.viewer;
 
-import static com.silverpeas.util.ImageUtil.BMP_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.GIF_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.JPG_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.PCD_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.PNG_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.TGA_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.TIF_IMAGE_EXTENSION;
-import static com.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
+import static org.silverpeas.util.ImageUtil.BMP_IMAGE_EXTENSION;
+import static org.silverpeas.util.ImageUtil.GIF_IMAGE_EXTENSION;
+import static org.silverpeas.util.ImageUtil.JPG_IMAGE_EXTENSION;
+import static org.silverpeas.util.ImageUtil.PCD_IMAGE_EXTENSION;
+import static org.silverpeas.util.ImageUtil.PNG_IMAGE_EXTENSION;
+import static org.silverpeas.util.ImageUtil.TGA_IMAGE_EXTENSION;
+import static org.silverpeas.util.ImageUtil.TIF_IMAGE_EXTENSION;
+import static org.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 
 import java.io.File;
@@ -49,8 +49,8 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.option.PageRangeFilterOption;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MimeTypes;
 
 /**
  * @author Yohann Chastagnier

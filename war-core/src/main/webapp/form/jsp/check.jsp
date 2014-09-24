@@ -48,7 +48,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ page import="com.silverpeas.form.FormTemplateSessionController" %>
 

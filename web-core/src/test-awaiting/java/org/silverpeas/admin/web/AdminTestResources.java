@@ -37,7 +37,7 @@ import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 import com.silverpeas.web.TestResources;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

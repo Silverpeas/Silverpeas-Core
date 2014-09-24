@@ -37,7 +37,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 

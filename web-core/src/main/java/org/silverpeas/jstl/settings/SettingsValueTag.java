@@ -27,7 +27,7 @@ import javax.servlet.jsp.JspException;
 
 import org.silverpeas.jstl.util.AbstractSetVarTagSupport;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 

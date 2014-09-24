@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.silverstatistics.model;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.util.ArrayList;

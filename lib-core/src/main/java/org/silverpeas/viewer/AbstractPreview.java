@@ -25,7 +25,7 @@ package org.silverpeas.viewer;
 
 import java.io.File;
 
-import com.silverpeas.util.ImageUtil;
+import org.silverpeas.util.ImageUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**

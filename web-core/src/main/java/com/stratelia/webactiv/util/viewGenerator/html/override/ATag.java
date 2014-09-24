@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.override;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.ecs.xhtml.a;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.security.SecuritySettings;

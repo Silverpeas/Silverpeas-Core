@@ -24,7 +24,7 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.cache.service.CacheServiceFactory;

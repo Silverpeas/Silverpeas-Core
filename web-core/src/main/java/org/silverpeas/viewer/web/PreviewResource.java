@@ -3,7 +3,7 @@ package org.silverpeas.viewer.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;

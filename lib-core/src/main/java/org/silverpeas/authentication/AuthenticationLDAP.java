@@ -21,7 +21,7 @@
 package org.silverpeas.authentication;
 
 import org.silverpeas.util.LdapConfiguration;
-import java.io.UnsupportedEncodingException;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +38,7 @@ import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;

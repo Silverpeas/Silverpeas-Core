@@ -20,7 +20,7 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceFactory;

@@ -21,8 +21,8 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import org.apache.commons.lang3.ObjectUtils;

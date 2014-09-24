@@ -1,6 +1,6 @@
 package com.silverpeas.util.security;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.util.crypto.Cipher;
@@ -8,6 +8,7 @@ import org.silverpeas.util.crypto.CipherFactory;
 import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+import org.silverpeas.util.security.EncryptionContentIterator;
 
 import java.text.ParseException;
 import java.util.HashMap;

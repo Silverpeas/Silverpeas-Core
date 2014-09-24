@@ -41,7 +41,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementFactory" %>
-<%@ page import="com.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

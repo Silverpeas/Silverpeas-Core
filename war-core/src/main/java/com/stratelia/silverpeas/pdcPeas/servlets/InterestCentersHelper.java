@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

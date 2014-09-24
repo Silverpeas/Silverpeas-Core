@@ -28,7 +28,7 @@ import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.apache.commons.io.FileUtils;

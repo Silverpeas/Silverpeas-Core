@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**

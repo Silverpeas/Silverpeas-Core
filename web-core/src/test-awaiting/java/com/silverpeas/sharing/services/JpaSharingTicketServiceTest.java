@@ -26,7 +26,7 @@ package com.silverpeas.sharing.services;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import org.dbunit.database.DatabaseConnection;

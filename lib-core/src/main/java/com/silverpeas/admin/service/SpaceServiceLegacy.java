@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.inject.Named;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;

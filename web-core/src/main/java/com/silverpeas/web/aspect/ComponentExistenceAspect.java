@@ -23,7 +23,7 @@
  */
 package com.silverpeas.web.aspect;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 

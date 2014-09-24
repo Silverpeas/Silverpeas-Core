@@ -26,7 +26,7 @@ package com.silverpeas.scheduler.trigger;
 
 import java.text.ParseException;
 import java.util.Date;
-import static com.silverpeas.util.AssertArgument.*;
+import static org.silverpeas.util.AssertArgument.*;
 
 /**
  * A trigger of a job execution. A job trigger specifies the time, regular or not, at which a job

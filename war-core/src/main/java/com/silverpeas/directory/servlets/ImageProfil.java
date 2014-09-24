@@ -24,16 +24,14 @@
 
 package com.silverpeas.directory.servlets;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

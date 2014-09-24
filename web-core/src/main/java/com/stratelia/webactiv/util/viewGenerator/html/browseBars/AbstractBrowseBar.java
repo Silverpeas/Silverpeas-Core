@@ -27,9 +27,9 @@
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NBean;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.util.ArrayList;

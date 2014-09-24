@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.pdcPeas.vo;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class ResultFilterVO {
   private String authorId = null;

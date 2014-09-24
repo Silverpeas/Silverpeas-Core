@@ -23,8 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.notification.ComponentJsonPatch;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.notification.jsondiff.Operation;
 

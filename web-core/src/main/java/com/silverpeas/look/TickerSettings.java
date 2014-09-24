@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.EnumerationUtils;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class TickerSettings {

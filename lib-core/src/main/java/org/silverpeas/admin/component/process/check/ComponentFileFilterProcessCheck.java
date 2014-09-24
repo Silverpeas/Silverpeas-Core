@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.component.process.check;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.apache.commons.io.FileUtils;

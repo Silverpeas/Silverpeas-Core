@@ -25,7 +25,7 @@ package org.silverpeas.subscription;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.subscribe.SubscriptionResource;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 

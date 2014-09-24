@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.component.parameter;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.admin.component.exception.ComponentFileFilterException;
@@ -36,7 +36,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This class handles component file filters (authorized or forbidden files).

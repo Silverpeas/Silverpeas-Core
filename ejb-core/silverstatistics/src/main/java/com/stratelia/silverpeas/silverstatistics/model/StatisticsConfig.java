@@ -25,8 +25,8 @@
 package com.stratelia.silverpeas.silverstatistics.model;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 

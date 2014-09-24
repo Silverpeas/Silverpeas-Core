@@ -24,8 +24,8 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.silverpeas.util.clipboard.SilverpeasKeyData;
+import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.clipboard.SilverpeasKeyData;
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;

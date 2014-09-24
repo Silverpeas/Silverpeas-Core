@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 public class CollectionUtil {
 

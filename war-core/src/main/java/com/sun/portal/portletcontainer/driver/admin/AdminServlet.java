@@ -48,7 +48,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and

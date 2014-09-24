@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;

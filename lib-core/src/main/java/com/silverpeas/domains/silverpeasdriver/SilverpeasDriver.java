@@ -24,7 +24,7 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;

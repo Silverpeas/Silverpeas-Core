@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.TicketFactory;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;

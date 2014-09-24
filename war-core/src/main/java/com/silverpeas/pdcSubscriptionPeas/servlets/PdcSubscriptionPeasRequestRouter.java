@@ -23,7 +23,7 @@ package com.silverpeas.pdcSubscriptionPeas.servlets;
 import com.silverpeas.pdc.web.AxisValueCriterion;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

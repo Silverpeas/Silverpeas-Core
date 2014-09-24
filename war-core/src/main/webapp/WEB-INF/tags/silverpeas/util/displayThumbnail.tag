@@ -22,7 +22,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@tag import="java.util.ArrayList"%>
-<%@tag import="com.silverpeas.util.StringUtil"%>
+<%@tag import="org.silverpeas.util.StringUtil"%>
 <%@tag import="org.silverpeas.core.admin.OrganisationControllerFactory"%>
 <%@tag import="org.silverpeas.core.admin.OrganisationController"%>
 <%@tag import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>

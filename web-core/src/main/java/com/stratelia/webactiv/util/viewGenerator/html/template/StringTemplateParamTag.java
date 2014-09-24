@@ -3,7 +3,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.template;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 
 public class StringTemplateParamTag extends TagSupport {
   private static final long serialVersionUID = -8246867491413179780L;

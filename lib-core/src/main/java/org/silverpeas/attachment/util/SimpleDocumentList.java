@@ -23,10 +23,10 @@
  */
 package org.silverpeas.attachment.util;
 
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.comparator.AbstractComplexComparator;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.util.ArrayList;

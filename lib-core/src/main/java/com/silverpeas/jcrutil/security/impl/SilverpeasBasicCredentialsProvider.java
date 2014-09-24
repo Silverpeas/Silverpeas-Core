@@ -24,7 +24,7 @@
 
 package com.silverpeas.jcrutil.security.impl;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.jcr.Credentials;

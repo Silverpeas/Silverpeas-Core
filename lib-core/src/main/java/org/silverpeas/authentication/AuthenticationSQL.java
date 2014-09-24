@@ -33,7 +33,7 @@ import org.silverpeas.authentication.exception.AuthenticationHostException;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;

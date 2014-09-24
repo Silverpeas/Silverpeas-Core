@@ -25,8 +25,8 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.status.StatusService;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -47,8 +47,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static com.silverpeas.util.StringUtil.areStringEquals;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.areStringEquals;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String CURRENT_REQUESTER_KEY =

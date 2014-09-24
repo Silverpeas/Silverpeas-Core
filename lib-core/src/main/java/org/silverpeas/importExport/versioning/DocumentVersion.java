@@ -32,8 +32,8 @@ import org.silverpeas.importExport.attachment.AttachmentDetail;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.jcrutil.converter.ConverterUtil;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MimeTypes;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;

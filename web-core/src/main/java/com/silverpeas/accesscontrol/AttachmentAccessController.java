@@ -29,8 +29,8 @@ import javax.inject.Named;
 
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;

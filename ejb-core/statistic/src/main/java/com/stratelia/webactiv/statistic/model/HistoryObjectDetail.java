@@ -30,7 +30,7 @@ package com.stratelia.webactiv.statistic.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 /**
  * Class declaration

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.persistent;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;

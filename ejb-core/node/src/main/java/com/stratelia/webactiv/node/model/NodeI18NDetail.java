@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.node.model;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 
 public class NodeI18NDetail extends Translation implements java.io.Serializable {
 

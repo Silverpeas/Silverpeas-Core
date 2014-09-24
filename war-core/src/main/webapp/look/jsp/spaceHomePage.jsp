@@ -27,9 +27,9 @@
 <%@page import="org.owasp.encoder.Encode"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@page import="ucar.nc2.units.DateUnit"%>

@@ -25,7 +25,7 @@ package org.silverpeas.importExport.versioning;
 
 import java.util.Date;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 

@@ -24,7 +24,7 @@
 
 package com.silverpeas.core;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;

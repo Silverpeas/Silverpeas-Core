@@ -43,7 +43,7 @@
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementFactory" %>
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="com.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 

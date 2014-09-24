@@ -26,7 +26,7 @@ package com.silverpeas.profile.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -46,8 +46,7 @@ import javax.ws.rs.core.Response;
 import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.web.RESTWebService.RESPONSE_HEADER_ARRAYSIZE;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a

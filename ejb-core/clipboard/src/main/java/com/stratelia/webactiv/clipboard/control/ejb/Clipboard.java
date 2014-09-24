@@ -24,8 +24,8 @@ import java.util.Collection;
 
 import javax.ejb.Local;
 
-import com.silverpeas.util.clipboard.ClipboardException;
-import com.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardSelection;
 
 /**
  * @author ehugonnet

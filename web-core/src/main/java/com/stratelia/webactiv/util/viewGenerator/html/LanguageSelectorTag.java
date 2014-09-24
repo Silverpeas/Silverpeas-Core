@@ -23,18 +23,16 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.I18NLanguage;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NLanguage;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import org.apache.ecs.Element;

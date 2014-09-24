@@ -26,7 +26,7 @@ package com.silverpeas.accesscontrol;
 
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;

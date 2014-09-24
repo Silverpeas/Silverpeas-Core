@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -125,7 +126,8 @@ out.println(frame.printBefore());
 			if (space.isRoot())
 				cellLabel = line.addArrayCellText(space.getName());
 			else
-				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+EncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+EncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
+				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+
+            EncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+EncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
 			cellLabel.setCompareOn(space.getName());
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemoveDate())+"&nbsp;("+space.getRemoverName()+")");
 			cell.setCompareOn(space.getRemoveDate());

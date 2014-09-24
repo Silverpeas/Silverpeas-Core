@@ -24,6 +24,7 @@ package com.silverpeas.util;
 import javax.mail.internet.InternetAddress;
 
 import org.junit.Test;
+import org.silverpeas.util.MailUtil;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

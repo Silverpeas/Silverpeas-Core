@@ -21,10 +21,10 @@
 package org.silverpeas.importExport.attachment;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -33,7 +33,6 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * Class declaration

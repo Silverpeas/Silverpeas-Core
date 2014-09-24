@@ -20,7 +20,7 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;

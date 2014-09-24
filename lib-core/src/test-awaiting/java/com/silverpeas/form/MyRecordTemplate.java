@@ -23,7 +23,7 @@ package com.silverpeas.form;
 
 import java.util.List;
 
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 /**
  * A record template implementation for testing purpose.

@@ -30,10 +30,10 @@
 
 <%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%

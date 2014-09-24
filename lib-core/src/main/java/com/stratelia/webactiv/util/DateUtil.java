@@ -26,7 +26,7 @@ package com.stratelia.webactiv.util;
 
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.DateTime;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -42,7 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static java.util.Calendar.*;
 
 /**

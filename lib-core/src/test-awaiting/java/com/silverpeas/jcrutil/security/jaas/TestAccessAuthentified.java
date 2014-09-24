@@ -39,7 +39,7 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 
 import com.stratelia.webactiv.util.JNDINames;
 

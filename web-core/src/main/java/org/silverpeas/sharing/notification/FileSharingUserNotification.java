@@ -35,8 +35,8 @@ import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuild
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

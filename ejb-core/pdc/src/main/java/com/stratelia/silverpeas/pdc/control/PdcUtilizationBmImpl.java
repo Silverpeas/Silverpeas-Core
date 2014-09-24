@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;

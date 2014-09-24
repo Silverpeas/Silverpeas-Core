@@ -42,7 +42,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.FormFatalException;
 import com.silverpeas.form.TypeManager;
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 /**
  * A generic FieldTemplate implementation.

@@ -25,7 +25,7 @@ package org.silverpeas.attachment.repository;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;

@@ -34,6 +34,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.web.RequestHelper;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 

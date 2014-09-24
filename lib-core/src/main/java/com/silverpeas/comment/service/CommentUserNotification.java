@@ -23,7 +23,7 @@
  */
 package com.silverpeas.comment.service;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -34,8 +34,8 @@ import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.util.ResourceLocator;
 

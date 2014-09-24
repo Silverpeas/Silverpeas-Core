@@ -30,7 +30,7 @@ import java.util.Map;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.fieldType.TextFieldImpl;
-import com.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ArrayUtil;
 
 /**
  * A dummy DataRecord .

@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;

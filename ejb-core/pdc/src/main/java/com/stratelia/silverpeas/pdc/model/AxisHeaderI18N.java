@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-import com.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.i18n.Translation;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can

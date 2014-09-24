@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 import com.silverpeas.portlets.portal.PortletAppData;
 import com.silverpeas.portlets.portal.PortletAppDataImpl;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletType;
 import com.sun.portal.portletcontainer.admin.mbeans.PortletAdmin;

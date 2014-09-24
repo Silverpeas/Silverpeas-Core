@@ -30,7 +30,7 @@ import javax.ejb.TransactionAttributeType;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;

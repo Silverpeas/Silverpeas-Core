@@ -22,7 +22,7 @@ package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.*;

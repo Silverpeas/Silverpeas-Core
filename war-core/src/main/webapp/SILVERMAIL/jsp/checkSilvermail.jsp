@@ -28,7 +28,7 @@
 
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import=" com.silverpeas.util.EncodeHelper"%>
+<%@ page import=" org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%
       SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) request.getAttribute(

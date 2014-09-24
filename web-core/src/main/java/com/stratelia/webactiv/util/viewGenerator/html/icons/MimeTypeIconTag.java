@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 import javax.servlet.jsp.JspException;

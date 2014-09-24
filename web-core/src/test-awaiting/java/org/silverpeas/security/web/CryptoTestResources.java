@@ -1,7 +1,7 @@
 package org.silverpeas.security.web;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.TestResources;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;

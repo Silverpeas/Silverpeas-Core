@@ -25,7 +25,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcAxisValue;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.List;

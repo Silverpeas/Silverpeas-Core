@@ -23,7 +23,7 @@
  */
 package org.silverpeas.persistence.repository;
 
-import com.silverpeas.util.AssertArgument;
+import org.silverpeas.util.AssertArgument;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.persistence.model.Entity;

@@ -33,7 +33,7 @@ import org.silverpeas.sharing.notification.FileSharingUserNotification;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

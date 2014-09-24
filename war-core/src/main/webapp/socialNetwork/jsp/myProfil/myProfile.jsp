@@ -34,7 +34,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
@@ -44,6 +44,7 @@
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

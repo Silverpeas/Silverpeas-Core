@@ -25,7 +25,7 @@
 package com.silverpeas.jobOrganizationPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

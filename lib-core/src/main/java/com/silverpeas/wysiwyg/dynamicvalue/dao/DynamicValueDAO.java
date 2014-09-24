@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.silverpeas.util.ConfigurationControl;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ConfigurationControl;
+import org.silverpeas.util.StringUtil;
 
 import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;

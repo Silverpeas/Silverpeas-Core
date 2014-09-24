@@ -32,7 +32,7 @@ import com.silverpeas.look.LookHelper;
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;

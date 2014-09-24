@@ -55,7 +55,7 @@
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);

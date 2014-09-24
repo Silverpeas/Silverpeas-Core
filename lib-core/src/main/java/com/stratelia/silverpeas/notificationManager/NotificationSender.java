@@ -21,10 +21,10 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterfaceImpl;

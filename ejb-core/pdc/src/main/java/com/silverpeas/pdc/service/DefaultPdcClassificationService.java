@@ -49,7 +49,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The default implementation of the PdcClassificationService by using both the JPA-based repository

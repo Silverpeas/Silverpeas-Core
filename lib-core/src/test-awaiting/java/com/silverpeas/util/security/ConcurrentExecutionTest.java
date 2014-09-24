@@ -4,6 +4,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.util.security.EncryptionContentIterator;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;

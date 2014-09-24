@@ -22,6 +22,9 @@ package com.silverpeas.util;
 
 import org.junit.Test;
 import org.silverpeas.media.Definition;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.StringUtil;
 
 import java.io.File;
 import java.net.URISyntaxException;

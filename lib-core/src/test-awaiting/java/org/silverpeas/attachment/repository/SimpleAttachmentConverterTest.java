@@ -42,7 +42,7 @@ import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 
 import com.stratelia.webactiv.util.DateUtil;
@@ -58,7 +58,6 @@ import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
-import static javax.jcr.Property.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;

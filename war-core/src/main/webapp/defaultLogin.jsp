@@ -23,6 +23,7 @@
   --%>
 
 <%@page import="org.silverpeas.web.util.DomainDetector" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -41,7 +42,7 @@
   pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 
   String domainId = null;
-  if (com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
+  if (StringUtil.isInteger(request.getParameter("DomainId"))) {
     domainId = request.getParameter("DomainId");
     request.setAttribute("Silverpeas_DomainId", domainId);
   }
@@ -318,7 +319,7 @@
 
   if (nbCookiesFound === 2) {
     document.getElementById("formLogin").cryptedPassword.value = "Yes";
-    <% if (!com.silverpeas.util.StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
+    <% if (!StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
     document.getElementById("formLogin").submit();
     <% } %>
   } else {

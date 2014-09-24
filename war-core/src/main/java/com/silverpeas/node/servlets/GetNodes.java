@@ -24,8 +24,8 @@
 
 package com.silverpeas.node.servlets;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.RestRequest;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

@@ -74,7 +74,7 @@
   <ctx:component-scan base-package="org.silverpeas.token"/>
   <ctx:component-scan base-package="org.silverpeas.util.data"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.peasCore"/>
-  <ctx:component-scan base-package="com.silverpeas.util.security"/>
+  <ctx:component-scan base-package="org.silverpeas.util.security"/>
   <ctx:component-scan base-package="org.silverpeas.security.web"/>
   <ctx:component-scan base-package="org.silverpeas.upload"/>
   <ctx:component-scan base-package="org.silverpeas.contribution"/>
@@ -191,7 +191,7 @@
   <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>
 
   <!-- the content encryption service factory from which Silverpeas components access the content encryption service -->
-  <bean id="contentEncryptionServiceFactory" class="com.silverpeas.util.security.ContentEncryptionServiceFactory"
+  <bean id="contentEncryptionServiceFactory" class="org.silverpeas.util.security.ContentEncryptionServiceFactory"
         factory-method="getFactory"/>
 
   <bean id="publicationTemplateManager" class="com.silverpeas.publicationTemplate.PublicationTemplateManager"

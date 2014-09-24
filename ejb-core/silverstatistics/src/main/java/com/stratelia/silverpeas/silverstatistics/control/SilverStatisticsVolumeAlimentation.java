@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

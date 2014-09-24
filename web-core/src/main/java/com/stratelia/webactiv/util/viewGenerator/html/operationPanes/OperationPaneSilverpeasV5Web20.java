@@ -23,8 +23,8 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Vector;
 

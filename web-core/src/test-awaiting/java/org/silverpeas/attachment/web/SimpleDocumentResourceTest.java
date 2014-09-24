@@ -25,7 +25,7 @@ package org.silverpeas.attachment.web;
 
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import com.silverpeas.web.ResourceGettingTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;

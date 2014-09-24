@@ -29,6 +29,7 @@
 <%@ include file="checkPdc.jsp"%>
 
 <%@ page import="java.net.URLEncoder"%>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%
 	 ArrayList result = new ArrayList();
@@ -109,7 +110,8 @@ function openSPWindow(){
 
     for (int i=0; i<result.size(); i++) {
         arrayLine = pane.addArrayLine();
-        arrayLine.addArrayCellText("<span class=textePetitBold>"+EncodeHelper.javaStringToHtmlParagraphe((String) result.get(i))+"</span>").setAlignement("center");
+        arrayLine.addArrayCellText("<span class=textePetitBold>"+
+            EncodeHelper.javaStringToHtmlParagraphe((String) result.get(i))+"</span>").setAlignement("center");
         arrayLine.addArrayCellText("<span class=textePetitBold>&nbsp;</span>").setAlignement("center");
         arrayLine.addArrayCellText("<input type=checkbox name=selAxis value=\""+URLEncoder.encode((String) result.get(i), "UTF-8")+"\">").setAlignement("center");
     }

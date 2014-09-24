@@ -25,13 +25,14 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import com.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.FileUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

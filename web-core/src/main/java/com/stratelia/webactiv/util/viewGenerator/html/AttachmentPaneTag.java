@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.core.admin.OrganisationControllerFactory;

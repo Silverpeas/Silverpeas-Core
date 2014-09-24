@@ -28,7 +28,7 @@ import java.util.Collection;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 

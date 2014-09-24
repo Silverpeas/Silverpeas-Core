@@ -26,9 +26,10 @@ package com.silverpeas.util.web.servlet;
 
 import junit.framework.TestCase;
 
+import org.silverpeas.util.web.servlet.RestRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import static com.silverpeas.util.web.servlet.RestRequest.Action.*;
+import static org.silverpeas.util.web.servlet.RestRequest.Action.*;
 
 public class TestRestRequest extends TestCase {
 

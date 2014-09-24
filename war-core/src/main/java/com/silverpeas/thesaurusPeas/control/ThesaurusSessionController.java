@@ -34,7 +34,7 @@ import com.silverpeas.thesaurus.control.ThesaurusBm;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.thesaurus.model.Synonym;
 import com.silverpeas.thesaurus.model.Vocabulary;
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.Axis;
@@ -49,7 +49,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ThesaurusSessionController extends AbstractComponentSessionController {

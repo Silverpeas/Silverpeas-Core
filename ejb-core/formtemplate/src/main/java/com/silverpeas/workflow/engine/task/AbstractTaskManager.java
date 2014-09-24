@@ -24,7 +24,7 @@
 
 package com.silverpeas.workflow.engine.task;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.TaskManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.Actor;

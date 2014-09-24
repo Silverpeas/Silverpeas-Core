@@ -24,11 +24,12 @@
 
 --%>
 
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -84,7 +85,8 @@ for (PublicationDetail pub : publications) {
     <% if (pubUpdater == null && pub.getUpdateDate() != null) { %>
       <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>
     <% } %>
-    <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil.isDefined(pub.getDescription(language))) { %>
+    <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil
+        .isDefined(pub.getDescription(language))) { %>
       <br/><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(EncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
     <% } %>
 <% } %>

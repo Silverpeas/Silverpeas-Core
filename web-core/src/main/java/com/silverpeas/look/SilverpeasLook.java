@@ -28,8 +28,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import com.stratelia.webactiv.util.FileServerUtils;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.io.File;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -41,7 +41,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.OrganisationController;
 
 import static com.stratelia.webactiv.beans.admin.Admin.*;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * It is a singleton that represents the current look of the running Silverpeas. Its single object

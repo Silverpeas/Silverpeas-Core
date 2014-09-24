@@ -37,7 +37,7 @@ import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.Status;
 import com.silverpeas.socialnetwork.status.StatusService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 

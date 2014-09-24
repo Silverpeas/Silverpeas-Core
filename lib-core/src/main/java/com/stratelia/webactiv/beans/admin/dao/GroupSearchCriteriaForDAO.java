@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An implementation of the search criteria for user groups stored in a SQL data source and used by

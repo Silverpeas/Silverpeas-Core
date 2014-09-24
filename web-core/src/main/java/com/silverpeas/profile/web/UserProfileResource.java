@@ -44,7 +44,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -56,7 +56,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ListSlice;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a

@@ -20,8 +20,8 @@
  */
 package com.stratelia.webactiv.agenda.view;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;

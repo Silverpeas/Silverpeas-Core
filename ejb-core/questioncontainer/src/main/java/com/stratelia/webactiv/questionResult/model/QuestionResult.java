@@ -26,7 +26,7 @@ package com.stratelia.webactiv.questionResult.model;
 
 import java.io.Serializable;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.answer.model.AnswerPK;
 
 public class QuestionResult implements Serializable {

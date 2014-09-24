@@ -21,6 +21,7 @@
 package com.silverpeas.util;
 
 import org.junit.Test;
+import org.silverpeas.util.EncodeHelper;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

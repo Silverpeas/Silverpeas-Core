@@ -26,7 +26,7 @@ package com.stratelia.webactiv.answer.model;
 
 import java.io.Serializable;
 
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 
 public class Answer implements Serializable {
   private static final long serialVersionUID = 7915608110782813687L;

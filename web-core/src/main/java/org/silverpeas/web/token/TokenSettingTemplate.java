@@ -23,9 +23,8 @@
  */
 package org.silverpeas.web.token;
 
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.util.Arrays;
 import java.util.List;

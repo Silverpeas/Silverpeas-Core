@@ -43,7 +43,7 @@ import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.GenericRecordTemplate;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
 import com.silverpeas.workflow.api.model.Action;

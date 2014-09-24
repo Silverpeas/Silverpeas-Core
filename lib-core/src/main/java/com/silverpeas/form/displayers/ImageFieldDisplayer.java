@@ -39,7 +39,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

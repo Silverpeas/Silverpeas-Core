@@ -29,7 +29,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.sharing.security.AbstractShareableAccessControl;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;

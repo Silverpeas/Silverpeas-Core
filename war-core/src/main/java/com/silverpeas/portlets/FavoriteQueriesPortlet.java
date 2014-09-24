@@ -36,7 +36,7 @@ import javax.portlet.RenderResponse;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenter.util.InterestCenterUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class FavoriteQueriesPortlet extends GenericPortlet implements FormNames {

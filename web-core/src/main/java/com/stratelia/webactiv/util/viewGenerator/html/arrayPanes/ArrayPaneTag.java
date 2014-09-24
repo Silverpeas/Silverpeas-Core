@@ -29,7 +29,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import javax.servlet.jsp.tagext.TagSupport;
 

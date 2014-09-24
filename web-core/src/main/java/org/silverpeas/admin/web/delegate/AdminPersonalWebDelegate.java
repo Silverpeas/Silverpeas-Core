@@ -35,7 +35,7 @@ import org.silverpeas.look.web.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;

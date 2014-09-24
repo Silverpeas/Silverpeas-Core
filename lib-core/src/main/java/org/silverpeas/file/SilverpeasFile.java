@@ -1,7 +1,7 @@
 package org.silverpeas.file;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedInputStream;

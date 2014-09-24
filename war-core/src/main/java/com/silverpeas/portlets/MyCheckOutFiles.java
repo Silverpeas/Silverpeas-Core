@@ -20,7 +20,7 @@
  */
 package com.silverpeas.portlets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentException;

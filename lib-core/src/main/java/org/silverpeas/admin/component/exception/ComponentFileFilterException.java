@@ -26,9 +26,7 @@ package org.silverpeas.admin.component.exception;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
 
-import java.io.File;
-
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

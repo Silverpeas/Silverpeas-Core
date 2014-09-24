@@ -23,7 +23,7 @@
  */
 package org.silverpeas.servlet;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
