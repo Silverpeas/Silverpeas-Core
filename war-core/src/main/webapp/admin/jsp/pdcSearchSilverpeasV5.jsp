@@ -24,14 +24,26 @@
 
 --%>
 
+<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
+<%@page import="com.stratelia.silverpeas.pdc.model.Value"%>
+<%@page import="java.io.IOException"%>
+<%@page import="com.silverpeas.thesaurus.ThesaurusException"%>
+<%@page import="com.silverpeas.thesaurus.model.Jargon"%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
+<%@page import="com.stratelia.silverpeas.pdcPeas.model.QueryParameters"%>
+<%@page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
+<%@page import="java.util.List"%>
+<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.silverpeas.look.LookHelper"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
-
-<%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -84,10 +96,8 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
 	String		sNbObjects			= "";
 	String		language			= resource.getLanguage();
 	
-    //out.println("<table width=\"10\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
 		// il peut y avoir aucun axe primaire dans un 1er temps
 		if (axis != null && axis.size()>0){
-		//	out.println("<tr>");
             for (int i=0; i<axis.size(); i++){
 				searchAxis		= (SearchAxis) axis.get(i);
                 axisId			= searchAxis.getAxisId();
@@ -147,16 +157,14 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
                     out.println("</select></td>");
                }
 			}// fin du for
-            //out.println("</tr>");
-		} else {
-			//out.println("<tr><td width=\"100%\" class=\"txtnav\" bgcolor=\"EDEDED\">&nbsp;</td></tr>");
-		} // fin du else
-    //out.println("</table>");
+		}
 }
-
 %>
 <%
 LookHelper  helper        = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 //recuperation des parametres pour le PDC
 List<SearchAxis> primaryAxis		= (List) request.getAttribute("ShowPrimaryAxis");
