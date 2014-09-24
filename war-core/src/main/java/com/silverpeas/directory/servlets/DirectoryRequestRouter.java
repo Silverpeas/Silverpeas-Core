@@ -42,7 +42,6 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * @author azzedine
@@ -83,8 +82,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String sort = request.getParameter("Sort");
         if (StringUtil.isDefined(sort)) {
           directorySC.setCurrentSort(sort);
+        } else {
+          directorySC.setCurrentSort(DirectorySessionController.SORT_ALPHA);
         }
-
+        
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
         } else if (StringUtil.isDefined(groupIds)) {
@@ -102,8 +103,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         } else {
           users = directorySC.getAllUsers();
         }
-
-        destination = doPagination(request, users, directorySC);
+        
+        String view = request.getParameter("View");
+        if (StringUtil.isDefined(view) && DirectorySessionController.VIEW_CONNECTED.equals(view)) {
+            destination = getDestination(DirectorySessionController.VIEW_CONNECTED, directorySC, request);
+        } else {
+          destination = doPagination(request, users, directorySC);
+        }
         request.setAttribute("ShowHelp", true);
       } else if ("CommonContacts".equals(function)) {
         String userId = request.getParameter("UserId");
@@ -116,14 +122,14 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
         } else {
-          destination = getDestination("tous", directorySC, request);
+          destination = getDestination(DirectorySessionController.VIEW_ALL, directorySC, request);
         }
-      } else if (function.equalsIgnoreCase("tous")) {
+      } else if (function.equalsIgnoreCase(DirectorySessionController.VIEW_ALL)) {
 
         users = directorySC.getLastListOfAllUsers();
         destination = doPagination(request, users, directorySC);
 
-      } else if (function.equalsIgnoreCase("connected")) {
+      } else if (function.equalsIgnoreCase(DirectorySessionController.VIEW_CONNECTED)) {
 
         users = directorySC.getConnectedUsers();
         destination = doPagination(request, users, directorySC);

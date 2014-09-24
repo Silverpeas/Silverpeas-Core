@@ -71,10 +71,13 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
  */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
-  private List<UserDetail> lastAlllistUsersCalled;
+  private List<UserDetail> lastAllListUsersCalled;
   private List<UserDetail> lastListUsersCalled; // cache for pagination
   private int elementsByPage = 10;
-  private String currentView = "tous";
+  public static final String VIEW_ALL = "tous";
+  public static final String VIEW_CONNECTED = "connected";
+  public static final String VIEW_QUERY = "query";
+  private String currentView = VIEW_ALL;
   public static final int DIRECTORY_DEFAULT = 0; // all users
   public static final int DIRECTORY_MINE = 1; // contacts of online user
   public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
@@ -124,7 +127,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public List<UserDetail> getAllUsers() {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_DEFAULT);
     setCurrentQuery(null);
     return getUsers();
@@ -134,25 +137,25 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     switch (GeneralPropertiesManager.getDomainVisibility()) {
       case GeneralPropertiesManager.DVIS_ALL:
         // all users are visible
-        lastAlllistUsersCalled = getUsersSorted();
+        lastAllListUsersCalled = getUsersSorted();
         break;
       case GeneralPropertiesManager.DVIS_EACH:
         // only users of user's domain are visible
-        lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
+        lastAllListUsersCalled = getUsersOfCurrentUserDomain();
         break;
       case GeneralPropertiesManager.DVIS_ONE:
         // default domain users can see all users
         // users of other domains can see only users of their domain
         String currentUserDomainId = getUserDetail().getDomainId();
         if ("0".equals(currentUserDomainId)) {
-          lastAlllistUsersCalled = getUsersSorted();
+          lastAllListUsersCalled = getUsersSorted();
         } else {
-          lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
+          lastAllListUsersCalled = getUsersOfCurrentUserDomain();
         }
     }
     setInitialSort(getCurrentSort());
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    lastListUsersCalled = lastAllListUsersCalled;
+    return lastAllListUsersCalled;
   }
 
   private List<UserDetail> getUsersSorted() {
@@ -212,7 +215,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       setCurrentSort(getPreviousSort());
     }
     lastListUsersCalled = new ArrayList<UserDetail>();
-    for (UserDetail varUd : lastAlllistUsersCalled) {
+    for (UserDetail varUd : lastAllListUsersCalled) {
       if (varUd.getLastName().toUpperCase().startsWith(index)) {
         lastListUsersCalled.add(varUd);
       }
@@ -226,14 +229,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * get all User that heir lastname or first name Last Name like "Key"
+   * get all User that their lastname or first name like "Key"
    * @param query the search query
+   * @param globalSearch true if it's a search outside directory (direct from URL)
    * @throws DirectoryException
    * @see
    */
   public List<UserDetail> getUsersByQuery(String query, boolean globalSearch)
       throws DirectoryException {
-    setCurrentView("query");
+    setCurrentView(VIEW_QUERY);
     setCurrentQuery(query);
     if (globalSearch) {
       setCurrentDirectory(DIRECTORY_DEFAULT);
@@ -251,7 +255,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
           queryDescription).getEntries();
       
       if (plainSearchResults != null && !plainSearchResults.isEmpty()) {
-        List<UserDetail> allUsers = lastAlllistUsersCalled;
+        List<UserDetail> allUsers = lastAllListUsersCalled;
         if (globalSearch) {
           // forcing to get all users to re-init list of visible users
           allUsers = getUsers();
@@ -279,13 +283,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public List<UserDetail> getAllUsersByGroup(String groupId) {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
     currentGroup = getOrganisationController().getGroup(groupId);
-    lastAlllistUsersCalled = Arrays.asList(getOrganisationController().getAllUsersOfGroup(groupId));
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    lastAllListUsersCalled = Arrays.asList(getOrganisationController().getAllUsersOfGroup(groupId));
+    lastListUsersCalled = lastAllListUsersCalled;
+    return lastAllListUsersCalled;
   }
 
   /**
@@ -294,7 +298,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public List<UserDetail> getAllUsersByGroups(List<String> groupIds) {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
 
@@ -305,10 +309,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
           groupId));
     }
 
-    lastAlllistUsersCalled = tmpList;
+    lastAllListUsersCalled = tmpList;
 
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    lastListUsersCalled = lastAllListUsersCalled;
+    return lastAllListUsersCalled;
 
   }
 
@@ -317,17 +321,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public List<UserDetail> getLastListOfAllUsers() {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentQuery(null);
     if (getCurrentSort().equals(SORT_PERTINENCE)) {
       setCurrentSort(getPreviousSort());
     }
-    if (getCurrentSort().equals(getInitialSort())) {
-      lastListUsersCalled = lastAlllistUsersCalled;
-    } else {
-      // force to sort all users according to current sort
-      getUsers();
-    }
+    
+    lastListUsersCalled = lastAllListUsersCalled;
     return lastListUsersCalled;
   }
 
@@ -345,7 +345,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_SPACE);
     setCurrentQuery(null);
     currentSpace = getOrganisationController().getSpaceInstLightById(spaceId);
@@ -354,10 +354,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (String componentId : componentIds) {
       fillList(lus, getOrganisationController().getAllUsers(componentId));
     }
-    lastAlllistUsersCalled = lus;
+    
+    //sort list
+    if (getCurrentSort().equals(SORT_ALPHA)) {
+      Collections.sort(lus);
+    } else if (getCurrentSort().equals(SORT_NEWEST)) {
+      Collections.sort(lus, new UserIdComparator());
+    }
+    
+    lastAllListUsersCalled = lus;
 
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    lastListUsersCalled = lastAllListUsersCalled;
+    return lastAllListUsersCalled;
 
   }
 
@@ -370,8 +378,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * return All user of Domaine who has Id="domainId"
-   * @param domainId:the ID of Domaine
+   * return All user of Domain Id="domainId"
+   * @param domainId:the ID of Domain
    * @see
    */
   public List<UserDetail> getAllUsersByDomain(String domainId) {
@@ -391,7 +399,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public List<UserDetail> getAllContactsOfUser(String userId) {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentQuery(null);
     if (getUserId().equals(userId)) {
       setCurrentDirectory(DIRECTORY_MINE);
@@ -399,35 +407,35 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       setCurrentDirectory(DIRECTORY_OTHER);
       otherUserDetail = getUserDetail(userId);
     }
-    lastAlllistUsersCalled = new ArrayList<UserDetail>();
+    lastAllListUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
+        lastAllListUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
     } catch (SQLException ex) {
-      SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
+      SilverTrace.error("directory", "DirectorySessionController.getAllContactsOfUser", "", ex);
     }
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    lastListUsersCalled = lastAllListUsersCalled;
+    return lastAllListUsersCalled;
   }
 
   public List<UserDetail> getCommonContacts(String userId) {
-    setCurrentView("tous");
+    setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_COMMON);
     commonUserDetail = getUserDetail(userId);
-    lastAlllistUsersCalled = new ArrayList<UserDetail>();
+    lastAllListUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds = relationShipService.getAllCommonContactsIds(Integer.parseInt(
           getUserId()), Integer.parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
+        lastAllListUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
     } catch (SQLException ex) {
-      SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
+      SilverTrace.error("directory", "DirectorySessionController.getCommonContacts", "", ex);
     }
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    lastListUsersCalled = lastAllListUsersCalled;
+    return lastAllListUsersCalled;
   }
 
   public UserFull getUserFul(String userId) {
@@ -446,7 +454,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
     int priorityId = 0;
-    SilverTrace.debug("notificationUser", "NotificationUsersessionController.sendMessage()",
+    SilverTrace.debug("directory", "DirectorySessionController.sendMessage()",
         "root.MSG_GEN_PARAM_VALUE", " AVANT CONTROLE priorityId=" + priorityId);
     NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
@@ -465,7 +473,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public List<UserDetail> getConnectedUsers() {
-    setCurrentView("connected");
+    setCurrentView(VIEW_CONNECTED);
     setCurrentQuery(null);
     if (getCurrentSort().equals(SORT_PERTINENCE)) {
       setCurrentSort(getPreviousSort());
@@ -479,18 +487,23 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
+    
+    if (getCurrentSort().equals(SORT_ALPHA)) {
+      Collections.sort(connectedUsers);
+    } else if (getCurrentSort().equals(SORT_NEWEST)) {
+      Collections.sort(connectedUsers, new UserIdComparator());
+    }
 
     if (getCurrentDirectory() != DIRECTORY_DEFAULT) {
       // all connected users must be filtered according to directory scope
       lastListUsersCalled = new ArrayList<UserDetail>();
       for (UserDetail connectedUser : connectedUsers) {
-        if (lastAlllistUsersCalled.contains(connectedUser)) {
+        if (lastAllListUsersCalled.contains(connectedUser)) {
           lastListUsersCalled.add(connectedUser);
         }
       }
     } else {
       lastListUsersCalled = connectedUsers;
-      lastAlllistUsersCalled = connectedUsers;
     }
 
     return lastListUsersCalled;
@@ -607,31 +620,17 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public List<UserDetail> sort(String sort) {
     setCurrentSort(sort);
-    if ("tous".equalsIgnoreCase(getCurrentView())) {
-      // get users from DB instead of sorting it
-      getUsers();
-    } else {
-      // sort lastListUsersCalled
-      if (getCurrentSort().equals(SORT_ALPHA)) {
-        Collections.sort(lastListUsersCalled, new UserNameComparator());
-      } else {
-        Collections.sort(lastListUsersCalled, new UserIdComparator());
-      }
+    
+    // sort lists
+    if (getCurrentSort().equals(SORT_ALPHA)) {
+      Collections.sort(lastAllListUsersCalled);
+      Collections.sort(lastListUsersCalled);
+    } else if (getCurrentSort().equals(SORT_NEWEST)) {
+      Collections.sort(lastAllListUsersCalled, new UserIdComparator());
+      Collections.sort(lastListUsersCalled, new UserIdComparator());
     }
+    
     return lastListUsersCalled;
-  }
-
-  private class UserNameComparator implements Comparator<UserDetail> {
-
-    @Override
-    public int compare(UserDetail o1, UserDetail o2) {
-      int compare = o1.getLastName().compareToIgnoreCase(o2.getLastName());
-      if (compare != 0) {
-        return compare;
-      }
-      return o1.getFirstName().compareToIgnoreCase(o2.getFirstName());
-    }
-
   }
 
   /**

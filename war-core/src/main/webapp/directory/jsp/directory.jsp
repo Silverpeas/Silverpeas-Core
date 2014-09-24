@@ -35,6 +35,14 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
+<view:setConstant var="DIRECTORY_DEFAULT" constant="com.silverpeas.directory.control.DirectorySessionController.DIRECTORY_DEFAULT"/>
+<view:setConstant var="DIRECTORY_DOMAIN" constant="com.silverpeas.directory.control.DirectorySessionController.DIRECTORY_DOMAIN"/>
+<view:setConstant var="SORT_PERTINENCE" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_PERTINENCE"/>
+<view:setConstant var="SORT_ALPHA" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_ALPHA"/>
+<view:setConstant var="SORT_NEWEST" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_NEWEST"/>
+<view:setConstant var="VIEW_ALL" constant="com.silverpeas.directory.control.DirectorySessionController.VIEW_ALL"/>
+<view:setConstant var="VIEW_CONNECTED" constant="com.silverpeas.directory.control.DirectorySessionController.VIEW_CONNECTED"/>
+
 <c:set var="breadcrumb" value="${requestScope.BreadCrumb}"/>
 <c:set var="pagination" value="${requestScope.pagination}"/>
 <c:set var="paginationCounter" value="${requestScope.paginationCounter}"/>
@@ -43,7 +51,7 @@
 <c:set var="query" value="${silfn:escapeHtml(requestScope.Query)}"/>
 <c:set var="sort" value="${requestScope.Sort}"/>
 <c:set var="scope" value="${requestScope.Scope}"/>
-<c:set var="view" value="${silfn:defaultString(requestScope.View, 'tous')}"/>
+<c:set var="view" value="${silfn:defaultString(requestScope.View, VIEW_ALL)}"/>
 <c:set var="showHelp" value="${requestScope.ShowHelp}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -174,18 +182,12 @@
           <a ${indexCSS} href="javascript:viewIndex('${letter}')">${letter} </a>
         </c:forTokens>
         <c:out value=" - "/>
-        <c:set var="indexCSS" value="${('tous' eq view) ? 'class=\"active\"' : ''}"/>
-        <a ${indexCSS} href="javascript:viewIndex('tous')"><fmt:message key="directory.scope.all"/></a>
+        <c:set var="indexCSS" value="${(VIEW_ALL eq view) ? 'class=\"active\"' : ''}"/>
+        <a ${indexCSS} href="javascript:viewIndex('${VIEW_ALL}')"><fmt:message key="directory.scope.all"/></a>
         <c:out value=" - "/>
-        <c:set var="indexCSS" value="${('connected' eq view) ? 'class=\"active\"' : ''}"/>
-        <a ${indexCSS} href="javascript:viewIndex('connected')"><fmt:message key="directory.scope.connected"/></a>
+        <c:set var="indexCSS" value="${(VIEW_CONNECTED eq view) ? 'class=\"active\"' : ''}"/>
+        <a ${indexCSS} href="javascript:viewIndex('${VIEW_CONNECTED}')"><fmt:message key="directory.scope.connected"/></a>
       </div>
-
-      <view:setConstant var="DIRECTORY_DEFAULT" constant="com.silverpeas.directory.control.DirectorySessionController.DIRECTORY_DEFAULT"/>
-      <view:setConstant var="DIRECTORY_DOMAIN" constant="com.silverpeas.directory.control.DirectorySessionController.DIRECTORY_DOMAIN"/>
-      <view:setConstant var="SORT_PERTINENCE" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_PERTINENCE"/>
-      <view:setConstant var="SORT_ALPHA" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_ALPHA"/>
-      <view:setConstant var="SORT_NEWEST" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_NEWEST"/>
 
       <c:if test="${(scope == DIRECTORY_DEFAULT or scope == DIRECTORY_DOMAIN) and !(SORT_PERTINENCE == sort)}">
         <div id="sort">
