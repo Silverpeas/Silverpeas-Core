@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.calendar.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.silverpeas.util.DateUtil.*;
 
 public class ToDoHeader extends Schedulable implements Cloneable {
 

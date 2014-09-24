@@ -33,7 +33,7 @@
 
 package com.stratelia.webactiv.todo.control;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author mmarengo

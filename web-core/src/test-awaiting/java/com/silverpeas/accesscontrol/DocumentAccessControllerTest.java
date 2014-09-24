@@ -23,8 +23,8 @@ package com.silverpeas.accesscontrol;
 
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationPK;

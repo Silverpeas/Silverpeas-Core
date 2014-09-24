@@ -21,7 +21,7 @@
 package org.silverpeas.attachment.web;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import java.io.File;
 import java.io.IOException;
 import javax.servlet.ServletException;

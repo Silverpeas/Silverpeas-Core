@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.management;
 
-import static com.stratelia.webactiv.util.GeneralPropertiesManager.getString;
+import static org.silverpeas.util.GeneralPropertiesManager.getString;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.apache.commons.io.FileUtils.readFileToString;

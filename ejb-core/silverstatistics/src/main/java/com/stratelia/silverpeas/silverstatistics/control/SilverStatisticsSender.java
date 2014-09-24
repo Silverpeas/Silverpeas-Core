@@ -39,8 +39,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_JMS_FACTORY;
-import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_JMS_QUEUE;
+import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_JMS_FACTORY;
+import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_JMS_QUEUE;
 
 /**
  * Class declaration

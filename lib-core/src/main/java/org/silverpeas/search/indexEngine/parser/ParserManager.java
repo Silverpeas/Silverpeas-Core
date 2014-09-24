@@ -34,7 +34,7 @@ import org.silverpeas.search.indexEngine.parser.tika.TikaParser;
 import org.silverpeas.util.ArrayUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
 * The ParserManager class manages all the parsers which will be used to parse the indexed files.

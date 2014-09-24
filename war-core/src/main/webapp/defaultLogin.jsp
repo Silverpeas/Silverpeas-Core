@@ -24,6 +24,7 @@
 
 <%@page import="org.silverpeas.web.util.DomainDetector" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

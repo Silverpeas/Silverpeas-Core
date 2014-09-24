@@ -41,7 +41,7 @@ import org.springframework.http.HttpMethod;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * This filter provide the right behaviour to handle Cross-Origin Resource Sharing (CORS).

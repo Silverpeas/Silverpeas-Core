@@ -34,12 +34,12 @@ import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
-import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_DATASOURCE;
+import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_DATASOURCE;
 
 /**
  * Class declaration

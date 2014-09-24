@@ -31,9 +31,9 @@ import java.sql.Statement;
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class QuestionInstanciator extends SQLRequest {
   private static ResourceLocator settings = new ResourceLocator(

@@ -24,7 +24,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1

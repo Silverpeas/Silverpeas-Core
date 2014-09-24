@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import java.util.Date;
 
 public class SilverContentVisibility {

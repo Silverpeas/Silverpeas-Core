@@ -25,7 +25,7 @@ package com.silverpeas.thumbnail.control;
 
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.process.io.file.AbstractDummyHandledFile;
 

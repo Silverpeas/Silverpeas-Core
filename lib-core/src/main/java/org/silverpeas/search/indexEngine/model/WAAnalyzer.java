@@ -23,7 +23,7 @@ package org.silverpeas.search.indexEngine.model;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.fr.ElisionFilter;
 import org.apache.lucene.analysis.snowball.SnowballFilter;

@@ -39,7 +39,7 @@ import com.silverpeas.socialnetwork.status.Status;
 import com.silverpeas.socialnetwork.status.StatusService;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * @author Bensalem Nabil

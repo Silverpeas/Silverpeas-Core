@@ -25,7 +25,7 @@ package org.silverpeas.admin.space.quota;
 
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
@@ -35,7 +35,7 @@ import org.silverpeas.util.memory.MemoryUnit;
 
 import java.io.File;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath;
+import static org.silverpeas.util.FileRepositoryManager.getAbsolutePath;
 import static org.apache.commons.io.FileUtils.sizeOfDirectory;
 
 /**

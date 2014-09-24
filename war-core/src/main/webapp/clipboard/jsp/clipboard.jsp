@@ -34,15 +34,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.clipboard.*"%>
 <%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 
@@ -50,6 +50,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.clipboard.ClipboardSelection" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
 <HTML>
 <HEAD>
 <TITLE>Presse-papier</TITLE>
@@ -184,7 +185,8 @@ function view(url)
         }
         line.addArrayCellText("<img src=\""+ icon+"\" border=\"0\"/>");
         if ("component".equalsIgnoreCase(indexEntry.getObjectType()))
-	        line.addArrayCellLink("<img src=\""+ iconComponent+"\" border=\"0\"/>&nbsp;" + Encode.javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
+	        line.addArrayCellLink("<img src=\""+ iconComponent+"\" border=\"0\"/>&nbsp;" + Encode
+              .javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
         else
 	        line.addArrayCellLink(Encode.javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
         	

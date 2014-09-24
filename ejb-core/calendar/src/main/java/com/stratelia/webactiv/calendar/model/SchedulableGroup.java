@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.calendar.model;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 import java.util.Vector;
 

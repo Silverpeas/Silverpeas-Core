@@ -25,7 +25,7 @@
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.model;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

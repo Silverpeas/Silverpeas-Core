@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
+import org.silverpeas.util.viewGenerator.html.ImageTag;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -64,7 +64,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 /**
  * @author Nabil Bensalem

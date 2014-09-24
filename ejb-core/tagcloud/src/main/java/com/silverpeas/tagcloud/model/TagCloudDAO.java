@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 public class TagCloudDAO {
   private static final int INITIAL_CAPACITY = 100;

@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.util;
 
+import org.silverpeas.util.GeneralPropertiesManager;
+
 /**
  * A helper class to access some private or protected fields for testing purpose.
  */

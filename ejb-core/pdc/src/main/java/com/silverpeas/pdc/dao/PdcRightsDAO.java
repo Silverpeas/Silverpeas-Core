@@ -24,7 +24,7 @@
 
 package com.silverpeas.pdc.dao;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

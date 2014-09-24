@@ -36,9 +36,9 @@ import javax.servlet.http.HttpSession;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
 
 public class ExportServlet extends HttpServlet {
 
@@ -52,7 +52,7 @@ public class ExportServlet extends HttpServlet {
 
   private static final String exportEncoding =
       new ResourceLocator(
-      "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "")
+      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "")
       .getString("gef.arraypane.export.encoding", EXPORT_ENCODING_DEFAULT);
 
   private HtmlCleaner cleaner = new HtmlCleaner();

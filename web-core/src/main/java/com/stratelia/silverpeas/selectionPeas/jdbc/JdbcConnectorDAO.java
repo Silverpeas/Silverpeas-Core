@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.selectionPeas.jdbc;
 
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

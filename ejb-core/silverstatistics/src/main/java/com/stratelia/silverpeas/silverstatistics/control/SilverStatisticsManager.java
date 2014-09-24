@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigExc
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 

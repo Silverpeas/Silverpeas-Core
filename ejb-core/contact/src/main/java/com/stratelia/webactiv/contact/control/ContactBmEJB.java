@@ -21,16 +21,16 @@
 package com.stratelia.webactiv.contact.control;
 
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.contact.info.InfoDAO;
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
 import com.stratelia.webactiv.contact.model.ContactRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.model.NodePK;
 import java.sql.Connection;
 import java.sql.SQLException;

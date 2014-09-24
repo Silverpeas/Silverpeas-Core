@@ -39,11 +39,11 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.servlet.HttpRequest;
 
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
@@ -283,7 +283,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         "root.MSG_GEN_ENTER_METHOD");
 
     ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
+        "org.silverpeas.util.attachment.Attachment", "");
     boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
 
     SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",

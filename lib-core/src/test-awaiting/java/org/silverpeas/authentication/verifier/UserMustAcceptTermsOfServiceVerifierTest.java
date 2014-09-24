@@ -24,7 +24,7 @@
 package org.silverpeas.authentication.verifier;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.junit.Test;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 

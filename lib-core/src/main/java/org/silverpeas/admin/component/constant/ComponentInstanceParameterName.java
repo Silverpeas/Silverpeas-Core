@@ -24,7 +24,7 @@
 package org.silverpeas.admin.component.constant;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * Centralization of common parameter names of component instances.

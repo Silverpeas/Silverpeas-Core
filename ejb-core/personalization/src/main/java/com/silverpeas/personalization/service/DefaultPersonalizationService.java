@@ -34,7 +34,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationDetailDao;
 import com.silverpeas.ui.DisplayI18NHelper;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import org.springframework.transaction.annotation.Transactional;
 

@@ -26,7 +26,7 @@ package com.silverpeas.socialnetwork.myProfil.control;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 

@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.genericPanel;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class GenericPanelSettings {
   public static final int m_ElementsByPage;

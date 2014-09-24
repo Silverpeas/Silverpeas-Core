@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.selectionPeas;
 
 import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class SelectionPeasSettings {
 

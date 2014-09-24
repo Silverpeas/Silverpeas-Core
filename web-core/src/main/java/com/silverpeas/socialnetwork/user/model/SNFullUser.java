@@ -32,8 +32,8 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.File;

@@ -30,7 +30,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import java.net.URI;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;

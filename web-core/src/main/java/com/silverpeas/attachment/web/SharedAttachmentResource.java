@@ -27,7 +27,7 @@ import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ZipManager;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;

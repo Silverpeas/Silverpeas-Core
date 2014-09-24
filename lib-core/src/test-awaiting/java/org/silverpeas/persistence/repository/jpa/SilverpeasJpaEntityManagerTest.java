@@ -24,7 +24,7 @@
 package org.silverpeas.persistence.repository.jpa;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.junit.Test;
 import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.persistence.repository.OperationContext;

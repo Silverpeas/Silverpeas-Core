@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 
 /**

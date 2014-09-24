@@ -23,7 +23,7 @@
  */
 package org.silverpeas.persistence.model.identifier;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.silverpeas.persistence.model.EntityIdentifier;

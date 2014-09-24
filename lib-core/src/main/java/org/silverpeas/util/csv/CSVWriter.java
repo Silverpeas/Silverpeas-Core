@@ -24,7 +24,7 @@
 
 package org.silverpeas.util.csv;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class CSVWriter {
   protected int m_nbCols = 0;

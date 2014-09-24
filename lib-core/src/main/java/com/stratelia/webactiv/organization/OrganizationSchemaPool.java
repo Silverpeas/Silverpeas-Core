@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.util.Schema;
-import com.stratelia.webactiv.util.SchemaPool;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.Schema;
+import org.silverpeas.util.SchemaPool;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.UtilException;
 
 /**
  * The OrganizationSchemaPool class manages a pool of OrganizationSchema shared by all the client

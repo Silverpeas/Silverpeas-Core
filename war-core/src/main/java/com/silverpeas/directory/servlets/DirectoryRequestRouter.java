@@ -33,8 +33,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

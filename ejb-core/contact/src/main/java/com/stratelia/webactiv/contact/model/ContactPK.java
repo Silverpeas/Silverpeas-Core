@@ -26,7 +26,7 @@ package com.stratelia.webactiv.contact.model;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * It's the Contact PrimaryKey object It identify a Contact

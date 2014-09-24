@@ -24,7 +24,7 @@
 package org.silverpeas.servlet;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

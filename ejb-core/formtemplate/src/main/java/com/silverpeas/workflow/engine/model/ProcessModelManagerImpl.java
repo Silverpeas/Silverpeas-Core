@@ -67,11 +67,11 @@ import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 
 /**
  * A ProcessModelManager implementation

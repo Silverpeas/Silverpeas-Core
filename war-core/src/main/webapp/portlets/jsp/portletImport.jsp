@@ -43,10 +43,10 @@
 <%@ page import="javax.portlet.PortletURL" %>
 <%@ page import="javax.portlet.WindowState"%>
 
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.homepage.*"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
@@ -54,8 +54,9 @@
 
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 
-<%@ page import="com.stratelia.webactiv.util.DateUtil"%>
+<%@ page import="org.silverpeas.util.DateUtil"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);

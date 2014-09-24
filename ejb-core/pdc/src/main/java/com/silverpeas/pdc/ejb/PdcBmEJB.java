@@ -33,7 +33,7 @@ import com.stratelia.silverpeas.contentManager.*;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "Pdc", description = "Stateless session bean to manage the pdc.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)

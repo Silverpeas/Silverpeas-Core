@@ -23,7 +23,7 @@
  */
 package org.silverpeas.cache.service;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 /**
  * @author Yohann Chastagnier

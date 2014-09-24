@@ -30,7 +30,7 @@
 
 package org.silverpeas.authentication.exception;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author tleroi

@@ -24,7 +24,7 @@
 
 package com.silverpeas.templatedesigner.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class TemplateDesignerException extends SilverpeasException {
 

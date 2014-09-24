@@ -24,14 +24,14 @@
 package org.silverpeas.process.annotation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ActionType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.annotation.Action;
-import com.stratelia.webactiv.util.annotation.AnnotationUtil;
-import com.stratelia.webactiv.util.annotation.Language;
-import com.stratelia.webactiv.util.annotation.SourcePK;
-import com.stratelia.webactiv.util.annotation.TargetObject;
-import com.stratelia.webactiv.util.annotation.TargetPK;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.annotation.Action;
+import org.silverpeas.util.annotation.AnnotationUtil;
+import org.silverpeas.util.annotation.Language;
+import org.silverpeas.util.annotation.SourcePK;
+import org.silverpeas.util.annotation.TargetObject;
+import org.silverpeas.util.annotation.TargetPK;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.management.ProcessExecutionContext;

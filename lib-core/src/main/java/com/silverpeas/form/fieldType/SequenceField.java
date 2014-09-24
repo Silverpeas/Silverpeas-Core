@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 
 public class SequenceField extends TextField {
 

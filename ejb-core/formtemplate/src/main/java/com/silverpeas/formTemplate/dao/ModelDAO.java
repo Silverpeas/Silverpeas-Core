@@ -33,8 +33,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.UtilException;
 
 public class ModelDAO {
 

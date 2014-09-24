@@ -28,7 +28,7 @@ import com.silverpeas.pdc.PdcServiceFactory;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import java.io.Serializable;
 import java.util.*;
 import javax.persistence.EmbeddedId;

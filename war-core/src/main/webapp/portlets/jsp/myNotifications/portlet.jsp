@@ -29,7 +29,8 @@
 
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.DateUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 
@@ -74,7 +75,8 @@ while(messageIterator.hasNext())
 	String link = "<A HREF =\"javascript:onClick=readMessage(" + smMessage.getId() + ");\">";
 	ArrayLine line = list.addArrayLine();
 	Date date = smMessage.getDate();
-	ArrayCellText cell1 = line.addArrayCellText(hasBeenReadenOrNotBegin + DateUtil.getOutputDate(date, language) + hasBeenReadenOrNotEnd );
+	ArrayCellText cell1 = line.addArrayCellText(hasBeenReadenOrNotBegin + DateUtil
+      .getOutputDate(date, language) + hasBeenReadenOrNotEnd );
 	cell1.setCompareOn(date);
 
 	ArrayCellText cell2 = line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(smMessage.getSource()) + "</A>" + hasBeenReadenOrNotEnd );

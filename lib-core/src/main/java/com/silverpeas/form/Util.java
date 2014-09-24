@@ -29,9 +29,9 @@ import java.util.Map;
 
 import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 public class Util {
 

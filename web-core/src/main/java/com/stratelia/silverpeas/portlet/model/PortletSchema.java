@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.portlet.model;
 
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.Schema;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.Schema;
+import org.silverpeas.util.exception.UtilException;
 import java.sql.Connection;
 
 public class PortletSchema extends Schema {

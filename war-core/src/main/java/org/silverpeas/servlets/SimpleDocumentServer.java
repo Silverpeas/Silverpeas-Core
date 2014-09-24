@@ -43,7 +43,7 @@ import org.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ClientBrowserUtil;
+import org.silverpeas.util.ClientBrowserUtil;
 
 /**
  * Servlet to access a simple document directly.

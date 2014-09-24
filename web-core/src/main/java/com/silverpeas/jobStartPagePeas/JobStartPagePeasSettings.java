@@ -24,7 +24,7 @@
 
 package com.silverpeas.jobStartPagePeas;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * This class manage the informations needed for job start page

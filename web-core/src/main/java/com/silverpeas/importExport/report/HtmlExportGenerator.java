@@ -29,7 +29,7 @@ import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.ecs.ElementContainer;

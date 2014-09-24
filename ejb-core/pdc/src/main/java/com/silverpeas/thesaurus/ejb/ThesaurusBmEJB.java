@@ -30,7 +30,7 @@ import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Synonym;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "Thesaurus", description = "Stateless EJB to access the thesaurus.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)

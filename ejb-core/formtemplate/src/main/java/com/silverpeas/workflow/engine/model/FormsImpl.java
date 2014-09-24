@@ -32,7 +32,7 @@ import java.util.List;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Forms;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Class implementing the representation of the &lt;forms&gt; element of a Process Model.

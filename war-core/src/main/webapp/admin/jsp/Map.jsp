@@ -40,7 +40,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 <view:timeout />
 <%

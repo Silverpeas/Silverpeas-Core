@@ -32,7 +32,7 @@ import java.sql.SQLException;
 
 import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author Bensalem Nabil

@@ -21,7 +21,7 @@
 package org.silverpeas.servlets;
 
 import com.silverpeas.session.SessionManagementFactory;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

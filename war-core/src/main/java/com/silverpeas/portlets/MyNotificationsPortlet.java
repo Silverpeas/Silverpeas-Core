@@ -42,7 +42,7 @@ import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAIL
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.*;
+import static org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane.*;
 import java.util.Collection;
 
 public class MyNotificationsPortlet extends GenericPortlet implements FormNames {

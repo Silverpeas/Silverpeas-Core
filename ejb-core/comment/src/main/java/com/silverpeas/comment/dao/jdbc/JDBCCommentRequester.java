@@ -38,11 +38,11 @@ import java.util.List;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.lang3.StringUtils;
 import java.sql.Statement;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.silverpeas.util.DateUtil.*;
 
 /**
  * A specific JDBC requester dedicated on the comments persisted in the underlying data source.

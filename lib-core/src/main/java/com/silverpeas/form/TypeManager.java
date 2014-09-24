@@ -22,7 +22,7 @@ package com.silverpeas.form;
 
 import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

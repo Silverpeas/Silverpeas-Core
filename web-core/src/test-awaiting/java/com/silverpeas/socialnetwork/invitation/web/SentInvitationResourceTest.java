@@ -26,10 +26,9 @@ package com.silverpeas.socialnetwork.invitation.web;
 import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
 import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
 
-import com.silverpeas.socialnetwork.invitation.web.InvitationEntity;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

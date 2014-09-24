@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.agenda.control;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class AgendaException extends SilverpeasException {
 

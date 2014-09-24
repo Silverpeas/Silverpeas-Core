@@ -28,8 +28,8 @@ import java.io.Serializable;
 
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * Class declaration

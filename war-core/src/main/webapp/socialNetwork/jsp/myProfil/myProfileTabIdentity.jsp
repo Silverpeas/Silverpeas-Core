@@ -28,11 +28,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@page import="org.silverpeas.util.ResourceLocator"%>
 <%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 

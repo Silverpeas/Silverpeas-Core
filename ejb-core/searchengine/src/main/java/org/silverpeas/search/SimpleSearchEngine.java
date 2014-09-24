@@ -37,7 +37,7 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.searchEngine.model.SearchCompletion;
 import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * A SimpleSearchEngine search silverpeas indexes index and give access to the retrieved index

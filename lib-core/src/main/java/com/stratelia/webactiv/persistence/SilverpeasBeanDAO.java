@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.persistence;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import java.sql.Connection;
 import java.util.Collection;
 

@@ -31,7 +31,7 @@ import org.junit.Before;
 
 import org.silverpeas.process.session.ProcessSession;
 
-import static com.stratelia.webactiv.util.GeneralPropertiesManager.getString;
+import static org.silverpeas.util.GeneralPropertiesManager.getString;
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

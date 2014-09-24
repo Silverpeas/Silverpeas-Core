@@ -33,7 +33,7 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 import com.silverpeas.node.notification.NodeNotificationService;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.control.dao.NodeI18NDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.search.searchEngine.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Thrown by the searchEngine

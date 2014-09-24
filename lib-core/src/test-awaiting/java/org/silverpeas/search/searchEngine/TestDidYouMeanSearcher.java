@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import org.silverpeas.search.searchEngine.model.DidYouMeanSearcher;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 /**
  *

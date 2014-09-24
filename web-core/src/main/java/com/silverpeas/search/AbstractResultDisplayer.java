@@ -31,7 +31,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 import javax.servlet.jsp.JspTagException;
 

@@ -25,7 +25,7 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import javax.servlet.http.HttpServletRequest;
 
 public class InterestCentersHelper {

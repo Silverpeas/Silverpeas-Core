@@ -26,7 +26,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory" %>
+<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ include file="headLog.jsp" %>
 
 <%

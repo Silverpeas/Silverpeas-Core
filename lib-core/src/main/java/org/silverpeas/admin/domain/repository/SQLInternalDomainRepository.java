@@ -27,7 +27,7 @@ package org.silverpeas.admin.domain.repository;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -24,8 +24,6 @@
 
 package com.stratelia.silverpeas.notificationserver;
 
-import java.io.IOException;
-
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -37,8 +35,8 @@ import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasException;
 import java.util.HashMap;
 import java.util.Map;
 

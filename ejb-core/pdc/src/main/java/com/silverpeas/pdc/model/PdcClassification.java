@@ -24,7 +24,7 @@ import com.silverpeas.pdc.model.constraints.UniquePositions;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import java.io.Serializable;
 import java.util.*;
 import javax.persistence.*;

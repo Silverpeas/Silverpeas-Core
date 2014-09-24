@@ -30,8 +30,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Date;

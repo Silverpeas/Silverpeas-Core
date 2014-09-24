@@ -24,7 +24,7 @@
 
 package org.silverpeas.wysiwyg;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class WysiwygException extends SilverpeasException {
 

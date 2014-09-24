@@ -25,7 +25,7 @@ package org.silverpeas.attachment.web;
 
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;

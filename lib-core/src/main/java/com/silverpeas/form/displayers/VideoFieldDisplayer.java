@@ -39,7 +39,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.util.FileServerUtils;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer

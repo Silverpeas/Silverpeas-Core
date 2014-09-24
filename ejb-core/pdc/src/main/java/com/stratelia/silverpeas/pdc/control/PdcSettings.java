@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.pdc.control;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class PdcSettings {
 

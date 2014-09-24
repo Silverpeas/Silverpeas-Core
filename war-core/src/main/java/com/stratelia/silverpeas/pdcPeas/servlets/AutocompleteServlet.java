@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;

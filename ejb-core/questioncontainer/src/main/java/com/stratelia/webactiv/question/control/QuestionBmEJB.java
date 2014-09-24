@@ -34,12 +34,12 @@ import javax.ejb.TransactionAttributeType;
 import org.silverpeas.util.ForeignPK;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.answer.control.AnswerBm;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.question.ejb.QuestionDAO;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.question.model.QuestionPK;

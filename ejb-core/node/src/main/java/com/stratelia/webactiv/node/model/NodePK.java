@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.node.model;
 
 import java.io.Serializable;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * It's the Node PrimaryKey object It identify a Node

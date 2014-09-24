@@ -29,7 +29,7 @@ import org.silverpeas.jstl.util.AbstractSetVarTagSupport;
 
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  *

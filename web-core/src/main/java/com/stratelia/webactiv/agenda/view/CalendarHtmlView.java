@@ -29,8 +29,8 @@ import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;

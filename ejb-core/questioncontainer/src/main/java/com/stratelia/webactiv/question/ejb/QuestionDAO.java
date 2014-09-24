@@ -27,10 +27,10 @@ package com.stratelia.webactiv.question.ejb;
 import java.sql.*;
 import java.util.*;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.DBUtil;
 import com.stratelia.webactiv.question.model.*;
 import com.stratelia.silverpeas.silvertrace.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * This class is made to access database only (table SB_Question_Question)

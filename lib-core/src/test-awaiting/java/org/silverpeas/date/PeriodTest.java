@@ -24,7 +24,7 @@
 package org.silverpeas.date;
 
 import com.silverpeas.calendar.DateTime;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

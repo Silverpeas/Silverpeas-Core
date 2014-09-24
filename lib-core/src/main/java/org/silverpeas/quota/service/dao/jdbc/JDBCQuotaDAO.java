@@ -30,9 +30,9 @@ import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.service.dao.QuotaDAO;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier

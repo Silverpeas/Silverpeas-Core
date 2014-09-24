@@ -24,7 +24,7 @@
 
 package com.silverpeas.thumbnail;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
 

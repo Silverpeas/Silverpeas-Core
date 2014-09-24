@@ -28,7 +28,7 @@
 package com.stratelia.silverpeas.treeManager.model;
 
 import java.io.Serializable;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * Class declaration

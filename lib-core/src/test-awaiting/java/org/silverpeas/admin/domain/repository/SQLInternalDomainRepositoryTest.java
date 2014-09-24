@@ -51,8 +51,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.FileRepositoryManager;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;

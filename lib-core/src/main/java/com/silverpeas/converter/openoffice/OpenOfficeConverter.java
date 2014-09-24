@@ -39,8 +39,8 @@ import com.silverpeas.converter.DocumentFormatConversion;
 import com.silverpeas.converter.DocumentFormatConversionException;
 import com.silverpeas.converter.DocumentFormatException;
 import com.silverpeas.converter.option.FilterOption;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * A document format converter using the OpenOffice API to perform its task. This class is the

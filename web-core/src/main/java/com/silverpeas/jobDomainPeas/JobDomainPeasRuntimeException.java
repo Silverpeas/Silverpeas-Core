@@ -24,7 +24,7 @@
 
 package com.silverpeas.jobDomainPeas;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class JobDomainPeasRuntimeException extends SilverpeasRuntimeException {
 

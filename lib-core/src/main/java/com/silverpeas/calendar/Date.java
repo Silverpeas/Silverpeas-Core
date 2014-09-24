@@ -24,7 +24,7 @@
 
 package com.silverpeas.calendar;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 import java.util.Calendar;
 import java.util.TimeZone;

@@ -27,6 +27,9 @@
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="../portletImport.jsp"%>

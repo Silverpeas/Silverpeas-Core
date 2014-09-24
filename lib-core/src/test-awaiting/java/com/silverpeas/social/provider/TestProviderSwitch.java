@@ -46,8 +46,8 @@ import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 import com.silverpeas.socialnetwork.status.SocialInformationStatus;
 import com.silverpeas.socialnetwork.status.Status;
 
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

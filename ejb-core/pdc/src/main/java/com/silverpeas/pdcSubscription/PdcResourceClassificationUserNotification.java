@@ -27,7 +27,7 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

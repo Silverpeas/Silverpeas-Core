@@ -32,7 +32,7 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import java.util.Collection;

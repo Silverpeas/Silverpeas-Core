@@ -24,7 +24,7 @@
 package org.silverpeas.notification.message;
 
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

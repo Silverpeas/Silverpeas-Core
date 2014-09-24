@@ -24,8 +24,8 @@
 package org.silverpeas.attachment;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;

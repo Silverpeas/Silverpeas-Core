@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.publication.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class PublicationRuntimeException extends SilverpeasRuntimeException {
 

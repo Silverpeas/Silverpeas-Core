@@ -51,7 +51,7 @@ import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.GenericRecordTemplate;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A

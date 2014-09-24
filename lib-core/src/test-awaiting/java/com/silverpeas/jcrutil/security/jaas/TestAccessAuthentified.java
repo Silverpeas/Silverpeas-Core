@@ -41,7 +41,7 @@ import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import org.silverpeas.util.MimeTypes;
 
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.JNDINames;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.IOUtils;

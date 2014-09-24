@@ -41,6 +41,7 @@
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%
 String			componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");

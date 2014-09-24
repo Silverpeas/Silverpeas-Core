@@ -58,8 +58,8 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.FileUtil;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.UtilException;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;

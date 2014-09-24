@@ -59,8 +59,8 @@ import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.jcrutil.RandomGenerator;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-comment-dao.xml")

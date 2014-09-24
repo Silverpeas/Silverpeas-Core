@@ -42,7 +42,7 @@
 
 package com.silverpeas.jobOrganizationPeas;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Class declaration

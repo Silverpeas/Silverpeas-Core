@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import com.stratelia.webactiv.util.AbstractTable;
-import com.stratelia.webactiv.util.Schema;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.AbstractTable;
+import org.silverpeas.util.Schema;
+import org.silverpeas.util.exception.UtilException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -27,12 +27,12 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.net.URLDecoder"%>
-<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.result.HtmlSearchResultTag"%>
 <%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
 

@@ -32,9 +32,9 @@ import com.stratelia.webactiv.calendar.model.Schedulable;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import com.stratelia.webactiv.calendar.model.SchedulableGroup;
 import com.stratelia.webactiv.calendar.model.SchedulableList;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Calendar;

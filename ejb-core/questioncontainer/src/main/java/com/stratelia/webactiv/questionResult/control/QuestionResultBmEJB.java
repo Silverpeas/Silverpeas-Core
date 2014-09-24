@@ -30,10 +30,10 @@ import javax.ejb.TransactionAttributeType;
 import org.silverpeas.util.ForeignPK;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.answer.model.AnswerPK;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.questionResult.ejb.QuestionResultDAO;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.questionResult.model.QuestionResultRuntimeException;

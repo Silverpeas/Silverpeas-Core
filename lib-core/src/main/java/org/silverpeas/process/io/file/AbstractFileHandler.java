@@ -24,7 +24,7 @@
 package org.silverpeas.process.io.file;
 
 import org.silverpeas.util.MapUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;

@@ -20,7 +20,7 @@
  */
 package com.silverpeas;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * A service providing the transverse operations related to a given Silverpeas component. A

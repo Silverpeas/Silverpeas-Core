@@ -35,8 +35,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAAttributeValuePair;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;
 
 import org.apache.commons.fileupload.FileItem;

@@ -28,7 +28,7 @@ import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.NodeTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import java.util.Date;
 import java.util.List;
 

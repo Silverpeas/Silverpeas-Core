@@ -26,7 +26,7 @@ package com.stratelia.webactiv.persistence;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
 

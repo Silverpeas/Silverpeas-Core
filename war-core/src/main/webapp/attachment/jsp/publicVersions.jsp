@@ -39,14 +39,14 @@
 				 com.stratelia.silverpeas.peasCore.MainSessionController,
                  com.stratelia.silverpeas.peasCore.URLManager,
                  org.silverpeas.util.ResourcesWrapper,
-                 com.stratelia.webactiv.util.FileRepositoryManager,
-                 com.stratelia.webactiv.util.FileServerUtils,
-                 com.stratelia.webactiv.util.ResourceLocator,
-                 com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory,
-                 com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText,
-                 com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine" %>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+                 org.silverpeas.util.FileRepositoryManager,
+                 org.silverpeas.util.FileServerUtils,
+                 org.silverpeas.util.ResourceLocator,
+                 org.silverpeas.util.viewGenerator.html.GraphicElementFactory,
+                 org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText,
+                 org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
 <%@ page import="org.apache.commons.lang3.CharEncoding" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@page import="org.silverpeas.attachment.web.VersioningSessionController" %>

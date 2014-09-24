@@ -25,7 +25,7 @@ package org.silverpeas.quota.exception;
 
 import org.silverpeas.quota.model.Quota;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author Yohann Chastagnier
@@ -70,7 +70,7 @@ public class QuotaException extends SilverpeasException {
 
   /*
    * (non-Javadoc)
-   * @see com.stratelia.webactiv.util.exception.SilverpeasException#getModule()
+   * @see org.silverpeas.util.exception.SilverpeasException#getModule()
    */
   @Override
   public String getModule() {

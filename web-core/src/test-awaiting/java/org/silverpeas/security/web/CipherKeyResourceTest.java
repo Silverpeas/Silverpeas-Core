@@ -3,7 +3,7 @@ package org.silverpeas.security.web;
 import com.silverpeas.web.RESTWebServiceTest;
 import com.silverpeas.web.WebResourceTesting;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.io.FileUtils;

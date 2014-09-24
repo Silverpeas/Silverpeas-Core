@@ -21,7 +21,7 @@
  */
 package com.silverpeas.importExport.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Thrown by the form components.

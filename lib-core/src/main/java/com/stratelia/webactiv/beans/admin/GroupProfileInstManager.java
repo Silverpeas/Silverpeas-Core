@@ -26,7 +26,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.webactiv.organization.GroupRow;
 import com.stratelia.webactiv.organization.GroupUserRoleRow;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 

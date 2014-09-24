@@ -32,8 +32,8 @@ import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 
 import com.stratelia.silverpeas.classifyEngine.Value;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 
 /**
  * Utility class. Contains calls of PdcSubscription Ejb

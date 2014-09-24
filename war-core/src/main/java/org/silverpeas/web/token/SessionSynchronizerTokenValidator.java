@@ -28,7 +28,7 @@ import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

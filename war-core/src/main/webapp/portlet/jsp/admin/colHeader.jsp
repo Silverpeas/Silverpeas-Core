@@ -32,8 +32,8 @@ response.setHeader("Pragma","no-cache");       //HTTP 1.0
 response.setDateHeader ("Expires",-1);        //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 
 
 <%@ include file="language.jsp" %>

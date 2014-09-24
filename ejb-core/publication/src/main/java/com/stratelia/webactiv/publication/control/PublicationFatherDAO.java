@@ -26,8 +26,8 @@ package com.stratelia.webactiv.publication.control;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.PublicationPK;

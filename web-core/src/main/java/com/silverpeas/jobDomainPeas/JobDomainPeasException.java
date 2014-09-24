@@ -31,7 +31,7 @@
 
 package com.silverpeas.jobDomainPeas;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Class declaration

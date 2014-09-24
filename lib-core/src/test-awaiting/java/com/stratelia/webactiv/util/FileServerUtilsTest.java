@@ -30,6 +30,7 @@ package com.stratelia.webactiv.util;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.FileServerUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -24,7 +24,7 @@
 package org.silverpeas.attachment.util;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.inject.Inject;
 

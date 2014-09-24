@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.security;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * User: Yohann Chastagnier

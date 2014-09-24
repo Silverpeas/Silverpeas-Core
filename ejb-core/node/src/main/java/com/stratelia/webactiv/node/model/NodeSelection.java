@@ -31,7 +31,7 @@ import org.silverpeas.util.clipboard.ClipboardSelection;
 import org.silverpeas.util.clipboard.SilverpeasKeyData;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 public class NodeSelection extends ClipboardSelection implements Serializable {
 

@@ -37,8 +37,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.AxisFilterNode;
 
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;

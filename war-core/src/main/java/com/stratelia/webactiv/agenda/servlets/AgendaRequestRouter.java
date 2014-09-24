@@ -34,9 +34,9 @@ import com.stratelia.webactiv.agenda.model.CalendarImportSettings;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.HttpRequest;
 

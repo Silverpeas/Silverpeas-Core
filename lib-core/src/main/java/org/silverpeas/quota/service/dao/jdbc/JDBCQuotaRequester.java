@@ -31,7 +31,7 @@ import java.sql.SQLException;
 
 import org.silverpeas.quota.model.Quota;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 /**
  * A specific JDBC requester dedicated on the quota persisted in the underlying data source.

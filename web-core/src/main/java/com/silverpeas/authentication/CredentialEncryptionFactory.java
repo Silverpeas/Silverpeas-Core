@@ -25,7 +25,7 @@
 package com.silverpeas.authentication;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * Factory of CredentialEncryption instances. It constructs an instance from the correct

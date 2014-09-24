@@ -41,7 +41,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 /**
  * @author Yohann Chastagnier

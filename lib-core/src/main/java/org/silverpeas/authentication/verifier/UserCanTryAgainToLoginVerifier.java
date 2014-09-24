@@ -34,8 +34,8 @@ import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 

@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

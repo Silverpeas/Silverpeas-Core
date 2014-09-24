@@ -24,20 +24,20 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.Value"%>
 <%@page import="java.io.IOException"%>
 <%@page import="com.silverpeas.thesaurus.ThesaurusException"%>
 <%@page import="com.silverpeas.thesaurus.model.Jargon"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
 <%@page import="com.stratelia.silverpeas.pdcPeas.model.QueryParameters"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
 <%@page import="java.util.List"%>
-<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>

@@ -25,7 +25,7 @@
 package com.silverpeas.subscribe;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * User: Yohann Chastagnier

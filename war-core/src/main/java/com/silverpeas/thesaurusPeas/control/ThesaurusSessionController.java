@@ -49,7 +49,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class ThesaurusSessionController extends AbstractComponentSessionController {
 

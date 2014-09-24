@@ -27,7 +27,7 @@ package org.silverpeas.authentication.password;
 import org.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;

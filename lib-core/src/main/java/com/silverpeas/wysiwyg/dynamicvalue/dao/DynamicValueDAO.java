@@ -38,8 +38,8 @@ import org.silverpeas.util.StringUtil;
 
 import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * data access object layer, this class allows executing operation on the table which contains the

@@ -24,8 +24,8 @@
 package org.silverpeas.process.annotation;
 
 import org.silverpeas.util.MapUtil;
-import com.stratelia.webactiv.util.ActionType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.LinkedList;
 import java.util.List;

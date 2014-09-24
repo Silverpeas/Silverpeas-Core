@@ -20,7 +20,6 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.webactiv.util.DateUtil;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.OfficeOpenXMLCore;
@@ -28,8 +27,6 @@ import org.apache.tika.metadata.Property;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.metadata.XMPDM;
 import org.silverpeas.media.Definition;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryData;
 import org.silverpeas.util.time.TimeData;
 import org.silverpeas.util.time.TimeUnit;

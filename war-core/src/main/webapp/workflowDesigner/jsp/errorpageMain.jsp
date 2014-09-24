@@ -47,11 +47,12 @@
 
 <%@ page import="javax.ejb.EJBException, javax.ejb.FinderException, javax.ejb.NoSuchEntityException, java.rmi.RemoteException, java.sql.SQLException, javax.ejb.RemoveException, javax.ejb.CreateException, javax.naming.NamingException, javax.transaction.TransactionRolledbackException"%>
 <%@ page import="java.util.Collection, java.util.Iterator, java.lang.Throwable"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="com.stratelia.webactiv.util.exception.*"%>
+<%@ page import="org.silverpeas.util.exception.*"%>
 <%@ page import="com.stratelia.webactiv.homepage.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
 
 <%@ include file="check.jsp" %>
 

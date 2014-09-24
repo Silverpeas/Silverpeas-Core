@@ -27,7 +27,7 @@
 
 package com.stratelia.silverpeas.containerManager;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Class declaration

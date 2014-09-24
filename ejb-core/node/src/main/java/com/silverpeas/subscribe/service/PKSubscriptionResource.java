@@ -24,7 +24,7 @@
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * A subscription resource related to a PKSubscription.

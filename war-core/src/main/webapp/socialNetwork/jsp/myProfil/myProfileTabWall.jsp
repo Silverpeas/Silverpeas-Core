@@ -26,7 +26,7 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@page import="org.silverpeas.util.ResourceLocator"%>
 <%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.StringUtil"%>

@@ -41,8 +41,8 @@ import com.silverpeas.subscribe.mock.OrganizationControllerMock;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
 
 import org.dbunit.database.DatabaseConnection;

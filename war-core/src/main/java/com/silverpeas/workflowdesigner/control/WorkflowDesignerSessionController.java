@@ -63,8 +63,8 @@ import com.silverpeas.workflowdesigner.model.WorkflowDesignerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.xml.bind.JAXBException;

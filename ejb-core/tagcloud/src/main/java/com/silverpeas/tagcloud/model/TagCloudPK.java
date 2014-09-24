@@ -26,7 +26,7 @@ package com.silverpeas.tagcloud.model;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * Primary key of a tagcloud.

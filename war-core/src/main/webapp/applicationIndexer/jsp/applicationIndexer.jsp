@@ -24,9 +24,9 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -36,14 +36,14 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.applicationIndexer.control.ApplicationIndexer"%>
 
 <%@ page import="java.util.ArrayList"%>

@@ -26,9 +26,9 @@ package com.stratelia.webactiv.organization;
 import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.Schema;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.Schema;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.*;
 import java.util.*;
@@ -102,7 +102,7 @@ public abstract class Table<T> {
   public int getNextId() throws SQLException {
     int nextId;
     try {
-      nextId = com.stratelia.webactiv.util.DBUtil.getNextId(tableName, "id");
+      nextId = DBUtil.getNextId(tableName, "id");
     } catch (Exception e) {
       throw new SQLException(e.toString(), e);
     }

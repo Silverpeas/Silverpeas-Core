@@ -34,12 +34,12 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import com.silverpeas.workflow.api.model.RelatedUser;
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
-import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
-import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane;
+import org.silverpeas.util.viewGenerator.html.iconPanes.IconPane;
+import org.silverpeas.util.viewGenerator.html.icons.Icon;
 
 /**
  * Class implementing the tag &lt;relatedUserList&gt; from workflowEditor.tld

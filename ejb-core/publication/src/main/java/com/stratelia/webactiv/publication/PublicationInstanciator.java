@@ -35,8 +35,8 @@ import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;

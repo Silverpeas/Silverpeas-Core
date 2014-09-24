@@ -22,9 +22,9 @@ package com.silverpeas.notation.ejb;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.notation.model.RatingDAO;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;

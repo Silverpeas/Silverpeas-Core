@@ -20,7 +20,7 @@
  */
 package org.silverpeas.node.web;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.util.EJBUtilitaire;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;

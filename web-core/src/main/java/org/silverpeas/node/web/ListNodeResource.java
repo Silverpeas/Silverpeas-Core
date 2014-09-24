@@ -33,11 +33,11 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.util.EJBUtilitaire;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodePK;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 
 /**
  * A REST Web resource representing a list of node. It is a web service that provides an access to a

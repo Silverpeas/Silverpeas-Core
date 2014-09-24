@@ -25,8 +25,8 @@ package com.stratelia.webactiv.node;
 
 import javax.inject.Named;
 
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
 
 /**

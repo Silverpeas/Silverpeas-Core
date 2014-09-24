@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.domains;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * Extracting common code from LDAPSettings and SQLSettings

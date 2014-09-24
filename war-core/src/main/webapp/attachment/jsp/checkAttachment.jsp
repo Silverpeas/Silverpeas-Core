@@ -36,10 +36,10 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="java.util.List" %>
 <%@page import="java.util.Date" %>
-<%@ page import="com.stratelia.webactiv.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 
 
 <%

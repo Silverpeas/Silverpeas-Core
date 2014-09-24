@@ -29,8 +29,8 @@ import java.util.List;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * A ComponentInstanceTable object manages the ST_ComponentInstance table.

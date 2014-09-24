@@ -22,7 +22,7 @@ package com.silverpeas.portlets.portal;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import java.text.MessageFormat;
 import java.util.Locale;

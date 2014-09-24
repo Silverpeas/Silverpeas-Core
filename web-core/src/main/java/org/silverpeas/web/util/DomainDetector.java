@@ -2,7 +2,7 @@ package org.silverpeas.web.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class DomainDetector {
 

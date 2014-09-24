@@ -28,8 +28,8 @@ import java.io.File;
 import java.io.Serializable;
 
 import org.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
 
 public class SpaceLookItem implements Serializable {
 

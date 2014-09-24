@@ -27,9 +27,9 @@ import java.sql.Statement;
 import com.silverpeas.admin.components.InstanciationException;
 
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
 
 public class ContactInstanciator extends SQLRequest {
 

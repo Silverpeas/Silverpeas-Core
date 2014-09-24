@@ -29,8 +29,8 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipDao;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
 
 import org.dbunit.database.IDatabaseConnection;
 

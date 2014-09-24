@@ -26,6 +26,8 @@
 
 <%@page import="com.silverpeas.session.SessionInfo"%>
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkSilverStatistics.jsp" %>
@@ -133,7 +135,11 @@ function DoIdle()
 				cellText = arrayLine.addArrayCellText(DateUtil.formatDuration(duration));
 				cellText.setCompareOn(new Long(duration));
 
-                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.getUserDetail().getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.getSessionId()) + "','" + Encode.javaStringToJsString(resources.getString("silverStatisticsPeas.ConfirmKickSession") + item.getUserDetail().getLogin() + " (" + item.getUserDetail().getDisplayedName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\"/></a></div>");
+                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.getUserDetail().getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.getSessionId()) + "','" + Encode
+                    .javaStringToJsString(
+                        resources.getString("silverStatisticsPeas.ConfirmKickSession") +
+                            item.getUserDetail().getLogin() + " (" +
+                            item.getUserDetail().getDisplayedName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\"/></a></div>");
             }
 
         	out.println(arrayPane.print());

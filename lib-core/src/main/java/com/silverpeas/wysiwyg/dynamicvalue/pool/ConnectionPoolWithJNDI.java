@@ -28,8 +28,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.UtilException;
 
 /**
  * use to create connection with JNDI Before using this class you must declare a jndi resource in

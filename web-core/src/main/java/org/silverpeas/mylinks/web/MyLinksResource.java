@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mylinks.web;
 
-import static com.stratelia.webactiv.util.JNDINames.MYLINKSBM_EJBHOME;
+import static org.silverpeas.util.JNDINames.MYLINKSBM_EJBHOME;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,7 +59,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.util.EJBUtilitaire;
 
 /**
  * A REST Web resource representing user favorite links. It is a web service that provides an access

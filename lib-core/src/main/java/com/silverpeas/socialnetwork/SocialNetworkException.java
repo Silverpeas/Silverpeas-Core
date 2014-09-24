@@ -24,7 +24,7 @@
 
 package com.silverpeas.socialnetwork;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class SocialNetworkException extends SilverpeasException {
 

@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.pdc.model;
 
 import org.silverpeas.util.i18n.AbstractI18NBean;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can

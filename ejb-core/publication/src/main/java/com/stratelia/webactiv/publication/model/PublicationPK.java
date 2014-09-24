@@ -27,7 +27,7 @@ package com.stratelia.webactiv.publication.model;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication

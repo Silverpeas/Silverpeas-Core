@@ -24,7 +24,7 @@
 package org.silverpeas.web.filter;
 
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -42,7 +42,6 @@ import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

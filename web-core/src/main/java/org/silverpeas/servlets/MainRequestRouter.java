@@ -20,7 +20,7 @@
  */
 package org.silverpeas.servlets;
 
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

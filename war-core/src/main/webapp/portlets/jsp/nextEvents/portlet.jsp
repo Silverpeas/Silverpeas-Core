@@ -30,6 +30,9 @@
 
 <%@ page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ include file="../portletImport.jsp"%>
 

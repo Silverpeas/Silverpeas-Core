@@ -1,6 +1,6 @@
 package com.silverpeas.export.ical.ical4j;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import net.fortuna.ical4j.util.HostInfo;
 import net.fortuna.ical4j.util.InetAddressHostInfo;
 

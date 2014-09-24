@@ -35,8 +35,8 @@ import java.util.List;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * A GroupTable object manages the DomainSQL_Group table.

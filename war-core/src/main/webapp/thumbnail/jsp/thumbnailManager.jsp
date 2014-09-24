@@ -30,7 +30,7 @@
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="java.util.List"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@page import="com.stratelia.webactiv.util.FileServerUtils"%>
+<%@page import="org.silverpeas.util.FileServerUtils"%>
 <%@ include file="thumbnailHeader.jsp"%>
 
 <%

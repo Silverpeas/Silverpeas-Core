@@ -36,6 +36,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.DBUtil;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.naming.InitialContext;

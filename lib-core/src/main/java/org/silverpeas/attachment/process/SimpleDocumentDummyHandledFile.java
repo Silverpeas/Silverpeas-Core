@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment.process;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.process.io.file.AbstractDummyHandledFile;

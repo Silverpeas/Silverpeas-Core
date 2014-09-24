@@ -24,7 +24,7 @@
 
 package com.silverpeas.treeMenu.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * 
@@ -81,7 +81,7 @@ public class MenuRuntimeException extends SilverpeasRuntimeException {
 
   /*
    * (non-Javadoc)
-   * @see com.stratelia.webactiv.util.exception.SilverpeasRuntimeException#getModule()
+   * @see org.silverpeas.util.exception.SilverpeasRuntimeException#getModule()
    */
   @Override
   public String getModule() {

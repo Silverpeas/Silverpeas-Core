@@ -34,8 +34,8 @@ import java.util.List;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 
 /**
  * Class declaration Get cumul datas from database to access

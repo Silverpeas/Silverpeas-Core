@@ -23,7 +23,7 @@ package com.silverpeas.importExport.control;
 import org.apache.commons.io.FilenameUtils;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class ImportSettings implements Cloneable {
   

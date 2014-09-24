@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToNavigatio
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
 

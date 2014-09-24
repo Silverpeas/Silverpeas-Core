@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.portlet.model;
 
-import com.stratelia.webactiv.util.Schema;
-import com.stratelia.webactiv.util.SchemaPool;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.Schema;
+import org.silverpeas.util.SchemaPool;
+import org.silverpeas.util.exception.UtilException;
 
 /**
  * The PortletSchemaPool class manages a pool of PortletSchema shared by all the client (admin

@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;

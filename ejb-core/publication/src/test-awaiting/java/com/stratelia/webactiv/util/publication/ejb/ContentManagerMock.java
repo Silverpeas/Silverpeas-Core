@@ -26,7 +26,7 @@ package com.stratelia.webactiv.util.publication.ejb;
 
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class ContentManagerMock extends ContentManager {
   private static final long serialVersionUID = 5186413195237227430L;

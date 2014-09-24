@@ -28,7 +28,7 @@ import com.silverpeas.look.LookSilverpeasV5Helper;
 import java.util.ArrayList;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.List;
 import javax.inject.Inject;
 import org.junit.Before;

@@ -47,10 +47,10 @@
 <%@ page import="java.rmi.RemoteException"%>
 <%@ page import="javax.ejb.FinderException"%>
 <%@ page import="java.util.Collection, java.util.ArrayList, java.util.Iterator, java.util.Date"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.control.AttachmentController"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.ejb.AttachmentException"%>
+<%@ page import="org.silverpeas.util.attachment.control.AttachmentController"%>
+<%@ page import="org.silverpeas.util.attachment.ejb.AttachmentException"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>

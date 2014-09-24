@@ -28,7 +28,7 @@
 
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.Domain" %>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.List" %>
 

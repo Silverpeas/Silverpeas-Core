@@ -1,7 +1,7 @@
 package org.silverpeas.attachment.process;
 
-import com.stratelia.webactiv.util.ActionType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.process.io.file.DummyHandledFile;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

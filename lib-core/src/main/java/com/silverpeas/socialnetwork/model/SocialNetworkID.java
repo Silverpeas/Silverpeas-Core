@@ -24,7 +24,7 @@
 
 package com.silverpeas.socialnetwork.model;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public enum SocialNetworkID {
   FACEBOOK, LINKEDIN;

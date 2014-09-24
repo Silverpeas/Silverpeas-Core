@@ -1,8 +1,8 @@
 package com.silverpeas.thumbnail.control;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ActionType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.process.io.file.DummyHandledFile;

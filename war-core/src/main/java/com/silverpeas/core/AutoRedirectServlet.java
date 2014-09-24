@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -41,7 +41,7 @@ import javax.servlet.http.HttpSession;
 import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
+import static org.silverpeas.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
 
 /**
  * @author ehugonnet

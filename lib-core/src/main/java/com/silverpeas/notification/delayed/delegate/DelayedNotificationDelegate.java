@@ -59,8 +59,8 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.password.rule;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.junit.After;
 
 import java.lang.reflect.ParameterizedType;

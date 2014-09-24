@@ -27,7 +27,7 @@
 
 package com.stratelia.webactiv.coordinates.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

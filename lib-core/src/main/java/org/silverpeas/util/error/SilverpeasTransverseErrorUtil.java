@@ -25,7 +25,7 @@ package org.silverpeas.util.error;
 
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.util.exception.WithNested;
+import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.util.UnitUtil;

@@ -28,7 +28,7 @@ import java.util.HashMap;
 
 import com.silverpeas.workflow.engine.WorkflowHub;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**

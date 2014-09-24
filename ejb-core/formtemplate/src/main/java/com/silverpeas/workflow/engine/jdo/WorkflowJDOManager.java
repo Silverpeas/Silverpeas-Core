@@ -32,7 +32,7 @@ import org.exolab.castor.mapping.MappingException;
 
 import com.silverpeas.workflow.api.WorkflowException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * This class offers services about database persistence. It uses Castor library to read/write

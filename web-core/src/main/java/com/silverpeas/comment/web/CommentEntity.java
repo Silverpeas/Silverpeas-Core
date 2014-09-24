@@ -29,7 +29,7 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;
 

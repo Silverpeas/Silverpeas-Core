@@ -49,7 +49,7 @@ import org.jdom.input.SAXBuilder;
 import org.silverpeas.search.indexEngine.parser.Parser;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 public class OOParser implements Parser {
 

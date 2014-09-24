@@ -30,8 +30,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.tabs.TabbedPane;
 
 /**
  * Class implementing the tag &lt;processModelTabs&gt; from workflowEditor.tld

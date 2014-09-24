@@ -27,7 +27,7 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.organization.SpaceUserRoleRow;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class SpaceProfileInstManager {
 

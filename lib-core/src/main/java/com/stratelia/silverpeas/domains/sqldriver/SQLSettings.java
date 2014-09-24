@@ -24,9 +24,8 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import org.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.domains.DriverSettings;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions

@@ -26,7 +26,7 @@ package com.stratelia.webactiv.publication.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 public class Visibility {
 

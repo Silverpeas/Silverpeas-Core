@@ -40,7 +40,7 @@ import com.silverpeas.sharing.model.TicketFactory;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 public class TicketEntity implements Exposable {
 

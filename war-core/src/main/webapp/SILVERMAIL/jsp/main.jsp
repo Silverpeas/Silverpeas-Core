@@ -39,7 +39,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ include file="tabManager.jsp.inc" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="com.stratelia.webactiv.util.DateUtil"%>
+<%@ page import="org.silverpeas.util.DateUtil"%>
 <%@ page import="java.util.Date"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -25,7 +25,7 @@ package org.silverpeas.attachment.model;
 
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  *

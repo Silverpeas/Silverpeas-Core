@@ -70,8 +70,8 @@ import com.silverpeas.sharing.security.ShareableAttachment;
 import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;

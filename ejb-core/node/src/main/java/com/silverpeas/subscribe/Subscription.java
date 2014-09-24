@@ -25,7 +25,6 @@
 package com.silverpeas.subscribe;
 
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 
 import java.util.Date;
 

@@ -20,8 +20,8 @@
  */
 package org.silverpeas.util.crypto;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.UtilException;
 
 import java.io.File;
 import java.io.FileInputStream;

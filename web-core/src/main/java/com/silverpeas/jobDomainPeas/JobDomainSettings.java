@@ -26,7 +26,7 @@ package com.silverpeas.jobDomainPeas;
 
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.Arrays;
 import java.util.Comparator;

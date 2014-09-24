@@ -2,7 +2,7 @@ package org.silverpeas.util.security;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

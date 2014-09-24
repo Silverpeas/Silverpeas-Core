@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class DisplayI18NHelper {
 

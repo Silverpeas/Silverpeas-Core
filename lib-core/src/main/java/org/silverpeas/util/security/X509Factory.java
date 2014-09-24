@@ -40,9 +40,9 @@ import java.security.cert.X509Certificate;
 import org.silverpeas.authentication.encryption.UnixDESEncryption;
 import net.sourceforge.jcetaglib.lib.X509Cert;
 
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.UtilException;
 
 public class X509Factory {
 

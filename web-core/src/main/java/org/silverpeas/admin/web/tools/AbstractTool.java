@@ -25,7 +25,7 @@ package org.silverpeas.admin.web.tools;
 
 import com.silverpeas.look.LookHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier

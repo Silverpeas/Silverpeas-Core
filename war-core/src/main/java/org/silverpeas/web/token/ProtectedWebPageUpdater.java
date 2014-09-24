@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.token;
 
-import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
+import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 import org.silverpeas.token.Token;
 import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
 

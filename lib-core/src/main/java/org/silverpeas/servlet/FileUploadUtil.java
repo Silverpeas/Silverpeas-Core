@@ -37,7 +37,7 @@ import org.apache.commons.lang3.CharEncoding;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.UtilException;
 
 /**
  * Utility class for file uploading.

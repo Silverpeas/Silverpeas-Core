@@ -24,7 +24,7 @@ import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.http.HttpServletRequest;
 

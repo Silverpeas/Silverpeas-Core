@@ -1,6 +1,6 @@
 package org.silverpeas.file;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 import java.util.ArrayList;
 import java.util.List;

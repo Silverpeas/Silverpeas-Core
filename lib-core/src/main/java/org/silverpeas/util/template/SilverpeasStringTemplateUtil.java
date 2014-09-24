@@ -24,7 +24,7 @@
 
 package org.silverpeas.util.template;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class SilverpeasStringTemplateUtil {
 

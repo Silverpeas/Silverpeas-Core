@@ -38,7 +38,7 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel

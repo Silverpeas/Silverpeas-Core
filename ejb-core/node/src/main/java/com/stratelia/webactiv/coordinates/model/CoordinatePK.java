@@ -27,7 +27,8 @@
 
 package com.stratelia.webactiv.coordinates.model;
 
-import com.stratelia.webactiv.util.*;
+import org.silverpeas.util.WAPrimaryKey;
+
 import java.io.Serializable;
 
 /**

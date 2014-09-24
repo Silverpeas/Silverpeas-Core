@@ -28,7 +28,7 @@ import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.junit.Test;
 import org.silverpeas.persistence.dao.DAOBasedTest;

@@ -25,7 +25,7 @@ package org.silverpeas.process.io.file;
 
 import java.io.File;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 
 /**

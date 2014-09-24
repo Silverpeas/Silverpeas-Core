@@ -20,8 +20,8 @@
  */
 package org.silverpeas.publication.web;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
+import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
+import static org.silverpeas.util.JNDINames.PUBLICATIONBM_EJBHOME;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,7 +39,7 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.util.EJBUtilitaire;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;

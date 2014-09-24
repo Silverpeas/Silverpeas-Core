@@ -25,7 +25,7 @@ package com.silverpeas.notation.model;
 
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;

@@ -24,7 +24,7 @@
 
 package com.silverpeas.pdc.ejb;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class PdcBmRuntimeException extends SilverpeasRuntimeException {
 

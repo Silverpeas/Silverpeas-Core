@@ -31,8 +31,8 @@ import javax.portlet.RenderResponse;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 
 public class MyDrafts extends GenericPortlet implements FormNames {

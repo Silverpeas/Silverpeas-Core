@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import java.util.Collection;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * Class declaration

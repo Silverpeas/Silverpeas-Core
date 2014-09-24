@@ -32,8 +32,8 @@ import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 
 public class ThumbnailInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 

@@ -32,9 +32,9 @@ import java.util.List;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.UtilException;
 import javax.inject.Named;
 
 @Named

@@ -34,7 +34,7 @@
 --%>
 
 <%@ page isErrorPage="true" %>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="javax.naming.NamingException"%>
 <%@ page import="java.sql.SQLException"%>
 <%@ page import="java.rmi.RemoteException"%>

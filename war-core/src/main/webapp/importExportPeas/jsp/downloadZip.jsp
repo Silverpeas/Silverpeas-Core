@@ -32,8 +32,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ page import="com.silverpeas.importExport.report.ExportReport" %>
-<%@ page import="com.stratelia.webactiv.util.DateUtil" %>
-<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 
 <%
   ExportReport report = (ExportReport) request.getAttribute("ExportReport");

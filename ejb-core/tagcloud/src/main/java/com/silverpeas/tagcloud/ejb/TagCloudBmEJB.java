@@ -39,9 +39,9 @@ import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.tagcloud.model.comparator.TagCloudByCountComparator;
 import com.silverpeas.tagcloud.model.comparator.TagCloudByNameComparator;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "TagCloud", description = "EJB to manage tags")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)

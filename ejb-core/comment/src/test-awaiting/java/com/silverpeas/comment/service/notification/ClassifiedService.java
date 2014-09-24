@@ -25,7 +25,7 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.SilverpeasComponentService;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.HashMap;
 import java.util.Map;
 

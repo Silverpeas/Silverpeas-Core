@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Collection;

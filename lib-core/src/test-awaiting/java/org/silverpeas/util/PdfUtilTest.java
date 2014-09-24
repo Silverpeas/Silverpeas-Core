@@ -23,7 +23,6 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;

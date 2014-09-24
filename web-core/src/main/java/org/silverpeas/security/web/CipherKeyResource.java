@@ -6,7 +6,7 @@ import org.silverpeas.util.security.ContentEncryptionService;
 import org.silverpeas.util.security.DefaultContentEncryptionService;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.crypto.CryptoException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

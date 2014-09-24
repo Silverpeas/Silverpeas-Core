@@ -23,7 +23,7 @@
  */
 package org.silverpeas.password.service;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.password.rule.PasswordRule;
 
 import java.util.ArrayList;

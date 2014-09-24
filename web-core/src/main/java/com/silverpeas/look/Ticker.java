@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.EnumerationUtils;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**

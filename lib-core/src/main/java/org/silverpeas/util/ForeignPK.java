@@ -26,8 +26,6 @@ package org.silverpeas.util;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
 /**
  * This PrimaryKey object must be used between two differents and independants modules It avoids
  * circular dependencies

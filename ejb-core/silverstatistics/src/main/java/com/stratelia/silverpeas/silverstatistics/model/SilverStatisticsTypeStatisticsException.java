@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.silverstatistics.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class SilverStatisticsTypeStatisticsException extends SilverpeasException {
 

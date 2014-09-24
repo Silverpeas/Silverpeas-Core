@@ -53,10 +53,10 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -199,7 +199,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    * (non-Javadoc)
    * @see
    * com.silverpeas.look.LookHelper#init(com.stratelia.silverpeas.peasCore.MainSessionController,
-   * com.stratelia.webactiv.util.ResourceLocator, com.stratelia.webactiv.util.ResourceLocator)
+   * org.silverpeas.util.ResourceLocator, org.silverpeas.util.ResourceLocator)
    */
   @Override
   public final void init(MainSessionController mainSessionController, ResourceLocator resources) {

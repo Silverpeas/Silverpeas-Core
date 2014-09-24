@@ -28,7 +28,7 @@ import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.socialnetwork.status.Status;
 import com.silverpeas.socialnetwork.status.StatusDao;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.Test;

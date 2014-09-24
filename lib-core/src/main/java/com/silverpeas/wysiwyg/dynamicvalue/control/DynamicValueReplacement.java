@@ -29,9 +29,9 @@ import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ResourceLocator;
 
 import java.sql.Connection;
 import java.sql.SQLException;

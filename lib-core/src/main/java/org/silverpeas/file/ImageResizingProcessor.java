@@ -2,7 +2,7 @@ package org.silverpeas.file;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.option.DimensionOption;
 

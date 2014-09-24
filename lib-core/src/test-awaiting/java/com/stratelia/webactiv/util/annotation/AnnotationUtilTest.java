@@ -26,6 +26,10 @@ package com.stratelia.webactiv.util.annotation;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import org.junit.Test;
+import org.silverpeas.util.annotation.AnnotationUtil;
+import org.silverpeas.util.annotation.Language;
+import org.silverpeas.util.annotation.SourcePK;
+import org.silverpeas.util.annotation.TargetPK;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;

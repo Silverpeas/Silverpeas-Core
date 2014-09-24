@@ -28,8 +28,8 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 import java.io.File;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier

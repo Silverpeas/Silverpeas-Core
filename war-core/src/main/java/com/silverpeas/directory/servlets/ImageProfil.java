@@ -25,7 +25,7 @@
 package com.silverpeas.directory.servlets;
 
 import org.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 

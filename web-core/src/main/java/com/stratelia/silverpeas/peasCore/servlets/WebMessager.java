@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.notification.message.Message;
 import org.silverpeas.util.NotifierUtil;
 

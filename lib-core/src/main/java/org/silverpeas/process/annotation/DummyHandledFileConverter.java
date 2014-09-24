@@ -1,7 +1,7 @@
 package org.silverpeas.process.annotation;
 
-import com.stratelia.webactiv.util.ActionType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.process.io.file.DummyHandledFile;
 
 import java.util.List;

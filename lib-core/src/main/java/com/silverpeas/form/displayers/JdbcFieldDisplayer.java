@@ -30,7 +30,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcField;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.ArrayList;

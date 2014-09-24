@@ -34,7 +34,7 @@
 <%@ include file="checkAttachment.jsp"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <fmt:setLocale value="${userLanguage}" />
-<view:setBundle basename="com.stratelia.webactiv.util.attachment.multilang.attachment" var="attachmentMessages"  />
+<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachmentMessages"  />
  <%
   ButtonPane warningButtonPane = gef.getButtonPane();
    if(m_MainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {

@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 import java.util.Collection;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Interface de définition des méthodes pour la synchronisation des utilisateurs d'un domaine LDAP

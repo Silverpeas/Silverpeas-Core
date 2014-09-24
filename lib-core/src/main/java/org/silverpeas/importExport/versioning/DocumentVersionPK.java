@@ -26,7 +26,7 @@ package org.silverpeas.importExport.versioning;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * This object contains the info about PrimaryKey of document version

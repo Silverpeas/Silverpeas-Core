@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.calendar.control;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class CalendarRuntimeException extends SilverpeasRuntimeException {
 

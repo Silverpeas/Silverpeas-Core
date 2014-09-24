@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.node.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class NodeRuntimeException extends SilverpeasRuntimeException {
 

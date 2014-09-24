@@ -25,10 +25,10 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.statistic.control.StatisticBm;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
@@ -41,7 +41,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 
-import static com.stratelia.webactiv.util.FileServerUtils.*;
+import static org.silverpeas.util.FileServerUtils.*;
 
 public class FileServer extends AbstractFileSender {
 

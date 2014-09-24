@@ -31,8 +31,8 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 
 
 <c:set var="componentId" value="${requestScope.componentId}" />

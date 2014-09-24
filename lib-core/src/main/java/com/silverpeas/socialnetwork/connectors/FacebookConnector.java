@@ -23,7 +23,7 @@ package com.silverpeas.socialnetwork.connectors;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;

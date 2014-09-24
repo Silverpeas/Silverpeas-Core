@@ -25,7 +25,7 @@ import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 
 public class MassiveDocumentImport {
 

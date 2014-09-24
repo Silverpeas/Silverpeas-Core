@@ -30,7 +30,7 @@ import org.springframework.social.connect.UserProfile;
 
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public abstract class AbstractSocialNetworkConnector implements SocialNetworkConnector {
 

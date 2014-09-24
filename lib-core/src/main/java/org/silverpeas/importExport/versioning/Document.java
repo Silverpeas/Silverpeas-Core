@@ -27,7 +27,7 @@ import java.util.Date;
 
 import org.silverpeas.util.ForeignPK;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public class Document implements java.io.Serializable, Cloneable {
 

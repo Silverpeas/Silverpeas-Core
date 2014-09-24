@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.persistence;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:

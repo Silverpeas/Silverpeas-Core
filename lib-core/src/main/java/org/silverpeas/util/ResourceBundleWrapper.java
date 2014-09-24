@@ -25,10 +25,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.silverpeas.util.FileUtil;
-
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
 public class ResourceBundleWrapper extends ResourceBundle {
 
   private ResourceBundle bundle;

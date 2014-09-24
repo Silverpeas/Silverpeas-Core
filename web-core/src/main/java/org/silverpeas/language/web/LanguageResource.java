@@ -37,7 +37,7 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 @Service
 @RequestScoped

@@ -23,9 +23,9 @@ package com.silverpeas.tagcloud.control;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.ejb.TagCloudRuntimeException;
 
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class TagCloudController {
 

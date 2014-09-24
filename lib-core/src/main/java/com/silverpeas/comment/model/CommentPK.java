@@ -23,7 +23,7 @@ package com.silverpeas.comment.model;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 import org.apache.commons.lang3.ObjectUtils;
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.annotation;
 
-import com.stratelia.webactiv.util.annotation.AnnotationUtil;
+import org.silverpeas.util.annotation.AnnotationUtil;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;

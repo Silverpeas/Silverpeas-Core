@@ -29,6 +29,7 @@
 
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
@@ -78,7 +79,8 @@ if (publications.isEmpty()) { %>
 %>
 	<a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=EncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
     <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil.getOutputDate(pub.getUpdateDate(), language)%>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
+    .getOutputDate(pub.getUpdateDate(), language)%>
     <% } else if (pubUpdater != null && pub.getUpdateDate() == null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/>
     <% } %>

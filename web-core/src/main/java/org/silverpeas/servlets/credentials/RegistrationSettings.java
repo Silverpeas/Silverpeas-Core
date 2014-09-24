@@ -23,7 +23,7 @@
  */
 package org.silverpeas.servlets.credentials;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * A wrapper of the settings on the registration of a new user.

@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;

@@ -28,6 +28,7 @@
 
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.UserNameGenerator" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

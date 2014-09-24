@@ -34,7 +34,7 @@ import java.util.List;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.UserRoleRow;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 public class RoleDAO {
 

@@ -24,7 +24,7 @@
 
 package com.silverpeas.notation.ejb;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class RatingRuntimeException extends SilverpeasRuntimeException {
 

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.viewer.exception;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier
@@ -50,7 +50,7 @@ public class PreviewException extends SilverpeasRuntimeException {
 
   /*
    * (non-Javadoc)
-   * @see com.stratelia.webactiv.util.exception.SilverpeasException#getModule()
+   * @see org.silverpeas.util.exception.SilverpeasException#getModule()
    */
   @Override
   public String getModule() {

@@ -30,7 +30,7 @@ import java.util.List;
 
 import com.silverpeas.components.model.AbstractTestDao;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import org.junit.Test;
 

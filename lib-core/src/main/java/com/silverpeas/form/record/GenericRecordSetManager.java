@@ -56,8 +56,8 @@ import org.silverpeas.util.security.ContentEncryptionService;
 import org.silverpeas.util.security.ContentEncryptionServiceFactory;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
 
 /**
  * The GenericRecordSetManage all the GenericRecordSet. It is a singleton.
@@ -647,7 +647,7 @@ public class GenericRecordSetManager {
     int nextId = 0;
 
     try {
-      nextId = com.stratelia.webactiv.util.DBUtil
+      nextId = DBUtil
           .getNextId(tableName, idColumn);
     } catch (Exception e) {
       throw new SQLException(e.toString());

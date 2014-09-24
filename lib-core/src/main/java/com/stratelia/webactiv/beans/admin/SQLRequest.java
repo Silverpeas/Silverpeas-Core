@@ -25,8 +25,8 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Enumeration;

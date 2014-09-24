@@ -37,7 +37,7 @@ import java.util.Set;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 public class ComponentDAO {
 

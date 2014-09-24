@@ -25,7 +25,7 @@
 package org.silverpeas.search.util;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;

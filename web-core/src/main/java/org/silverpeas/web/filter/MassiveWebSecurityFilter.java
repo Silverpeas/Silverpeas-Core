@@ -25,7 +25,7 @@ package org.silverpeas.web.filter;
 
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.servlet.HttpRequest;

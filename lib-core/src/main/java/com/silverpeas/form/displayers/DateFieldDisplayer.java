@@ -47,7 +47,7 @@ import com.silverpeas.form.fieldType.DateField;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * A DateFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel

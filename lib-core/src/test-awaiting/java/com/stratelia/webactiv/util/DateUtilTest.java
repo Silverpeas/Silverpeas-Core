@@ -27,6 +27,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
+import org.silverpeas.util.DateUtil;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

@@ -30,8 +30,8 @@ import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({com.stratelia.webactiv.util.EJBUtilitaire.class, SharingServiceFactory.class})
+@PrepareForTest({EJBUtilitaire.class, SharingServiceFactory.class})
 public class NodeAccessControlTest {
 
   public NodeAccessControlTest() {

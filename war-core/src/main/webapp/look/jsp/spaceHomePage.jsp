@@ -25,13 +25,13 @@
 --%>
 
 <%@page import="org.owasp.encoder.Encode"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPaneType"%>
+<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@page import="com.stratelia.webactiv.util.DateUtil"%>
+<%@page import="org.silverpeas.util.DateUtil"%>
 <%@page import="ucar.nc2.units.DateUnit"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
@@ -39,7 +39,7 @@
 <%@page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.look.LookHelper"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>

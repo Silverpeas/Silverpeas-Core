@@ -25,7 +25,7 @@
 package com.silverpeas.portlets.portal.portletwindow;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

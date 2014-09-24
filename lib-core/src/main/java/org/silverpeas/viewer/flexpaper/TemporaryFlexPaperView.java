@@ -28,7 +28,7 @@ import java.io.File;
 import org.silverpeas.viewer.AbstractView;
 import org.silverpeas.viewer.util.DocumentInfo;
 
-import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.util.FileServerUtils;
 
 /**
  * @author Yohann Chastagnier

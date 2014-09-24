@@ -59,7 +59,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 public class UsersAndGroupsTest {
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.persistent;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.junit.Test;
 import org.silverpeas.token.exception.TokenException;
 

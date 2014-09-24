@@ -51,8 +51,8 @@ import com.silverpeas.notification.repository.NotificationResourceRepository;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier

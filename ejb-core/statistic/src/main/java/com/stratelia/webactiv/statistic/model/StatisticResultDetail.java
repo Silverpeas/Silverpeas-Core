@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * Class declaration

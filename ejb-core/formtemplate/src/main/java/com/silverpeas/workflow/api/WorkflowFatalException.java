@@ -24,7 +24,7 @@
 
 package com.silverpeas.workflow.api;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Thrown when a fatal error occured in a workflow engine component.

@@ -43,9 +43,9 @@ import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.UtilException;
 
 public class ConnectionDAO {
   private static String tableName = "SB_webConnections_info";

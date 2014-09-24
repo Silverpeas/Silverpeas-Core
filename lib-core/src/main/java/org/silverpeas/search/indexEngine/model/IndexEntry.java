@@ -23,8 +23,8 @@ package org.silverpeas.search.indexEngine.model;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.WAPrimaryKey;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;

@@ -32,7 +32,7 @@ import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * Utility class for path and date conversions between JCR and Slverpeas Pojo.

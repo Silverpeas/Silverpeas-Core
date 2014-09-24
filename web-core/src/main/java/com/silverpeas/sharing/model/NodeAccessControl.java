@@ -30,9 +30,9 @@ import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.sharing.security.AbstractShareableAccessControl;
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;

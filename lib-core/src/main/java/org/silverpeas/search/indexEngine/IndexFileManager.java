@@ -25,7 +25,7 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 import static java.io.File.separatorChar;
 

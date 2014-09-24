@@ -25,8 +25,8 @@
 package com.silverpeas.importExport.report;
 
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

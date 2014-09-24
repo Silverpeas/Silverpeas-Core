@@ -30,8 +30,8 @@ import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.ejb.InterestCenterBm;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 
 public class InterestCenterUtil {
 

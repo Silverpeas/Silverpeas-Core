@@ -36,7 +36,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.silverpeas.util.Charsets;
 
 import com.stratelia.silverpeas.notificationserver.xml.NotifyContentHandler;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

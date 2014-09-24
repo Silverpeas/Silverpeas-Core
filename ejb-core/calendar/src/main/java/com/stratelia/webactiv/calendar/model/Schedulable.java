@@ -26,7 +26,7 @@ import java.util.Date;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import static org.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.silverpeas.util.DateUtil.*;
 
 public abstract class Schedulable implements java.io.Serializable {
 

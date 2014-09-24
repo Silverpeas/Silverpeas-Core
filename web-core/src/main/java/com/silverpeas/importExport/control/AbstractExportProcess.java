@@ -9,10 +9,10 @@ import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ExportReport;
 import org.silverpeas.util.ZipManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 
 public abstract class AbstractExportProcess {
 

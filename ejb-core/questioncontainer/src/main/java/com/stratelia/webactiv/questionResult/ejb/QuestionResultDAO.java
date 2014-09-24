@@ -35,10 +35,10 @@ import java.util.List;
 
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import com.stratelia.webactiv.answer.model.AnswerPK;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.questionResult.model.QuestionResultPK;
 import com.stratelia.webactiv.questionResult.model.QuestionResultRuntimeException;

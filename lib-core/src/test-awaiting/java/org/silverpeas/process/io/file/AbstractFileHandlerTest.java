@@ -36,7 +36,7 @@ import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.session.DefaultProcessSession;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;

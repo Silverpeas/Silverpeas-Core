@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;

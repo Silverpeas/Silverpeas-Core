@@ -24,8 +24,7 @@
 
 package com.silverpeas.notification.jms.access;
 
-import com.stratelia.webactiv.util.JNDINames;
-import org.omg.PortableInterceptor.TRANSPORT_RETRY;
+import org.silverpeas.util.JNDINames;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

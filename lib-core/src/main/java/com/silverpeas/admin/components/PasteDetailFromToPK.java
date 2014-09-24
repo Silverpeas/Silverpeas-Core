@@ -25,7 +25,7 @@
 package com.silverpeas.admin.components;
 
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public abstract class PasteDetailFromToPK<F extends WAPrimaryKey, T extends WAPrimaryKey>
     extends PasteDetail {

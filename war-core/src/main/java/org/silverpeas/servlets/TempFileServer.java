@@ -38,9 +38,9 @@ import org.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * To get files from temp directory
@@ -139,7 +139,7 @@ public class TempFileServer extends HttpServlet {
     OutputStream out2 = res.getOutputStream();
     int read;
     ResourceLocator resourceLocator = new ResourceLocator(
-        "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
 
     sr = new StringReader(resourceLocator.getString("warning"));
     try {

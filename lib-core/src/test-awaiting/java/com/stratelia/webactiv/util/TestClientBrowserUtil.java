@@ -27,6 +27,7 @@ package com.stratelia.webactiv.util;
 import junit.framework.TestCase;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
+import org.silverpeas.util.ClientBrowserUtil;
 
 public class TestClientBrowserUtil extends TestCase {
 

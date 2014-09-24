@@ -33,8 +33,8 @@ import java.util.List;
 
 import com.silverpeas.myLinks.model.LinkDetail;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.UtilException;
 
 public class LinkDAO {
 

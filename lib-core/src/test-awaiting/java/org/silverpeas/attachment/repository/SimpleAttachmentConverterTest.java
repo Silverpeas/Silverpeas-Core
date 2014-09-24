@@ -45,7 +45,7 @@ import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

@@ -68,8 +68,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.servlet.HttpRequest;
 
 public class WorkflowDesignerRequestRouter extends

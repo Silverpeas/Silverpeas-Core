@@ -25,7 +25,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToNavigationStep;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
-import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarTag;
+import org.silverpeas.util.viewGenerator.html.browseBars.BrowseBarTag;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.ws.rs.core.UriBuilder;

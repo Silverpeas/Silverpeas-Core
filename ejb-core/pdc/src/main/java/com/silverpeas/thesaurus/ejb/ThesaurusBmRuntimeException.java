@@ -24,7 +24,7 @@
 
 package com.silverpeas.thesaurus.ejb;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ThesaurusBmRuntimeException extends SilverpeasRuntimeException {
 

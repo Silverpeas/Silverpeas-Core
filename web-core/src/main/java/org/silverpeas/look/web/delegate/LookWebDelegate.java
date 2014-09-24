@@ -39,7 +39,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
 import com.stratelia.webactiv.organization.DAOFactory;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganisationController;
 
 /**

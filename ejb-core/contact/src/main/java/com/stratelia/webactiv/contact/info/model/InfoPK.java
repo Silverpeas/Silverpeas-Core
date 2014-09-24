@@ -26,7 +26,7 @@ package com.stratelia.webactiv.contact.info.model;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public class InfoPK extends WAPrimaryKey implements Serializable {
 

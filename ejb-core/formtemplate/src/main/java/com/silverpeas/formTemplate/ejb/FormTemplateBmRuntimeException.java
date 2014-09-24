@@ -24,7 +24,7 @@
 
 package com.silverpeas.formTemplate.ejb;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class FormTemplateBmRuntimeException extends SilverpeasRuntimeException {
 

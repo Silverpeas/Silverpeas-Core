@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class NotificationManagerException extends SilverpeasException {
 

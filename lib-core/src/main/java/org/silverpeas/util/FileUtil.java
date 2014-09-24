@@ -22,8 +22,7 @@ package org.silverpeas.util;
 
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;

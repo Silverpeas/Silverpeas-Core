@@ -23,9 +23,9 @@
  */
 package org.silverpeas.calendar;
 
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;

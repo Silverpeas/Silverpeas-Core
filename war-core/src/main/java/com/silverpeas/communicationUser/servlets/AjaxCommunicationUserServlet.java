@@ -44,7 +44,7 @@ import org.apache.commons.io.FileUtils;
 import com.silverpeas.communicationUser.CommunicationUserException;
 import com.silverpeas.communicationUser.control.CommunicationUserSessionController;
 import org.silverpeas.util.EncodeHelper;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 public class AjaxCommunicationUserServlet extends HttpServlet {
   private static final long serialVersionUID = 5706201637719833762L;

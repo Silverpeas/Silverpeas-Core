@@ -28,7 +28,7 @@
  */
 package com.silverpeas.pdcSubscription;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class PdcSubscriptionRuntimeException extends SilverpeasRuntimeException {
 

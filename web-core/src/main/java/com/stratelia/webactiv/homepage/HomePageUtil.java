@@ -28,8 +28,8 @@
 package com.stratelia.webactiv.homepage;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.FromModule;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.FromModule;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

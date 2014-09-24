@@ -30,7 +30,7 @@ import java.sql.PreparedStatement;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.silverpeas.admin.components.InstanciationException;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 public class TagCloudInstanciator implements ComponentsInstanciatorIntf {
 

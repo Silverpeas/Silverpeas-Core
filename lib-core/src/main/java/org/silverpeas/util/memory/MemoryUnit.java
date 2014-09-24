@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.memory;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.notification.message.MessageManager;
 
 import java.math.BigDecimal;

@@ -26,7 +26,7 @@ package com.silverpeas.notation.model;
 
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.rating.ContributionRating;

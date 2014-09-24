@@ -28,7 +28,7 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class DAOException extends SilverpeasException {
 

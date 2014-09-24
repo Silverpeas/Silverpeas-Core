@@ -30,7 +30,7 @@ import java.sql.Statement;
 
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class QuestionContainerInstanciator extends SQLRequest {
   /** Creates new QuestionContainerInstanciator */

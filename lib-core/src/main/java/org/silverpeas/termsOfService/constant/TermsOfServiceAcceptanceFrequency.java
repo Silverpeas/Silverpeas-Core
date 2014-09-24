@@ -24,7 +24,7 @@
 package org.silverpeas.termsOfService.constant;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 

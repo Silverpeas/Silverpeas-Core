@@ -38,7 +38,7 @@ package com.stratelia.silverpeas.portlet;
 
 import java.util.ArrayList;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /*
  * CVS Informations

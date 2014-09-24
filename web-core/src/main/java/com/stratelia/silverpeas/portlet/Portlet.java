@@ -27,7 +27,7 @@
 
 package com.stratelia.silverpeas.portlet;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Title: portlets Description: Enable portlet management in Silverpeas Copyright: Copyright (c)

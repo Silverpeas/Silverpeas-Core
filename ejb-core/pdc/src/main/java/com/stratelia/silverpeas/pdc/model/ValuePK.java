@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.pdc.model;
 
 import java.io.Serializable;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * It's the Value PrimaryKey object It identify values of the an axe

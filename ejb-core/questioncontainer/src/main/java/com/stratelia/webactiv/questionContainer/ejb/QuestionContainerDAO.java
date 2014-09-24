@@ -36,8 +36,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.questionContainer.model.Comment;
 import com.stratelia.webactiv.questionContainer.model.CommentPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;

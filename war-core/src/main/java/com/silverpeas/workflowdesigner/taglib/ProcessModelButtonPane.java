@@ -30,9 +30,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane;
-import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane;
+import org.silverpeas.util.viewGenerator.html.buttons.Button;
 
 /**
  * Class implementing the tag &lt;buttonPane&gt; from workflowEditor.tld

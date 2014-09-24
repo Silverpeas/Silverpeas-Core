@@ -27,8 +27,8 @@ package org.silverpeas.search.indexEngine.parser;
 import java.util.MissingResourceException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 /*
  * CVS Informations

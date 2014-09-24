@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.personalizationPeas.bean.DelayedNotificationBean;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Class declaration

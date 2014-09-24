@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.After;

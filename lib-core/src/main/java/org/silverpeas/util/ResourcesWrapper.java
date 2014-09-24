@@ -24,11 +24,7 @@
 
 package org.silverpeas.util;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.text.ParseException;
 import java.util.Date;
