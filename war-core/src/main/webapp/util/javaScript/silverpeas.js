@@ -65,3 +65,15 @@ function SP_openWindow(page, name, width, height, options) {
 function SP_openUserPanel(page, name, options) {
   return SP_openWindow(page, name, '700', '730', options);
 }
+
+function currentPopupResize() {
+  // Resizing
+  var $document = $(document.body);
+  window.resizeTo($document.width(),
+      Math.min((screen.height - 200), ($document.height() + 85)));
+  // Positioning
+  var $window = $(window);
+  var top = (screen.height - $window.height() - 85) / 2;
+  var left = (screen.width - $window.width()) / 2;
+  window.moveTo(left, top);
+}
