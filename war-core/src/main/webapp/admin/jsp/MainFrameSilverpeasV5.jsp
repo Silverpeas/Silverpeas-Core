@@ -97,7 +97,7 @@ if (m_MainSessionCtrl == null) {
 		frameBottomParams 	= "?SpaceId=&ComponentId="+componentIdFromRedirect;
 	}
 	
-	gef.setSpaceId(helper.getSubSpaceId());
+	gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
 
 	if (login) {
 		frameBottomParams += "&amp;Login=1";

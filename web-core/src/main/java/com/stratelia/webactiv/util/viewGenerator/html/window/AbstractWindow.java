@@ -140,7 +140,7 @@ public abstract class AbstractWindow implements Window {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
       if (!isPopup() && GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
-          StringUtil.isDefined(getGEF().getComponentId())) {
+          StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest())) {
         addOperationToSetupComponent();
       }
     }
@@ -149,13 +149,13 @@ public abstract class AbstractWindow implements Window {
 
   private void addOperationToSetupComponent() {
     MainSessionController msc = getGEF().getMainSessionController();
-    if (msc.getOrganisationController().isComponentManageable(getGEF().getComponentId(),
+    if (msc.getOrganisationController().isComponentManageable(getGEF().getComponentIdOfCurrentRequest(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
       String label =
           GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
               .getString("GML.operations.setupComponent");
       String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
-          "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
+          "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentIdOfCurrentRequest();
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();
     }
@@ -262,7 +262,7 @@ public abstract class AbstractWindow implements Window {
 
   public String displayWelcomeMessage() {
     if (getGEF().isComponentMainPage()) {
-      String componentId = getGEF().getComponentId();
+      String componentId = getGEF().getComponentIdOfCurrentRequest();
       if (StringUtil.isDefined(componentId)) {
         StringBuilder sb = new StringBuilder(300);
         ComponentInstLight component =
@@ -296,8 +296,8 @@ public abstract class AbstractWindow implements Window {
     if (!isPopup() && !getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
         !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
       if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
-          StringUtil.isDefined(getGEF().getSpaceId())) ||
-          StringUtil.isDefined(getGEF().getComponentId())) {
+          StringUtil.isDefined(getGEF().getSpaceIdOfCurrentRequest())) ||
+          StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest())) {
         if (getOperationPane().nbOperations() > 0) {
           getOperationPane().addLine();
         }
@@ -311,17 +311,17 @@ public abstract class AbstractWindow implements Window {
               bundle.getString("GML.space.responsibles", "Responsables").replaceAll("''", "'");
           viewMgrAction =
               "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
-                  "','" + getGEF().getSpaceId() + "')";
+                  "','" + getGEF().getSpaceIdOfCurrentRequest() + "')";
           addFavLabel = bundle.getString("GML.favorite.space.add");
-          addFavAction = "addFavoriteSpace('" + getGEF().getSpaceId() + "')";
+          addFavAction = "addFavoriteSpace('" + getGEF().getSpaceIdOfCurrentRequest() + "')";
         } else {
           viewMgrLabel =
               bundle.getString("GML.component.responsibles", "Responsables").replaceAll("''", "'");
           viewMgrAction =
               "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
-                  "','" + getGEF().getComponentId() + "')";
+                  "','" + getGEF().getComponentIdOfCurrentRequest() + "')";
           addFavLabel = bundle.getString("GML.favorite.application.add");
-          addFavAction = "addFavoriteApp('" + getGEF().getComponentId() + "')";
+          addFavAction = "addFavoriteApp('" + getGEF().getComponentIdOfCurrentRequest() + "')";
           addFavOperation = getGEF().isComponentMainPage();
         }
         if (addFavOperation) {

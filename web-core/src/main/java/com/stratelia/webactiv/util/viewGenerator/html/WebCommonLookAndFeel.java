@@ -62,23 +62,25 @@ public class WebCommonLookAndFeel {
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    
-    String spaceId = null;
-    String componentId = null;
-    String[] context = (String[]) request.getAttribute("browseContext");
+
+    // Retrieving from the request, or from GraphicElementFactory instance the current space and
+    // the current component of the user
+    final String spaceId;
+    final String componentId;
+    final String[] context = (String[]) request.getAttribute("browseContext");
     if (isDefined(context)) {
       // page of a regular component
       spaceId = context[2];
       componentId = context[3];
     } else if (context != null) {
-      // page of a "personal" component
+      // page of a "personal" component (context is not defined, but the associated request
+      // attribute is set)
       spaceId = null;
       componentId = null;
-      gef.setSpaceId(spaceId);
-      gef.setComponentId(componentId);
     } else {
-      spaceId = gef.getSpaceId();
-      componentId = gef.getComponentId();
+      // Not context set into the request attributes (so no context is defined)
+      spaceId = gef.getSpaceIdOfCurrentRequest();
+      componentId = gef.getComponentIdOfCurrentRequest();
     }
 
     return getCommonHeader(controller, spaceId, componentId);

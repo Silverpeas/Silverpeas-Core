@@ -49,7 +49,7 @@ public class GoToSpace extends GoTo {
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
       if (gef != null && helper != null) {
-        gef.setSpaceId(space.getFullId());
+        gef.setSpaceIdForCurrentRequest(space.getFullId());
         helper.setSpaceIdAndSubSpaceId(space.getFullId());
       }
       return "SpaceId=" + objectId;

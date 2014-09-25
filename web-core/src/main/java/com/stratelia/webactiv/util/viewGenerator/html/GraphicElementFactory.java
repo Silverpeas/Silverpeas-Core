@@ -20,18 +20,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.MissingResourceException;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -49,8 +37,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
 import com.stratelia.webactiv.util.viewGenerator.html.buttons.ButtonSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar;
 import com.stratelia.webactiv.util.viewGenerator.html.calendar.CalendarWA1;
-import com.stratelia.webactiv.util.viewGenerator.html.formPanes.FormPane;
-import com.stratelia.webactiv.util.viewGenerator.html.formPanes.FormPaneWA;
 import com.stratelia.webactiv.util.viewGenerator.html.frame.Frame;
 import com.stratelia.webactiv.util.viewGenerator.html.frame.FrameSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
@@ -67,6 +53,16 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.MissingResourceException;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -86,16 +82,19 @@ public class GraphicElementFactory {
       "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "");
   private static ResourceLocator lookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
+  private final static String REQUEST_SPACE_ID = GraphicElementFactory.class + "_REQUEST_SPACE_ID";
+  private final static String REQUEST_COMPONENT_ID =
+      GraphicElementFactory.class + "_REQUEST_COMPONENT_ID";
+  private final static String REQUEST_IS_COMPONENT_MAIN_PAGE =
+      GraphicElementFactory.class + "_REQUEST_IS_COMPONENT_MAIN_PAGE";
+  private final static String REQUEST_EXTERNAL_STYLESHEET =
+      GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
   private final static String defaultLook = "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static String iconsPath = (URLManager.getApplicationURL() + settings
       .getString("IconsPath")).replaceAll("/$", "");
   private ResourceLocator multilang = null;
   private String currentLookName = null;
-  private String externalStylesheet = null;
-  private String componentId = null;
   private MainSessionController mainSessionController = null;
-  private String spaceId = null;
-  private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
   protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
@@ -211,15 +210,17 @@ public class GraphicElementFactory {
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
-    this.externalStylesheet = externalStylesheet;
+    CacheServiceFactory.getRequestCacheService()
+        .put(REQUEST_EXTERNAL_STYLESHEET, externalStylesheet);
   }
 
   public String getExternalStylesheet() {
-    return this.externalStylesheet;
+    return CacheServiceFactory.getRequestCacheService()
+        .get(REQUEST_EXTERNAL_STYLESHEET, String.class);
   }
 
   public boolean hasExternalStylesheet() {
-    return (externalStylesheet != null);
+    return (getExternalStylesheet() != null);
   }
 
   /**
@@ -240,8 +241,9 @@ public class GraphicElementFactory {
    */
   @Deprecated
   public String getLookStyleSheet() {
-    return WebCommonLookAndFeel.getInstance().getCommonHeader(mainSessionController, getSpaceId(),
-        getComponentId());
+    return WebCommonLookAndFeel.getInstance()
+        .getCommonHeader(mainSessionController, getSpaceIdOfCurrentRequest(),
+            getComponentIdOfCurrentRequest());
   }
 
   /**
@@ -552,18 +554,6 @@ public class GraphicElementFactory {
   }
 
   /**
-   * Build a new FormPane.
-   * @param name
-   * @param actionURL
-   * @param pageContext
-   * @return
-   */
-  public FormPane getFormPane(String name, String actionURL,
-      javax.servlet.jsp.PageContext pageContext) {
-    return new FormPaneWA(name, actionURL, pageContext);
-  }
-
-  /**
    * Build a new OperationPane.
    * @return An object implementing the OperationPane interface.
    */
@@ -589,14 +579,14 @@ public class GraphicElementFactory {
     String browseBarClassName = getFavoriteLookSettings().getString("BrowseBar");
     try {
       BrowseBar browseBar = (BrowseBar) Class.forName(browseBarClassName).newInstance();
-      browseBar.setComponentId(componentId);
+      browseBar.setComponentId(getComponentIdOfCurrentRequest());
       browseBar.setMainSessionController(mainSessionController);
       return browseBar;
     } catch (Exception e) {
       SilverTrace.error("viewgenerator", "GraphicElementFactory.getBrowseBar()",
           "viewgenerator.EX_CANT_GET_BROWSE_BAR", "", e);
       BrowseBar browseBar = new BrowseBarComplete();
-      browseBar.setComponentId(componentId);
+      browseBar.setComponentId(getComponentIdOfCurrentRequest());
       browseBar.setMainSessionController(mainSessionController);
       return browseBar;
     }
@@ -654,42 +644,45 @@ public class GraphicElementFactory {
     return progress;
   }
 
-  public void setComponentId(String componentId) {
-    this.componentId = componentId;
+  public void setComponentIdForCurrentRequest(String componentId) {
+    CacheServiceFactory.getRequestCacheService().put(REQUEST_COMPONENT_ID, componentId);
   }
 
-  public String getComponentId() {
-    return componentId;
+  public String getComponentIdOfCurrentRequest() {
+    return CacheServiceFactory.getRequestCacheService().get(REQUEST_COMPONENT_ID, String.class);
   }
 
   public MainSessionController getMainSessionController() {
     return mainSessionController;
   }
 
-  public void setHttpRequest(HttpServletRequest request) {
-    HttpSession session = request.getSession(true);
-    mainSessionController = (MainSessionController) session.
-        getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    componentMainPage = request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
-        endsWith("/jsp/Main");
+  public void setHttpRequest(HttpRequest request) {
+    mainSessionController = request.getMainSessionController();
+    boolean isComponentMainPage =
+        request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
+            endsWith("/jsp/Main");
+    CacheServiceFactory.getRequestCacheService()
+        .put(REQUEST_IS_COMPONENT_MAIN_PAGE, isComponentMainPage);
   }
 
   public boolean isComponentMainPage() {
-    return componentMainPage;
+    Boolean isComponentMainPage = CacheServiceFactory.getRequestCacheService()
+        .get(REQUEST_IS_COMPONENT_MAIN_PAGE, Boolean.class);
+    return isComponentMainPage != null && isComponentMainPage;
   }
 
   /**
    * @return the space identifier
    */
-  public String getSpaceId() {
-    return spaceId;
+  public String getSpaceIdOfCurrentRequest() {
+    return CacheServiceFactory.getRequestCacheService().get(REQUEST_SPACE_ID, String.class);
   }
 
   /**
    * @param spaceId the space identifier to set (full identifier with WA + number)
    */
-  public void setSpaceId(String spaceId) {
-    this.spaceId = spaceId;
+  public void setSpaceIdForCurrentRequest(String spaceId) {
+    CacheServiceFactory.getRequestCacheService().put(REQUEST_SPACE_ID, spaceId);
   }
 
   /**
