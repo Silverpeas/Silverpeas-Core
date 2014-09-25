@@ -41,7 +41,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.silverpeas.look.LookHelper"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 
@@ -74,7 +73,7 @@ boolean someAxisPertinent(List<SearchAxis> axis)
 	{
         for (int i=0; i<axis.size(); i++)
         {
-			searchAxis		= (SearchAxis) axis.get(i);
+			searchAxis		= axis.get(i);
             nbPositions 	= searchAxis.getNbObjects();
             
             if (nbPositions > 0)
@@ -161,7 +160,6 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
 }
 %>
 <%
-LookHelper  helper        = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String m_context = GeneralPropertiesManager.getString("ApplicationURL");
@@ -171,12 +169,6 @@ List<SearchAxis> primaryAxis		= (List) request.getAttribute("ShowPrimaryAxis");
 List<SearchAxis> secondaryAxis		= (List) request.getAttribute("ShowSecondaryAxis");
 SearchContext	 searchContext		= (SearchContext) request.getAttribute("SearchContext");
 QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryParameters");
-
-boolean	isEmptySearchContext = true;
-// l'objet SearchContext n'est pas vide
-if (searchContext != null && searchContext.getCriterias().size() > 0){
-	isEmptySearchContext = false;
-}
 
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>

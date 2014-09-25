@@ -640,8 +640,8 @@ public class SPDesktopServlet extends HttpServlet {
       GraphicElementFactory gef =
           (GraphicElementFactory) request.getSession().getAttribute(
               GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      gef.setSpaceId(spaceId);
-      gef.setComponentId(null);
+      gef.setSpaceIdForCurrentRequest(spaceId);
+      gef.setComponentIdForCurrentRequest(null);
 
       // Maintenance Mode
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&

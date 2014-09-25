@@ -24,11 +24,10 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
 
 public class LookAndStyleTag extends TagSupport {
 
@@ -37,8 +36,8 @@ public class LookAndStyleTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      pageContext.getOut().println(
-          WebCommonLookAndFeel.getInstance().getCommonHeader((HttpServletRequest) pageContext.getRequest()));
+      pageContext.getOut().println(WebCommonLookAndFeel.getInstance()
+          .getCommonHeader((HttpServletRequest) pageContext.getRequest()));
     } catch (IOException e) {
       throw new JspException("LookAndStyle Tag", e);
     }

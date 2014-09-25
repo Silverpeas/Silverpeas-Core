@@ -221,7 +221,7 @@ public class SilverpeasSessionOpener {
     // Put a graphicElementFactory in the session
     GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
     if (StringUtil.isDefined(personalWs)) {
-      gef.setSpaceId(personalWs);
+      gef.setSpaceIdForCurrentRequest(personalWs);
     }
     gef.setHttpRequest(request);
     session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);

@@ -159,8 +159,8 @@ public abstract class GoTo extends HttpServlet {
         if (!StringUtil.isDefined(helperSpaceId)) {
           helperSpaceId = helper.getSpaceId();
         }
-        gef.setSpaceId(helperSpaceId);
-        gef.setComponentId(componentId);
+        gef.setSpaceIdForCurrentRequest(helperSpaceId);
+        gef.setComponentIdForCurrentRequest(componentId);
       }
     }
   }

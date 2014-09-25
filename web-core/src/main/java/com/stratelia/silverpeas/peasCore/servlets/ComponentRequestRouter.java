@@ -188,18 +188,19 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         new ResourcesWrapper(component.getMultilang(), component.getIcon(), component.getSettings(),
             component.getLanguage());
     request.setAttribute("resources", resources);
-    request.setAttribute("browseContext",
-        new String[]{component.getSpaceLabel(), component.getComponentLabel(),
-            component.getSpaceId(), component.getComponentId(), component.getComponentUrl()});
+    String[] browseContext = new String[]{component.getSpaceLabel(), component.getComponentLabel(),
+        component.getSpaceId(), component.getComponentId(), component.getComponentUrl()};
+    request.setAttribute("browseContext", browseContext);
     request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.
         getComponentUrl());
 
+    HttpRequest httpRequest = HttpRequest.decorate(request);
     if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
         !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
       GraphicElementFactory gef = (GraphicElementFactory) session
           .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      gef.setComponentId(component.getComponentId());
-      gef.setHttpRequest(request);
+      gef.setComponentIdForCurrentRequest(component.getComponentId());
+      gef.setHttpRequest(httpRequest);
     }
 
     // notify silverstatistics
@@ -222,7 +223,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
-    HttpRequest httpRequest = HttpRequest.decorate(request);
     destination = getDestination(function, component, httpRequest);
 
     // Session security token management
@@ -380,12 +380,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         if (!StringUtil.isDefined(helperSpaceId)) {
           helperSpaceId = helper.getSpaceId();
         }
-        gef.setSpaceId(helperSpaceId);
+        gef.setSpaceIdForCurrentRequest(helperSpaceId);
       }
     } else if (StringUtil.isDefined(spaceId)) {
       if (gef != null && helper != null) {
         helper.setSpaceId(spaceId);
-        gef.setSpaceId(spaceId);
+        gef.setSpaceIdForCurrentRequest(spaceId);
       }
     }
   }

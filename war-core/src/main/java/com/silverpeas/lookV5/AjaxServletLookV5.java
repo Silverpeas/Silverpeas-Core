@@ -116,10 +116,10 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (!StringUtil.isDefined(helperSpaceId)) {
         helperSpaceId = helper.getSpaceId();
       }
-      gef.setSpaceId(helperSpaceId);
+      gef.setSpaceIdForCurrentRequest(helperSpaceId);
     } else if (StringUtil.isDefined(spaceId) && !isPersonalSpace(spaceId)) {
       helper.setSpaceIdAndSubSpaceId(spaceId);
-      gef.setSpaceId(spaceId);
+      gef.setSpaceIdForCurrentRequest(spaceId);
     }
 
     // New request parameter to manage Bookmarks view or classical view

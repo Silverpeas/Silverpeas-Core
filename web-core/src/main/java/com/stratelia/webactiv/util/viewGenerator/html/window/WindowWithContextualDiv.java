@@ -50,7 +50,7 @@ public class WindowWithContextualDiv extends AbstractWindow {
   
   public String getContextualDiv() {
     String spaceIds = "";
-    String componentId = getGEF().getComponentId();
+    String componentId = getGEF().getComponentIdOfCurrentRequest();
     OrganisationController oc = getGEF().getMainSessionController().getOrganisationController();
     if (StringUtil.isDefined(componentId)) {
       List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
