@@ -9,6 +9,8 @@
       <!--
       <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=y</property>
       -->
+      <property name="javaVmArguments">-Djboss.socket.binding.port-offset=100</property>
+      <property name="managementPort">10090</property>
     </configuration>
   </container>
 </arquillian>
