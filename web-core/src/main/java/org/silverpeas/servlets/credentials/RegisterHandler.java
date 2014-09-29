@@ -48,7 +48,7 @@ public class RegisterHandler extends FunctionHandler {
 
     if (settings.isUserSelfRegistrationEnabled()) {
       try {
-        UserService service = UserServiceProvider.getInstance().getService();
+        UserService service = UserServiceProvider.getUserService();
         service.registerUser(firstName, lastName, email, domainId);
       } catch (AdminException e) {
         return "/admin/jsp/registrationFailed.jsp";

@@ -35,7 +35,6 @@ public interface AdminNotificationService {
    *
    * @param componentId the id of the component whose configuration has changed.
    * @param userId the id of the user updating the configuration.
-   * @param type type of component.
    * @param changes the configuration changes.
    */
   public abstract void notifyOfComponentConfigurationChange(final String componentId,

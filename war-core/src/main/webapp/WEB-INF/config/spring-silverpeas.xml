@@ -187,8 +187,8 @@
   <bean id="passwordServiceFactory" class="org.silverpeas.password.service.PasswordServiceFactory"
         factory-method="getInstance"/>
 
-  <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/>
-  <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>
+  <!-- ebo <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/> -->
+  <!-- ebo remove unused code <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/> -->
 
   <!-- the content encryption service factory from which Silverpeas components access the content encryption service -->
   <bean id="contentEncryptionServiceFactory" class="org.silverpeas.util.security.ContentEncryptionServiceFactory"
