@@ -28,12 +28,12 @@
  */
 package com.silverpeas.comment;
 
-import java.sql.Connection;
-
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.sql.Connection;
 
 /**
  * @author neysseri
@@ -57,7 +57,7 @@ public class CommentInstanciator implements ComponentsInstanciatorIntf {
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
 
     try {
-      CommentServiceFactory.getFactory().getCommentService()
+      CommentServiceProvider.getCommentService()
           .deleteAllCommentsByComponentInstanceId(componentId);
     } catch (Exception e) {
       throw new InstanciationException("CommentInstanciator.delete()",

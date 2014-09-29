@@ -38,8 +38,8 @@
 
   <!-- the CommentService factory from which Silverpeas components access the comment service.
        It delegate to the Spring container the management of the life-cycle of the CommentService objects. -->
-  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/> -->
 
 </beans>
 

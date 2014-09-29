@@ -47,8 +47,8 @@
 
   <!-- the DefaultCommentService factory from which Silverpeas components access the comment service.
        It delegate to the Spring container the management of the life-cycle of the DefaultCommentService objects. -->
-  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/> -->
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <bean id="organizationControllerFactory"

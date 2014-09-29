@@ -21,26 +21,24 @@
 package com.silverpeas.comment.service;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
+
 import javax.inject.Inject;
 
 /**
  * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and so
  * to encapsulates from the CommentService client the adopted policy about that life-cycle.
  */
-public class CommentServiceFactory {
+public class CommentServiceProvider {
 
-  private static final CommentServiceFactory instance = new CommentServiceFactory();
-  @Inject
-  private CommentService commentService;
-  @Inject
-  private CommentUserNotificationService commentUserNotificationService;
+  private static final CommentServiceProvider instance = new CommentServiceProvider();
 
   /**
-   * Gets an instance of this CommentServiceFactory class.
+   * Gets an instance of this CommentServiceProvider class.
    *
-   * @return a CommentServiceFactory instance.
+   * @return a CommentServiceProvider instance.
    */
-  public static CommentServiceFactory getFactory() {
+  public static CommentServiceProvider getFactory() {
     return instance;
   }
 
@@ -49,12 +47,8 @@ public class CommentServiceFactory {
    *
    * @return a CommentService instance.
    */
-  public CommentService getCommentService() {
-    if (commentService == null) {
-      SilverTrace.error("comment", getClass().getSimpleName() + ".getCommentService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found!");
-    }
-    return commentService;
+  public static CommentService getCommentService() {
+    return ServiceProvider.getService(CommentService.class);
   }
 
   /**
@@ -62,16 +56,10 @@ public class CommentServiceFactory {
    *
    * @return a CommentUserNotificationService instance.
    */
-  public CommentUserNotificationService getCommentUserNotificationService() {
-    if (commentUserNotificationService == null) {
-      SilverTrace.error("comment", getClass().getSimpleName()
-          + ".getCommentUserNotificationService()",
-          "EX_NO_MESSAGES",
-          "IoC container not bootstrapped or no CommentUserNotificationService bean found!");
-    }
-    return commentUserNotificationService;
+  public static CommentUserNotificationService getCommentUserNotificationService() {
+    return ServiceProvider.getService(CommentUserNotificationService.class);
   }
 
-  private CommentServiceFactory() {
+  private CommentServiceProvider() {
   }
 }

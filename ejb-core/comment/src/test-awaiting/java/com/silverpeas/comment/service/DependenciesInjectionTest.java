@@ -61,8 +61,7 @@ public class DependenciesInjectionTest extends AbstractCommentTest {
    */
   @Test
   public void theCommentServiceShouldBeGetByTheFactory() {
-    CommentServiceFactory commentServiceFactory = CommentServiceFactory.getFactory();
-    CommentService commentService = commentServiceFactory.getCommentService();
+    CommentService commentService = CommentServiceProvider.getCommentService();
     assertNotNull(commentService);
     assertNotNull(((DefaultCommentService)commentService).getCommentDAO());
   }
