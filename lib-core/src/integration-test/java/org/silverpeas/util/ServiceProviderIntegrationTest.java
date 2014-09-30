@@ -23,23 +23,18 @@
  */
 package org.silverpeas.util;
 
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jboss.arquillian.junit.Arquillian;
 
-import javax.enterprise.inject.spi.CDI;
-import java.io.File;
+import javax.enterprise.util.AnnotationLiteral;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -52,11 +47,13 @@ public class ServiceProviderIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addClass(ServiceProvider.class)
+    return ShrinkWrap.create(JavaArchive.class, "test.jar").addClass(ServiceProvider.class)
         .addClass(BeanContainer.class)
         .addClass(CDIContainer.class)
+        .addClass(TestQualifier.class)
+        .addClass(org.silverpeas.util.Test.class)
         .addClass(TestManagedBean.class)
+        .addClass(TestManagedAndQualifiedBean.class)
         .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
             "services/org.silverpeas.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -71,5 +68,18 @@ public class ServiceProviderIntegrationTest {
   public void fetchAManagedBeanByTheServiceProviderShouldSucceed() {
     TestManagedBean bean = ServiceProvider.getService(TestManagedBean.class);
     assertThat(bean, notNullValue());
+  }
+
+  @Test
+  public void fetchAManagedBeanTypeByTheServiceProviderShouldSucceed() {
+    org.silverpeas.util.Test bean = ServiceProvider.getService(org.silverpeas.util.Test.class);
+    assertThat(bean, instanceOf(TestManagedBean.class));
+  }
+
+  @Test
+  public void fetchAManagedAndQualifiedBeanTypeByTheServiceProviderShouldSucceed() {
+    org.silverpeas.util.Test bean = ServiceProvider
+        .getService(org.silverpeas.util.Test.class, new AnnotationLiteral<TestQualifier>() {});
+    assertThat(bean, instanceOf(TestManagedAndQualifiedBean.class));
   }
 }

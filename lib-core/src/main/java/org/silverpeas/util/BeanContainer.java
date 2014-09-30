@@ -36,7 +36,7 @@ public interface BeanContainer {
 
   public <T> T getBeanByName(String name);
 
-  public <T> T getBeanByType(Class<T> type, Class<? extends Annotation>... qualifiers);
+  public <T> T getBeanByType(Class<T> type, Annotation... qualifiers);
 
   public <T> Set<T> getAllBeansByType(Class<T> type);
 }

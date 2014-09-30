@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.*;
 import org.silverpeas.util.i18n.I18NHelper;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -799,8 +800,8 @@ public class SimpleDocument implements Serializable {
     }
 
     // Access is verified for sharing context
-    AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
+    AccessController<SimpleDocument> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
@@ -812,8 +813,8 @@ public class SimpleDocument implements Serializable {
    * @return true if the user can access this document, false otherwise.
    */
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
+    AccessController<SimpleDocument> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), this);
   }
 
@@ -838,8 +839,8 @@ public class SimpleDocument implements Serializable {
     }
 
     // Otherwise access is verified for download context
-    AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
+    AccessController<SimpleDocument> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }

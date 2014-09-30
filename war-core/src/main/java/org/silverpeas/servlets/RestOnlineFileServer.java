@@ -40,6 +40,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.web.servlet.RestRequest;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -178,8 +179,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
 
   private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment)
       throws Exception {
-    AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
+    AccessController<SimpleDocument> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
     return accessController.isUserAuthorized(userId, attachment,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }

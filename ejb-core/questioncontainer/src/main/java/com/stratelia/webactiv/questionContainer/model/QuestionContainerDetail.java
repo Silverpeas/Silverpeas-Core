@@ -34,6 +34,7 @@ import com.stratelia.webactiv.questionContainer.control.QuestionContainerContent
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -168,8 +169,8 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

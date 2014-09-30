@@ -1,9 +1,14 @@
 package org.silverpeas.util;
 
+import org.apache.commons.lang3.AnnotationUtils;
+import sun.reflect.annotation.AnnotationType;
+
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -28,17 +33,7 @@ public class CDIContainer implements BeanContainer {
   }
 
   @Override
-  public <T> T getBeanByType(final Class<T> type, Class<? extends Annotation>... qualifierClasses) {
-    Annotation[] qualifiers = new Annotation[qualifierClasses.length];
-    for (Class<? extends Annotation> qualifierClass : qualifierClasses) {
-      try {
-        qualifiers[qualifiers.length] = qualifierClass.newInstance();
-      } catch (InstantiationException | IllegalAccessException e) {
-        throw new IllegalArgumentException(
-            "Impossible to create a new instance of qualifier in error: " +
-                qualifierClass.getName());
-      }
-    }
+  public <T> T getBeanByType(final Class<T> type, Annotation... qualifiers) {
     BeanManager beanManager = CDI.current().getBeanManager();
     Bean<T> bean = (Bean<T>) beanManager.getBeans(type, qualifiers).stream().findFirst()
         .orElseThrow(

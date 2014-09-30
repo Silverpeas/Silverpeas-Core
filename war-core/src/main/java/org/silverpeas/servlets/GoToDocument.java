@@ -25,14 +25,15 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.peasUtil.GoTo;
-import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.permalinks.PermalinkServiceFactory;
+import org.silverpeas.util.StringUtil;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,8 +67,8 @@ public class GoToDocument extends GoTo {
       setGefSpaceId(req, componentId);
     }
     if (isLoggedIn) {
-      AccessController<SimpleDocument> accessController =
-          AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
+      AccessController<SimpleDocument> accessController = AccessControllerProvider
+          .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
       boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), version,
           AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
       if (!isAccessAuthorized) {

@@ -68,6 +68,7 @@ import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -1202,13 +1203,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     boolean canBeAccessed = accessController.
         isUserAuthorized(user.getId(), getComponentInstanceId());
     if (canBeAccessed) {
-      AccessController<NodePK> nodeAccessController =
-          AccessControllerProvider.getAccessController(NodeAccessControl.class);
+      AccessController<NodePK> nodeAccessController = AccessControllerProvider
+          .getAccessController(new AnnotationLiteral<NodeAccessControl>() {});
       Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(getId(),
           getInstanceId()));
       for (NodePK aNode : nodes) {

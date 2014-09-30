@@ -31,11 +31,13 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.accesscontrol.NodeAccessControl;
 import org.silverpeas.accesscontrol.PublicationAccessControl;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.Date;
 
 /**
@@ -82,13 +84,13 @@ public class TicketFactory {
       return doc.isSharingAllowedForRolesFrom(UserDetail.getById(creatorId));
     } else if (Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
       AccessController<NodePK> nodeAccessController = AccessControllerProvider
-          .getAccessController(org.silverpeas.accesscontrol.NodeAccessControl.class);
+          .getAccessController(new AnnotationLiteral<NodeAccessControl>() {});
       return nodeAccessController.isUserAuthorized(creatorId,
           new NodePK(String.valueOf(sharedObjectId), componentId),
               AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     } else if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
-      AccessController<PublicationPK> publicationAccessController =
-          AccessControllerProvider.getAccessController(PublicationAccessControl.class);
+      AccessController<PublicationPK> publicationAccessController = AccessControllerProvider
+          .getAccessController(new AnnotationLiteral<PublicationAccessControl>() {});
       return publicationAccessController.isUserAuthorized(creatorId,
           new PublicationPK(String.valueOf(sharedObjectId), componentId),
             AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));

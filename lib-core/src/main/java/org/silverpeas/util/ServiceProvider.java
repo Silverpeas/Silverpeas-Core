@@ -43,7 +43,7 @@ public final class ServiceProvider {
   private ServiceProvider() {
   }
 
-  public static <T> T getService(Class<T> type, Class<? extends Annotation>... qualifiers) {
+  public static <T> T getService(Class<T> type, Annotation... qualifiers) {
     return beanContainer().getBeanByType(type, qualifiers);
   }
 

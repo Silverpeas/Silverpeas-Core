@@ -43,7 +43,7 @@ public class AccessControllerProvider {
    * @param <T> the type of the resource that is used in the access control mechanism.
    * @return the asked access controller.
    */
-  public static <T> AccessController<T> getAccessController(Class<? extends Annotation> qualifier) {
+  public static <T> AccessController<T> getAccessController(Annotation qualifier) {
     return (AccessController<T>) ServiceProvider.getService(AccessController.class, qualifier);
   }
 }

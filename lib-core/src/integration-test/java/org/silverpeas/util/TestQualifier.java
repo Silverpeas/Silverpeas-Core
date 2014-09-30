@@ -1,4 +1,4 @@
-package org.silverpeas.accesscontrol;
+package org.silverpeas.util;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;
@@ -7,11 +7,11 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation qualifies an implementation of access controller of a Node resource.
+ * Annotation to verify the Qualifier behaviour.
  * @author Yohann Chastagnier
  */
 @Qualifier
 @Documented
 @Retention(RUNTIME)
-public @interface NodeAccessControl {
+public @interface TestQualifier {
 }
