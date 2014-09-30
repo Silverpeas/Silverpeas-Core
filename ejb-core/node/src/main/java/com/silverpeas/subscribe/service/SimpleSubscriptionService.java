@@ -64,7 +64,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
    */
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(dbName);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscriptionService.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

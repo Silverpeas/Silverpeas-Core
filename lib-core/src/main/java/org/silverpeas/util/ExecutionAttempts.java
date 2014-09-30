@@ -38,7 +38,7 @@ public class ExecutionAttempts {
    * @param maxAttempts the maximum number of execution attempts that are authorized before
    * throwing really the exception.
    * @param aJob the job to run within a retry mechanism.
-   * @throws the exception the job has thrown when the maximum execution attempts has been reached.
+   * @throws Exception the exception the job has thrown when the maximum execution attempts has been reached.
    */
   public static void retry(int maxAttempts, final Job aJob) throws Exception {
     int attempts = 1;

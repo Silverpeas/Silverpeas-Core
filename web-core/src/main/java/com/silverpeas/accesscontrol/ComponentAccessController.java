@@ -50,6 +50,9 @@ public class ComponentAccessController extends AbstractAccessController<String> 
   @Inject
   private OrganisationController controller;
 
+  @Inject
+  private ComponentHelper componentHelper;
+
   public ComponentAccessController() {
   }
 
@@ -92,7 +95,7 @@ public class ComponentAccessController extends AbstractAccessController<String> 
   }
 
   private boolean isThemeTracker(String componentId) {
-    return ComponentHelper.getInstance().isThemeTracker(componentId);
+    return componentHelper.isThemeTracker(componentId);
   }
 
   @Override

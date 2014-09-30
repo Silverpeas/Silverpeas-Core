@@ -56,7 +56,7 @@ import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
  *
  * @author sdevolder
  */
-public class ZipManager {
+public class ZipUtil {
 
   /**
    * Compress a file into a zip file.

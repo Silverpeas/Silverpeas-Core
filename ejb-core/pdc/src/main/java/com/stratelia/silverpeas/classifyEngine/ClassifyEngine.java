@@ -29,7 +29,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -196,7 +195,7 @@ public class ClassifyEngine implements Cloneable {
     int[] tempRegisteredAxis = new int[nbMaxAxis];
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       // build the statement to load
       String sSQLStatement = SQLStatement.buildLoadRegisteredAxisStatement();
@@ -301,7 +300,7 @@ public class ClassifyEngine implements Cloneable {
     Connection connection = null;
     try {
       // Open the connection if necessary
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       // Check if the position already exists
       sSQLStatement = SQLStatement.buildVerifyStatement(nSilverObjectId, position);
@@ -348,7 +347,7 @@ public class ClassifyEngine implements Cloneable {
     try {
       // Open the connection if necessary
       if (connection == null) {
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -399,7 +398,7 @@ public class ClassifyEngine implements Cloneable {
     try {
       // Open the connection if necessary
       if (connection == null) {
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -472,7 +471,7 @@ public class ClassifyEngine implements Cloneable {
     try {
       // Open the connection if necessary
       if (connection == null) {
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -523,7 +522,7 @@ public class ClassifyEngine implements Cloneable {
     try {
       // Open the connection if necessary
       if (connection == null) {
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -566,7 +565,7 @@ public class ClassifyEngine implements Cloneable {
     try {
       // Open the connection if necessary
       if (connection == null) {
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
       for (Value classifyValue : classifyValues) {
@@ -634,7 +633,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       String today = DateUtil.today2SQLDate();
 
@@ -698,7 +697,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       // build the statement to get the SilverObjectIds
       String sSQLStatement = SQLStatement.buildSilverContentIdsByPositionIdsStatement(
@@ -741,7 +740,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       // build the statement to get the SilverObjectIds
       String sSQLStatement = SQLStatement.buildFindBySilverObjectIdStatement(nSilverObjectId);
@@ -902,7 +901,7 @@ public class ClassifyEngine implements Cloneable {
     try {
       if (connection == null) {
         // Open the connection
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -1011,7 +1010,7 @@ public class ClassifyEngine implements Cloneable {
 
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       String today = DateUtil.today2SQLDate();
 
@@ -1087,7 +1086,7 @@ public class ClassifyEngine implements Cloneable {
 
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       String today = DateUtil.today2SQLDate();
 
@@ -1149,7 +1148,7 @@ public class ClassifyEngine implements Cloneable {
         nAxisId = this.getPhysicalAxisId(nAxisId);
 
         // Open the connection
-        connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -1227,7 +1226,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       String today = DateUtil.today2SQLDate();
 
@@ -1289,7 +1288,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       String today = DateUtil.today2SQLDate();
 
@@ -1356,7 +1355,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       String today = DateUtil.today2SQLDate();
 
@@ -1417,7 +1416,7 @@ public class ClassifyEngine implements Cloneable {
     ResultSet resSet = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(JNDINames.CLASSIFYENGINE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       // Build the statement
       StringBuilder inClause = new StringBuilder(1000);

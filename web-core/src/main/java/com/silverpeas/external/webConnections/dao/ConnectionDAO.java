@@ -116,8 +116,7 @@ public class ConnectionDAO {
    * @throws SQLException
    * @throws UtilException
    */
-  public String createConnection(Connection con, ConnectionDetail connection) throws SQLException,
-      UtilException {
+  public String createConnection(Connection con, ConnectionDetail connection) throws SQLException {
     String id = "";
     PreparedStatement prepStmt = null;
     try {

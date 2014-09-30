@@ -22,7 +22,6 @@ package com.stratelia.webactiv.contact.control;
 
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.contact.info.InfoDAO;
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
@@ -418,8 +417,8 @@ public class ContactBmEJB implements ContactBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.CONTACT_DATASOURCE);
-    } catch (UtilException re) {
+      return DBUtil.openConnection();
+    } catch (SQLException re) {
       throw new ContactRuntimeException("ContactBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);
     }

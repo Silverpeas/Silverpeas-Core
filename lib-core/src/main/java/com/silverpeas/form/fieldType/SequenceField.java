@@ -30,7 +30,6 @@ import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 
 public class SequenceField extends TextField {
 
@@ -119,7 +118,7 @@ public class SequenceField extends TextField {
     PreparedStatement statement = null;
     ResultSet rs = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.FORMTEMPLATE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       // if global, all values of same form is gathered between instances
       if (global) {

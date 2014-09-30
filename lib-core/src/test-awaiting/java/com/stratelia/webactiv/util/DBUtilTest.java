@@ -145,7 +145,7 @@ public class DBUtilTest {
    */
   @Test
   public void testMakeConnection() throws SQLException {
-    Connection connection = DBUtil.makeConnection(DATASOURCE_NAME);
+    Connection connection = DBUtil.openConnection();
     assertThat(connection, is(notNullValue()));
     connection.close();
   }

@@ -41,6 +41,7 @@ import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,7 +112,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       user.setId(id);
       user = userDao.saveAndFlush(user);
       return String.valueOf(id);
-    } catch (UtilException ex) {
+    } catch (SQLException ex) {
       Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
     }
     return "-1";
@@ -310,7 +311,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       }
       spGroup = groupDao.saveAndFlush(spGroup);
       return String.valueOf(spGroup.getId());
-    } catch (UtilException ex) {
+    } catch (SQLException ex) {
       Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
     }
     return "";

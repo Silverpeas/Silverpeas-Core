@@ -7,7 +7,7 @@ import java.util.Date;
 
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ExportReport;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
@@ -38,8 +38,7 @@ public abstract class AbstractExportProcess {
     try {
       String zipFileName = fileExportDir.getName() + ".zip";
       String tempDir = FileRepositoryManager.getTemporaryPath();
-      long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-          + zipFileName);
+      long zipFileSize = ZipUtil.compressPathToZip(fileExportDir.getPath(), tempDir + zipFileName);
       exportReport.setZipFileName(zipFileName);
       exportReport.setZipFileSize(zipFileSize);
       exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));

@@ -76,7 +76,7 @@ public class PublicationI18NDAO {
   }
 
   public static void addTranslation(Connection con, PublicationI18N translation)
-      throws SQLException, UtilException {
+      throws SQLException {
     StringBuffer insertStatement = new StringBuffer(128);
     insertStatement.append("insert into ").append(TABLENAME).append(
         " values (?, ?, ?, ?, ?, ?)");

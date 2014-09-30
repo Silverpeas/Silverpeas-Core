@@ -34,7 +34,6 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -209,7 +208,7 @@ public class ThesaurusBm {
   public void deleteVocabulary(long idVoca) throws ThesaurusException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THESAURUS_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
 
       // supprime les synonymes du vocabulaire
@@ -387,7 +386,7 @@ public class ThesaurusBm {
     Connection con = null;
 
     try {
-      con = DBUtil.makeConnection(JNDINames.THESAURUS_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
 
       Iterator<Synonym> i = synonyms.iterator();
@@ -429,7 +428,7 @@ public class ThesaurusBm {
   public void deleteSynonyms(String idVoca, String idTree, String idTerm) throws ThesaurusException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THESAURUS_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(true);
       deleteSynonyms(con, Long.parseLong(idVoca), Long.parseLong(idTree), Long.parseLong(idTerm));
     } catch (Exception e) {
@@ -712,7 +711,7 @@ public class ThesaurusBm {
     Connection con = null;
 
     try {
-      con = DBUtil.makeConnection(JNDINames.THESAURUS_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
 
       deleteVocaJargons(con, idVoca);

@@ -102,7 +102,7 @@ public class SilverStatisticsPeasDAO {
 
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(dbName);
+      con = DBUtil.openConnection();
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAO.getConnection()",
           "root.EX_CONNECTION_CLOSE_FAILED", "", e);

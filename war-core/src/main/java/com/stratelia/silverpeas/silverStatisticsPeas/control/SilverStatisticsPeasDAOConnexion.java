@@ -29,7 +29,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -105,7 +104,7 @@ public class SilverStatisticsPeasDAOConnexion {
     Connection myCon = null;
     List<String[]> result = new ArrayList<String[]>();
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_GLOBAL_COUNTS);
       stmt.setString(1, startDate);
       stmt.setString(2, endDate);
@@ -175,7 +174,7 @@ public class SilverStatisticsPeasDAOConnexion {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_GLOBAL_NB_USER);
       stmt.setString(1, startDate);
       stmt.setString(2, endDate);
@@ -208,7 +207,7 @@ public class SilverStatisticsPeasDAOConnexion {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_GLOBAL_STATISTICS);
       stmt.setString(1, startDate);
       stmt.setString(2, endDate);
@@ -242,7 +241,7 @@ public class SilverStatisticsPeasDAOConnexion {
     Connection myCon = null;
     List<String[]> result = new ArrayList<String[]>();
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_STATISTICS_FOR_USER);
       stmt.setString(1, dateBegin);
       stmt.setString(2, dateEnd);
@@ -274,7 +273,7 @@ public class SilverStatisticsPeasDAOConnexion {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_USER_NB_CONNECTION);
       stmt.setString(1, startDate);
       stmt.setString(2, endDate);
@@ -311,7 +310,7 @@ public class SilverStatisticsPeasDAOConnexion {
     Connection myCon = null;
     LinkedHashMap<String, Long> result = prepareStatisticsArray(startDate, endDate);
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       UserDetail[] users = OrganisationControllerFactory
           .getOrganisationController().getAllUsersOfGroup(groupId);
       stmt = myCon.prepareStatement(SELECT_USER_NB_CONNECTION);
@@ -381,7 +380,7 @@ public class SilverStatisticsPeasDAOConnexion {
     Connection myCon = null;
     List<String[]> result = new ArrayList<String[]>();
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_COUNTS_FOR_USER);
       long countConnection = 0L;
       long duration = 0L;
@@ -425,7 +424,7 @@ public class SilverStatisticsPeasDAOConnexion {
     Connection myCon = null;
     List<String[]> result = new ArrayList<String[]>();
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_STATISTICS_FOR_ALL_USERS);
       stmt.setString(1, dateBegin);
       stmt.setString(2, dateEnd);
@@ -462,7 +461,7 @@ public class SilverStatisticsPeasDAOConnexion {
     Connection myCon = null;
     List<String[]> result = new ArrayList<String[]>();
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_STATISTICS_FOR_USER);
       stmt.setString(1, dateBegin);
       stmt.setString(2, dateEnd);
@@ -489,7 +488,7 @@ public class SilverStatisticsPeasDAOConnexion {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
       LinkedHashSet<String> years = new LinkedHashSet<String>();
@@ -528,7 +527,7 @@ public class SilverStatisticsPeasDAOConnexion {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_NB_USER_BY_USAGE);
       stmt.setString(1, startDate);
       stmt.setString(2, endDate);

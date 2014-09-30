@@ -102,7 +102,7 @@ public class ScoreDAO {
     try {
       /* Recherche de la nouvelle PK de la table */
       newId = DBUtil.getNextId(scoreDetail.getScorePK().getTableName(), "scoreId");
-    } catch (UtilException ue) {
+    } catch (SQLException ue) {
       throw new ScoreRuntimeException("ScoreDAO.addScore()",
           SilverpeasRuntimeException.ERROR, "score.EX_RECORD_GETNEXTID_FAILED",
           "id = " + scoreDetail.getScorePK().getId().toString());

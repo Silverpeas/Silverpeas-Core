@@ -54,11 +54,9 @@ public class StatusDao {
    * @param connection
    * @param status
    * @return int
-   * @throws UtilException
    * @throws SQLException
    */
-  public int changeStatus(Connection connection, Status status) throws UtilException,
-      SQLException {
+  public int changeStatus(Connection connection, Status status) throws SQLException {
 
     int id = DBUtil.getNextId("sb_sn_status", "id");
     PreparedStatement pstmt = null;
@@ -185,8 +183,8 @@ public class StatusDao {
    * @throws SQLException
    * @param connection
    * @param userId
-   * @param nbElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationStatus>
    * @throws SQLException
    */
@@ -215,8 +213,8 @@ public class StatusDao {
    * and the first Index
    * @param connection
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationStatus>
    * @throws SQLException
    */

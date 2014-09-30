@@ -29,7 +29,6 @@ import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.UserRoleRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -333,7 +332,7 @@ public class ProfileInstManager {
   public String[] getProfileIdsOfUser(String sUserId, List<String> groupIds) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId));
       List<String> roleIds = new ArrayList<String>();
@@ -356,7 +355,7 @@ public class ProfileInstManager {
       throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
           RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentId);
@@ -389,7 +388,7 @@ public class ProfileInstManager {
       String sGroupId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       List<String> groupIds = new ArrayList<String>();
       groupIds.add(sGroupId);

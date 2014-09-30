@@ -77,7 +77,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     try {
       // Need first to make a SQL query to find all concerned instances ids
       // Due to the operator EXISTS that is not yet supported by Castor OQL->SQL translator
-      con = DBUtil.makeConnection(dbName);
+      con = DBUtil.openConnection();
 
       if (role.equals("supervisor")) {
         selectQuery.append("SELECT * from SB_Workflow_ProcessInstance instance where modelId = ?");
@@ -249,7 +249,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       // Need first to make a SQL query to find all concerned instances ids
       // Due to the operator EXISTS that is not yet supported by Castor OQL->SQL
       // translator
-      con = DBUtil.makeConnection(dbName);
+      con = DBUtil.openConnection();
 
       selectQuery = "SELECT DISTINCT instance.instanceId ";
       selectQuery +=
@@ -582,7 +582,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       db.begin();
 
       // Need first to make a SQL query to find all concerned instances ids
-      con = DBUtil.makeConnection(dbName);
+      con = DBUtil.openConnection();
 
       selectQuery =
           "SELECT DISTINCT activeState.instanceId FROM SB_Workflow_ActiveState activeState WHERE activeState.timeoutDate < ? ";

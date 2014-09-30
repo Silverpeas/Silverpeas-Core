@@ -25,6 +25,7 @@ package org.silverpeas.media.video.ffmpeg;
 
 import java.io.File;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.silverpeas.media.video.ThumbnailPeriod;
@@ -42,15 +43,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 @Named("videoThumbnailExtractor")
 public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
 
-  private static final FFmpegThumbnailExtractor instance = new FFmpegThumbnailExtractor();
-
-  /**
-   * Gets the singleton instance.
-   * @return
-   */
-  public static FFmpegThumbnailExtractor getInstance() {
-    return instance;
-  }
+  @Inject
+  private MetadataExtractor metadataExtractor;
 
   @Override
   public boolean isActivated() {
@@ -60,7 +54,7 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
   @Override
   public void generateThumbnailsFrom(File video) {
     if (video.exists() && video.isFile()) {
-      MetaData metadata = MetadataExtractor.getInstance().extractMetadata(video);
+      MetaData metadata = metadataExtractor.extractMetadata(video);
       TimeData timeData = metadata.getDuration();
       if (timeData != null) {
         File thumbnailDir = video.getParentFile();

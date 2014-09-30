@@ -30,7 +30,6 @@ import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.SpaceRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -546,7 +545,7 @@ public class ComponentInstManager {
   public String[] getComponentIdsInSpace(int spaceId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       // getting all componentIds available for user
       List<String> componentIds = ComponentDAO.getComponentIdsInSpace(con, spaceId);
@@ -563,7 +562,7 @@ public class ComponentInstManager {
   public List<ComponentInstLight> getComponentsInSpace(int spaceId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       // getting all components in given space
       return com.stratelia.webactiv.beans.admin.dao.ComponentDAO.getComponentsInSpace(con, spaceId);
@@ -590,7 +589,7 @@ public class ComponentInstManager {
       String componentName) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       if (StringUtil.isDefined(spaceId)) {
         // getting componentIds available for user in given space (not subspaces)

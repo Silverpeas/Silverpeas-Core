@@ -44,7 +44,6 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class FormEncryptionContentIterator implements EncryptionContentIterator {
@@ -177,7 +176,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
    */
   private void openConnection() {
     try {
-      con = DBUtil.makeConnection(JNDINames.FORMTEMPLATE_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
       throw new FormRuntimeException("FormEncryptionContentIterator.openConnection",

@@ -43,7 +43,6 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**
@@ -98,7 +97,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     List<UsedAxis> usedAxis = null;
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      con = DBUtil.openConnection();
       usedAxis = utilizationDAO.getUsedAxisByInstanceId(con, instanceId);
     } catch (Exception e) {
       throw new PdcException("PdcUtilizationBmImpl.getUsedAxisByInstanceId",
@@ -155,7 +154,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       SilverpeasBeanDAO<AxisHeaderPersistence> dao = SilverpeasBeanDAOFactory
           .<AxisHeaderPersistence>getDAO(
           "com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence");
-      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      con = DBUtil.openConnection();
       Collection<AxisHeaderPersistence> result = dao.findByWhereClause(con, new AxisPK("useless"),
           "id IN (" + inClause.toString() + ")");
 
@@ -203,7 +202,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
   public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      con = DBUtil.openConnection();
       if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
           Integer.parseInt(usedAxis.getPK().getId()), usedAxis
           .getAxisId(), usedAxis.getBaseValue(), treeId)) {
@@ -230,7 +229,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       throws PdcException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      con = DBUtil.openConnection();
       // test si la valeur de base a été modifiée
       int newBaseValue = usedAxis.getBaseValue();
       int oldBaseValue = (getUsedAxis(usedAxis.getPK().getId())).getBaseValue();

@@ -91,7 +91,7 @@ public class TreeI18NDAO {
   }
 
   public void createTranslation(Connection con, TreeNodeI18N translation,
-      String treeId) throws SQLException, UtilException {
+      String treeId) throws SQLException {
     String selectQuery = "insert into " + treeI18NTable + "(" + COLUMNS
         + ") values  (?, ?, ?, ?, ?, ?)";
     PreparedStatement prepStmt = null;

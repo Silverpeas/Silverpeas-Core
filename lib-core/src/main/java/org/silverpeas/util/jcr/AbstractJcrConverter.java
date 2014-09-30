@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -304,7 +305,7 @@ public abstract class AbstractJcrConverter {
    * @return the name of the node.
    * @throws UtilException
    */
-  protected String computeUniqueName(String prefix, String tableName) throws UtilException {
+  protected String computeUniqueName(String prefix, String tableName) throws SQLException {
     return prefix + DBUtil.getNextId(tableName, null);
   }
 

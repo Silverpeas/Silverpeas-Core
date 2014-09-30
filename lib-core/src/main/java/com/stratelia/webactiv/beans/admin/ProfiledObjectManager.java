@@ -27,7 +27,6 @@ package com.stratelia.webactiv.beans.admin;
 import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
 import com.stratelia.webactiv.organization.UserRoleRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -76,7 +75,7 @@ public class ProfiledObjectManager {
       List<String> groupIds) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
           RoleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);

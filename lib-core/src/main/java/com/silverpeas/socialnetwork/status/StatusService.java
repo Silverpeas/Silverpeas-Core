@@ -33,7 +33,6 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 
 public class StatusService {
@@ -50,8 +49,8 @@ public class StatusService {
    * @throws UtilException
    * @throws SQLException
    */
-  private Connection getConnection() throws UtilException {
-    return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+  private Connection getConnection() throws SQLException {
+    return DBUtil.openConnection();
   }
 
   /**
@@ -161,8 +160,8 @@ public class StatusService {
   /**
    * get all my SocialInformation according to number of Item and the first Index
    * @param userId
-   * @param nbElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationStatus>
    */
   public List<SocialInformation> getAllStatusService(int userId, Date begin, Date end) {
@@ -183,8 +182,8 @@ public class StatusService {
    * when data base is PostgreSQL get SocialInformation of my conatct according to number of Item
    * and the first Index
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationStatus>
    */
   List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,

@@ -21,6 +21,7 @@
 package com.silverpeas.myLinks.ejb;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.ejb.Stateless;
@@ -32,7 +33,6 @@ import com.silverpeas.myLinks.dao.LinkDAO;
 import com.silverpeas.myLinks.model.LinkDetail;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -147,8 +147,8 @@ public class MyLinksBmEJB implements MyLinksBm {
   private Connection initCon() {
     Connection con;
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
+      con = DBUtil.openConnection();
+    } catch (SQLException e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.initCon()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }

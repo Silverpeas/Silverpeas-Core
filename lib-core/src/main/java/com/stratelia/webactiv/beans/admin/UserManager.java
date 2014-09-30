@@ -30,7 +30,6 @@ import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.UserRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
@@ -57,7 +56,7 @@ public class UserManager {
   public List<String> getDomainsOfUser(String login) throws AdminException {
     Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      connection = DBUtil.openConnection();
       return userDAO.getDomainsContainingLogin(connection, login);
     } catch (Exception e) {
       throw new AdminException("UserManager.getDomainsOfUser", SilverpeasException.ERROR,
@@ -107,7 +106,7 @@ public class UserManager {
     }
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       List<UserDetail> users = userDAO.getUsersOfGroups(con, groupIds);
       return users.toArray(new UserDetail[users.size()]);
     } catch (Exception e) {
@@ -130,7 +129,7 @@ public class UserManager {
       throws AdminException {
     Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      connection = DBUtil.openConnection();
       return userDAO.getUsersByCriteria(connection, criteria);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersMatching",
@@ -153,7 +152,7 @@ public class UserManager {
     }
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       return userDAO.getUserIdsOfGroups(con, groupIds);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersOfGroups",
@@ -266,7 +265,7 @@ public class UserManager {
       throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       List<String> spaceIds = SpaceDAO.getManageableSpaceIds(con, sUserId, groupIds);
       return spaceIds.toArray(new String[spaceIds.size()]);
     } catch (Exception e) {
@@ -742,7 +741,7 @@ public class UserManager {
   public List<UserDetail> getAllUsers() throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return userDAO.getAllUsers(con);
     } catch (Exception e) {
@@ -761,7 +760,7 @@ public class UserManager {
   public List<UserDetail> getAllUsersFromNewestToOldest() throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       return userDAO.getAllUsersFromNewestToOldest(con);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersFromNewestToOldest",
@@ -779,7 +778,7 @@ public class UserManager {
   public List<UserDetail> getUsersOfDomains(List<String> domainIds) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return userDAO.getUsersOfDomains(con, domainIds);
     } catch (Exception e) {
@@ -798,7 +797,7 @@ public class UserManager {
   public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return userDAO.getUsersOfDomainsFromNewestToOldest(con, domainIds);
     } catch (Exception e) {

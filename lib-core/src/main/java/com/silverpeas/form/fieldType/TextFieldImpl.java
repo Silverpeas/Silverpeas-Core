@@ -25,7 +25,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -85,7 +85,7 @@ public class TextFieldImpl extends TextField {
     PreparedStatement statement = null;
     ResultSet rs = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.FORMTEMPLATE_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       statement = connection.prepareStatement(suggestionsQuery);
       statement.setString(1, fieldName);

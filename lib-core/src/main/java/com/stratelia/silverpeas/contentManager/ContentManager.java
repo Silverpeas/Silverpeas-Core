@@ -156,7 +156,7 @@ public class ContentManager implements Serializable {
     PreparedStatement prepStmt = null;
     try {
       if (connection == null) {
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -214,7 +214,7 @@ public class ContentManager implements Serializable {
     PreparedStatement prepStmt = null;
     try {
       if (connection == null) {
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -509,7 +509,7 @@ public class ContentManager implements Serializable {
       String sValue = null;
 
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
 
       // Execute the query
       SilverTrace.info("contentManager", "ContentManager.getFirstStringValue",
@@ -568,7 +568,7 @@ public class ContentManager implements Serializable {
     try {
       if (connection == null) {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -701,7 +701,7 @@ public class ContentManager implements Serializable {
     int silverContentId;
     try {
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
       stmt = connection.createStatement();
       silverContentId = getSilverContentId(stmt, sInternalContentId,
           sComponentId, false);
@@ -733,7 +733,7 @@ public class ContentManager implements Serializable {
     int silverContentId;
     try {
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
       stmt = connection.createStatement();
       // main loop to build sql queries
       for (int i = 0; i < documentFeature.size(); i = i + 2) {
@@ -795,7 +795,7 @@ public class ContentManager implements Serializable {
       ResultSet resSet = null;
       try {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
 
         // Get the InternalContentId
         String sSQLStatement = "SELECT internalContentId FROM "
@@ -892,7 +892,7 @@ public class ContentManager implements Serializable {
     try {
       if (connection == null) {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -979,7 +979,7 @@ public class ContentManager implements Serializable {
     List<String> alInstanceIds = new ArrayList<String>();
     try {
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
 
       sSQLStatement.append("select I.componentId from ").append(m_sInstanceTable).append(" I, ").
           append(m_sSilverContentTable).append(" C ");
@@ -1032,7 +1032,7 @@ public class ContentManager implements Serializable {
     List<Integer> allSilverContentIds = new ArrayList<Integer>();
     try {
       // Open connection
-      con = DBUtil.makeConnection(m_dbName);
+      con = DBUtil.openConnection();
 
       String sSQLStatement = "select C.silverContentId from "
           + m_sInstanceTable + " I, " + m_sSilverContentTable + " C ";
@@ -1073,7 +1073,7 @@ public class ContentManager implements Serializable {
     List<SilverContent> silverContents = new ArrayList<SilverContent>();
     try {
       // Open connection
-      con = DBUtil.makeConnection(m_dbName);
+      con = DBUtil.openConnection();
 
       StringBuilder where = new StringBuilder();
       int sizeOfIds = alSilverContentIds.size();
@@ -1125,7 +1125,7 @@ public class ContentManager implements Serializable {
     try {
       if (scv != null) {
         // Open connection
-        con = DBUtil.makeConnection(m_dbName);
+        con = DBUtil.openConnection();
 
         // update the silverContent
         StringBuffer sSQLStatement = new StringBuffer();
@@ -1165,7 +1165,7 @@ public class ContentManager implements Serializable {
 
     try {
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
       
       // Get the SilverContentVisibility
       sSQLStatement.append("SELECT beginDate, endDate, isVisible FROM ").append(m_sSilverContentTable);

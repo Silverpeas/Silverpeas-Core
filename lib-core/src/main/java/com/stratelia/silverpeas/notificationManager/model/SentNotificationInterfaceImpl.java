@@ -35,7 +35,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -140,7 +139,7 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
 
   private Connection initCon() throws NotificationManagerException {
     try {
-      return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new NotificationManagerException("SentNotificationInterfaceImpl.initCon()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

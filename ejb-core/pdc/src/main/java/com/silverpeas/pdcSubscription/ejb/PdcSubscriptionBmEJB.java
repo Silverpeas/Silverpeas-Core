@@ -39,7 +39,6 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -63,15 +62,12 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    */
   @Override
   public List<PDCSubscription> getPDCSubscriptionByUserId(int userId) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       return PdcSubscriptionDAO.getPDCSubscriptionByUserId(conn, userId);
     } catch (SQLException re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.getPDCSubscriptionByUserId",
           PdcSubscriptionRuntimeException.ERROR,
           "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID", String.valueOf(userId), re);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -83,16 +79,13 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    */
   @Override
   public PDCSubscription getPDCSubsriptionById(int id) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
     PDCSubscription result = null;
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       result = PdcSubscriptionDAO.getPDCSubsriptionById(conn, id);
     } catch (SQLException re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.getPDCSubsriptionById",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID",
           String.valueOf(id), re);
-    } finally {
-      DBUtil.close(conn);
     }
     if (result == null) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.getPDCSubsriptionById",
@@ -110,15 +103,12 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public int createPDCSubscription(PDCSubscription subscription) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       return PdcSubscriptionDAO.createPDCSubscription(conn, subscription);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.createPDCSubscription",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_CREATE_SUBSCRIPTION",
           subscription, re);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -132,15 +122,12 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   public void updatePDCSubscription(PDCSubscription subscription) {
     SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.updatePDCSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = " + subscription);
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.updatePDCSubscription(conn, subscription);
     } catch (SQLException re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.updatePDCSubscription",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_UPDATE_SUBSCRIPTION",
           subscription, re);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -152,15 +139,12 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void removePDCSubscriptionById(int id) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, id);
     } catch (SQLException re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.removePDCSubscriptionById",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION",
           String.valueOf(id), re);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -172,15 +156,12 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void removePDCSubscriptionById(int[] ids) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
     } catch (SQLException re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.removePDCSubscriptionById",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION",
           Arrays.toString(ids), re);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -193,8 +174,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    */
   @Override
   public void checkAxisOnDelete(int axisId, String axisName) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       // found all subscription uses axis provided
       List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
@@ -213,8 +193,6 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     } catch (SQLException e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkAxisOnDelete",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -231,8 +209,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
   @Override
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
       List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo) {
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       List<PDCSubscription> subscriptions =
           PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn, axisId);
       if (subscriptions == null || subscriptions.isEmpty()) {
@@ -257,8 +234,6 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
     } catch (SQLException e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkValueOnDelete",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED", e);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 
@@ -277,11 +252,10 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
         "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues + ", componentId = "
         + componentId + ", silverObjectid = " + silverObjectid);
 
-    Connection conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
     OrganisationController organizationController = OrganisationControllerFactory
         .getOrganisationController();
 
-    try {
+    try(Connection conn = DBUtil.openConnection()) {
       ContentManager contentManager = new ContentManager();
       SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
       boolean contentObjectIsVisible = (scv.isVisible() == 1);
@@ -317,13 +291,10 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
           }
         }
       }
-
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkSubscriptions",
           PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_SUBSCR_FALIED",
           classifyValues, e);
-    } finally {
-      DBUtil.close(conn);
     }
   }
 

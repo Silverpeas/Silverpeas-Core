@@ -49,7 +49,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class PdcSessionController extends AbstractComponentSessionController {
@@ -362,7 +361,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
   private Connection getConnection() throws PdcException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.PDC_BUSIHM_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
       throw new PdcException("PdcSessionController.getConnection()",

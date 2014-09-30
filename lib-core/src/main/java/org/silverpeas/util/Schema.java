@@ -63,12 +63,10 @@ public abstract class Schema {
   protected final synchronized void createConnection() throws UtilException {
     SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      Context ctx = new InitialContext();
-      DataSource src = (DataSource) ctx.lookup(getJNDIName());
       if (this.connection != null) {
         DBUtil.close(this.connection);
       }
-      this.connection = src.getConnection();
+      this.connection = DBUtil.openConnection();
       if (!this.connection.getAutoCommit()) {
         managed = true;
       } else {
@@ -78,24 +76,6 @@ public abstract class Schema {
       isLocalConnection = true;
       SilverTrace.info("util", "Schema.createConnection()",
           "root.MSG_GEN_PARAM_VALUE", "Connection Created !");
-    } catch (NamingException e) {
-      try {
-        // Get the initial Context
-        Context ctx = new InitialContext();
-        // Look up the datasource directly without JNDI access
-        DataSource dataSource = (DataSource) ctx.lookup(JNDINames.DIRECT_DATASOURCE);
-        // Create a connection object
-        this.connection = dataSource.getConnection();
-        this.managed = false;
-      } catch (NamingException ne) {
-        throw new UtilException("Schema.createConnection",
-            SilverpeasException.ERROR, "root.EX_DATASOURCE_NOT_FOUND",
-            "Data source " + JNDINames.DIRECT_DATASOURCE + " not found", ne);
-      } catch (SQLException se) {
-        throw new UtilException("Schema.createConnection",
-            SilverpeasException.ERROR, "can't get connection for dataSource "
-            + JNDINames.DIRECT_DATASOURCE, se);
-      }
     } catch (SQLException e) {
       throw new UtilException("Schema.createConnection",
           SilverpeasException.ERROR, "root.EX_DATASOURCE_INVALID", e);

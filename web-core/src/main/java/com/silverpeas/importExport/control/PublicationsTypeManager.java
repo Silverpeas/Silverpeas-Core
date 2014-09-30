@@ -73,6 +73,7 @@ import org.silverpeas.util.Charsets;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,7 +91,12 @@ import static java.io.File.separator;
  */
 public class PublicationsTypeManager {
 
-  final static MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
+  @Inject
+  private MetadataExtractor metadataExtractor;
+
+  protected PublicationsTypeManager() {
+
+  }
 
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications

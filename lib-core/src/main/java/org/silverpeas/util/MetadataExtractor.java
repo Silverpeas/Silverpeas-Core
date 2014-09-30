@@ -46,21 +46,12 @@ import java.util.regex.Pattern;
 
 public class MetadataExtractor {
 
-  private static final MetadataExtractor instance = new MetadataExtractor();
-
   private MetadataExtractor() {
   }
 
   private static final Pattern VIDEO_ADDITIONAL_METADATA_PATTERN =
       Pattern.compile("(?i)/[x\\-ms]*(m4v|mp4|quicktime)$");
 
-  /**
-   * Gets the singleton instance.
-   * @return
-   */
-  public static MetadataExtractor getInstance() {
-    return instance;
-  }
 
   /**
    * Return Metadata of a document.

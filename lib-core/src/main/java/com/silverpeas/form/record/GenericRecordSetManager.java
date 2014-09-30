@@ -53,11 +53,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ContentEncryptionService;
-import org.silverpeas.util.security.ContentEncryptionServiceFactory;
+import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 
 /**
  * The GenericRecordSetManage all the GenericRecordSet. It is a singleton.
@@ -510,7 +509,7 @@ public class GenericRecordSetManager {
   }
 
   private ContentEncryptionService getEncryptionService() {
-    return ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
+    return ContentEncryptionServiceProvider.getContentEncryptionService();
   }
 
   protected void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
@@ -632,7 +631,7 @@ public class GenericRecordSetManager {
         "root.MSG_GEN_ENTER_METHOD");
 
     try {
-      return DBUtil.makeConnection(JNDINames.FORMTEMPLATE_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new FormException("GenericRecordSetManager.getConnection()",
           "root.EX_CONNECTION_OPEN_FAILED", e);
@@ -644,15 +643,8 @@ public class GenericRecordSetManager {
    */
   private int getNextId(String tableName, String idColumn)
       throws SQLException {
-    int nextId = 0;
-
-    try {
-      nextId = DBUtil
+      int nextId = DBUtil
           .getNextId(tableName, idColumn);
-    } catch (Exception e) {
-      throw new SQLException(e.toString());
-    }
-
     if (nextId == 0) {
       return 1;
     } else {

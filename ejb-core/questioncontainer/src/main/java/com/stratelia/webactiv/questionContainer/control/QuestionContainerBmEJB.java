@@ -26,7 +26,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.answer.control.AnswerBm;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;
@@ -1456,7 +1455,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.QUESTIONCONTAINER_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

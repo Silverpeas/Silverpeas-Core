@@ -73,7 +73,7 @@ public class JDBCCommentRequester {
     int newId;
     try {
       newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
-    } catch (Exception e) {
+    } catch (SQLException e) {
       SilverTrace.warn("comments", getClass().getSimpleName() + ".createComment",
           "root.EX_PK_GENERATION_FAILED", e);
       return null;

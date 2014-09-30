@@ -27,20 +27,16 @@ package org.silverpeas.util;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
 
+import javax.inject.Singleton;
 import java.util.Set;
 
 /**
  * @author ehugonnet
  */
+@Singleton
 public class ComponentHelper {
 
-  private static final ComponentHelper instance = new ComponentHelper();
-
-  private ComponentHelper() {
-  }
-
-  public synchronized static ComponentHelper getInstance() {
-    return instance;
+  protected ComponentHelper() {
   }
 
   public Set<String> listComponentTypes() {

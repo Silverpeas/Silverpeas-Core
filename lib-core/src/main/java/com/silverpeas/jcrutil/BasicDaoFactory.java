@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -339,7 +340,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws UtilException
    */
   public static String computeUniqueName(String prefix, String tableName)
-      throws UtilException {
+      throws SQLException {
     return prefix + DBUtil.getNextId(tableName, null);
   }
 

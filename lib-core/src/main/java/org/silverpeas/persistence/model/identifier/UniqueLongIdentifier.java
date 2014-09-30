@@ -30,6 +30,7 @@ import org.silverpeas.persistence.model.EntityIdentifier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.sql.SQLException;
 
 /**
  * @author Yohann Chastagnier
@@ -63,7 +64,11 @@ public class UniqueLongIdentifier implements EntityIdentifier {
   @Override
   public UniqueLongIdentifier generateNewId(final String tableName,
       final String tableColumnIdName) {
-    this.id = (long) DBUtil.getNextId(tableName, tableColumnIdName);
+    try {
+      this.id = (long) DBUtil.getNextId(tableName, tableColumnIdName);
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
     return this;
   }
 

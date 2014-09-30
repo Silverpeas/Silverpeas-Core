@@ -164,7 +164,7 @@ public class AnswerBmEJB implements AnswerBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(dbName);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new AnswerRuntimeException("AnswerBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

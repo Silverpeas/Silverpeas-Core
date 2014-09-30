@@ -28,7 +28,6 @@ import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipDao;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -247,8 +246,8 @@ public class InvitationService {
    * @throws SQLException
    */
 
-  private Connection getConnection() throws UtilException {
-    return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+  private Connection getConnection() throws SQLException {
+    return DBUtil.openConnection();
   }
 
   /**

@@ -113,7 +113,7 @@ public class ContainerManager implements java.io.Serializable {
     try {
       if (connection == null) {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -170,7 +170,7 @@ public class ContainerManager implements java.io.Serializable {
     try {
       if (connection == null) {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -408,7 +408,7 @@ public class ContainerManager implements java.io.Serializable {
     try {
       if (connection == null) {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
@@ -457,7 +457,7 @@ public class ContainerManager implements java.io.Serializable {
     try {
       if (connection == null) {
         // Open connection
-        connection = DBUtil.makeConnection(m_dbName);
+        connection = DBUtil.openConnection();
         connection.setAutoCommit(false);
         bCloseConnection = true;
       }
@@ -582,7 +582,7 @@ public class ContainerManager implements java.io.Serializable {
       String sValue = null;
 
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
 
       // Execute the query
       SilverTrace.info("containerManager",
@@ -789,7 +789,7 @@ public class ContainerManager implements java.io.Serializable {
     ResultSet resSet = null;
     try {
       // Open connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
 
       // Get the containerInstanceId corresponding to the given componentId
       int nContainerInstanceId = this.getContainerInstanceId(sComponentId);

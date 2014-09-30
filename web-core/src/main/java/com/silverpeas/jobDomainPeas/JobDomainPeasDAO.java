@@ -52,7 +52,7 @@ public class JobDomainPeasDAO {
    */
   private static Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new JobDomainPeasRuntimeException("JobDomainPeasDAO.getConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "DbName="

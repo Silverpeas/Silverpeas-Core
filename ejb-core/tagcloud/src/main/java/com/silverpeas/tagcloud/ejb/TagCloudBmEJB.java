@@ -40,7 +40,6 @@ import com.silverpeas.tagcloud.model.comparator.TagCloudByCountComparator;
 import com.silverpeas.tagcloud.model.comparator.TagCloudByNameComparator;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "TagCloud", description = "EJB to manage tags")
@@ -51,7 +50,7 @@ public class TagCloudBmEJB implements TagCloudBm {
 
   private Connection openConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new TagCloudRuntimeException("TagCloudBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

@@ -79,7 +79,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     Connection connection = null;
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
       // Vérification de la contrainte invariante
       int nPositionId = classifyEngine.classifySilverObject(connection, silverObjectId, position);
       // Call the containerManager to register the association containerInstance
@@ -122,7 +122,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
     try {
       // Open the connection
-      connection = DBUtil.makeConnection(m_dbName);
+      connection = DBUtil.openConnection();
       classifyEngine.unclassifySilverObjectByPositionId(connection, nPositionId);
       // Call the containerManager to unregister the association
       containerManager.removeContainerContentInstanceLink(connection, nPositionId, sComponentId);

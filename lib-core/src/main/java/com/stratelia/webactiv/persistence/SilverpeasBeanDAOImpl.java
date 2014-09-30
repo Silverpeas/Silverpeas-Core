@@ -27,7 +27,6 @@ package com.stratelia.webactiv.persistence;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.beans.BeanInfo;
@@ -404,7 +403,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       Connection con = null;
       switch (connectionType) {
         case CONNECTION_TYPE_DATASOURCE: {
-          con = DBUtil.makeConnection(datasourceName);
+          con = DBUtil.openConnection();
           break;
         }
         case CONNECTION_TYPE_JDBC_CLASSIC: {
@@ -415,11 +414,11 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           break;
         }
         case CONNECTION_TYPE_DATASOURCE_SILVERPEAS: {
-          con = DBUtil.makeConnection(JNDINames.PERSISTENCE_DB_DATASOURCE);
+          con = DBUtil.openConnection();
           break;
         }
         default: {
-          con = DBUtil.makeConnection(JNDINames.PERSISTENCE_EJB_DATASOURCE);
+          con = DBUtil.openConnection();
           break;
         }
       }

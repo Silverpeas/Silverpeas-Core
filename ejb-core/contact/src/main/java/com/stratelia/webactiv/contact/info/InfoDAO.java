@@ -68,7 +68,7 @@ public class InfoDAO {
   // create the info reference
   // match the info with a model
   public static InfoPK createInfo(Connection con, String modelId,
-      ContactPK pubPK) throws SQLException, UtilException {
+      ContactPK pubPK) throws SQLException {
     int newId = 0;
     InfoPK infoPK = new InfoPK("unknown", pubPK);
     String tableName = infoPK.getTableName();

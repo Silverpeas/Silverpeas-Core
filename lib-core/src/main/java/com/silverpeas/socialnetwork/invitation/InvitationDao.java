@@ -57,11 +57,9 @@ public class InvitationDao {
    * @param connection
    * @param invitation
    * @return int the id of invitation
-   * @throws UtilException
    * @throws SQLException
    */
-  public int createInvitation(Connection connection, Invitation invitation) throws UtilException,
-      SQLException {
+  public int createInvitation(Connection connection, Invitation invitation) throws SQLException {
 
     int id = DBUtil.getNextId("sb_sn_invitation", "id");
     PreparedStatement pstmt = null;

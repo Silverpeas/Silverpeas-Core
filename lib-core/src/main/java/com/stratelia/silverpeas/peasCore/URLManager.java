@@ -23,6 +23,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -219,7 +220,6 @@ public class URLManager {
    *
    * @param componentName - le nom du jobPeas
    * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
-   * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
   private static String buildStandardURL(String componentName, String sComponentId) {
     return '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/'
@@ -233,7 +233,8 @@ public class URLManager {
    * @return
    */
   public static String getComponentNameFromComponentId(String sClientComponentId) {
-    return ComponentHelper.getInstance().extractComponentName(sClientComponentId);
+    ComponentHelper componentHelper = ServiceProvider.getService(ComponentHelper.class);
+    return componentHelper.extractComponentName(sClientComponentId);
   }
 
   /**

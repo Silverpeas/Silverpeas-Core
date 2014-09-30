@@ -46,13 +46,7 @@ public class TreeDAO {
 
   public static String createRoot(Connection con, TreeNode root)
       throws SQLException {
-    int newTreeId = 0;
-
-    try {
-      newTreeId = DBUtil.getNextId(TreeTable, "treeId");
-    } catch (UtilException e) {
-      throw new SQLException("DBUtil.getNextId() failed !");
-    }
+    int newTreeId = DBUtil.getNextId(TreeTable, "treeId");
 
     String insertQuery =
         "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? )";

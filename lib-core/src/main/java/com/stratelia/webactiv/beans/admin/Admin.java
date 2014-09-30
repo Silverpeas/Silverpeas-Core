@@ -52,10 +52,8 @@ import com.stratelia.webactiv.organization.UserRow;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.pool.ConnectionPool;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
@@ -5294,7 +5292,7 @@ public final class Admin {
   private Connection openConnection(boolean bAutoCommit) throws AdminException {
     try {
       // Get the connection to the DB
-      Connection connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      Connection connection = DBUtil.openConnection();
       connection.setAutoCommit(bAutoCommit);
       return connection;
     } catch (Exception e) {
@@ -6884,7 +6882,6 @@ public final class Admin {
           "root.MSG_GEN_ENTER_METHOD",
           "RESET ALL DB CONNECTIONS ! (Scheduled : " + isScheduled + ")");
       OrganizationSchemaPool.releaseConnections();
-      ConnectionPool.releaseConnections();
     } catch (Exception e) {
       throw new AdminException("Admin.resetAllDBConnections",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);

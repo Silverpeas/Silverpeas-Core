@@ -30,7 +30,6 @@ import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 
 import java.sql.Connection;
@@ -110,7 +109,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
       return getCollectionArrayFromResultset(rs);

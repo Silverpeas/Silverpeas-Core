@@ -44,7 +44,6 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
@@ -78,6 +77,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -100,6 +100,10 @@ public class PublicationBmEJB implements PublicationBm {
   private RatingBm ratingBm;
   @EJB
   private TagCloudBm tagCloudBm;
+
+  @Inject
+  private ComponentHelper componentHelper;
+
   private static final long serialVersionUID = -829288807683338746L;
   private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
 
@@ -155,7 +159,7 @@ public class PublicationBmEJB implements PublicationBm {
 
       try {
         id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
-      } catch (UtilException ex) {
+      } catch (SQLException ex) {
         throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
             SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
       }
@@ -1262,7 +1266,7 @@ public class PublicationBmEJB implements PublicationBm {
    */
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.PUBLICATION_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
@@ -1708,7 +1712,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   private boolean isRatingEnabled(WAPrimaryKey pk) {
     WAComponent componentDefinition =
-        ComponentHelper.getInstance().extractComponent(pk.getInstanceId());
+        componentHelper.extractComponent(pk.getInstanceId());
     return componentDefinition.hasParameterDefined("publicationRating");
   }
 

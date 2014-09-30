@@ -35,7 +35,6 @@ import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.statistic.ejb.HistoryObjectDAO;
@@ -54,7 +53,7 @@ public class StatisticBmEJB implements StatisticBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.STATISTIC_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

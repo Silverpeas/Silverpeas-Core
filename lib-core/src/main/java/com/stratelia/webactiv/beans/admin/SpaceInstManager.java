@@ -35,7 +35,6 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceI18NRow;
 import com.stratelia.webactiv.organization.SpaceRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class SpaceInstManager {
@@ -440,7 +439,7 @@ public class SpaceInstManager {
   public List<String> getRootSpaceIds() throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return SpaceDAO.getRootSpaceIds(con);
 
@@ -721,7 +720,7 @@ public class SpaceInstManager {
       throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       return SpaceDAO.getManageableSpaceIds(con, userId, groupIds);
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getManageableSpaceIds",

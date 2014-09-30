@@ -26,6 +26,7 @@ package org.silverpeas.upload;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -181,7 +182,7 @@ public class UploadedFile {
     String title = getTitle();
     String description = getDescription();
     if (!StringUtil.isDefined(title)) {
-      MetadataExtractor extractor = MetadataExtractor.getInstance();
+      MetadataExtractor extractor = ServiceProvider.getService(MetadataExtractor.class);
       MetaData metadata = extractor.extractMetadata(getFile());
       if (StringUtil.isDefined(metadata.getTitle())) {
         title = metadata.getTitle();

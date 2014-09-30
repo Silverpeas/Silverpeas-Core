@@ -39,7 +39,6 @@ import org.silverpeas.util.DBUtil;
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
-import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_DATASOURCE;
 
 /**
  * Class declaration
@@ -62,8 +61,8 @@ public class SilverStatisticsService implements SilverStatistics {
     StrTokenizer stData = new StrTokenizer(data, SEPARATOR);
     List<String> dataArray = stData.getTokenList();
     if (myStatsConfig.isGoodDatas(type, dataArray)) {
-      Connection myCon = DBUtil.makeConnection(SILVERSTATISTICS_DATASOURCE);
-      try {
+      try(Connection myCon = DBUtil.openConnection()) {
+
         SilverStatisticsDAO.putDataStats(myCon, type, dataArray, myStatsConfig);
         if (!myCon.getAutoCommit()) {
           myCon.commit();
@@ -75,8 +74,6 @@ public class SilverStatisticsService implements SilverStatistics {
       } catch (StatisticsRuntimeException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "MSG_CONNECTION_BD");
-      } finally {
-        DBUtil.close(myCon);
       }
 
     } else {

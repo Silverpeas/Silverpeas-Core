@@ -57,6 +57,9 @@ public class PublicationAccessController extends AbstractAccessController<Public
   @Inject
   private OrganisationController controller;
 
+  @Inject
+  private ComponentHelper componentHelper;
+
   public PublicationAccessController() {
   }
 
@@ -85,7 +88,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
     }
     
     if (isRoleVerificationRequired &&
-        ComponentHelper.getInstance().isThemeTracker(object.getInstanceId())) {
+        componentHelper.isThemeTracker(object.getInstanceId())) {
       String foreignId = object.getId();
       try {
         foreignId = getActualForeignId(foreignId, object.getInstanceId());

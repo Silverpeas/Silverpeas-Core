@@ -49,6 +49,7 @@ import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -395,7 +396,7 @@ public class ImportExport extends AbstractExportProcess {
     // de publications existantes
     if (silverExType.getPublicationsType() != null) {
       // Traitement de l'élément <publications>
-      PublicationsTypeManager typeMgr = new PublicationsTypeManager();
+      PublicationsTypeManager typeMgr = getPublicationsTypeManager();
       ImportSettings importSettings = new ImportSettings(null, userDetail, silverExType.
           getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
       typeMgr.processImport(silverExType.getPublicationsType(), importSettings, reportManager);
@@ -435,7 +436,7 @@ public class ImportExport extends AbstractExportProcess {
     // pour le multilangue
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.silverpeas.importExport.multilang.importExportBundle", language);
-    PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
+    PublicationsTypeManager pub_Typ_Mger = getPublicationsTypeManager();
     PdcImportExport pdcIE = new PdcImportExport();
     NodeImportExport nodeIE = new NodeImportExport();
     AdminImportExport adminIE = new AdminImportExport();
@@ -672,7 +673,7 @@ public class ImportExport extends AbstractExportProcess {
     ExportPDFReport report = new ExportPDFReport();
     report.setDateDebut(new Date());
 
-    PublicationsTypeManager pubTypeManager = new PublicationsTypeManager();
+    PublicationsTypeManager pubTypeManager = getPublicationsTypeManager();
 
     String fileExportName = generateExportDirName(userDetail, "fusion");
     String tempDir = FileRepositoryManager.getTemporaryPath();
@@ -796,7 +797,7 @@ public class ImportExport extends AbstractExportProcess {
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.silverpeas.importExport.multilang.importExportBundle", language);
 
-    PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
+    PublicationsTypeManager pub_Typ_Mger = getPublicationsTypeManager();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
@@ -1138,7 +1139,7 @@ public class ImportExport extends AbstractExportProcess {
 
   private ExportReport processExportOfFilesOnly(UserDetail userDetail, String language,
       List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
-    PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
+    PublicationsTypeManager pub_Typ_Mger = getPublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
     // Creates export folder
@@ -1158,7 +1159,7 @@ public class ImportExport extends AbstractExportProcess {
 
   private ExportReport processExportOfPublicationsOnly(UserDetail userDetail, String language,
       List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
-    PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
+    PublicationsTypeManager pub_Typ_Mger = getPublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
     // Stockage de la date de démarrage de l'export dans l'objet rapport
@@ -1177,5 +1178,9 @@ public class ImportExport extends AbstractExportProcess {
     // Création du zip
     createZipFile(fileExportDir, exportReport);
     return exportReport;
+  }
+
+  private PublicationsTypeManager getPublicationsTypeManager() {
+    return ServiceProvider.getService(PublicationsTypeManager.class);
   }
 }

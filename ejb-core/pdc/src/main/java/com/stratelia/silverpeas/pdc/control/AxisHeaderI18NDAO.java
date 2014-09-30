@@ -93,7 +93,7 @@ public class AxisHeaderI18NDAO {
   }
 
   public void createTranslation(Connection con, AxisHeaderI18N translation)
-      throws SQLException, UtilException {
+      throws SQLException {
     String selectQuery = "insert into " + PdcAxisI18NTable + "(" + COLUMNS
         + ") values  (?, ?, ?, ?, ?)";
     PreparedStatement prepStmt = null;

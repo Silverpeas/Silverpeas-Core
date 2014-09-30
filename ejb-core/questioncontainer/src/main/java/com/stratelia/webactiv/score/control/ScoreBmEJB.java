@@ -56,7 +56,7 @@ public class ScoreBmEJB implements ScoreBm {
    */
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(dbName);
+      Connection con = DBUtil.openConnection();
       return con;
     } catch (Exception re) {
       throw new ScoreRuntimeException("ScoreBmEJB.getConnection()",

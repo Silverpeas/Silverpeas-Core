@@ -35,7 +35,6 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import javax.inject.Named;
@@ -47,7 +46,7 @@ public class JDBCCommentDAO implements CommentDAO {
 
   private Connection openConnection() {
     try {
-      Connection con = DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
+      Connection con = DBUtil.openConnection();
       return con;
     } catch (Exception e) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".getConnection()",

@@ -42,7 +42,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.model.*;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -57,7 +56,7 @@ public class CalendarEJB implements SilverpeasCalendar {
   // private methods to use in all this ejb methods
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.CALENDAR_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED");
@@ -1038,7 +1037,7 @@ public class CalendarEJB implements SilverpeasCalendar {
     PreparedStatement prepStmt = null;
 
     try {
-      con = DBUtil.makeConnection(JNDINames.CALENDAR_DATASOURCE);
+      con = DBUtil.openConnection();
       prepStmt = con.prepareStatement(selectStatement);
       rs = prepStmt.executeQuery();
       ToDoHeader todo;
@@ -1201,7 +1200,7 @@ public class CalendarEJB implements SilverpeasCalendar {
     PreparedStatement prepStmt = null;
 
     try {
-      con = DBUtil.makeConnection(JNDINames.CALENDAR_DATASOURCE);
+      con = DBUtil.openConnection();
       prepStmt = con.prepareStatement(selectStatement);
       rs = prepStmt.executeQuery();
       JournalHeader journal;

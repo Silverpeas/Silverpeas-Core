@@ -32,7 +32,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.templatedesigner.model.TemplateDesignerException;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.security.ContentEncryptionService;
-import org.silverpeas.util.security.ContentEncryptionServiceFactory;
+import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -547,7 +547,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   public boolean isEncryptionAvailable() {
     ContentEncryptionService encryptionService =
-        ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
+        ContentEncryptionServiceProvider.getContentEncryptionService();
     return encryptionService.isCipherKeyDefined();
   }
 }

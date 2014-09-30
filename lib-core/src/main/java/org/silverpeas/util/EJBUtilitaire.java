@@ -100,7 +100,7 @@ public class EJBUtilitaire {
    * @since 1.0
    */
   @SuppressWarnings({"unchecked", "unchecked"})
-  public <T> T getObjectReference(String name, Class<T> classObj) throws UtilException {
+  private <T> T getObjectReference(String name, Class<T> classObj) throws UtilException {
     SilverTrace.debug("util", "EJBUtilitaire.getEJBObjectRef", name);
     Context ic = initialiseContext();
     try {

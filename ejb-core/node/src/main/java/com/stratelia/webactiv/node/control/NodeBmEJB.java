@@ -46,7 +46,6 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -800,7 +799,7 @@ public class NodeBmEJB implements NodeBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new NodeRuntimeException("NodeEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

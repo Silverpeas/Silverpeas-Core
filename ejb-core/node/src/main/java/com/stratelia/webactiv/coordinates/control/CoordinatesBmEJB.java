@@ -32,7 +32,6 @@ import javax.ejb.TransactionAttributeType;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.coordinates.ejb.CoordinatesDAO;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
@@ -57,7 +56,7 @@ public class CoordinatesBmEJB implements CoordinatesBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.PUBLICATION_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new CoordinateRuntimeException("CoordinatesBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

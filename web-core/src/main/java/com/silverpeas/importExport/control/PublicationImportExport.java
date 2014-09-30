@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailExtractor;
@@ -53,7 +54,6 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PublicationImportExport {
 
-  final static MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
   final static ResourceLocator multilang = new ResourceLocator(
       "org.silverpeas.importExport.multilang.importExportBundle", "fr");
 
@@ -64,10 +64,9 @@ public class PublicationImportExport {
    * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à
    * partir des informations du fichier destiné à être attaché à celle ci. Utilisation de l'api POI
    * dans le cas des fichiers MSoffice.
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
    * informations qui iront renseigner les méta-données de la publication à creer
-   * @param isPOIUsed
+   * @param settings
    * @return renvoie un objet PublicationDetail
    */
   public static PublicationDetail convertFileInfoToPublicationDetail(File file, ImportSettings settings) {
@@ -117,7 +116,7 @@ public class PublicationImportExport {
       MetaData metaData = null;
       if (settings.isPoiUsed()) {
         // extract title, subject and keywords
-        metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+        metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
         if (StringUtil.isDefined(metaData.getTitle())) {
           nomPub = metaData.getTitle();
         }
@@ -132,7 +131,7 @@ public class PublicationImportExport {
       if (settings.useFileDates()) {
         // extract creation and last modification dates
         if (metaData == null) {
-          metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+          metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
         }
         if (metaData.getCreationDate() != null) {
           creationDate = metaData.getCreationDate();
@@ -178,5 +177,9 @@ public class PublicationImportExport {
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
     return new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
         new PublicationPK("useless", componentId)));
+  }
+
+  private static MetadataExtractor getMetadataExtractor() {
+    return ServiceProvider.getService(MetadataExtractor.class);
   }
 }

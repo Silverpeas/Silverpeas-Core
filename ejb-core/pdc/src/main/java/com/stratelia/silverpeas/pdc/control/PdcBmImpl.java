@@ -50,7 +50,6 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
@@ -2074,8 +2073,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   @Override
   public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
       String axisType, List<String> instanceIds) throws PdcException {
-    return getPertinentAxisByInstanceIds(searchContext, axisType, instanceIds,
-        new AxisFilter());
+    return getPertinentAxisByInstanceIds(searchContext, axisType, instanceIds, new AxisFilter());
   }
 
   @Override
@@ -2132,8 +2130,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   public List<Value> getPertinentDaughterValuesByInstanceId(
       SearchContext searchContext, String axisId, String valueId,
       String instanceId) throws PdcException {
-    return getPertinentDaughterValuesByInstanceId(searchContext, axisId,
-        valueId, instanceId, new AxisFilter());
+    return getPertinentDaughterValuesByInstanceId(searchContext, axisId, valueId, instanceId,
+        new AxisFilter());
   }
 
   @Override
@@ -2142,8 +2140,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       String instanceId, AxisFilter filter) throws PdcException {
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.add(instanceId);
-    return getPertinentDaughterValuesByInstanceIds(searchContext, axisId,
-        valueId, instanceIds, filter);
+    return getPertinentDaughterValuesByInstanceIds(searchContext, axisId, valueId, instanceIds,
+        filter);
   }
 
   // recherche à l'intérieur d'une liste d'instance
@@ -2184,8 +2182,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       String axisId, String instanceId) throws PdcException {
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.add(instanceId);
-    return getFirstLevelAxisValuesByInstanceIds(searchContext, axisId,
-        instanceIds);
+    return getFirstLevelAxisValuesByInstanceIds(searchContext, axisId, instanceIds);
   }
 
   @Override
@@ -2443,7 +2440,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   private Connection openConnection() throws PdcException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      con = DBUtil.openConnection();
     } catch (Exception e) {
       throw new PdcException("PdcBmImpl.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
@@ -2454,7 +2451,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   private Connection openTransaction() throws PdcException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
       throw new PdcException("PdcBmImpl.openTransaction()",

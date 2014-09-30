@@ -33,7 +33,6 @@ import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -142,8 +141,8 @@ public class WebConnectionService implements WebConnectionsInterface {
   private Connection initCon() {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
+      con = DBUtil.openConnection();
+    } catch (SQLException e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.initCon()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }

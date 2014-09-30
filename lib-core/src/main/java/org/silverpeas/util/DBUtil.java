@@ -20,16 +20,11 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.exception.MultilangMessage;
-import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -37,135 +32,76 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBUtil {
-
-  private static DBUtil instance;
 
   /**
    * @return the DateFieldLength
    */
   public static int getDateFieldLength() {
-    return getInstance().dateFieldLength;
+    return dateFieldLength;
   }
 
   /**
    * @return the TextMaxiLength
    */
   public static int getTextMaxiLength() {
-    return getInstance().textMaxiLength;
+    return textMaxiLength;
   }
 
   /**
    * @return the TextAreaLength
    */
   public static int getTextAreaLength() {
-    return getInstance().textAreaLength;
+    return textAreaLength;
   }
 
   /**
    * @return the TextFieldLength
    */
   public static int getTextFieldLength() {
-    return getInstance().textFieldLength;
-  }
-
-  private Connection connectionForTest;
-
-  private DBUtil(Connection connectionForTest) {
-    this.connectionForTest = connectionForTest;
-  }
-
-  public static DBUtil getInstance() {
-    synchronized (DBUtil.class) {
-      if (instance == null) {
-        instance = new DBUtil(null);
-      }
-    }
-    return instance;
-  }
-
-  public static DBUtil getInstanceForTest(Connection connectionForTest) {
-    clearTestInstance();
-    synchronized (DBUtil.class) {
-      if (connectionForTest != null) {
-        instance = new DBUtil(connectionForTest);
-      }
-    }
-    return instance;
-  }
-
-  public static void clearTestInstance() {
-    synchronized (DBUtil.class) {
-      if (instance != null) {
-        close(instance.connectionForTest);
-      }
-      instance = new DBUtil(null);
-      dsStock.clear();
-    }
+    return textFieldLength;
   }
 
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
    */
-  private volatile int textFieldLength = 1000;
+  private static final int textFieldLength = 1000;
   /**
    * TextAreaLength is the maximum length to store an html textarea input in db.
    */
-  private volatile int textAreaLength = 2000;
+  private static final int textAreaLength = 2000;
   /**
    * TextMaxiLength is the maximum length to store in db. This length is to use with fields that
    * can
    * contain a lot of information. This is the case of publication's model for exemple. TODO : In
    * the near future, these fields will have to be put in BLOB (Binary Large OBject).
    */
-  private volatile int textMaxiLength = 4000;
+  private static final int textMaxiLength = 4000;
   /**
    * DateFieldLength is the length to use for date storage.
    */
-  private volatile int dateFieldLength = 10;
-  // Static for the makeConnection
-  private InitialContext ic = null;
-  private static Map<String, DataSource> dsStock = new HashMap<String, DataSource>(5);
+  private static final int dateFieldLength = 10;
+
+  private static final Logger logger = Logger.getLogger(DBUtil.class.getSimpleName());
 
   /**
    * fabrique une nouvelle connection
-   * @param dbName le nom de la base de donnée
    * @return a new connection to the database.
-   * @throws UtilException
    */
-  public static Connection makeConnection(String dbName) {
-    return getInstance().openConnection(dbName);
-  }
-
-  private synchronized Connection openConnection(String dbName) {
-    SilverTrace.debug("util", "DBUtil makeConnection", "DBUtil : makeConnection : entree");
-    DataSource ds = null;
-    if (ic == null) {
-      try {
-        ic = new InitialContext();
-      } catch (NamingException e) {
-        throw new UtilException("DBUtil.makeConnection", "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
-      }
-    }
-    try {
-      ds = dsStock.get(dbName);
-      if (ds == null) {
-        ds = (DataSource) ic.lookup(dbName);
-        dsStock.put(dbName, ds);
-      }
-    } catch (NamingException e) {
-      throw new UtilException("DBUtil.makeConnection",
-          new MultilangMessage("util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
-    }
-
-    try {
-      return ds.getConnection();
-    } catch (SQLException e) {
-      throw new UtilException("DBUtil.makeConnection",
-          new MultilangMessage("util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
-    }
+  public static Connection openConnection() throws SQLException {
+    return ServiceProvider.getService(ConnectionPool.class).getConnection();
   }
 
   /**
@@ -181,40 +117,21 @@ public class DBUtil {
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
-   * @throws UtilException
+   * @throws java.sql.SQLException
    */
-  public static int getNextId(String tableName, String idName) throws UtilException {
-    Connection privateConnection = null;
-    boolean testingMode = false;
+  public static int getNextId(String tableName, String idName) throws SQLException {
+    Connection connection = null;
     try {
-      // On ne peux pas utiliser une simple connection du pool
-      // on utilise une connection extérieure au contexte transactionnel des ejb
-      synchronized (DBUtil.class) {
-        if (getInstance().connectionForTest != null) {
-          privateConnection = getInstance().connectionForTest;
-          testingMode = true;
-        } else {
-          privateConnection = ConnectionPool.getConnection();
-        }
+      connection = openConnection();
+      connection.setAutoCommit(false);
+      return getNextId(connection, tableName, idName);
+    } catch (SQLException ex) {
+      if (connection != null) {
+        rollback(connection);
       }
-      privateConnection.setAutoCommit(false);
-      return getNextId(privateConnection, tableName, idName);
-    } catch (Exception ex) {
-      SilverTrace.debug("util", "DBUtil.getNextId", "impossible de recupérer le prochain id", ex);
-      if (privateConnection != null) {
-        rollback(privateConnection);
-      }
-      throw new UtilException("DBUtil.getNextId",
-          new MultilangMessage("util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(),
-          ex);
+      throw ex;
     } finally {
-      try {
-        if (privateConnection != null && !testingMode) {
-          privateConnection.close();
-        }
-      } catch (SQLException e) {
-        SilverTrace.error("util", "DBUtil.getNextId", "root.EX_CONNECTION_CLOSE_FAILED", e);
-      }
+      close(connection);
     }
   }
 
@@ -226,46 +143,39 @@ public class DBUtil {
    * @return a unique id.
    * @throws SQLException
    */
-  public static int getNextId(Connection connection, String tableName, String idName)
+  protected static int getNextId(Connection connection, String tableName, String idName)
       throws SQLException {
     return getMaxId(connection, tableName, idName);
   }
 
-  protected static int getMaxId(Connection privateConnection, String tableName, String idName)
+  protected static int getMaxId(Connection connection, String tableName, String idName)
       throws SQLException {
     // tentative d'update
-    SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
     try {
-      int max = updateMaxFromTable(privateConnection, tableName);
-      privateConnection.commit();
+      int max = updateMaxFromTable(connection, tableName);
+      connection.commit();
       return max;
     } catch (Exception e) {
-      // l'update n'a rien fait, il faut recuperer une valeur par defaut.
-      // on recupere le max (depuis la table existante du composant)
-      SilverTrace.debug("util", "DBUtil.getNextId",
-          "impossible d'updater, if faut recuperer la valeur initiale", e);
     }
-    int max = getMaxFromTable(privateConnection, tableName, idName);
+    int max = getMaxFromTable(connection, tableName, idName);
     PreparedStatement createStmt = null;
     try {
       // on enregistre le max
       String createStatement = "INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)";
-      createStmt = privateConnection.prepareStatement(createStatement);
+      createStmt = connection.prepareStatement(createStatement);
       createStmt.setInt(1, max);
       createStmt.setString(2, tableName.toLowerCase());
       createStmt.executeUpdate();
-      privateConnection.commit();
+      connection.commit();
       return max;
     } catch (Exception e) {
       // impossible de creer, on est en concurence, on reessaye l'update.
-      SilverTrace
-          .debug("util", "DBUtil.getNextId", "impossible de creer, if faut reessayer l'update", e);
-      rollback(privateConnection);
+      rollback(connection);
     } finally {
       close(createStmt);
     }
-    max = updateMaxFromTable(privateConnection, tableName);
-    privateConnection.commit();
+    max = updateMaxFromTable(connection, tableName);
+    connection.commit();
     return max;
   }
 
@@ -297,7 +207,6 @@ public class DBUtil {
         selectStmt.setString(1, table);
         rs = selectStmt.executeQuery();
         if (!rs.next()) {
-          SilverTrace.error("util", "DBUtil.getNextId", "util.MSG_NO_RECORD_FOUND");
           throw new RuntimeException("Erreur Interne DBUtil.getNextId()");
         }
         max = rs.getInt(1);
@@ -338,14 +247,14 @@ public class DBUtil {
       try {
         rs.close();
       } catch (SQLException e) {
-        SilverTrace.error("util", "DBUtil.close", "util.CAN_T_CLOSE_RESULTSET", e);
+        logger.log(Level.SEVERE, e.getMessage(), e);
       }
     }
     if (st != null) {
       try {
         st.close();
       } catch (SQLException e) {
-        SilverTrace.error("util", "DBUtil.close", "util.CAN_T_CLOSE_STATEMENT", e);
+        logger.log(Level.SEVERE, e.getMessage(), e);
       }
     }
   }
@@ -365,7 +274,7 @@ public class DBUtil {
       try {
         connection.close();
       } catch (SQLException e) {
-        SilverTrace.error("util", "DBUtil.close", "util.CAN_T_CLOSE_CONNECTION", e);
+        logger.log(Level.SEVERE, e.getMessage(), e);
       }
     }
   }
@@ -377,7 +286,7 @@ public class DBUtil {
           connection.rollback();
         }
       } catch (SQLException e) {
-        SilverTrace.error("util", "DBUtil.close", "util.CAN_T_ROLLBACK_CONNECTION", e);
+        logger.log(Level.SEVERE, e.getMessage(), e);
       }
     }
   }
@@ -389,23 +298,12 @@ public class DBUtil {
    * @return
    */
   public static Set<String> getAllTableNames() {
-    Connection privateConnection = null;
+    Connection connection = null;
     ResultSet tables_rs = null;
-    boolean testingMode = false;
     Set<String> tableNames = new LinkedHashSet<String>();
     try {
-      // On ne peux pas utiliser une simple connection du pool
-      // on utilise une connection extérieure au contexte transactionnel des ejb
-      synchronized (DBUtil.class) {
-        if (getInstance().connectionForTest != null) {
-          privateConnection = getInstance().connectionForTest;
-          testingMode = true;
-        } else {
-          privateConnection = ConnectionPool.getConnection();
-        }
-      }
-
-      DatabaseMetaData dbMetaData = privateConnection.getMetaData();
+      connection = openConnection();
+      DatabaseMetaData dbMetaData = connection.getMetaData();
       tables_rs = dbMetaData.getTables(null, null, null, null);
       tables_rs.getMetaData();
 
@@ -413,12 +311,9 @@ public class DBUtil {
         tableNames.add(tables_rs.getString(TABLE_NAME));
       }
     } catch (Exception e) {
-      SilverTrace.debug("util", "DBUtil.getAllTableNames", "database error ...", e);
     } finally {
       close(tables_rs);
-      if (privateConnection != null && !testingMode) {
-        close(privateConnection);
-      }
+      close(connection);
     }
     return tableNames;
   }
@@ -693,11 +588,15 @@ public class DBUtil {
         preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
       } else if (parameter instanceof Date) {
         preparedStatement.setDate(paramIndex, new java.sql.Date(((Date) parameter).getTime()));
-      } else if (parameter instanceof UserDetail) {
-        preparedStatement.setString(paramIndex, ((UserDetail) parameter).getId());
       } else {
-        throw new IllegalArgumentException(
-            "SQL parameter type not handled: " + parameter.getClass());
+        try {
+          Method idGetter = parameter.getClass().getDeclaredMethod("getId");
+          String id = (String) idGetter.invoke(parameter);
+          preparedStatement.setString(paramIndex, id);
+        } catch (NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
+          throw new IllegalArgumentException(
+              "SQL parameter type not handled: " + parameter.getClass());
+        }
       }
       paramIndex++;
     }

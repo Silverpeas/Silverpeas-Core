@@ -40,6 +40,7 @@ import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +56,9 @@ import java.util.List;
 public class DragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  @Inject
+  private MetadataExtractor metadataExtractor;
 
   /**
    * Method declaration
@@ -120,8 +124,7 @@ public class DragAndDrop extends HttpServlet {
             File tempFile = File.createTempFile("silverpeas_", fileName);
             try {
               FileUploadUtil.saveToFile(tempFile, item);
-              MetadataExtractor extractor = MetadataExtractor.getInstance();
-              MetaData metadata = extractor.extractMetadata(tempFile);
+              MetaData metadata = metadataExtractor.extractMetadata(tempFile);
               document.setSize(tempFile.length());
               document.setTitle(metadata.getTitle());
               document.setDescription(metadata.getSubject());

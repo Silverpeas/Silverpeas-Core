@@ -65,8 +65,6 @@ public class ValidationStepsDAO {
       prepStmt.setString(5, Long.toString(new Date().getTime()));
       prepStmt.setString(6, step.getDecision());
       prepStmt.executeUpdate();
-    } catch (UtilException e) {
-      throw new SQLException(e.getMessage());
     } finally {
       DBUtil.close(prepStmt);
     }

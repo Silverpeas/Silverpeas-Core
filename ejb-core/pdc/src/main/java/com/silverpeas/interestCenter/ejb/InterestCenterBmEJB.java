@@ -38,7 +38,6 @@ import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
@@ -56,8 +55,7 @@ public class InterestCenterBmEJB implements InterestCenterBm {
 
   @Override
   public List<InterestCenter> getICByUserID(int userID) {
-    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-    try {
+    try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.getICByUserID(con, userID);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
@@ -65,15 +63,12 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
           "Pdc.CANNOT_GET_INTEREST_CENTERS", String.valueOf(userID), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public InterestCenter getICByID(int icPK) {
-    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-    try {
+    try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.getICByPK(con, icPK);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
@@ -81,16 +76,13 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
           "InterestCenter.CANNOT_LOAD_LIST_OF_IC", String.valueOf(icPK), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public int createIC(InterestCenter ic) {
-    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-    try {
+    try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.createIC(con, ic);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
@@ -98,16 +90,13 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
           "Pdc.CANNOT_CREATE_INTEREST_CENTER", ic.toString(), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void updateIC(InterestCenter ic) {
-    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-    try {
+    try(Connection con = DBUtil.openConnection()) {
       InterestCenterDAO.updateIC(con, ic);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
@@ -115,17 +104,13 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
           "Pdc.CANNOT_UPDATE_INTEREST_CENTER", ic.toString(), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void removeICByPK(List<Integer> pks, String userId) {
-    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-    
-    try {
+    try(Connection con = DBUtil.openConnection()) {
       //check rights : check that the current user has the rights to delete the interest center
       int userIdInt = Integer.parseInt(userId);
       for (Integer icPk : pks) {
@@ -146,16 +131,13 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
           "Pdc.CANNOT_DELETE_INTEREST_CENTERS", pks.toString(), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void removeICByPK(int pk) {
-    Connection con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-    try {
+    try(Connection con = DBUtil.openConnection()) {
       InterestCenterDAO.removeICByPK(con, pk);
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
@@ -163,8 +145,6 @@ public class InterestCenterBmEJB implements InterestCenterBm {
     } catch (DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
           "Pdc.CANNOT_DELETE_INTEREST_CENTER", String.valueOf(pk), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 }

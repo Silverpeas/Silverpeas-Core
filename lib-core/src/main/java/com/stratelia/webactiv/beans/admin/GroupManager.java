@@ -29,7 +29,6 @@ import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.GroupRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,7 +58,7 @@ public class GroupManager {
           AdminException {
     Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      connection = DBUtil.openConnection();
 
       ListSlice<Group> groups = groupDao.getGroupsByCriteria(connection,
               (GroupSearchCriteriaForDAO) criteria);
@@ -360,7 +359,7 @@ public class GroupManager {
   public Group getGroup(String groupId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       Group group = groupDao.getGroup(con, groupId);
       return group;
 
@@ -419,7 +418,7 @@ public class GroupManager {
   public List<String> getAllSubGroupIdsRecursively(String superGroupId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
       return getSubGroupIds(con, superGroupId);
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllSubGroupIdsRecursively",
@@ -956,7 +955,7 @@ public class GroupManager {
           throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return groupDao.getManageableGroupIds(con, userId, groupIds);
     } catch (Exception e) {
@@ -971,7 +970,7 @@ public class GroupManager {
   public int getNBUsersDirectlyInGroup(String groupId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return groupDao.getNBUsersDirectlyInGroup(con, groupId);
     } catch (Exception e) {

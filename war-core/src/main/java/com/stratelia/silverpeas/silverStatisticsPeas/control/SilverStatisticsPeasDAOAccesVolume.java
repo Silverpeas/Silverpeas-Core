@@ -52,7 +52,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 
 /**
@@ -115,7 +114,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_VOLUME_YEARS);
       rs = stmt.executeQuery();
       LinkedHashSet<String> years = new LinkedHashSet<String>();
@@ -139,7 +138,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_YEARS);
       rs = stmt.executeQuery();
       LinkedHashSet<String> years = new LinkedHashSet<String>();
@@ -256,7 +255,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_SPACE);
       pstmt.setString(1, spaceId);
       rs = pstmt.executeQuery();
@@ -276,7 +275,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
       pstmt.setString(1, spaceId);
       pstmt.setInt(2, Integer.parseInt(userId));
@@ -322,7 +321,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_COMPONENT);
       pstmt.setString(1, componentId);
       rs = pstmt.executeQuery();
@@ -342,7 +341,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER);
       pstmt.setString(1, componentId);
       pstmt.setInt(2, Integer.parseInt(userId));
@@ -488,7 +487,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_VOLUME_BY_USER);
       stmt.setString(1, dateStat);
       stmt.setInt(2, Integer.parseInt(filterIdUser));
@@ -510,7 +509,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_ALL_COMPONENTS);
       stmt.setString(1, dateStat);
       rs = stmt.executeQuery();
@@ -531,7 +530,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_USER);
       stmt.setString(1, dateStat);
       stmt.setInt(2, Integer.parseInt(filterIdUser));
@@ -588,7 +587,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_VOLUME_FOR_ALL_COMPONENTS);
       stmt.setString(1, dateStat);
       rs = stmt.executeQuery();
@@ -646,7 +645,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
     AdminController adminController = new AdminController(currentUserId);
     try {
-      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_COMPONENTS_USER);
       //Setting a cursor to avoid performance problems
       stmt.setFetchSize(50);

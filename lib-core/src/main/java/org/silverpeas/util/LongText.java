@@ -40,11 +40,12 @@ import org.silverpeas.util.exception.UtilException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LongText {
   public final static int PART_SIZE_MAX = 1998;
 
-  static public int addLongText(String theText) throws UtilException {
+  static public int addLongText(String theText) throws SQLException {
     int theId = DBUtil.getNextId("ST_LongText", "id");
     PreparedStatement stmt = null;
     Connection privateConnection = null;
@@ -74,9 +75,6 @@ public class LongText {
           orderNum++;
         }
       }
-    } catch (Exception e) {
-      throw new UtilException("LongText.addLongText()",
-          SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", theText, e);
     } finally {
       DBUtil.close(stmt);
       closeConnection(privateConnection);
@@ -133,7 +131,7 @@ public class LongText {
   static protected Connection openConnection() throws UtilException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      con = DBUtil.openConnection();
     } catch (Exception e) {
       throw new UtilException("LongText.openConnection()",
           SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", e);

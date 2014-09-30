@@ -30,7 +30,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -66,7 +66,7 @@ public class ZipManagerTest {
     String path = PathTestUtil.TARGET_DIR + "test-classes" + separatorChar + "ZipSample";
     String outfilename =
       PathTestUtil.TARGET_DIR + "temp" + separatorChar + "testCompressPathToZip.zip";
-    ZipManager.compressPathToZip(path, outfilename);
+    ZipUtil.compressPathToZip(path, outfilename);
     ZipFile zipFile = new ZipFile(new File(outfilename), CharEncoding.UTF_8);
     try {
       Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
@@ -106,13 +106,13 @@ public class ZipManagerTest {
         + "FrenchScrum.odp";
     String outfilename = PathTestUtil.TARGET_DIR + "temp" + separatorChar
         + "testCompressStreamToZip.zip";
-    ZipManager.compressStreamToZip(inputStream, filePathNameToCreate, outfilename);
+    ZipUtil.compressStreamToZip(inputStream, filePathNameToCreate, outfilename);
     inputStream.close();
     File file = new File(outfilename);
     assertThat(file, is(notNullValue()));
     assertThat(file.exists(), is(true));
     assertThat(file.isFile(), is(true));
-    int result = ZipManager.getNbFiles(new File(outfilename));
+    int result = ZipUtil.getNbFiles(new File(outfilename));
     assertThat(result, is(1));
     ZipFile zipFile = new ZipFile(file);
     assertThat(zipFile.getEntry("/dir1/dir2/FrenchScrum.odp"), is(notNullValue()));
@@ -130,7 +130,7 @@ public class ZipManagerTest {
         + "testExtract.zip");
     File dest = new File(PathTestUtil.TARGET_DIR + "temp" + separatorChar + "extract");
     dest.mkdirs();
-    ZipManager.extract(source, dest);
+    ZipUtil.extract(source, dest);
     assertThat(dest, is(notNullValue()));
   }
 
@@ -145,7 +145,7 @@ public class ZipManagerTest {
       PathTestUtil.TARGET_DIR + "test-classes" + separatorChar + "testExtract.tar.gz");
     File dest = new File(PathTestUtil.TARGET_DIR + "temp" + separatorChar + "extract-tar");
     dest.mkdirs();
-    ZipManager.extract(source, dest);
+    ZipUtil.extract(source, dest);
     assertThat(dest, is(notNullValue()));
     File uncompressedDir = new File(dest, "ZipSample");
     assertThat(uncompressedDir.exists(), is(true));
@@ -164,7 +164,7 @@ public class ZipManagerTest {
       + "testExtract.tar.bz2");
     File dest = new File(PathTestUtil.TARGET_DIR + "temp" + separatorChar + "extract-bz2");
     dest.mkdirs();
-    ZipManager.extract(source, dest);
+    ZipUtil.extract(source, dest);
     assertThat(dest, is(notNullValue()));
     File uncompressedDir = new File(dest, "ZipSample");
     assertThat(uncompressedDir.exists(), is(true));
@@ -182,12 +182,12 @@ public class ZipManagerTest {
     String path = PathTestUtil.TARGET_DIR + "test-classes" + separatorChar + "ZipSample";
     String outfilename = PathTestUtil.TARGET_DIR + "temp" + separatorChar
       + "testGetNbFiles.zip";
-    ZipManager.compressPathToZip(path, outfilename);
+    ZipUtil.compressPathToZip(path, outfilename);
     File file = new File(outfilename);
     assertThat(file, is(notNullValue()));
     assertThat(file.exists(), is(true));
     assertThat(file.isFile(), is(true));
-    int result = ZipManager.getNbFiles(file);
+    int result = ZipUtil.getNbFiles(file);
     assertThat(result, is(5));
   }
 }

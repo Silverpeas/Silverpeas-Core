@@ -140,7 +140,7 @@ public class LinkDAO {
   }
 
   public static int createLink(Connection con, LinkDetail link)
-      throws SQLException, UtilException {
+      throws SQLException {
     // Création d'un nouveau lien
     LinkDetail newLink = link;
     int newId = 0;

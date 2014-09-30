@@ -33,6 +33,7 @@ import java.util.Collection;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.AgeFileFilter;
@@ -44,6 +45,7 @@ import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
@@ -51,8 +53,8 @@ import org.silverpeas.util.ResourceLocator;
 /**
  * @author Yohann Chastagnier
  */
-@Named("temporaryDataCleanerSchedulerInitializer")
-public class TemporaryDataCleanerSchedulerInitializer {
+@Singleton
+public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
 
   private final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.util.data.temporaryDataManagementSettings", "");
@@ -63,8 +65,8 @@ public class TemporaryDataCleanerSchedulerInitializer {
   @Inject
   private Scheduler scheduler;
 
-  @PostConstruct
-  public void initialize() throws Exception {
+  @Override
+  public void init() throws Exception{
 
     // Job instance
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();

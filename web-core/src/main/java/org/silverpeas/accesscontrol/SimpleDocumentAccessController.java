@@ -58,6 +58,9 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   @Inject
   private NodeAccessController nodeAccessController;
 
+  @Inject
+  private ComponentHelper componentHelper;
+
   public SimpleDocumentAccessController() {
   }
 
@@ -81,7 +84,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     }
 
     // Node access control
-    if (ComponentHelper.getInstance().isThemeTracker(object.getInstanceId())) {
+    if (componentHelper.isThemeTracker(object.getInstanceId())) {
       String foreignId = object.getForeignId();
       if (StringUtil.isInteger(foreignId)) {
         final PublicationDetail pubDetail;

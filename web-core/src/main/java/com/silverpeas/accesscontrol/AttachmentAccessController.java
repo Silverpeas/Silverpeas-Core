@@ -50,6 +50,9 @@ public class AttachmentAccessController extends AbstractAccessController<Attachm
   @Inject
   private PublicationAccessController publicationAccessController;
 
+  @Inject
+  private ComponentHelper componentHelper;
+
   public AttachmentAccessController() {
   }
 
@@ -64,7 +67,7 @@ public class AttachmentAccessController extends AbstractAccessController<Attachm
   @Override
   public boolean isUserAuthorized(String userId, AttachmentDetail object,
       final AccessControlContext context) {
-    if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
+    if (componentHelper.isThemeTracker(object.getForeignKey().getComponentName())) {
       String foreignId = object.getForeignKey().getId();
       if (StringUtil.isInteger(foreignId)) {
         PublicationPK pubPK =

@@ -34,7 +34,6 @@ import java.util.TreeSet;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 
 /**
@@ -83,7 +82,7 @@ public class SearchCompletion {
 
     int autocompletionMaxResults = Integer.parseInt(resource.getString("autocompletionMaxResults"));
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+      con = DBUtil.openConnection();
       // request pdc
       ArrayList<String> pdcList = executeQuery(con, pdcMaxRow,
           query, pdcQuery);

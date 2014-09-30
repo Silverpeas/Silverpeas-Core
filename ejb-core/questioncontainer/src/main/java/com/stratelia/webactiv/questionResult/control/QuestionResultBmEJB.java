@@ -209,7 +209,7 @@ public class QuestionResultBmEJB implements QuestionResultBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(dbName);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new QuestionResultRuntimeException("QuestionResultBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

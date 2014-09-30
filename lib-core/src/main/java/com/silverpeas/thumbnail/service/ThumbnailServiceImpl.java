@@ -29,7 +29,6 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDAO;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
@@ -49,7 +48,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
   public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      con = DBUtil.openConnection();
       return ThumbnailDAO.insertThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
@@ -68,7 +67,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
   public void updateThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      con = DBUtil.openConnection();
       ThumbnailDAO.updateThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.updateAttachment()",
@@ -83,7 +82,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
   public void deleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      con = DBUtil.openConnection();
       ThumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
           thumbDetail.getInstanceId());
     } catch (SQLException se) {
@@ -99,7 +98,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
       throws ThumbnailException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      con = DBUtil.openConnection();
       return ThumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
           thumbDetail.getObjectType());
     } catch (SQLException se) {
@@ -114,7 +113,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
   public void deleteAllThumbnail(String componentId) throws ThumbnailException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      con = DBUtil.openConnection();
       ThumbnailDAO.deleteAllThumbnails(con, componentId);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
@@ -128,7 +127,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
   public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId) throws ThumbnailException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      con = DBUtil.openConnection();
       ThumbnailDAO.moveThumbnail(con, thumbDetail, toInstanceId);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.moveThumbnail()",

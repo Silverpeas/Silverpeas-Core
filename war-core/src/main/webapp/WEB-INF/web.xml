@@ -151,6 +151,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <listener>
+    <listener-class>org.silverpeas.initialization.SilverpeasServiceInitialization</listener-class>
+  </listener>
+  <listener>
     <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
   </listener>
   <listener>

@@ -33,7 +33,6 @@ import java.util.List;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 import javax.inject.Named;
 
@@ -47,7 +46,7 @@ public class RelationShipService {
   }
 
   private Connection getConnection(boolean useAutoCommit) throws UtilException, SQLException {
-    Connection connection = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+    Connection connection = DBUtil.openConnection();
     connection.setAutoCommit(useAutoCommit);
     return connection;
   }

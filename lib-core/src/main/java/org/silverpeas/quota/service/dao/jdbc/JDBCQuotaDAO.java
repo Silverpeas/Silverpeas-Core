@@ -31,7 +31,6 @@ import org.silverpeas.quota.service.dao.QuotaDAO;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
@@ -63,7 +62,7 @@ public class JDBCQuotaDAO implements QuotaDAO {
    */
   private Connection openConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (final Exception e) {
       throw new QuotaRuntimeException(getClass().getSimpleName() + ".openConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

@@ -47,7 +47,7 @@ import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.security.ContentEncryptionServiceFactory;
+import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -492,7 +492,7 @@ public class PublicationTemplateManager {
   
   protected void registerForRenewingContentCipher() {
     EncryptionContentIterator contentIterator = new FormEncryptionContentIterator();
-    ContentEncryptionServiceFactory.getFactory().getContentEncryptionService()
+    ContentEncryptionServiceProvider.getContentEncryptionService()
         .registerForRenewingContentCipher(contentIterator);
   }
 }

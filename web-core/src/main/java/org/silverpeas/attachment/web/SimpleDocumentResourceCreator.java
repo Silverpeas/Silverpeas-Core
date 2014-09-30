@@ -45,6 +45,7 @@ import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.RequestParameterDecoder;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -70,6 +71,9 @@ import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 @Path("documents/{componentId}/document/create")
 @Authorized
 public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResource {
+
+  @Inject
+  private MetadataExtractor metadataExtractor;
 
   /**
    * Create the document identified by the requested URI and from the content and some additional
@@ -139,8 +143,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         String title = uploadData.getTitle();
         String description = uploadData.getDescription();
         if (!StringUtil.isDefined(title)) {
-          MetadataExtractor extractor = MetadataExtractor.getInstance();
-          MetaData metadata = extractor.extractMetadata(tempFile);
+          MetaData metadata = metadataExtractor.extractMetadata(tempFile);
           if (StringUtil.isDefined(metadata.getTitle())) {
             title = metadata.getTitle();
           } else {

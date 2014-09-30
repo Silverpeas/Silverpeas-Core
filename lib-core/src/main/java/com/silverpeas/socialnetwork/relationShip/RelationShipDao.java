@@ -56,11 +56,10 @@ public class RelationShipDao {
    * @param connection
    * @param relationShip
    * @return int
-   * @throws UtilException
    * @throws SQLException
    */
   public int createRelationShip(Connection connection, RelationShip relationShip) throws
-      UtilException, SQLException {
+      SQLException {
     int id = DBUtil.getNextId("sb_sn_RelationShip", "id");
     PreparedStatement pstmt = null;
     try {
@@ -190,8 +189,8 @@ public class RelationShipDao {
    * get list of my socialInformation (relationShip) according to number of Item and the first Index
    * @param con
    * @param userId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
@@ -227,8 +226,8 @@ public class RelationShipDao {
    * @param con
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */

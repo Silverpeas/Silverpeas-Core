@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao {
@@ -163,7 +162,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
 
   // Recuperation de la connection
   private Connection getConnection() throws Exception {
-    return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+    return DBUtil.openConnection();
   }
 
 }

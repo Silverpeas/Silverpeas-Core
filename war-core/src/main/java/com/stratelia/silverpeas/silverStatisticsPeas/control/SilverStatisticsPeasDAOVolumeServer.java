@@ -66,7 +66,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
     ResultSet rs = null;
     Connection myCon = null;
     try {
-      myCon = DBUtil.makeConnection(DB_NAME);
+      myCon = DBUtil.openConnection();
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
       return getStatsVolumeServerFromResultSet(rs);

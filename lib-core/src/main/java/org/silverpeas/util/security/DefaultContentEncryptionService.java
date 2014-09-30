@@ -29,7 +29,7 @@ import org.silverpeas.util.crypto.CryptographicAlgorithmName;
  * CAST5 cipher), in order to protect it. The two keys are set together in the key file which is
  * located in an hidden directory. The key file is hidden and readonly.
  * </p>
- * It manages the cipher key by maintening both the actual cipher key used to encrypt and decrypt
+ * It manages the cipher key by maintaining both the actual cipher key used to encrypt and decrypt
  * the content and the previous one so that the cipher of some old contents can be renewed with the
  * new key after decrypting them with the old key.
  * </p>

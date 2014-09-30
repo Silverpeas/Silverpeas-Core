@@ -26,7 +26,7 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -101,7 +101,7 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
       URI downloadUri =
           getUriInfo().getBaseUriBuilder().path("sharing").path("attachments").path(componentId)
               .path(getToken()).path("zipcontent").path(zipFile.getName()).build();
-      long size = ZipManager.compressPathToZip(folderToZip, zipFile);
+      long size = ZipUtil.compressPathToZip(folderToZip, zipFile);
       return new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
     } catch (IllegalArgumentException e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

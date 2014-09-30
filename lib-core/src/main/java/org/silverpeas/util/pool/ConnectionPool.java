@@ -32,52 +32,32 @@ import org.apache.commons.dbcp.BasicDataSource;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 
+import javax.annotation.Resource;
+import javax.inject.Singleton;
+import javax.sql.DataSource;
+
+/**
+ * A pool of JDBC connections. It encapsulates the underlying mechanism to manage a pool of
+ * connections to the data source used by Silverpeas.
+ *
+ * Currently, it wraps the connection pool spawned by the JEE application server for the data
+ * source used by Silverpeas.
+ */
+@Singleton
 public class ConnectionPool {
 
-  private static BasicDataSource pool;
-
-  static {
-    init();
-  }
-
-  private static void init() {
-    SilverTrace.debug("util", "ConnectionPool.getConnection",
-        "No more free connection : we need to create a new one.");
-    ResourceLocator resources = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
-    pool = new BasicDataSource();
-    pool.setPassword(resources.getString("WaProductionPswd"));
-    pool.setUsername(resources.getString("WaProductionUser"));
-    pool.setDriverClassName(resources.getString("AdminDBDriver"));
-    pool.setUrl(resources.getString("WaProductionDb"));
-    pool.setRemoveAbandoned(true);
-  }
+  @Resource(mappedName = "java:/datasources/silverpeas")
+  private DataSource dataSource;
 
   /**
-   * Release all the connections and close the pool.
-   * @throws SQLException
+   * Return a connection to the Silverpeas data source.
+   * @return a connection to the Silverpeas data source.
+   * @throws java.sql.SQLException if an error occurs while getting an available connection.
    */
-  public static void releaseConnections() throws SQLException {
-    SilverTrace.debug("util", "ConnectionPool.releaseConnections", "start");
-    synchronized (ConnectionPool.class) {
-      pool.close();
-    }
+  public Connection getConnection() throws SQLException {
+    return dataSource.getConnection();
   }
 
-  /**
-   * Return a connection to Silverpeas database from the pool.
-   * @return a connection to Silverpeas database.
-   * @throws java.sql.SQLException
-   */
-  public static Connection getConnection() throws SQLException {
-    SilverTrace.debug("util", "ConnectionPool.getConnection", "start");
-    synchronized (ConnectionPool.class) {
-      if (pool.isClosed()) {
-        init();
-      }
-    }
-    return pool.getConnection();
-  }
-
-  private ConnectionPool() {
+  protected ConnectionPool() {
   }
 }

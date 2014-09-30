@@ -500,7 +500,7 @@ public class SilverStatisticsManagerDAO {
    */
   private static Connection getConnection() {
     try {
-      return DBUtil.makeConnection(DB_NAME);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new StatisticsRuntimeException("SilverStatisticsManagerDAO.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",

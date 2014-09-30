@@ -45,6 +45,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -525,7 +526,11 @@ public class SimpleDocument implements Serializable {
   public String computeNodeName() {
     if (!StringUtil.isDefined(getNodeName())) {
       if (getOldSilverpeasId() <= 0L) {
-        setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
+        try {
+          setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
+        } catch (SQLException e) {
+          throw new RuntimeException(e.getMessage(), e);
+        }
       }
       setNodeName(DOCUMENT_PREFIX + getOldSilverpeasId());
       return getNodeName();

@@ -63,7 +63,7 @@ public class ConnectionPoolWithJNDI implements ConnectionPool {
     Connection conn = null;
     // use the common mechanism to get a connection
     try {
-      conn = DBUtil.makeConnection(poolInfo.getJndiName());
+      conn = DBUtil.openConnection();
     } catch (UtilException e) {
       SilverTrace
           .error("wysiwig", ConnectionPoolWithJNDI.class.toString(),

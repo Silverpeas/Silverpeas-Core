@@ -92,12 +92,7 @@ public abstract class AbstractTable<T> {
    * Returns the next id which can be used to create a new row.
    */
   public int getNextId() throws SQLException {
-    int nextId;
-    try {
-      nextId = DBUtil.getNextId(tableName, "id");
-    } catch (Exception e) {
-      throw new SQLException(e.toString());
-    }
+    int nextId = DBUtil.getNextId(tableName, "id");
 
     if (nextId == 0) {
       return 1;

@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -21,11 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util;
 
 /**
- * A bean that has to be managed by CDI. It is here for testing purpose.
- * @author mmoquillon
+ * All objects requiring to be initialized or bootstrapped at Silverpeas starting have to be
+ * implement the Initialization interface and to implement the init() method.
  */
-public class TestManagedBean {
-}
+package org.silverpeas.initialization;
