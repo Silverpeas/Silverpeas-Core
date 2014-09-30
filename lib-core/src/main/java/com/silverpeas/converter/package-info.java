@@ -28,7 +28,7 @@
  * an ODT document to the PDF format.
  * The converters are managed by the underlying IoC container and so can be injected as dependency.
  * For objects whose the life-cycle isn't managed by the IoC container, a factory of theses
- * converters is available, DocumentFormatConverterFactory.
+ * converters is available, DocumentFormatConverterProvider.
  */
 package com.silverpeas.converter;
 

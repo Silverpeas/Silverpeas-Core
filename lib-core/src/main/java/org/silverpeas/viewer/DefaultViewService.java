@@ -27,6 +27,7 @@ import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 
 import java.io.File;
 
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.viewer.exception.PreviewException;
 import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
@@ -35,7 +36,6 @@ import org.silverpeas.viewer.util.SwfUtil;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.DocumentFormatConverterFactory;
 import org.silverpeas.util.FileUtil;
 
 /**
@@ -96,7 +96,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
    * @return
    */
   private File toPdf(final File source, final File destination) {
-    DocumentFormatConverterFactory.getFactory().getToPDFConverter()
+    DocumentFormatConverterProvider.getToPDFConverter()
         .convert(source, destination, DocumentFormat.pdf);
     return destination;
   }

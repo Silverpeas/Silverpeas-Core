@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.mail;
 
-import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
@@ -175,7 +175,7 @@ public class MSGExtractor implements MailExtractor {
   private String getRtfText(String rtfText) {
     try {
       ByteArrayOutputStream htmlText = new ByteArrayOutputStream();
-      DocumentFormatConverterFactory.getFactory().getToHTMLConverter().convert(
+      DocumentFormatConverterProvider.getToHTMLConverter().convert(
           new ByteArrayInputStream(rtfText.getBytes(Charsets.UTF_8)), inFormat(rtf), htmlText,
           inFormat(html));
       return htmlText.toString(CharEncoding.UTF_8);

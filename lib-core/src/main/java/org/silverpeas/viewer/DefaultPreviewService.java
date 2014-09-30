@@ -39,6 +39,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.ImageToolDirective;
 import org.silverpeas.image.option.DimensionOption;
@@ -47,7 +48,6 @@ import org.silverpeas.viewer.util.SwfUtil;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.option.PageRangeFilterOption;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
@@ -135,7 +135,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    * @return
    */
   private File toPdf(final File source, final File destination) {
-    DocumentFormatConverterFactory.getFactory().getToPDFConverter()
+    DocumentFormatConverterProvider.getToPDFConverter()
         .convert(source, destination, DocumentFormat.pdf, new PageRangeFilterOption("1"));
     return destination;
   }

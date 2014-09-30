@@ -24,70 +24,46 @@
 
 package com.silverpeas.converter;
 
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * A factory of document format converters available in Silverpeas. This factory is dedicated to
  * objects whose the life-cycle isn't managed by the IoC container.
  */
-public class DocumentFormatConverterFactory {
-
-  private static final DocumentFormatConverterFactory instance =
-      new DocumentFormatConverterFactory();
-
-  @Inject
-  private ODTConverter odtConverter;
-
-  @Inject
-  private HTMLConverter htmlConverter;
-
-  @Inject
-  private ToPDFConverter toPDFConverter;
-
-  @Inject
-  private ToHTMLConverter toHTMLConverter;
-
-  /**
-   * Gets an instance of this factory.
-   * @return a DocumentFormatConverterFactory instance.
-   */
-  public static DocumentFormatConverterFactory getFactory() {
-    return instance;
-  }
+public class DocumentFormatConverterProvider {
 
   /**
    * Gets an instance of the ODTConverter interface.
    * @return an ODTConverter instance.
    */
-  public ODTConverter getODTConverter() {
-    return odtConverter;
+  public static ODTConverter getODTConverter() {
+    return ServiceProvider.getService(ODTConverter.class);
   }
 
   /**
    * Gets an instance of the HTMLConverter interface.
    * @return a HTMLConverter instance.
    */
-  public HTMLConverter getHTMLConverter() {
-    return htmlConverter;
+  public static HTMLConverter getHTMLConverter() {
+    return ServiceProvider.getService(HTMLConverter.class);
   }
 
   /**
    * Gets an instance of the ToPDFConverter interface.
    * @return a ToPDFConverter instance.
    */
-  public ToPDFConverter getToPDFConverter() {
-    return toPDFConverter;
+  public static ToPDFConverter getToPDFConverter() {
+    return ServiceProvider.getService(ToPDFConverter.class);
   }
 
   /**
    * Gets an instance of the ToHTMLConverter interface.
    * @return a ToHTMLConverter instance.
    */
-  public ToHTMLConverter getToHTMLConverter() {
-    return toHTMLConverter;
+  public static ToHTMLConverter getToHTMLConverter() {
+    return ServiceProvider.getService(ToHTMLConverter.class);
   }
 
-  private DocumentFormatConverterFactory() {
-
+  private DocumentFormatConverterProvider() {
   }
 }

@@ -34,11 +34,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
  <ctx:annotation-config/>
- <ctx:component-scan base-package="com.silverpeas.converter"/>
+ <!-- ebo <ctx:component-scan base-package="com.silverpeas.converter"/> -->
 
   <!-- the factory of the document format converters available in Silverpeas.
         It wraps and provides an access to the actual converter implementations -->
-  <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
-        factory-method="getFactory"/>
+<!-- ebo  <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
+        factory-method="getFactory"/> -->
 
 </beans>

@@ -61,8 +61,7 @@ public class ConverterImplementationInjectionTest {
 
   @Test
   public void convertersShouldBeGetFromTheFactory() {
-    DocumentFormatConverterFactory factory = DocumentFormatConverterFactory.getFactory();
-    assertNotNull(factory.getODTConverter());
-    assertNotNull(factory.getHTMLConverter());
+    assertNotNull(DocumentFormatConverterProvider.getODTConverter());
+    assertNotNull(DocumentFormatConverterProvider.getHTMLConverter());
   }
 }

@@ -33,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.util.DateUtil;
@@ -128,7 +128,7 @@ public class MsgMailExtractorTest {
    */
   protected String getRtfText(String rtfText) throws Exception {
     ByteArrayOutputStream htmlText = new ByteArrayOutputStream();
-    DocumentFormatConverterFactory.getFactory().getToHTMLConverter()
+    DocumentFormatConverterProvider.getToHTMLConverter()
         .convert(new ByteArrayInputStream(rtfText.getBytes()), inFormat(rtf), htmlText,
         inFormat(html));
     return htmlText.toString();

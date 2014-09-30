@@ -142,8 +142,8 @@
 
   <!-- the factory of the document format converters available in Silverpeas.
   It wraps and provides an access to the actual converter implementations -->
-  <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
-        factory-method="getFactory"/>
+  <!-- <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterProvider"
+        factory-method="getFactory"/>-->
 
   <!-- the factory for document viewing features available in Silverpeas.
   It wraps and provides an access to the actual view implementations -->

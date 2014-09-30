@@ -73,7 +73,7 @@ public class ToHTMLConverterTest {
   public void setUp() throws Exception {
     document = getDocumentNamed(ODT_DOCUMENT_NAME);
     assertThat(document.exists(), is(true));
-    converter = DocumentFormatConverterFactory.getFactory().getToHTMLConverter();
+    converter = DocumentFormatConverterProvider.getToHTMLConverter();
   }
 
   @After

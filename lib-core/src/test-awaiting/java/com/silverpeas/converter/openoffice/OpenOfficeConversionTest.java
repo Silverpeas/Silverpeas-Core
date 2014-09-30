@@ -26,7 +26,7 @@ package com.silverpeas.converter.openoffice;
 
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.silverpeas.converter.DocumentFormatConversionException;
-import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import com.silverpeas.converter.DocumentFormatException;
 import com.silverpeas.converter.ODTConverter;
 import java.io.File;
@@ -81,7 +81,7 @@ public class OpenOfficeConversionTest {
   @Test(expected = DocumentFormatConversionException.class)
   public void conversionWithoutAnyOpenOfficeServiceShouldThrowADocumentFormatConversionException()
     throws Exception {
-    ODTConverter odtConverter = DocumentFormatConverterFactory.getFactory().getODTConverter();
+    ODTConverter odtConverter = DocumentFormatConverterProvider.getODTConverter();
     File document = aDocumentsProvider().getODTDocument();
     odtConverter.convert(document, inFormat(pdf));
   }
