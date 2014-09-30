@@ -25,9 +25,9 @@
 /* $Id$ */
 package com.stratelia.webactiv.publication.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.util.WAPrimaryKey;
+
+import java.io.Serializable;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication
@@ -35,10 +35,7 @@ import org.silverpeas.util.WAPrimaryKey;
  * @version 1.0
  */
 public class PublicationPK extends WAPrimaryKey implements Serializable {
-
   private static final long serialVersionUID = -6957633959517435029L;
-  /** For flat pk design pattern. */
-  public transient PublicationDetail pubDetail = null;
 
   /**
    * Constructor which set only the id

@@ -23,30 +23,26 @@
  */
 package org.silverpeas.admin.web;
 
-import static org.silverpeas.admin.web.AdminResourceURIs.buildURIOfComponent;
-import static org.silverpeas.admin.web.AdminResourceURIs.buildURIOfSpace;
-import static org.silverpeas.admin.web.AdminResourceURIs.buildURIOfSpaceAppearance;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.admin.web.delegate.AdminPersonalWebDelegate;
-import org.silverpeas.admin.web.tools.AbstractTool;
-import org.silverpeas.look.web.delegate.LookWebDelegate;
-
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.accesscontrol.SpaceAccessControl;
+import org.silverpeas.admin.web.delegate.AdminPersonalWebDelegate;
+import org.silverpeas.admin.web.tools.AbstractTool;
+import org.silverpeas.look.web.delegate.LookWebDelegate;
+
+import javax.inject.Inject;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.silverpeas.admin.web.AdminResourceURIs.*;
 
 /**
  * Centralizations of admin resource processings
@@ -59,8 +55,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   private AdminPersonalWebDelegate adminPersonalDelegate;
 
-  @Inject
-  @Named("spaceAccessController")
+  @Inject @SpaceAccessControl
   private AccessController<String> spaceAccessController;
 
   private LookWebDelegate lookDelegate;
@@ -256,7 +251,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Converts the component into its corresponding web entity.
-   * @param component the component to convert.
+   * @param object any object instance.
    * @return the corresponding component entity.
    */
   protected AbstractTypeEntity asWebEntity(final Object object) {
@@ -306,7 +301,6 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Verifies the requester user is authorized to access the given space
-   * @param spaceId
    */
   protected void verifyUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized
@@ -317,7 +311,6 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Indicates if the requester user is authorized to access the given space
-   * @param spaceId
    */
   protected boolean isUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized

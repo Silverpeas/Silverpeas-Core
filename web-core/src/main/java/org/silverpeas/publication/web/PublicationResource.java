@@ -20,21 +20,21 @@
  */
 package org.silverpeas.publication.web;
 
-import java.net.URI;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
-import com.silverpeas.accesscontrol.NodeAccessController;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.accesscontrol.NodeAccessController;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import java.net.URI;
+import java.util.List;
 
 /**
  * A REST Web resource providing access to publications through private mode.
@@ -44,7 +44,10 @@ import com.stratelia.webactiv.node.model.NodePK;
 @Path("private/publications/{componentId}")
 @Authorized
 public class PublicationResource extends AbstractPublicationResource {
-  
+
+  @Inject
+  private NodeAccessController nodeAccessController;
+
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<PublicationEntity> getPublications(@QueryParam("node") String nodeId,
@@ -69,12 +72,10 @@ public class PublicationResource extends AbstractPublicationResource {
   
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
-    NodeAccessController nodeAccessController = new NodeAccessController();
     return nodeAccessController.isUserAuthorized(getUserDetail().getId(), nodePK);
   }
   
   protected URI identifiedBy(URI uri) {
     return uri;
   }
-
 }

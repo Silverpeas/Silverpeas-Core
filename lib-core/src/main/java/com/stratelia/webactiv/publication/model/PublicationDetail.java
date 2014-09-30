@@ -20,28 +20,6 @@
  */
 package com.stratelia.webactiv.publication.model;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.date.Period;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
@@ -59,22 +37,45 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.accesscontrol.NodeAccessControl;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.date.Period;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This object contains the description of a publication
@@ -1201,13 +1202,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider.getAccessController(
-        "componentAccessController");
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     boolean canBeAccessed = accessController.
         isUserAuthorized(user.getId(), getComponentInstanceId());
     if (canBeAccessed) {
-      AccessController<NodePK> nodeAccessController = AccessControllerProvider.getAccessController(
-          "nodeAccessController");
+      AccessController<NodePK> nodeAccessController =
+          AccessControllerProvider.getAccessController(NodeAccessControl.class);
       Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(getId(),
           getInstanceId()));
       for (NodePK aNode : nodes) {

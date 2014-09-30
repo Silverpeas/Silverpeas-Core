@@ -28,6 +28,7 @@ import java.util.Collection;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import org.silverpeas.accesscontrol.NodeAccessControl;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -590,7 +591,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
    */
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<NodePK> accessController =
-        AccessControllerProvider.getAccessController("nodeAccessController");
+        AccessControllerProvider.getAccessController(NodeAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), this.getNodePK());
   }
 }

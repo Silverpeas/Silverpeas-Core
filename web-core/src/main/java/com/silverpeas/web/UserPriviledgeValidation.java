@@ -32,6 +32,8 @@ import com.silverpeas.session.SessionValidationContext;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
@@ -66,12 +68,13 @@ public class UserPriviledgeValidation {
 
   @Inject
   private SessionManagement sessionManagement;
-  @Inject
-  @Named("componentAccessController")
+
+  @Inject @ComponentAccessControl
   private AccessController<String> componentAccessController;
-  @Inject
-  @Named("simpleDocumentAccessController")
+
+  @Inject @SimpleDocumentAccessControl
   private AccessController<SimpleDocument> documentAccessController;
+
   @Inject
   private OrganisationController organisationController;
 

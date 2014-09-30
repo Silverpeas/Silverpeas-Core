@@ -23,27 +23,21 @@
  */
 package com.silverpeas.web;
 
+import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.personalization.service.PersonalizationService;
-import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.mock.AccessControllerMock;
-import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
 import com.silverpeas.web.mock.SessionManagerMock;
-import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.silverpeas.web.mock.TokenServiceMockWrapper;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.sun.istack.logging.Logger;
-
-import java.lang.reflect.Field;
-import java.util.logging.Level;
-import javax.inject.Inject;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.EntityReference;
+import org.silverpeas.accesscontrol.SpaceAccessController;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
@@ -53,12 +47,16 @@ import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.silverpeas.token.persistent.PersistentResourceTokenBuilder;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
+import org.silverpeas.util.StringUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -94,11 +92,11 @@ public abstract class TestResources implements ApplicationContextAware {
   @Inject
   private SessionManagerMock sessionManagerMock;
   @Inject
-  private AccessControllerMock accessControllerMock;
+  private AccessController accessControllerMock;
   @Inject
-  private OrganizationControllerMockWrapper organizationControllerMockWrapper;
+  private OrganizationController organizationControllerMockWrapper;
   @Inject
-  private SpaceAccessControllerMock spaceAccessController;
+  private SpaceAccessController spaceAccessControllerMock;
   @Inject
   private PersonalizationServiceMockWrapper personalizationServiceMockWrapper;
   @Inject
@@ -175,7 +173,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * according to the test fixture.
    * @return mock of the access controller used in the test case.
    */
-  public AccessControllerMock getAccessControllerMock() {
+  public AccessController getAccessControllerMock() {
     return accessControllerMock;
   }
 
@@ -184,8 +182,8 @@ public abstract class TestResources implements ApplicationContextAware {
    * capabilities according to the test fixture.
    * @return mock of the access controller used in the test case.
    */
-  public SpaceAccessControllerMock getSpaceAccessControllerMock() {
-    return spaceAccessController;
+  public SpaceAccessController getSpaceAccessControllerMock() {
+    return spaceAccessControllerMock;
   }
 
   /**
@@ -194,7 +192,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * @return the OrganizationController mock used in the tests.
    */
   public OrganisationController getOrganizationControllerMock() {
-    return organizationControllerMockWrapper.getOrganizationControllerMock();
+    return organizationControllerMockWrapper;
   }
 
   /**

@@ -27,6 +27,8 @@ package com.silverpeas.accesscontrol;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.accesscontrol.ComponentAccessController;
+import org.silverpeas.accesscontrol.NodeAccessController;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;

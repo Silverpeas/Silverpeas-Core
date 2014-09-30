@@ -57,7 +57,6 @@ import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
  * container and published under the name 'organizationController' so that the initialization of the
  * static Admin instance can be performed correctly within the execution context of IoC container.
  */
-@Named("organizationController")
 public class OrganizationController implements OrganisationController {
 
   private static final long serialVersionUID = 3435241972671610107L;

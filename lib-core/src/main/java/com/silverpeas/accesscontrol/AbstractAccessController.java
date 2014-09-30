@@ -32,8 +32,11 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * User: Yohann Chastagnier
- * Date: 30/12/13
+ * This abstract class provides common implementation about the access controller :
+ * <ul>
+ *   <li>- cache provider</li>
+ *   <li>- user roles</li>
+ * </ul>
  */
 public abstract class AbstractAccessController<T> implements AccessController<T> {
 

@@ -26,31 +26,31 @@ package org.silverpeas.accesscontrol;
 import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
-import com.silverpeas.accesscontrol.ComponentAccessController;
-import com.silverpeas.accesscontrol.NodeAccessController;
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * @author ehugonnet
  */
-@Named("simpleDocumentAccessController")
+@Singleton
+@SimpleDocumentAccessControl
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument> {
+
+  @Inject
+  private PublicationBm publicationService;
 
   @Inject
   private ComponentAccessController componentAccessController;
@@ -61,15 +61,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   @Inject
   private ComponentHelper componentHelper;
 
-  public SimpleDocumentAccessController() {
-  }
-
-  /**
-   * For test only.
-   * @param accessController
-   */
-  SimpleDocumentAccessController(NodeAccessController accessController) {
-    this.nodeAccessController = accessController;
+  protected SimpleDocumentAccessController() {
   }
 
   @Override
@@ -200,8 +192,8 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     return StringUtil.isDefined(foreignId) && foreignId.startsWith("Node_");
   }
 
-  protected PublicationBm getPublicationBm() throws Exception {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  protected PublicationBm getPublicationBm() {
+    return publicationService;
   }
 
   /**
@@ -228,9 +220,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
    * @return a ComponentAccessController instance.
    */
   protected ComponentAccessController getComponentAccessController() {
-    if (componentAccessController == null) {
-      componentAccessController = new ComponentAccessController();
-    }
     return componentAccessController;
   }
 
@@ -239,9 +228,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
    * @return a NodeAccessController instance.
    */
   protected NodeAccessController getNodeAccessController() {
-    if (nodeAccessController == null) {
-      nodeAccessController = new NodeAccessController();
-    }
     return nodeAccessController;
   }
 }

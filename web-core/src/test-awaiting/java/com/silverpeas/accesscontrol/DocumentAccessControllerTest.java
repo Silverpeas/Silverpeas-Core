@@ -21,6 +21,7 @@
 
 package com.silverpeas.accesscontrol;
 
+import org.silverpeas.accesscontrol.NodeAccessController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.EJBUtilitaire;

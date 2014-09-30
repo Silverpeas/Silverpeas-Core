@@ -20,6 +20,29 @@
  */
 package com.stratelia.webactiv.node.control;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.node.control.dao.NodeDAO;
+import com.stratelia.webactiv.node.control.dao.NodeI18NDAO;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeI18NDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeRuntimeException;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,33 +52,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import com.stratelia.webactiv.node.control.dao.NodeDAO;
-import com.stratelia.webactiv.node.control.dao.NodeI18NDAO;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodeI18NDetail;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.node.model.NodeRuntimeException;
-
 /**
  * This is the NodeBM EJB-tier controller. A node is composed by some another nodes (children) and
  * have got one and only one father. It describes a tree. It is implemented as a session EJB.
@@ -64,7 +60,7 @@ import com.stratelia.webactiv.node.model.NodeRuntimeException;
  */
 @Stateless(name = "Node", description = "Stateless EJB to manage nodes. A node is composed by some "
     + "another nodes (children) and have got one and only one father. It describes a tree.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Transactional(Transactional.TxType.SUPPORTS)
 public class NodeBmEJB implements NodeBm {
 
   /**
@@ -83,9 +79,9 @@ public class NodeBmEJB implements NodeBm {
   private NodeDetail findNode(NodePK pk) {
     Connection con = getConnection();
     try {
-      NodePK primary = NodeDAO.selectByPrimaryKey(con, pk);
-      if (primary != null) {
-        return primary.nodeDetail;
+      NodeDetail nodeDetail = NodeDAO.selectByPrimaryKey(con, pk);
+      if (nodeDetail != null) {
+        return nodeDetail;
       } else {
         throw new NodeRuntimeException("NodeBmEJB.findNode()", SilverpeasRuntimeException.ERROR,
             "node.NODE_UNFINDABLE", "nodeId = " + pk.getId());
@@ -102,9 +98,9 @@ public class NodeBmEJB implements NodeBm {
   public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId) {
     Connection con = getConnection();
     try {
-      NodePK primary = NodeDAO.selectByNameAndFatherId(con, pk, name, nodeFatherId);
-      if (primary != null) {
-        return primary.nodeDetail;
+      NodeDetail nodeDetail = NodeDAO.selectByNameAndFatherId(con, pk, name, nodeFatherId);
+      if (nodeDetail != null) {
+        return nodeDetail;
       } else {
         throw new NodeRuntimeException("NodeBmEJB.getDetailByNameAndNodeFatherId()",
             SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED",
@@ -127,7 +123,7 @@ public class NodeBmEJB implements NodeBm {
    * @since 1.0
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+  @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public NodeDetail getDetail(NodePK pk) {
     try {
       NodeDetail nodeDetail = findNode(pk);
@@ -158,7 +154,7 @@ public class NodeBmEJB implements NodeBm {
    * @return a NodeDetail
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+  @Transactional(Transactional.TxType.SUPPORTS)
   public NodeDetail getDetailTransactionally(NodePK pk) {
     return getDetail(pk);
   }
@@ -287,7 +283,7 @@ public class NodeBmEJB implements NodeBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public void moveNode(NodePK nodePK, NodePK toNode) {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + '/';
@@ -418,7 +414,7 @@ public class NodeBmEJB implements NodeBm {
    * @since 1.0
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public void setDetail(NodeDetail nd) {
     NodeDetail oldNodeDetail = getHeader(nd.getNodePK());
     Connection con = getConnection();
@@ -493,7 +489,7 @@ public class NodeBmEJB implements NodeBm {
    * @since 1.0
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public void removeNode(NodePK pk) {
     Connection connection = getConnection();
     try {
@@ -634,7 +630,7 @@ public class NodeBmEJB implements NodeBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public NodePK createNode(NodeDetail node) {
     NodePK parentPK = node.getFatherPK();
     NodeDetail parent = getHeader(parentPK);
@@ -971,7 +967,7 @@ public class NodeBmEJB implements NodeBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public void updateRightsDependency(NodeDetail nodeDetail) {
     updateNodeDetail(nodeDetail);
     try {

@@ -29,8 +29,6 @@ import java.util.Set;
 
 /**
  * This class permits to define the context of access to a resource.
- * User: Yohann Chastagnier
- * Date: 30/12/13
  */
 public class AccessControlContext {
 

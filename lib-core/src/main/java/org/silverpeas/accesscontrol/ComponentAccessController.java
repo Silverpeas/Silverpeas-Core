@@ -22,20 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Set;
 
 /**
@@ -44,7 +46,8 @@ import java.util.Set;
  * personal tool or an administrative tool.
  * @author ehugonnet
  */
-@Named
+@Singleton
+@ComponentAccessControl
 public class ComponentAccessController extends AbstractAccessController<String> {
 
   @Inject
@@ -53,15 +56,7 @@ public class ComponentAccessController extends AbstractAccessController<String> 
   @Inject
   private ComponentHelper componentHelper;
 
-  public ComponentAccessController() {
-  }
-
-  /**
-   * For tests only.
-   * @param controller the controller to set for tests.
-   */
-  protected void setOrganizationController(final OrganisationController controller) {
-    this.controller = controller;
+  protected ComponentAccessController() {
   }
 
   /**
@@ -158,9 +153,6 @@ public class ComponentAccessController extends AbstractAccessController<String> 
    * @return an organization controller instance.
    */
   private OrganisationController getOrganisationController() {
-    if (controller == null) {
-      controller = OrganisationControllerFactory.getOrganisationController();
-    }
     return controller;
   }
 }

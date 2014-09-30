@@ -22,33 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
-import java.util.Collection;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Check the access to a publication for a user.
  * @author neysseric
  */
-@Named
+@Singleton
+@PublicationAccessControl
 public class PublicationAccessController extends AbstractAccessController<PublicationPK> {
 
   @Inject
@@ -58,17 +57,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private OrganisationController controller;
 
   @Inject
+  private PublicationBm publicationService;
+
+  @Inject
   private ComponentHelper componentHelper;
 
-  public PublicationAccessController() {
-  }
-
-  /**
-   * For test only.
-   * @param accessController
-   */
-  PublicationAccessController(NodeAccessController accessController) {
-    this.accessController = accessController;
+  protected PublicationAccessController() {
   }
 
   @Override
@@ -121,8 +115,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
     return authorized;
   }
 
-  protected PublicationBm getPublicationBm() throws Exception {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  protected PublicationBm getPublicationBm() {
+    return publicationService;
   }
 
   /**
@@ -147,9 +141,6 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * @return a NodeAccessController instance.
    */
   protected NodeAccessController getNodeAccessController() {
-    if (accessController == null) {
-      accessController = new NodeAccessController();
-    }
     return accessController;
   }
   
@@ -158,9 +149,6 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * @return an organization controller instance.
    */
   private OrganisationController getOrganisationController() {
-    if (controller == null) {
-      controller = OrganisationControllerFactory.getOrganisationController();
-    }
     return controller;
   }
 }

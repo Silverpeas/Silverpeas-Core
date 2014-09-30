@@ -20,6 +20,7 @@
  */
 package org.silverpeas.util;
 
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 /**
@@ -35,7 +36,7 @@ public interface BeanContainer {
 
   public <T> T getBeanByName(String name);
 
-  public <T> T getBeanByType(Class<T> type);
+  public <T> T getBeanByType(Class<T> type, Class<? extends Annotation>... qualifiers);
 
   public <T> Set<T> getAllBeansByType(Class<T> type);
 }

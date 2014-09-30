@@ -45,7 +45,7 @@
 
   <ctx:component-scan base-package="com.silverpeas.scheduler"/>
   <ctx:component-scan base-package="com.silverpeas.calendar"/>
-  <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
+  <!-- YCH <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>-->
   <ctx:component-scan base-package="com.silverpeas.admin.service"/>
   <ctx:component-scan base-package="com.silverpeas.domains"/>
   <ctx:component-scan base-package="com.silverpeas.look"/>
@@ -63,7 +63,7 @@
   <ctx:component-scan base-package="org.silverpeas.admin.web"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
   <ctx:component-scan base-package="com.silverpeas.bundle.web" />
-  <ctx:component-scan base-package="org.silverpeas.accesscontrol" />
+  <!-- YCH <ctx:component-scan base-package="org.silverpeas.accesscontrol" />-->
   <ctx:component-scan base-package="org.silverpeas.admin.space"/>
   <ctx:component-scan base-package="org.silverpeas.admin.component"/>
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
@@ -208,8 +208,8 @@
         factory-method="getInstance"/>
 
   <!-- the provider of the differnt access controllers available in Silverpeas -->
-  <bean id="accessControllerProvider" class="com.silverpeas.accesscontrol.AccessControllerProvider"
-        factory-method="getInstance"/>
+  <!-- YCH <bean id="accessControllerProvider" class="com.silverpeas.accesscontrol.AccessControllerProvider"-->
+        <!--factory-method="getInstance"/>-->
 
   <!-- the provider of the video thumbnails service in Silverpeas -->
   <bean id="videoThumbnailExtractorFactory" class="org.silverpeas.media.video.VideoThumbnailExtractorFactory"

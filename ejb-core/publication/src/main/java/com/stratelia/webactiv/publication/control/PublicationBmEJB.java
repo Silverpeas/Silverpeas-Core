@@ -35,23 +35,14 @@ import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -71,12 +62,20 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -84,36 +83,33 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Class declaration
- *
- * @author
+ * Implementation of the PublicationBm interface
  */
 @Stateless(name = "Publication", description = "Stateless session bean to manage publications.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Transactional(value = Transactional.TxType.SUPPORTS)
 public class PublicationBmEJB implements PublicationBm {
 
-  @EJB
+  @Inject
   private NodeBm nodeBm;
-  @EJB
+  @Inject
   private CoordinatesBm coordinatesBm;
-  @EJB
+  @Inject
   private RatingBm ratingBm;
-  @EJB
+  @Inject
   private TagCloudBm tagCloudBm;
 
   @Inject
   private ComponentHelper componentHelper;
 
-  private static final long serialVersionUID = -829288807683338746L;
   private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
 
   @Override
   public PublicationDetail getDetail(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
-      PublicationPK publicationPk = PublicationDAO.selectByPrimaryKey(con, pubPK);
-      if (publicationPk != null) {
-        return loadTranslations(publicationPk.pubDetail);
+      PublicationDetail publicationDetail = PublicationDAO.selectByPrimaryKey(con, pubPK);
+      if (publicationDetail != null) {
+        return loadTranslations(publicationDetail);
       }
       return null;
     } catch (SQLException e) {
@@ -148,14 +144,14 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public PublicationPK createPublication(PublicationDetail detail) {
     Connection con = getConnection();
     try {
       int indexOperation = detail.getIndexOperation();
       SilverTrace.info("publication", "PublicationBmEJB.createPublication()",
           "root.MSG_GEN_PARAM_VALUE", "indexOperation = " + indexOperation);
-      int id = 0;
+      int id;
 
       try {
         id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
@@ -173,10 +169,7 @@ public class PublicationBmEJB implements PublicationBm {
       if (I18NHelper.isI18N) {
         try {
           createTranslations(con, detail);
-        } catch (SQLException ex) {
-          throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_TRANSLATIONS", ex);
-        } catch (UtilException ex) {
+        } catch (SQLException | UtilException ex) {
           throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_TRANSLATIONS", ex);
         }
@@ -187,7 +180,6 @@ public class PublicationBmEJB implements PublicationBm {
       if (useTagCloud) {
         createTagCloud(detail);
       }
-      detail.getPK().pubDetail = detail;
       return detail.getPK();
     } catch (Exception re) {
       throw new PublicationRuntimeException("PublicationBmEJB.createPublication()",
@@ -311,7 +303,7 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public void removePublication(PublicationPK pk) {
     Connection con = getConnection();
     try {
@@ -345,7 +337,7 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional
   public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
     Connection con = getConnection();
     try {
@@ -378,11 +370,7 @@ public class PublicationBmEJB implements PublicationBm {
       if (useTagCloud) {
         updateTagCloud(detail);
       }
-    } catch (FormException re) {
-      throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
-          "detail = " + detail, re);
-    } catch (PublicationTemplateException re) {
+    } catch (FormException | PublicationTemplateException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
           SilverpeasRuntimeException.ERROR, "publication.UPDATING_PUBLICATION_HEADER_FAILED",
           "detail = " + detail, re);
@@ -509,10 +497,7 @@ public class PublicationBmEJB implements PublicationBm {
               } else {
                 PublicationI18NDAO.addTranslation(con, translation);
               }
-            } catch (UtilException e) {
-              throw new PublicationRuntimeException("PublicationEJB.setDetail()",
-                  SilverpeasRuntimeException.ERROR, "publication.CANNOT_MANAGE_TRANSLATIONS", e);
-            } catch (SQLException e) {
+            } catch (UtilException | SQLException e) {
               throw new PublicationRuntimeException("PublicationEJB.setDetail()",
                   SilverpeasRuntimeException.ERROR, "publication.CANNOT_MANAGE_TRANSLATIONS", e);
             }
@@ -1192,7 +1177,7 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationPK pubPK, String sorting, String status) {
     ArrayList<String> statusList = null;
     if (status != null) {
-      statusList = new ArrayList<String>(1);
+      statusList = new ArrayList<>(1);
       statusList.add(status);
     }
     return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, sorting, statusList);
@@ -1261,8 +1246,7 @@ public class PublicationBmEJB implements PublicationBm {
   /**
    * Method declaration
    *
-   * @return
-   * @see
+   * @return a connection
    */
   private Connection getConnection() {
     try {
@@ -1301,10 +1285,7 @@ public class PublicationBmEJB implements PublicationBm {
             pubDetail.getPK().getInstanceId() + ':' + pubDetail.getInfoId());
         RecordSet set = pub.getRecordSet();
         set.indexRecord(pubDetail.getPK().getId(), pubDetail.getInfoId(), indexEntry);
-      } catch (FormException e) {
-        SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "",
-            e);
-      } catch (PublicationTemplateException e) {
+      } catch (FormException | PublicationTemplateException e) {
         SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "",
             e);
       }
@@ -1395,7 +1376,7 @@ public class PublicationBmEJB implements PublicationBm {
       Iterator<String> languages = pubDetail.getLanguages();
       while (languages.hasNext()) {
         String language = languages.next();
-        PublicationI18N translation = (PublicationI18N) pubDetail.getTranslation(language);
+        PublicationI18N translation = pubDetail.getTranslation(language);
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
@@ -1527,9 +1508,7 @@ public class PublicationBmEJB implements PublicationBm {
    *
    * @param pubPK
    * @param sorting
-   * @return
-   * @
-   * @see
+   * @return collection of publication details
    */
   @Override
   public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting) {
@@ -1555,9 +1534,10 @@ public class PublicationBmEJB implements PublicationBm {
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK + ", pubName = " + pubName);
     Connection con = getConnection();
     try {
-      PublicationPK primary = PublicationDAO.selectByPublicationName(con, pubPK, pubName);
-      if (primary != null) {
-        return primary.pubDetail;
+      PublicationDetail publicationDetail =
+          PublicationDAO.selectByPublicationName(con, pubPK, pubName);
+      if (publicationDetail != null) {
+        return publicationDetail;
       } else {
         SilverTrace.debug("publication", "PublicationEJB.ejbFindByName()",
             "root.EX_CANT_FIND_ENTITY", "name = " + pubName);
@@ -1586,10 +1566,10 @@ public class PublicationBmEJB implements PublicationBm {
         + nodeId);
     Connection con = getConnection();
     try {
-      PublicationPK primary =
+      PublicationDetail publicationDetail =
           PublicationDAO.selectByPublicationNameAndNodeId(con, pubPK, pubName, nodeId);
-      if (primary != null) {
-        return primary.pubDetail;
+      if (publicationDetail != null) {
+        return publicationDetail;
       } else {
         SilverTrace.debug("publication", "PublicationEJB.getDetailByNameAndNodeId()",
             "root.EX_CANT_FIND_ENTITY", "name=" + pubName + ", nodeId=" + nodeId);
@@ -1722,7 +1702,6 @@ public class PublicationBmEJB implements PublicationBm {
    * @param pubId
    * @param componentId
    * @return
-   * @
    */
   @Override
   public Collection<Coordinate> getCoordinates(String pubId, String componentId) {

@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.node.model;
 
-import java.io.Serializable;
 import org.silverpeas.util.WAPrimaryKey;
+
+import java.io.Serializable;
 
 /**
  * It's the Node PrimaryKey object It identify a Node
@@ -40,8 +41,6 @@ public class NodePK extends WAPrimaryKey implements Serializable {
   public static final String ROOT_NODE_ID = "0";
   public static final String BIN_NODE_ID = "1";
   public static final String UNCLASSED_NODE_ID = "2";
-  /** To apply the fat key pattern. */
-  transient public NodeDetail nodeDetail = null;
 
   /**
    * Constructor which set only the id

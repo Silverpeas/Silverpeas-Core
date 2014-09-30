@@ -27,22 +27,14 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.util.URLUtils;
+import org.silverpeas.util.*;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -54,8 +46,8 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
+import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 
 /**
  *
@@ -808,7 +800,7 @@ public class SimpleDocument implements Serializable {
 
     // Access is verified for sharing context
     AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
@@ -821,7 +813,7 @@ public class SimpleDocument implements Serializable {
    */
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), this);
   }
 
@@ -847,7 +839,7 @@ public class SimpleDocument implements Serializable {
 
     // Otherwise access is verified for download context
     AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }

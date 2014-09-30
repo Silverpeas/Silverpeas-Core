@@ -23,11 +23,9 @@
  */
 package com.silverpeas.accesscontrol;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.silverpeas.util.ServiceProvider;
 
-import java.util.Map;
+import java.lang.annotation.Annotation;
 
 /**
  * A provider of the different access controllers available in Silverpeas.
@@ -37,50 +35,15 @@ import java.util.Map;
  * container and they can need the services of an access controller. The AccessControllerProvider
  * aims to make available the different access controllers to such objects.
  */
-public class AccessControllerProvider implements ApplicationContextAware {
-
-  private static final AccessControllerProvider instance = new AccessControllerProvider();
-
-  private ApplicationContext context;
+public class AccessControllerProvider {
 
   /**
-   * Gets an instance of the AccessControllerProvider class.
-   * @return an AccessControllerProvider instance.
-   */
-  public static AccessControllerProvider getInstance() {
-    return instance;
-  }
-
-  /**
-   * Gets the access controller identified by the specified name.
-   * @param name the unique name of the access controller. It is the name under which it has been
-   * registered into the IoC container.
+   * Gets the access controller identified by the specified qualifier.
+   * @param qualifier the qualifier of the access controller requested.
    * @param <T> the type of the resource that is used in the access control mechanism.
    * @return the asked access controller.
    */
-  public static <T> AccessController<T> getAccessController(String name) {
-    return (AccessController<T>) getInstance().context.getBean(name);
-  }
-
-  /**
-   * Set the ApplicationContext that this object runs in.
-   * Normally this call will be used to initialize the object.
-   * <p>Invoked after population of normal bean properties but before an init callback such
-   * as {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()}
-   * or a custom init-method. Invoked after {@link org.springframework.context
-   * .ResourceLoaderAware#setResourceLoader},
-   * {@link org.springframework.context.ApplicationEventPublisherAware#setApplicationEventPublisher}
-   * and
-   * {@link org.springframework.context.MessageSourceAware}, if applicable.
-   * @param applicationContext the ApplicationContext object to be used by this object
-   * @throws org.springframework.context.ApplicationContextException in case of context
-   * initialization errors
-   * @throws org.springframework.beans.BeansException if thrown by application context methods
-   * @see org.springframework.beans.factory.BeanInitializationException
-   */
-  @Override
-  public void setApplicationContext(final ApplicationContext applicationContext)
-      throws BeansException {
-    this.context = applicationContext;
+  public static <T> AccessController<T> getAccessController(Class<? extends Annotation> qualifier) {
+    return (AccessController<T>) ServiceProvider.getService(AccessController.class, qualifier);
   }
 }

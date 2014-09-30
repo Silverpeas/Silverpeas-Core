@@ -25,20 +25,22 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.accesscontrol.ComponentAccessController;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.accesscontrol.ComponentAccessController;
+import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.web.servlet.RestRequest;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +54,10 @@ import java.io.IOException;
  */
 @Deprecated
 public class RestOnlineFileServer extends AbstractFileSender {
-
   private static final long serialVersionUID = 4039504051749955604L;
+
+  @Inject
+  private ComponentAccessController componentAccessController;
 
   @Override
   public void init(ServletConfig config) {
@@ -155,7 +159,6 @@ public class RestOnlineFileServer extends AbstractFileSender {
       throws Exception {
     SilverpeasWebUtil util = new SilverpeasWebUtil();
     MainSessionController controller = util.getMainSessionController(request.getWebRequest());
-    ComponentAccessController componentAccessController = new ComponentAccessController();
     if (controller != null) {
 
       if (object instanceof SimpleDocument) {
@@ -176,7 +179,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
   private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment)
       throws Exception {
     AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(userId, attachment,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }

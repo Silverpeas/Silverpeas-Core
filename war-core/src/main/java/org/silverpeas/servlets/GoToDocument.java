@@ -25,6 +25,7 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -66,7 +67,7 @@ public class GoToDocument extends GoTo {
     }
     if (isLoggedIn) {
       AccessController<SimpleDocument> accessController =
-          AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+          AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
       boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), version,
           AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
       if (!isAccessAuthorized) {

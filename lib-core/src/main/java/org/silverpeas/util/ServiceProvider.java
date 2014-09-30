@@ -1,5 +1,6 @@
 package org.silverpeas.util;
 
+import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -42,8 +43,8 @@ public final class ServiceProvider {
   private ServiceProvider() {
   }
 
-  public static <T> T getService(Class<T> type) {
-    return beanContainer().getBeanByType(type);
+  public static <T> T getService(Class<T> type, Class<? extends Annotation>... qualifiers) {
+    return beanContainer().getBeanByType(type, qualifiers);
   }
 
   public static <T> T getService(String name) {

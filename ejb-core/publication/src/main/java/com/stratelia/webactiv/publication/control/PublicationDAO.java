@@ -597,17 +597,11 @@ public class PublicationDAO {
     invalidateLastPublis(pk.getComponentName());
   }
 
-  public static PublicationPK selectByPrimaryKey(Connection con,
+  public static PublicationDetail selectByPrimaryKey(Connection con,
       PublicationPK primaryKey) throws SQLException {
 
     try {
-      PublicationDetail detail = loadRow(con, primaryKey);
-      PublicationPK primary = new PublicationPK(primaryKey.getId(), detail.getPK().
-          getInstanceId());
-
-      primary.pubDetail = detail;
-      return primary;
-
+      return loadRow(con, primaryKey);
     } catch (PublicationRuntimeException e) {
       /*
        * NodeRuntimeException thrown by loadRow() should be replaced by returning null (not found)
@@ -616,33 +610,14 @@ public class PublicationDAO {
     }
   }
 
-  public static PublicationPK selectByPublicationName(Connection con,
+  public static PublicationDetail selectByPublicationName(Connection con,
       PublicationPK primaryKey, String name) throws SQLException {
-
-    PublicationPK primary = null;
-    PublicationDetail detail = selectByName(con, primaryKey, name);
-
-    if (detail != null) {
-      primary = new PublicationPK(detail.getPK().getId(), primaryKey);
-      primary.pubDetail = detail;
-    }
-
-    return primary;
+    return selectByName(con, primaryKey, name);
   }
 
-  public static PublicationPK selectByPublicationNameAndNodeId(Connection con,
+  public static PublicationDetail selectByPublicationNameAndNodeId(Connection con,
       PublicationPK primaryKey, String name, int nodeId) throws SQLException {
-
-    PublicationPK primary = null;
-    PublicationDetail detail = selectByNameAndNodeId(con, primaryKey, name,
-        nodeId);
-
-    if (detail != null) {
-      primary = new PublicationPK(detail.getPK().getId(), primaryKey);
-      primary.pubDetail = detail;
-    }
-
-    return primary;
+    return selectByNameAndNodeId(con, primaryKey, name, nodeId);
   }
 
   private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
@@ -2055,8 +2030,8 @@ public class PublicationDAO {
    * used(PostgreSQL,Oracle,MMS) .
    * @param con
    * @param userId
-   * @param firstIndex
-   * @param nbElement
+   * @param begin
+   * @param end
    * @return List<SocialInformationPublication>
    * @throws SQLException
    */
@@ -2097,11 +2072,12 @@ public class PublicationDAO {
   /**
    * get list of socialInformation of my contacts according to the type of data base
    * used(PostgreSQL,Oracle,MMS) .
-   * @return: List <SocialInformation>
-   * @param : String myId
-   * @param :List<String> myContactsIds
-   * @param :List<String> options list of Available Components name
-   * @param int numberOfElement, int firstIndex
+   * @param con
+   * @param myContactsIds
+   * @param options list of Available Components name
+   * @param begin
+   * @param end
+   * @return List <SocialInformation>
    */
   public static List<SocialInformation> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)

@@ -897,16 +897,11 @@ public class NodeDAO {
    * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
-  public static NodePK selectByPrimaryKey(Connection con, NodePK pk)
+  public static NodeDetail selectByPrimaryKey(Connection con, NodePK pk)
       throws SQLException {
 
     try {
-      NodeDetail detail = loadRow(con, pk);
-      NodePK primary = new NodePK(pk.getId(), pk);
-
-      primary.nodeDetail = detail;
-      return primary;
-
+      return loadRow(con, pk);
     } catch (NodeRuntimeException e) {
       /*
        * NodeRuntimeException thrown by loadRow() should be replaced by returning null (not found)
@@ -915,49 +910,17 @@ public class NodeDAO {
     }
   }
 
-  public static NodePK selectByNameAndFatherId(Connection con, NodePK pk,
+  public static NodeDetail selectByNameAndFatherId(Connection con, NodePK pk,
       String name, int nodeFatherId) throws SQLException {
 
     try {
-      NodeDetail detail = loadRow(con, pk, name, nodeFatherId);
-      NodePK primary = new NodePK(detail.getNodePK().getId(), detail.getNodePK().
-          getInstanceId());
-
-      primary.nodeDetail = detail;
-      return primary;
-
+      return loadRow(con, pk, name, nodeFatherId);
     } catch (NodeRuntimeException e) {
       /*
        * NodeRuntimeException thrown by loadRow() should be replaced by returning null (not found)
        */
       return null;
     }
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param con
-   * @param pk
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  public static Collection<NodePK> selectByFatherPrimaryKey(Connection con, NodePK pk)
-      throws SQLException {
-
-    Collection<NodeDetail> children = getChildrenDetails(con, pk);
-    List<NodePK> result = new ArrayList<NodePK>();
-    NodeDetail detail;
-    NodePK primary;
-
-    for (Iterator<NodeDetail> i = children.iterator(); i.hasNext();) {
-      detail = i.next();
-      primary = detail.getNodePK();
-      primary.nodeDetail = detail;
-      result.add(primary);
-    }
-    return result;
   }
 
   public static NodeDetail loadRow(Connection con, NodePK nodePK)

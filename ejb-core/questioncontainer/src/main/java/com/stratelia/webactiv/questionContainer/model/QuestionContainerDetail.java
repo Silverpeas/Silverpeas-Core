@@ -24,12 +24,7 @@
 
 package com.stratelia.webactiv.questionContainer.model;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-
 import com.silverpeas.SilverpeasContent;
-
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -37,6 +32,11 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.questionContainer.control.QuestionContainerContentManager;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 public class QuestionContainerDetail implements java.io.Serializable, SilverpeasContent {
 
@@ -169,7 +169,7 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

@@ -23,12 +23,11 @@
  */
 package com.silverpeas.web;
 
+import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.web.mock.AccessControllerMock;
-import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.Client;
@@ -40,11 +39,14 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import javax.ws.rs.core.MultivaluedMap;
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
+import org.silverpeas.accesscontrol.SpaceAccessController;
 import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -157,14 +159,18 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
    * Denies the access to the silverpeas resources to all users.
    */
   public void denieAuthorizationToUsers() {
-    getAccessControllerMock().setAuthorization(false);
+    //  getAccessControllerMock().setAuthorization(false);
+    throw new NotImplementedException(
+        "Migration : the implementation of denieAuthorizationToUsers is not yet performed...");
   }
 
   /**
    * Denies the access to the silverpeas spaces to all users.
    */
   public void denieSpaceAuthorizationToUsers() {
-    getMockedSpaceAccessController().setAuthorization(false);
+    // getMockedSpaceAccessController().setAuthorization(false);
+    throw new NotImplementedException(
+        "Migration : the implementation of denieSpaceAuthorizationToUsers is not yet performed...");
   }
 
   /**
@@ -200,11 +206,11 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return getTestResources().getOrganizationControllerMock();
   }
 
-  protected AccessControllerMock getAccessControllerMock() {
+  protected AccessController getAccessControllerMock() {
     return getTestResources().getAccessControllerMock();
   }
 
-  protected SpaceAccessControllerMock getMockedSpaceAccessController() {
+  protected SpaceAccessController getMockedSpaceAccessController() {
     return getTestResources().getSpaceAccessControllerMock();
   }
 

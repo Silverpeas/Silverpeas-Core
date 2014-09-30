@@ -24,13 +24,14 @@
 
 package com.silverpeas.comment.model;
 
-import java.util.Date;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.WAPrimaryKey;
+
+import java.util.Date;
 
 /**
  * This object contains the description of document
@@ -214,7 +215,7 @@ public class Comment implements SilverpeasContent {
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

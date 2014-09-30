@@ -75,6 +75,13 @@
   <name>Silverpeas Core</name>
   <url>http://www.silverpeas.org/docs/core</url>
 
+  <dependencies>
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>

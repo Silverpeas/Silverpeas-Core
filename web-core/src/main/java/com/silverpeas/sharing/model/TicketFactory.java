@@ -24,12 +24,6 @@
  */
 package com.silverpeas.sharing.model;
 
-import java.util.Date;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
@@ -37,6 +31,12 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.accesscontrol.PublicationAccessControl;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import java.util.Date;
 
 /**
  *
@@ -81,14 +81,14 @@ public class TicketFactory {
           AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk, null);
       return doc.isSharingAllowedForRolesFrom(UserDetail.getById(creatorId));
     } else if (Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
-      AccessController<NodePK> nodeAccessController =
-          AccessControllerProvider.getAccessController("nodeAccessController");
+      AccessController<NodePK> nodeAccessController = AccessControllerProvider
+          .getAccessController(org.silverpeas.accesscontrol.NodeAccessControl.class);
       return nodeAccessController.isUserAuthorized(creatorId,
           new NodePK(String.valueOf(sharedObjectId), componentId),
               AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     } else if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
       AccessController<PublicationPK> publicationAccessController =
-          AccessControllerProvider.getAccessController("publicationAccessController");
+          AccessControllerProvider.getAccessController(PublicationAccessControl.class);
       return publicationAccessController.isUserAuthorized(creatorId,
           new PublicationPK(String.valueOf(sharedObjectId), componentId),
             AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));

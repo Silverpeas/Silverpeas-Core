@@ -22,30 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Set;
 
 /**
  * Check the access to a node for a user.
  * @author ehugonnet
  */
-@Named
+@Singleton
+@NodeAccessControl
 public class NodeAccessController extends AbstractAccessController<NodePK> {
 
   @Inject
@@ -54,15 +55,10 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
   @Inject
   private OrganisationController controller;
 
-  public NodeAccessController() {
-  }
+  @Inject
+  private NodeBm nodeService;
 
-  /**
-   * For tests only.
-   * @param controller
-   */
-  NodeAccessController(OrganisationController controller) {
-    this.controller = controller;
+  protected NodeAccessController() {
   }
 
   @Override
@@ -134,8 +130,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
     }
   }
 
-  public NodeBm getNodeBm() throws Exception {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+  public NodeBm getNodeBm() {
+    return nodeService;
   }
 
   /**
@@ -143,9 +139,6 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
    * @return an organization controller instance.
    */
   private OrganisationController getOrganisationController() {
-    if (controller == null) {
-      controller = OrganisationControllerFactory.getOrganisationController();
-    }
     return controller;
   }
 
@@ -154,9 +147,6 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
    * @return a ComponentAccessController instance.
    */
   protected ComponentAccessController getComponentAccessController() {
-    if (componentAccessController == null) {
-      componentAccessController = new ComponentAccessController();
-    }
     return componentAccessController;
   }
 }

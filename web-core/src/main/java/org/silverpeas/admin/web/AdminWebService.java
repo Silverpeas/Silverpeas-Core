@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.OrganisationController;
  * entities.
  * @author Yohann Chastagnier
  */
-@Named
 public class AdminWebService {
 
   @Inject
