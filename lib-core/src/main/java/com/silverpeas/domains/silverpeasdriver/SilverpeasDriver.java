@@ -325,20 +325,20 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   public void deleteGroup(String groupId) {
     SPGroup group = groupManager.getById(groupId);
     if (group != null) {
-      for (SPUser user : group.getUsers()) {
-        user.getGroups().remove(group);
+      for (SPGroup subGroup : new ArrayList<SPGroup>(group.getSubGroups())) {
+        deleteGroup(String.valueOf(subGroup.getId()));
       }
-      for (SPGroup subGroup : group.getSubGroups()) {
-        subGroup.setParent(group.getParent());
-        group.getParent().getSubGroups().add(subGroup);
-        groupManager.saveAndFlush(subGroup);
+      SPGroup reloadedGroup = groupManager.getById(Integer.valueOf(groupId));
+      for (SPUser user : new ArrayList<SPUser>(reloadedGroup.getUsers())) {
+        user.getGroups().remove(reloadedGroup);
       }
-      SPGroup parent = group.getParent();
+      SPGroup parent = reloadedGroup.getParent();
       if (parent != null) {
-        parent.getSubGroups().remove(group);
+        parent.getSubGroups().remove(reloadedGroup);
         groupManager.saveAndFlush(parent);
       }
-      groupManager.delete(group);
+      groupManager.delete(reloadedGroup);
+      groupManager.flush();
     }
   }
 
