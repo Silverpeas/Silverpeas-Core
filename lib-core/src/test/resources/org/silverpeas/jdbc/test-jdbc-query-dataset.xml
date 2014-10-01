@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright (C) 2000 - 2014 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception. You should have recieved a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<dataset>
+  <a_table id="0" value="value_0"/>
+  <a_table id="1" value="value_1"/>
+  <a_table id="2" value="value_2"/>
+  <a_table id="3" value="value_3"/>
+  <a_table id="4" value="value_4"/>
+  <a_table id="5" value="value_5"/>
+  <a_table id="6" value="value_6"/>
+  <a_table id="7" value="value_7"/>
+  <a_table id="8" value="value_8"/>
+  <a_table id="9" value="value_9"/>
+  <a_table id="10" value="value_10"/>
+  <a_table id="11" value="value_11"/>
+  <a_table id="12" value="value_12"/>
+  <a_table id="13" value="value_13"/>
+  <a_table id="14" value="value_14"/>
+  <a_table id="15" value="value_15"/>
+  <a_table id="16" value="value_16"/>
+  <a_table id="17" value="value_17"/>
+  <a_table id="18" value="value_18"/>
+  <a_table id="19" value="value_19"/>
+  <a_table id="20" value="value_20"/>
+  <a_table id="21" value="value_21"/>
+  <a_table id="22" value="value_22"/>
+  <a_table id="23" value="value_23"/>
+  <a_table id="24" value="value_24"/>
+  <a_table id="25" value="value_25"/>
+  <a_table id="26" value="value_26"/>
+  <a_table id="27" value="value_27"/>
+  <a_table id="28" value="value_28"/>
+  <a_table id="29" value="value_29"/>
+  <a_table id="30" value="value_30"/>
+  <a_table id="31" value="value_31"/>
+  <a_table id="32" value="value_32"/>
+  <a_table id="33" value="value_33"/>
+  <a_table id="34" value="value_34"/>
+  <a_table id="35" value="value_35"/>
+  <a_table id="36" value="value_36"/>
+  <a_table id="37" value="value_37"/>
+  <a_table id="38" value="value_38"/>
+  <a_table id="39" value="value_39"/>
+  <a_table id="40" value="value_40"/>
+  <a_table id="41" value="value_41"/>
+  <a_table id="42" value="value_42"/>
+  <a_table id="43" value="value_43"/>
+  <a_table id="44" value="value_44"/>
+  <a_table id="45" value="value_45"/>
+  <a_table id="46" value="value_46"/>
+  <a_table id="47" value="value_47"/>
+  <a_table id="48" value="value_48"/>
+  <a_table id="49" value="value_49"/>
+  <a_table id="50" value="value_50"/>
+  <a_table id="51" value="value_51"/>
+  <a_table id="52" value="value_52"/>
+  <a_table id="53" value="value_53"/>
+  <a_table id="54" value="value_54"/>
+  <a_table id="55" value="value_55"/>
+  <a_table id="56" value="value_56"/>
+  <a_table id="57" value="value_57"/>
+  <a_table id="58" value="value_58"/>
+  <a_table id="59" value="value_59"/>
+  <a_table id="60" value="value_60"/>
+  <a_table id="61" value="value_61"/>
+  <a_table id="62" value="value_62"/>
+  <a_table id="63" value="value_63"/>
+  <a_table id="64" value="value_64"/>
+  <a_table id="65" value="value_65"/>
+  <a_table id="66" value="value_66"/>
+  <a_table id="67" value="value_67"/>
+  <a_table id="68" value="value_68"/>
+  <a_table id="69" value="value_69"/>
+  <a_table id="70" value="value_70"/>
+  <a_table id="71" value="value_71"/>
+  <a_table id="72" value="value_72"/>
+  <a_table id="73" value="value_73"/>
+  <a_table id="74" value="value_74"/>
+  <a_table id="75" value="value_75"/>
+  <a_table id="76" value="value_76"/>
+  <a_table id="77" value="value_77"/>
+  <a_table id="78" value="value_78"/>
+  <a_table id="79" value="value_79"/>
+  <a_table id="80" value="value_80"/>
+  <a_table id="81" value="value_81"/>
+  <a_table id="82" value="value_82"/>
+  <a_table id="83" value="value_83"/>
+  <a_table id="84" value="value_84"/>
+  <a_table id="85" value="value_85"/>
+  <a_table id="86" value="value_86"/>
+  <a_table id="87" value="value_87"/>
+  <a_table id="88" value="value_88"/>
+  <a_table id="89" value="value_89"/>
+  <a_table id="90" value="value_90"/>
+  <a_table id="91" value="value_91"/>
+  <a_table id="92" value="value_92"/>
+  <a_table id="93" value="value_93"/>
+  <a_table id="94" value="value_94"/>
+  <a_table id="95" value="value_95"/>
+  <a_table id="96" value="value_96"/>
+  <a_table id="97" value="value_97"/>
+  <a_table id="98" value="value_98"/>
+  <a_table id="99" value="value_99"/>
+</dataset>

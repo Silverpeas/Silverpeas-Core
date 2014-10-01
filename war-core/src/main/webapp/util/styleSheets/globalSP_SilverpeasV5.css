@@ -6499,6 +6499,56 @@ form .forms .fields > li:nth-child(even) {
 	display: none;
 }
 
+/*******************************/
+/* Profil */
+/*******************************/
+
+#identity-main .field {
+	clear:left;
+    width: 96%;
+}
+
+#profil-groups-belong #form-row-desc {
+ 	width:98%
+}
+
+.skinFieldset .fields  {
+	padding:0;
+}
+
+#identity-main legend {
+    background: url("/silverpeas/util/icons/contactCard.gif") no-repeat scroll 11px 0 transparent;
+}
+
+#profil table.tableArrayPane {
+	margin:10px;
+}
+
+#profil-groups-belong legend {
+    background: url("/silverpeas/util/icons/groups.png") no-repeat scroll 7px 0 transparent;
+}
+
+#profil-spaces-management legend {
+    background: url("/silverpeas/util/icons/cog.png") no-repeat scroll 11px 0 transparent;
+}
+
+#profiles legend {
+    background: url("/silverpeas/util/icons/characteristic.png") no-repeat scroll 11px 0 transparent;
+}
+
+#affected-profil .champ-ui-dialog img{
+	border:0;
+	vertical-align:bottom
+}
+
+#affected-profil input[type="radio"]{
+	vertical-align:bottom;
+	background-color:transparent
+}
+
+#profil .ui-dialog #sourceRightsName{
+	width:88%;
+
 /**** Surchage plugin jquery rate it ****/
 div.silverpeas-rating {
   display:inline;

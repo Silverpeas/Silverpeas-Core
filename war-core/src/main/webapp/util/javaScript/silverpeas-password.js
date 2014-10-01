@@ -33,15 +33,14 @@
     nbMatchingCombinedRules: null,
     combinedRules: null,
     extraRuleMessage: null,
-    initialized: false,
-    doInitialize: function() {
-      if (!$.password.initialized) {
-        $.password.initialized = true;
-        var policy = __getJSonData($.password.webServiceContext + '/password/policy');
-        $.password.rules = policy.rules;
-        $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
-        $.password.combinedRules = policy.combinedRules;
-        $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
+    doInitialize : function() {
+      if ($.password.rules == null) {
+        __getJSonData($.password.webServiceContext + '/password/policy').then(function(policy) {
+          $.password.rules = policy.rules;
+          $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
+          $.password.combinedRules = policy.combinedRules;
+          $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
+        });
       }
     }
   };
@@ -110,7 +109,7 @@
       }
 
       // Checking
-      __checking($this, $box, options);
+      return __checking($this, $box, options);
     });
   }
 
@@ -122,57 +121,67 @@
    * @private
    */
   function __checking($target, $box, options) {
+    var deferred = new $.Deferred();
 
     // Checking
-    var passwordCheck = __postJSonData($.password.webServiceContext + '/password/policy/checking',
-            {value: $target.val()});
+    __postJSonData($.password.webServiceContext + '/password/policy/checking',
+        {value : $target.val()}).then(function(passwordCheck) {
 
-    // All rules are verified by default
-    $box.find('li').each(function() {
-      var $rule = $(this);
-      if ($rule.attr('id')) {
-        if (!$rule.hasClass('combined')) {
-          __switchStatusStyleClass($rule, 'success');
-        } else {
-          if ($.inArray($rule.attr('id'), passwordCheck.combinedRuleIdsInError) < 0) {
-            __switchStatusStyleClass($rule, 'success');
-          } else {
-            __switchStatusStyleClass($rule, 'error');
-          }
-        }
-      }
-    });
+          // Ajax concurrency
+          $(document).ready(function() {
 
-    try {
-      if (passwordCheck.isCorrect) {
-        if (options.onSuccess) {
-          options.onSuccess.call(this);
-        }
-      } else {
-        // Indicate the rules in error
-        $.each(passwordCheck.requiredRuleIdsInError, function(index, value) {
-          $box.find('li[id="' + value + '"]').each(function() {
-            var $rule = $(this);
-            if (!$rule.hasClass('combined')) {
-              __switchStatusStyleClass($rule, 'error');
+            // All rules are verified by default
+            $box.find('li').each(function() {
+              var $rule = $(this);
+              if ($rule.attr('id')) {
+                if (!$rule.hasClass('combined')) {
+                  __switchStatusStyleClass($rule, 'success');
+                } else {
+                  if ($.inArray($rule.attr('id'), passwordCheck.combinedRuleIdsInError) < 0) {
+                    __switchStatusStyleClass($rule, 'success');
+                  } else {
+                    __switchStatusStyleClass($rule, 'error');
+                  }
+                }
+              }
+            });
+
+            try {
+              if (passwordCheck.isCorrect) {
+                if (options.onSuccess) {
+                  options.onSuccess.call(this);
+                }
+              } else {
+                // Indicate the rules in error
+                $.each(passwordCheck.requiredRuleIdsInError, function(index, value) {
+                  $box.find('li[id="' + value + '"]').each(function() {
+                    var $rule = $(this);
+                    if (!$rule.hasClass('combined')) {
+                      __switchStatusStyleClass($rule, 'error');
+                    }
+                  });
+                });
+                if (!passwordCheck.isRuleCombinationRespected) {
+                  __switchStatusStyleClass($box.find('li[id="' + __getCombinedRuleId() + '"]'),
+                      'error');
+                }
+                if (options.onError) {
+                  options.onError.call(this);
+                }
+                $box.show();
+              }
+            } catch (e) {
+              alert("Silverpeas JQuery password plugin error ...");
+              if (options.onError) {
+                options.onError.call(this);
+              }
+              $box.show();
+            } finally {
+              deferred.resolve()
             }
           });
         });
-        if (!passwordCheck.isRuleCombinationRespected) {
-          __switchStatusStyleClass($box.find('li[id="' + __getCombinedRuleId() + '"]'), 'error');
-        }
-        if (options.onError) {
-          options.onError.call(this);
-        }
-        $box.show();
-      }
-    } catch (e) {
-      alert("Silverpeas JQuery password plugin error ...");
-      if (options.onError) {
-        options.onError.call(this);
-      }
-      $box.show();
-    }
+    return deferred.promise();
   }
 
   /**
@@ -248,6 +257,7 @@
 
     // Events
     $target.keyup(function(event) {
+      var deferred = new $.Deferred();
       // Toggle info box display on 'Escape'
       if (event.keyCode === 27) {
         $box.toggle();
@@ -256,17 +266,30 @@
       // and no 'shift' (16) key and no 'tab' key (9) and no 'Escape' and no 'Print Screen'
       if ((event.keyCode !== 44 && event.keyCode !== 27 && event.keyCode !== 9 &&
               event.keyCode !== 16) && $box.css('display') !== 'none') {
-        __checking($target, $box, {});
+        __checking($target, $box, {}).then(function() {
+          deferred.resolve();
+        });
+      } else {
+        deferred.resolve();
       }
 
-      // Position
-      if ($box.css('display') !== 'none') {
-        // Checking when displaying the box from 'Escape' key event
-        if (event.keyCode === 27 && $target.val()) {
-          __checking($target, $box, {});
+      deferred.then(function() {
+        var deferred2 = new $.Deferred();
+        // Position
+        if ($box.css('display') !== 'none') {
+          // Checking when displaying the box from 'Escape' key event
+          if (event.keyCode === 27 && $target.val()) {
+            __checking($target, $box, {}).then(function() {
+              deferred2.resolve();
+            });
+          } else {
+            deferred2.resolve();
+          }
+          deferred2.then(function() {
+            __setBoxInfoPosition($target, $box);
+          });
         }
-        __setBoxInfoPosition($target, $box);
-      }
+      });
     });
 
     $(window).resize(function() {
@@ -276,11 +299,18 @@
       }
     });
     $target.focus(function() {
+      var deferred = new $.Deferred();
       if ($target.val()) {
-        __checking($target, $box, {});
+        __checking($target, $box, {}).then(function() {
+          deferred.resolve();
+        });
+      } else {
+        deferred.resolve();
       }
-      $box.show();
-      __setBoxInfoPosition($target, $box);
+      deferred.then(function() {
+        $box.show();
+        __setBoxInfoPosition($target, $box);
+      });
       return true;
     });
     $target.blur(function() {
@@ -349,7 +379,7 @@
    * @private
    */
   function __getJSonData(url) {
-    return __performAjaxRequest({url: url, type: 'GET', dataType: 'json'});
+    return __performAjaxRequest({url : url, type : 'GET', dataType : 'json', async : false});
   }
 
   /**
@@ -369,23 +399,22 @@
   }
 
   /**
-   * Private function that performs an ajax request. By default, the request is
-   * synchroned, that is to say the javascript running is waiting for the return of ajax request
-   * request.
+   * Private function that performs an ajax request.
    */
   function __performAjaxRequest(settings) {
-    var result = {};
+    var deferred = new $.Deferred();
 
     // Default options.
     // url, type, dataType are missing.
     var options = {
-      cache: false,
-      async: false,
-      success: function(data) {
-        result = data;
+      cache : false,
+      success : function(data) {
+        deferred.resolve(data);
       },
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
+      error : function(jqXHR, textStatus, errorThrown) {
+        window.console &&
+        window.console.log('Silverpeas Check Password Request - ERROR - ' + errorThrown);
+        deferred.reject();
       }
     };
 
@@ -394,7 +423,7 @@
 
     // Ajax request
     $.ajax(options);
-    return result;
+    return deferred.promise();
   }
 
 // Initialization indicator.
