@@ -1213,7 +1213,7 @@ public final class Admin {
   /**
    * Delete the index for the specified component.
    *
-   * @param componentInst
+   * @param componentId
    */
   private void deleteComponentIndex(String componentId) {
     FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
@@ -1732,7 +1732,7 @@ public final class Admin {
         }
 
         if (StringUtil.isDefined(inheritedProfile.getId())) {
-          updateProfileInst(inheritedProfile, null, false);
+          updateProfileInst(inheritedProfile, null, false, null);
         } else {
           if (!inheritedProfile.isEmpty()) {
             addProfileInst(inheritedProfile, null, false);
@@ -2171,11 +2171,11 @@ public final class Admin {
   }
 
   public String updateProfileInst(ProfileInst profileInstNew) throws AdminException {
-    return updateProfileInst(profileInstNew, null, true);
+    return updateProfileInst(profileInstNew, null, true, null);
   }
 
   public String updateProfileInst(ProfileInst profileInstNew, String userId) throws AdminException {
-    return updateProfileInst(profileInstNew, userId, true);
+    return updateProfileInst(profileInstNew, userId, true, null);
   }
 
   /**
@@ -2184,11 +2184,15 @@ public final class Admin {
    * @param newProfile
    * @param userId
    * @param startNewTransaction
+   * @param rightAssignationMode the data is used from a copy/replace from operation. It is not a
+   * nice way to handle this kind of information, but it is not possible to refactor the right
+   * services.
    * @return
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
   private String updateProfileInst(ProfileInst newProfile, String userId,
-      boolean startNewTransaction) throws AdminException {
+      boolean startNewTransaction, final RightAssignationContext.MODE rightAssignationMode)
+      throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
         .getCurrentDomainDriverManager();
     if (StringUtil.isDefined(userId)) {
@@ -2199,7 +2203,8 @@ public final class Admin {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
       }
-      profileManager.updateProfileInst(domainDriverManager, newProfile);
+      profileManager
+          .updateProfileInst(groupManager, domainDriverManager, newProfile, rightAssignationMode);
       if (StringUtil.isDefined(
           userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
         ComponentInst component = getComponentInst(newProfile.getComponentFatherId(), true, null);
@@ -4141,21 +4146,7 @@ public final class Admin {
     if (allGroupsOfUser == null) {
       // group ids of user is not yet processed
       // process it and store it in cache
-      allGroupsOfUser = new ArrayList<String>();
-
-      String[] directGroupIds = groupManager.getDirectGroupsOfUser(domainDriverManager, userId);
-      for (String directGroupId : directGroupIds) {
-        Group group = groupManager.getGroup(directGroupId);
-        if (group != null) {
-          allGroupsOfUser.add(group.getId());
-          while (group != null && StringUtil.isDefined(group.getSuperGroupId())) {
-            group = groupManager.getGroup(group.getSuperGroupId());
-            if (group != null) {
-              allGroupsOfUser.add(group.getId());
-            }
-          }
-        }
-      }
+      allGroupsOfUser = groupManager.getAllGroupsOfUser(domainDriverManager, userId);
       // store groupIds of user in cache
       GroupCache.setAllGroupIdsOfUser(userId, allGroupsOfUser);
     }
@@ -5050,7 +5041,7 @@ public final class Admin {
    */
   public String[] getProfileIds(String sUserId) throws AdminException {
     try {
-      // Get the component instance from cache
+      // Get the profile ids from cache
       String[] asProfilesIds = cache.getProfileIds(sUserId);
 
       if (asProfilesIds == null) {
@@ -5065,7 +5056,7 @@ public final class Admin {
 
       return asProfilesIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getProfiles", SilverpeasException.ERROR,
+      throw new AdminException("Admin.getProfileIds", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
     }
   }
@@ -5074,16 +5065,7 @@ public final class Admin {
    * Get all the profiles Id for the given group
    */
   public String[] getProfileIdsOfGroup(String sGroupId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory
-        .getCurrentDomainDriverManager();
-    try {
-      // retrieve value from database
-      return profileManager.getProfileIdsOfGroup(domainDriverManager, sGroupId);
-    } catch (Exception e) {
-      throw new AdminException("Admin.getProfileIdsOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
-          "group Id : '" + sGroupId + "'", e);
-    }
+    return getDirectComponentProfileIdsOfGroup(sGroupId);
   }
 
   /**
@@ -5890,8 +5872,8 @@ public final class Admin {
     Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
         getCurrentDomainDriverManager();
-    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD", "userId="
-        + userId);
+    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD",
+        "userId=" + userId);
     try {
       // Start transaction
       domainDriverManager.startTransaction(false);
@@ -7150,7 +7132,7 @@ public final class Admin {
    * Gets all the profile instances defined for the specified resource in the specified component
    * instance.
    *
-   * @param resourceId the unique idenifier of a resource managed in a component instance.
+   * @param resourceId the unique identifier of a resource managed in a component instance.
    * @param instanceId the unique identifier of the component instance.
    * @return a list of profile instances.
    */
@@ -7165,5 +7147,380 @@ public final class Admin {
     }
     throw new AdminPersistenceException("Admin.getProfileInstFor", SilverTrace.TRACE_LEVEL_ERROR,
         "Bad resource identifier: " + resourceId);
+  }
+
+  /**
+   * Get all the space profiles Id for the given user without group transitivity.
+   */
+  private String[] getDirectSpaceProfileIdsOfUser(String sUserId) throws AdminException {
+    try {
+      DomainDriverManager domainDriverManager =
+          DomainDriverManagerFactory.getCurrentDomainDriverManager();
+      return spaceProfileManager.getSpaceProfileIdsOfUserType(domainDriverManager, sUserId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getSpaceProfileIdsOfUserType", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
+    }
+  }
+
+  /**
+   * Get all the space profiles Id for the given group
+   */
+  private String[] getDirectSpaceProfileIdsOfGroup(String groupId) throws AdminException {
+    try {
+      DomainDriverManager domainDriverManager =
+          DomainDriverManagerFactory.getCurrentDomainDriverManager();
+      return spaceProfileManager.getSpaceProfileIdsOfGroupType(domainDriverManager, groupId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getSpaceProfileIdsOfGroupType", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_PROFILES", "group Id : '" + groupId + "'", e);
+    }
+  }
+
+  /**
+   * Get all the component profiles Id for the given user without group transitivity.
+   * (component object profiles are not retrieved)
+   */
+  @SuppressWarnings("unchecked")
+  private String[] getDirectComponentProfileIdsOfUser(String sUserId) throws AdminException {
+    try {
+      return profileManager.getProfileIdsOfUser(sUserId, Collections.EMPTY_LIST);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getComponentProfileIdsOfUserType", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_GROUP_COMPONENT_PROFILES", "user Id : '" + sUserId + "'", e);
+    }
+  }
+
+  /**
+   * Get all the component profiles Id for the given group.
+   * (component object profiles are not retrieved)
+   */
+  @SuppressWarnings("unchecked")
+  private String[] getDirectComponentProfileIdsOfGroup(String groupId) throws AdminException {
+    try {
+      return profileManager.getProfileIdsOfGroup(groupId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getComponentProfileIdsOfGroupType", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_GROUP_COMPONENT_PROFILES", "group Id : '" + groupId + "'", e);
+    }
+  }
+
+  /**
+   * Get all the component object profiles Id for the given user.
+   * (direct component profiles are not retrieved)
+   */
+  @SuppressWarnings("unchecked")
+  private String[] getComponentObjectProfileIdsOfUserType(String userId) throws AdminException {
+    try {
+      // retrieve value from database
+      return profileManager.getAllComponentObjectProfileIdsOfUser(userId, Collections.EMPTY_LIST);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getComponentObjectProfileIdsOfUserType",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + userId + "'",
+          e);
+    }
+  }
+
+  /**
+   * Get all the component object profiles Id for the given group.
+   * (direct component profiles are not retrieved)
+   */
+  private String[] getComponentObjectProfileIdsOfGroupType(String sGroupId) throws AdminException {
+    try {
+      // retrieve value from database
+      return profileManager.getAllComponentObjectProfileIdsOfGroup(sGroupId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getComponentObjectProfileIdsOfGroupType",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
+          "group Id : '" + sGroupId + "'", e);
+    }
+  }
+
+  /*
+   * Add target profiles (space, components, nodes)
+   */
+  private void addTargetProfiles(RightAssignationContext context, String[] sourceSpaceProfileIds,
+      String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) throws AdminException {
+
+    //Add space rights (and sub-space and components, by inheritance)
+    for (String spaceProfileId : sourceSpaceProfileIds) {
+      SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
+      switch (context.getTargetType()) {
+        case USER:
+          currentSourceSpaceProfile.addUser(context.getTargetId());
+          break;
+        case GROUP:
+          currentSourceSpaceProfile.addGroup(context.getTargetId());
+          break;
+      }
+      updateSpaceProfileInst(currentSourceSpaceProfile, context.getAuthor(), false);
+    }
+
+    //Add component rights
+    for (String profileId : sourceComponentProfileIds) {
+      ProfileInst currentSourceProfile = getProfileInst(profileId);
+      ComponentInst currentComponent =
+          getComponentInst(currentSourceProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
+
+      if (currentComponent.getStatus() == null &&
+          !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        switch (context.getTargetType()) {
+          case USER:
+            currentSourceProfile.addUser(context.getTargetId());
+            break;
+          case GROUP:
+            currentSourceProfile.addGroup(context.getTargetId());
+            break;
+        }
+        updateProfileInst(currentSourceProfile, context.getAuthor(), false, context.getMode());
+      }
+    }
+
+    //Add nodes rights
+    for (String profileId : sourceNodeProfileIds) {
+      ProfileInst currentSourceProfile = getProfileInst(profileId);
+      ComponentInst currentComponent =
+          getComponentInst(currentSourceProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
+
+      if (currentComponent.getStatus() == null &&
+          !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        switch (context.getTargetType()) {
+          case USER:
+            currentSourceProfile.addUser(context.getTargetId());
+            break;
+          case GROUP:
+            currentSourceProfile.addGroup(context.getTargetId());
+            break;
+        }
+        updateProfileInst(currentSourceProfile, context.getAuthor(), false, context.getMode());
+      }
+    }
+  }
+
+  /*
+   * Delete target profiles about spaces, components and component objects (node for example).
+   */
+  private void deleteTargetProfiles(RightAssignationContext context,
+      final String[] spaceProfileIdsToDeleteForTarget, final String[] componentProfileIdsForTarget)
+      throws AdminException {
+
+    // Delete space rights (and sub-space and components, by inheritance) for target
+    for (String spaceProfileId : spaceProfileIdsToDeleteForTarget) {
+      SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
+      switch (context.getTargetType()) {
+        case USER:
+          currentTargetSpaceProfile.removeUser(context.getTargetId());
+          break;
+        case GROUP:
+          currentTargetSpaceProfile.removeGroup(context.getTargetId());
+          break;
+      }
+      updateSpaceProfileInst(currentTargetSpaceProfile, context.getAuthor(), false);
+    }
+
+    // Delete component and node rights for target (it the same Profile manager that handles
+    // component and node rights)
+    for (String profileId : componentProfileIdsForTarget) {
+      ProfileInst currentTargetProfile = getProfileInst(profileId);
+      ComponentInst currentComponent =
+          getComponentInst(currentTargetProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
+
+      if (currentComponent.getStatus() == null &&
+          !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        switch (context.getTargetType()) {
+          case USER:
+            currentTargetProfile.removeUser(context.getTargetId());
+            break;
+          case GROUP:
+            currentTargetProfile.removeGroup(context.getTargetId());
+            break;
+        }
+        updateProfileInst(currentTargetProfile, context.getAuthor(), false, context.getMode());
+      }
+    }
+  }
+
+  /**
+   * Centralized method to copy or replace rights.
+   * @param context the context that defined what the treatment must perform.
+   * @throws AdminException
+   */
+  private void assignRightsFromSourceToTarget(RightAssignationContext context)
+      throws AdminException {
+
+    DomainDriverManager ddManager = DomainDriverManagerFactory.getCurrentDomainDriverManager();
+
+    try {
+      ddManager.startTransaction(false);
+
+      if (context.areSourceAndTargetEqual()) {
+        //target = source, so nothing is done
+        return;
+      }
+
+      String[] spaceProfileIdsToCopy = new String[0];
+      String[] componentProfileIdsToCopy = new String[0];
+      String[] componentObjectProfileIdsToCopy = new String[0];
+      String[] spaceProfileIdsToReplace = new String[0];
+      String[] componentProfileIdsToReplace = new String[0];
+
+      // Loading existing source profile data identifiers
+      switch (context.getSourceType()) {
+        case USER:
+          spaceProfileIdsToCopy = getDirectSpaceProfileIdsOfUser(context.getSourceId());
+          componentProfileIdsToCopy = getDirectComponentProfileIdsOfUser(context.getSourceId());
+          if (context.isAssignObjectRights()) {
+            componentObjectProfileIdsToCopy =
+                getComponentObjectProfileIdsOfUserType(context.getSourceId());
+          }
+          break;
+        case GROUP:
+          spaceProfileIdsToCopy = getDirectSpaceProfileIdsOfGroup(context.getSourceId());
+          componentProfileIdsToCopy = getDirectComponentProfileIdsOfGroup(context.getSourceId());
+          if (context.isAssignObjectRights()) {
+            componentObjectProfileIdsToCopy =
+                getComponentObjectProfileIdsOfGroupType(context.getSourceId());
+          }
+          break;
+      }
+      // Loading existing target profile data identifiers
+      if (RightAssignationContext.MODE.REPLACE.equals(context.getMode())) {
+        switch (context.getTargetType()) {
+          case USER:
+            spaceProfileIdsToReplace = getDirectSpaceProfileIdsOfUser(context.getTargetId());
+            componentProfileIdsToReplace =
+                getDirectComponentProfileIdsOfUser(context.getTargetId());
+            break;
+          case GROUP:
+            spaceProfileIdsToReplace = getDirectSpaceProfileIdsOfGroup(context.getTargetId());
+            componentProfileIdsToReplace =
+                getDirectComponentProfileIdsOfGroup(context.getTargetId());
+            break;
+        }
+      }
+
+
+      // Deleting the current rights of the targeted resource (into the transaction)
+      deleteTargetProfiles(context, spaceProfileIdsToReplace, componentProfileIdsToReplace);
+
+      // Adding the new rights for the targeted resource (into the transaction)
+      addTargetProfiles(context, spaceProfileIdsToCopy, componentProfileIdsToCopy,
+          componentObjectProfileIdsToCopy);
+
+      // Committing all the modified profiles
+      ddManager.commit();
+
+    } catch (Exception e) {
+      // Roll back the transactions
+      try {
+        ddManager.rollback();
+        cache.resetCache();
+      } catch (Exception e1) {
+        SilverTrace.error(MODULE_ADMIN, "Admin.addSpaceInst", "root.EX_ERR_ROLLBACK", e1);
+      }
+      throw new AdminException("Admin.assignRightsFromSourceToTarget", SilverpeasException.ERROR,
+          "admin.EX_ERR_ASSIGN_RIGHTS", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+
+  /*
+   * Assign rights of a user to a user
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceUserId : the user id of the source user
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromUserToUser(RightAssignationContext.MODE operationMode,
+      String sourceUserId, String targetUserId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    RightAssignationContext context =
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromUserId(sourceUserId).toUserId(targetUserId);
+    assignRightsFromSourceToTarget(context);
+  }
+
+  /*
+   * Assign rights of a user to a group
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceUserId : the user id of the source user
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromUserToGroup(RightAssignationContext.MODE operationMode,
+      String sourceUserId, String targetGroupId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    RightAssignationContext context =
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromUserId(sourceUserId).toGroupId(targetGroupId);
+    assignRightsFromSourceToTarget(context);
+  }
+
+  /*
+   * Assign rights of a group to a user
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceGroupId : the group id of the source group
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromGroupToUser(RightAssignationContext.MODE operationMode,
+      String sourceGroupId, String targetUserId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    RightAssignationContext context =
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromGroupId(sourceGroupId).toUserId(targetUserId);
+    assignRightsFromSourceToTarget(context);
+  }
+
+  /*
+   * Assign rights of a group to a group
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceGroupId : the group id of the source group
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromGroupToGroup(RightAssignationContext.MODE operationMode,
+      String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    RightAssignationContext context =
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromGroupId(sourceGroupId).toGroupId(targetGroupId);
+    assignRightsFromSourceToTarget(context);
+  }
+
+  /**
+   * Initializing a right assignation context.
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   * @return the initialized {@link RightAssignationContext}
+   */
+  private RightAssignationContext initializeRightAssignationContext(
+      RightAssignationContext.MODE operationMode, boolean nodeAssignRights, String authorId) {
+    final RightAssignationContext context;
+    switch (operationMode) {
+      case COPY:
+      default:
+        context = RightAssignationContext.copy();
+        break;
+      case REPLACE:
+        context = RightAssignationContext.replace();
+        break;
+    }
+    if (!nodeAssignRights) {
+      context.withoutAssigningComponentObjectRights();
+    }
+    return context.setAuthor(authorId);
   }
 }

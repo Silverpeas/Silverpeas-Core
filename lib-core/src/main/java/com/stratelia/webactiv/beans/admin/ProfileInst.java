@@ -61,6 +61,9 @@ public class ProfileInst implements Serializable, Cloneable {
     m_alUsers = new ArrayList<String>();
   }
 
+  @Override
+  @SuppressWarnings(
+      {"unchecked", "CloneDoesntDeclareCloneNotSupportedException", "CloneDoesntCallSuperClone"})
   public Object clone() {
     ProfileInst pi = new ProfileInst();
     pi.m_sName = m_sName;
@@ -124,7 +127,9 @@ public class ProfileInst implements Serializable, Cloneable {
   }
 
   public void addGroup(String sGroupId) {
-    m_alGroups.add(sGroupId);
+    if (!m_alGroups.contains(sGroupId)) {
+      m_alGroups.add(sGroupId);
+    }
   }
 
   public void removeGroup(String sGroupId) {
@@ -148,7 +153,9 @@ public class ProfileInst implements Serializable, Cloneable {
   }
 
   public void addUser(String sUserId) {
-    m_alUsers.add(sUserId);
+    if (!m_alUsers.contains(sUserId)) {
+      m_alUsers.add(sUserId);
+    }
   }
 
   public void removeUser(String sUserId) {
@@ -164,11 +171,15 @@ public class ProfileInst implements Serializable, Cloneable {
   }
 
   public void addUsers(List<String> users) {
-    m_alUsers.addAll(users);
+    ArrayList<String> a = new ArrayList<String>(users);
+    a.removeAll(this.m_alUsers);
+    m_alUsers.addAll(a);
   }
 
   public void addGroups(List<String> groups) {
-    m_alGroups.addAll(groups);
+    ArrayList<String> a = new ArrayList<String>(groups);
+    a.removeAll(this.m_alGroups);
+    m_alGroups.addAll(a);
   }
 
   public boolean isInherited() {
