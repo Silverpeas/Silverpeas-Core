@@ -979,6 +979,39 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Space Profile related functions
   // ----------------------------------------------
+  
+  /**
+   * All the space profiles to which the user belongs
+   * @return an array of profile IDs
+   */
+  public String[] getSpaceProfileIds(String sUserId) {
+    SilverTrace.info("admin", "AdminController.getSpaceProfileIds",
+        "root.MSG_GEN_ENTER_METHOD");
+    try {
+      return getAdminService().getSpaceProfileIds(sUserId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.getSpaceProfileIds",
+          "admin.MSG_ERR_GET_USERPROFILE", e);
+      return null;
+    }
+  }
+  
+  /**
+   * All the space profiles to which the group belongs
+   * @return an array of profile IDs
+   */
+  public String[] getSpaceProfileIdsOfGroup(String groupId) {
+    SilverTrace.info("admin", "AdminController.getSpaceProfileIdsOfGroup",
+        "root.MSG_GEN_ENTER_METHOD");
+    try {
+      return getAdminService().getSpaceProfileIdsOfGroup(groupId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.getSpaceProfileIdsOfGroup",
+          "admin.MSG_ERR_GET_USERPROFILE", e);
+      return null;
+    }
+  }
+  
   /**
 * Return the space profile Instance corresponding to the given space profile id
 */

@@ -1673,6 +1673,38 @@ public final class Admin {
       subSpace.addSpaceProfileInst(subSpaceProfile);
     }
   }
+  
+  /**
+   * Get all the space profiles Id for the given user
+   */
+  public String[] getSpaceProfileIds(String sUserId) throws AdminException {
+    try {
+
+      DomainDriverManager domainDriverManager = DomainDriverManagerFactory
+          .getCurrentDomainDriverManager();
+      return spaceProfileManager.getSpaceProfileIdsOfUser(domainDriverManager, sUserId);
+      
+    } catch (Exception e) {
+      throw new AdminException("Admin.getSpaceProfileIds", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
+    }
+  }
+  
+  /**
+   * Get all the space profiles Id for the given group
+   */
+  public String[] getSpaceProfileIdsOfGroup(String groupId) throws AdminException {
+    try {
+
+      DomainDriverManager domainDriverManager = DomainDriverManagerFactory
+          .getCurrentDomainDriverManager();
+      return spaceProfileManager.getSpaceProfileIdsOfGroup(domainDriverManager, groupId);
+      
+    } catch (Exception e) {
+      throw new AdminException("Admin.getSpaceProfileIdsOfGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_PROFILES", "group Id : '" + groupId + "'", e);
+    }
+  }
 
   public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
       AdminException {

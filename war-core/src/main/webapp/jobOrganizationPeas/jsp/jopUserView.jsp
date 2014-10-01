@@ -26,27 +26,38 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.AdminController"%>
+<%@ page import="com.silverpeas.jobOrganizationPeas.control.JobOrganizationPeasSessionController"%>
 
 <%@ include file="check.jsp" %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="context" value="${pageContext.request.contextPath}"/>
 
 <%
   Board board = gef.getBoard();
   String userId = (String) request.getAttribute("userid"); //peut être null
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><%=resource.getString("GML.popupTitle")%></title>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
-    <script language="javascript">
-      <!--
+    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+	<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
+	<view:includePlugin name="jquery"/>
+	
+    <script type="text/javascript">
+    <!--
     function MM_reloadPage(init) {  //reloads the window if Nav4 resized
         if (init == true)
           with (navigator) {
@@ -63,7 +74,7 @@
         chemin = '<%=(m_context + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION))%>showUserSubscriptions.jsp?userId=<%=userId%>';
         largeur = "600";
         hauteur = "440";
-        SP_openWindow(chemin, "", largeur, hauteur, "resizable=yes,scrollbars=yes");
+        SP_openWindow(chemin, "pdcWindow", largeur, hauteur, "resizable=yes,scrollbars=yes");
       }
 
       MM_reloadPage(true);
@@ -93,7 +104,60 @@
         }
         componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
       }
-      //-->
+      
+	function isCorrectForm() {
+		var errorMsg = "";
+		var errorNb = 0;
+		var sourceRightsId = stripInitialWhitespace(document.rightsForm.sourceRightsId.value);
+
+		if (isWhitespace(sourceRightsId)) {
+        	errorMsg+=" - '<fmt:message key="JOP.rightsFrom"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+        	errorNb++;
+		} 
+
+		var result = false;
+		switch (errorNb) {
+        	case 0 :
+				result = true;
+				break;
+			case 1 :
+				errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+				window.alert(errorMsg);
+				break;
+			default :
+				errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+				window.alert(errorMsg);
+				break;
+		}
+		return result;
+	}
+      
+      $(function() {
+          $("#assignRightsDialog").dialog({
+          autoOpen: false,
+          resizable: false,
+          modal: true,
+          height: "auto",
+          width: 500,
+          buttons: {
+            "<fmt:message key="GML.ok"/>": function() {
+            	if (isCorrectForm()) {
+                	document.rightsForm.action = "AssignRights";
+                	document.rightsForm.submit();
+            	}
+            },
+            "<fmt:message key="GML.cancel" />": function() {
+              $(this).dialog("close");
+            }
+          }
+        });
+      });  
+      
+      function assignSameRights() {
+    	  $("#assignRightsDialog").dialog("open");
+      }
+      
+    //-->
     </script>
     <%
       out.println(gef.getLookStyleSheet());
@@ -105,10 +169,12 @@
       <%
         operationPane.addOperation(resource.getIcon("JOP.userPanelAccess"), resource.getString(
             "JOP.select"), "Main");
-        if (userId != null && userId != "") {
+      	if (StringUtil.isDefined(userId)) {
           operationPane.addOperation(resource.getIcon("PDCSubscription.subscriptions"), resource.
               getString("PDCSubscription.show"), "javascript:showPDCSubscription()");
         }
+        operationPane.addOperation(resource.getIcon("JOP.userPanelAccess"), resource.getString(
+            "JOP.assignRights"), "javascript:assignSameRights()");
         out.println(window.printBefore());
         out.println(frame.printBefore());
       %>
@@ -126,59 +192,59 @@
           <!--Nom-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.lastName"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.lastName"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(userInfos.getLastName())%>
+              <%=EncodeHelper.javaStringToHtmlString(userInfos.getLastName())%>
             </td>
           </tr>
 
           <!--Prénom-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.surname"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.surname"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(userInfos.getFirstName())%>
+              <%=EncodeHelper.javaStringToHtmlString(userInfos.getFirstName())%>
             </td>
           </tr>
 
           <!---mail-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.eMail"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.eMail"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <a href="mailto:<%=Encode.javaStringToHtmlString(userInfos.geteMail())%>"><%=Encode.javaStringToHtmlString(userInfos.geteMail())%></a>
+              <a href="mailto:<%=EncodeHelper.javaStringToHtmlString(userInfos.geteMail())%>"><%=Encode.javaStringToHtmlString(userInfos.geteMail())%></a>
             </td>
           </tr>
 
           <!--Login-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.login"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.login"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(userInfos.getLogin())%>
+              <%=EncodeHelper.javaStringToHtmlString(userInfos.getLogin())%>
             </td>
           </tr>
 
           <!--mot de passe-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("JOP.silverPassword"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("JOP.silverPassword"))%>
               :
             </td>
             <td align='left' valign='baseline'>
               <%
                 if (userInfos.isPasswordAvailable() && userInfos.isPasswordValid()) {
-                  out.print(Encode.javaStringToHtmlString(resource.getString("GML.yes")));
+                  out.print(EncodeHelper.javaStringToHtmlString(resource.getString("GML.yes")));
                 } else {
-                  out.print(Encode.javaStringToHtmlString(resource.getString("GML.no")));
+                  out.print(EncodeHelper.javaStringToHtmlString(resource.getString("GML.no")));
                 }
               %>
             </td>
@@ -187,11 +253,11 @@
           <!--Login-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("JOP.domain"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("JOP.domain"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(userInfos.getDomain().getName())%>
+              <%=EncodeHelper.javaStringToHtmlString(userInfos.getDomain().getName())%>
             </td>
           </tr>
 
@@ -208,14 +274,14 @@
           <!--Specific Info-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(userInfos.getSpecificLabel(resource.
+              <%=EncodeHelper.javaStringToHtmlString(userInfos.getSpecificLabel(resource.
             getLanguage(),
             currentKey))%>
               :
             </td>
             <td align=left valign='baseline'>
               <%
-                out.print(Encode.javaStringToHtmlString(userInfos.getValue(currentKey)));
+                out.print(EncodeHelper.javaStringToHtmlString(userInfos.getValue(currentKey)));
 
               %>
             </td>
@@ -224,26 +290,27 @@
               }
             }
           } else if (groupInfos != null) {//Group
+				String superGroupName = (String) request.getAttribute("superGroupName");
           %>
           <!--Nom-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.name"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.name"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(groupInfos.getName())%>
+              <%=EncodeHelper.javaStringToHtmlString(groupInfos.getName())%>
             </td>
           </tr>
 
           <!--Nbre d'utilisateurs-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.users"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.users"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(String.valueOf(
+              <%=EncodeHelper.javaStringToHtmlString(String.valueOf(
         groupInfos.getUserIds().length))%>
             </td>
           </tr>
@@ -251,34 +318,22 @@
           <!--Description-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("GML.description"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("GML.description"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%=Encode.javaStringToHtmlString(groupInfos.getDescription())%>
+              <%=EncodeHelper.javaStringToHtmlString(groupInfos.getDescription())%>
             </td>
           </tr>
 
           <!--Groupe parent-->
           <tr>
             <td class='textePetitBold'>
-              <%=Encode.javaStringToHtmlString(resource.getString("JOP.parentGroup"))%>
+              <%=EncodeHelper.javaStringToHtmlString(resource.getString("JOP.parentGroup"))%>
               :
             </td>
             <td align=left valign='baseline'>
-              <%
-                String parentId = groupInfos.getSuperGroupId();
-                if (parentId == null || parentId.equals("")) {
-              %>
-              -
-              <%} else {
-                AdminController adminController = (AdminController) request.getAttribute("adminController");
-              %>
-              <%=Encode.javaStringToHtmlString(adminController.getGroupName(
-          groupInfos.getSuperGroupId()))%>
-              <%
-                }
-              %>
+              <%=EncodeHelper.javaStringToHtmlString(superGroupName)%>
             </td>
           </tr>
           <%
@@ -420,5 +475,60 @@
         });
       });
     </script>
+    
+    <!-- Dialog choice rights -->
+    <fmt:message key="JOP.sourceRightsUserPanel" var="sourceRightsUserPanelIcon" bundle="${icons}" />
+    <fmt:message key="JOP.mandatory" var="mandatoryIcon" bundle="${icons}" />
+	<div id="assignRightsDialog" title="<fmt:message key="JOP.assignRights"/>">
+	  <form name="rightsForm" action="#" method="post">
+	    <table>
+	    	<tr>
+	    		<td></td>
+	          	<td>
+	          		<input type="radio" name="choiceAssignRights" id="choiceAssignRights" value="<%=JobOrganizationPeasSessionController.REPLACE_RIGHTS%>" checked="checked"/><fmt:message key="JOP.replaceRights"/>
+	          		<% 
+	          		if (userInfos != null) {//User
+	          		  out.println(" "+EncodeHelper.javaStringToHtmlString(userInfos.getDisplayedName())+" ");
+	          		} else if (groupInfos != null) {//Group
+	          		  out.println(" "+EncodeHelper.javaStringToHtmlString(groupInfos.getName())+" ");
+	          		}
+          			%>
+          			<fmt:message key="GML.by"/>
+	          	</td>
+	        </tr>
+	        <tr>
+	        	<td></td>
+	          	<td>
+	          		<input type="radio" name="choiceAssignRights" id="choiceAssignRights" value="<%=JobOrganizationPeasSessionController.ADD_RIGHTS%>"/><fmt:message key="JOP.addRights"/>
+	          		<% 
+	          		if (userInfos != null) {//User
+	          		  out.println(" "+EncodeHelper.javaStringToHtmlString(userInfos.getDisplayedName())+" ");
+	          		} else if (groupInfos != null) {//Group
+	          		  out.println(" "+EncodeHelper.javaStringToHtmlString(groupInfos.getName())+" ");
+	          		}
+          			%>
+	          	</td>
+	        </tr>
+	        <tr>
+	        	<td><fmt:message key="JOP.rightsFrom"/> : </td>
+	          	<td>
+			        <input type="text" name="sourceRightsName" id="sourceRightsName" value="" size="60" readonly="readonly"/>
+			        <a href="#" onclick="javascript:SP_openWindow('SelectRightsUserOrGroup','SelectUserGroupWindow',800,600,'');">
+						<img src="${context}${sourceRightsUserPanelIcon}" width="15" height="15" border="0" 
+							alt="<fmt:message key="JOP.sourceRightsUserPanel"/>"
+							title="<fmt:message key="JOP.sourceRightsUserPanel"/>"
+							align="absmiddle"/>
+					</a>
+			        &nbsp;<img src="${context}${mandatoryIcon}" width="5" height="5" border="0"/>
+			        <input type="hidden" name="sourceRightsId" id="sourceRightsId" value=""/>
+			        <input type="hidden" name="sourceRightsType" id="sourceRightsType" value=""/>   
+	          	</td>
+	        </tr>
+		</table>
+		<div class="legend">
+			<img src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+		</div>
+	  </form>
+	</div>
   </body>
 </html>

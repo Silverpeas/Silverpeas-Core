@@ -56,6 +56,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   private String[] currentSpaces = null;
   private List<String[]> currentProfiles = null;
   private Map<String, WAComponent> componentOfficialNames = getAdminController().getAllComponents();
+  
+  public static final String REPLACE_RIGHTS = "1";
+  public static final String ADD_RIGHTS = "2";
 
   /**
    * Standard Session Controller Constructeur
@@ -205,6 +208,20 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     }
     return currentGroup;
   }
+  
+  /**
+   * @return String
+   */
+  public String getCurrentSuperGroupName() {
+    String currentSuperGroupName = "-";
+    if (currentGroup != null) {
+      String parentId = currentGroup.getSuperGroupId();
+      if (StringUtil.isDefined(parentId)) {
+        currentSuperGroupName = getAdminController().getGroupName(parentId);
+      }
+    }
+    return currentSuperGroupName;
+  }
 
   /**
    * @return array of space names (manageable by the current group or user)
@@ -318,9 +335,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   /*
-   * Retour du initialisation userPanel un user ou (exclusif) un groupe
+   * UserPanel initialization : a user or (exclusive) a group
    */
-  public String initSelectionPeas() {
+  public String initSelectionUserOrGroup() {
     String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
@@ -338,7 +355,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    // Contraintes
     sel.setMultiSelect(false);
     sel.setPopupMode(false);
     sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
@@ -346,21 +362,174 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   /*
-   * Retour du UserPanel
+   * Back from UserPanel
    */
-  public void retourSelectionPeas() {
+  public void backSelectionUserOrGroup() {
     Selection sel = getSelection();
     String id;
 
     id = sel.getFirstSelectedElement();
     setCurrentUserId(id);
-//    if ((id != null) && (id.length() > 0)) {
-//      setCurrentUserId(id);
-//    }
+
     id = sel.getFirstSelectedSet();
     setCurrentGroupId(id);
-//    if ((id != null) && (id.length() > 0)) {
-//      setCurrentGroupId(id);
-//    }
+  }
+  
+  /*
+   * UserPanel initialization : a user or (exclusive) a group
+   */
+  public String initSelectionRightsUserOrGroup() {
+    String hostSpaceName = getString("JOP.pseudoSpace");
+    String cancelUrl = "";
+    PairObject hostComponentName = new PairObject(getString("JOP.pseudoPeas"),
+        cancelUrl);
+    String hostUrl = "";
+
+    Selection sel = getSelection();
+    sel.resetAll();
+    sel.setHostSpaceName(hostSpaceName);
+    sel.setHostComponentName(hostComponentName);
+    sel.setHostPath(null);
+
+    sel.setGoBackURL(hostUrl);
+    sel.setCancelURL(cancelUrl);
+    
+    sel.setHtmlFormName("rightsForm");
+    sel.setHtmlFormElementName("sourceRightsName");
+    sel.setHtmlFormElementId("sourceRightsId");
+    sel.setHtmlFormElementType("sourceRightsType");
+
+    sel.setMultiSelect(false);
+    sel.setPopupMode(true);
+    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
+    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+  }
+  
+  /*
+   * Delete target profiles
+   */
+  private void deleteTargetProfiles() {
+    String[] targetSpaceProfileIds = new String[0];
+    String[] targetProfileIds = new String[0];
+    
+    if (getCurrentUserId() != null) {//target is a user
+      targetSpaceProfileIds = getAdminController().getSpaceProfileIds(getCurrentUserId());
+      targetProfileIds = getAdminController().getProfileIds(getCurrentUserId());
+    } else if (getCurrentGroupId() != null) {//target is a group
+      targetSpaceProfileIds = getAdminController().getSpaceProfileIdsOfGroup(getCurrentGroupId());
+      targetProfileIds = getAdminController().getProfileIdsOfGroup(getCurrentGroupId());
+    }
+    
+    //Delete space rights (and sub-space and components, by inheritance) for target
+    for (String spaceProfileId : targetSpaceProfileIds) {
+      SpaceProfileInst currentTargetSpaceProfile = getAdminController().getSpaceProfileInst(spaceProfileId);
+      if (getCurrentUserId() != null) {//target is a user
+        currentTargetSpaceProfile.removeUser(getCurrentUserId());
+      } else if (getCurrentGroupId() != null) {//target is a group
+        currentTargetSpaceProfile.removeGroup(getCurrentGroupId());
+      }
+      getAdminController().updateSpaceProfileInst(currentTargetSpaceProfile, getUserId());  
+    }
+    
+    //Delete component rights for target
+    for (String profileId : targetProfileIds) {
+      ProfileInst currentTargetProfile = getAdminController().getProfileInst(profileId);
+      ComponentInst currentComponent = getAdminController().getComponentInst(
+          currentTargetProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
+     
+      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        if (getCurrentUserId() != null) {//target is a user
+          currentTargetProfile.removeUser(getCurrentUserId());
+        } else if (getCurrentGroupId() != null) {//target is a group
+          currentTargetProfile.removeGroup(getCurrentGroupId());
+        }
+        getAdminController().updateProfileInst(currentTargetProfile, getUserId());
+      }
+    }
+  }
+  
+  /*
+   * Add target profiles (space and components)
+   */
+  private void addTargetProfiles(String[] sourceSpaceProfileIds, String[] sourceProfileIds) {
+    
+    //Add space rights (and sub-space and components, by inheritance)
+    for (String spaceProfileId : sourceSpaceProfileIds) {
+      SpaceProfileInst currentSourceSpaceProfile = getAdminController().getSpaceProfileInst(spaceProfileId);
+      
+      if (getCurrentUserId() != null) {//target is a user
+        currentSourceSpaceProfile.addUser(getCurrentUserId());
+      } else if (getCurrentGroupId() != null) {//target is a group
+        currentSourceSpaceProfile.addGroup(getCurrentGroupId());
+      }
+      getAdminController().updateSpaceProfileInst(currentSourceSpaceProfile, getUserId());       
+    }
+    
+    //Add component rights
+    for (String profileId : sourceProfileIds) {
+      ProfileInst currentSourceProfile = getAdminController().getProfileInst(profileId);
+      ComponentInst currentComponent = getAdminController().getComponentInst(
+          currentSourceProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
+     
+      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        if (getCurrentUserId() != null) {//target is a user
+          currentSourceProfile.addUser(getCurrentUserId());
+        } else if (getCurrentGroupId() != null) {//target is a group
+          currentSourceProfile.addGroup(getCurrentGroupId());
+        }
+        getAdminController().updateProfileInst(currentSourceProfile, getUserId());
+      }
+    }
+  }
+  
+  /*
+   * Assign rights to current selected user or group
+   */
+  public void assignRights(String choiceAssignRights, String sourceRightsId, String sourceRightsType) {
+    if (JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights) || 
+        JobOrganizationPeasSessionController.ADD_RIGHTS.equals(choiceAssignRights)) {
+      
+      String[] sourceSpaceProfileIds = new String[0];
+      String[] sourceProfileIds = new String[0];
+      boolean targetSameSource = false;
+      
+      if(StringUtil.isDefined(sourceRightsId)) {
+        if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+          if (getCurrentUserId() != null && sourceRightsId.equals(getCurrentUserId())) {//target = source
+            targetSameSource = true;
+          } else {
+            sourceSpaceProfileIds = getAdminController().getSpaceProfileIds(sourceRightsId);
+            sourceProfileIds = getAdminController().getProfileIds(sourceRightsId);
+          }
+        } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+          if (getCurrentGroupId() != null && sourceRightsId.equals(getCurrentGroupId())) {//target = source
+            targetSameSource = true;
+          } else {
+            sourceSpaceProfileIds = getAdminController().getSpaceProfileIdsOfGroup(sourceRightsId);
+            sourceProfileIds = getAdminController().getProfileIdsOfGroup(sourceRightsId);
+          }
+        }
+      }
+      
+      //Replace rights : first, delete profiles of target user / group
+      if (StringUtil.isDefined(sourceRightsId) && 
+          !targetSameSource && 
+          JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights)) {
+        
+        deleteTargetProfiles();
+      }
+      
+      //Second : add rights
+      addTargetProfiles(sourceSpaceProfileIds, sourceProfileIds);
+
+      if(!targetSameSource) {
+        //force to refresh
+        currentProfiles = null;
+      }
+    }
   }
 }

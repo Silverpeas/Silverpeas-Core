@@ -81,13 +81,24 @@ public class JobOrganizationPeasRequestRouter extends
         "User=" + jobOrganizationSC.getUserId() + " Function=" + function);
 
     try {
-      if (function.startsWith("ViewUserOrGroup")) {
+      if (function.equals("Main")) {
+        destination = jobOrganizationSC.initSelectionUserOrGroup();
+      } else if (function.equals("ViewUserOrGroup")) {
         // get user panel data
-        jobOrganizationSC.retourSelectionPeas();
+        jobOrganizationSC.backSelectionUserOrGroup();
         destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
-      } else {
-        destination = jobOrganizationSC.initSelectionPeas();
-      }
+      } else if (function.equals("SelectRightsUserOrGroup")) {
+        destination = jobOrganizationSC.initSelectionRightsUserOrGroup();
+      } else if (function.startsWith("AssignRights")) {
+        String choiceAssignRights = request.getParameter("choiceAssignRights"); //1 = replace rights | 2 = add rights
+        String sourceRightsId = request.getParameter("sourceRightsId");
+        String sourceRightsType = request.getParameter("sourceRightsType"); //Set | Element
+        
+        jobOrganizationSC.assignRights(choiceAssignRights, sourceRightsId, sourceRightsType);
+        
+        destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
+      } 
+      
       if (destination.endsWith("jopUserView.jsp")) {
         if (jobOrganizationSC.getCurrentUserId() != null) { // l'utilisateur a sélectionné un user
           request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
@@ -96,7 +107,7 @@ public class JobOrganizationPeasRequestRouter extends
         } else if (jobOrganizationSC.getCurrentGroupId() != null) {// l'utilisateur a sélectionné un
           // group
           request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
-          request.setAttribute("adminController", jobOrganizationSC.getAdminController());
+          request.setAttribute("superGroupName", jobOrganizationSC.getCurrentSuperGroupName());
         }
         request.setAttribute("spaces", jobOrganizationSC.getCurrentSpaces());
         request.setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());
