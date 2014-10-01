@@ -32,25 +32,13 @@ import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 
+import javax.inject.Singleton;
+
 /**
  * A decoder/encoder of iCal4J dates with Silverpeas dates.
  */
+@Singleton
 public class ICal4JDateCodec {
-
-  /**
-   * Sets a shareable instance accessible through the anICal4DateCodec() class method. It is always
-   * possible to manage in a multiple instances way this codec by calling explicitly and directly
-   * the constructor.
-   */
-  private static final ICal4JDateCodec instance = new ICal4JDateCodec();
-
-  /**
-   * Gets an instance of the ICal4JDateCodec class.
-   * @return an ICal4JDateCodec instance.
-   */
-  public static ICal4JDateCodec anICal4JDateCodec() {
-    return instance;
-  }
 
   /**
    * Encodes a Silverpeas date into an iCal4J date.

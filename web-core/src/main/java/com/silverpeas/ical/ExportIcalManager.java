@@ -24,7 +24,7 @@ import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -115,8 +115,7 @@ public class ExportIcalManager {
     String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX
         + getUserId() + ".ics";
     String filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
-    ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
 
     try {
       FileWriter fileWriter = new FileWriter(filePath);
@@ -167,8 +166,7 @@ public class ExportIcalManager {
     String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX
         + getUserId() + ".ics";
     String filePath = null;
-    ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
 
     try {
       List<CalendarEvent> events = getCalendarEvents(null, null);

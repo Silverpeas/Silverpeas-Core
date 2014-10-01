@@ -26,36 +26,19 @@ package com.silverpeas.export;
 
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.export.ical.ICalExporter;
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * A factory of exporters in Silverpeas. The factory hides the concrete implementation used in the
  * exporting process and it wraps the life-cycle of the exporter objects.
  */
-public class ExporterFactory {
-
-  private static final ExporterFactory instance = new ExporterFactory();
-
-  @Inject
-  private ICalExporter exporter;
-
-  /**
-   * Gets an instance of factory of ICalExporter objects.
-   * @return an instance of ICalExporterFactory.
-   */
-  public static ExporterFactory getFactory() {
-    return instance;
-  }
+public class ExporterProvider {
 
   /**
    * Gets an exporter of a calendar in iCal format.
    * @return an exporter of a calendar.
    */
-  public Exporter<ExportableCalendar> getICalExporter() {
-    return exporter;
-  }
-
-  private ExporterFactory() {
-
+  public static Exporter<ExportableCalendar> getICalExporter() {
+    return ServiceProvider.getService(ICalExporter.class);
   }
 }

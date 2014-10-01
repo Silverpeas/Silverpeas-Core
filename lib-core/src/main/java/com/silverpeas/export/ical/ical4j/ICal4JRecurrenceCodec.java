@@ -24,37 +24,29 @@
 
 package com.silverpeas.export.ical.ical4j;
 
-import com.silverpeas.export.EncodingException;
 import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.DayOfWeekOccurrence;
 import com.silverpeas.calendar.RecurrencePeriod;
-import java.text.ParseException;
+import com.silverpeas.export.EncodingException;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.text.ParseException;
+
 import static com.silverpeas.calendar.CalendarEventRecurrence.*;
-import static com.silverpeas.export.ical.ical4j.ICal4JDateCodec.*;
-import static com.silverpeas.calendar.DayOfWeekOccurrence.*;
+import static com.silverpeas.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
 
 /**
  * A codec to encode/decode iCal4J recurrence with Silverpeas event recurrence.
  */
+@Singleton
 public class ICal4JRecurrenceCodec {
 
-  /**
-   * Sets a shareable instance accessible through the anICal4DRecurrenceCodec() class method. It is
-   * always possible to manage in a multiple instances way this codec by calling explicitly and
-   * directly the constructor.
-   */
-  private static final ICal4JRecurrenceCodec instance = new ICal4JRecurrenceCodec();
-
-  /**
-   * Gets an instance of the ICal4JDateCodec class.
-   * @return an ICal4JDateCodec instance.
-   */
-  public static ICal4JRecurrenceCodec anICal4JRecurrenceCodec() {
-    return instance;
-  }
+  @Inject
+  private ICal4JDateCodec iCal4JDateCodec;
 
   /**
    * Encodes the specified Silverpeas event recurrence into an iCal4J recurrence.
@@ -74,7 +66,7 @@ public class ICal4JRecurrenceCodec {
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
       } else if (eventRecurrence.getEndDate() != NO_RECURRENCE_END_DATE) {
-        Date endDate = anICal4JDateCodec().encodeInUTC(eventRecurrence.getEndDate());
+        Date endDate = iCal4JDateCodec.encodeInUTC(eventRecurrence.getEndDate());
         recur.setUntil(endDate);
       }
       for (DayOfWeekOccurrence dayOfWeekOccurrence : eventRecurrence.getDaysOfWeek()) {

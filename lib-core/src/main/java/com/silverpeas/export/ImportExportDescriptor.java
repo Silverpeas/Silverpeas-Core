@@ -26,10 +26,11 @@ package com.silverpeas.export;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import static org.silverpeas.util.StringUtil.*;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An import export descriptor is an object that provides useful information to exporters and
@@ -85,8 +86,8 @@ public abstract class ImportExportDescriptor {
   }
 
   /**
-   * Sets the specified process parameter with the specified value. If the parameter already exists,
-   * the value is replaced with the specified one.
+   * Sets the specified process parameter with the specified value. If the parameter already
+   * exists, the value is replaced with the specified one.
    * @param <T> the type of the parameter value to set.
    * @param name the name of the parameter.
    * @param value the parameter value to set.

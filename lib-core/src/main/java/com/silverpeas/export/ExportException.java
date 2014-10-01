@@ -25,8 +25,8 @@
 package com.silverpeas.export;
 
 /**
- * Exception thrown when the export of a Silverpeas resource failed. It is a business exception that
- * occurs when a business operation invoked by a user fails.
+ * Exception thrown when the export of a Silverpeas resource failed. It is a business exception
+ * that occurs when a business operation invoked by a user fails.
  */
 public class ExportException extends Exception {
 

@@ -24,22 +24,20 @@
 
 package com.silverpeas.export.ical;
 
-import java.io.Writer;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.NoDataToExportException;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.Writer;
 
 /**
  * An exporter of calendar events into a file in the iCal format.
  */
-@Named
+@Singleton
 public class ICalExporter implements Exporter<ExportableCalendar> {
 
   @Inject
@@ -92,5 +90,4 @@ public class ICalExporter implements Exporter<ExportableCalendar> {
 
   private ICalExporter() {
   }
-
 }

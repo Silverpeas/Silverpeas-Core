@@ -47,7 +47,7 @@ public class ExportableCalendar implements Serializable {
    * @return an exportable calendar.
    */
   public static ExportableCalendar with(final Collection<CalendarEvent> events) {
-    Set<CalendarEvent> exportableEvents = new HashSet<CalendarEvent>(events);
+    Set<CalendarEvent> exportableEvents = new HashSet<>(events);
     return new ExportableCalendar(exportableEvents);
   }
 
@@ -56,8 +56,8 @@ public class ExportableCalendar implements Serializable {
    * @param events the events to export.
    * @return an exportable calendar.
    */
-  public static ExportableCalendar with(final CalendarEvent... event) {
-    Set<CalendarEvent> exportableEvents = new HashSet<CalendarEvent>(Arrays.asList(event));
+  public static ExportableCalendar with(final CalendarEvent... events) {
+    Set<CalendarEvent> exportableEvents = new HashSet<>(Arrays.asList(events));
     return new ExportableCalendar(exportableEvents);
   }
 
@@ -70,7 +70,7 @@ public class ExportableCalendar implements Serializable {
    * @return a list of events to export.
    */
   public List<CalendarEvent> getEvents() {
-    return new ArrayList<CalendarEvent>(this.events);
+    return new ArrayList<>(this.events);
   }
 
   /**

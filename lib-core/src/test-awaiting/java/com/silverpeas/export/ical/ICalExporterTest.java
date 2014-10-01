@@ -47,7 +47,7 @@ import com.silverpeas.calendar.DateTime;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.NoDataToExportException;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
@@ -77,7 +77,7 @@ public class ICalExporterTest {
   @Before
   public void setUp() throws IOException {
     icsFile = root.createData("myexport-" + UUID.randomUUID().toString() + ".ics");
-    ExporterFactory factory = ExporterFactory.getFactory();
+    ExporterProvider factory = ExporterProvider.getFactory();
     exporter = factory.getICalExporter();
     assertNotNull(exporter);
     descriptor = ExportDescriptor.withWriter(new OutputStreamWriter(icsFile.getOutputStream(),
