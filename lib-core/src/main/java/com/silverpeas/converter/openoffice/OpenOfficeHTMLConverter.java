@@ -29,12 +29,15 @@ import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.HTMLConverter;
 import java.io.File;
 import javax.inject.Named;
+import javax.inject.Singleton;
+
 import static com.silverpeas.converter.DocumentFormat.*;
 import static org.silverpeas.util.StringUtil.*;
 
 /**
  * Implementation of the HTMLConverter interface by using the OpenOffice API to perform its job.
  */
+@Singleton
 @Named("htmlConverter")
 public class OpenOfficeHTMLConverter extends OpenOfficeConverter implements HTMLConverter {
 

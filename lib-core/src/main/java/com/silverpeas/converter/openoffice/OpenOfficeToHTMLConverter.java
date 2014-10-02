@@ -29,6 +29,7 @@ import com.silverpeas.converter.ToHTMLConverter;
 import org.silverpeas.util.FileUtil;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 
 import static com.silverpeas.converter.DocumentFormat.html;
@@ -38,6 +39,7 @@ import static org.silverpeas.util.MimeTypes.RTF_MIME_TYPE;
  * Implementation of the ToHTMLConverter interface by using the OpenOffice API to perform its job.
  * @author Yohann Chastagnier
  */
+@Singleton
 @Named("toHTMLConverter")
 public class OpenOfficeToHTMLConverter extends OpenOfficeConverter implements ToHTMLConverter {
 

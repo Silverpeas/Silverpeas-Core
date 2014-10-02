@@ -29,12 +29,15 @@ import java.io.File;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.ODTConverter;
 import javax.inject.Named;
+import javax.inject.Singleton;
+
 import static com.silverpeas.converter.DocumentFormat.*;
 import static org.silverpeas.util.StringUtil.*;
 
 /**
  * Implementation of the ODTConverter interface by using the OpenOffice API to perform its job.
  */
+@Singleton
 @Named("odtConverter")
 public class OpenOfficeODTConverter extends OpenOfficeConverter implements ODTConverter {
 

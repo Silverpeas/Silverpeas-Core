@@ -29,6 +29,7 @@ import static com.silverpeas.converter.DocumentFormat.pdf;
 import java.io.File;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.ToPDFConverter;
@@ -38,6 +39,7 @@ import org.silverpeas.util.FileUtil;
  * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.
  * @author Yohann Chastagnier
  */
+@Singleton
 @Named("toPDFConverter")
 public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToPDFConverter {
 
