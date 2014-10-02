@@ -46,12 +46,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The default implementation of the user notification about events on the comments.
  */
+@Singleton
 @Named("commentUserNotificationService")
 public class DefaultCommentUserNotificationService extends CommentActionListener
     implements CommentUserNotificationService {

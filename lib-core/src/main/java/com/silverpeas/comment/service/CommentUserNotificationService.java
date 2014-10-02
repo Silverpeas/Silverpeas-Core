@@ -77,7 +77,7 @@ public interface CommentUserNotificationService {
    * the comment.
    *
    * @param component the name of the Silverpeas component (it must be unique).
-   * @param getter the ResourceInfoGetter object specific to the registered Silverpeas Component
+   * @param service
    */
   void register(String component,
       final SilverpeasComponentService<? extends SilverpeasContent> service);

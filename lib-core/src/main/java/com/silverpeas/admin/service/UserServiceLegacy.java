@@ -30,6 +30,7 @@ import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.StringUtil;
@@ -52,6 +53,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 
+@Singleton
 @Named("silverpeasUserService")
 public class UserServiceLegacy implements UserService {
 

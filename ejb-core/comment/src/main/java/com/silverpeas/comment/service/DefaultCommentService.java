@@ -31,6 +31,8 @@ import org.silverpeas.util.WAPrimaryKey;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -46,6 +48,7 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
  * engine. This service is managed by an IoC container and this be retrieved by dependency
  * injection.
  */
+@Singleton
 @Named("commentService")
 public class DefaultCommentService extends CommentActionNotifier implements CommentService {
 
