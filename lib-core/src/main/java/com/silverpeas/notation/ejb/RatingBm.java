@@ -26,8 +26,10 @@ import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 
 import javax.ejb.Local;
+import javax.inject.Singleton;
 import java.util.Map;
 
+@Singleton
 @Local
 public interface RatingBm {
 

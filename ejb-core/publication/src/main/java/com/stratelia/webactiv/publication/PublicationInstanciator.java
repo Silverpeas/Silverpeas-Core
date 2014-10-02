@@ -31,7 +31,7 @@
 package com.stratelia.webactiv.publication;
 
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.notation.ejb.RatingServiceFactory;
+import com.silverpeas.notation.ejb.RatingServiceProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
@@ -88,7 +88,7 @@ public class PublicationInstanciator extends SQLRequest {
 
     try {
       // Delete the notations
-      RatingServiceFactory.getRatingService().deleteComponentRatings(componentId);
+      RatingServiceProvider.getRatingService().deleteComponentRatings(componentId);
     } catch (Exception e) {
       // No exceptions are throwed because of those informations are not sensible.
     }

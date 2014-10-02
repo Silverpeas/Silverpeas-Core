@@ -44,7 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import static com.silverpeas.notation.ejb.RatingServiceFactory.getRatingService;
+import static com.silverpeas.notation.ejb.RatingServiceProvider.getRatingService;
 
 /**
  * A REST Web resource representing a given rating.
