@@ -51,13 +51,13 @@ public class StreamTest {
 
     // Dummy performed in order to perform greatly the performance tests
     List<Pair<String, Integer>> dummyPairList = new ArrayList<>(nbElementOfSource);
-    for (int i = 0; i < nbElementOfSource; i++) {
+    for (int i = 0; i < (nbElementOfSource * 10); i++) {
       dummyPairList.add(Pair.of("index_" + i, i));
     }
     List<Map<String, String>> dummyMapFromPairList =
         dummyPairList.stream().map(pair -> convertPairToMap(pair.getRight()))
             .collect(Collectors.toList());
-    assertThat(dummyMapFromPairList, hasSize(nbElementOfSource));
+    assertThat(dummyMapFromPairList, hasSize(nbElementOfSource * 10));
 
     // Test
     List<Pair<String, Integer>> pairList = new ArrayList<>(nbElementOfSource);
