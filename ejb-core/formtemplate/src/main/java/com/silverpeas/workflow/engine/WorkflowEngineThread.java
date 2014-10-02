@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,15 +24,6 @@
 
 package com.silverpeas.workflow.engine;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.workflow.api.ProcessInstanceManager;
@@ -46,7 +37,6 @@ import com.silverpeas.workflow.api.event.TaskDoneEvent;
 import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
 import com.silverpeas.workflow.api.instance.Actor;
-import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.Participant;
 import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.instance.UpdatableHistoryStep;
@@ -66,6 +56,14 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
 import com.silverpeas.workflow.external.ExternalAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.PersistenceException;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A thread WorkflowEngineThread process in the background a batch of events sent to workflow All
@@ -225,7 +223,7 @@ public class WorkflowEngineThread extends Thread {
    * }
    * </PRE>
    */
-  static private final List<Request> requestList = new ArrayList<Request>();
+  static private final List<Request> requestList = new ArrayList<>();
   /**
    * All the requests are processed by a single background thread. This thread is built and started
    * by the start method.
@@ -248,7 +246,6 @@ interface Request {
 
   /**
    * Method declaration
-   * @param wfEngine
    */
   public void process() throws WorkflowException;
 }
@@ -357,8 +354,7 @@ class TaskDoneRequest implements Request {
         }
       } catch (WorkflowException we) {
         db.rollback();
-        WorkflowHub.getErrorManager().saveError(instance, event,
-            (HistoryStep) step, we);
+        WorkflowHub.getErrorManager().saveError(instance, event, step, we);
 
         // begin transaction
         db.begin();
@@ -380,8 +376,7 @@ class TaskDoneRequest implements Request {
       // commit
       db.commit();
     } catch (PersistenceException pe) {
-      WorkflowHub.getErrorManager().saveError(instance, event,
-          (HistoryStep) step, pe);
+      WorkflowHub.getErrorManager().saveError(instance, event, step, pe);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
     } finally {
@@ -517,8 +512,7 @@ class TaskSavedRequest implements Request {
         processEvent(instance, step.getId(), event.getResolvedState());
       } catch (WorkflowException we) {
         db.rollback();
-        WorkflowHub.getErrorManager().saveError(instance, event,
-            (HistoryStep) step, we);
+        WorkflowHub.getErrorManager().saveError(instance, event, step, we);
 
         // begin transaction
         db.begin();
@@ -540,8 +534,7 @@ class TaskSavedRequest implements Request {
       // commit
       db.commit();
     } catch (PersistenceException pe) {
-      WorkflowHub.getErrorManager().saveError(instance, event,
-          (HistoryStep) step, pe);
+      WorkflowHub.getErrorManager().saveError(instance, event, step, pe);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_ADD_TASKSAVED_REQUEST", pe);
     } finally {
@@ -689,8 +682,7 @@ class QuestionRequest implements Request {
       // commit
       db.commit();
     } catch (PersistenceException pe) {
-      WorkflowHub.getErrorManager().saveError(instance, event,
-          (HistoryStep) step, pe);
+      WorkflowHub.getErrorManager().saveError(instance, event, step, pe);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
     } finally {
@@ -737,7 +729,7 @@ class QuestionRequest implements Request {
     TaskManager taskManager = WorkflowHub.getTaskManager();
 
     // Assign task to this participant
-    Task task = taskManager.createTask((Actor) participant, instance);
+    Task task = taskManager.createTask(participant, instance);
     taskManager.assignTask(task, participant.getUser());
 
     // Declare this user as a working user in instance
@@ -860,8 +852,7 @@ class ResponseRequest implements Request {
       // commit
       db.commit();
     } catch (PersistenceException pe) {
-      WorkflowHub.getErrorManager().saveError(instance, event,
-          (HistoryStep) step, pe);
+      WorkflowHub.getErrorManager().saveError(instance, event, step, pe);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
     } finally {
@@ -906,7 +897,7 @@ class ResponseRequest implements Request {
     TaskManager taskManager = WorkflowHub.getTaskManager();
 
     // Unassign task to this participant
-    Task task = taskManager.createTask((Actor) participant, instance);
+    Task task = taskManager.createTask(participant, instance);
     taskManager.unAssignTask(task);
 
     // Remove this user of working user list
@@ -1027,8 +1018,7 @@ class TimeoutRequest implements Request {
       // commit
       db.commit();
     } catch (PersistenceException pe) {
-      WorkflowHub.getErrorManager().saveError(instance, event,
-          (HistoryStep) step, pe);
+      WorkflowHub.getErrorManager().saveError(instance, event, step, pe);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_ADD_TIMEOUT_REQUEST", pe);
     } finally {

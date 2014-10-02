@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,6 +24,38 @@
 
 package com.silverpeas.workflow.engine.model;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.record.GenericRecordSetManager;
+import com.silverpeas.workflow.api.ProcessModelManager;
+import com.silverpeas.workflow.api.WorkflowException;
+import com.silverpeas.workflow.api.model.DataFolder;
+import com.silverpeas.workflow.api.model.Form;
+import com.silverpeas.workflow.api.model.Forms;
+import com.silverpeas.workflow.api.model.ProcessModel;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import org.apache.commons.io.FileUtils;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.xml.sax.InputSource;
+
+import javax.inject.Singleton;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -39,43 +71,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import com.stratelia.webactiv.beans.admin.AdminReference;
-
-import org.apache.commons.io.FileUtils;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
-
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.record.GenericRecordSetManager;
-import org.silverpeas.util.FileUtil;
-import com.silverpeas.workflow.api.ProcessModelManager;
-import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.model.DataFolder;
-import com.silverpeas.workflow.api.model.Form;
-import com.silverpeas.workflow.api.model.Forms;
-import com.silverpeas.workflow.api.model.ProcessModel;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
-
 /**
  * A ProcessModelManager implementation
  */
+@Singleton
 public class ProcessModelManagerImpl implements ProcessModelManager {
 
   private static final String selectQuery =
@@ -90,7 +89,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * The map (modelId -> cached process model).
    */
-  private final Map<String, ProcessModel> models = new HashMap<String, ProcessModel>();
+  private final Map<String, ProcessModel> models = new HashMap<>();
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
 
   /**
@@ -106,13 +105,8 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   public List<String> listProcessModels() throws WorkflowException {
     try {
       // Recursively search all subdirs for .xml files
-      //
       return findProcessModels(getProcessModelDir());
-    } catch (UtilException e) {
-      throw new WorkflowException("WorkflowManager.getProcessModels",
-          "WorkflowEngine.EX_GETTING_RPOCES_MODELS_FAILED", "Workflow Dir : "
-          + getProcessModelDir(), e);
-    } catch (IOException e) {
+    } catch (UtilException | IOException e) {
       throw new WorkflowException("WorkflowManager.getProcessModels",
           "WorkflowEngine.EX_GETTING_RPOCES_MODELS_FAILED", "Workflow Dir : "
           + getProcessModelDir(), e);
@@ -121,7 +115,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
   /**
    * Recursive method to retrieve all process models in and below the given directory
-   * @param processModelDir the directory to start with
+   * @param strProcessModelDir the directory to start with
    * @return a list of strings containing the relative path and file name of the model
    * @throws UtilException
    * @throws IOException
@@ -133,7 +127,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     Iterator<String> subFolderModelsIterator;
     Iterator<File> currentDirModelsIterator =
         FileFolderManager.getAllFile(strProcessModelDir).iterator();
-    List<String> processModels = new ArrayList<String>();
+    List<String> processModels = new ArrayList<>();
     File subFolder;
 
     while (subFoldersIterator.hasNext()) {
@@ -193,7 +187,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     cacheProcessModel(modelId, model, fileName);
 
     // return the process model
-    return (ProcessModel) model;
+    return model;
   }
 
   /*
@@ -215,10 +209,10 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   @Override
   public ProcessModel createProcessModel(String processFileName, String peasId)
       throws WorkflowException {
-    ProcessModel model = null;
-    DataFolder folder = null;
-    RecordTemplate template = null;
-    Forms forms = null;
+    ProcessModel model;
+    DataFolder folder;
+    RecordTemplate template;
+    Forms forms;
 
     try {
       // Load abstract process model
@@ -244,14 +238,10 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
               template);
         }
       }
-    } catch (FormException fe) {
+    } catch (FormException | WorkflowException fe) {
       throw new WorkflowException("ProcessModelManagerImpl.createProcessModel",
           "workflowEngine.EX_ERR_INSTANCIATING_MODEL", "Process FileName : "
           + processFileName == null ? "<null>" : processFileName, fe);
-    } catch (WorkflowException we) {
-      throw new WorkflowException("ProcessModelManagerImpl.createProcessModel",
-          "workflowEngine.EX_ERR_INSTANCIATING_MODEL", "Process FileName : "
-          + processFileName == null ? "<null>" : processFileName, we);
     }
 
     return model;
@@ -266,7 +256,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     ProcessModel model = getProcessModel(instanceId);
     String formName = null;
     try {
-      Forms forms = null;
+      Forms forms;
 
       // delete the folder
       formName = model.getFolderRecordSetName();
@@ -465,14 +455,14 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      List<String> peasIds = new ArrayList<String>();
+      List<String> peasIds = new ArrayList<>();
       con = this.getConnection();
       prepStmt = con.prepareStatement(selectQuery);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         peasIds.add(rs.getString(1));
       }
-      return (String[]) peasIds.toArray(new String[peasIds.size()]);
+      return peasIds.toArray(new String[peasIds.size()]);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessModelManagerImpl.getAllPeasId",
           "workflowEngine.EX_ERR_GET_ALL_PEAS_IDS", "sql query : "
@@ -522,7 +512,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * @return the DB connection
    */
   private Connection getConnection() throws WorkflowException {
-    Connection con = null;
+    Connection con;
     try {
       // con = DBUtil.makeConnection(dbName);
       Context ctx = new InitialContext();

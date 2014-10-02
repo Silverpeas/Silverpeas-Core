@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -39,7 +39,7 @@ public final class Workflow {
   /**
    * @return the ProcessModelManager
    */
-  static public final ProcessModelManager getProcessModelManager()
+  static public ProcessModelManager getProcessModelManager()
       throws WorkflowException {
     return WorkflowHub.getProcessModelManager();
   }
@@ -47,7 +47,7 @@ public final class Workflow {
   /**
    * @return the ProcessInstanceManager
    */
-  static public final ProcessInstanceManager getProcessInstanceManager()
+  static public ProcessInstanceManager getProcessInstanceManager()
       throws WorkflowException {
     return WorkflowHub.getProcessInstanceManager();
   }
@@ -55,14 +55,14 @@ public final class Workflow {
   /**
    * @return the UserManager
    */
-  static public final UserManager getUserManager() throws WorkflowException {
+  static public UserManager getUserManager() throws WorkflowException {
     return WorkflowHub.getUserManager();
   }
 
   /**
    * @return the WorkflowEngine
    */
-  static public final WorkflowEngine getWorkflowEngine()
+  static public WorkflowEngine getWorkflowEngine()
       throws WorkflowException {
     return WorkflowHub.getWorkflowEngine();
   }
@@ -70,14 +70,14 @@ public final class Workflow {
   /**
    * @return the TaskManager
    */
-  static public final TaskManager getTaskManager() throws WorkflowException {
+  static public TaskManager getTaskManager() throws WorkflowException {
     return WorkflowHub.getTaskManager();
   }
 
   /**
    * @return the ErrorManager
    */
-  static public final ErrorManager getErrorManager() throws WorkflowException {
+  static public ErrorManager getErrorManager() throws WorkflowException {
     return WorkflowHub.getErrorManager();
   }
 
@@ -85,7 +85,7 @@ public final class Workflow {
    * Returns the localized label.
    */
   static public String getLabel(String labelName, String lang) {
-    ResourceLocator labels = (ResourceLocator) localLabels.get(lang);
+    ResourceLocator labels = localLabels.get(lang);
     if (labels == null) {
       labels = new ResourceLocator(
           "com.silverpeas.workflow.multilang.workflowEngineBundle", lang);
@@ -110,6 +110,6 @@ public final class Workflow {
     }
   }
 
-  static private HashMap<String, ResourceLocator> localLabels =
-      new HashMap<String, ResourceLocator>();
+  static private final HashMap<String, ResourceLocator> localLabels =
+      new HashMap<>();
 }

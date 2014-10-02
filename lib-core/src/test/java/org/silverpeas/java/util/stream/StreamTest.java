@@ -23,56 +23,47 @@
  */
 package org.silverpeas.java.util.stream;
 
+import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
+import com.carrotsearch.junitbenchmarks.BenchmarkRule;
+import com.carrotsearch.junitbenchmarks.annotation.BenchmarkMethodChart;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang.time.DurationFormatUtils.formatDurationHMS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
  * @author Yohann Chastagnier
  */
+@BenchmarkMethodChart
+@BenchmarkOptions(benchmarkRounds = 1000, warmupRounds = 1000)
 public class StreamTest {
 
-  private Logger log = Logger.getLogger(StreamTest.class.getName());
+  @Rule
+  public TestRule benchmarkRun = new BenchmarkRule();
 
   @Test
   public void testStreamCallingInternalClassMethod() {
-    int nbElementOfSource = 10000;
+    int nbElementOfSource = 1000;
 
-    // Dummy performed in order to perform greatly the performance tests
-    List<Pair<String, Integer>> dummyPairList = new ArrayList<>(nbElementOfSource);
-    for (int i = 0; i < (nbElementOfSource * 10); i++) {
-      dummyPairList.add(Pair.of("index_" + i, i));
-    }
-    List<Map<String, String>> dummyMapFromPairList =
-        dummyPairList.stream().map(pair -> convertPairToMap(pair.getRight()))
-            .collect(Collectors.toList());
-    assertThat(dummyMapFromPairList, hasSize(nbElementOfSource * 10));
-
-    // Test
     List<Pair<String, Integer>> pairList = new ArrayList<>(nbElementOfSource);
     for (int i = 0; i < nbElementOfSource; i++) {
       pairList.add(Pair.of("index_" + i, i));
     }
 
-    long startStream = System.currentTimeMillis();
-
     List<Map<String, String>> mapFromPairList =
         pairList.stream().map(pair -> convertPairToMap(pair.getRight()))
             .collect(Collectors.toList());
     assertThat(mapFromPairList, hasSize(nbElementOfSource));
-
-    long streamPerformance = System.currentTimeMillis() - startStream;
 
     // Verifying that data have been processed
     Iterator<Pair<String, Integer>> pairIterator = pairList.iterator();
@@ -81,13 +72,16 @@ public class StreamTest {
       assertThat(mapToTest.size(), is(1));
       assertThat(mapToTest, hasEntry(expected.getLeft(), expected.getRight() + "_value"));
     }
+  }
+
+  @Test
+  public void testForStatementCallingInternalClassMethod() {
+    int nbElementOfSource = 1000;
 
     List<Pair<String, Integer>> pairListForStatement = new ArrayList<>(nbElementOfSource);
     for (int i = 0; i < nbElementOfSource; i++) {
       pairListForStatement.add(Pair.of("index_" + i, i));
     }
-
-    long startForStatement = System.currentTimeMillis();
 
     List<Map<String, String>> mapFromPairListForStatement = new ArrayList<>();
     //noinspection Convert2streamapi
@@ -96,19 +90,13 @@ public class StreamTest {
     }
     assertThat(mapFromPairListForStatement, hasSize(nbElementOfSource));
 
-    long forPerformance = System.currentTimeMillis() - startForStatement;
-
     // Verifying that data have been processed
-    assertThat(mapFromPairListForStatement, contains(mapFromPairList.toArray()));
-
-    // Verifying performances between stream api and for statement
-    double ratio = (streamPerformance / Math.max(1, forPerformance));
-
-    log.info("Stream performance :  : " + formatDurationHMS(streamPerformance));
-    log.info("For statement performance : " + formatDurationHMS(forPerformance));
-    log.info("Ratio (stream / for) : " + ratio);
-    assertThat("Stream perform is less accurate than for statement ...", ratio,
-        lessThanOrEqualTo(1D));
+    Iterator<Pair<String, Integer>> pairIterator = pairListForStatement.iterator();
+    for (Map<String, String> mapToTest : mapFromPairListForStatement) {
+      Pair<String, Integer> expected = pairIterator.next();
+      assertThat(mapToTest.size(), is(1));
+      assertThat(mapToTest, hasEntry(expected.getLeft(), expected.getRight() + "_value"));
+    }
   }
 
   /**
@@ -124,16 +112,40 @@ public class StreamTest {
   }
 
   @Test
-  public void testMapKeysToArrayWithStreamApi() {
-    int nbElementOfSource = 10000;
+  public void testStreamHandlingInterfaces() {
+    int nbElementOfSource = 1000;
 
-    Map<String, Integer> sourceMap = new HashMap<>();
+    List<TestInterface> interfaceSourceList = new ArrayList<>(nbElementOfSource);
     for (int i = 0; i < nbElementOfSource; i++) {
-      sourceMap.put("index_" + i, i);
+      interfaceSourceList.add(new TestInterfaceImpl("index_" + i));
     }
 
-    Integer[] keys = sourceMap.keySet().stream().map(sourceMap::get).toArray(Integer[]::new);
-    assertThat(keys,
-        arrayContainingInAnyOrder(sourceMap.values().toArray(new Integer[sourceMap.size()])));
+    List<String> identifiers =
+        interfaceSourceList.stream().map(TestInterface::getIdentifier).collect(Collectors.toList());
+    assertThat(identifiers, hasSize(nbElementOfSource));
+
+    // Verifying that data have been processed
+    Iterator<TestInterface> interfaceIterator = interfaceSourceList.iterator();
+    for (String identifier : identifiers) {
+      TestInterface expected = interfaceIterator.next();
+      assertThat(identifier, is(expected.getIdentifier()));
+    }
+  }
+
+  private interface TestInterface {
+    String getIdentifier();
+  }
+
+  private class TestInterfaceImpl implements TestInterface {
+    private final String identifier;
+
+    public TestInterfaceImpl(final String identifier) {
+      this.identifier = identifier;
+    }
+
+    @Override
+    public String getIdentifier() {
+      return identifier;
+    }
   }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,8 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -35,11 +33,14 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.AccessPathField;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A AccessPathFieldDisplayer is an object which can display in a HTML field the current access path
+ * A AccessPathFieldDisplayer is an object which can display in a HTML field the current access
+ * path
  * of the form (space > subSpace > service > theme > subTheme) to a end user and can retrieve via
  * HTTP any updated value.
  * @see Field
@@ -59,7 +60,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[] { AccessPathField.TYPE };
+    return new String[]{AccessPathField.TYPE};
   }
 
   /**
@@ -98,15 +99,16 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
       SilverTrace.info("form", "AccessPathFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           AccessPathField.TYPE);
     } else {
-      currentAccessPath = field.getAccessPath(PagesContext.getComponentId(),
-          PagesContext.getNodeId(), PagesContext.getContentLanguage());
+      currentAccessPath = field
+          .getAccessPath(PagesContext.getComponentId(), PagesContext.getNodeId(),
+              PagesContext.getContentLanguage());
     }
 
     if (!field.isNull()) {
       value = field.getValue(PagesContext.getLanguage());
     }
-    html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName).append(
-        "\" type=\"text\" size=\"80\"");
+    html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName)
+        .append("\" type=\"text\" size=\"80\"");
     if (value != null) {
       html.append(" value=\"").append(value).append("\"");
     } else {
@@ -117,8 +119,8 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
     }
     html.append("/>\n");
 
-    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-        && !template.isHidden() && PagesContext.useMandatory()) {
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
+        !template.isHidden() && PagesContext.useMandatory()) {
       html.append(Util.getMandatorySnippet());
     }
     out.println(html);
@@ -126,7 +128,8 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
 
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
-   * the request. @throw FormException if the field type is not a managed type. @throw FormException
+   * the request. @throw FormException if the field type is not a managed type. @throw
+   * FormException
    * if the field doesn't accept the new value.
    */
   @Override
@@ -144,7 +147,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
       throw new FormException("AccessPathFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           AccessPathField.TYPE);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   @Override

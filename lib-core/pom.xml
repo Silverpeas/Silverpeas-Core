@@ -35,6 +35,10 @@
       <type>jar</type>
     </dependency>
     <dependency>
+      <groupId>com.carrotsearch</groupId>
+      <artifactId>junit-benchmarks</artifactId>
+    </dependency>
+    <dependency>
       <groupId>informa</groupId>
       <artifactId>informa</artifactId>
       <classifier>silverpeas</classifier>

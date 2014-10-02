@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,24 +24,29 @@
 
 package com.silverpeas.workflow.engine.timeout;
 
-import java.util.Date;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import com.silverpeas.scheduler.*;
-
-import com.silverpeas.workflow.api.*;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.workflow.api.TimeoutManager;
+import com.silverpeas.workflow.api.Workflow;
+import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
+import com.silverpeas.workflow.engine.WorkflowEngineThread;
 import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
-import com.silverpeas.workflow.engine.WorkflowEngineThread;
-import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+
+import javax.inject.Singleton;
+import java.util.Date;
 
 /**
  * The workflow engine services relate to error management.
  */
+@Singleton
 public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListener {
 
   // Local constants
@@ -80,8 +85,6 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
    * of these peas that have the "timeout" states actives are read to check if timeout interval has
    * been reached. In that case, the administrator can be notified, the active state and the
    * instance are marked as timeout
-   * @param currentDate the date when the method is called by the scheduler
-   * @see SimpleScheduler for parameters,
    */
   public void doTimeoutManagement() {
     Date beginDate = new Date();
@@ -92,22 +95,19 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
           Workflow.getProcessInstanceManager().getTimeOutProcessInstances();
       Date now = new Date();
 
-      for (int k = 0; k < instances.length; k++) {
+      for (final ProcessInstance instance : instances) {
         try {
-          ActionAndState timeoutActionAndState = instances[k].getTimeOutAction(now);
-          TimeoutEvent event = new TimeoutEventImpl(instances[k],
-              timeoutActionAndState.getState(), timeoutActionAndState.getAction());
+          ActionAndState timeoutActionAndState = instance.getTimeOutAction(now);
+          TimeoutEvent event = new TimeoutEventImpl(instance, timeoutActionAndState.getState(),
+              timeoutActionAndState.getAction());
           WorkflowEngineThread.addTimeoutRequest(event);
-          SilverTrace.info("workflowEngine",
-              "TimeoutManagerImpl.doTimeoutManagement",
-              "workflowEngine.WARN_TIMEOUT_DETECTED", "instance Id : '"
-              + instances[k].getInstanceId() + "' state : '"
-              + timeoutActionAndState.getState().getName());
+          SilverTrace.info("workflowEngine", "TimeoutManagerImpl.doTimeoutManagement",
+              "workflowEngine.WARN_TIMEOUT_DETECTED",
+              "instance Id : '" + instance.getInstanceId() + "' state : '" +
+                  timeoutActionAndState.getState().getName());
         } catch (WorkflowException e) {
-          SilverTrace.error("workflowEngine",
-              "TimeoutManagerImpl.doTimeoutManagement",
+          SilverTrace.error("workflowEngine", "TimeoutManagerImpl.doTimeoutManagement",
               "workflowEngine.EX_ERR_TIMEOUT_MANAGEMENT", e);
-          continue;
         }
       }
     } catch (Exception e) {

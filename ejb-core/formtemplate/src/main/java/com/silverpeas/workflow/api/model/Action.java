@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -38,7 +38,7 @@ public interface Action {
 
   /**
    * Set the name of this action
-   * @param action 's name
+   * @param strName 's name
    */
   public void setName(String strName);
 
@@ -50,14 +50,14 @@ public interface Action {
 
   /**
    * Set the kind of this action
-   * @param action 's kind
+   * @param kind an instance of Kind object
    */
   public void setKind(String kind);
 
   /**
    * Get description in specific language for the given role
-   * @param lang description's language
    * @param role role for which the description is
+   * @param language description's language
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
    * given language, if not found again, return the default description in default language, if not
@@ -84,8 +84,8 @@ public interface Action {
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
    * @param role role for which the label is
+   * @param language label's language
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
    * found again, return the default label in default language, if not found again, return empty
@@ -145,7 +145,7 @@ public interface Action {
 
   /**
    * Set the consequences of this action
-   * @param consequences
+   * @param consequences the consequences
    */
   public void setConsequences(Consequences consequences);
 
@@ -157,7 +157,7 @@ public interface Action {
 
   /**
    * Set the form associated with this action
-   * @param Form object
+   * @param form instance of Form object
    */
   public void setForm(Form form);
 }

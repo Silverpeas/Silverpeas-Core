@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -38,9 +38,12 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 /* Castor library */
 import org.exolab.castor.jdo.*;
 
+import javax.inject.Singleton;
+
 /**
  * The workflow engine services relate to error management.
  */
+@Singleton
 public class ErrorManagerImpl implements ErrorManager {
   /**
    * Save an error
@@ -66,7 +69,7 @@ public class ErrorManagerImpl implements ErrorManager {
       // Commit transaction
       db.commit();
 
-      return (WorkflowError) error;
+      return error;
     } catch (WorkflowException we) {
       SilverTrace.warn("workflowEngine", "ErrorManagerImpl",
           "workflowEngine.EX_PROBLEM_SAVE_ERROR", we);
@@ -85,9 +88,9 @@ public class ErrorManagerImpl implements ErrorManager {
    */
   public WorkflowError[] getErrorsOfInstance(String instanceId) {
     Database db = null;
-    OQLQuery query = null;
+    OQLQuery query;
     QueryResults results;
-    Vector<WorkflowError> errors = new Vector<WorkflowError>();
+    Vector<WorkflowError> errors = new Vector<>();
 
     try {
       // Constructs the query
@@ -111,7 +114,7 @@ public class ErrorManagerImpl implements ErrorManager {
 
       db.commit();
 
-      return (WorkflowError[]) errors.toArray(new WorkflowError[0]);
+      return errors.toArray(new WorkflowError[errors.size()]);
     } catch (PersistenceException pe) {
       SilverTrace.warn("workflowEngine", "ErrorManagerImpl",
           "workflowEngine.EX_PROBLEM_GETTING_ERRORS", pe);
@@ -130,7 +133,7 @@ public class ErrorManagerImpl implements ErrorManager {
    */
   public void removeErrorsOfInstance(String instanceId) {
     Database db = null;
-    OQLQuery query = null;
+    OQLQuery query;
     QueryResults results;
 
     try {
@@ -154,12 +157,9 @@ public class ErrorManagerImpl implements ErrorManager {
       }
 
       db.commit();
-    } catch (PersistenceException pe) {
+    } catch (PersistenceException | WorkflowException pe) {
       SilverTrace.warn("workflowEngine", "ErrorManagerImpl",
           "workflowEngine.EX_PROBLEM_REMOVE_ERRORS", pe);
-    } catch (WorkflowException we) {
-      SilverTrace.warn("workflowEngine", "ErrorManagerImpl",
-          "workflowEngine.EX_PROBLEM_REMOVE_ERRORS", we);
     } finally {
       WorkflowJDOManager.closeDatabase(db);
     }

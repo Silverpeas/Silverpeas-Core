@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -151,7 +151,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
       throw new FormException(
           "PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", PdcField.TYPE);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   /**
@@ -160,7 +160,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * @return The list of used axis corresponding to the description given as parameter.
    */
   public ArrayList<UsedAxis> getUsedAxisList(String value) {
-    ArrayList<UsedAxis> usedAxisList = new ArrayList<UsedAxis>();
+    ArrayList<UsedAxis> usedAxisList = new ArrayList<>();
     StringTokenizer st = new StringTokenizer(value, ".");
     String[] axisData;
     AxisHeader axisHeader;
@@ -625,7 +625,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * @return The list of positions corresponding to the description given as parameter.
    */
   public ArrayList<ClassifyPosition> getPositions(String pattern) {
-    ArrayList<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
+    ArrayList<ClassifyPosition> positions = new ArrayList<>();
     StringTokenizer classifyPositionSt = new StringTokenizer(pattern, ".");
     StringTokenizer classifyValueSt;
     String classifyValueData;
@@ -637,7 +637,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     StringBuffer valuesPath;
     int positionId = 0;
     while (classifyPositionSt.hasMoreTokens()) {
-      ArrayList<ClassifyValue> classifyValues = new ArrayList<ClassifyValue>();
+      ArrayList<ClassifyValue> classifyValues = new ArrayList<>();
       classifyValueSt = new StringTokenizer(classifyPositionSt.nextToken(), ";");
       while (classifyValueSt.hasMoreTokens()) {
         classifyValueData = classifyValueSt.nextToken();
@@ -648,7 +648,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
           List<Value> nodes = getFullPath(valueId, axisId);
           if (nodes != null) {
             Iterator<Value> nodesIter = nodes.iterator();
-            ArrayList<Value> values = new ArrayList<Value>();
+            ArrayList<Value> values = new ArrayList<>();
             valuesPath = new StringBuffer();
             while (nodesIter.hasNext()) {
               node = nodesIter.next();

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -150,7 +150,7 @@ public class UserSettingsImpl implements UserSettings {
    * Remove all user infos
    */
   public void reset() {
-    userInfos = new Vector<UserInfo>();
+    userInfos = new Vector<>();
   }
 
   /**
@@ -158,7 +158,7 @@ public class UserSettingsImpl implements UserSettings {
    */
   public UserInfo[] getUserInfos() {
     if (userInfos != null)
-      return (UserInfo[]) userInfos.toArray(new UserInfo[0]);
+      return userInfos.toArray(new UserInfo[0]);
     else
       return null;
   }
@@ -173,7 +173,7 @@ public class UserSettingsImpl implements UserSettings {
     if (index == -1)
       return null;
     else
-      return (UserInfo) userInfos.get(index);
+      return userInfos.get(index);
   }
 
   /**
@@ -211,7 +211,7 @@ public class UserSettingsImpl implements UserSettings {
           settings.reset();
 
           for (int i = 0; i < this.userInfos.size(); i++) {
-            UserInfo info = (UserInfo) this.userInfos.get(i);
+            UserInfo info = this.userInfos.get(i);
             settings.addUserInfo(info.getName(), info.getValue());
           }
         }
@@ -247,7 +247,7 @@ public class UserSettingsImpl implements UserSettings {
           continue;
         }
 
-        String value = (String) field.getStringValue();
+        String value = field.getStringValue();
         if (value != null) {
           this.addUserInfo(fieldNames[i], value);
         }
@@ -297,7 +297,7 @@ public class UserSettingsImpl implements UserSettings {
    */
   private void addUserInfo(String name, String value) {
     UserInfoImpl userInfo = new UserInfoImpl(name, value);
-    userInfo.setUserSettings((UserSettings) this);
+    userInfo.setUserSettings(this);
 
     int index = userInfos.indexOf(userInfo);
     if (index == -1) {

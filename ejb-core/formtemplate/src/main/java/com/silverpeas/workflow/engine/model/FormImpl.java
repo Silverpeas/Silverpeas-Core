@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -84,7 +84,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    */
   private void reset() {
     titles = new SpecificLabelListHelper();
-    inputList = new Vector<Input>();
+    inputList = new Vector<>();
   }
 
   /**
@@ -129,7 +129,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     if (inputList == null) {
       return null;
     }
-    return (Input[]) inputList.toArray(new ItemRef[0]);
+    return inputList.toArray(new ItemRef[0]);
   }
 
   /*
@@ -137,7 +137,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * @see com.silverpeas.workflow.api.model.Form#getInput(int)
    */
   public Input getInput(int idx) {
-    return (Input) inputList.get(idx);
+    return inputList.get(idx);
   }
 
   /*
@@ -148,7 +148,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     int idx = inputList.indexOf(reference);
 
     if (idx >= 0) {
-      return (Input) inputList.get(idx);
+      return inputList.get(idx);
     } else {
       return null;
     }
@@ -283,7 +283,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     int count = 0;
     for (int i = 0; i < inputList.size(); i++) {
       // Get the input
-      Input input = (Input) inputList.get(i);
+      Input input = inputList.get(i);
 
       // Get the item name referenced by this input
       Item item = input.getItem();
@@ -327,7 +327,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
       // Add all fields description in the RecordTemplate
       for (int i = 0; i < inputList.size(); i++) {
         // Get the item definition
-        Input input = (Input) inputList.get(i);
+        Input input = inputList.get(i);
         ItemImpl item = (ItemImpl) input.getItem();
         if (item == null) {
           item = new ItemImpl();

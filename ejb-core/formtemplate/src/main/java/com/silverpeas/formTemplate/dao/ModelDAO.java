@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,6 +24,10 @@
 
 package com.silverpeas.formTemplate.dao;
 
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,10 +35,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
 
 public class ModelDAO {
 
@@ -66,7 +66,7 @@ public class ModelDAO {
 
   public static void deleteModel(Connection con, String instanceId, String objectId)
       throws SQLException, UtilException {
-    // suppression de tous les modèles
+    // deleting all models
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from st_instance_ModelUsed where instanceId = ? ";
@@ -92,7 +92,7 @@ public class ModelDAO {
 
   public static Collection<String> getModelUsed(Connection con, String instanceId, String objectId)
       throws SQLException, UtilException {
-    List<String> listModel = new ArrayList<String>();
+    List<String> listModel = new ArrayList<>();
     String query = "select modelId from st_instance_ModelUsed where instanceId = ?";
     if (StringUtil.isDefined(objectId)) {
       query += " and objectId = ? ";
@@ -111,7 +111,7 @@ public class ModelDAO {
         listModel.add(modelId);
       }
     } finally {
-      // fermeture
+      // Closing
       DBUtil.close(rs, prepStmt);
     }
     return listModel;

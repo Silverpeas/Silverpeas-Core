@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -42,17 +42,19 @@ import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Hashtable;
 
 /**
  * A UserManager implementation built upon the silverpeas user management system.
  */
+@Singleton
 public class UserManagerImpl implements UserManager {
 
 
   static final private Hashtable<String, UserSettings> userSettings =
-      new Hashtable<String, UserSettings>();
+      new Hashtable<>();
 
   /**
    * The constructor builds and set the shared OrganisationController.

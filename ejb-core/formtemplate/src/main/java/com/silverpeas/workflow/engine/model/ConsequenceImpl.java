@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -65,9 +65,9 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    * Constructor
    */
   public ConsequenceImpl() {
-    targetStateList = new Vector<StateSetter>();
-    unsetStateList = new Vector<StateSetter>();
-    notifiedUsersList = new ArrayList<QualifiedUsers>();
+    targetStateList = new Vector<>();
+    unsetStateList = new Vector<>();
+    notifiedUsersList = new ArrayList<>();
     triggers = new TriggersImpl();
     kill = false;
   }
@@ -78,9 +78,9 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    */
   public State getTargetState(String strStateName) {
     for (int i = 0; i < targetStateList.size(); i++) {
-      if (((StateSetter) targetStateList.get(i)).getState().getName().equals(
+      if (targetStateList.get(i).getState().getName().equals(
           strStateName)) {
-        return ((StateSetter) targetStateList.get(i)).getState();
+        return targetStateList.get(i).getState();
       }
     }
 
@@ -102,7 +102,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
       states[i] = ref.getState();
     }
 
-    return (State[]) states;
+    return states;
   }
 
   /*
@@ -140,9 +140,9 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    */
   public State getUnsetState(String strStateName) {
     for (int i = 0; i < unsetStateList.size(); i++) {
-      if (((StateSetter) unsetStateList.get(i)).getState().getName().equals(
+      if (unsetStateList.get(i).getState().getName().equals(
           strStateName)) {
-        return ((StateSetter) unsetStateList.get(i)).getState();
+        return unsetStateList.get(i).getState();
       }
     }
 
@@ -164,7 +164,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
       states[i] = ref.getState();
     }
 
-    return (State[]) states;
+    return states;
   }
 
   /*

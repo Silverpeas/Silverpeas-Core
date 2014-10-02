@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -52,9 +52,12 @@ import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
 
+import javax.inject.Singleton;
+
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
  */
+@Singleton
 public class WorkflowEngineImpl implements WorkflowEngine {
   /**
    * default constructor
@@ -116,15 +119,15 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         // Do workflow stuff
         try {
           // Over-locks the process instance by admin
-          this.manageLocks((GenericEvent) event, instance);
+          this.manageLocks(event, instance);
 
           // Tests if user is declared as a working user
           if (!creationEvent)
-            this.manageRights((GenericEvent) event, instance);
+            this.manageRights(event, instance);
 
           // Tests if user is declared as the working user for this state
           if (!creationEvent)
-            this.checkUserLock((GenericEvent) event, instance);
+            this.checkUserLock(event, instance);
 
           // Checks the datas associated to the event
           /* xoxox a faire en concordance avec les specs du form manager */
@@ -188,17 +191,17 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       // Do workflow stuff
       try {
         // Over-locks the process instance by admin
-        this.manageLocks((GenericEvent) event, instance);
+        this.manageLocks(event, instance);
 
         // Tests if user is declared as a working user
         if (!creationEvent) {
-          this.manageRights((GenericEvent) event, instance);
+          this.manageRights(event, instance);
         } else {
           instance.lock(new StateImpl(""), event.getUser());
         }
         // Tests if user is declared as the working user for this state
         if (!creationEvent) {
-          this.checkUserLock((GenericEvent) event, instance);
+          this.checkUserLock(event, instance);
         }
         // Checks the datas associated to the event
         /* xoxox a faire en concordance avec les specs du form manager */
@@ -245,13 +248,13 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       // Do workflow stuff
       try {
         // Over-locks the process instance by admin
-        this.manageLocks((GenericEvent) event, instance);
+        this.manageLocks(event, instance);
 
         // Tests if user is declared as a working user
-        this.manageRights((GenericEvent) event, instance);
+        this.manageRights(event, instance);
 
         // Tests if user is declared as the working user for this state
-        this.checkUserLock((GenericEvent) event, instance);
+        this.checkUserLock(event, instance);
 
         // Checks the datas associated to the event
         /* xoxox a faire en concordance avec les specs du form manager */
@@ -298,13 +301,13 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       // Do workflow stuff
       try {
         // Over-locks the process instance by admin
-        this.manageLocks((GenericEvent) event, instance);
+        this.manageLocks(event, instance);
 
         // Tests if user is declared as a working user
-        this.manageRights((GenericEvent) event, instance);
+        this.manageRights(event, instance);
 
         // Tests if user is declared as the working user for this state
-        this.checkUserLock((GenericEvent) event, instance);
+        this.checkUserLock(event, instance);
 
         // Checks the datas associated to the event
         /* xoxox a faire en concordance avec les specs du form manager */

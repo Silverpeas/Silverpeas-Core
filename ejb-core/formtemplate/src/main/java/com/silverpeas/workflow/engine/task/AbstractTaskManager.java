@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,7 +24,6 @@
 
 package com.silverpeas.workflow.engine.task;
 
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.TaskManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.Actor;
@@ -37,6 +36,9 @@ import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.model.StateImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.StringUtil;
+
+import java.util.Arrays;
 
 /**
  * The AbstractTaskManager implements all the silverpeas internal TaskManager methods. This Class
@@ -74,13 +76,12 @@ abstract public class AbstractTaskManager implements TaskManager {
 
     // Getting assigned states
     String[] stateNames = processInstance.getAssignedStates(user, roleName);
-    SilverTrace.debug("workflowEngine",
-        "AbstractTaskManager.getTasks",
-        "root.MSG_GEN_PARAM_VALUE", "assigned states (role=" + roleName + ", user=" + user +
-        ") : " + stateNames);
+    SilverTrace.debug("workflowEngine", "AbstractTaskManager.getTasks", "root.MSG_GEN_PARAM_VALUE",
+        "assigned states (role=" + roleName + ", user=" + user +
+            ") : " + Arrays.toString(stateNames));
 
     Task[] tasks = new Task[stateNames.length];
-    State state = null;
+    State state;
 
     for (int i = 0; i < stateNames.length; i++) {
       // Get the steps that can be discussed

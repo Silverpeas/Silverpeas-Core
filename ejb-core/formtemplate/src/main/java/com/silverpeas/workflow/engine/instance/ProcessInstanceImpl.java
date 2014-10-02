@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.workflow.engine.instance;
 
@@ -189,11 +192,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public ProcessInstanceImpl() {
     historySteps = new Vector();
-    questions = new Vector<Question>();
-    interestedUsers = new Vector<InterestedUser>();
-    workingUsers = new Vector<WorkingUser>();
-    activeStates = new Vector<ActiveState>();
-    lockingUsers = new Vector<LockingUser>();
+    questions = new Vector<>();
+    interestedUsers = new Vector<>();
+    workingUsers = new Vector<>();
+    activeStates = new Vector<>();
+    lockingUsers = new Vector<>();
     valid = false;
     folder = null;
     actionData = null;
@@ -241,7 +244,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @param step the history step to add
    */
   public void addHistoryStep(HistoryStep step) throws WorkflowException {
-    ((HistoryStepImpl) step).setProcessInstance((ProcessInstance) this);
+    ((HistoryStepImpl) step).setProcessInstance(this);
     historySteps.add(step);
 
     this.currentStep = step;
@@ -766,7 +769,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return Vector
    */
   public Vector<Participant> getParticipants() throws WorkflowException {
-    Vector<Participant> participants = new Vector<Participant>();
+    Vector<Participant> participants = new Vector<>();
     for (int i = 0; i < historySteps.size(); i++) {
       HistoryStepImpl step = (HistoryStepImpl) historySteps.get(i);
       User user;
@@ -817,8 +820,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     }
 
     // return the participant
-    return (Participant) (new ParticipantImpl(user, step.getUserRoleName(),
-        state, step.getAction()));
+    return new ParticipantImpl(user, step.getUserRoleName(),
+        state, step.getAction());
   }
 
   /**
@@ -964,7 +967,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   @Override
   public DataRecord getActionRecord(String actionName) throws WorkflowException {
     if (actionData == null) {
-      actionData = new HashMap<String, DataRecord>(0);
+      actionData = new HashMap<>(0);
     }
 
     DataRecord data = actionData.get(actionName);
@@ -1031,7 +1034,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       Input[] inputs = form.getInputs();
       List<String> fNames;
       if (inputs != null) {
-        fNames = new ArrayList<String>(inputs.length);
+        fNames = new ArrayList<>(inputs.length);
         for (int i = 0; i < inputs.length; i++) {
           if (inputs[i] != null && inputs[i].getItem() != null) {
             fNames.add(inputs[i].getItem().getName());
@@ -1169,7 +1172,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     HistoryStep step = null;
 
     for (int i = 0; i < historySteps.size(); i++) {
-      step = (HistoryStep) historySteps.get(i);
+      step = historySteps.get(i);
 
       // if step matches the searched action, tests if the step is most recent
       if (step.getAction().equals(actionName)) {
@@ -1198,7 +1201,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
         "root.MSG_GEN_ENTER_METHOD", "userId =" + userId);
 
     for (int i = 0; i < historySteps.size(); i++) {
-      step = (HistoryStep) historySteps.get(i);
+      step = historySteps.get(i);
 
       // if step matches the searched action, tests if the step is most recent
       if ((step.getActionStatus() == 3) && (step.getUser().getUserId().equals(userId))) {
@@ -1374,7 +1377,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return Actor[]
    */
   public Actor[] getWorkingUsers() throws WorkflowException {
-    List<Actor> actors = new ArrayList<Actor>(workingUsers.size());
+    List<Actor> actors = new ArrayList<>(workingUsers.size());
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = workingUsers.get(i);
       actors.addAll(wkUser.toActors());
@@ -1387,7 +1390,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return Actor[]
    */
   public Actor[] getWorkingUsers(String state) throws WorkflowException {
-    List<Actor> actors = new ArrayList<Actor>(workingUsers.size());
+    List<Actor> actors = new ArrayList<>(workingUsers.size());
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = workingUsers.get(i);
@@ -1449,7 +1452,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public Actor[] getWorkingUsers(String state, String role)
       throws WorkflowException {
-    List<Actor> actors = new ArrayList<Actor>(workingUsers.size());
+    List<Actor> actors = new ArrayList<>(workingUsers.size());
     for (WorkingUser wkUser : workingUsers) {
       if (wkUser.getState().equals(state) && wkUser.getRoles().contains(role)) {
         actors.addAll(wkUser.toActors());
@@ -1465,7 +1468,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       throws WorkflowException {
     SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
         "root.MSG_GEN_ENTER_METHOD", "user : " + user.getUserId() + ", roleName=" + roleName);
-    List<String> stateNames = new ArrayList<String>();
+    List<String> stateNames = new ArrayList<>();
     String userId = user.getUserId();
 
     for (WorkingUser wkUser : workingUsers) {
@@ -1768,7 +1771,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return tuples role/user as an array of Actor objects
    */
   public Actor[] getActors(QualifiedUsers qualifiedUsers, State state) throws WorkflowException {
-    List<Actor> actors = new ArrayList<Actor>();
+    List<Actor> actors = new ArrayList<>();
     UserManager userManager = WorkflowHub.getUserManager();
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
@@ -1850,7 +1853,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   private void addUndoHistoryStep(String action, String params)
       throws WorkflowException {
     UndoHistoryStep undoStep = new UndoHistoryStep();
-    undoStep.setStepId(((HistoryStepImpl) this.currentStep).getId());
+    undoStep.setStepId(this.currentStep.getId());
     undoStep.setInstanceId(instanceId);
     undoStep.setAction(action);
     undoStep.setParameters(params);
@@ -1893,7 +1896,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           + "WHERE undoStep.stepId = $1 ");
 
       // Execute the query
-      query.bind((Integer.parseInt(((HistoryStepImpl) historyStep).getId())));
+      query.bind((Integer.parseInt(historyStep.getId())));
       results = query.execute();
 
       while (results.hasMore()) {
@@ -2033,8 +2036,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   public HistoryStep[] getBackSteps(User user, String roleName, String stateName)
       throws WorkflowException {
     String stepId = null;
-    List<String> stepIds = new ArrayList<String>();
-    List<HistoryStep> steps = new ArrayList<HistoryStep>();
+    List<String> stepIds = new ArrayList<>();
+    List<HistoryStep> steps = new ArrayList<>();
     OQLQuery query = null;
     QueryResults results;
     HistoryStep[] allSteps = this.getHistorySteps();
@@ -2138,7 +2141,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     State targetState = getProcessModel().getState(step.getResolvedState());
     Participant participant = getParticipant(targetState.getName());
     // Save the question
-    QuestionImpl question = new QuestionImpl((ProcessInstance) this, content,
+    QuestionImpl question = new QuestionImpl(this, content,
         fromState.getName(), step.getResolvedState(), fromUser, participant.getUser());
     addQuestion(question);
     return getProcessModel().getState(step.getResolvedState());
@@ -2158,7 +2161,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     // search for the question with given id
     for (int i = 0; question == null && i < questions.size(); i++) {
       if (questions.get(i).getId().equals(questionId)) {
-        question = (Question) questions.get(i);
+        question = questions.get(i);
       }
     }
     // if question not found, throw exception
@@ -2180,7 +2183,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   @Override
   public Question[] getPendingQuestions(String stateName) {
-    List<Question> questionsAsked = new ArrayList<Question>();
+    List<Question> questionsAsked = new ArrayList<>();
     for (int i = 0; i < questions.size(); i++) {
       Question question = questions.get(i);
       if (question.getTargetState().getName().equals(stateName) && question.getResponseDate()
@@ -2198,7 +2201,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return all the questions (not yet answered) asked from the given state
    */
   public Question[] getSentQuestions(String stateName) {
-    Vector<Question> questionsAsked = new Vector<Question>();
+    Vector<Question> questionsAsked = new Vector<>();
     Question question = null;
 
     for (int i = 0; i < questions.size(); i++) {
@@ -2218,7 +2221,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return all the answered questions asked from the given state
    */
   public Question[] getRelevantQuestions(String stateName) {
-    Vector<Question> questionsAsked = new Vector<Question>();
+    Vector<Question> questionsAsked = new Vector<>();
     Question question = null;
 
     for (int i = 0; i < questions.size(); i++) {

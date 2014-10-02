@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -49,7 +49,7 @@ public class PresentationImpl implements Presentation, Serializable {
    */
   public PresentationImpl() {
     titles = new SpecificLabelListHelper();
-    columnsList = new Vector<Columns>();
+    columnsList = new Vector<>();
   }
 
   // //////////////////
@@ -116,7 +116,7 @@ public class PresentationImpl implements Presentation, Serializable {
     if (columns == null)
       return null;
     else
-      return (Column[]) columns.getColumnList().toArray(new ColumnImpl[0]);
+      return columns.getColumnList().toArray(new ColumnImpl[0]);
   }
 
   /*
@@ -141,9 +141,9 @@ public class PresentationImpl implements Presentation, Serializable {
       if (indexDefault == -1)
         return null;
 
-      return (Columns) columnsList.get(indexDefault);
+      return columnsList.get(indexDefault);
     } else
-      return (Columns) columnsList.get(index);
+      return columnsList.get(index);
   }
 
   /*

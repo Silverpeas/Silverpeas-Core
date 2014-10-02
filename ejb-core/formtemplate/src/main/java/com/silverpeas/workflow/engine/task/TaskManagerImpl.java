@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -26,7 +26,6 @@ package com.silverpeas.workflow.engine.task;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
@@ -42,19 +41,22 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
+import org.silverpeas.util.StringUtil;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * The workflow engine services relate to task management.
  */
+@Singleton
 public class TaskManagerImpl extends AbstractTaskManager {
-  static Hashtable<String, NotificationSender> notificationSenders =
-      new Hashtable<String, NotificationSender>();
+  static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<>();
 
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
@@ -62,7 +64,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   @Override
   public void assignTask(Task task, User delegator) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
-    ComponentInst compoInst = null;
+    ComponentInst compoInst;
 
     try {
       compoInst = AdminReference.getAdminService().getComponentInst(componentId);
@@ -85,7 +87,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     }
 
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    Vector<Attendee> attendees = new Vector<Attendee>();
+    Vector<Attendee> attendees = new Vector<>();
     if (task.getUser() != null) {
       // add todo to specified user
       attendees.add(new Attendee(task.getUser().getUserId()));
@@ -93,7 +95,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
       todo.setExternalId(getExternalId(task));
       todoBBA.addEntry(todo);
     } else {
-      List<User> users = null;
+      List<User> users;
       if (StringUtil.isDefined(task.getGroupId())) {
         // get users according to group
         users = task.getProcessInstance().getUsersInGroup(task.getGroupId());
@@ -117,7 +119,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   @Override
   public void unAssignTask(Task task) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
-    ComponentInst compoInst = null;
+    ComponentInst compoInst;
 
     try {
       compoInst = AdminReference.getAdminService().getComponentInst(componentId);
@@ -168,20 +170,16 @@ public class TaskManagerImpl extends AbstractTaskManager {
   @Override
   public void notifyActor(Task task, User sender, User user, String text) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
-    List<String> userIds = new ArrayList<String>();
+    final List<String> userIds = new ArrayList<>();
     if (user != null) {
       userIds.add(user.getUserId());
     } else if (StringUtil.isDefined(task.getGroupId())) {
       List<User> usersInGroup = task.getProcessInstance().getUsersInGroup(task.getGroupId());
-      for (User userInGroup : usersInGroup) {
-        userIds.add(userInGroup.getUserId());
-      }
+      userIds.addAll(usersInGroup.stream().map(User::getUserId).collect(Collectors.toList()));
     } else {
       String role = task.getUserRoleName();
       List<User> usersInRole = task.getProcessInstance().getUsersInRole(role);
-      for (User userInRole : usersInRole) {
-        userIds.add(userInRole.getUserId());
-      }
+      userIds.addAll(usersInRole.stream().map(User::getUserId).collect(Collectors.toList()));
     }
 
     NotificationSender notifSender = notificationSenders.get(componentId);
@@ -211,10 +209,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
             + task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
         notifMetaData.setLink(link);
         notifSender.notifyUser(notifMetaData);
-      } catch (WorkflowException e) {
-        SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
-            "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
-      } catch (NotificationManagerException e) {
+      } catch (WorkflowException | NotificationManagerException e) {
         SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
             "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
       }
