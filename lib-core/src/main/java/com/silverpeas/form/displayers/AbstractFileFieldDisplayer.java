@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,9 +29,6 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
@@ -42,6 +39,9 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +61,6 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * The different kinds of operation that can be applied into an attached file.
    */
   protected enum Operation {
-
     ADD, UPDATE, DELETION
   }
 
@@ -105,8 +104,6 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
 
   /**
    * Returns the name of the managed types.
-   *
-   * @return
    */
   public String[] getManagedTypes() {
     return new String[]{FileField.TYPE};
@@ -117,12 +114,10 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   *
-   * @param pageContext
+   * <ul>
+   * <li>the fieldName is unknown by the template.</li>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
    */
   @Override
   public void displayScripts(final PrintWriter out, final FieldTemplate template,
@@ -157,7 +152,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   @Override
   public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    List<String> attachmentIds = new ArrayList<String>();
+    List<String> attachmentIds = new ArrayList<>();
 
     String attachmentId = processInput(items, field, pageContext);
 
@@ -220,7 +215,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   @Override
   public List<String> update(String attachmentId, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
-    List<String> updated = new ArrayList<String>();
+    List<String> updated = new ArrayList<>();
     if (FileField.TYPE.equals(field.getTypeName())) {
       if (!StringUtil.isDefined(attachmentId)) {
         field.setNull();

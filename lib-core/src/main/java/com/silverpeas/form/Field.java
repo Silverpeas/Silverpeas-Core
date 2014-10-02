@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -52,8 +52,7 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value from a normalized string value.
-   * @throw FormException when the field is readOnly.
-   * @throw FormException when the string value is ill formed.
+   * @throws FormException when the field is readOnly or when the string value is ill formed.
    */
   public void setValue(String value) throws FormException;
 
@@ -69,8 +68,7 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value from a local string value.
-   * @throw FormException when the field is readOnly.
-   * @throw FormException when the string value is ill formed.
+   * @throws FormException when the field is readOnly or when the string value is ill formed.
    */
   public void setValue(String value, String lang) throws FormException;
 
@@ -86,8 +84,8 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value from a normalized String value.
-   * @throw FormException when the field is readOnly.
-   * @throw FormException when the value is not a normalized.
+   * @throws FormException when the field is readOnly or FormException when the value is not a
+   * normalized.
    */
   public void setStringValue(String value) throws FormException;
 
@@ -103,8 +101,7 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value.
-   * @throw FormException when the field is readOnly.
-   * @throw FormException when the value has a wrong type.
+   * @throws FormException when the field is readOnly or when the value has a wrong type.
    */
   public void setObjectValue(Object value) throws FormException;
 
@@ -120,8 +117,7 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set to null this field.
-   * @throw FormException when the field is mandatory.
-   * @throw FormException when the field is read only.
+   * @throws FormException when the field is mandatory or when the field is read only.
    */
   public void setNull() throws FormException;
   

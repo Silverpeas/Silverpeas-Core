@@ -20,28 +20,26 @@
  */
 package com.silverpeas.form.fieldType;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An ExplorerField stores a node reference.
@@ -171,11 +169,7 @@ public class ExplorerField extends AbstractField {
    * Returns true if the value is a String and this field isn't read only.
    */
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof UserDetail) {
-      return !isReadOnly();
-    } else {
-      return false;
-    }
+    return value instanceof UserDetail && !isReadOnly();
   }
 
   /**
@@ -211,22 +205,21 @@ public class ExplorerField extends AbstractField {
   /**
    * Set to null this field.
    *
-   * @throw FormException when the field is mandatory.
-   * @throw FormException when the field is read only.
+   * @throws FormException when the field is mandatory or when the field is read only.
    */
   public void setNull() throws FormException {
     setNodePK(null);
   }
 
   /**
-   * Tests equality beetwen this field and the specified field.
+   * Tests equality between this field and the specified field.
    */
   public boolean equals(Object o) {
     String s = getNodePK();
 
     if (o instanceof ExplorerField) {
       String t = ((ExplorerField) o).getNodePK();
-      return ((s == null && t == null) || s.equals(t));
+      return (s == null || s.equals(t));
     } else {
       return false;
     }

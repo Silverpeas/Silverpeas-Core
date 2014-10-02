@@ -1,41 +1,42 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.form.fieldType;
+
+import com.silverpeas.form.AbstractField;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.StringTokenizer;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import com.silverpeas.form.AbstractField;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * A UserField stores user references.
@@ -53,8 +54,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns the type name.
-   *
-   * @return
    */
   @Override
   public String getTypeName() {
@@ -69,8 +68,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns the user id referenced by this field.
-   *
-   * @return
    */
   public String[] getUserIds() {
     return userIds;
@@ -78,8 +75,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Set the user ids referenced by this field.
-   *
-   * @param currentUserIds
    */
   public void setUserIds(String[] currentUserIds) {
     SilverTrace.info("form", "MultipleUserField.setUserIds",
@@ -93,8 +88,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns true if the value is read only.
-   *
-   * @return
    */
   public boolean isReadOnly() {
     return false;
@@ -102,8 +95,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns the string value of this field : aka the user name.
-   *
-   * @return
    */
   @Override
   public String getValue() {
@@ -136,9 +127,6 @@ public class MultipleUserField extends AbstractField {
   /**
    * Returns the local value of this field. There is no local format for a user field, so the
    * language parameter is unused.
-   *
-   * @param language
-   * @return
    */
   @Override
   public String getValue(String language) {
@@ -147,9 +135,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
-   *
-   * @param value
-   * @throws FormException
    */
   @Override
   public void setValue(String value) throws FormException {
@@ -157,9 +142,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
-   *
-   * @param value
-   * @param language
    * @throws FormException
    */
   @Override
@@ -168,9 +150,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
-   *
-   * @param value
-   * @return
    */
   @Override
   public boolean acceptValue(String value) {
@@ -179,10 +158,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
-   *
-   * @param value
-   * @param language
-   * @return
    */
   @Override
   public boolean acceptValue(String value, String language) {
@@ -191,8 +166,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns the User referenced by this field.
-   *
-   * @return
    */
   @Override
   public Object getObjectValue() {
@@ -204,8 +177,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Set user referenced by this field.
-   *
-   * @param value
    * @throws FormException
    */
   @Override
@@ -225,22 +196,14 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns true if the value is a String and this field isn't read only.
-   *
-   * @param value
-   * @return
    */
   @Override
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof UserDetail[]) {
-      return !isReadOnly();
-    }
-    return false;
+    return value instanceof UserDetail[] && !isReadOnly();
   }
 
   /**
    * Returns this field value as a normalized String : a user id
-   *
-   * @return
    */
   @Override
   public String getStringValue() {
@@ -252,8 +215,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Set this field value from a normalized String : a user id
-   *
-   * @param value
    */
   @Override
   public void setStringValue(String value) {
@@ -263,7 +224,7 @@ public class MultipleUserField extends AbstractField {
       setUserIds(null);
     } else {
       StringTokenizer tokenizer = new StringTokenizer(value, ",");
-      Collection<String> extractedIds = new ArrayList<String>();
+      Collection<String> extractedIds = new ArrayList<>();
       while (tokenizer.hasMoreTokens()) {
         extractedIds.add(tokenizer.nextToken());
       }
@@ -273,9 +234,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns true if this field isn't read only.
-   *
-   * @param value
-   * @return
    */
   @Override
   public boolean acceptStringValue(String value) {
@@ -284,8 +242,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Returns true if this field is not set.
-   *
-   * @return
    */
   @Override
   public boolean isNull() {
@@ -303,10 +259,7 @@ public class MultipleUserField extends AbstractField {
   }
 
   /**
-   * Tests equality beetwen this field and the specified field.
-   *
-   * @param o
-   * @return
+   * Tests equality between this field and the specified field.
    */
   @Override
   public boolean equals(Object o) {
@@ -334,9 +287,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Compares this field with the specified field. This is nonsense to compare arrays.
-   *
-   * @param o
-   * @return
    */
   @Override
   public int compareTo(Object o) {
@@ -351,6 +301,6 @@ public class MultipleUserField extends AbstractField {
   /**
    * The referenced userId.
    */
-  private String[] userIds = null;
+  private String[] userIds;
 
 }

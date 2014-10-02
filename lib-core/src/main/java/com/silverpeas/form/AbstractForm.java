@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,22 +24,20 @@
 
 package com.silverpeas.form;
 
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.servlet.jsp.JspWriter;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import com.silverpeas.form.record.GenericFieldTemplate;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 /**
  * This abstract class implements the form interface and provides for all concretes classes a
@@ -51,9 +49,7 @@ public abstract class AbstractForm implements Form {
   private String title = "";
   private String name = "";
   private String formName = "";
-  public static final String CONTEXT_FORM_FILE = "Images";
-  public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
-  
+
   public static final String REPEATED_FIELD_CSS_SHOW = "field-occurrence-shown";
   public static final String REPEATED_FIELD_CSS_HIDE = "field-occurrence-hidden";
   public static final String REPEATED_FIELD_SEPARATOR = "__SSPP__";
@@ -68,7 +64,7 @@ public abstract class AbstractForm implements Form {
     if (template != null) {
       fieldTemplates = Arrays.asList(template.getFieldTemplates());
     } else {
-      fieldTemplates = new ArrayList<FieldTemplate>();
+      fieldTemplates = new ArrayList<>();
     }
   }
   
@@ -83,7 +79,6 @@ public abstract class AbstractForm implements Form {
 
   /**
    * Gets the template of all of the fields that made this form.
-   * @return
    */
   public List<FieldTemplate> getFieldTemplates() {
     return fieldTemplates;
@@ -173,7 +168,7 @@ public abstract class AbstractForm implements Form {
           String fieldType = fieldTemplate.getTypeName();
           String fieldName = fieldTemplate.getFieldName();
           boolean mandatory = fieldTemplate.isMandatory();
-          FieldDisplayer fieldDisplayer = null;
+          FieldDisplayer fieldDisplayer;
           try {
             if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
               fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
@@ -268,11 +263,9 @@ public abstract class AbstractForm implements Form {
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
    * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
    * the request.
-   * @param items the item of a form in which is embbeded multipart data.
+   * @param items the item of a form in which is embedded multipart data.
    * @param record the record of data.
    * @param pagesContext the page context.
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
    */
   @Override
   public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
@@ -287,13 +280,11 @@ public abstract class AbstractForm implements Form {
    * @param record the record of data.
    * @param pagesContext the page context.
    * @param updateWysiwyg flag indicating if all of WYSIWYG data can be updated.
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
    */
   @Override
   public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext,
       boolean updateWysiwyg) {
-    List<String> attachmentIds = new ArrayList<String>();
+    List<String> attachmentIds = new ArrayList<>();
 
     for (FieldTemplate fieldTemplate : fieldTemplates) {
       // Have to check if field is not readonly, if so no need to update
@@ -336,15 +327,13 @@ public abstract class AbstractForm implements Form {
    * @param items the item of a form in which is embbeded multipart data.
    * @param record the record of data.
    * @param pagesContext the page context.
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
    */
   @Override
   public List<String> updateWysiwyg(List<FileItem> items, DataRecord record,
       PagesContext pagesContext) {
-    List<String> attachmentIds = new ArrayList<String>();
+    List<String> attachmentIds = new ArrayList<>();
     for (FieldTemplate fieldTemplate : fieldTemplates) {
-      FieldDisplayer fieldDisplayer = null;
+      FieldDisplayer fieldDisplayer;
       if (fieldTemplate != null) {
         String fieldName = fieldTemplate.getFieldName();
         String fieldType = fieldTemplate.getTypeName();
@@ -380,7 +369,7 @@ public abstract class AbstractForm implements Form {
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     boolean isEmpty = true;
     for (FieldTemplate fieldTemplate : fieldTemplates) {
-      FieldDisplayer fieldDisplayer = null;
+      FieldDisplayer fieldDisplayer;
       if (fieldTemplate != null) {
         String fieldType = fieldTemplate.getTypeName();
         String fieldDisplayerName = fieldTemplate.getDisplayerName();

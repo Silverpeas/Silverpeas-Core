@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -89,7 +89,7 @@ public class FormException extends SilverpeasException {
    * Set the caller, the level, the error message and infos. Used only by the FatalFormException
    */
   protected FormException(String caller, int level, String message, String infos) {
-    super(caller, level, message);
+    super(caller, level, message, infos);
   }
 
   /**
@@ -98,6 +98,6 @@ public class FormException extends SilverpeasException {
    */
   protected FormException(String caller, int level, String message,
       String infos, Exception nestedException) {
-    super(caller, level, message, nestedException);
+    super(caller, level, message, infos, nestedException);
   }
 }

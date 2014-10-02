@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,18 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
-import org.apache.ecs.xhtml.span;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -44,14 +32,24 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.DateField;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+import org.apache.ecs.xhtml.span;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 
-import org.silverpeas.util.DateUtil;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
- * A DateFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
- * to a end user and can retrieve via HTTP any updated value.
+ * A DateFieldDisplayer is an object which can display a TextField in HTML the content of a
+ * TextField to a end user and can retrieve via HTTP any updated value.
  * <p/>
  * @see Field
  * @see FieldTemplate
@@ -201,8 +199,8 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
+   * @throws FormException if the field type is not a managed type or  if the field doesn't accept
+   * the new value.
    */
   @Override
   public List<String> update(String newValue, DateField field, FieldTemplate template,
@@ -213,7 +211,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
       throw new FormException("DateFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           DateField.TYPE);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   @Override

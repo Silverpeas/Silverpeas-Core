@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -25,7 +25,6 @@
 package com.silverpeas.form;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
 import org.silverpeas.util.ForeignPK;
 
 import java.util.Map;
@@ -50,7 +49,7 @@ public interface RecordSet {
 
   /**
    * Returns the DataRecord with the given id.
-   * @throw FormException when the id is unknown.
+   * @throws FormException when the id is unknown.
    */
   public DataRecord getRecord(String id) throws FormException;
 
@@ -58,35 +57,16 @@ public interface RecordSet {
       throws FormException;
 
   /**
-   * Inserts the given DataRecord and set its id.
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has a not null id.
-   * @throw FormException when the insert fail.
-   */
-  // public void insert(DataRecord record) throws FormException;
-
-  /**
-   * Updates the given DataRecord.
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has a null or unknown id.
-   * @throw FormException when the update fail.
-   */
-  // public void update(DataRecord record) throws FormException;
-
-  /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has an unknown id.
-   * @throw FormException when the insert or update fail.
+   * @throws FormException when the record doesn't have the required template or when the record
+   * has an unknown id or when the insert or update fail.
    */
   public void save(DataRecord record) throws FormException;
 
   /**
    * Index the given DataRecord into the indexEntry. formName looks like allFields (ie template
    * filename allFields.xml without extension)
-   * @param formName
-   * @param indexEntry
    * @throws FormException
    */
   public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
@@ -94,9 +74,8 @@ public interface RecordSet {
 
   /**
    * Deletes the given DataRecord and set to null its id.
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has an unknown id.
-   * @throw FormException when the delete fail.
+   * @throws FormException when the record doesn't have the required template or when the record
+   * has an unknown id or when the delete fail.
    */
   public void delete(DataRecord record) throws FormException;
 

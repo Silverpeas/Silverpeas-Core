@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,6 +24,17 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.FormFatalException;
+import com.silverpeas.form.TypeManager;
+import org.silverpeas.util.ArrayUtil;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -31,18 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.FormFatalException;
-import com.silverpeas.form.TypeManager;
-import org.silverpeas.util.ArrayUtil;
 
 /**
  * A generic FieldTemplate implementation.
@@ -53,35 +52,35 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   private static final long serialVersionUID = 1L;
   @XmlElement(required = true)
-  private String fieldName = null;
-  private Class fieldImpl = null;
-  private String typeName = null;
+  private String fieldName;
+  private Class fieldImpl;
+  private String typeName;
   @XmlElement(required = true)
   private String displayerName = "";
   @XmlElement(name = "isMandatory", required = true, defaultValue = "false")
-  private boolean mandatory = false;
+  private boolean mandatory;
   @XmlElement(name = "isReadOnly", required = true, defaultValue = "false")
-  private boolean readOnly = false;
+  private boolean readOnly;
   @XmlElement(name = "isDisabled", required = true, defaultValue = "false")
-  private boolean disabled = false;
+  private boolean disabled;
   @XmlElement(name = "isHidden", required = true, defaultValue = "false")
-  private boolean hidden = false;
-  
-  private String defaultLabel = null;
-  private Map<String, String> labels = new HashMap<String, String>();
-  private Map<String, String> parameters = new HashMap<String, String>();
-  
+  private boolean hidden;
+
+  private String defaultLabel;
+  private Map<String, String> labels = new HashMap<>();
+  private Map<String, String> parameters = new HashMap<>();
+
   @XmlElement(name = "label")
-  private List<Label> labelsObj = new ArrayList<Label>();
+  private List<Label> labelsObj = new ArrayList<>();
   @XmlElement(name = "parameter")
-  private List<Parameter> parametersObj = new ArrayList<Parameter>();
+  private List<Parameter> parametersObj = new ArrayList<>();
   @XmlElement(name = "isSearchable", required = true, defaultValue = "false")
-  private boolean searchable = false;
-  private String templateName = null;
-  
+  private boolean searchable;
+  private String templateName;
+
   @XmlElement(name = "isFacet", required = true, defaultValue = "false")
-  private boolean usedAsFacet = false;
-  
+  private boolean usedAsFacet;
+
   @XmlElement(defaultValue = "1")
   private int maximumNumberOfOccurrences = 1;
 
@@ -236,7 +235,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       setLabel(label);
     } else {
       if (labels == null) {
-        labels = new HashMap<String, String>();
+        labels = new HashMap<>();
       }
       labels.put(language, label);
     }
@@ -247,7 +246,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   public void addParameter(String name, String value) {
     if (parameters == null) {
-      parameters = new HashMap<String, String>();
+      parameters = new HashMap<>();
     }
     parameters.put(name, value);
   }
@@ -328,7 +327,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   }
 
   public Map<String, String> getKeyValuePairs(String language) {
-    Map<String, String> keyValuePairs = new HashMap<String, String>();
+    Map<String, String> keyValuePairs = new HashMap<>();
     Map<String, String> theParameters = getParameters(language);
 
     if (theParameters == null) {
@@ -427,12 +426,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
 
-    List<String> langs = new ArrayList<String>();
-    for (String lang : labels.keySet()) {
-      langs.add(labels.get(lang));
-    }
-
-    return langs.toArray(new String[langs.size()]);
+    return labels.keySet().stream().map(labels::get).toArray(String[]::new);
   }
 
   /**

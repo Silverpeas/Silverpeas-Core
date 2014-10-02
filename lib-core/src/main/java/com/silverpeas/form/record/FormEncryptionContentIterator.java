@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -84,7 +85,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     SilverTrace.info("form", this.getClass().getName() + ".update()",
         "root.MSG_GEN_ENTER_METHOD", updatedContent.size() + " items to update");
     // generate structured data to store in database
-    List<RecordRow> rowsToUpdate = new ArrayList<RecordRow>();
+    List<RecordRow> rowsToUpdate = new ArrayList<>();
     for (Entry<String, String> entry : updatedContent.entrySet()) {
       String key = entry.getKey();
       String[] recordIdAndFieldName = StringUtil.splitByWholeSeparator(key, "$SP$");
@@ -123,7 +124,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
 
   @Override
   public void init() {
-    List<Map<String, String>>contents = new ArrayList<Map<String,String>>();
+    List<Map<String, String>>contents = new ArrayList<>();
     if (StringUtil.isDefined(formName)) {
       // encrypting/decrypting values...
       Map<String, String> toProcess = getFormData(formName);
@@ -137,9 +138,8 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
         throw new FormRuntimeException("FormEncryptionContentIterator", SilverpeasException.ERROR,
             "form.EXP_SELECT_FAILED", e);
       }
-      for (PublicationTemplate form : forms) {
-        contents.add(getFormData(form.getFileName()));
-      }
+      contents.addAll(
+          forms.stream().map(form -> getFormData(form.getFileName())).collect(Collectors.toList()));
     }
     this.contents = contents.iterator();
     openConnection();
@@ -147,7 +147,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
   
   private Map<String, String> getFormData(String formName) {
     // get all data to process...
-    List<RecordRow> rows = new ArrayList<RecordRow>();
+    List<RecordRow> rows;
     try {
       rows = getGenericRecordSetManager().getAllRecordsOfTemplate(formName);
     } catch (FormException e) {
@@ -156,7 +156,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
     }
     
     // start to generate a compliant structure to encryption service 
-    Map<String, String> toProcess = new HashMap<String, String>();
+    Map<String, String> toProcess = new HashMap<>();
     for (RecordRow row : rows) {
       toProcess.put(row.getRecordId()+"$SP$"+row.getFieldName(), row.getFieldValue());
     }

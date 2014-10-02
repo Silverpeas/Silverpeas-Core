@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class XMLModelContentType {
 
-  private String name = null;
+  private String name;
   private List<XMLField> fields;
 
   public XMLModelContentType() {
@@ -49,9 +49,6 @@ public class XMLModelContentType {
     return name;
   }
 
-  /**
-   * @param name
-   */
   public void setName(String name) {
     this.name = name;
   }
@@ -64,7 +61,7 @@ public class XMLModelContentType {
   }
 
   /**
-   * @param listImageParts The listImageParts to set.
+   * @param fields the XML field list to set.
    */
   public void setFields(List<XMLField> fields) {
     this.fields = fields;
@@ -72,7 +69,7 @@ public class XMLModelContentType {
 
   public void addField(XMLField field) {
     if (fields == null) {
-      fields = new ArrayList<XMLField>();
+      fields = new ArrayList<>();
     }
 
     fields.add(field);

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,11 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -37,10 +32,15 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.UserField;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
+
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
@@ -54,7 +54,6 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   /**
    * Returns the name of the managed types.
-   * @return
    */
   public String[] getManagedTypes() {
     return new String[] { UserField.TYPE };
@@ -65,14 +64,10 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
-   * @param out
-   * @param template
-   * @param pagesContext
-   * @throws java.io.IOException
+   * <ul>
+   * <li>the fieldName is unknown by the template.</li>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
@@ -99,13 +94,9 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
-   * @param out
-   * @param field
-   * @param PagesContext
-   * @param template
+   * <ul>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
    * @throws FormException
    */
   @Override
@@ -215,7 +206,6 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   /**
    * Method declaration
-   * @return
    */
   @Override
   public boolean isDisplayedMandatory() {

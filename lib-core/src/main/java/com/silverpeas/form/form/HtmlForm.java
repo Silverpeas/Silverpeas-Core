@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -57,8 +57,8 @@ import java.io.PrintWriter;
 public class HtmlForm extends AbstractForm {
   private DataRecord record;
   private PagesContext pagesContext;
-  private String m_FileName = null;
-  private BufferedReader m_HtmlFile = null;
+  private String m_FileName;
+  private BufferedReader m_HtmlFile;
   private String currentLine = "";
 
   private static String TAG_BEGIN = "<%=";
@@ -101,10 +101,9 @@ public class HtmlForm extends AbstractForm {
   /**
    * Opens the underlying HTML file. If the file is already opened, it is then closed before opening
    * it again.
-   * @throws FileNotFoundException if the file doesn't exist.
    * @throws IOException if an error occurs while opening the file.
    */
-  private void openHtmlFile() throws FileNotFoundException, IOException {
+  private void openHtmlFile() throws IOException {
     closeHtmlFile();
     m_HtmlFile = new BufferedReader(new InputStreamReader(new FileInputStream(m_FileName),
         Charsets.UTF_8));
@@ -115,12 +114,11 @@ public class HtmlForm extends AbstractForm {
    * Parses the content of the HTML file in order to insert the form at the correct position.
    * @param out the writer into which the content will be printed.
    * @throws IOException if an error occurs while working with the HTML file.
-   * @throws FileNotFoundException if the underlying HTML file doesn't exist.
    */
-  private void parseFile(PrintWriter out) throws IOException, FileNotFoundException {
+  private void parseFile(PrintWriter out) throws IOException {
     openHtmlFile();
     PagesContext pc = new PagesContext(pagesContext);
-    boolean endOfFile = false;
+    boolean endOfFile;
     pc.incCurrentFieldIndex(1);
     do {
       endOfFile = printBeforeTag(out);
@@ -209,7 +207,6 @@ public class HtmlForm extends AbstractForm {
    * @param out the writer into which the field is printed.
    * @param fieldName the name of the field.
    * @param pc the page context.
-   * @throws IOException if an error occurs while printing the field.
    */
   private void printField(PrintWriter out, String fieldName, PagesContext pc) {
     try {
@@ -267,7 +264,6 @@ public class HtmlForm extends AbstractForm {
    * @param out the writer into which the field should be written.
    * @param fieldName the name of the field.
    * @param pc the page context.
-   * @throws IOException if an error occurs while printing the field label.
    */
   private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) {
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
@@ -286,9 +282,6 @@ public class HtmlForm extends AbstractForm {
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
    * </ul>
-   * @param jw
-   * @param pagesContext
-   * @param record
    */
   @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
@@ -307,8 +300,6 @@ public class HtmlForm extends AbstractForm {
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
    * </ul>
-   * @param PagesContext
-   * @param record
    * @return the string to be displayed
    */
   @Override

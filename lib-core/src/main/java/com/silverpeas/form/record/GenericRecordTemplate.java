@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,22 +24,21 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordTemplate;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordTemplate;
 
 /**
  * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map (FieldName ->
@@ -50,16 +49,14 @@ import com.silverpeas.form.RecordTemplate;
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
   private static final long serialVersionUID = 5454875955919676819L;
 
-  private Map<String, IndexedFieldTemplate> fields =
-      new LinkedHashMap<String, IndexedFieldTemplate>();
-  
+  private Map<String, IndexedFieldTemplate> fields = new LinkedHashMap<>();
+
   @XmlElement(name = "fieldTemplate", type=com.silverpeas.form.record.GenericFieldTemplate.class)
-  private List<FieldTemplate> fieldList = new ArrayList<FieldTemplate>();
+  private List<FieldTemplate> fieldList = new ArrayList<>();
   private String templateName;
 
   /**
    * A GenericRecordTemplate is built empty : use addFieldTemplate for each field.
-   * @see addFieldTemplate
    */
   public GenericRecordTemplate() {
   }
@@ -69,7 +66,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   }
 
   public void setFieldList(List<FieldTemplate> fieldList) {
-    this.fieldList = new ArrayList<FieldTemplate>(fieldList);
+    this.fieldList = new ArrayList<>(fieldList);
   }
 
   Map<String, IndexedFieldTemplate> getFields() {
@@ -113,7 +110,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -128,7 +125,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the field index of the named field.
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   @Override
   public int getFieldIndex(String fieldName) throws FormException {

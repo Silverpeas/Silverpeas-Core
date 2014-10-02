@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -33,9 +33,6 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -43,6 +40,9 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -59,7 +59,7 @@ import java.util.Map;
 public class GenericRecordSet implements RecordSet, Serializable {
 
   private static final long serialVersionUID = 1L;
-  private IdentifiedRecordTemplate recordTemplate = null;
+  private IdentifiedRecordTemplate recordTemplate;
 
   /**
    * The generic record set is built upon a RecordTemplate.
@@ -91,7 +91,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * @param objectId
    * @return the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
@@ -102,8 +101,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * @param objectId
-   * @param language
    * @return the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
@@ -117,9 +114,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Inserts the given DataRecord and set its id.
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has a not null id.
-   * @throw FormException when the insert fail.
+   * @throws FormException when the record doesn't have the required template or when the record
+   * has a not null id or when the insert fail.
    */
   private void insert(DataRecord record) throws FormException {
     recordTemplate.checkDataRecord(record);
@@ -128,9 +124,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Updates the given DataRecord.
-   * @throw FormException when the record doesn't have the required template.
-   * @throw FormException when the record has a null or unknown id.
-   * @throw FormException when the update fail.
+   * @throws FormException when the record doesn't have the required template or when the record
+   * has a null or unknown id or when the update fail.
    */
   private void update(DataRecord record) throws FormException {
     recordTemplate.checkDataRecord(record);
@@ -140,7 +135,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
-   * @param record
    * @throws FormException when the record doesn't have the required , when the record has an
    * unknown id, when the insert or update fail.
    */
@@ -161,7 +155,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     DataRecord data = getRecord(recordId, language);
     if (data != null) {
       String[] fieldNames = data.getFieldNames();
-      Field field = null;
+      Field field;
       for (String fieldName : fieldNames) {
         field = data.getField(fieldName);
         if (field != null) {
@@ -180,9 +174,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
                 fieldDisplayer.index(indexEntry, key, fieldName, field, language,
                     fieldTemplate.isUsedAsFacet());
               }
-            } catch (FormException fe) {
-              SilverTrace.error("form", "AbstractForm.update",
-                  "form.EXP_UNKNOWN_FIELD", null, fe);
             } catch (Exception e) {
               SilverTrace.error("form", "AbstractForm.update",
                   "form.EXP_UNKNOWN_FIELD", null, e);
@@ -209,8 +200,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Deletes the given DataRecord and set to null its id.
-   *
-   * @param record
    * @throws FormException when the record doesn't have the required template., when the record has
    * an unknown id, when the delete fail.
    */
@@ -289,7 +278,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
     
     // copy files, images and videos
-    Map<String, String> ids = new HashMap<String, String>();
+    Map<String, String> ids = new HashMap<>();
     try {
       List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
@@ -344,7 +333,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
       originals.addAll(AttachmentServiceFactory.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.video, null));
-      Map<String, String> ids = new HashMap<String, String>(originals.size());
+      Map<String, String> ids = new HashMap<>(originals.size());
       for (SimpleDocument original : originals) {
         SimpleDocumentPK clonePk = AttachmentServiceFactory.getAttachmentService().cloneDocument(
             original, cloneExternalId);
@@ -401,11 +390,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
         FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
         if (fieldTemplate != null) {
           String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
-            }
             if (Field.TYPE_FILE.equals(fieldType)) {
               if (ids.containsKey(field.getStringValue())) {
                 field.setStringValue(ids.get(field.getStringValue()));

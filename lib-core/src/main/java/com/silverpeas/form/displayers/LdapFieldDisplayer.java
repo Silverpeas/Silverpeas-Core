@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.form.displayers;
 
@@ -29,8 +32,9 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.LdapField;
-import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.EncodeHelper;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,8 +64,6 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
   /**
    * Returns the name of the managed types.
-   *
-   * @return
    */
   public String[] getManagedTypes() {
     return MANAGED_TYPES;
@@ -76,10 +78,6 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   *
-   * @param out
-   * @param template
-   * @param pagesContext
    * @throws java.io.IOException
    */
   @Override
@@ -111,11 +109,6 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   *
-   * @param out
-   * @param field
-   * @param pagesContext
-   * @param template
    * @throws FormException
    */
   @Override
@@ -135,7 +128,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
           LdapField.TYPE);
       ldapField = new LdapField();
     } else {
-      ldapField = (LdapField) field;
+      ldapField = field;
     }
 
     if (!field.isNull()) {
@@ -330,8 +323,8 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
    *
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
+   * @throws FormException if the field type is not a managed type or if the field doesn't accept
+   * the new value.
    */
   @Override
   public List<String> update(String newValue, LdapField field, FieldTemplate template,
@@ -348,7 +341,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
       throw new FormException("LdapFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           LdapField.TYPE);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   @Override

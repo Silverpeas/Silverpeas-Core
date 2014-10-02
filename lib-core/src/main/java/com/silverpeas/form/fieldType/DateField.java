@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.form.fieldType;
 
@@ -26,6 +29,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
+
 import java.text.ParseException;
 
 /**
@@ -73,8 +77,6 @@ public abstract class DateField extends AbstractField {
   }
 
   private String formatClient(String value, String language) {
-    // SimpleDateFormat formatter = new
-    // SimpleDateFormat(Util.getString("GML.dateFormat", language));
     if ((value != null) && (!value.equals(""))) {
       try {
         /*
@@ -127,8 +129,7 @@ public abstract class DateField extends AbstractField {
   /**
    * Set this field value.
    *
-   * @throw FormException when the field is readOnly.
-   * @throw FormException when the value is not a String.
+   * @throws FormException when the field is readOnly or when the value is not a String.
    */
   @Override
   public void setObjectValue(Object value) throws FormException {
@@ -146,11 +147,7 @@ public abstract class DateField extends AbstractField {
 
   @Override
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof String) {
-      return !isReadOnly();
-    } else {
-      return false;
-    }
+    return value instanceof String && !isReadOnly();
   }
 
   @Override
@@ -164,7 +161,7 @@ public abstract class DateField extends AbstractField {
   }
 
   /**
-   * Tests equality beetwen this field and the specified field.
+   * Tests equality between this field and the specified field.
    */
   @Override
   public boolean equals(Object o) {

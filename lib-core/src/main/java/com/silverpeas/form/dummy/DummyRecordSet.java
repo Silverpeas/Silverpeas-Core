@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,15 +24,14 @@
 
 package com.silverpeas.form.dummy;
 
-import java.util.Map;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.ForeignPK;
+
+import java.util.Map;
 
 /**
  * A dummy record set.
@@ -41,7 +40,7 @@ public class DummyRecordSet implements RecordSet {
   private DummyRecordTemplate recordTemplate = null;
 
   /**
-   * The no paramaters constructor.
+   * The no parameters constructor.
    */
   public DummyRecordSet() {
     this.recordTemplate = new DummyRecordTemplate();
@@ -53,7 +52,6 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.
-   * @return
    */
   @Override
   public RecordTemplate getRecordTemplate() {
@@ -62,7 +60,6 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * Returns an empty DataRecord built on the RecordTemplate.
-   * @return
    * @throws FormException
    */
   @Override
@@ -72,8 +69,6 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set always return a dummy record.
-   * @param recordId
-   * @return
    * @throws FormException
    */
   @Override
@@ -89,23 +84,6 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set simply do nothing.
-   * @param record
-   * @throws FormException
-   */
-  public void insert(DataRecord record) throws FormException {
-  }
-
-  /**
-   * This dummy record set simply do nothing.
-   * @param record
-   * @throws FormException
-   */
-  public void update(DataRecord record) throws FormException {
-  }
-
-  /**
-   * This dummy record set simply do nothing.
-   * @param record
    * @throws FormException
    */
   @Override
@@ -114,7 +92,6 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set simply do nothing.
-   * @param record
    * @throws FormException
    */
   @Override

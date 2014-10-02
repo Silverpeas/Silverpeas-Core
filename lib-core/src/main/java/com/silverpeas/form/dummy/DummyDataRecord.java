@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,13 +24,13 @@
 
 package com.silverpeas.form.dummy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import org.silverpeas.util.ArrayUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A dummy DataRecord .
@@ -50,7 +50,6 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Returns the data record id.
-   * @return
    */
   @Override
   public String getId() {
@@ -59,7 +58,6 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Gives an id to the data record.
-   * @param externalId
    */
   @Override
   public void setId(String externalId) {
@@ -67,7 +65,6 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Return true if this record has not been inserted in a RecordSet.
-   * @return
    */
   @Override
   public boolean isNew() {
@@ -76,8 +73,6 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Returns the named field.
-   * @param fieldName
-   * @return
    */
   @Override
   public Field getField(String fieldName) {
@@ -91,8 +86,6 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Returns the field at the index position in the record.
-   * @param fieldIndex
-   * @return
    */
   @Override
   public Field getField(int fieldIndex) {
@@ -115,7 +108,6 @@ public class DummyDataRecord implements DataRecord {
   
   @Override
   public Map<String, String> getValues(String language) {
-    return new HashMap<String, String>();
+    return new HashMap<>();
   }
-
 }

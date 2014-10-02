@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,12 +24,12 @@
 
 package com.silverpeas.form.record;
 
-import java.io.Serializable;
-
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordTemplate;
+
+import java.io.Serializable;
 
 /**
  * An Identified RecordTemplate adds a database id and an external id to a RecordTemplate.
@@ -38,10 +38,10 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   private static final long serialVersionUID = 1L;
   private int id = -1;
-  private String externalId = null;
-  private RecordTemplate wrappedTemplate = null;
-  private String templateName = null;
-  private boolean encrypted = false;
+  private String externalId;
+  private RecordTemplate wrappedTemplate;
+  private String templateName;
+  private boolean encrypted;
 
   /**
    * A IdentifiedRecordTemplate is built upon a wrapped template.
@@ -73,7 +73,7 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     return wrappedTemplate.getFieldTemplate(fieldName);
@@ -81,7 +81,7 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the field index of the named field.
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
     return wrappedTemplate.getFieldIndex(fieldName);

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -57,7 +57,7 @@ public interface DataRecord extends Serializable {
 
   /**
    * Returns the named field.
-   * @throw FormException when the fieldName is unknown.
+   * @throws FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException;
   
@@ -65,7 +65,7 @@ public interface DataRecord extends Serializable {
 
   /**
    * Returns the field at the index position in the record.
-   * @throw FormException when the fieldIndex is unknown.
+   * @throws FormException when the fieldIndex is unknown.
    */
   public Field getField(int fieldIndex) throws FormException;
 

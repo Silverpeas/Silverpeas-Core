@@ -1,26 +1,27 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.form.fieldType;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
@@ -28,6 +29,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A GroupField stores a group reference.
@@ -176,11 +178,7 @@ public class GroupField extends AbstractField {
    */
   @Override
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof Group) {
-      return !isReadOnly();
-    } else {
-      return false;
-    }
+    return value instanceof Group && !isReadOnly();
   }
 
   /**
@@ -220,8 +218,7 @@ public class GroupField extends AbstractField {
   /**
    * Set to null this field.
    *
-   * @throw FormException when the field is mandatory.
-   * @throw FormException when the field is read only.
+   * @throws FormException when the field is mandatory or  when the field is read only.
    */
   @Override
   public void setNull() throws FormException {
@@ -229,7 +226,7 @@ public class GroupField extends AbstractField {
   }
 
   /**
-   * Tests equality beetwen this field and the specified field.
+   * Tests equality between this field and the specified field.
    */
   @Override
   public boolean equals(Object o) {
@@ -237,7 +234,7 @@ public class GroupField extends AbstractField {
 
     if (o instanceof GroupField) {
       String t = ((GroupField) o).getGroupId();
-      return ((s == null && t == null) || s.equals(t));
+      return (s == null || s.equals(t));
     } else {
       return false;
     }
@@ -280,8 +277,9 @@ public class GroupField extends AbstractField {
     String s = getGroupId();
     return ("" + s).hashCode();
   }
+
   /**
    * The referenced groupId.
    */
-  private String groupId = null;
+  private String groupId;
 }

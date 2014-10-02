@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -49,11 +49,11 @@ public class GenericDataRecord implements DataRecord, Serializable {
 
   private static final long serialVersionUID = 1L;
   private int id = -1;
-  private String externalId = null;
-  private Field[] fields = null;
-  private RecordTemplate template = null;
-  private String language = null;
-  private Map<String, List<Field>> fieldsByName = null;
+  private String externalId;
+  private Field[] fields;
+  private RecordTemplate template;
+  private String language;
+  private Map<String, List<Field>> fieldsByName;
 
   /**
    * A GenericDataRecord is built from a RecordTemplate.
@@ -61,14 +61,14 @@ public class GenericDataRecord implements DataRecord, Serializable {
   public GenericDataRecord(RecordTemplate template) throws FormException {
     this.template = template;
 
-    List<Field> allFields = new ArrayList<Field>();
-    fieldsByName = new HashMap<String, List<Field>>();
+    List<Field> allFields = new ArrayList<>();
+    fieldsByName = new HashMap<>();
 
     FieldTemplate fieldTemplate;
     Field field;
     for (final String fieldName : template.getFieldNames()) {
       fieldTemplate = template.getFieldTemplate(fieldName);
-      List<Field> occurrences = new ArrayList<Field>();
+      List<Field> occurrences = new ArrayList<>();
       int maximumNumberOfOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
       for (int o = 0; o < maximumNumberOfOccurrences; o++) {
         field = fieldTemplate.getEmptyField(o);
@@ -106,7 +106,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
 
   /**
    * Returns the named field.
-   * @throw FormException when the fieldName is unknown.
+   * @throws FormException when the fieldName is unknown.
    */
   @Override
   public Field getField(String fieldName) throws FormException {
@@ -132,7 +132,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
 
   /**
    * Returns the field at the index position in the record.
-   * @throw FormException when the fieldIndex is unknown.
+   * @throws FormException when the fieldIndex is unknown.
    */
   @Override
   public Field getField(int fieldIndex) throws FormException {
@@ -183,7 +183,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
   
   @Override
   public Map<String, String> getValues(String language) {
-    Map<String, String> formValues = new HashMap<String, String>();
+    Map<String, String> formValues = new HashMap<>();
     String fieldNames[] = getFieldNames();
     PagesContext pageContext = new PagesContext();
     pageContext.setLanguage(language);

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.form.Field;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.FieldDisplayer;
@@ -49,8 +50,6 @@ import org.silverpeas.servlet.FileUploadUtil;
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can
  * retrieve via HTTP any updated value.
  * <p/>
- * < * p/>
- * < p/>
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -194,12 +193,11 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
       throw new FormException("GroupFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           GroupField.TYPE);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   /**
    * Method declaration
-   * @return
    */
   @Override
   public boolean isDisplayedMandatory() {
@@ -208,7 +206,6 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
 
   /**
    * Method declaration
-   * @return
    */
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
@@ -222,7 +219,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
         && !StringUtil.isDefined(value)) {
-      return new ArrayList<String>();
+      return new ArrayList<>();
     }
     return update(value, field, template, pageContext);
   }

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -66,7 +66,7 @@ public class GenericRecordSetManager {
   private static final GenericRecordSetManager instance = new GenericRecordSetManager();
   private static final String SEPARATOR = "|"; 
 
-  private final Map<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
+  private final Map<String, GenericRecordSet> cache = new HashMap<>();
 
   private GenericRecordSetManager() {
 
@@ -82,9 +82,6 @@ public class GenericRecordSetManager {
 
   /**
    * Build and return a new record set.
-   * @param externalId
-   * @param template
-   * @return
    * @throws FormException
    */
   public GenericRecordSet createRecordSet(String externalId,
@@ -158,8 +155,6 @@ public class GenericRecordSetManager {
 
   /**
    * Return the record set known be its external id.
-   * @param externalId
-   * @return
    * @throws FormException when the id is unknown.
    */
   public RecordSet getRecordSet(String externalId) throws FormException {
@@ -203,7 +198,6 @@ public class GenericRecordSetManager {
 
   /**
    * Remove the record set known by its external id.
-   * @param externalId
    * @throws FormException when the id is unknown.
    */
   public void removeRecordSet(String externalId) throws FormException {
@@ -255,7 +249,7 @@ public class GenericRecordSetManager {
         "root.MSG_GEN_ENTER_METHOD", "templateName = " + templateName);
 
     // getting cached recordsets managed by given template
-    List<String> ids = new ArrayList<String>();
+    List<String> ids = new ArrayList<>();
     for (String id : cache.keySet()) {
       GenericRecordSet rs = cache.get(id);
       IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) rs.getRecordTemplate();
@@ -267,9 +261,7 @@ public class GenericRecordSetManager {
         "root.MSG_GEN_PARAM_VALUE", "externalIds to remove = " + ids.toString());
 
     // removing recordsets from cache
-    for (String id : ids) {
-      removeCachedRecordSet(id);
-    }
+    ids.forEach(this::removeCachedRecordSet);
   }
 
   /**
@@ -537,7 +529,7 @@ public class GenericRecordSetManager {
     Connection con = null;
     PreparedStatement select = null;
     ResultSet rs = null;
-    List<RecordRow> rows = new ArrayList<RecordRow>();
+    List<RecordRow> rows = new ArrayList<>();
     try {
       con = getConnection();
       select = con.prepareStatement(SELECT_TEMPLATE_RECORD_ENTRIES);
@@ -984,7 +976,7 @@ public class GenericRecordSetManager {
       select = con.prepareStatement(SELECT_FIELDS);
       select.setInt(1, record.getInternalId());
       rs = select.executeQuery();
-      Map<String, String> rows = new TreeMap<String, String>();
+      Map<String, String> rows = new TreeMap<>();
       while (rs.next()) {
         String fieldName = rs.getString("fieldName");
         String fieldValue = rs.getString("fieldValue");
@@ -1019,7 +1011,7 @@ public class GenericRecordSetManager {
       throws SQLException {
     PreparedStatement select = null;
     ResultSet rs = null;
-    List<String> languages = new ArrayList<String>();
+    List<String> languages = new ArrayList<>();
     try {
       select = con.prepareStatement(SELECT_RECORD);
       select.setInt(1, template.getInternalId());
@@ -1084,7 +1076,7 @@ public class GenericRecordSetManager {
   
   private Map<String, String> getRowsToStore(GenericDataRecord record, boolean crypt)
       throws FormException, CryptoException {
-    Map<String, String> rows = new HashMap<String, String>();
+    Map<String, String> rows = new HashMap<>();
     for (Field field : record.getFields()) {
       String fieldNameIndexed = field.getName()+SEPARATOR+field.getOccurrence();
       rows.put(fieldNameIndexed, field.getStringValue());

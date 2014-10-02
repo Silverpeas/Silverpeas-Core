@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -37,8 +37,8 @@ public class DataRecordUtil {
    */
   static public void updateFields(String[] fieldNames,
       DataRecord updatedRecord, DataRecord copiedRecord) throws FormException {
-    Field updatedField = null;
-    Field copiedField = null;
+    Field updatedField;
+    Field copiedField;
 
     for (String fieldName : fieldNames) {
       updatedField = updatedRecord.getField(fieldName);
@@ -65,7 +65,7 @@ public class DataRecordUtil {
    */
   static public String applySubstitution(String text, DataRecord data,
       String lang) {
-    return applySubstitution(text, data, lang, new ArrayList<String>());
+    return applySubstitution(text, data, lang, new ArrayList<>());
   }
 
   static private String applySubstitution(String text, DataRecord data,

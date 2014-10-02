@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,19 +24,10 @@
 
 package com.silverpeas.form.form;
 
-import com.silverpeas.form.AbstractForm;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.Util;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.form.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
@@ -45,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -55,7 +47,7 @@ import java.util.List;
  */
 public class XmlSearchForm extends AbstractForm {
 
-  private List<FieldTemplate> fieldTemplates = new ArrayList<FieldTemplate>();
+  private List<FieldTemplate> fieldTemplates = new ArrayList<>();
   private String title = "";
 
   public XmlSearchForm(RecordTemplate template) throws FormException {
@@ -70,12 +62,10 @@ public class XmlSearchForm extends AbstractForm {
    * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
    * field type and constraints. The RecordTemplate gives the local label too. Never throws an
    * Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>a field is unknown by the template.
-   * <LI>a field has not the required type.
-   * </UL>
-   * @param jw
-   * @param PagesContext
+   * <ul>
+   * <li>a field is unknown by the template.</li>
+   * <li>a field has not the required type.</li>
+   * </ul>
    */
   @Override
   public void displayScripts(JspWriter jw, PagesContext PagesContext) {
@@ -85,13 +75,10 @@ public class XmlSearchForm extends AbstractForm {
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
    * informations. The value formats may be adapted to a local language. Never throws an Exception
    * but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>a field is unknown by the template.
-   * <LI>a field has not the required type.
-   * </UL>
-   * @param pagesContext
-   * @param record
-   * @return
+   * <ul>
+   * <li>a field is unknown by the template.</li>
+   * <li>a field has not the required type.</li>
+   * </ul>
    */
   @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
@@ -198,7 +185,7 @@ public class XmlSearchForm extends AbstractForm {
             }
             out.println("</td>");
             out.println("</tr>");
-            ;
+
             pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
           }
         }
@@ -278,7 +265,6 @@ public class XmlSearchForm extends AbstractForm {
         int lastFieldIndex = -1;
         lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
         FieldTemplate fieldTemplate;
-        String fieldName;
         String fieldType;
         String fieldDisplayerName;
         FieldDisplayer fieldDisplayer = null;
@@ -286,7 +272,6 @@ public class XmlSearchForm extends AbstractForm {
         while (itFields.hasNext()) {
           fieldTemplate = itFields.next();
           if (fieldTemplate != null) {
-            fieldName = fieldTemplate.getFieldName();
             fieldType = fieldTemplate.getTypeName();
             fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
@@ -313,7 +298,7 @@ public class XmlSearchForm extends AbstractForm {
         while (itFields.hasNext()) {
           fieldTemplate = itFields.next();
           if (fieldTemplate != null) {
-            fieldName = fieldTemplate.getFieldName();
+            String fieldName = fieldTemplate.getFieldName();
             fieldLabel = fieldTemplate.getLabel(language);
             fieldType = fieldTemplate.getTypeName();
             fieldDisplayerName = fieldTemplate.getDisplayerName();
@@ -389,7 +374,7 @@ public class XmlSearchForm extends AbstractForm {
         "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     String values = "";
     List<FileItem> params = getParameters(items, parameterName);
-    FileItem item = null;
+    FileItem item;
     for (int p = 0; p < params.size(); p++) {
       item = params.get(p);
       values += item.getString();
@@ -413,13 +398,8 @@ public class XmlSearchForm extends AbstractForm {
 
   // for multi-values parameter (like checkbox)
   private List<FileItem> getParameters(List<FileItem> items, String parameterName) {
-    List<FileItem> parameters = new ArrayList<FileItem>();
-    for (FileItem item : items) {
-      if (parameterName.equals(item.getFieldName())) {
-        parameters.add(item);
-      }
-    }
-    return parameters;
+    return items.stream().filter(item -> parameterName.equals(item.getFieldName()))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -446,8 +426,8 @@ public class XmlSearchForm extends AbstractForm {
       itFields = this.fieldTemplates.iterator();
     }
     if (itFields != null && itFields.hasNext()) {
-      FieldDisplayer fieldDisplayer = null;
-      FieldTemplate fieldTemplate = null;
+      FieldDisplayer fieldDisplayer;
+      FieldTemplate fieldTemplate;
       while (itFields.hasNext() || !isEmpty) {
         fieldTemplate = itFields.next();
         if (fieldTemplate != null) {
@@ -461,7 +441,7 @@ public class XmlSearchForm extends AbstractForm {
                 fieldDisplayerName);
             if (fieldDisplayer != null) {
               String itemName = fieldTemplate.getFieldName();
-              String itemValue = null;
+              String itemValue;
 
               if (Field.TYPE_FILE.equals(fieldType)) {
                 FileItem image = getParameter(items, itemName);
@@ -480,9 +460,6 @@ public class XmlSearchForm extends AbstractForm {
                 }
               }
             }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "XmlSearchForm.isEmpty",
-                "form.EXP_UNKNOWN_FIELD", null, fe);
           } catch (Exception e) {
             SilverTrace.error("form", "XmlSearchForm.isEmpty",
                 "form.EXP_UNKNOWN_FIELD", null, e);

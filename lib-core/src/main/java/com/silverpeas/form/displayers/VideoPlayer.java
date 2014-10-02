@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -52,7 +52,7 @@ public class VideoPlayer {
       "flowplayer(''{0}'', ''{1}'', '{'wmode: ''opaque'', "
       + "clip: '{' autoBuffering: {2}, autoPlay: {3} '}' '}')";
   private String videoURL = "";
-  private boolean autoplay = false;
+  private boolean autoplay;
   private String width = "425px";
   private String height = "300px";
 
@@ -145,7 +145,7 @@ public class VideoPlayer {
   /**
    * Initializes the video player by declaring the required ressources (script, stylesheets, ...).
    * This method is required before any call of the display method.
-   * @param an XHTML element into which the resources declaration will be rendered.
+   * @param element an XHTML element into which the resources declaration will be rendered.
    */
   public void init(final ConcreteElement element) {
     script cssLoading = new script("$(document.head).append(\"" + playerStyle + "\")").setType(
@@ -163,7 +163,7 @@ public class VideoPlayer {
 
   /**
    * Renders the video player into the specified (X)HTML element.
-   * @param an (X)HTML element into which the video player will be rendered.
+   * @param element an (X)HTML element into which the video player will be rendered.
    */
   public void renderIn(final ConcreteElement element) {
     String videoId = generateId();

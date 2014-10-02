@@ -1,33 +1,27 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.form.displayers;
-
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -39,12 +33,20 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -65,11 +67,6 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL> <LI>the field type is not a managed type. </UL>
-   *
-   * @param out
-   * @param field
-   * @param template
-   * @param pageContext
    * @throws FormException
    */
   @Override
@@ -90,7 +87,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
     } else {
       attachmentPk = new SimpleDocumentPK(attachmentId, componentId);
     }
-    SimpleDocument attachment = null;
+    SimpleDocument attachment;
     String imageURL = null;
     if (StringUtil.isDefined(attachmentId)) {
       if (attachmentId.startsWith("/")) {
@@ -114,69 +111,68 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       attachmentId = "";
     }
     Map<String, String> parameters = template.getParameters(language);
-    if (template.isReadOnly() && !template.isHidden()) {
-      if (imageURL != null) {
-        displayImage(parameters, imageURL, out, pageContext.isSharingContext());
+    if (!template.isHidden()) {
+      if (template.isReadOnly()) {
+        if (imageURL != null) {
+          displayImage(parameters, imageURL, out, pageContext.isSharingContext());
+        }
+      } else if (!template.isDisabled()) {
+
+        String displayCSS = "display:none";
+        if (imageURL != null) {
+          displayCSS = "display:block";
+        }
+
+        String deleteImg = Util.getIcon("delete");
+        String deleteLab = Util.getString("removeImage", language);
+        String size = settings.getString("image.size.xmlform.thumbnail");
+        if (!StringUtil.isDefined(size)) {
+          size = "x50";
+        }
+        String thumbnailURL = imageURL;
+        if (imageURL != null) {
+          thumbnailURL = FileServerUtils.getImageURL(imageURL, size);
+        }
+
+        out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");
+        out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL +
+            "\" target=\"_blank\">");
+        out.println("<img alt=\"\" align=\"top\" src=\"" + thumbnailURL + "\" id=\"" + fieldName +
+            "Thumbnail\"/>&nbsp;");
+        out.println("</a>");
+        out.println(
+            "&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('" + fieldName +
+                "ThumbnailArea').style.display='none';" + "document." + pageContext.getFormName() +
+                "." + fieldName + OPERATION_KEY + ".value='" + Operation.DELETION.name() + "';" +
+                "\">");
+        out.println("<img src=\"" + deleteImg + "\" width=\"15\" height=\"15\" alt=\"" + deleteLab +
+            "\" align=\"top\" title=\"" + deleteLab + "\"/></a>");
+        out.println("</div>");
+
+        out.println("<div id=\"" + fieldName + "SelectionArea\">");
+        out.print("<input type=\"file\" size=\"50\" id=\"");
+        out.print(fieldName);
+        out.print("\" name=\"");
+        out.print(fieldName);
+        out.println("\"/>");
+        out.println("<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
+            "\" id=\"" + fieldName + FileField.PARAM_ID_SUFFIX + "\" value=\"" + attachmentId +
+            "\"/>");
+        out.println("<input type=\"hidden\" id=\"" + fieldName + OPERATION_KEY + "\" name=\"" +
+            fieldName + OPERATION_KEY + "\" value=\"" + originalOperation.name() + "\"/>");
+
+        // Adding "Galleries" listbox if needed
+        boolean useGalleries = Util.getBooleanValue(parameters, "galleries");
+        if (useGalleries) {
+          renderGalleries(originalOperation, fieldName, language, out);
+        }
+
+        if (template.isMandatory() && pageContext.useMandatory()) {
+          out.println(Util.getMandatorySnippet());
+        }
+
+        out.println("</div>");
       }
-    } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-
-      String displayCSS = "display:none";
-      if (imageURL != null) {
-        displayCSS = "display:block";
-      }
-
-      String deleteImg = Util.getIcon("delete");
-      String deleteLab = Util.getString("removeImage", language);
-      String size = settings.getString("image.size.xmlform.thumbnail");
-      if (!StringUtil.isDefined(size)) {
-        size = "x50";
-      }
-      String thumbnailURL = imageURL;
-      if (imageURL != null) {
-        thumbnailURL = FileServerUtils.getImageURL(imageURL, size);
-      }
-
-      out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");
-      out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL
-          + "\" target=\"_blank\">");
-      out.println("<img alt=\"\" align=\"top\" src=\"" + thumbnailURL
-          + "\" id=\"" + fieldName + "Thumbnail\"/>&nbsp;");
-      out.println("</a>");
-      out.println("&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document.getElementById('" + fieldName + "ThumbnailArea').style.display='none';"
-          + "document." + pageContext.getFormName() + "." + fieldName
-          + OPERATION_KEY + ".value='"+Operation.DELETION.name()+"';"
-          + "\">");
-      out.println("<img src=\""
-          + deleteImg
-          + "\" width=\"15\" height=\"15\" alt=\""
-          + deleteLab + "\" align=\"top\" title=\""
-          + deleteLab + "\"/></a>");
-      out.println("</div>");
-
-      out.println("<div id=\"" + fieldName + "SelectionArea\">");
-      out.print("<input type=\"file\" size=\"50\" id=\"");
-      out.print(fieldName);
-      out.print("\" name=\"");
-      out.print(fieldName);
-      out.println("\"/>");
-      out.println("<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
-          "\" id=\"" + fieldName + FileField.PARAM_ID_SUFFIX + "\" value=\"" + attachmentId +
-          "\"/>");
-      out.println("<input type=\"hidden\" id=\"" + fieldName + OPERATION_KEY + "\" name=\"" +
-          fieldName + OPERATION_KEY + "\" value=\"" + originalOperation.name() + "\"/>");
-
-      // Adding "Galleries" listbox if needed
-      boolean useGalleries = Util.getBooleanValue(parameters, "galleries");
-      if (useGalleries) {
-        renderGalleries(originalOperation, fieldName, language, out);
-      }
-
-      if (template.isMandatory() && pageContext.useMandatory()) {
-        out.println(Util.getMandatorySnippet());
-      }
-
-      out.println("</div>");
     }
   }
   
@@ -235,8 +231,6 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
   /**
    * Method declaration
-   *
-   * @return
    */
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {

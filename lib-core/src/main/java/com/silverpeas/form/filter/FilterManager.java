@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -80,44 +80,48 @@ public class FilterManager {
         String filteredName = filteredField.getFieldName();
         String filteredLabel = filteredField.getLabel(lang);
 
-        if ("text".equals(filteredType)) {
-          criteriumField = new GenericFieldTemplate(filteredName + "__like", "text");
-          criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
+        switch (filteredType) {
+          case "text":
+            criteriumField = new GenericFieldTemplate(filteredName + "__like", "text");
+            criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
 
-          if (fieldsParameter.containsKey(filteredName)) {
-            FieldTemplate field = fieldsParameter.get(filteredName);
-            criteriumField.setDisplayerName("listbox");
-            
-            Map<String, String> parameters = field.getParameters(lang);
-            Set<String> keys = parameters.keySet();
-            for (String key : keys) {
-              criteriumField.addParameter(key, parameters.get(key));
+            if (fieldsParameter.containsKey(filteredName)) {
+              FieldTemplate field = fieldsParameter.get(filteredName);
+              criteriumField.setDisplayerName("listbox");
+
+              Map<String, String> parameters = field.getParameters(lang);
+              Set<String> keys = parameters.keySet();
+              for (String key : keys) {
+                criteriumField.addParameter(key, parameters.get(key));
+              }
             }
-          }
-        } else if ("jdbc".equals(filteredType)) {
-          criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
-          criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
+            break;
+          case "jdbc":
+            criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
+            criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
 
-          if (fieldsParameter.containsKey(filteredName)) {
-            FieldTemplate field = fieldsParameter.get(filteredName);
-            Map<String, String> parameters = field.getParameters(lang);
-            Set<String> keys = parameters.keySet();
-            for (String key : keys) {
-              criteriumField.addParameter(key, parameters.get(key));
+            if (fieldsParameter.containsKey(filteredName)) {
+              FieldTemplate field = fieldsParameter.get(filteredName);
+              Map<String, String> parameters = field.getParameters(lang);
+              Set<String> keys = parameters.keySet();
+              for (String key : keys) {
+                criteriumField.addParameter(key, parameters.get(key));
+              }
+              criteriumField.addParameter("displayer", "listbox");
             }
-            criteriumField.addParameter("displayer", "listbox");
-          }
-        } else if ("date".equals(filteredType)) {
-          criteriumField = new GenericFieldTemplate(filteredName + "__lt", "date");
-          criteriumField.addLabel(filteredLabel + " "
-              + Util.getString("le", lang), lang);
-          criteriaTemplate.addFieldTemplate(criteriumField);
+            break;
+          case "date":
+            criteriumField = new GenericFieldTemplate(filteredName + "__lt", "date");
+            criteriumField.addLabel(filteredLabel + " " + Util.getString("le", lang), lang);
+            criteriaTemplate.addFieldTemplate(criteriumField);
 
-          criteriumField = new GenericFieldTemplate(filteredName + "__gt", "date");
-          criteriumField.addLabel(filteredLabel + " " + Util.getString("ge", lang), lang);
-        } else {
-          criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
-          criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
+            criteriumField = new GenericFieldTemplate(filteredName + "__gt", "date");
+            criteriumField.addLabel(filteredLabel + " " + Util.getString("ge", lang), lang);
+            break;
+          default:
+            criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
+            criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
+            break;
         }
         criteriaTemplate.addFieldTemplate(criteriumField);
       }
@@ -138,7 +142,7 @@ public class FilterManager {
    */
   public List<DataRecord> filter(DataRecord criteria, List<DataRecord> filtered)
       throws FormException {
-    ArrayList<DataRecord> result = new ArrayList<DataRecord>();
+    ArrayList<DataRecord> result = new ArrayList<>();
     RecordFilter filter = buildRecordFilter(criteria);
     Iterator<DataRecord> records = filtered.iterator();
     DataRecord record;
@@ -154,7 +158,7 @@ public class FilterManager {
   }
 
   /**
-   * Builds a RecordFilter from the criteria record (which must be built with the criterieTemplate)
+   * Builds a RecordFilter from the criteria record (which must be built with the criteriaRecord)
    */
   public RecordFilter buildRecordFilter(DataRecord criteriaRecord)
       throws FormException {
@@ -174,16 +178,22 @@ public class FilterManager {
       filteredName = getFilteredName(criteriaName);
       filterKind = getFilterKind(criteriaName);
 
-      if ("like".equals(filterKind)) {
-        fieldFilter = new LikeFilter(criteria);
-      } else if ("lt".equals(filterKind)) {
-        fieldFilter = new LessThenFilter(criteria);
-      } else if ("gt".equals(filterKind)) {
-        fieldFilter = new GreaterThenFilter(criteria);
-      } else if ("equal".equals(filterKind)) {
-        fieldFilter = new EqualityFilter(criteria);
-      } else {
-        fieldFilter = null;
+      switch (filterKind) {
+        case "like":
+          fieldFilter = new LikeFilter(criteria);
+          break;
+        case "lt":
+          fieldFilter = new LessThenFilter(criteria);
+          break;
+        case "gt":
+          fieldFilter = new GreaterThenFilter(criteria);
+          break;
+        case "equal":
+          fieldFilter = new EqualityFilter(criteria);
+          break;
+        default:
+          fieldFilter = null;
+          break;
       }
       if (fieldFilter != null) {
         filter.addFieldFilter(filteredName, fieldFilter);
@@ -222,17 +232,17 @@ public class FilterManager {
   /**
    * The template of the criteria records.
    */
-  private GenericRecordTemplate criteriaTemplate = null;
+  private GenericRecordTemplate criteriaTemplate;
 
   /**
    * The Form which can be used to fill the criteria.
    */
-  private Form criteriaForm = null;
+  private Form criteriaForm;
 
   /**
    * The lang used to display the several label.
    */
-  private String lang = null;
+  private String lang;
 
-  private Hashtable<String, FieldTemplate> fieldsParameter = new Hashtable<String, FieldTemplate>();
+  private Hashtable<String, FieldTemplate> fieldsParameter = new Hashtable<>();
 }
