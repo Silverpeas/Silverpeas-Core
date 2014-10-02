@@ -45,7 +45,7 @@
 
   <context:component-scan base-package="com.silverpeas.domains.silverpeasdriver"/>
   <context:component-scan base-package="com.stratelia.webactiv.beans.admin" />
-  <bean name="domainDriverFactory" id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory"/>
+  <!-- ebo <bean name="domainDriverFactory" id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory"/> -->
 
   <jpa:repositories base-package="com.silverpeas.domains.silverpeasdriver" transaction-manager-ref="jpaTransactionManager" query-lookup-strategy="use-declared-query"/>
 

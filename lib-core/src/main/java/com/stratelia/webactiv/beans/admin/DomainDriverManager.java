@@ -20,7 +20,7 @@
 */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.domains.DomainDriverFactory;
+import com.silverpeas.domains.DomainDriverProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -51,7 +51,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   private UserIndexation userIndexation = null;
   private OrganizationSchema organization = null;
   private Map<String, DomainDriver> domainDriverInstances =
-          new ConcurrentHashMap<String, DomainDriver>();
+          new ConcurrentHashMap<>();
 
   public DomainDriverManager() {
   }
@@ -1080,7 +1080,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
         // Get the driver class name
         try {
-          domainDriver = DomainDriverFactory.getDriver(dr.className);
+          domainDriver = DomainDriverProvider.getDriver(dr.className);
           domainDriver.init(domainId, dr.propFileName, dr.authenticationServer);
         } catch (ClassNotFoundException e) {
           throw new AdminException("DomainDriverManager.getDomainDriver",

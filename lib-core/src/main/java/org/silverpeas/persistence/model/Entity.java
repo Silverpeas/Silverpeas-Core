@@ -48,13 +48,7 @@ import java.util.Date;
  * @author Yohann Chastagnier
  */
 public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
-    extends Serializable {
-
-  /**
-   * Gets the id of the entity.
-   * @return
-   */
-  String getId();
+    extends IdentifiableEntity, Serializable {
 
   /**
    * Gets the identifier of the component instance which the entity is attached.
@@ -119,12 +113,6 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFI
    * @return
    */
   Long getVersion();
-
-  /**
-   * Indicates if the entity is persisted (commonly if the entity has an id)
-   * @return
-   */
-  boolean isPersisted();
 
   /**
    * Indicates if the entity has been modified at least one time.

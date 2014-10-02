@@ -93,8 +93,8 @@
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>
 
-  <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
-        factory-method="getDomainDriverFactory"/>
+  <!-- ebo <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
+        factory-method="getDomainDriverFactory"/> -->
 
   <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
   <bean id="validator"

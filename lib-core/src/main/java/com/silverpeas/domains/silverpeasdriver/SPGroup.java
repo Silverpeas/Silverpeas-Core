@@ -24,6 +24,10 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
+import org.silverpeas.persistence.model.IdentifiableEntity;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
+
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -46,11 +50,15 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "domainsp_group")
-@NamedQueries( {
-    @NamedQuery(name = "SPGroup.findByName", query = "SELECT s FROM SPGroup s WHERE s.name = :name"),
-    @NamedQuery(name = "SPGroup.findByDescription", query = "SELECT s FROM SPGroup s WHERE s.description = :description"),
-    @NamedQuery(name = "SPGroup.listAllRootGroups", query = "SELECT s FROM SPGroup s WHERE s.parent is null") })
-public class SPGroup implements Serializable {
+@NamedQueries({
+    @NamedQuery(name = "SPGroup.findByName",
+        query = "SELECT s FROM SPGroup s WHERE s.name = :name"),
+    @NamedQuery(name = "SPGroup.findByDescription",
+        query = "SELECT s FROM SPGroup s WHERE s.description = :description"),
+    @NamedQuery(name = "SPGroup.listAllRootGroups",
+        query = "SELECT s FROM SPGroup s WHERE s.parent is null")})
+public class SPGroup extends AbstractJpaIdentifiableEntity<SPGroup, UniqueIntegerIdentifier>
+    implements Serializable {
 
   private static final long serialVersionUID = 287775215176520067L;
   @Id
@@ -66,7 +74,9 @@ public class SPGroup implements Serializable {
   @Size(max = 400)
   @Column(name = "description")
   private String description;
-  @JoinTable(name = "domainsp_group_user_rel", joinColumns = { @JoinColumn(name = "groupid", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "userid", referencedColumnName = "id") })
+  @JoinTable(name = "domainsp_group_user_rel",
+      joinColumns = {@JoinColumn(name = "groupid", referencedColumnName = "id")},
+      inverseJoinColumns = {@JoinColumn(name = "userid", referencedColumnName = "id")})
   @ManyToMany
   private Set<SPUser> users;
   @OneToMany(mappedBy = "parent")
@@ -85,10 +95,6 @@ public class SPGroup implements Serializable {
   public SPGroup(Integer id, String name) {
     this.id = id;
     this.name = name;
-  }
-
-  public Integer getId() {
-    return id;
   }
 
   public void setId(Integer id) {
@@ -133,26 +139,6 @@ public class SPGroup implements Serializable {
 
   public void setParent(SPGroup parent) {
     this.parent = parent;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 0;
-    hash += (id != null ? id.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    // TODO: Warning - this method won't work in the case the id fields are not set
-    if (!(object instanceof SPGroup)) {
-      return false;
-    }
-    SPGroup other = (SPGroup) object;
-    if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-      return false;
-    }
-    return true;
   }
 
   @Override

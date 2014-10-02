@@ -25,45 +25,24 @@
 package com.silverpeas.domains;
 
 import com.stratelia.webactiv.beans.admin.DomainDriver;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * @author ehugonnet
  */
-public class DomainDriverFactory implements ApplicationContextAware {
+public class DomainDriverProvider {
 
-  private static final DomainDriverFactory instance = new DomainDriverFactory();
-  private ApplicationContext context;
-
-  private DomainDriverFactory() {
+  private DomainDriverProvider() {
   }
 
-  static DomainDriverFactory getDomainDriverFactory() {
-    return instance;
-  }
-
-  private static DomainDriver loadDomainDriverFromSpring(String name) throws ClassNotFoundException {
-    if (getDomainDriverFactory() == null || getDomainDriverFactory().getApplicationContext() == null) {
-      return null;
-    }
-    if (getDomainDriverFactory().getApplicationContext().containsBean(name)) {
-      return getDomainDriverFactory().getApplicationContext().getBean(name, DomainDriver.class);
-    }
-    Class<? extends DomainDriver> driverClass = (Class<? extends DomainDriver>) Class.forName(name);
-    String[] names =
-        getDomainDriverFactory().getApplicationContext().getBeanNamesForType(driverClass);
-    if (names.length > 0) {
-      return getDomainDriverFactory().getApplicationContext().getBean(names[0], driverClass);
-    }
-    return null;
+  private static DomainDriver loadDomainDriver(String name) throws ClassNotFoundException {
+    return ServiceProvider.getService(name);
   }
 
   public static DomainDriver getDriver(String name)
       throws IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-    DomainDriver domainDriver = loadDomainDriverFromSpring(name);
+    DomainDriver domainDriver = loadDomainDriver(name);
     if (domainDriver == null) {
       Class<? extends DomainDriver> driverClass =
           (Class<? extends DomainDriver>) Class.forName(name);
@@ -72,12 +51,4 @@ public class DomainDriverFactory implements ApplicationContextAware {
     return domainDriver;
   }
 
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    this.context = applicationContext;
-  }
-
-  protected ApplicationContext getApplicationContext() {
-    return context;
-  }
 }

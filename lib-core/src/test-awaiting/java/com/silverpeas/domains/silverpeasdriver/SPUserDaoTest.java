@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
 public class SPUserDaoTest {
 
   @Inject
-  private SPUserDao dao;
+  private SPUserRepository dao;
   @Inject
   private DataSource ds;
 

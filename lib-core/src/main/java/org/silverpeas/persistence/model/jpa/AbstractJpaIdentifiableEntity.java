@@ -1,0 +1,144 @@
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.persistence.model.jpa;
+
+import org.silverpeas.persistence.model.AbstractIdentifiableEntity;
+import org.silverpeas.persistence.model.EntityIdentifier;
+import org.silverpeas.persistence.model.IdentifiableEntity;
+import org.silverpeas.util.StringUtil;
+
+import javax.persistence.EmbeddedId;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.lang.reflect.ParameterizedType;
+
+/**
+ * This abstract class must be extended by all Basic JPA entity definitions.
+ * All technical data, excepted the identifier, are handled at this level.
+ * <p/>
+ * The {@link org.silverpeas.persistence.model.AbstractEntity#performBeforePersist()} and {@link
+ * org.silverpeas.persistence.model.AbstractEntity#performBeforeUpdate()}
+ * method calls are handled at this level for JPA.
+ * <p/>
+ * Please be careful into the child entity classes about the use of @PrePersist and @PreUpdate
+ * annotations. In most of cases you don't need to use them, but to override {@link
+ * org.silverpeas.persistence.model.AbstractEntity#performBeforePersist} or {@link
+ * org.silverpeas.persistence.model.AbstractEntity#performBeforeUpdate} methods
+ * without forgetting to play the super call.
+ * <p/>
+ * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
+ * manager.
+ * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
+ * definition.
+ * @author ebonnet
+ */
+@MappedSuperclass
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY, IDENTIFIER_TYPE>,
+    IDENTIFIER_TYPE extends EntityIdentifier> extends AbstractIdentifiableEntity<ENTITY, IDENTIFIER_TYPE> {
+
+  @Transient
+  private String tableName;
+
+  @Transient
+  private Class<IDENTIFIER_TYPE> entityIdentifierClass;
+
+  @EmbeddedId
+  private IDENTIFIER_TYPE id;
+
+  /**
+   * Gets the identifier class of the entity managed by the repository.
+   * @return
+   */
+  protected Class<IDENTIFIER_TYPE> getEntityIdentifierClass() {
+    initializeEntityClasses();
+    return entityIdentifierClass;
+  }
+
+  /**
+   * Gets the identifier class of the entity.
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  private void initializeEntityClasses() {
+    if (entityIdentifierClass == null) {
+      try {
+        entityIdentifierClass = ((Class<IDENTIFIER_TYPE>) ((ParameterizedType) this.getClass().
+            getGenericSuperclass()).getActualTypeArguments()[1]);
+
+        tableName = this.getClass().getAnnotation(Table.class).name();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Override
+  public boolean isPersisted() {
+    return StringUtil.isDefined(getId());
+  }
+
+  @Override
+  public String getId() {
+    return id == null ? null : id.asString();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected IDENTIFIER_TYPE newIdentifierInstance() {
+    try {
+      return getEntityIdentifierClass().newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected ENTITY setId(final String id) {
+    if (StringUtil.isDefined(id)) {
+      try {
+        this.id = newIdentifierInstance();
+        this.id.fromString(id);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      this.id = null;
+    }
+    return (ENTITY) this;
+  }
+
+  @PrePersist
+  private void beforePersist() {
+    this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
+  }
+
+  @PreUpdate
+  private void beforeUpdate() {
+  }
+
+}

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,21 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.domains.silverpeasdriver;
-
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
+package org.silverpeas.persistence.model;
 
 /**
- * @author ehugonnet
+ * @author: ebonnet
  */
-public interface SPGroupDao {
+public interface IdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY, IDENTIFIER_TYPE>,
+    IDENTIFIER_TYPE> {
+  /**
+   * Gets the id of the entity.
+   * @return
+   */
+  String getId();
 
-  List<SPGroup> findByName(@Param("name") String name);
+  /**
+   * Indicates if the entity is persisted (commonly if the entity has an id)
+   * @return
+   */
+  boolean isPersisted();
 
-  List<SPGroup> findByDescription(@Param("description") String description);
-
-  List<SPGroup> listAllRootGroups();
 }

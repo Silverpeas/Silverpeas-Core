@@ -21,8 +21,9 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import java.io.Serializable;
-import java.util.Set;
+import org.silverpeas.persistence.model.IdentifiableEntity;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -34,40 +35,46 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author ehugonnet
  */
 @Entity
 @Table(name = "domainsp_user")
-@NamedQueries({
-  @NamedQuery(name = "SPUser.findByFirstname", query
-      = "SELECT s FROM SPUser s WHERE s.firstname = :firstname"),
-  @NamedQuery(name = "SPUser.findByLastname", query
-      = "SELECT s FROM SPUser s WHERE s.lastname = :lastname"),
-  @NamedQuery(name = "SPUser.findByPhone", query = "SELECT s FROM SPUser s WHERE s.phone = :phone"),
-  @NamedQuery(name = "SPUser.findByHomephone", query
-      = "SELECT s FROM SPUser s WHERE s.homephone = :homephone"),
-  @NamedQuery(name = "SPUser.findByCellphone", query
-      = "SELECT s FROM SPUser s WHERE s.cellphone = :cellphone"),
-  @NamedQuery(name = "SPUser.findByFax", query = "SELECT s FROM SPUser s WHERE s.fax = :fax"),
-  @NamedQuery(name = "SPUser.findByAddress", query
-      = "SELECT s FROM SPUser s WHERE s.address = :address"),
-  @NamedQuery(name = "SPUser.findByTitle", query = "SELECT s FROM SPUser s WHERE s.title = :title"),
-  @NamedQuery(name = "SPUser.findByCompany", query
-      = "SELECT s FROM SPUser s WHERE s.company = :company"),
-  @NamedQuery(name = "SPUser.findByPosition", query
-      = "SELECT s FROM SPUser s WHERE s.position = :position"),
-  @NamedQuery(name = "SPUser.findByBoss", query = "SELECT s FROM SPUser s WHERE s.boss = :boss"),
-  @NamedQuery(name = "SPUser.findByLogin", query = "SELECT s FROM SPUser s WHERE s.login = :login"),
-  @NamedQuery(name = "SPUser.findByPassword", query
-      = "SELECT s FROM SPUser s WHERE s.password = :password"),
-  @NamedQuery(name = "SPUser.findByPasswordvalid", query
-      = "SELECT s FROM SPUser s WHERE s.passwordvalid = :passwordvalid"),
-  @NamedQuery(name = "SPUser.findByLoginmail", query
-      = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
-  @NamedQuery(name = "SPUser.findByEmail", query = "SELECT s FROM SPUser s WHERE s.email = :email")})
-public class SPUser implements Serializable {
+@NamedQueries({@NamedQuery(name = "SPUser.findByFirstname",
+    query = "SELECT s FROM SPUser s WHERE s.firstname = :firstname"),
+    @NamedQuery(name = "SPUser.findByLastname",
+        query = "SELECT s FROM SPUser s WHERE s.lastname = :lastname"),
+    @NamedQuery(name = "SPUser.findByPhone",
+        query = "SELECT s FROM SPUser s WHERE s.phone = :phone"),
+    @NamedQuery(name = "SPUser.findByHomephone",
+        query = "SELECT s FROM SPUser s WHERE s.homephone = :homephone"),
+    @NamedQuery(name = "SPUser.findByCellphone",
+        query = "SELECT s FROM SPUser s WHERE s.cellphone = :cellphone"),
+    @NamedQuery(name = "SPUser.findByFax", query = "SELECT s FROM SPUser s WHERE s.fax = :fax"),
+    @NamedQuery(name = "SPUser.findByAddress",
+        query = "SELECT s FROM SPUser s WHERE s.address = :address"),
+    @NamedQuery(name = "SPUser.findByTitle",
+        query = "SELECT s FROM SPUser s WHERE s.title = :title"),
+    @NamedQuery(name = "SPUser.findByCompany",
+        query = "SELECT s FROM SPUser s WHERE s.company = :company"),
+    @NamedQuery(name = "SPUser.findByPosition",
+        query = "SELECT s FROM SPUser s WHERE s.position = :position"),
+    @NamedQuery(name = "SPUser.findByBoss", query = "SELECT s FROM SPUser s WHERE s.boss = :boss"),
+    @NamedQuery(name = "SPUser.findByLogin",
+        query = "SELECT s FROM SPUser s WHERE s.login = :login"),
+    @NamedQuery(name = "SPUser.findByPassword",
+        query = "SELECT s FROM SPUser s WHERE s.password = :password"),
+    @NamedQuery(name = "SPUser.findByPasswordvalid",
+        query = "SELECT s FROM SPUser s WHERE s.passwordvalid = :passwordvalid"),
+    @NamedQuery(name = "SPUser.findByLoginmail",
+        query = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
+    @NamedQuery(name = "SPUser.findByEmail",
+        query = "SELECT s FROM SPUser s WHERE s.email = :email")})
+public class SPUser extends AbstractJpaIdentifiableEntity<SPUser, UniqueIntegerIdentifier>
+    implements Serializable {
 
   private static final long serialVersionUID = 2645559023438948622L;
 
@@ -132,7 +139,8 @@ public class SPUser implements Serializable {
   @Size(max = 100)
   @Column(name = "loginmail")
   private String loginmail;
-  // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+  // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@
+  // (?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
   // message="Invalid email")//if the field contains email address consider using this annotation to
   // enforce field validation
   @Size(max = 100)
@@ -165,10 +173,6 @@ public class SPUser implements Serializable {
     this.lastname = lastname;
     this.login = login;
     this.passwordvalid = passwordvalid;
-  }
-
-  public Integer getId() {
-    return id;
   }
 
   public void setId(Integer id) {
@@ -313,26 +317,6 @@ public class SPUser implements Serializable {
 
   public void setGroups(Set<SPGroup> groups) {
     this.groups = groups;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 0;
-    hash += (id != null ? id.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    // TODO: Warning - this method won't work in the case the id fields are not set
-    if (!(object instanceof SPUser)) {
-      return false;
-    }
-    SPUser other = (SPUser) object;
-    if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-      return false;
-    }
-    return true;
   }
 
   @Override

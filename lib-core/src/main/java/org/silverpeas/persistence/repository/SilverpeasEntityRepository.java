@@ -39,7 +39,7 @@ import java.util.List;
  * key definition.
  * @author Yohann Chastagnier
  */
-public interface EntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE> {
+public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE> {
 
   /**
    * Gets all persisted entities.

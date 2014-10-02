@@ -1,32 +1,10 @@
-/*
- * Copyright (C) 2000 - 2013 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package org.silverpeas.persistence.repository.jpa;
 
 import org.hibernate.ejb.QueryImpl;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
-import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
+import org.silverpeas.persistence.model.IdentifiableEntity;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.QueryCriteria;
 import org.silverpeas.util.CollectionUtil;
@@ -48,29 +26,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * A Silverpeas dedicated entity manager that wraps the JPA {@link javax.persistence.EntityManager}
- * and that provides convenient methods to perform the CRUD operations on entities.
- * <p/>
- * All repositories that use only JPA for managing the persistence of their entities should extends
- * this JPA manager. If the different parts of an entity are persisted into several data source
- * beside a SQL-based one, then this repository should be used within a delegation of JPA related
- * operations.
- * <p/>
- * It provides additional signatures to handle friendly the JPA queries into extensions of
- * repository classes.
- * <p/>
- * Take a look into this class to analyse how query parameters are performed ({@link
- * NamedParameters}).
- * <p/>
- * @param <ENTITY> specify the class name of the entity which is handled by the repository
- * manager.
- * @param <ENTITY_IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its
- * primary key definition.
- * @author Yohann Chastagnier
+ * @author: ebonnet
  */
-public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
-    ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
-    implements SilverpeasEntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
+public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
+    ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+    implements BasicEntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
 
   /**
    * Maximum number of items to be passed into a SQL "in" clause.
@@ -221,6 +181,11 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
   }
 
   @Override
+  public ENTITY findOne(final ENTITY_IDENTIFIER_TYPE id) {
+    return getById(id.toString());
+  }
+
+  @Override
   public List<ENTITY> getById(final String... ids) {
     return getByIdentifier(convertToEntityIdentifiers(ids));
   }
@@ -251,18 +216,24 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
   }
 
   @Override
-  public ENTITY save(final OperationContext context, final ENTITY entity) {
-    return save(context, Collections.singletonList(entity)).get(0);
+  public ENTITY save(final ENTITY entity) {
+    return save(Collections.singletonList(entity)).get(0);
   }
 
   @Override
-  public List<ENTITY> save(final OperationContext context, final ENTITY... entities) {
-    return save(context, CollectionUtil.asList(entities));
+  public ENTITY saveAndFlush(final ENTITY entity) {
+    ENTITY curEntity = save(Collections.singletonList(entity)).get(0);
+    flush();
+    return curEntity;
   }
 
   @Override
-  public List<ENTITY> save(final OperationContext context, final List<ENTITY> entities) {
-    context.putIntoCache();
+  public List<ENTITY> save(final ENTITY... entities) {
+    return save(CollectionUtil.asList(entities));
+  }
+
+  @Override
+  public List<ENTITY> save(final List<ENTITY> entities) {
     List<ENTITY> savedEntities = new ArrayList<ENTITY>(entities.size());
     for (ENTITY entity : entities) {
       if (entity.isPersisted()) {
@@ -288,17 +259,6 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
       }
     }
   }
-
-  @Override
-  public long deleteById(final String... ids) {
-    return deleteByIdentifier(convertToEntityIdentifiers(ids));
-  }
-
-  @Override
-  public long deleteById(final Collection<String> ids) {
-    return deleteByIdentifier(convertToEntityIdentifiers(ids));
-  }
-
 
   private long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     long nbDeletes = 0;
@@ -559,8 +519,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     if (!Pattern.compile("version.*=.*version[ ]*\\+[ ]*1").matcher(queryString).find()) {
       throw new IllegalArgumentException(
           "version management is missing from the query '" + queryString +
-              "' -> expected entity.version = (entity.version + 1)"
-      );
+              "' -> expected entity.version = (entity.version + 1)");
     }
   }
 
@@ -578,7 +537,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    * A centralized access to the entity manager (just in case ...)
    * @return
    */
-  private EntityManager getEntityManager() {
+  protected EntityManager getEntityManager() {
     return em;
   }
 
@@ -619,4 +578,5 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     }
     return query;
   }
+
 }

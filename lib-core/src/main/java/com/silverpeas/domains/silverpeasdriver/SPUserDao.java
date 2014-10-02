@@ -24,14 +24,14 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * @author ehugonnet
  */
-public interface SPUserDao extends JpaRepository<SPUser, Integer> {
+public interface SPUserDao {
 
   List<SPUser> findByFirstname(@Param("firstname") String firstName);
 
@@ -54,4 +54,5 @@ public interface SPUserDao extends JpaRepository<SPUser, Integer> {
   List<SPUser> findByPosition(@Param("position") String position);
 
   List<SPUser> findByEmail(@Param("email") String email);
+
 }
