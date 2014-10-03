@@ -24,31 +24,30 @@
 
 package com.silverpeas.personalization.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
-import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.dao.PersonalizationDetailDao;
+import com.silverpeas.personalization.dao.PersonalizationManager;
 import com.silverpeas.ui.DisplayI18NHelper;
-
 import org.silverpeas.util.ResourceLocator;
 
-import org.springframework.transaction.annotation.Transactional;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
+import java.util.List;
+
 
 /**
  * Class declaration
- * @author
  */
-@Service
+@Default
+@Singleton
 @Transactional
 public class DefaultPersonalizationService implements PersonalizationService {
 
   @Inject
-  private PersonalizationDetailDao dao;
-  private static final long serialVersionUID = 6776141343859788723L;
+  private PersonalizationManager personalizationManager;
+
   private final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
 
@@ -71,22 +70,22 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
-    dao.saveAndFlush(userPreferences);
+    personalizationManager.saveAndFlush(userPreferences);
   }
 
   @Override
   public void resetDefaultSpace(String spaceId) {
-    List<UserPreferences> prefs = dao.findByDefaultSpace(spaceId);
+    List<UserPreferences> prefs = personalizationManager.findByDefaultSpace(spaceId);
     for (UserPreferences pref : prefs) {
       pref.setPersonalWorkSpaceId(null);
     }
-    dao.save(prefs);
-    dao.flush();
+    personalizationManager.save(prefs);
+    personalizationManager.flush();
   }
 
   @Override
   public UserPreferences getUserSettings(String userId) {
-    UserPreferences preferences = dao.findOne(userId);
+    UserPreferences preferences = personalizationManager.getById(userId);
     if (preferences == null) {
       preferences = getDefaultUserSettings(userId);
     }

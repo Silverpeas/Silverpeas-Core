@@ -23,14 +23,16 @@
  */
 package org.silverpeas.persistence.model.jpa;
 
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.persistence.model.AbstractEntity;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
+import org.silverpeas.persistence.model.ForeignEntityIdentifier;
+import org.silverpeas.util.StringUtil;
 
 import javax.persistence.*;
 import java.lang.reflect.ParameterizedType;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * This abstract class must be extended by all Silverpeas JPA entity definitions.
@@ -150,7 +152,17 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
   @SuppressWarnings("unchecked")
   @PrePersist
   private void beforePersist() {
-    this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
+    boolean isForeignIdentifier =
+        getEntityIdentifierClass().isAssignableFrom(ForeignEntityIdentifier.class);
+    if (!isForeignIdentifier) {
+      if (this.id != null && StringUtil.isDefined(this.id.asString())) {
+        Logger.getLogger(this.getClass().getName())
+            .warning("As the entity identifier is not a ForeignEntityIdentifier one, " +
+                "identifier value should not exist on a persist operation... (ID=" + getId() +
+                ")");
+      }
+      this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
+    }
     performBeforePersist();
   }
 

@@ -45,8 +45,8 @@
   <context:component-scan base-package="com.silverpeas.personalization.dao"/>
   <context:component-scan base-package="com.silverpeas.personalization.service"/>
   
-   <bean name="personalizationServiceFactory"
-        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
+   <!--<bean name="personalizationServiceFactory"-->
+        <!--class="com.silverpeas.personalization.service.PersonalizationServiceProvider" factory-method="getFactory"/>-->
 
   <jpa:repositories base-package="com.silverpeas.personalization" transaction-manager-ref="jpaTransactionManager"/>
 

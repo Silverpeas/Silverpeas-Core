@@ -21,14 +21,12 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import org.silverpeas.persistence.model.IdentifiableEntity;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -78,11 +76,6 @@ public class SPUser extends AbstractJpaIdentifiableEntity<SPUser, UniqueIntegerI
 
   private static final long serialVersionUID = 2645559023438948622L;
 
-  @Id
-  @Basic(optional = false)
-  @NotNull
-  @Column(name = "id")
-  private Integer id;
   @Size(max = 100)
   @Column(name = "firstname")
   private String firstname;
@@ -165,18 +158,18 @@ public class SPUser extends AbstractJpaIdentifiableEntity<SPUser, UniqueIntegerI
   }
 
   public SPUser(Integer id) {
-    this.id = id;
+    setId(id);
   }
 
   public SPUser(Integer id, String lastname, String login, char passwordvalid) {
-    this.id = id;
+    this(id);
     this.lastname = lastname;
     this.login = login;
     this.passwordvalid = passwordvalid;
   }
 
   public void setId(Integer id) {
-    this.id = id;
+    setId(String.valueOf(id));
   }
 
   public String getFirstname() {
@@ -321,7 +314,7 @@ public class SPUser extends AbstractJpaIdentifiableEntity<SPUser, UniqueIntegerI
 
   @Override
   public String toString() {
-    return "com.silverpeas.domains.silverpeasdriver.SPUser[ id=" + id + " ]";
+    return "com.silverpeas.domains.silverpeasdriver.SPUser[ id=" + getId() + " ]";
   }
 
 }

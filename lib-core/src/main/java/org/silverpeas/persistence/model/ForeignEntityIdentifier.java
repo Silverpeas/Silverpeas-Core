@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,21 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.persistence.model;
 
-package com.silverpeas.personalization.service;
+/**
+ * Entity identifier implementing this interface never generate automatically a new identifier
+ * value on persist operations.
+ * As a consequence, the value of the identifier must be set explicitly before save operations.
+ * @author Yohann Chastagnier
+ */
+public interface ForeignEntityIdentifier extends EntityIdentifier {
 
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-
-public interface PersonalizationService {
-
-  public final String DEFAULT_LOOK = "Initial";
-
-  public final UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DEFAULT;
-
-  public void saveUserSettings(UserPreferences userPreferences);
-
-  public void resetDefaultSpace(String spaceId);
-
-  public UserPreferences getUserSettings(String userId);
+  /**
+   * No identifier value is generated and returning null explicitly in order to get an
+   * NullPointerException in case of wrong code development.
+   */
+  default ForeignEntityIdentifier generateNewId(final String tableName,
+      final String tableColumnIdName) {
+    return null;
+  }
 }

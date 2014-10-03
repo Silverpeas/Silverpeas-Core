@@ -20,11 +20,10 @@
  */
 package com.silverpeas.web.mock;
 
-import javax.inject.Named;
-
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.Default;
+
+import javax.inject.Singleton;
 
 import static org.mockito.Mockito.mock;
 
@@ -35,8 +34,8 @@ import static org.mockito.Mockito.mock;
  * the wrapped mock for registering some behaviours an PersonalizationController instance should
  * have in the tests.
  */
-@Named("personalizationService")
-@Default
+@Singleton
+@MockImplementation
 public class PersonalizationServiceMockWrapper implements PersonalizationService {
 
   private PersonalizationService mock;

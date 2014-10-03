@@ -23,14 +23,13 @@
  */
 package org.silverpeas.persistence;
 
-import com.silverpeas.annotation.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import javax.transaction.Transactional;
 
 /**
  * A transaction. All processes it performs will be in charge by the JPA transaction manager.
  * @author mmoquillon
  */
-@Service
 public class Transaction {
 
   /**
@@ -38,8 +37,7 @@ public class Transaction {
    * @return a transaction.
    */
   public static Transaction getTransaction() {
-    TransactionFactory factory = TransactionFactory.getFactory();
-    return factory.getTransaction();
+    return TransactionProvider.getTransaction();
   }
 
   /**

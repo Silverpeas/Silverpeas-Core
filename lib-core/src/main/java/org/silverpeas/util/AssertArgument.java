@@ -42,7 +42,18 @@ public final class AssertArgument {
    * @param msg the message to pass if the argument isn't well defined.
    */
   public static void assertDefined(final String arg, final String msg) {
-    if (arg == null || arg.trim().isEmpty()) {
+    if (StringUtil.isNotDefined(arg)) {
+      throwIllegalArgumentException(msg);
+    }
+  }
+
+  /**
+   * Asserts the specified String argument is not defined, that is it is null or empty.
+   * @param arg the argument to assert.
+   * @param msg the message to pass if the argument isn't well verified.
+   */
+  public static void assertNotDefined(final String arg, final String msg) {
+    if (StringUtil.isDefined(arg)) {
       throwIllegalArgumentException(msg);
     }
   }

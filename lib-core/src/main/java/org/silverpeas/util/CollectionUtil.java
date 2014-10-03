@@ -40,9 +40,9 @@ public class CollectionUtil {
 
   /**
    * Reverse the given list and returns it.
-   * @param list
-   * @param <T>
-   * @return
+   * @param <T> the type of the instance contained into the specified list
+   * @param list the list to reverse
+   * @return the specified list that has been reversed (same instance)
    */
   public static <T> List<T> reverse(List<T> list) {
     Collections.reverse(list);
@@ -50,20 +50,20 @@ public class CollectionUtil {
   }
 
   /**
-   * Checks if the given collection is not instancied or empty
-   * @param <T>
-   * @param collection
-   * @return
+   * Checks if the given collection is not instanced or empty
+   * @param <T> the type of the instance contained into the specified collection
+   * @param collection the collection to verify
+   * @return true if specified collection is empty, false otherwise
    */
   public static <T> boolean isEmpty(final Collection<T> collection) {
     return !isNotEmpty(collection);
   }
 
   /**
-   * Checks if the given collection is instancied and not empty
-   * @param <T>
-   * @param collection
-   * @return
+   * Checks if the given collection is instanced and not empty
+   * @param <T> the type of the instance contained into the specified collection
+   * @param collection the collection to verify
+   * @return true if specified collection is not empty, false otherwise
    */
   public static <T> boolean isNotEmpty(final Collection<T> collection) {
     return collection != null && !collection.isEmpty();
@@ -72,8 +72,8 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
-   * @param collection
-   * @return
+   * @param collection the collection to split
+   * @return the clices of the specified collection
    */
   public static <T> Collection<Collection<T>> split(final Collection<T> collection) {
     return split(collection, 500);
@@ -82,9 +82,9 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
-   * @param collection
-   * @param collectionSizeMax
-   * @return
+   * @param collection the collection to split
+   * @param collectionSizeMax the maximum elements in slice
+   * @return the clices of the specified collection
    */
   @SuppressWarnings("unchecked")
   public static <T> Collection<Collection<T>> split(final Collection<T> collection,
@@ -100,7 +100,7 @@ public class CollectionUtil {
           if ((collection.size() % collectionSizeMax) != 0) {
             size++;
           }
-          result = new ArrayList<Collection<T>>(size);
+          result = new ArrayList<>(size);
 
           // Browsing the collection
           Collection<T> curLot = null;
@@ -108,7 +108,7 @@ public class CollectionUtil {
 
             // If necessary, initializing a lot
             if (curLot == null || curLot.size() >= collectionSizeMax) {
-              curLot = new ArrayList<T>(collectionSizeMax);
+              curLot = new ArrayList<>(collectionSizeMax);
 
               // Adding the new lot
               result.add(curLot);
@@ -125,11 +125,11 @@ public class CollectionUtil {
       throw new RuntimeException(e);
     } finally {
       if (result == null) {
-        result = new ArrayList<Collection<T>>();
+        result = new ArrayList<>();
       }
     }
 
-    // Retour du resultat
+    // Returning the result
     return result;
   }
 
@@ -138,19 +138,19 @@ public class CollectionUtil {
    * @param <T> collection type elements
    * @param <K> map type key
    * @param <V> map type value
-   * @param collection
+   * @param collection the collection to map
    * @param extractor extractor interface
    * @return a map initialized from a list by an extractor
    */
-  public static <T extends Object, K extends Object, V extends Object> HashMap<K, V> listToMap(
-      final Collection<T> collection, final ExtractionList<T, K, V> extractor) {
+  public static <T, K, V> HashMap<K, V> listToMap(final Collection<T> collection,
+      final ExtractionList<T, K, V> extractor) {
     final LinkedHashMap<K, V> result;
     if (collection == null) {
       result = null;
     } else if (collection.isEmpty()) {
-      result = new LinkedHashMap<K, V>();
+      result = new LinkedHashMap<>();
     } else {
-      result = new LinkedHashMap<K, V>((int) (collection.size() * 0.75f));
+      result = new LinkedHashMap<>((int) (collection.size() * 0.75f));
       if (extractor instanceof ExtractionComplexList<?, ?, ?>) {
         ((ExtractionComplexList<T, K, V>) extractor).setMap(result);
       }
@@ -161,18 +161,21 @@ public class CollectionUtil {
     return result;
   }
 
+  @SafeVarargs
   public static <T> List<T> asList(T... values) {
-    return new ArrayList<T>(Arrays.asList(values));
+    return new ArrayList<>(Arrays.asList(values));
   }
 
+  @SafeVarargs
   public static <T> Set<T> asSet(T... values) {
-    return new HashSet<T>(Arrays.asList(values));
+    return new HashSet<>(Arrays.asList(values));
   }
 
   /**
    * Null elements are not taking into account.
    * @see Collections#addAll(java.util.Collection, Object[])
    */
+  @SafeVarargs
   public static <T> boolean addAllIgnoreNull(Collection<? super T> c, T... elements) {
     boolean result = false;
     for (T element : elements) {

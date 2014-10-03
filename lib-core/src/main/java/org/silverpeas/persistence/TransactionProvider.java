@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,17 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.persistence;
 
-package com.silverpeas.personalization.dao;
+import org.silverpeas.util.ServiceProvider;
 
-import com.silverpeas.personalization.UserPreferences;
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import javax.inject.Inject;
 
-public interface PersonalizationDetailDao extends JpaRepository<UserPreferences, String> {
+/**
+ * A factory of transaction instances.
+ * <p/>
+ * @author mmoquillon
+ */
+public class TransactionProvider {
 
-  @Query("from UserPreferences p WHERE p.collaborativeWorkSpaceId = :space")
-  List<UserPreferences> findByDefaultSpace(@Param("space") String space);
+  public static Transaction getTransaction() {
+    return ServiceProvider.getService(Transaction.class);
+  }
 }

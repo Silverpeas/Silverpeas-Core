@@ -52,8 +52,8 @@
         class="com.silverpeas.session.SessionManagementFactory"
         factory-method="getFactory" />
 
-  <bean name="personalizationServiceFactory"
-        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
+  <!-- YCH <bean name="personalizationServiceFactory"-->
+        <!--class="com.silverpeas.personalization.service.PersonalizationServiceProviderr" factory-method="getFactory"/>-->
 
   <bean name="tokenServiceFactory"
         class="org.silverpeas.token.persistent.service.TokenServiceFactory" factory-method="getInstance"/>

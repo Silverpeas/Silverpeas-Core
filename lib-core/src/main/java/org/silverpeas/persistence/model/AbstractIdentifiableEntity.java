@@ -23,14 +23,14 @@ public abstract class AbstractIdentifiableEntity<ENTITY extends IdentifiableEnti
   }
 
   @Override
-  public final int hashCode() {
+  public int hashCode() {
     HashCodeBuilder hash = new HashCodeBuilder();
     hash.append(getId() != null ? getId() : super.hashCode());
     return hash.toHashCode();
   }
 
   @Override
-  public final boolean equals(Object obj) {
+  public boolean equals(Object obj) {
     if (obj == null) {
       return false;
     }

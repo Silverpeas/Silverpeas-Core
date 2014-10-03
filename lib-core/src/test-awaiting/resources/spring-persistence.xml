@@ -45,8 +45,8 @@
 
   <jpa:repositories base-package="org.silverpeas.persistence" transaction-manager-ref="jpaTransactionManager" />
 
-  <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
-        factory-method="getFactory"/>
+  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"-->
+        <!--factory-method="getFactory"/>-->
 
   <util:list id="entities">
     <value>org.silverpeas.persistence.repository</value>

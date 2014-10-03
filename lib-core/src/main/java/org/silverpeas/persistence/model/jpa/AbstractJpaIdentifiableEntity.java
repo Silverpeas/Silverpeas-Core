@@ -25,6 +25,7 @@ package org.silverpeas.persistence.model.jpa;
 
 import org.silverpeas.persistence.model.AbstractIdentifiableEntity;
 import org.silverpeas.persistence.model.EntityIdentifier;
+import org.silverpeas.persistence.model.ForeignEntityIdentifier;
 import org.silverpeas.persistence.model.IdentifiableEntity;
 import org.silverpeas.util.StringUtil;
 
@@ -33,10 +34,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.lang.reflect.ParameterizedType;
+import java.util.logging.Logger;
 
 /**
  * This abstract class must be extended by all Basic JPA entity definitions.
@@ -60,8 +61,9 @@ import java.lang.reflect.ParameterizedType;
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY, IDENTIFIER_TYPE>,
-    IDENTIFIER_TYPE extends EntityIdentifier> extends AbstractIdentifiableEntity<ENTITY, IDENTIFIER_TYPE> {
+public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY,
+    IDENTIFIER_TYPE>, IDENTIFIER_TYPE extends EntityIdentifier>
+    extends AbstractIdentifiableEntity<ENTITY, IDENTIFIER_TYPE> {
 
   @Transient
   private String tableName;
@@ -118,6 +120,7 @@ public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableE
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected ENTITY setId(final String id) {
     if (StringUtil.isDefined(id)) {
       try {
@@ -132,13 +135,19 @@ public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableE
     return (ENTITY) this;
   }
 
+  @SuppressWarnings("unchecked")
   @PrePersist
   private void beforePersist() {
-    this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
+    boolean isForeignIdentifier =
+        ForeignEntityIdentifier.class.isAssignableFrom(getEntityIdentifierClass());
+    if (!isForeignIdentifier) {
+      if (this.id != null && StringUtil.isDefined(this.id.asString())) {
+        Logger.getLogger(this.getClass().getName())
+            .warning("As the entity identifier is not a ForeignEntityIdentifier one, " +
+                "identifier value should not exist on a persist operation... (ID=" + getId() +
+                ")");
+      }
+      this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
+    }
   }
-
-  @PreUpdate
-  private void beforeUpdate() {
-  }
-
 }

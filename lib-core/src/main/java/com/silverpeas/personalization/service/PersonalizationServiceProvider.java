@@ -24,38 +24,15 @@
 
 package com.silverpeas.personalization.service;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
-
-public class PersonalizationServiceFactory {
-  private static final PersonalizationServiceFactory instance = new PersonalizationServiceFactory();
-
-  @Inject
-  private PersonalizationService personalizationService;
-
-  /**
-   * Gets an instance of this PersonalizationServiceFactory class.
-   * @return a PersonalizationServiceFactory instance.
-   */
-  public static PersonalizationServiceFactory getFactory() {
-    return instance;
-  }
+public class PersonalizationServiceProvider {
 
   /**
    * Gets a PersonalizationService instance.
    * @return a PersonalizationService instance.
    */
-  public PersonalizationService getPersonalizationService() {
-    if (personalizationService == null) {
-      SilverTrace.warn("personalization", getClass().getSimpleName() +
-          ".getPersonalizationService()",
-          "EX_NO_MESSAGES",
-          "IoC container not bootstrapped or no PersonalizationService bean found!");
-    }
-    return personalizationService;
-  }
-
-  private PersonalizationServiceFactory() {
+  public static PersonalizationService getPersonalizationService() {
+    return ServiceProvider.getService(PersonalizationService.class);
   }
 }

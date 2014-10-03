@@ -24,21 +24,27 @@
 
 package com.silverpeas.personalization;
 
+import com.silverpeas.personalization.service.PersonalizationService;
+import org.silverpeas.persistence.model.identifier.ForeignStringIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
+import org.silverpeas.util.StringUtil;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-
-import com.silverpeas.personalization.service.PersonalizationService;
-import org.silverpeas.util.StringUtil;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "personalization")
-public class UserPreferences implements java.io.Serializable {
-
+@NamedQueries({@NamedQuery(name = "UserPreferences.findByDefaultSpace",
+    query = "from UserPreferences p WHERE p.collaborativeWorkSpaceId = :space")})
+public class UserPreferences
+    extends AbstractJpaIdentifiableEntity<UserPreferences, ForeignStringIdentifier>
+    implements Serializable {
   private static final long serialVersionUID = 9192830552642027995L;
-  @Id
-  private String id;
+
   @Column(name = "languages")
   private String language = null;
   @Column(name = "look")
@@ -62,7 +68,7 @@ public class UserPreferences implements java.io.Serializable {
       boolean dragAndDropEnabled, boolean webdavEditionEnabled, UserMenuDisplay display) {
     this(language, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
         webdavEditionEnabled, display);
-    this.id = userId;
+    setId(userId);
   }
 
   public UserPreferences(String language, String look, String collaborativeWorkSpaceId,
@@ -113,10 +119,7 @@ public class UserPreferences implements java.io.Serializable {
   }
 
   public boolean isThesaurusEnabled() {
-    if (1 == thesaurusStatus) {
-      return true;
-    }
-    return false;
+    return 1 == thesaurusStatus;
   }
 
   public void enableThesaurus(boolean thesaurusEnabled) {
@@ -124,10 +127,7 @@ public class UserPreferences implements java.io.Serializable {
   }
 
   public boolean isDragAndDropEnabled() {
-    if (1 == dragAndDropStatus) {
-      return true;
-    }
-    return false;
+    return 1 == dragAndDropStatus;
   }
 
   public void enableDragAndDrop(boolean dragAndDropEnabled) {
@@ -135,10 +135,7 @@ public class UserPreferences implements java.io.Serializable {
   }
 
   public boolean isWebdavEditionEnabled() {
-    if (1 == webdavEditionStatus) {
-      return true;
-    }
-    return false;
+    return 1 == webdavEditionStatus;
   }
 
   public void enableWebdavEdition(boolean webdavEditionEnabled) {
@@ -165,7 +162,7 @@ public class UserPreferences implements java.io.Serializable {
       return false;
     }
     final UserPreferences other = (UserPreferences) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+    if ((getId() == null) ? (other.getId() != null) : !getId().equals(other.getId())) {
       return false;
     }
     if ((this.language == null) ? (other.language != null) : !this.language.equals(
@@ -189,15 +186,12 @@ public class UserPreferences implements java.io.Serializable {
     if (this.webdavEditionStatus != other.webdavEditionStatus) {
       return false;
     }
-    if (this.getDisplay() != other.getDisplay()) {
-      return false;
-    }
-    return true;
+    return this.getDisplay() == other.getDisplay();
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
+    int result = getId() != null ? getId().hashCode() : 0;
     result = 31 * result + (language != null ? language.hashCode() : 0);
     result = 31 * result + (look != null ? look.hashCode() : 0);
     result =
@@ -211,9 +205,9 @@ public class UserPreferences implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "UserSettings{" + "id=" + id + ", language=" + language + ", look="
-        + look + ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus="
-        + isThesaurusEnabled() + ", dragDropStatus=" + isDragAndDropEnabled() +
+    return "UserSettings{" + "id=" + getId() + ", language=" + language + ", look=" + look +
+        ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus=" +
+        isThesaurusEnabled() + ", dragDropStatus=" + isDragAndDropEnabled() +
         ", webdavEditingStatus=" + isWebdavEditionEnabled() + ", display=" + getDisplay() + '}';
   }
 }

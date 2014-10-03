@@ -123,7 +123,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
   protected Collection<ENTITY_IDENTIFIER_TYPE> convertToEntityIdentifiers(
       Collection<String> idsAsString) {
     int size = (idsAsString == null) ? 0 : idsAsString.size();
-    Collection<ENTITY_IDENTIFIER_TYPE> identifiers = new ArrayList<ENTITY_IDENTIFIER_TYPE>(size);
+    Collection<ENTITY_IDENTIFIER_TYPE> identifiers = new ArrayList<>(size);
     if (size > 0) {
       for (String id : idsAsString) {
         identifiers.add(convertToEntityIdentifier(id));
@@ -142,6 +142,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
    * Warning, the behavior of this method is implementation-dependent. According to the type of
    * the repository or of the underlying data source, the flush can not to be working.
    */
+  @Override
   public void flush() {
     getEntityManager().flush();
   }
@@ -181,11 +182,6 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
   }
 
   @Override
-  public ENTITY findOne(final ENTITY_IDENTIFIER_TYPE id) {
-    return getById(id.toString());
-  }
-
-  @Override
   public List<ENTITY> getById(final String... ids) {
     return getByIdentifier(convertToEntityIdentifiers(ids));
   }
@@ -200,10 +196,10 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
   }
 
   private List<ENTITY> getByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
-    List<ENTITY> entities = new ArrayList<ENTITY>(ids.size());
+    List<ENTITY> entities = new ArrayList<>(ids.size());
     String selectQuery = "select a from " + getEntityClass().getName() + " a where a.id in :ids";
     for (Collection<ENTITY_IDENTIFIER_TYPE> entityIds : split(
-        new HashSet<ENTITY_IDENTIFIER_TYPE>(ids))) {
+        new HashSet<>(ids))) {
       List<ENTITY> tmp = newNamedParameters().add("ids", entityIds)
           .applyTo(getEntityManager().createQuery(selectQuery, getEntityClass())).getResultList();
       if (entities.isEmpty()) {
@@ -227,14 +223,15 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
     return curEntity;
   }
 
+  @SafeVarargs
   @Override
-  public List<ENTITY> save(final ENTITY... entities) {
+  public final List<ENTITY> save(final ENTITY... entities) {
     return save(CollectionUtil.asList(entities));
   }
 
   @Override
   public List<ENTITY> save(final List<ENTITY> entities) {
-    List<ENTITY> savedEntities = new ArrayList<ENTITY>(entities.size());
+    List<ENTITY> savedEntities = new ArrayList<>(entities.size());
     for (ENTITY entity : entities) {
       if (entity.isPersisted()) {
         savedEntities.add(getEntityManager().merge(entity));
@@ -246,8 +243,9 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
     return savedEntities;
   }
 
+  @SafeVarargs
   @Override
-  public void delete(final ENTITY... entity) {
+  public final void delete(final ENTITY... entity) {
     delete(CollectionUtil.asList(entity));
   }
 

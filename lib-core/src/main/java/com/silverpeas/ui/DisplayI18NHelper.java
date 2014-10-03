@@ -38,7 +38,7 @@ public class DisplayI18NHelper {
 
   static {
     ResourceLocator rs = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
 
     defaultLanguage = rs.getString("DefaultLanguage");
 

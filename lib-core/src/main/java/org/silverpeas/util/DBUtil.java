@@ -370,17 +370,17 @@ public class DBUtil {
   /**
    * Update query executor.
    * @param con
-   * @param updateQuery
+   * @param selectQuery
    * @param parameters
    * @throws SQLException
    */
   @SuppressWarnings("unchecked")
-  public static <ROW_ENTITY> List<ROW_ENTITY> select(Connection con, String updateQuery,
+  public static <ROW_ENTITY> List<ROW_ENTITY> select(Connection con, String selectQuery,
       Object parameters, SelectResultRowProcessor<ROW_ENTITY> rowProcess) throws SQLException {
     PreparedStatement st = null;
     ResultSet rs = null;
     try {
-      st = con.prepareStatement(updateQuery);
+      st = con.prepareStatement(selectQuery);
       final Collection<Object> sqlParams;
       if (parameters instanceof Object[]) {
         sqlParams = Arrays.asList((Object[]) parameters);

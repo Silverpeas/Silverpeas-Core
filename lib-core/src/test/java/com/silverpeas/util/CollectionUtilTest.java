@@ -42,7 +42,7 @@ public class CollectionUtilTest {
   @Test
   public void testSplit() {
     assertThat(CollectionUtil.split(null, 0).size(), is(0));
-    assertThat(CollectionUtil.split(new ArrayList<Integer>(), 0).size(), is(0));
+    assertThat(CollectionUtil.split(new ArrayList<>(), 0).size(), is(0));
     final List<?> list = createListOfArray();
     Collection<?> test = CollectionUtil.split(list, 0);
     assertThat(test.size(), is(1));
@@ -63,7 +63,7 @@ public class CollectionUtilTest {
   private List<TestElement> createListOfTestElement() {
 
     // Initialization
-    final List<TestElement> list = new ArrayList<TestElement>();
+    final List<TestElement> list = new ArrayList<>();
 
     // Alimentation
     TestElement testElement;
@@ -99,7 +99,7 @@ public class CollectionUtilTest {
   private List<Object[]> createListOfArray() {
 
     // Initialization
-    final List<Object[]> arrayList = new ArrayList<Object[]>();
+    final List<Object[]> arrayList = new ArrayList<>();
 
     // Alimentation
     arrayList.add(new Object[] { "1_1", "1_2" });

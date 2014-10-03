@@ -499,8 +499,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     try {
       int userId = Integer.parseInt(getUserId());
       notificationManager.deleteAllAddress(userId);
-      for (int i = 0; i < channels.length; i++) {
-        notifAddressId = Integer.parseInt(channels[i]);
+      for (final String channel : channels) {
+        notifAddressId = Integer.parseInt(channel);
         notificationManager.addAddress(notifAddressId, userId);
       }
     } catch (NotificationManagerException e) {

@@ -21,6 +21,7 @@
  */
 package com.silverpeas;
 
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.WebdavServiceFactory;
@@ -29,7 +30,6 @@ import org.silverpeas.attachment.webdav.WebdavService;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerFactory;
 
@@ -45,7 +45,7 @@ public class SilverpeasServiceProvider {
   }
 
   public static PersonalizationService getPersonalizationService() {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService();
+    return PersonalizationServiceProvider.getPersonalizationService();
   }
 
   public static CommentService getCommentService() {

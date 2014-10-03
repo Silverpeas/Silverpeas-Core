@@ -24,26 +24,14 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import org.silverpeas.persistence.model.IdentifiableEntity;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 
-import java.io.Serializable;
-import java.util.Set;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author ehugonnet
@@ -61,11 +49,7 @@ public class SPGroup extends AbstractJpaIdentifiableEntity<SPGroup, UniqueIntege
     implements Serializable {
 
   private static final long serialVersionUID = 287775215176520067L;
-  @Id
-  @Basic(optional = false)
-  @NotNull
-  @Column(name = "id")
-  private Integer id;
+
   @Basic(optional = false)
   @NotNull
   @Size(min = 1, max = 100)
@@ -89,16 +73,16 @@ public class SPGroup extends AbstractJpaIdentifiableEntity<SPGroup, UniqueIntege
   }
 
   public SPGroup(Integer id) {
-    this.id = id;
+    setId(id);
   }
 
   public SPGroup(Integer id, String name) {
-    this.id = id;
+    this(id);
     this.name = name;
   }
 
   public void setId(Integer id) {
-    this.id = id;
+    setId(String.valueOf(id));
   }
 
   public String getName() {
@@ -143,6 +127,6 @@ public class SPGroup extends AbstractJpaIdentifiableEntity<SPGroup, UniqueIntege
 
   @Override
   public String toString() {
-    return "com.silverpeas.domains.silverpeasdriver.SPGroup[ id=" + id + " ]";
+    return "com.silverpeas.domains.silverpeasdriver.SPGroup[ id=" + getId() + " ]";
   }
 }

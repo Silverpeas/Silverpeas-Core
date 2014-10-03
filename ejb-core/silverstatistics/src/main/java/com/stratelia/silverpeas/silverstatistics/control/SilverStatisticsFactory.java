@@ -37,8 +37,8 @@ public class SilverStatisticsFactory {
   private SilverStatistics silverStatistics;
 
   /**
-   * Gets an instance of this PersonalizationServiceFactory class.
-   * @return a PersonalizationServiceFactory instance.
+   * Gets an instance of this SilverStatisticsFactory class.
+   * @return a SilverStatisticsFactory instance.
    */
   public static SilverStatisticsFactory getFactory() {
     return instance;

@@ -90,8 +90,8 @@
   <ctx:component-scan base-package="org.silverpeas.file"/>
   <ctx:component-scan base-package="org.silverpeas.media.video"/>
 
-  <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
-        factory-method="getFactory"/>
+  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionProvider"-->
+        <!--factory-method="getFactory"/>-->
 
   <!-- ebo <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
         factory-method="getDomainDriverFactory"/> -->

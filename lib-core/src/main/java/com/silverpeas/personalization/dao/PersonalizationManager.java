@@ -21,27 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.persistence;
 
-import javax.inject.Inject;
+package com.silverpeas.personalization.dao;
+
+import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.persistence.model.identifier.ForeignStringIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
+
+import java.util.List;
 
 /**
- * A factory of transaction instances.
- * <p/>
- * @author mmoquillon
+ * @author Yohann Chastagnier
  */
-public class TransactionFactory {
+public interface PersonalizationManager
+    extends BasicEntityRepository<UserPreferences, ForeignStringIdentifier> {
 
-  @Inject
-  private Transaction transaction;
-
-  private static final TransactionFactory instance = new TransactionFactory();
-
-  public static TransactionFactory getFactory() {
-    return instance;
-  }
-
-  public Transaction getTransaction() {
-    return transaction;
-  }
+  List<UserPreferences> findByDefaultSpace(String space);
 }
