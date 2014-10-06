@@ -63,7 +63,7 @@ public final class JMSAccessObject {
   private TopicSession publishingSession;
   // to catch errors and transparently reallocate all pf the lost resources.
   private ExceptionListener exceptionListener = new ConnectionExceptionListener();
-  private Set<ConnectionFailureListener> listeners = new HashSet<ConnectionFailureListener>();
+  private Set<ConnectionFailureListener> listeners = new HashSet<>();
   /**
    * The prefix of the JNDI name under which JMS topic will be registered.
    */
@@ -192,7 +192,6 @@ public final class JMSAccessObject {
    * Gets a JMS session for publishing operations. Once the publishing operations ends to be done,
    * the session should be released with the releaseSession() method.
    * @return a TopicSession instance.
-   * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
   protected TopicSession getTopicSessionForPublishing() {
     return publishingSession;
@@ -202,7 +201,6 @@ public final class JMSAccessObject {
    * Gets a JMS session for subscription operations. Once the subscription operations ends to be
    * done, the session should be released with the releaseSession() method.
    * @return a TopicSession instance.
-   * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
   protected TopicSession getTopicSessionForSubscription() {
     return subscriptionSession;

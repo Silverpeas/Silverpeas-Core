@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.notification.delayed.DelayedNotificationFactory;
+import com.silverpeas.notification.delayed.DelayedNotificationProvider;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
 
@@ -291,13 +291,13 @@ public class DelayedNotificationDelegateTest {
 
     for (final Integer userId : userIds) {
       final Map<NotifChannel, List<DelayedNotificationData>> dndMap =
-          DelayedNotificationFactory.getDelayedNotification().
+          DelayedNotificationProvider.getDelayedNotification().
           findDelayedNotificationByUserIdGroupByChannel(userId,
-          DelayedNotificationFactory.getDelayedNotification().getWiredChannels());
+          DelayedNotificationProvider.getDelayedNotification().getWiredChannels());
       for (final List<DelayedNotificationData> dndList : dndMap.values()) {
         for (final DelayedNotificationData dnd : dndList) {
           dnd.setLanguage(language);
-          DelayedNotificationFactory.getDelayedNotification().saveDelayedNotification(dnd);
+          DelayedNotificationProvider.getDelayedNotification().saveDelayedNotification(dnd);
         }
       }
     }

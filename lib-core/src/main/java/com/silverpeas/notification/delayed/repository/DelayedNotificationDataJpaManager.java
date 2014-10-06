@@ -1,52 +1,49 @@
-/*
- * Copyright (C) 2000 - 2013 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package com.silverpeas.notification.delayed.repository;
 
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
-import org.silverpeas.util.persistence.TypedParameter;
-import org.silverpeas.util.persistence.TypedParameterUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.util.persistence.TypedParameter;
+import org.silverpeas.util.persistence.TypedParameterUtil;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 /**
- * @author Yohann Chastagnier
+ * @author: ebonnet
  */
-public class DelayedNotificationRepositoryImpl implements DelayedNotificationRepositoryCustom {
+public class DelayedNotificationDataJpaManager
+    extends JpaBasicEntityManager<DelayedNotificationData, UniqueLongIdentifier>
+    implements DelayedNotificationDataManager {
 
-  @PersistenceContext
-  private EntityManager em;
+  @Override
+  public List<Integer> findAllUsersToBeNotified(final Collection<Integer> aimedChannels) {
+    return getEntityManager()
+        .createNamedQuery("DelayedNotificationData.findDistinctUserByChannel", Integer.class)
+        .getResultList();
+  }
+
+  @Override
+  public List<DelayedNotificationData> findByUserId(final int userId,
+      final Collection<Integer> aimedChannels) {
+    return listFromNamedQuery("DelayedNotificationData.findByUserId",
+        newNamedParameters().add("userId", userId).add("channels", aimedChannels));
+  }
+
+  @Override
+  public long deleteByIds(final Collection<Long> ids) {
+    return deleteFromNamedQuery("DelayedNotificationData.deleteByIds",
+        newNamedParameters().add("ids", ids));
+  }
 
 
   /*
@@ -54,7 +51,6 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
    * @see com.silverpeas.notification.delayed.repository.DelayedNotificationRepositoryCustom#
    * findUsersToBeNotified(java.util.Set, java.util.Set, boolean)
    */
-  @Override
   public List<Integer> findUsersToBeNotified(final Set<NotifChannel> aimedChannels,
       final Set<DelayedNotificationFrequency> aimedFrequencies,
       final boolean isThatUsersWithNoSettingHaveToBeNotified) {
@@ -79,7 +75,8 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
     query.append(") ");
 
     // Typed query
-    final TypedQuery<Integer> typedQuery = em.createQuery(query.toString(), Integer.class);
+    final TypedQuery<Integer> typedQuery =
+        getEntityManager().createQuery(query.toString(), Integer.class);
 
     // Parameters
     TypedParameterUtil.computeNamedParameters(typedQuery, parameters);
@@ -95,7 +92,6 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
    * .DelayedNotificationRepositoryCustom#findResource(com.silverpeas.
    * notification.model.NotificationResourceData)
    */
-  @Override
   public List<DelayedNotificationData> findDelayedNotification(
       final DelayedNotificationData delayedNotification) {
 
@@ -144,7 +140,7 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
 
     // Typed query
     final TypedQuery<DelayedNotificationData> typedQuery =
-        em.createQuery(query.toString(), DelayedNotificationData.class);
+        getEntityManager().createQuery(query.toString(), DelayedNotificationData.class);
 
     // Parameters
     TypedParameterUtil.computeNamedParameters(typedQuery, parameters);

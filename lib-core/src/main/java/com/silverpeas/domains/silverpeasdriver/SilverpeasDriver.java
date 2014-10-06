@@ -56,10 +56,10 @@ import java.util.logging.Logger;
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
   @Inject
-  private SPUserRepository userRepository;
+  private SPUserManager userManager;
 
   @Inject
-  private SPGroupRepository groupRepository;
+  private SPGroupManager groupManager;
 
   /**
    * Constructor
@@ -111,7 +111,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       SPUser user = convertToSPUser(ud, new SPUser());
       int id = DBUtil.getNextId("domainsp_user", "id");
       user.setId(id);
-      user = userRepository.saveAndFlush(user);
+      user = userManager.saveAndFlush(user);
       return String.valueOf(id);
     } catch (SQLException ex) {
       Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
@@ -125,20 +125,20 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   @Override
   public void deleteUser(String userId) {
     if (StringUtil.isInteger(userId)) {
-      SPUser user = userRepository.getById(userId);
+      SPUser user = userManager.getById(userId);
       if (user.getGroups() != null) {
         for (SPGroup group : user.getGroups()) {
           group.getUsers().remove(user);
-          groupRepository.saveAndFlush(group);
+          groupManager.saveAndFlush(group);
         }
       }
-      userRepository.delete(user);
+      userManager.delete(user);
     }
   }
 
   @Override
   public void updateUserFull(UserFull userFull) throws UtilException {
-    SPUser oldUser = userRepository.getById(userFull.getSpecificId());
+    SPUser oldUser = userManager.getById(userFull.getSpecificId());
     oldUser.setFirstname(userFull.getFirstName());
     oldUser.setLastname(userFull.getLastName());
     oldUser.setLogin(userFull.getLogin());
@@ -161,7 +161,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
        oldUser.setPassword(encrypt(userFull.getPassword()));
     }
     oldUser.setPasswordValid(userFull.isPasswordValid());
-    this.userRepository.saveAndFlush(oldUser);
+    this.userManager.saveAndFlush(oldUser);
   }
 
   /**
@@ -170,9 +170,9 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   @Override
   public void updateUserDetail(UserDetail ud) {
     if (StringUtil.isInteger(ud.getSpecificId())) {
-      SPUser user = userRepository.getById(ud.getSpecificId());
+      SPUser user = userManager.getById(ud.getSpecificId());
       if (user != null) {
-        userRepository.save(convertToSPUser(ud, user));
+        userManager.save(convertToSPUser(ud, user));
       }
     }
   }
@@ -186,7 +186,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     if (!StringUtil.isInteger(userId)) {
       return null;
     }
-    SPUser spUser = userRepository.getById(userId);
+    SPUser spUser = userManager.getById(userId);
     return convertToUser(spUser, new UserDetail());
   }
 
@@ -195,7 +195,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     if (!StringUtil.isInteger(userId)) {
       return null;
     }
-    SPUser user = userRepository.getById(userId);
+    SPUser user = userManager.getById(userId);
     UserFull userFull = new UserFull(this);
     if (user != null) {
       userFull.setFirstName(user.getFirstname());
@@ -228,7 +228,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public UserDetail[] getAllUsers() {
-    List<SPUser> users = userRepository.getAll();
+    List<SPUser> users = userManager.getAll();
     List<UserDetail> details = new ArrayList<>(users.size());
     for (SPUser sPUser : users) {
       details.add(convertToUser(sPUser, new UserDetail()));
@@ -245,21 +245,21 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
     List<SPUser> users = new ArrayList<>();
     if ("title".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByTitle(propertyValue);
+      users = userManager.findByTitle(propertyValue);
     } else if ("company".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByCompany(propertyValue);
+      users = userManager.findByCompany(propertyValue);
     } else if ("position".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByPosition(propertyValue);
+      users = userManager.findByPosition(propertyValue);
     } else if ("phone".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByPhone(propertyValue);
+      users = userManager.findByPhone(propertyValue);
     } else if ("homePhone".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByHomephone(propertyValue);
+      users = userManager.findByHomephone(propertyValue);
     } else if ("fax".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByFax(propertyValue);
+      users = userManager.findByFax(propertyValue);
     } else if ("cellularPhone".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByCellphone(propertyValue);
+      users = userManager.findByCellphone(propertyValue);
     } else if ("address".equalsIgnoreCase(propertyName)) {
-      users = userRepository.findByAddress(propertyValue);
+      users = userManager.findByAddress(propertyValue);
     }
     List<UserDetail> userDetails = new ArrayList<>(users.size());
     for (SPUser spUser : users) {
@@ -301,16 +301,16 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       spGroup.setDescription(group.getDescription());
       spGroup.setName(group.getName());
       if (StringUtil.isInteger(group.getSuperGroupId())) {
-        SPGroup parent = groupRepository.getById(group.getSuperGroupId());
+        SPGroup parent = groupManager.getById(group.getSuperGroupId());
         spGroup.setParent(parent);
       }
       String[] userIds = group.getUserIds();
       for (String userId : userIds) {
-        SPUser user = userRepository.getById(userId);
+        SPUser user = userManager.getById(userId);
         spGroup.getUsers().add(user);
         user.getGroups().add(spGroup);
       }
-      spGroup = groupRepository.saveAndFlush(spGroup);
+      spGroup = groupManager.saveAndFlush(spGroup);
       return String.valueOf(spGroup.getId());
     } catch (SQLException ex) {
       Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
@@ -323,7 +323,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void deleteGroup(String groupId) {
-    SPGroup group = groupRepository.getById(groupId);
+    SPGroup group = groupManager.getById(groupId);
     if (group != null) {
       for (SPUser user : group.getUsers()) {
         user.getGroups().remove(group);
@@ -331,14 +331,14 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       for (SPGroup subGroup : group.getSubGroups()) {
         subGroup.setParent(group.getParent());
         group.getParent().getSubGroups().add(subGroup);
-        groupRepository.saveAndFlush(subGroup);
+        groupManager.saveAndFlush(subGroup);
       }
       SPGroup parent = group.getParent();
       if (parent != null && parent != null) {
         parent.getSubGroups().remove(group);
-        groupRepository.saveAndFlush(parent);
+        groupManager.saveAndFlush(parent);
       }
-      groupRepository.delete(group);
+      groupManager.delete(group);
     }
   }
 
@@ -356,7 +356,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
 
     // Update the group node
-    SPGroup gr = groupRepository.getById(group.getSpecificId());
+    SPGroup gr = groupManager.getById(group.getSpecificId());
     gr = convertToSPGroup(group, gr);
     Set<SPUser> users = gr.getUsers();
     Map<String, SPUser> existingUsers = new HashMap<>(users.size());
@@ -370,13 +370,13 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
         addedUsers.add(existingUsers.get(userId));
         existingUsers.remove(userId);
       } else {
-        SPUser newUser = userRepository.getById(userId);
+        SPUser newUser = userManager.getById(userId);
         addedUsers.add(newUser);
       }
     }
     gr.setUsers(addedUsers);
 
-    groupRepository.saveAndFlush(gr);
+    groupManager.saveAndFlush(gr);
   }
 
   /**
@@ -385,7 +385,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public Group getGroup(String groupId) {
-    SPGroup gr = groupRepository.getById(groupId);
+    SPGroup gr = groupManager.getById(groupId);
     return convertToGroup(gr);
   }
 
@@ -400,7 +400,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public Group[] getGroups(String groupId) {
-    SPGroup gr = groupRepository.getById(groupId);
+    SPGroup gr = groupManager.getById(groupId);
     Set<SPGroup> subGroups = gr.getSubGroups();
     List<Group> groups = new ArrayList<>(subGroups.size());
     for (SPGroup spGroup : subGroups) {
@@ -414,7 +414,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public Group[] getAllGroups() {
-    List<SPGroup> groups = groupRepository.getAll();
+    List<SPGroup> groups = groupManager.getAll();
     List<Group> result = new ArrayList<>(groups.size());
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
@@ -424,7 +424,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public Group[] getAllRootGroups() {
-    List<SPGroup> groups = groupRepository.listAllRootGroups();
+    List<SPGroup> groups = groupManager.listAllRootGroups();
     List<Group> result = new ArrayList<>(groups.size());
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
@@ -455,11 +455,11 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @throws Exception
    */
   public void addUserInGroup(String userId, String groupId) throws Exception {
-    SPUser user = userRepository.getById(userId);
-    SPGroup group = groupRepository.getById(groupId);
+    SPUser user = userManager.getById(userId);
+    SPGroup group = groupManager.getById(groupId);
     user.getGroups().add(group);
     group.getUsers().add(user);
-    groupRepository.saveAndFlush(group);
+    groupManager.saveAndFlush(group);
   }
 
   /**
@@ -467,11 +467,11 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @param groupId
    */
   public void removeUserFromGroup(String userId, String groupId) {
-    SPUser user = userRepository.getById(userId);
-    SPGroup group = groupRepository.getById(groupId);
+    SPUser user = userManager.getById(userId);
+    SPGroup group = groupManager.getById(groupId);
     user.getGroups().remove(group);
     group.getUsers().remove(user);
-    groupRepository.saveAndFlush(group);
+    groupManager.saveAndFlush(group);
   }
 
   /**
@@ -483,7 +483,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
     if (StringUtil.isDefined(group.getSuperGroupId()) && StringUtil.isInteger(
         group.getSuperGroupId())) {
-      SPGroup parent = groupRepository.getById(group.getSuperGroupId());
+      SPGroup parent = groupManager.getById(group.getSuperGroupId());
       spGroup.setParent(parent);
     }
     spGroup.setName(group.getName());
@@ -537,10 +537,10 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public void resetPassword(UserDetail userDetail, String password) throws Exception {
-    SPUser user = userRepository.getById(userDetail.getId());
+    SPUser user = userManager.getById(userDetail.getId());
     user.setPassword(encrypt(password));
     user.setPasswordValid(true);
-    userRepository.saveAndFlush(user);
+    userManager.saveAndFlush(user);
   }
 
   private String encrypt(String password) {
@@ -551,9 +551,9 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) throws Exception {
-    SPUser user = userRepository.getById(userDetail.getId());
+    SPUser user = userManager.getById(userDetail.getId());
     user.setPassword(encryptedPassword);
     user.setPasswordValid(true);
-    userRepository.saveAndFlush(user);
+    userManager.saveAndFlush(user);
   }
 }

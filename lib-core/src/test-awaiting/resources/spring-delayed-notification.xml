@@ -29,7 +29,7 @@
     <value>com.silverpeas.notification.delayed.model</value>
   </util:list>
 
-  <bean class="com.silverpeas.notification.delayed.DelayedNotificationFactory"
+  <bean class="com.silverpeas.notification.delayed.DelayedNotificationProvider"
       factory-method="getInstance" />
 
 </beans>

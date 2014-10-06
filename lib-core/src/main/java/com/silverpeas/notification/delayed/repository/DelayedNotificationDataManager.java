@@ -23,30 +23,33 @@
  */
 package com.silverpeas.notification.delayed.repository;
 
+import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
+import com.silverpeas.notification.delayed.model.DelayedNotificationData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
+
 import java.util.Collection;
 import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import com.silverpeas.notification.delayed.model.DelayedNotificationData;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface DelayedNotificationRepository extends
-    JpaRepository<DelayedNotificationData, Long>, DelayedNotificationRepositoryCustom {
+public interface DelayedNotificationDataManager
+    extends BasicEntityRepository<DelayedNotificationData, UniqueLongIdentifier> {
 
-  @Query("select distinct userId from DelayedNotificationData where channel in (:channels)")
-  List<Integer> findAllUsersToBeNotified(@Param("channels") Collection<Integer> aimedChannels);
+  List<Integer> findAllUsersToBeNotified(Collection<Integer> aimedChannels);
 
-  @Query("from DelayedNotificationData where userId = :userId and channel in (:channels) order by channel")
-  List<DelayedNotificationData> findByUserId(@Param("userId") int userId,
-      @Param("channels") Collection<Integer> aimedChannels);
+  List<DelayedNotificationData> findByUserId(int userId, Collection<Integer> aimedChannels);
 
-  @Modifying
-  @Query("delete from DelayedNotificationData where id in (:ids)")
-  public int deleteByIds(@Param("ids") Collection<Long> ids);
+  public long deleteByIds(Collection<Long> ids);
+
+  List<Integer> findUsersToBeNotified(Set<NotifChannel> aimedChannels,
+      Set<DelayedNotificationFrequency> aimedFrequencies,
+      boolean isThatUsersWithNoSettingHaveToBeNotified);
+
+  List<DelayedNotificationData> findDelayedNotification(
+      DelayedNotificationData delayedNotification);
+
 }

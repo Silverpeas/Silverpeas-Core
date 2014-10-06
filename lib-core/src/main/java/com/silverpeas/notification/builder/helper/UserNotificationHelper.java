@@ -26,15 +26,16 @@ package com.silverpeas.notification.builder.helper;
 import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
+@Singleton
 public class UserNotificationHelper {
-
-  private static final UserNotificationHelper instance = new UserNotificationHelper();
 
   @Inject
   private UserNotificationManager userNotificationManager;
@@ -42,7 +43,6 @@ public class UserNotificationHelper {
   /**
    * Builds a notification data container from a given builder. After that, sends the builded notification
    * @param notificationBuider
-   * @return
    */
   public static void buildAndSend(final UserNotificationBuider notificationBuider) {
     getInstance().getManager().buildAndSend(notificationBuider);
@@ -53,7 +53,6 @@ public class UserNotificationHelper {
    * media type
    * @param mediaType
    * @param notificationBuider
-   * @return
    */
   public static void buildAndSend(final NotifMediaType mediaType,
       final UserNotificationBuider notificationBuider) {
@@ -74,9 +73,6 @@ public class UserNotificationHelper {
    * @return
    */
   private UserNotificationManager getManager() {
-    if (userNotificationManager == null) {
-      userNotificationManager = new UserNotificationManager();
-    }
     return userNotificationManager;
   }
 
@@ -84,6 +80,6 @@ public class UserNotificationHelper {
    * @return a UserNotificationHelper instance.
    */
   public static UserNotificationHelper getInstance() {
-    return instance;
+    return ServiceProvider.getService(UserNotificationHelper.class);
   }
 }

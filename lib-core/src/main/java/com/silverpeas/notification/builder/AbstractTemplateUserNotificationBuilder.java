@@ -45,7 +45,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * The silverpeas templates indexed by languages
    */
   private final Map<String, SilverpeasTemplate> templates
-      = new HashMap<String, SilverpeasTemplate>();
+      = new HashMap<>();
 
   /**
    * Default constructor

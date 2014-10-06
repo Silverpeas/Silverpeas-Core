@@ -46,7 +46,6 @@ public interface UserNotification {
   /**
    * Sends the notification for the given media type
    * @param mediaType
-   * @param notification
    */
   void send(NotifMediaType mediaType);
 }

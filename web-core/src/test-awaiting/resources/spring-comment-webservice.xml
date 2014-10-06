@@ -41,7 +41,7 @@
 
   <!-- the notification publisher factory through which a notification publisher is accessed.
         It bootstraps the actual messaging system backend -->
-  <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherFactory"
+  <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherProvider"
         factory-method="getFactory"/>
 
   <import resource="spring-webservice.xml" />

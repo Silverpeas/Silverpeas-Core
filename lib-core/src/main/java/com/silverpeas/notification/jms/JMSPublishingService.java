@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
@@ -47,6 +48,7 @@ import static org.silverpeas.util.ExecutionAttempts.retry;
  * container under the name 'notificationPublisher' as required by the Notification API. The JMS
  * system is injected as a dependency by the IoC container.
  */
+@Singleton
 @Named("notificationPublisher")
 public class JMSPublishingService implements NotificationPublisher {
 
@@ -56,25 +58,21 @@ public class JMSPublishingService implements NotificationPublisher {
   @Override
   public void publish(final SilverpeasNotification notification, final NotificationTopic onTopic) {
     try {
-      retry(2, new ExecutionAttempts.Job() {
-
-        @Override
-        public void execute() throws Exception {
-          TopicPublisher publisher = null;
+      retry(2, () -> {
+        TopicPublisher publisher = null;
+        try {
+          String topicName = onTopic.getName();
+          publisher = jmsService.createTopicPublisher(topicName);
+          ObjectMessage message = jmsService.createObjectMessageFor(publisher);
+          message.setObject(notification);
+          publisher.publish(message);
+        } finally {
           try {
-            String topicName = onTopic.getName();
-            publisher = jmsService.createTopicPublisher(topicName);
-            ObjectMessage message = jmsService.createObjectMessageFor(publisher);
-            message.setObject(notification);
-            publisher.publish(message);
-          } finally {
-            try {
-              if (publisher != null) {
-                jmsService.disposeTopicPublisher(publisher);
-              }
-            } catch (JMSException ex) {
-              Logger.getLogger(JMSPublishingService.class.getName()).log(Level.SEVERE, null, ex);
+            if (publisher != null) {
+              jmsService.disposeTopicPublisher(publisher);
             }
+          } catch (JMSException ex) {
+            Logger.getLogger(JMSPublishingService.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
       });

@@ -21,26 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.delayed.repository;
+package com.silverpeas.notification.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
+import com.silverpeas.notification.model.NotificationResourceData;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface DelayedNotificationUserSettingRepository extends
-    JpaRepository<DelayedNotificationUserSetting, Integer> {
+public interface NotificationResourceDataManager
+    extends BasicEntityRepository<NotificationResourceData, UniqueLongIdentifier> {
 
-  @Query("from DelayedNotificationUserSetting where userId = :param")
-  List<DelayedNotificationUserSetting> findByUserId(@Param("param") int userId);
+  public long deleteResources();
 
-  @Query("from DelayedNotificationUserSetting where userId = :param and channel = :param2")
-  List<DelayedNotificationUserSetting> findByUserIdAndChannel(@Param("param") int userId,
-      @Param("param2") int channel);
+  NotificationResourceData getExistingResource(String resourceId, String resourceType,
+      String componentInstanceId);
 }

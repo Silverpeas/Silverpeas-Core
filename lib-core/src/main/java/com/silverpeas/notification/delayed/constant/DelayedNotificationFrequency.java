@@ -70,12 +70,12 @@ public enum DelayedNotificationFrequency {
 
   /**
    * Transforming the given collection into a collection of simple type
-   * @param notifChannels
+   * @param delayedNotificationFrequencies
    * @return
    */
   public static Collection<String> toCodes(
       final Collection<DelayedNotificationFrequency> delayedNotificationFrequencies) {
-    final Collection<String> result = new ArrayList<String>();
+    final Collection<String> result = new ArrayList<>();
     if (delayedNotificationFrequencies != null) {
       for (final DelayedNotificationFrequency delayedNotificationFrequency : delayedNotificationFrequencies) {
         result.add(delayedNotificationFrequency.getCode());

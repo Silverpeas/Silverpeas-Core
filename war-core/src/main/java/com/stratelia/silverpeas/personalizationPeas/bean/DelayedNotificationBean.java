@@ -25,7 +25,7 @@ package com.stratelia.silverpeas.personalizationPeas.bean;
 
 import java.util.Set;
 
-import com.silverpeas.notification.delayed.DelayedNotificationFactory;
+import com.silverpeas.notification.delayed.DelayedNotificationProvider;
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
@@ -49,18 +49,18 @@ public class DelayedNotificationBean {
   }
 
   public DelayedNotificationFrequency getDefaultFrequency() {
-    return DelayedNotificationFactory.getDelayedNotification()
+    return DelayedNotificationProvider.getDelayedNotification()
         .getDefaultDelayedNotificationFrequency();
   }
 
   public Set<DelayedNotificationFrequency> getFrequencies() {
-    return DelayedNotificationFactory.getDelayedNotification().getPossibleFrequencies();
+    return DelayedNotificationProvider.getDelayedNotification().getPossibleFrequencies();
   }
 
   public String getCurrentUserFrequencyCode() {
     if (userSettings == null) {
       userSettings =
-          DelayedNotificationFactory.getDelayedNotification()
+          DelayedNotificationProvider.getDelayedNotification()
               .getDelayedNotificationUserSettingByUserIdAndChannel(userId, NotifChannel.SMTP);
     }
     if (userSettings != null) {

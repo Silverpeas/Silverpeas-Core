@@ -23,6 +23,24 @@
  */
 package com.silverpeas.notification.delayed;
 
+import com.ibm.icu.util.Calendar;
+import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
+import com.silverpeas.notification.delayed.model.DelayedNotificationData;
+import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
+import com.silverpeas.notification.delayed.repository.DelayedNotificationDataManager;
+import com.silverpeas.notification.delayed.repository.DelayedNotificationUserSettingJpaManager;
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.notification.repository.NotificationResourceDataManager;
+import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.MapUtil;
+import org.silverpeas.util.ResourceLocator;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -33,31 +51,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.ibm.icu.util.Calendar;
-import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
-import com.silverpeas.notification.delayed.model.DelayedNotificationData;
-import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
-import com.silverpeas.notification.delayed.repository.DelayedNotificationRepository;
-import com.silverpeas.notification.delayed.repository.DelayedNotificationUserSettingRepository;
-import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.notification.repository.NotificationResourceRepository;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.MapUtil;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
-
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Singleton
 @Transactional
 public class DelayedNotificationManager implements DelayedNotification {
   private static final Object SYNCHRONIZED = new Object();
@@ -70,27 +67,26 @@ public class DelayedNotificationManager implements DelayedNotification {
   private static Set<DelayedNotificationFrequency> POSSIBLE_FREQUENCIES;
 
   /** For now, only the SMTP channel can be delayed (mail) */
-  private static final Set<NotifChannel> WIRED_CHANNELS = new HashSet<NotifChannel>();
+  private static final Set<NotifChannel> WIRED_CHANNELS = new HashSet<>();
   static {
     WIRED_CHANNELS.add(NotifChannel.SMTP);
   }
 
   @Inject
-  private DelayedNotificationRepository dnRepository;
+  private DelayedNotificationDataManager dnRepository;
 
   @Inject
-  private NotificationResourceRepository nrRepository;
+  private NotificationResourceDataManager nrRepository;
 
   @Inject
-  private DelayedNotificationUserSettingRepository dnUserSettingRepository;
+  private DelayedNotificationUserSettingJpaManager dnUserSettingManager;
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public Map<NotifChannel, List<DelayedNotificationData>> findDelayedNotificationByUserIdGroupByChannel(
       final int userId,
       final Set<NotifChannel> aimedChannels) {
-    final Map<NotifChannel, List<DelayedNotificationData>> result =
-        new LinkedHashMap<NotifChannel, List<DelayedNotificationData>>();
+    final Map<NotifChannel, List<DelayedNotificationData>> result = new LinkedHashMap<>();
     for (final DelayedNotificationData data : dnRepository.findByUserId(userId, NotifChannel.toIds(aimedChannels))) {
       MapUtil.putAddList(result, data.getChannel(), data);
     }
@@ -98,13 +94,13 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public List<Integer> findAllUsersToBeNotified(final Set<NotifChannel> aimedChannels) {
     return dnRepository.findAllUsersToBeNotified(NotifChannel.toIds(aimedChannels));
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public List<Integer> findUsersToBeNotified(final Date date,
       final Set<NotifChannel> aimedChannels,
       final DelayedNotificationFrequency defaultDelayedNotificationFrequency) {
@@ -112,8 +108,7 @@ public class DelayedNotificationManager implements DelayedNotification {
     final Date dateOfDay = DateUtil.getBeginOfDay(date);
 
     // Calculating aimed frequencies
-    final Set<DelayedNotificationFrequency> aimedFrequencies =
-        new HashSet<DelayedNotificationFrequency>();
+    final Set<DelayedNotificationFrequency> aimedFrequencies = new HashSet<>();
 
     // Daily frequency is logically aimed
     aimedFrequencies.add(DelayedNotificationFrequency.DAILY);
@@ -148,7 +143,7 @@ public class DelayedNotificationManager implements DelayedNotification {
           final List<DelayedNotificationData> exists =
               dnRepository.findDelayedNotification(delayedNotificationData);
           if (exists.size() == 1) {
-            delayedNotificationData.setId(exists.get(0).getId());
+            delayedNotificationData.setId(Integer.parseInt(exists.get(0).getId()));
           } else {
             dnRepository.saveAndFlush(delayedNotificationData);
           }
@@ -182,7 +177,7 @@ public class DelayedNotificationManager implements DelayedNotification {
    */
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public NotificationResourceData getExistingResource(final String resourceId,
       final String resourceType, final String componentInstanceId) {
     return nrRepository.getExistingResource(resourceId, resourceType, componentInstanceId);
@@ -193,24 +188,24 @@ public class DelayedNotificationManager implements DelayedNotification {
    */
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public DelayedNotificationUserSetting getDelayedNotificationUserSetting(final int id) {
-    return dnUserSettingRepository.findOne(id);
+    return dnUserSettingManager.getById(Integer.toString(id));
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public List<DelayedNotificationUserSetting> findDelayedNotificationUserSettingByUserId(
       final int userId) {
-    return dnUserSettingRepository.findByUserId(userId);
+    return dnUserSettingManager.findByUserId(userId);
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(
       final int userId, final NotifChannel channel) {
     final List<DelayedNotificationUserSetting> userSettings =
-        dnUserSettingRepository.findByUserIdAndChannel(userId, channel.getId());
+        dnUserSettingManager.findByUserIdAndChannel(userId, channel.getId());
     DelayedNotificationUserSetting result = null;
     if (!userSettings.isEmpty()) {
       result = userSettings.iterator().next();
@@ -229,21 +224,21 @@ public class DelayedNotificationManager implements DelayedNotification {
       userSettings.setChannel(channel);
     }
     userSettings.setFrequency(frequency);
-    dnUserSettingRepository.saveAndFlush(userSettings);
+    dnUserSettingManager.saveAndFlush(userSettings);
     return userSettings;
   }
 
   @Override
   public void deleteDelayedNotificationUserSetting(final int id) {
-    dnUserSettingRepository.delete(id);
-    dnUserSettingRepository.flush();
+    dnUserSettingManager.deleteById(Integer.toString(id));
+    dnUserSettingManager.flush();
   }
 
   @Override
   public void deleteDelayedNotificationUserSetting(
       final DelayedNotificationUserSetting delayedNotificationUserSetting) {
-    dnUserSettingRepository.delete(delayedNotificationUserSetting);
-    dnUserSettingRepository.flush();
+    dnUserSettingManager.delete(delayedNotificationUserSetting);
+    dnUserSettingManager.flush();
   }
 
   /*
@@ -251,20 +246,20 @@ public class DelayedNotificationManager implements DelayedNotification {
    */
 
   @Override
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public Set<NotifChannel> getWiredChannels() {
     return WIRED_CHANNELS;
   }
 
   @Override
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public Set<DelayedNotificationFrequency> getPossibleFrequencies() {
     if (POSSIBLE_FREQUENCIES == null) {
       synchronized (SYNCHRONIZED) {
         if (POSSIBLE_FREQUENCIES == null) {
 
           // Initialization
-          final Set<DelayedNotificationFrequency> possibleFrequencies = new HashSet<DelayedNotificationFrequency>();
+          final Set<DelayedNotificationFrequency> possibleFrequencies = new HashSet<>();
 
           // The parameter value
           final String frequencyChoiceList =
@@ -283,7 +278,7 @@ public class DelayedNotificationManager implements DelayedNotification {
 
           // Eliminating wrong frequencies
           possibleFrequencies.remove(null);
-          POSSIBLE_FREQUENCIES = new TreeSet<DelayedNotificationFrequency>(possibleFrequencies);
+          POSSIBLE_FREQUENCIES = new TreeSet<>(possibleFrequencies);
         }
       }
     }
@@ -291,7 +286,7 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
     DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency.decode(settings.getString(
         "DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
@@ -302,7 +297,7 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public DelayedNotificationFrequency getUserFrequency(final Integer userId,
       final NotifChannel channel) {
     DelayedNotificationFrequency result = DelayedNotificationFrequency.NONE;

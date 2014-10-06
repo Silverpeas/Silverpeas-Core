@@ -77,17 +77,13 @@ public class JMSSubscribingService implements MessageSubscribingService, Connect
       topicsSubscriber = existingTopicsSubscriber;
     }
     try {
-      retry(2, new ExecutionAttempts.Job() {
-
-        @Override
-        public void execute() throws Exception {
-          if (!topicsSubscriber.isSubscribedTo(topicName)) {
-            String id = topicsSubscriber.getId();
-            MessageListener listener = mapMessageListenerTo(subscriber).forTopic(topicName);
-            createSubscription(topicsSubscriber, topicName, listener);
-            topicsSubscriber.save();
-            subscriber.setId(id);
-          }
+      retry(2, () -> {
+        if (!topicsSubscriber.isSubscribedTo(topicName)) {
+          String id = topicsSubscriber.getId();
+          MessageListener listener = mapMessageListenerTo(subscriber).forTopic(topicName);
+          createSubscription(topicsSubscriber, topicName, listener);
+          topicsSubscriber.save();
+          subscriber.setId(id);
         }
       });
     } catch (Exception ex) {
@@ -101,18 +97,14 @@ public class JMSSubscribingService implements MessageSubscribingService, Connect
     final ManagedTopicsSubscriber topicsSubscriber =
             ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriber.getId());
     try {
-      retry(2, new ExecutionAttempts.Job() {
-
-        @Override
-        public void execute() throws Exception {
-          if (topicsSubscriber != null) {
-            TopicSubscriber jmsSubscriber = topicsSubscriber.getSubscription(fromTopic.getName());
-            if (jmsSubscriber != null) {
-              jmsService.disposeTopicSubscriber(jmsSubscriber);
-              topicsSubscriber.removeSubscription(jmsSubscriber);
-              if (topicsSubscriber.hasNoSusbscriptions()) {
-                topicsSubscriber.delete();
-              }
+      retry(2, () -> {
+        if (topicsSubscriber != null) {
+          TopicSubscriber jmsSubscriber = topicsSubscriber.getSubscription(fromTopic.getName());
+          if (jmsSubscriber != null) {
+            jmsService.disposeTopicSubscriber(jmsSubscriber);
+            topicsSubscriber.removeSubscription(jmsSubscriber);
+            if (topicsSubscriber.hasNoSusbscriptions()) {
+              topicsSubscriber.delete();
             }
           }
         }
@@ -133,15 +125,11 @@ public class JMSSubscribingService implements MessageSubscribingService, Connect
       Collection<TopicSubscriber> subscriptions = subscriber.getAllSubscriptions();
       for (final TopicSubscriber subscription: subscriptions) {
         try {
-          retry(2, new ExecutionAttempts.Job() {
-
-            @Override
-            public void execute() throws Exception {
-              MessageListener listener = subscription.getMessageListener();
-              String topicName = subscription.getTopic().getTopicName();
-              createSubscription(subscriber, topicName, listener);
-              subscriber.removeSubscription(subscription);
-            }
+          retry(2, () -> {
+            MessageListener listener = subscription.getMessageListener();
+            String topicName = subscription.getTopic().getTopicName();
+            createSubscription(subscriber, topicName, listener);
+            subscriber.removeSubscription(subscription);
           });
         } catch (Exception ex) {
           try {

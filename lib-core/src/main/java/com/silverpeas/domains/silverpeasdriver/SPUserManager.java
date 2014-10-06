@@ -22,39 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notification;
+package com.silverpeas.domains.silverpeasdriver;
 
-import javax.inject.Inject;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
- * Factory of notification publishers for beans not managed by an IoC container. IoC container
- * managed beans should use directly a NotificationPublisher instance as it will be injected as
- * dependency by the IoC container. This factory wraps the concrete implementation of the
- * NotifcationPublisher interface by using the IoC container.
+ * @author ehugonnet
  */
-public class NotificationPublisherFactory {
+public interface SPUserManager extends BasicEntityRepository<SPUser, UniqueIntegerIdentifier> {
 
-  private static NotificationPublisherFactory instance = new NotificationPublisherFactory();
+  List<SPUser> findByFirstname(@Param("firstname") String firstName);
 
-  @Inject
-  private NotificationPublisher publisher;
+  List<SPUser> findByLastname(@Param("lastname") String lastName);
 
-  /**
-   * Gets an instance of this factory.
-   * @return a NotificationPublisherFactory instance.
-   */
-  public static NotificationPublisherFactory getFactory() {
-    return instance;
-  }
+  List<SPUser> findByPhone(@Param("phone") String phone);
 
-  /**
-   * Gets a notification publisher.
-   * @return an implementation of the NotificationPublisher interface.
-   */
-  public NotificationPublisher getNotificationPublisher() {
-    return publisher;
-  }
+  List<SPUser> findByHomephone(@Param("homephone") String homephone);
 
-  private NotificationPublisherFactory() {
-  }
+  List<SPUser> findByCellphone(@Param("cellphone") String cellphone);
+
+  List<SPUser> findByFax(@Param("fax") String fax);
+
+  List<SPUser> findByAddress(@Param("address") String address);
+
+  List<SPUser> findByTitle(@Param("title") String title);
+
+  List<SPUser> findByCompany(@Param("company") String company);
+
+  List<SPUser> findByPosition(@Param("position") String position);
+
+  List<SPUser> findByEmail(@Param("email") String email);
+
 }

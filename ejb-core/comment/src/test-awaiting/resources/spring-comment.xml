@@ -42,8 +42,8 @@
 
   <!-- the notification publisher factory through which a notification publisher is accessed.
         It bootstraps the actual messaging system backend -->
-  <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherProvider"
+        factory-method="getFactory"/> -->
 
   <!-- the DefaultCommentService factory from which Silverpeas components access the comment service.
        It delegate to the Spring container the management of the life-cycle of the DefaultCommentService objects. -->

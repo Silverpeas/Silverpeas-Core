@@ -27,9 +27,12 @@ import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 
+import javax.inject.Singleton;
+
 /**
  * @author: Yohann Chastagnier
  */
+@Singleton
 public class UserNotificationManager {
 
   protected UserNotificationManager() {
@@ -40,7 +43,6 @@ public class UserNotificationManager {
    * Builds a notification data container from a given builder. After that, sends the builded
    * notification
    * @param notificationBuider
-   * @return
    */
   public void buildAndSend(final UserNotificationBuider notificationBuider) {
     notificationBuider.build().send();
@@ -52,7 +54,6 @@ public class UserNotificationManager {
    * media type
    * @param mediaType
    * @param notificationBuider
-   * @return
    */
   public void buildAndSend(final NotifMediaType mediaType,
       final UserNotificationBuider notificationBuider) {

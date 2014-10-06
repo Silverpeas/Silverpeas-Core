@@ -39,7 +39,7 @@ public class SilverpeasNotification implements Serializable {
   private final NotificationSource source;
   private SilverpeasNotificationCause cause = SilverpeasNotificationCause.UPDATE;
   private final Serializable object;
-  private Map<String, String> parameters = new HashMap<String, String>();
+  private Map<String, String> parameters = new HashMap<>();
 
   /**
    * Constructs a new notification involving the specified object and triggered by the specified

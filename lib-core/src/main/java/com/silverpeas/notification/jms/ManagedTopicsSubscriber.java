@@ -41,7 +41,7 @@ import javax.jms.TopicSubscriber;
 final class ManagedTopicsSubscriber {
 
   private static Map<String, ManagedTopicsSubscriber> subscribers = Collections.synchronizedMap(
-      new HashMap<String, ManagedTopicsSubscriber>());
+      new HashMap<>());
 
   /**
    * Gets an existing managed subscriber by its unique identifier.
@@ -76,7 +76,7 @@ final class ManagedTopicsSubscriber {
   }
 
   private final String id;
-  private final List<TopicSubscriber> subscriptions = new ArrayList<TopicSubscriber>();
+  private final List<TopicSubscriber> subscriptions = new ArrayList<>();
 
   /**
    * Is this subscriber subscirbed to the specified topic?
@@ -125,7 +125,7 @@ final class ManagedTopicsSubscriber {
    * subscriber.
    */
   public Collection<TopicSubscriber> getAllSubscriptions() {
-    return Collections.unmodifiableCollection(new ArrayList<TopicSubscriber>(subscriptions));
+    return Collections.unmodifiableCollection(new ArrayList<>(subscriptions));
   }
 
   /**

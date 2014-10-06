@@ -34,12 +34,12 @@ import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency
  * @author Yohann Chastagnier
  */
 public class DelayedNotificationSyntheseData {
-  private final Collection<Long> delayedNotificationIdProceeded = new ArrayList<Long>();
+  private final Collection<Long> delayedNotificationIdProceeded = new ArrayList<>();
   private Integer userId;
   private DelayedNotificationFrequency frequency;
   private String language;
   private int nbNotifications = 0;
-  private final Collection<SyntheseResource> resources = new ArrayList<SyntheseResource>();
+  private final Collection<SyntheseResource> resources = new ArrayList<>();
   private String subject;
   private String message;
 

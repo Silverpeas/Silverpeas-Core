@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,23 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.delayed.repository;
 
-import java.util.List;
-import java.util.Set;
+package com.silverpeas.notification;
 
-import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
-import com.silverpeas.notification.delayed.model.DelayedNotificationData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * @author Yohann Chastagnier
+ * Factory of notification publishers for beans not managed by an IoC container. IoC container
+ * managed beans should use directly a NotificationPublisher instance as it will be injected as
+ * dependency by the IoC container. This factory wraps the concrete implementation of the
+ * NotifcationPublisher interface by using the IoC container.
  */
-public interface DelayedNotificationRepositoryCustom {
+@Singleton
+public class NotificationPublisherProvider {
 
-  List<Integer> findUsersToBeNotified(Set<NotifChannel> aimedChannels,
-      Set<DelayedNotificationFrequency> aimedFrequencies,
-      boolean isThatUsersWithNoSettingHaveToBeNotified);
+  /**
+   * Gets a notification publisher.
+   * @return an implementation of the NotificationPublisher interface.
+   */
+  public NotificationPublisher getNotificationPublisher() {
+    return ServiceProvider.getService(NotificationPublisher.class);
+  }
 
-  List<DelayedNotificationData> findDelayedNotification(DelayedNotificationData delayedNotification);
+  private NotificationPublisherProvider() {
+  }
 }

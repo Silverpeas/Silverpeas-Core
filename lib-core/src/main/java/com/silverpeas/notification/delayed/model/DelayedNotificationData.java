@@ -28,23 +28,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.silverpeas.notification.model.NotificationResourceData;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -56,15 +45,17 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
  */
 @Entity
 @Table(name = "st_delayednotification")
-public class DelayedNotificationData implements Serializable {
+@NamedQueries({
+    @NamedQuery(name = "DelayedNotificationData.findDistinctUserByChannel",
+        query = "select distinct userId from DelayedNotificationData where channel in (:channels)"),
+    @NamedQuery(name = "DelayedNotificationData.findByUserId",
+        query = "from DelayedNotificationData where userId = :userId and channel in (:channels) order by channel"),
+    @NamedQuery(name="DelayedNotificationData.deleteByIds", query= "delete from DelayedNotificationData where id in (:ids)")
+})
+public class DelayedNotificationData
+    extends AbstractJpaIdentifiableEntity<DelayedNotificationData, UniqueLongIdentifier>
+    implements Serializable {
   private static final long serialVersionUID = 3477090528448919931L;
-
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "st_delayednotification", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  @Column(name = "id")
-  private Long id;
 
   @Column(name = "userId", nullable = false)
   private Integer userId;
@@ -93,9 +84,10 @@ public class DelayedNotificationData implements Serializable {
   private NotificationResourceData resource;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumns({
-      @JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false, updatable = false),
-      @JoinColumn(name = "channel", referencedColumnName = "channel", insertable = false, updatable = false) })
+  @JoinColumns({@JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false,
+      updatable = false),
+      @JoinColumn(name = "channel", referencedColumnName = "channel", insertable = false,
+          updatable = false)})
   private DelayedNotificationUserSetting delayedNotificationUserSetting;
 
   @Transient
@@ -132,12 +124,8 @@ public class DelayedNotificationData implements Serializable {
     }
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(final Long id) {
-    this.id = id;
+  public void setId(Integer id) {
+    setId(String.valueOf(id));
   }
 
   public Integer getUserId() {

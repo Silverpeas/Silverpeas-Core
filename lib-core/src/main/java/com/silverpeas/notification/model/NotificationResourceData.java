@@ -23,34 +23,29 @@
  */
 package com.silverpeas.notification.model;
 
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import javax.persistence.*;
 
 /**
  * @author Yohann Chastagnier
  */
 @Entity
 @Table(name = "st_notificationresource")
-public class NotificationResourceData implements Cloneable {
-  
-  public final static String LOCATION_SEPARATOR = "@#@#@";
+@NamedQueries({
+    @NamedQuery(name = "NotificationResourceData.deleteResources",
+        query = "delete from NotificationResourceData r where not exists (from DelayedNotificationData d where d.resource.id = r.id)")
+})
 
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "st_notificationresource", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  @Column(name = "id")
-  private Long id;
+public class NotificationResourceData
+    extends AbstractJpaIdentifiableEntity<NotificationResourceData, UniqueLongIdentifier>
+    implements Cloneable {
+
+  public final static String LOCATION_SEPARATOR = "@#@#@";
 
   @Column(name = "resourceId", nullable = false)
   private String resourceId;
@@ -118,12 +113,8 @@ public class NotificationResourceData implements Cloneable {
         isNotBlank(resourceLocation) && isNotBlank(resourceUrl) && isNotBlank(componentInstanceId);
   }
 
-  public Long getId() {
-    return id;
-  }
-
   public void setId(final Long id) {
-    this.id = id;
+    setId(Long.toString(id));
   }
 
   public String getResourceId() {
@@ -199,7 +190,7 @@ public class NotificationResourceData implements Cloneable {
     NotificationResourceData clone;
     try {
       clone = (NotificationResourceData) super.clone();
-      clone.setId(null);
+      clone.setId(Long.MIN_VALUE);
     } catch (final CloneNotSupportedException e) {
       throw new RuntimeException(e.getCause());
     }

@@ -35,8 +35,7 @@ public class SyntheseResource {
   private String description;
   private String location;
   private String url;
-  private final List<SyntheseResourceNotification> notifications =
-      new ArrayList<SyntheseResourceNotification>();
+  private final List<SyntheseResourceNotification> notifications = new ArrayList<>();
 
   public String getName() {
     return name;

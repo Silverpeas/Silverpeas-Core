@@ -21,21 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.repository;
+package com.silverpeas.notification.delayed;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.silverpeas.util.ServiceProvider;
 
-import com.silverpeas.notification.model.NotificationResourceData;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface NotificationResourceRepository extends
-    JpaRepository<NotificationResourceData, Long>, NotificationResourceRepositoryCustom {
+@Singleton
+public class DelayedNotificationProvider {
 
-  @Modifying
-  @Query("delete from NotificationResourceData r where not exists (from DelayedNotificationData d where d.resource.id = r.id)")
-  public int deleteResources();
+  private DelayedNotificationProvider() {
+    // Nothing to do
+  }
+
+  /**
+   * Delayed Notification Manager provider
+   * @return
+   */
+  public static DelayedNotification getDelayedNotification() {
+    return ServiceProvider.getService(DelayedNotification.class);
+  }
 }
