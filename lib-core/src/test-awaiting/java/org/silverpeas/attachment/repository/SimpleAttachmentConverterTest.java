@@ -57,7 +57,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static com.silverpeas.jcrutil.JcrConstants.*;
+import static org.silverpeas.jcr.util.JcrConstants.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;

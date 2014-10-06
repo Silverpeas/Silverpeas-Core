@@ -24,7 +24,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name>Silverpeas</display-name>
   <description>Collaborative portal organizer</description>
   <context-param>
@@ -343,7 +346,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository.</description>
     <servlet-name>Webdav</servlet-name>
-    <servlet-class>com.silverpeas.jcrutil.servlets.SimpleDigestWebdavServlet</servlet-class>
+    <servlet-class>org.silverpeas.webdav.SilverpeasJcrWebdavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>
@@ -359,7 +362,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository for Office 2000.</description>
     <servlet-name>BasicWebdav</servlet-name>
-    <servlet-class>com.silverpeas.jcrutil.servlets.SimpleWebdavServlet</servlet-class>
+    <servlet-class>org.silverpeas.webdav.SilverpeasJcrWebdavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>
@@ -371,11 +374,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       <param-value>/WEB-INF/classes/webdav-config.xml</param-value>
     </init-param>
     <load-on-startup>4</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>JcrInitializer</servlet-name>
-    <servlet-class>com.silverpeas.jcrutil.servlets.RepositoryAccessServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>PersoPeasRequestRouter</servlet-name>
@@ -814,10 +812,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <url-pattern>/repository2000/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>JcrInitializer</servlet-name>
-    <url-pattern>/startRepository</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>PersoPeasRequestRouter</servlet-name>
     <url-pattern>/Rpersonalization/*</url-pattern>
   </servlet-mapping>
@@ -1146,4 +1140,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </cookie-config>
     <tracking-mode>COOKIE</tracking-mode>
   </session-config>
+  <resource-env-ref>
+    <description>Content Repository</description>
+    <resource-env-ref-name>jcr/repository</resource-env-ref-name>
+    <resource-env-ref-type>javax.jcr.Repository</resource-env-ref-type>
+    <lookup-name>java:/jca/jcr</lookup-name>
+  </resource-env-ref>
 </web-app>

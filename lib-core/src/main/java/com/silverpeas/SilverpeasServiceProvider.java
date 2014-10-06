@@ -56,10 +56,6 @@ public class SilverpeasServiceProvider {
     return AttachmentServiceFactory.getAttachmentService();
   }
 
-  public static WebdavService getWebdavService() {
-    return WebdavServiceFactory.getWebdavService();
-  }
-
   private SilverpeasServiceProvider() {
   }
 }

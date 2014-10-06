@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -19,42 +19,35 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.jaas;
+package org.silverpeas.jcr.provider;
 
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.jcr.JcrRepositoryProvider;
 
-public class SilverpeasUserPrincipal implements Principal {
+import javax.annotation.Resource;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
+import javax.jcr.Repository;
 
-  private String userId;
-  private boolean administrator;
-  private Map<String, SilverpeasUserProfileEntry> entries;
+/**
+ * The default implementation of the {@code org.silverpeas.jcr.JcrRepositoryProvider} interface
+ * used in Silverpeas.
+ * <p>
+ * This implementation currently fetch by JNDI the JCR repository that in fact managed by a JCA
+ * implementation of the JCR API. By default, the repository must be available by injection under
+ * the name <i>jcr/repository</i>.
+ * </p>
+ * @author mmoquillon
+ */
+@Singleton
+public class DefaultJcrRepositoryProvider implements JcrRepositoryProvider {
 
-  public SilverpeasUserPrincipal(String userId, boolean administrator) {
-    this.userId = userId;
-    this.administrator = administrator;
-    this.entries = new HashMap<String, SilverpeasUserProfileEntry>(100);
-  }
-
-  public void addUserProfile(SilverpeasUserProfileEntry entry) {
-    entries.put(entry.getComponentId(), entry);
-  }
-
-  public SilverpeasUserProfileEntry getUserProfile(String componentId) {
-    return this.entries.get(componentId);
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public boolean isAdministrator() {
-    return this.administrator;
-  }
+  @Resource(name = "jcr/repository")
+  private Repository repository;
 
   @Override
-  public String getName() {
-    return userId;
+  @Produces
+  public Repository getRepository() {
+    return repository;
   }
+
 }

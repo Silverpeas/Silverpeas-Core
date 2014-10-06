@@ -78,7 +78,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
+import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;

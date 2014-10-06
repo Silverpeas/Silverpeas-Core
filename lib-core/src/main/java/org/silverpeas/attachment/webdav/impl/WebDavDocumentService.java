@@ -20,19 +20,20 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 import org.silverpeas.attachment.webdav.WebdavService;
+import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import java.io.IOException;
+
+import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
 
 @Named("webdavService")
 public class WebDavDocumentService implements WebdavService {
@@ -43,9 +44,7 @@ public class WebDavDocumentService implements WebdavService {
 
   @Override
   public void updateDocumentContent(SimpleDocument document) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       webdavRepository.updateAttachmentBinaryContent(session, document);
       session.save();
     } catch (RepositoryException ex) {
@@ -58,16 +57,12 @@ public class WebDavDocumentService implements WebdavService {
           .error("attachment", "WebDavDocumentService", "attachment.jcr.create.exception", ex);
       throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
           "attachment.jcr.create.exception", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public String getContentEditionLanguage(final SimpleDocument document) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return webdavRepository.getContentEditionLanguage(session, document);
     } catch (RepositoryException ex) {
       SilverTrace
@@ -75,8 +70,6 @@ public class WebDavDocumentService implements WebdavService {
               ex);
       throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
           "attachment.jcr.node.notFound.exception", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 }

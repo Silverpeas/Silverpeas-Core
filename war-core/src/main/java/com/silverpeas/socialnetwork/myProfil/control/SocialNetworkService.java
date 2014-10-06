@@ -37,6 +37,7 @@ import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.Status;
 import com.silverpeas.socialnetwork.status.StatusService;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
@@ -55,8 +56,8 @@ public class SocialNetworkService {
   /**
    * get my wall : the List of my social information according to the type of social information
    * @param type
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
@@ -66,7 +67,7 @@ public class SocialNetworkService {
     com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
 
     List<SocialInformation> socialInformationsFull =
-        new ProviderService().getSocialInformationsList(type, myId,
+        socialInformationService().getSocialInformationsList(type, myId,
         null, dEnd, dBegin);
 
     if (SocialInformationType.ALL.equals(type)) {
@@ -107,8 +108,8 @@ public class SocialNetworkService {
   /**
    * get my feed : the List of my social information and those of my contacts, according to the type of social information
    * @param type
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
@@ -121,7 +122,7 @@ public class SocialNetworkService {
     myContactIds.add(myId); // add myself
 
     List<SocialInformation> socialInformationsFull =
-        new ProviderService().getSocialInformationsListOfMyContact(type, myId,
+        socialInformationService().getSocialInformationsListOfMyContact(type, myId,
         myContactIds, dEnd, dBegin);
 
     if (SocialInformationType.ALL.equals(type)) {
@@ -135,8 +136,8 @@ public class SocialNetworkService {
    * get my contact wall : the List of social information of the contacts of user in parameter, according to the type of social information
    * @param myContactId
    * @param type
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
@@ -148,7 +149,7 @@ public class SocialNetworkService {
     List<String> myContactIds = getTheContactsIds(myContactId); // the contacts
 
     List<SocialInformation> socialInformationsFull =
-        new ProviderService().getSocialInformationsListOfMyContact(type, myId,
+        socialInformationService().getSocialInformationsListOfMyContact(type, myId,
         myContactIds, dEnd, dBegin);
 
     if (SocialInformationType.ALL.equals(type)) {
@@ -197,6 +198,10 @@ public class SocialNetworkService {
       SilverTrace.error("socialNetworkService", "SocialNetworkService.getTheContactsIds", "", ex);
     }
     return new ArrayList<String>();
+  }
+
+  private SocialInformationService socialInformationService() {
+    return ServiceProvider.getService(SocialInformationService.class);
   }
 
 }

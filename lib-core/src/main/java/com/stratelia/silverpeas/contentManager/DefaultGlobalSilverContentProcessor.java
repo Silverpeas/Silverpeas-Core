@@ -26,6 +26,9 @@ package com.stratelia.silverpeas.contentManager;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import javax.inject.Named;
+
+@Named("defaultGlobalSilverContentProcessor")
 public class DefaultGlobalSilverContentProcessor implements IGlobalSilverContentProcessor {
 
   @Override

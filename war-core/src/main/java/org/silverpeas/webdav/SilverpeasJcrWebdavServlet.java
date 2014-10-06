@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -18,17 +18,31 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.jcrutil.model;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+package org.silverpeas.webdav;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
+import org.apache.jackrabbit.server.CredentialsProvider;
+import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 
-public abstract class AbstractJcrRepository {
+import javax.inject.Inject;
+import javax.jcr.Repository;
 
-  public void addProperty(Node node, String propertyName, String value) throws RepositoryException {
-    BasicDaoFactory.addStringProperty(node, propertyName, value);
+/**
+ * A servlet taking in charge the access by WebDAV of the content of the JCR repository.
+ * @author mmoquillon
+ */
+public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
+
+  @Inject
+  private Repository repository;
+
+  @Override
+  public Repository getRepository() {
+    return repository;
   }
-  
+
+  @Override
+  protected CredentialsProvider getCredentialsProvider() {
+    return null;
+  }
 }

@@ -79,7 +79,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
+import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

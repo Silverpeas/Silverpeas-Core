@@ -24,25 +24,27 @@
 
 package com.silverpeas.socialnetwork.myProfil.control;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.calendar.Date;
-import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.provider.ProviderSwitchInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Bensalem Nabil;
  */
-public class ProviderService {
+@Singleton
+public class SocialInformationService {
 
+  @Inject
   private ProviderSwitchInterface switchInterface;
 
-  public ProviderService() {
-    switchInterface = (ProviderSwitchInterface) BasicDaoFactory.getBean("providerSwitch");
+  public SocialInformationService() {
   }
 
   /**
@@ -52,8 +54,8 @@ public class ProviderService {
    * @param socialInformationType
    * @param userId
    * @param classification
-   * @param nbElements
-   * @param firstIndex
+   * @param begin
+   * @param end
    */
 
   public List<SocialInformation> getSocialInformationsList(
@@ -77,8 +79,8 @@ public class ProviderService {
    * @param socialInformationType
    * @param myId
    * @param myContactIds
-   * @param nbElements
-   * @param firstIndex
+   * @param begin
+   * @param end
    */
 
   public List<SocialInformation> getSocialInformationsListOfMyContact(

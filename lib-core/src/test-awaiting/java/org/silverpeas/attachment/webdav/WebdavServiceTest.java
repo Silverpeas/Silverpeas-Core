@@ -35,8 +35,8 @@ import org.silverpeas.attachment.webdav.impl.WebdavDocumentRepository;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import static com.silverpeas.jcrutil.JcrConstants.SLV_OWNABLE_MIXIN;
-import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_OWNER;
+import static org.silverpeas.jcr.util.JcrConstants.SLV_OWNABLE_MIXIN;
+import static org.silverpeas.jcr.util.JcrConstants.SLV_PROPERTY_OWNER;
 import static javax.jcr.Property.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

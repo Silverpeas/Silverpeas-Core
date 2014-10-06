@@ -44,7 +44,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.silverpeas.jcrutil.JcrConstants.*;
+import static org.silverpeas.jcr.util.JcrConstants.*;
 
 @Named("webdavRepository")
 public class WebdavDocumentRepository implements WebdavRepository {

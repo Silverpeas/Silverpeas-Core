@@ -26,26 +26,12 @@ package org.silverpeas.attachment;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.annotation.Action;
-import org.silverpeas.util.annotation.TargetObject;
-import org.silverpeas.util.annotation.TargetPK;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -59,10 +45,24 @@ import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.attachment.repository.DocumentRepository;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.attachment.webdav.WebdavRepository;
+import org.silverpeas.jcr.JcrSession;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.annotation.Action;
+import org.silverpeas.util.annotation.TargetObject;
+import org.silverpeas.util.annotation.TargetPK;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -81,6 +81,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
 
 /**
  *
@@ -101,9 +103,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try (JcrSession session = openSystemSession()) {
       List<SimpleDocument> documentsToDelete =
           repository.listAllDocumentsByComponentId(session, componentInstanceId, null);
       for (SimpleDocument documentToDelete : documentsToDelete) {
@@ -113,8 +113,6 @@ public class SimpleDocumentService implements AttachmentService {
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -196,9 +194,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try (JcrSession session = openSystemSession()) {
       List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, foreignKey.
           getInstanceId(), foreignKey.getId(), I18NHelper.defaultLanguage);
       for (SimpleDocument doc : docs) {
@@ -206,16 +202,12 @@ public class SimpleDocumentService implements AttachmentService {
       }
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       SimpleDocument doc = repository.findDocumentById(session, pk, language);
       doc.setXmlFormId(xmlFormName);
       repository.updateDocument(session, doc);
@@ -224,8 +216,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -278,9 +268,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
       InputStream content, boolean indexIt, boolean invokeCallback) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
       if (invokeCallback && StringUtil.isDefined(document.getCreatedBy())) {
         CallBackManager callBackManager = CallBackManager.get();
@@ -302,8 +290,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -326,15 +312,11 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public void deleteAttachment(SimpleDocument document, boolean invokeCallback) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       deleteAttachment(session, document, invokeCallback);
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -357,9 +339,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       if (StringUtil.isDefined(primaryKey.getId()) && !StringUtil.isLong(primaryKey.getId())) {
         return repository.findDocumentById(session, primaryKey, lang);
       }
@@ -372,38 +352,28 @@ public class SimpleDocumentService implements AttachmentService {
       return doc;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
       String lang) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository.listAllDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
           getId(), lang);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
       String lang) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository.listDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
           getId(), lang);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -412,9 +382,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, boolean indexIt,
       boolean invokeCallback) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
           document.getLanguage());
       repository.fillNodeName(session, document);
@@ -444,8 +412,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -454,9 +420,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, InputStream in,
       boolean indexIt, boolean invokeCallback) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       String owner = document.getEditedBy();
       if (!StringUtil.isDefined(owner)) {
         owner = document.getUpdatedBy();
@@ -488,16 +452,12 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public void removeContent(SimpleDocument document, String lang, boolean invokeCallback) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
@@ -536,8 +496,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -550,11 +508,8 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId) {
-    Session session = null;
-    InputStream in = null;
-    try {
-      in = new FileInputStream(original.getAttachmentPath());
-      session = BasicDaoFactory.getSystemSession();
+    try (JcrSession session = openSystemSession();
+         InputStream in = new FileInputStream(original.getAttachmentPath())) {
       SimpleDocumentPK clonePk = repository.copyDocument(session, original, new ForeignPK(
           foreignCloneId, original.getInstanceId()));
       SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
@@ -566,9 +521,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      IOUtils.closeQuietly(in);
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -584,9 +536,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentPK copyDocument(@TargetObject SimpleDocument original,
       @TargetPK ForeignPK targetPk) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK copyPk;
       if (original instanceof HistorisedDocument) {
         copyPk = repository.copyDocument(session, (HistorisedDocument) original, targetPk);
@@ -606,8 +556,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -619,9 +567,7 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       int i = STEP;
       for (SimpleDocumentPK pk : pks) {
         SimpleDocument doc = repository.findDocumentById(session, pk, null);
@@ -632,8 +578,6 @@ public class SimpleDocumentService implements AttachmentService {
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -646,9 +590,7 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       int i = STEP;
       for (SimpleDocument doc : documents) {
         doc.setOrder(i);
@@ -658,8 +600,6 @@ public class SimpleDocumentService implements AttachmentService {
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -671,58 +611,40 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void getBinaryContent(final OutputStream output, final SimpleDocumentPK pk,
       final String lang, final long contentOffset, final long contentLength) {
-    Session session = null;
-    InputStream in = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
-      in = repository.getContent(session, pk, lang);
+    try (JcrSession session = openSystemSession();
+         InputStream in = repository.getContent(session, pk, lang)) {
       IOUtils.copyLarge(in, output, contentOffset, contentLength);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      IOUtils.closeQuietly(in);
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public List<SimpleDocument> listDocumentsRequiringWarning(Date alertDate, String language) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository.listDocumentsRequiringWarning(session, alertDate, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public List<SimpleDocument> listExpiringDocuments(Date expiryDate, String language) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository.listExpiringDocuments(session, expiryDate, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public List<SimpleDocument> listDocumentsToUnlock(Date expiryDate, String language) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository.listDocumentsToUnlock(session, expiryDate, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -796,9 +718,7 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public boolean unlock(UnlockContext context) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       String contentLanguage = I18NHelper.checkLanguage(context.getLang());
       SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
           context.getAttachmentId()), contentLanguage);
@@ -864,8 +784,6 @@ public class SimpleDocumentService implements AttachmentService {
     } catch (RepositoryException e) {
       throw new AttachmentException("AttachmentService.unlock()",
           SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
     return true;
   }
@@ -881,10 +799,8 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public boolean lock(String attachmentId, String userId, String language) {
-    Session session = null;
-    try {
+    try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId);
-      session = BasicDaoFactory.getSystemSession();
       SimpleDocument document = repository.findDocumentById(session, pk, language);
       if (document.isReadOnly()) {
         return document.getEditedBy().equals(userId);
@@ -901,8 +817,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -932,9 +846,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK updatedPk = repository.changeVersionState(session, pk, comment);
       session.save();
       return updatedPk;
@@ -942,8 +854,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -965,30 +875,22 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
       WAPrimaryKey foreignKey, DocumentType type, String lang) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository
           .listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
                   getId(), type, lang
           );
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
   @Override
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       return repository.listDocumentsLockedByUser(session, usedId, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -997,9 +899,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentPK moveDocument(@TargetObject SimpleDocument document,
       @TargetPK ForeignPK destination) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
       SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
       repository.moveFullContent(document, moveDoc);
@@ -1012,8 +912,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -1046,9 +944,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
       DocumentType type) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
       List<SimpleDocument> attachments = listDocumentsByForeignKeyAndType(originalForeignKey, type,
           null);
@@ -1085,8 +981,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
 
   }
@@ -1107,9 +1001,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void switchComponentBehaviour(String componentId, boolean toVersionning) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
+    try(JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
       List<SimpleDocument> attachments = repository
           .listDocumentsByComponentIdAndType(session, componentId, DocumentType.attachment,
@@ -1124,8 +1016,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 
@@ -1143,15 +1033,11 @@ public class SimpleDocumentService implements AttachmentService {
 
     // Updating JCR if required
     if (documentUpdateRequired) {
-      Session session = null;
-      try {
-        session = BasicDaoFactory.getSystemSession();
+      try(JcrSession session = openSystemSession()) {
         repository.saveForbiddenDownloadForRoles(session, document);
         session.save();
       } catch (RepositoryException ex) {
         throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-      } finally {
-        BasicDaoFactory.logout(session);
       }
     }
   }

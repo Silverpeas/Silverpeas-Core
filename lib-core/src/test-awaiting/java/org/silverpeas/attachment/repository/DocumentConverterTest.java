@@ -56,7 +56,7 @@ import java.io.Reader;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.silverpeas.jcrutil.JcrConstants.*;
+import static org.silverpeas.jcr.util.JcrConstants.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;

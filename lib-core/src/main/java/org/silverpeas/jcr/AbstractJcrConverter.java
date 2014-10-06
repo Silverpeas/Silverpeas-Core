@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.jcr;
+package org.silverpeas.jcr;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,7 +54,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
 
-import com.silverpeas.jcrutil.converter.ConverterUtil;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.FileUtil;
@@ -62,8 +61,8 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 
-import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
-import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;
+import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
+import static org.silverpeas.jcr.util.JcrConstants.SLV_PROPERTY_NAME;
 import static javax.jcr.Property.*;
 
 /**
@@ -101,7 +100,7 @@ public abstract class AbstractJcrConverter {
    */
   protected String getComponentId(Node node) throws ItemNotFoundException,
       AccessDeniedException, RepositoryException {
-    return ConverterUtil.convertFromJcrPath(node.getAncestor(1).getName());
+    return JcrDataConverter.convertFromJcrPath(node.getAncestor(1).getName());
   }
 
   /**

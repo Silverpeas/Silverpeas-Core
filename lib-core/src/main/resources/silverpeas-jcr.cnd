@@ -20,7 +20,7 @@
   - slv:forbiddenDownloadForRoles (STRING) IGNORE
 
 [slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable, slv:commentable
-  - slv:foreignKey (STRING) 
+  - slv:foreignKey (STRING)
   - slv:instanceId (STRING) MANDATORY
   - slv:versioned (BOOLEAN)  = 'false'
   - slv:public (BOOLEAN) = 'true'
@@ -64,7 +64,7 @@
   - slv:major (LONG) = '0'
   - slv:minor (LONG) = '0'
   - slv:workingCopy (BOOLEAN) = 'true'
-  + jcr:content primary  
+  + jcr:content primary
 
 /*  Document are the versionning document used in kmelia */
 [slv:document] > nt:folder, mix:referenceable
@@ -91,7 +91,7 @@
   - slv:description (STRING) /* info */
   - slv:size (LONG)
   + jcr:content primary
-  
+
 /*  Attachment are the attachment used in kmelia */
 [slv:attachment] > nt:folder, mix:referenceable, mix:versionable
   - slv:order (LONG) = '0'
@@ -120,7 +120,7 @@
   - slv:importance (LONG) = '0' mandatory
   - slv:content (STRING)
   - slv:status (STRING)
-  - slv:lang (STRING) = 'fr' mandatory  
+  - slv:lang (STRING) = 'fr' mandatory
   - slv:version (STRING)
   - slv:startDate (DATE) mandatory
   - slv:endDate (DATE) mandatory
@@ -133,20 +133,20 @@
   - slv:validators (STRING)
   - slv:deleted (BOOLEAN) = 'false'
   - slv:template (STRING) /* infoId */
-  - slv:clone (REFERENCE) < slv:publication 
+  - slv:clone (REFERENCE) < slv:publication
   - slv:translations (REFERENCE) multiple < slv:i18nPublication
 
 /* Links between a Node and its publications */
 [slv:link] > nt:folder, mix:referenceable
   - slv:creationDate (DATE)
-  - slv:author (LONG) 
+  - slv:author (LONG)
   - slv:type (STRING) mandatory
   - slv:publication (REFERENCE) < slv:publication
 
 [slv:i18nTheme] > nt:folder, mix:referenceable
   - slv:name (STRING) mandatory
   - slv:description (STRING)
-  - slv:lang (STRING) = 'fr' mandatory  
+  - slv:lang (STRING) = 'fr' mandatory
 
 /*  Nodes are the themes used in kmelia */
 [slv:theme] > nt:folder, mix:referenceable
@@ -164,11 +164,11 @@
 /*  Kmelia instance node */
 [slv:kmelia] > nt:folder, mix:referenceable
   + * (nt:folder)
-  
+
   /*  Blog instance node */
 [slv:blog] > nt:folder, mix:referenceable
   + * (nt:folder)
-  
+
 /* Quick Info instance node */
 [slv:quickInfo] > nt:folder, mix:referenceable
   + * (nt:folder)
@@ -176,19 +176,19 @@
 /* News Edito instance node */
 [slv:newsEdito] > nt:folder, mix:referenceable
   + * (nt:folder)
-  
+
 /* Forum instance node */
 [slv:forum] > nt:folder, mix:referenceable
   + * (nt:folder)
-  
+
 /* Gallery instance node */
 [slv:gallery] > nt:folder, mix:referenceable
   + * (nt:folder)
-  
+
 /* Question/Reply instance node */
 [slv:questionReply] > nt:folder, mix:referenceable
   + * (nt:folder)
-  
+
 /* WebSites instance node */
 [slv:webSites] > nt:folder, mix:referenceable
   + * (nt:folder)

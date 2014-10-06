@@ -20,6 +20,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -31,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -75,26 +77,10 @@ public class LaunchWebdavEdition extends HttpServlet {
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
       }
-      String login = mainSessionController.getCurrentUserDetail().getLogin();
-      String password = (String) request.getSession().getAttribute("Silverpeas_pwdForHyperlink");
-      String encPassword = "";
-      if (StringUtil.isDefined(password)) {
-        Cipher cipher = Cipher.getInstance(ALGORITHME);
-        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(KEY, ALGORITHME));
-        byte[] cipherText = cipher.doFinal(password.getBytes(CharEncoding.UTF_8));
-        encPassword = toHex(cipherText);
-      }
-      prepareJNLP(request, out, login, encPassword);
-    } catch (NoSuchAlgorithmException ex) {
-      throw new ServletException(ex);
-    } catch (NoSuchPaddingException ex) {
-      throw new ServletException(ex);
-    } catch (InvalidKeyException ex) {
-      throw new ServletException(ex);
-    } catch (IllegalBlockSizeException ex) {
-      throw new ServletException(ex);
-    } catch (BadPaddingException ex) {
-      throw new ServletException(ex);
+      UserDetail user = mainSessionController.getCurrentUserDetail();
+      String userID = user.getLogin() + "@ " + user.getDomainId();
+      String encodedUserID = StringUtil.asBase64(userID.getBytes("UTF-8"));
+      prepareJNLP(request, out, user.getLogin(), encodedUserID);
     } finally {
       out.close();
     }
@@ -117,7 +103,8 @@ public class LaunchWebdavEdition extends HttpServlet {
   }
 
   private void prepareJNLP(HttpServletRequest request, PrintWriter out, String login,
-      String password) throws UnsupportedEncodingException {
+      String encodedUserID)
+      throws UnsupportedEncodingException {
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     out.print("<jnlp spec=\"1.0+\" codebase=\"");
     out.print(URLManager.getServerURL(request));
@@ -153,7 +140,7 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<jar href=\"log4j-1.2.17.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xml-apis-1.4.01.jar\" download=\"eager\"/>");
     out.println("\t</resources>");
-    out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.Launcher\">");
+    out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.OfficeOnline\">");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(request.getParameter("documentUrl"), CharEncoding.UTF_8));
     out.println("</argument>");
@@ -162,16 +149,14 @@ public class LaunchWebdavEdition extends HttpServlet {
         CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(resources.getBoolean("deconnectedMode", false));
+    out.print(login);
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
+    out.print(encodedUserID);
     out.println("</argument>");
-    if (StringUtil.isDefined(password)) {
-      out.print("\t\t<argument>");
-      out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
-      out.println("</argument>");
-    }
+    out.print("\t\t<argument>");
+    out.print(resources.getBoolean("disconnectedMode", false));
+    out.println("</argument>");
     out.println("\t</application-desc>");
     out.println(" </jnlp>");
   }

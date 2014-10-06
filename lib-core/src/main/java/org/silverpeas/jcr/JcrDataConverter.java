@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.jcrutil.converter;
+package org.silverpeas.jcr;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -35,12 +35,12 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.DateUtil;
 
 /**
- * Utility class for path and date conversions between JCR and Slverpeas Pojo.
+ * A converter of some data handled in the JCR, such as node paths and dates.
+ * It converts the data from and fro the JCR world and the Silverpeas wrld.
  *
  * @author Emmanuel Hugonnet
- * @version $revision$
  */
-public class ConverterUtil {
+public class JcrDataConverter {
 
   /**
    * Token used to replace space in names.

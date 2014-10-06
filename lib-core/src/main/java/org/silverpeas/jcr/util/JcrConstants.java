@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -19,14 +19,13 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.jcrutil;
+package org.silverpeas.jcr.util;
 
 import javax.jcr.Property;
 
 /**
- * Constants used in Silverpeas JCR implementation.
+ * JCR Properties required by the Silverpeas use of the JCR repository.
  * @author Emmanuel Hugonnet
- * @version $revision$
  */
 public interface JcrConstants extends Property {
 

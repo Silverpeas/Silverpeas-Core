@@ -73,7 +73,7 @@ import com.silverpeas.util.PathTestUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
 
-import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
+import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 

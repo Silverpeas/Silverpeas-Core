@@ -25,13 +25,11 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
-import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.pdc.web.AxisValueCriterion;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerInterface;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
@@ -66,9 +64,18 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAAttributeValuePair;
 import org.silverpeas.util.exception.UtilException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,12 +84,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
-import org.silverpeas.servlet.HttpRequest;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
@@ -1392,12 +1393,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       throws Exception {
     List<GlobalSilverContent> alSilverContents =
         new ArrayList<GlobalSilverContent>(silverContentTempo.size());
-    String contentProcessorId = "default";
+    String contentProcessorId = "defaultGlobalSilverContentProcessor";
     if (instanceId.startsWith("gallery")) {
-      contentProcessorId = "gallery";
+      contentProcessorId = "galleryGlobalSilverContentProcessor";
     }
-    IGlobalSilverContentProcessor processor =
-        (IGlobalSilverContentProcessor) BasicDaoFactory.getBean(contentProcessorId);
+    IGlobalSilverContentProcessor processor = ServiceProvider.getService(contentProcessorId);
 
     for (SilverContentInterface sci : silverContentTempo) {
       UserDetail creatorDetail = pdcSC.getOrganisationController().getUserDetail(sci.getCreatorId());

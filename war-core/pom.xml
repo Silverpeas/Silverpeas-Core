@@ -74,6 +74,14 @@
     </dependency>
     -->
     <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-webdav</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
       <scope>provided</scope>
@@ -236,6 +244,9 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <jackrabbit>deployment.jackrabbit-jca-2.8.0.rar</jackrabbit>
+  </properties>
   <build>
     <finalName>war-core</finalName>
     <testResources>
@@ -254,6 +265,12 @@
         <filtering>false</filtering>
       </testResource>
     </testResources>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

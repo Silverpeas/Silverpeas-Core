@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 import org.junit.Test;
+import org.silverpeas.jcr.JcrDataConverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -33,44 +34,44 @@ public class TestConverterUtil {
 
   @Test
   public void testConvertToJcrPath() {
-    assertEquals("/", ConverterUtil.convertToJcrPath("/"));
-    assertEquals("/toto", ConverterUtil.convertToJcrPath("/toto"));
-    assertEquals("/theme__test", ConverterUtil.convertToJcrPath("/theme test"));
-    assertEquals("/theme__test/sous__theme__test", ConverterUtil.convertToJcrPath(
-        "/theme test/sous theme test"));
-    assertEquals("/theme__test%7C", ConverterUtil.convertToJcrPath("/theme test|"));
-    assertEquals("/theme__test%09", ConverterUtil.convertToJcrPath("/theme test\t"));
-    assertEquals("/theme__test%0D", ConverterUtil.convertToJcrPath("/theme test\r"));
-    assertEquals("/theme__test%0A", ConverterUtil.convertToJcrPath("/theme test\n"));
-    assertEquals("t%2E", ConverterUtil.convertToJcrPath("t."));
-    assertEquals("theme.", ConverterUtil.convertToJcrPath("theme."));
-    assertEquals("/theme%2A", ConverterUtil.convertToJcrPath("/theme*"));
-    assertEquals("/theme__%5Btest%5D", ConverterUtil.convertToJcrPath("/theme [test]"));
-    assertEquals("/theme\"", ConverterUtil.convertToJcrPath("/theme\""));
-    assertEquals("/theme'", ConverterUtil.convertToJcrPath("/theme'"));
-    assertEquals("/theme__20%25", ConverterUtil.convertToJcrPath("/theme 20%"));
-    assertEquals("/theme%3Atest", ConverterUtil.convertToJcrPath("/theme:test"));
+    assertEquals("/", JcrDataConverter.convertToJcrPath("/"));
+    assertEquals("/toto", JcrDataConverter.convertToJcrPath("/toto"));
+    assertEquals("/theme__test", JcrDataConverter.convertToJcrPath("/theme test"));
+    assertEquals("/theme__test/sous__theme__test", JcrDataConverter
+        .convertToJcrPath("/theme test/sous theme test"));
+    assertEquals("/theme__test%7C", JcrDataConverter.convertToJcrPath("/theme test|"));
+    assertEquals("/theme__test%09", JcrDataConverter.convertToJcrPath("/theme test\t"));
+    assertEquals("/theme__test%0D", JcrDataConverter.convertToJcrPath("/theme test\r"));
+    assertEquals("/theme__test%0A", JcrDataConverter.convertToJcrPath("/theme test\n"));
+    assertEquals("t%2E", JcrDataConverter.convertToJcrPath("t."));
+    assertEquals("theme.", JcrDataConverter.convertToJcrPath("theme."));
+    assertEquals("/theme%2A", JcrDataConverter.convertToJcrPath("/theme*"));
+    assertEquals("/theme__%5Btest%5D", JcrDataConverter.convertToJcrPath("/theme [test]"));
+    assertEquals("/theme\"", JcrDataConverter.convertToJcrPath("/theme\""));
+    assertEquals("/theme'", JcrDataConverter.convertToJcrPath("/theme'"));
+    assertEquals("/theme__20%25", JcrDataConverter.convertToJcrPath("/theme 20%"));
+    assertEquals("/theme%3Atest", JcrDataConverter.convertToJcrPath("/theme:test"));
   }
 
   @Test
   public void testConvertFromJcrPath() {
-    assertEquals("/", ConverterUtil.convertFromJcrPath("/"));
-    assertEquals("/toto", ConverterUtil.convertFromJcrPath("/toto"));
-    assertEquals("/theme test", ConverterUtil.convertFromJcrPath("/theme__test"));
-    assertEquals("/theme test/sous theme test", ConverterUtil.convertFromJcrPath(
-        "/theme__test/sous__theme__test"));
-    assertEquals("/theme test|", ConverterUtil.convertFromJcrPath("/theme__test%7C"));
-    assertEquals("/theme test\t", ConverterUtil.convertFromJcrPath("/theme__test%09"));
-    assertEquals("/theme test\r", ConverterUtil.convertFromJcrPath("/theme__test%0D"));
-    assertEquals("/theme test\n", ConverterUtil.convertFromJcrPath("/theme__test%0A"));
-    assertEquals("t.", ConverterUtil.convertFromJcrPath("t%2E"));
-    assertEquals("theme.", ConverterUtil.convertFromJcrPath("theme."));
-    assertEquals("/theme*", ConverterUtil.convertFromJcrPath("/theme%2A"));
-    assertEquals("/theme [test]", ConverterUtil.convertFromJcrPath("/theme__%5Btest%5D"));
-    assertEquals("/theme\"", ConverterUtil.convertFromJcrPath("/theme%22"));
-    assertEquals("/theme'", ConverterUtil.convertFromJcrPath("/theme%27"));
-    assertEquals("/theme 20%", ConverterUtil.convertFromJcrPath("/theme__20%25"));
-    assertEquals("/theme:test", ConverterUtil.convertFromJcrPath("/theme%3Atest"));
+    assertEquals("/", JcrDataConverter.convertFromJcrPath("/"));
+    assertEquals("/toto", JcrDataConverter.convertFromJcrPath("/toto"));
+    assertEquals("/theme test", JcrDataConverter.convertFromJcrPath("/theme__test"));
+    assertEquals("/theme test/sous theme test", JcrDataConverter
+        .convertFromJcrPath("/theme__test/sous__theme__test"));
+    assertEquals("/theme test|", JcrDataConverter.convertFromJcrPath("/theme__test%7C"));
+    assertEquals("/theme test\t", JcrDataConverter.convertFromJcrPath("/theme__test%09"));
+    assertEquals("/theme test\r", JcrDataConverter.convertFromJcrPath("/theme__test%0D"));
+    assertEquals("/theme test\n", JcrDataConverter.convertFromJcrPath("/theme__test%0A"));
+    assertEquals("t.", JcrDataConverter.convertFromJcrPath("t%2E"));
+    assertEquals("theme.", JcrDataConverter.convertFromJcrPath("theme."));
+    assertEquals("/theme*", JcrDataConverter.convertFromJcrPath("/theme%2A"));
+    assertEquals("/theme [test]", JcrDataConverter.convertFromJcrPath("/theme__%5Btest%5D"));
+    assertEquals("/theme\"", JcrDataConverter.convertFromJcrPath("/theme%22"));
+    assertEquals("/theme'", JcrDataConverter.convertFromJcrPath("/theme%27"));
+    assertEquals("/theme 20%", JcrDataConverter.convertFromJcrPath("/theme__20%25"));
+    assertEquals("/theme:test", JcrDataConverter.convertFromJcrPath("/theme%3Atest"));
   }
   @Test
   public void testParseDate() throws Exception {
@@ -82,9 +83,9 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals(calend.getTime(), ConverterUtil.parseDate("1986/02/17"));
+    assertEquals(calend.getTime(), JcrDataConverter.parseDate("1986/02/17"));
     try {
-      ConverterUtil.parseDate("1986/15/17");
+      JcrDataConverter.parseDate("1986/15/17");
       fail();
     } catch (ParseException pex) {
     }
@@ -100,11 +101,11 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("1986/02/17", ConverterUtil.formatDate(calend.getTime()));
+    assertEquals("1986/02/17", JcrDataConverter.formatDate(calend.getTime()));
     calend.set(Calendar.MINUTE, 10);
-    assertEquals("1986/02/17", ConverterUtil.formatDate(calend.getTime()));
+    assertEquals("1986/02/17", JcrDataConverter.formatDate(calend.getTime()));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("1986/12/17", ConverterUtil.formatDate(calend.getTime()));
+    assertEquals("1986/12/17", JcrDataConverter.formatDate(calend.getTime()));
   }
 
   @Test
@@ -117,11 +118,11 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("1986/02/17", ConverterUtil.formatDate(calend));
+    assertEquals("1986/02/17", JcrDataConverter.formatDate(calend));
     calend.set(Calendar.MINUTE, 10);
-    assertEquals("1986/02/17", ConverterUtil.formatDate(calend));
+    assertEquals("1986/02/17", JcrDataConverter.formatDate(calend));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("1986/12/17", ConverterUtil.formatDate(calend));
+    assertEquals("1986/12/17", JcrDataConverter.formatDate(calend));
   }
 
   @Test
@@ -134,11 +135,11 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("08:15", ConverterUtil.formatTime(calend));
+    assertEquals("08:15", JcrDataConverter.formatTime(calend));
     calend.set(Calendar.MINUTE, 5);
-    assertEquals("08:05", ConverterUtil.formatTime(calend));
+    assertEquals("08:05", JcrDataConverter.formatTime(calend));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("08:05", ConverterUtil.formatTime(calend));
+    assertEquals("08:05", JcrDataConverter.formatTime(calend));
   }
 
   @Test
@@ -151,11 +152,11 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("08:15", ConverterUtil.formatTime(calend.getTime()));
+    assertEquals("08:15", JcrDataConverter.formatTime(calend.getTime()));
     calend.set(Calendar.MINUTE, 5);
-    assertEquals("08:05", ConverterUtil.formatTime(calend.getTime()));
+    assertEquals("08:05", JcrDataConverter.formatTime(calend.getTime()));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("08:05", ConverterUtil.formatTime(calend.getTime()));
+    assertEquals("08:05", JcrDataConverter.formatTime(calend.getTime()));
   }
 
   @Test
@@ -176,15 +177,15 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    ConverterUtil.setTime(calend, "09:05");
+    JcrDataConverter.setTime(calend, "09:05");
     assertEquals(reference, calend);
     calend.set(Calendar.HOUR_OF_DAY, 8);
     calend.set(Calendar.MINUTE, 15);
-    ConverterUtil.setTime(calend, "9:05");
+    JcrDataConverter.setTime(calend, "9:05");
     assertEquals(reference, calend);
     calend.set(Calendar.HOUR_OF_DAY, 8);
     calend.set(Calendar.MINUTE, 15);
-    ConverterUtil.setTime(calend, "9:5");
+    JcrDataConverter.setTime(calend, "9:5");
     assertEquals(reference, calend);
   }
 
@@ -198,13 +199,13 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", ConverterUtil.
+    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MINUTE, 5);
-    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", ConverterUtil.
+    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil.
+    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
   }
 
@@ -218,13 +219,13 @@ public class TestConverterUtil {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", ConverterUtil.
+    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MINUTE, 5);
-    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", ConverterUtil.
+    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil.
+    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
   }
 }

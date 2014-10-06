@@ -66,7 +66,7 @@ import java.util.Date;
 
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
+import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 

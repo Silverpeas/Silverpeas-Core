@@ -31,7 +31,7 @@ import java.util.Date;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
-import com.silverpeas.jcrutil.converter.ConverterUtil;
+import org.silverpeas.jcr.JcrDataConverter;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
 
@@ -245,7 +245,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
       jcrPath.append(getDocumentPK().getId()).append('/');
     }
     jcrPath.append(majorNumber).append(".").append(minorNumber).append('/');
-    jcrPath.append(ConverterUtil.escapeIllegalJcrChars(getLogicalName()));
+    jcrPath.append(JcrDataConverter.escapeIllegalJcrChars(getLogicalName()));
     return jcrPath.toString();
   }
 

@@ -23,14 +23,7 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -39,8 +32,16 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.util.jcr.NodeIterable;
-import org.silverpeas.util.jcr.PropertyIterable;
+import org.silverpeas.jcr.JcrRepositoryConnector;
+import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.jcr.util.NodeIterable;
+import org.silverpeas.jcr.util.PropertyIterable;
 
 import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
@@ -74,7 +75,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.silverpeas.jcrutil.JcrConstants.*;
+import static org.silverpeas.jcr.util.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
 /**
@@ -89,12 +90,9 @@ public class DocumentRepository {
 
   public void prepareComponentAttachments(String instanceId, String folder) throws
       RepositoryException {
-    Session session = BasicDaoFactory.getSystemSession();
-    try {
+    try (JcrSession session = JcrRepositoryConnector.openSystemSession()) {
       prepareComponentAttachments(session, instanceId, folder);
       session.save();
-    } finally {
-      BasicDaoFactory.logout(session);
     }
   }
 

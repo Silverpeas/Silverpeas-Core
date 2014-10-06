@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.silverpeas.jcrutil.JcrConstants.*;
+import static org.silverpeas.jcr.util.JcrConstants.*;
 import static javax.jcr.Property.JCR_CONTENT;
 import static javax.jcr.Property.JCR_DATA;
 import static javax.jcr.Property.JCR_ENCODING;

@@ -22,10 +22,9 @@ package org.silverpeas.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import org.apache.commons.codec.binary.Hex;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,6 +35,7 @@ import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -255,7 +255,7 @@ public class StringUtil extends StringUtils {
    * {@link javax.mail.internet.InternetAddress} <li>when parsed with "
    *
    * @" as delimiter, <tt>aEmailAddress</tt> contains two tokens which satisfy
-   * {@link hirondelle.web4j.util.Util#textHasContent}. </ul> <P> The second condition arises since
+   * </ul> <P> The second condition arises since
    * local email addresses, simply of the form "<tt>albert</tt>", for example, are valid for
    * {@link javax.mail.internet.InternetAddress}, but almost always undesired.
    *
@@ -446,7 +446,7 @@ public class StringUtil extends StringUtils {
    * @return a String representation of the binary data in Base64 characters.
    */
   public static String asBase64(byte[] binaryData) {
-    return Base64.encodeBase64String(binaryData);
+    return Base64.getEncoder().encodeToString(binaryData);
   }
 
   /**
@@ -456,7 +456,7 @@ public class StringUtil extends StringUtils {
    * @return the binary representation of the text.
    */
   public static byte[] fromBase64(String base64Text) {
-    return Base64.decodeBase64(base64Text);
+    return Base64.getDecoder().decode(base64Text);
   }
 
   /**
