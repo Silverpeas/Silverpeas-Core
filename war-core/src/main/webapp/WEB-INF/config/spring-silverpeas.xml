@@ -83,7 +83,7 @@
   <ctx:component-scan base-package="com.silverpeas.thumbnail"/>
   <ctx:component-scan base-package="org.silverpeas.thumbnail"/>
   <ctx:component-scan base-package="org.silverpeas.rating"/>
-  <ctx:component-scan base-package="org.silverpeas.persistence"/>
+  <!-- YCH <ctx:component-scan base-package="org.silverpeas.persistence"/>-->
   <ctx:component-scan base-package="org.silverpeas.mylinks"/>
   <ctx:component-scan base-package="org.silverpeas.language"/>
   <ctx:component-scan base-package="org.silverpeas.preferences"/>

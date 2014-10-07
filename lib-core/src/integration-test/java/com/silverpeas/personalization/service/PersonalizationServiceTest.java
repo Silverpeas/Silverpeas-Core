@@ -39,11 +39,10 @@ import com.silverpeas.personalization.dao.PersonalizationMatcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.test.LibCoreIntegrationTestConfigurator;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -51,7 +50,6 @@ import javax.sql.DataSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.silverpeas.test.ShrinkWrapUtil.*;
 
 /**
  * @author Yohann Chastagnier
@@ -92,13 +90,24 @@ public class PersonalizationServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    JavaArchive testJar = getMinimalTestJar().addPackages(true, "com.silverpeas.personalization");
-    applyBasicUtils(testJar);
-    applyPersistence(testJar);
-    applyBundle(testJar);
-    WebArchive testWar = getMinimalTestWar().addAsLibraries(testJar).addAsResource(
-        "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings.properties");
-    return applyManualCDI(testWar);
+    return LibCoreIntegrationTestConfigurator
+        // Initializing the configuration
+        .initialize()
+            // Configuring JAR library
+        .onJar()
+            // Adding Persistence
+        .addPersistenceFeatures()
+            // Tested packages / classes
+        .apply(
+            (context) -> context.getContainer().addPackages(true, "com.silverpeas.personalization"))
+            // Configuring WAR archive
+        .onWar()
+            // Tested resources
+        .apply((context) -> context.getContainer().addAsResource(
+            "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings" +
+                ".properties"))
+            // Builds the final WAR
+        .buildWar();
   }
 
 

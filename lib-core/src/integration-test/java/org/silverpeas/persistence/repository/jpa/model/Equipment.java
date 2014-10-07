@@ -29,56 +29,42 @@ import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
 @Entity
-@Table(name = "test_persons")
-@NamedQuery(name = "getPersonsByName", query = "from Person p where p.lastName = :name")
-public class Person extends AbstractJpaEntity<Person, UuidIdentifier> {
+@Table(name = "test_equipments")
+public class Equipment extends AbstractJpaEntity<Equipment, UuidIdentifier> implements
+    Serializable {
 
-  @Column(name = "firstName", nullable = false)
-  @NotNull
-  private String firstName;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-  @Column(name = "lastName", nullable = false)
-  @NotNull
-  private String lastName;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "animalId", referencedColumnName = "id", nullable = false)
+  private Animal animal;
 
-  @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
-  private List<Animal> animals;
-
-  public String getFirstName() {
-    return firstName;
+  public String getName() {
+    return name;
   }
 
-  public Person setFirstName(final String firstName) {
-    this.firstName = firstName;
+  public Equipment setName(final String name) {
+    this.name = name;
     return this;
   }
 
-  public String getLastName() {
-    return lastName;
+  public Animal getAnimal() {
+    return animal;
   }
 
-  public Person setLastName(final String lastName) {
-    this.lastName = lastName;
-    return this;
-  }
-
-  public List<Animal> getAnimals() {
-    return animals;
-  }
-
-  public Person setAnimals(final List<Animal> animals) {
-    this.animals = animals;
+  public Equipment setAnimal(final Animal animal) {
+    this.animal = animal;
     return this;
   }
 }

@@ -23,15 +23,23 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
+import com.ninja_squad.dbsetup.Operations;
+import com.ninja_squad.dbsetup.operation.Operation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.AnimalType;
 import org.silverpeas.persistence.repository.jpa.model.Equipment;
 import org.silverpeas.persistence.repository.jpa.model.Person;
+import org.silverpeas.test.LibCoreIntegrationTestConfigurator;
+import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -55,34 +63,94 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
+@RunWith(Arquillian.class)
 public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
 
   private JpaEntityServiceTest jpaEntityServiceTest;
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    DBUtil.getInstanceForTest(getDataSource().getConnection());
-    jpaEntityServiceTest = getApplicationContext().getBean(JpaEntityServiceTest.class);
-  }
+  public static final Operation TABLES_CREATION = Operations
+      .sql("CREATE TABLE IF NOT EXISTS test_persons ( id VARCHAR(40) PRIMARY KEY NOT NULL, " +
+              "firstName VARCHAR(30) NOT NULL, lastName VARCHAR(30) NOT NULL, " +
+              "createDate TIMESTAMP NOT NULL, createdBy VARCHAR(40) NOT NULL, " +
+              "lastUpdateDate TIMESTAMP NOT NULL, lastUpdatedBy VARCHAR(40) NOT NULL, " +
+              "version INT8 NOT NULL)",
+          "CREATE TABLE IF NOT EXISTS test_animals ( id INT8 PRIMARY KEY NOT NULL, " +
+              "personId VARCHAR(40) NOT NULL, type VARCHAR(10) NOT NULL, " +
+              "name VARCHAR(30) NOT NULL, " +
+              "createDate TIMESTAMP NOT NULL, createdBy VARCHAR(40) NOT NULL, " +
+              "lastUpdateDate TIMESTAMP NOT NULL, lastUpdatedBy VARCHAR(40) NOT NULL, " +
+              "version INT8 NOT NULL" +
+              " )",
+          "CREATE TABLE IF NOT EXISTS test_equipments ( id VARCHAR(40) PRIMARY KEY NOT NULL, " +
+              "animalId INT8 NOT NULL, name VARCHAR(30) NOT NULL, createDate TIMESTAMP NOT NULL, " +
+              "createdBy VARCHAR(40) NOT NULL, lastUpdateDate TIMESTAMP NOT NULL, " +
+              "lastUpdatedBy VARCHAR(40) NOT NULL, version INT8 NOT NULL" +
+              " )", "CREATE TABLE IF NOT EXISTS uniqueId ( maxId INT NOT NULL, " +
+              "tableName VARCHAR(100) NOT NULL" +
+              " )");
+  public static final Operation CLEAN_UP =
+      Operations.deleteAllFrom("test_persons", "test_animals", "test_equipments", "uniqueId");
+  public static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
+      .columns("id", "firstName", "lastName", "createDate", "createdBy", "lastUpdateDate",
+          "lastUpdatedBy", "version")
+      .values("person_1", "Yohann", "Chastagnier", "2013-11-21 09:57:30.003", "1",
+          "2013-11-21 09:57:30.003", "1", 0L)
+      .values("person_2", "Nicolas", "Eysseric", "2013-11-21 09:57:30.003", "1",
+          "2013-11-21 09:57:30.003", "1", 0L)
+      .values("person_3", "Miguel", "Moquillon", "2013-11-21 09:57:30.003", "2",
+          "2013-11-22 22:00:50.006", "10", 3L)
+      .values("person_1000", "firstName", "lastName", "2013-11-21 09:57:30.003", "1",
+          "2013-11-21 09:57:30.003", "1", 0L)
+      .values("person_1001", "firstName", "lastName", "2013-11-21 09:57:30.003", "1",
+          "2013-11-21 09:57:30.003", "1", 0L).build();
+  public static final Operation ANIMAL_SET_UP = Operations.insertInto("test_animals")
+      .columns("id", "type", "name", "personId", "createDate", "createdBy", "lastUpdateDate",
+          "lastUpdatedBy", "version")
+      .values(1L, "cat", "Blacky", "person_1", "2013-11-21 09:57:30.003", "1",
+          "2013-11-22 22:00:50.006", "2", 2L)
+      .values(2L, "dog", "Bagels", "person_2", "2013-11-21 09:57:30.003", "10",
+          "2013-11-21 09:57:30.003", "10", 0L)
+      .values(3L, "bird", "Titi", "person_2", "2013-11-21 09:57:30.003", "10",
+          "2013-11-21 09:57:30.003", "10", 0L)
+      .values(1000L, "type", "name", "person_1000", "2013-11-21 09:57:30.003", "10",
+          "2013-11-21 09:57:30.003", "10", 0L)
+      .values(1001L, "type", "name", "person_1001", "2013-11-21 09:57:30.003", "10",
+          "2013-11-21 09:57:30.003", "10", 0L).build();
+  public static final Operation EQUIPEMENT_SET_UP = Operations.insertInto("test_equipments")
+      .columns("id", "name", "animalId", "createDate", "createdBy", "lastUpdateDate",
+          "lastUpdatedBy", "version")
+      .values("equipment_1", "necklace", 2L, "2013-11-21 09:57:30.003", "1",
+          "2013-11-22 22:00:50.006", "2", 10L).build();
+  public static final Operation UNIQUE_ID_SET_UP =
+      Operations.insertInto("UniqueId").columns("maxId", "tableName").values(9, "test_animals")
+          .build();
 
   @Override
-  public void tearDown() throws Exception {
-    try {
-      super.tearDown();
-    } finally {
-      DBUtil.clearTestInstance();
-    }
+  protected Operation getDbSetupOperations() {
+    return Operations
+        .sequenceOf(TABLES_CREATION, CLEAN_UP, PERSON_SET_UP, ANIMAL_SET_UP, EQUIPEMENT_SET_UP,
+            UNIQUE_ID_SET_UP);
   }
 
-  @Override
-  public String[] getApplicationContextPath() {
-    return new String[]{"/spring-persistence.xml", "/spring-persistence-embedded-datasource.xml"};
+  @Before
+  public void setup() {
+    jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
   }
 
-  @Override
-  public String getDataSetPath() {
-    return "org/silverpeas/persistence/persistence-dataset.xml";
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return LibCoreIntegrationTestConfigurator
+        // Initializing the configuration
+        .initialize()
+            // Configuring full Web Archive
+        .onWar()
+            // Adding Persistence
+        .addPersistenceFeatures()
+            // Tested packages / classes
+        .apply((context) -> context.getContainer()
+            .addPackages(true, "org.silverpeas.persistence.repository.jpa"))
+            // Builds the final WAR
+        .buildWar();
   }
 
   @Test
@@ -358,6 +426,40 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
           new Person().setFirstName("FirstName_" + i).setLastName("LastName_" + i)
               .setCreatedBy("38").setLastUpdatedBy("not_registred_I_hope"),
           new Person().setFirstName("FirstName#" + i).setLastName("LastName#" + i)
+              .setCreatedBy("69").setLastUpdatedBy("not_registred_I_hope"));
+    }
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(106));
+  }
+
+  @Test
+  public void savePersonWithIdSetManually() {
+    Person newPerson =
+        new Person().setId("id_that_will_be_changed").setFirstName("Aurore").setLastName("Allibe")
+            .setCreatedBy("200").setLastUpdatedBy("not_registred_I_hope");
+    assertThat(newPerson.getVersion(), is(0L));
+    assertThat(newPerson.getId(), is("id_that_will_be_changed"));
+    Person personSaveResult = jpaEntityServiceTest.save(createOperationContext("400"), newPerson);
+    assertThat(personSaveResult, not(sameInstance(newPerson)));
+    assertThat(newPerson.getId(), notNullValue());
+    Person personCreated = jpaEntityServiceTest.getPersonById(newPerson.getId());
+    assertThat(personCreated, nullValue());
+    personCreated = jpaEntityServiceTest.getPersonById(personSaveResult.getId());
+    assertThat(personCreated, notNullValue());
+    assertThat(personCreated, not(sameInstance(newPerson)));
+    assertThat(personCreated, is(personCreated));
+    assertThat(personCreated.getCreatedBy(), is("400"));
+    assertThat(newPerson.getCreateDate(), nullValue());
+    assertThat(personCreated.getCreateDate(), is(personSaveResult.getCreateDate()));
+    assertThat(personCreated.getLastUpdatedBy(), is(personCreated.getCreatedBy()));
+    assertThat(personCreated.getLastUpdateDate(), is(personCreated.getCreateDate()));
+    assertThat(personCreated.getVersion(), is(0L));
+    assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
+
+    for (int i = 0; i < 50; i++) {
+      jpaEntityServiceTest.save(createOperationContext("26"),
+          new Person().setFirstName("FirstName_" + i).setLastName("LastName_" + i)
+              .setCreatedBy("38").setLastUpdatedBy("not_registred_I_hope"),
+          new Person().setFirstName("FirstName#" + i).setLastName("LastName#" + i)
               .setCreatedBy("69").setLastUpdatedBy("not_registred_I_hope")
       );
     }
@@ -608,8 +710,8 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
 
   /**
    * Create a user.
-   * @param userId
-   * @return
+   * @param userId the identifier of the user to create.
+   * @return the created user.
    */
   private static UserDetail createUser(String userId) {
     UserDetail user = new UserDetail();
@@ -618,9 +720,9 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
   }
 
   /**
-   * Create a user.
-   * @param userId
-   * @return
+   * Create an operation context.
+   * @param userId the identifier of the user behind the operation/
+   * @return the context of the operation.
    */
   private static OperationContext createOperationContext(String userId) {
     return OperationContext.fromUser(createUser(userId));

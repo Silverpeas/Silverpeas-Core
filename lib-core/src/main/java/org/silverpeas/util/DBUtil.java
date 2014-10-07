@@ -20,8 +20,9 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.util.pool.ConnectionPool;
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.util.pool.ConnectionPool;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -119,20 +120,25 @@ public class DBUtil {
    * @return a unique id.
    * @throws java.sql.SQLException
    */
-  public static int getNextId(String tableName, String idName) throws SQLException {
-    Connection connection = null;
-    try {
-      connection = openConnection();
-      connection.setAutoCommit(false);
-      return getNextId(connection, tableName, idName);
-    } catch (SQLException ex) {
-      if (connection != null) {
-        rollback(connection);
-      }
-      throw ex;
-    } finally {
-      close(connection);
+  public static int getNextId(final String tableName, final String idName) throws SQLException {
+    //noinspection RedundantCast
+    final Pair<Integer, SQLException> result =
+        Transaction.performInNew((Transaction.Process<Pair<Integer, SQLException>>) () -> {
+          Connection connection = null;
+          try {
+            connection = openConnection();
+            return Pair.of(getNextId(connection, tableName, idName), null);
+          } catch (SQLException ex) {
+            return Pair.of(null, ex);
+          } finally {
+            close(connection);
+          }
+        });
+    //noinspection ThrowableResultOfMethodCallIgnored
+    if (result.getRight() != null) {
+      throw result.getRight();
     }
+    return result.getLeft();
   }
 
   /**
@@ -143,19 +149,17 @@ public class DBUtil {
    * @return a unique id.
    * @throws SQLException
    */
-  protected static int getNextId(Connection connection, String tableName, String idName)
-      throws SQLException {
+  private static int getNextId(Connection connection, String tableName, String idName)
+  throws SQLException {
     return getMaxId(connection, tableName, idName);
   }
 
-  protected static int getMaxId(Connection connection, String tableName, String idName)
-      throws SQLException {
+  private static int getMaxId(Connection connection, String tableName, String idName)
+  throws SQLException {
     // tentative d'update
     try {
-      int max = updateMaxFromTable(connection, tableName);
-      connection.commit();
-      return max;
-    } catch (Exception e) {
+      return updateMaxFromTable(connection, tableName);
+    } catch (Exception ignored) {
     }
     int max = getMaxFromTable(connection, tableName, idName);
     PreparedStatement createStmt = null;
@@ -166,16 +170,13 @@ public class DBUtil {
       createStmt.setInt(1, max);
       createStmt.setString(2, tableName.toLowerCase());
       createStmt.executeUpdate();
-      connection.commit();
       return max;
     } catch (Exception e) {
-      // impossible de creer, on est en concurence, on reessaye l'update.
-      rollback(connection);
+      // access concurrency
     } finally {
       close(createStmt);
     }
     max = updateMaxFromTable(connection, tableName);
-    connection.commit();
     return max;
   }
 
@@ -190,10 +191,6 @@ public class DBUtil {
           connection.prepareStatement("UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
       prepStmt.setString(1, table);
       count = prepStmt.executeUpdate();
-      connection.commit();
-    } catch (SQLException sqlex) {
-      rollback(connection);
-      throw sqlex;
     } finally {
       close(prepStmt);
     }
@@ -218,7 +215,7 @@ public class DBUtil {
     throw new SQLException("Update impossible : Ligne non existante");
   }
 
-  public static int getMaxFromTable(Connection con, String tableName, String idName) {
+  private static int getMaxFromTable(Connection con, String tableName, String idName) {
     if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(idName)) {
       return 1;
     }
@@ -234,7 +231,6 @@ public class DBUtil {
       }
       return maxFromTable + 1;
     } catch (SQLException ex) {
-      rollback(con);
       return 1;
     } finally {
       close(rs, prepStmt);

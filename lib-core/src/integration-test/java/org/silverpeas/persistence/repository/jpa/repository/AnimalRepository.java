@@ -23,16 +23,43 @@
  */
 package org.silverpeas.persistence.repository.jpa.repository;
 
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
-import org.silverpeas.persistence.repository.jpa.model.Equipment;
+import org.silverpeas.persistence.repository.jpa.model.Animal;
+import org.silverpeas.persistence.repository.jpa.model.AnimalType;
+import org.silverpeas.persistence.repository.jpa.model.Person;
 
-import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-@Named
-public class EquipmentRepository extends SilverpeasJpaEntityManager<Equipment, UuidIdentifier> {
+@Singleton
+public class AnimalRepository extends SilverpeasJpaEntityManager<Animal, UniqueLongIdentifier> {
+
+  public List<Animal> getByType(AnimalType type) {
+    return listFromNamedQuery("getAnimalsByType", newNamedParameters().add("type", type));
+  }
+
+  public Animal getByName(String name) {
+    return getFromNamedQuery("getAnimalsByName", newNamedParameters().add("name", name));
+  }
+
+  public List<Person> getPersonsHaveTypeOfAnimal(AnimalType type) {
+    String jpqlQuery = "select a.person from Animal a where a.type like :type";
+    return listFromJpqlString(jpqlQuery, newNamedParameters().add("type", type),
+        Person.class);
+  }
+
+  public long updateAnimalNamesByType(AnimalType type) {
+    return updateFromNamedQuery("updateAnimalNamesByType",
+        newNamedParameters().add("type", type).add("lastUpdatedBy", "dummy"));
+  }
+
+  public long deleteAnimalsByType(AnimalType type) {
+    return deleteFromNamedQuery("deleteAnimalsByType",
+        newNamedParameters().add("type", type));
+  }
 }

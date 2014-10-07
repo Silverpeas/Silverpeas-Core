@@ -30,7 +30,6 @@ import com.silverpeas.personalization.dao.PersonalizationManager;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.ResourceLocator;
 
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -40,7 +39,6 @@ import java.util.List;
 /**
  * Class declaration
  */
-@Default
 @Singleton
 @Transactional
 public class DefaultPersonalizationService implements PersonalizationService {
@@ -48,8 +46,9 @@ public class DefaultPersonalizationService implements PersonalizationService {
   @Inject
   private PersonalizationManager personalizationManager;
 
-  private final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+  private final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
+          "");
 
   private boolean getDefaultWebDAVEditingStatus() {
     return settings.getBoolean("DefaultWebDAVEditingStatus", true);
@@ -64,8 +63,8 @@ public class DefaultPersonalizationService implements PersonalizationService {
   }
 
   private UserMenuDisplay getDefaultMenuDisplay() {
-    return UserMenuDisplay.valueOf(settings.getString("DefaultMenuDisplay",
-        DEFAULT_MENU_DISPLAY_MODE.name()));
+    return UserMenuDisplay
+        .valueOf(settings.getString("DefaultMenuDisplay", DEFAULT_MENU_DISPLAY_MODE.name()));
   }
 
   @Override

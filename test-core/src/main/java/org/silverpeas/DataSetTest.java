@@ -23,18 +23,17 @@
  */
 package org.silverpeas;
 
+import com.ninja_squad.dbsetup.DbSetup;
+import com.ninja_squad.dbsetup.DbSetupTracker;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
+import com.ninja_squad.dbsetup.operation.Operation;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
 import org.junit.Before;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,39 +42,27 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public abstract class DataSetTest {
 
-  // Spring context
-  private ClassPathXmlApplicationContext context;
-
+  @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
 
-  @Before
-  public void setUp() throws Exception {
-
-    // Spring
-    context = new ClassPathXmlApplicationContext(getApplicationContextPath());
-
-    // Beans
-    dataSource = (DataSource) context.getBean(getDataSourceInjectionBeanId());
-
-    // Database
-    DatabaseOperation.INSERT
-        .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
-  }
-
-  /**
-   * Gets the identifier which permits to retrieve the instance of the data source in the injection
-   * context.
-   * @return
-   */
-  protected abstract String getDataSourceInjectionBeanId();
+  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
 
   protected DataSource getDataSource() {
     return dataSource;
   }
+
+  @Before
+  public final void prepareDataSource() {
+    Operation preparation = getDbSetupOperations();
+    DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
+    dbSetupTracker.launchIfNecessary(dbSetup);
+  }
+
+  protected abstract Operation getDbSetupOperations();
 
   /**
    * Gets the database connection.
@@ -85,32 +72,6 @@ public abstract class DataSetTest {
   protected Connection getConnection() throws SQLException {
     return getDataSource().getConnection();
   }
-
-  public ReplacementDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder()
-        .build(DataSetTest.class.getClassLoader().getResourceAsStream(getDataSetPath())));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    context.close();
-  }
-
-  /**
-   * Gets the path of the XML file in which are defined the data to insert into the database
-   * before the running of a test.
-   * @return the path of the XML data set.
-   */
-  public abstract String getDataSetPath();
-
-  /**
-   * Gets the XML Spring configuration files from which the context will be bootstrapped for the
-   * test.
-   * @return the location of the Spring XML configuration files.
-   */
-  abstract public String[] getApplicationContextPath();
 
   public IDataSet getActualDataSet() throws Exception {
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
@@ -144,10 +105,6 @@ public abstract class DataSetTest {
 
   public int getTableIndexForId(ITable table, Object id) throws Exception {
     return getTableIndexFor(table, "id", id);
-  }
-
-  public ApplicationContext getApplicationContext() {
-    return this.context;
   }
 
   /**

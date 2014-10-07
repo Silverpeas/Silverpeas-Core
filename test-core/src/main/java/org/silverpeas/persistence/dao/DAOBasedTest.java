@@ -34,11 +34,6 @@ import java.sql.Connection;
  */
 public abstract class DAOBasedTest extends DataSetTest {
 
-  @Override
-  protected String getDataSourceInjectionBeanId() {
-    return "dataSource";
-  }
-
   /**
    * Calling this method to perform a DAO test without handling the connection opening and closing.
    * @param daoTest

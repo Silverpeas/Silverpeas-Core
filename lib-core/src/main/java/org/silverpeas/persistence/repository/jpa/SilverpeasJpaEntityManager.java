@@ -23,12 +23,12 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
-import org.hibernate.ejb.QueryImpl;
+import org.hibernate.jpa.internal.QueryImpl;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
-import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.QueryCriteria;
+import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.PaginationList;
 import org.silverpeas.util.StringUtil;
@@ -50,26 +50,25 @@ import java.util.regex.Pattern;
 /**
  * A Silverpeas dedicated entity manager that wraps the JPA {@link javax.persistence.EntityManager}
  * and that provides convenient methods to perform the CRUD operations on entities.
- * <p/>
+ * <p>
  * All repositories that use only JPA for managing the persistence of their entities should extends
  * this JPA manager. If the different parts of an entity are persisted into several data source
  * beside a SQL-based one, then this repository should be used within a delegation of JPA related
  * operations.
- * <p/>
+ * <p>
  * It provides additional signatures to handle friendly the JPA queries into extensions of
  * repository classes.
- * <p/>
+ * <p>
  * Take a look into this class to analyse how query parameters are performed ({@link
  * NamedParameters}).
- * <p/>
+ * <p>
  * @param <ENTITY> specify the class name of the entity which is handled by the repository
  * manager.
  * @param <ENTITY_IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its
  * primary key definition.
  * @author Yohann Chastagnier
  */
-public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
-    ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
     implements SilverpeasEntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
 
   /**
@@ -178,7 +177,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    * only when the transaction will be committed. The consequence of the synchronization within
    * a transaction context is the persistence context is then validated by the data source. Making
    * it work, the data source has to support the transactions.
-   * <p/>
+   * <p>
    * Warning, the behavior of this method is implementation-dependent. According to the type of
    * the repository or of the underlying data source, the flush can not to be working.
    */
@@ -559,8 +558,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     if (!Pattern.compile("version.*=.*version[ ]*\\+[ ]*1").matcher(queryString).find()) {
       throw new IllegalArgumentException(
           "version management is missing from the query '" + queryString +
-              "' -> expected entity.version = (entity.version + 1)"
-      );
+              "' -> expected entity.version = (entity.version + 1)");
     }
   }
 

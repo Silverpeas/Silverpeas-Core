@@ -51,6 +51,16 @@ public class Transaction {
   }
 
   /**
+   * Performs in a new transaction the specified process.
+   * @param process the process to execute in a transaction.
+   * @param <RETURN_VALUE> the type of the return value.
+   * @return the result of the process.
+   */
+  public static <RETURN_VALUE> RETURN_VALUE performInNew(final Process<RETURN_VALUE> process) {
+    return getTransaction().performNew(process);
+  }
+
+  /**
    * The given process is executed in a transaction : support a current transaction,
    * create a new one if none exists.
    * Analogous to EJB transaction attribute of the same name.
@@ -60,6 +70,18 @@ public class Transaction {
    */
   @Transactional
   public <RETURN_VALUE> RETURN_VALUE perform(final Process<RETURN_VALUE> process) {
+    return process.execute();
+  }
+
+  /**
+   * The given process is executed in a new transaction, even it is called from an existent one.
+   * Analogous to EJB transaction attribute of the same name.
+   * @param process the process to execute in a transaction.
+   * @param <RETURN_VALUE> the type of the return value.
+   * @return the result of the process.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public <RETURN_VALUE> RETURN_VALUE performNew(final Process<RETURN_VALUE> process) {
     return process.execute();
   }
 

@@ -21,48 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.persistence.repository.jpa.model;
+package org.silverpeas.persistence.repository.jpa.repository;
 
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.persistence.repository.jpa.model.Equipment;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.inject.Singleton;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-@Entity
-@Table(name = "test_equipments")
-public class Equipment extends AbstractJpaEntity<Equipment, UuidIdentifier> {
-
-  @Column(name = "name", nullable = false)
-  private String name;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "animalId", referencedColumnName = "id", nullable = false)
-  private Animal animal;
-
-  public String getName() {
-    return name;
-  }
-
-  public Equipment setName(final String name) {
-    this.name = name;
-    return this;
-  }
-
-  public Animal getAnimal() {
-    return animal;
-  }
-
-  public Equipment setAnimal(final Animal animal) {
-    this.animal = animal;
-    return this;
-  }
-}
+@Singleton
+public class EquipmentRepository extends SilverpeasJpaEntityManager<Equipment, UuidIdentifier> {}

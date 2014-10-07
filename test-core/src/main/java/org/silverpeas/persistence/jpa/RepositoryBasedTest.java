@@ -31,9 +31,4 @@ import org.silverpeas.DataSetTest;
  * JPA repository.
  */
 public abstract class RepositoryBasedTest extends DataSetTest {
-
-  @Override
-  protected String getDataSourceInjectionBeanId() {
-    return "jpaDataSource";
-  }
 }

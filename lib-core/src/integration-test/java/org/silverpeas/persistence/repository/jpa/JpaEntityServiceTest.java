@@ -23,7 +23,6 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
-import com.silverpeas.annotation.Service;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.AnimalType;
@@ -32,19 +31,19 @@ import org.silverpeas.persistence.repository.jpa.model.Person;
 import org.silverpeas.persistence.repository.jpa.repository.AnimalRepository;
 import org.silverpeas.persistence.repository.jpa.repository.EquipmentRepository;
 import org.silverpeas.persistence.repository.jpa.repository.PersonRepository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-@Service
-@Transactional(propagation = Propagation.SUPPORTS)
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
 public class JpaEntityServiceTest {
 
   @Inject
@@ -98,42 +97,42 @@ public class JpaEntityServiceTest {
     return animalRepository.getById(id);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public List<Person> save(final OperationContext context, final Person... person) {
     return personRepository.save(context, person);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public List<Animal> save(final OperationContext context, final Animal... animal) {
     return animalRepository.save(context, animal);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public Person save(final OperationContext context, final Person person) {
     return personRepository.save(context, person);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public Animal save(final OperationContext context, final Animal animal) {
     return animalRepository.save(context, animal);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void delete(final Person... person) {
     personRepository.delete(person);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void delete(final Animal... animal) {
     animalRepository.delete(animal);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long deletePersonById(final String... personIds) {
     return personRepository.deleteById(personIds);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long deleteAnimalById(final String... animalIds) {
     return animalRepository.deleteById(animalIds);
   }
@@ -162,39 +161,39 @@ public class JpaEntityServiceTest {
     return animalRepository.getPersonsHaveTypeOfAnimal(type);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long updateAnimalNamesByType(AnimalType type) {
     return animalRepository.updateAnimalNamesByType(type);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long deleteAnimalsByType(AnimalType type) {
     return animalRepository.deleteAnimalsByType(type);
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long updatePersonFirstNamesHavingAtLeastOneAnimal() {
     return personRepository.updatePersonFirstNamesHavingAtLeastOneAnimal();
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long deletePersonFirstNamesHavingAtLeastOneAnimal() {
     return personRepository.deletePersonFirstNamesHavingAtLeastOneAnimal();
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long badUpdateMissingLastUpdatedBy() {
     return personRepository.badUpdateMissingLastUpdatedBy();
   }
 
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long badUpdateMissingLastUpdateDate() {
     return personRepository.badUpdateMissingLastUpdateDate();
   }
 
 
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public long badUpdateMissingVersionManagement() {
     return personRepository.badUpdateMissingVersionManagement();
   }

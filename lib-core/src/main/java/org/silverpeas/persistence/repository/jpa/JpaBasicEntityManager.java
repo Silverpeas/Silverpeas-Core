@@ -1,11 +1,9 @@
 package org.silverpeas.persistence.repository.jpa;
 
-import org.hibernate.ejb.QueryImpl;
-import org.silverpeas.persistence.model.Entity;
+import org.hibernate.jpa.internal.QueryImpl;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.model.IdentifiableEntity;
 import org.silverpeas.persistence.repository.BasicEntityRepository;
-import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.QueryCriteria;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.PaginationList;
@@ -138,7 +136,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
    * only when the transaction will be committed. The consequence of the synchronization within
    * a transaction context is the persistence context is then validated by the data source. Making
    * it work, the data source has to support the transactions.
-   * <p/>
+   * <p>
    * Warning, the behavior of this method is implementation-dependent. According to the type of
    * the repository or of the underlying data source, the flush can not to be working.
    */
@@ -198,8 +196,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
   private List<ENTITY> getByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     List<ENTITY> entities = new ArrayList<>(ids.size());
     String selectQuery = "select a from " + getEntityClass().getName() + " a where a.id in :ids";
-    for (Collection<ENTITY_IDENTIFIER_TYPE> entityIds : split(
-        new HashSet<>(ids))) {
+    for (Collection<ENTITY_IDENTIFIER_TYPE> entityIds : split(new HashSet<>(ids))) {
       List<ENTITY> tmp = newNamedParameters().add("ids", entityIds)
           .applyTo(getEntityManager().createQuery(selectQuery, getEntityClass())).getResultList();
       if (entities.isEmpty()) {

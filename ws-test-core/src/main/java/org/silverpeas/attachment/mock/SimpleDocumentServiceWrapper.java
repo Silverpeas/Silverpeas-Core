@@ -24,7 +24,6 @@
 package org.silverpeas.attachment.mock;
 
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.Default;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;
 import org.mockito.Mockito;
@@ -45,7 +44,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Default
 @Service
 @Named("simpleDocumentService")
 public class SimpleDocumentServiceWrapper implements AttachmentService {

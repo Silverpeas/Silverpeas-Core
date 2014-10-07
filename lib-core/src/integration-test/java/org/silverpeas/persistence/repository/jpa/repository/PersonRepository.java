@@ -28,14 +28,14 @@ import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.Person;
 
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
-@Named
+@Singleton
 public class PersonRepository extends SilverpeasJpaEntityManager<Person, UuidIdentifier> {
 
   public Person getByFirstName(String firstName) {
