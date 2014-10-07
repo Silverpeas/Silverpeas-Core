@@ -38,7 +38,7 @@ import org.silverpeas.persistence.repository.jpa.model.Animal;
 import org.silverpeas.persistence.repository.jpa.model.AnimalType;
 import org.silverpeas.persistence.repository.jpa.model.Equipment;
 import org.silverpeas.persistence.repository.jpa.model.Person;
-import org.silverpeas.test.LibCoreIntegrationTestConfigurator;
+import org.silverpeas.test.LibCoreTestArchiveDeploymentBuilder;
 import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Timestamp;
@@ -139,7 +139,7 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return LibCoreIntegrationTestConfigurator
+    return LibCoreTestArchiveDeploymentBuilder
         // Initializing the configuration
         .initialize()
             // Configuring full Web Archive

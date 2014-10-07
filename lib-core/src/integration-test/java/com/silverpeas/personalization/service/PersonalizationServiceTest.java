@@ -42,7 +42,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.LibCoreIntegrationTestConfigurator;
+import org.silverpeas.test.LibCoreTestArchiveDeploymentBuilder;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -90,7 +90,7 @@ public class PersonalizationServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return LibCoreIntegrationTestConfigurator
+    return LibCoreTestArchiveDeploymentBuilder
         // Initializing the configuration
         .initialize()
             // Configuring JAR library

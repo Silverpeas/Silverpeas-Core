@@ -40,34 +40,34 @@ import org.silverpeas.util.pool.ConnectionPool;
 /**
  * @author Yohann Chastagnier
  */
-public class LibCoreIntegrationTestConfigurator extends IntegrationTestConfigurator {
+public class LibCoreTestArchiveDeploymentBuilder extends TestArchiveDeploymentBuilder {
 
 
   /**
    * Gets an initialized instance of a integration test configurator.
    * @return the initialized instance of the configurator.
    */
-  public static LibCoreIntegrationTestConfigurator initialize() {
-    return new LibCoreIntegrationTestConfigurator();
+  public static LibCoreTestArchiveDeploymentBuilder initialize() {
+    return new LibCoreTestArchiveDeploymentBuilder();
   }
 
   /**
    * Hidden constructor.
    */
-  private LibCoreIntegrationTestConfigurator() {
+  private LibCoreTestArchiveDeploymentBuilder() {
     super();
     withManualCDIFeatures();
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public LibCoreIntegrationTestConfigurator onJar() {
+  public LibCoreTestArchiveDeploymentBuilder onJar() {
     return super.onJar();
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public LibCoreIntegrationTestConfigurator onWar() {
+  public LibCoreTestArchiveDeploymentBuilder onWar() {
     return super.onWar();
   }
 
@@ -79,7 +79,7 @@ public class LibCoreIntegrationTestConfigurator extends IntegrationTestConfigura
    * </ul>
    * @return the instance of the configurator.
    */
-  public <T extends Archive<T>> LibCoreIntegrationTestConfigurator addCacheFeatures() {
+  public <T extends Archive<T>> LibCoreTestArchiveDeploymentBuilder addCacheFeatures() {
     apply((context) -> {
       if (!context.getArchive().contains("org.silverpeas.cache")) {
         addMavenDependencies("net.sf.ehcache:ehcache-core");
@@ -93,7 +93,7 @@ public class LibCoreIntegrationTestConfigurator extends IntegrationTestConfigura
    * Sets util classes.
    * @return the instance of the configurator.
    */
-  public LibCoreIntegrationTestConfigurator addUtilClasses() {
+  public LibCoreTestArchiveDeploymentBuilder addUtilClasses() {
     apply((context) -> {
       if (!context.getArchive().contains(StringUtil.class.getName())) {
         context.getContainer().addClasses(StringUtil.class);
@@ -114,7 +114,7 @@ public class LibCoreIntegrationTestConfigurator extends IntegrationTestConfigura
    * Sets bundle features.
    * @return the instance of the configurator.
    */
-  private LibCoreIntegrationTestConfigurator addBundleFeatures() {
+  private LibCoreTestArchiveDeploymentBuilder addBundleFeatures() {
     apply((context) -> {
       context.getContainer().addClasses(ResourceLocator.class, DisplayI18NHelper.class,
           ConfigurationClassLoader.class, ConfigurationControl.class, ResourceBundleWrapper.class,
@@ -137,7 +137,7 @@ public class LibCoreIntegrationTestConfigurator extends IntegrationTestConfigura
    * </ul>
    * @return the instance of the configurator.
    */
-  public LibCoreIntegrationTestConfigurator addPersistenceFeatures() {
+  public LibCoreTestArchiveDeploymentBuilder addPersistenceFeatures() {
     addBundleFeatures();
     addCacheFeatures();
     addUtilClasses();
@@ -162,7 +162,7 @@ public class LibCoreIntegrationTestConfigurator extends IntegrationTestConfigura
    * Sets manual CDI features.
    * @return the instance of the configurator.
    */
-  private LibCoreIntegrationTestConfigurator withManualCDIFeatures() {
+  private LibCoreTestArchiveDeploymentBuilder withManualCDIFeatures() {
     applyOnWar((war) -> war.addClass(ServiceProvider.class).addClass(BeanContainer.class)
         .addClass(CDIContainer.class)
         .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",

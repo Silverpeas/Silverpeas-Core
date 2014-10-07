@@ -42,7 +42,7 @@ import java.util.HashSet;
  * This class permits to setup an integration test
  * @author Yohann Chastagnier
  */
-public abstract class IntegrationTestConfigurator {
+public abstract class TestArchiveDeploymentBuilder {
 
   private JavaArchive jar;
   private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
@@ -55,7 +55,7 @@ public abstract class IntegrationTestConfigurator {
   /**
    * Hidden constructor.
    */
-  protected IntegrationTestConfigurator() {
+  protected TestArchiveDeploymentBuilder() {
   }
 
   /**
@@ -63,7 +63,7 @@ public abstract class IntegrationTestConfigurator {
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  public <T extends IntegrationTestConfigurator> T onJar() {
+  public <T extends TestArchiveDeploymentBuilder> T onJar() {
     current = getJar();
     return (T) this;
   }
@@ -73,7 +73,7 @@ public abstract class IntegrationTestConfigurator {
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  public <T extends IntegrationTestConfigurator> T onWar() {
+  public <T extends TestArchiveDeploymentBuilder> T onWar() {
     current = getWar();
     return (T) this;
   }
@@ -102,7 +102,7 @@ public abstract class IntegrationTestConfigurator {
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  public <T extends IntegrationTestConfigurator> T addMavenDependencies(
+  public <T extends TestArchiveDeploymentBuilder> T addMavenDependencies(
       String... mavenDependencies) {
     Collections.addAll(this.mavenDependencies, mavenDependencies);
     return (T) this;
@@ -152,7 +152,7 @@ public abstract class IntegrationTestConfigurator {
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  public final <T extends IntegrationTestConfigurator> T apply(OnCurrent onCurrent) {
+  public final <T extends TestArchiveDeploymentBuilder> T apply(OnCurrent onCurrent) {
     onCurrent.apply(new OnCurrentContext(getCurrentArchive(), getCurrentContainer()));
     return (T) this;
   }
@@ -164,7 +164,7 @@ public abstract class IntegrationTestConfigurator {
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  protected final <T extends IntegrationTestConfigurator> T applyOnJar(OnJar onJar) {
+  protected final <T extends TestArchiveDeploymentBuilder> T applyOnJar(OnJar onJar) {
     onJar.apply(getJar());
     return (T) this;
   }
@@ -176,7 +176,7 @@ public abstract class IntegrationTestConfigurator {
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  protected final <T extends IntegrationTestConfigurator> T applyOnWar(OnWar onWar) {
+  protected final <T extends TestArchiveDeploymentBuilder> T applyOnWar(OnWar onWar) {
     onWar.apply(getWar());
     return (T) this;
   }
