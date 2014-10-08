@@ -129,7 +129,6 @@ public class SimpleScheduler implements Scheduler {
 
   /**
    * This method adds a job to the internal list of jobs an starts the job
-   * @param aJobOwner A job owner
    * @param aNewJob A new job
    */
   private synchronized ScheduledJob addJob(SchedulerJob aNewJob) throws SchedulerException {

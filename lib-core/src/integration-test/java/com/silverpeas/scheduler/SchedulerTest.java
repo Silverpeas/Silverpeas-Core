@@ -30,6 +30,8 @@ import com.silverpeas.scheduler.trigger.TimeUnit;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
@@ -39,6 +41,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.util.AssertArgument;
+import org.silverpeas.util.BeanContainer;
+import org.silverpeas.util.CDIContainer;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ServiceProvider;
 
 import java.io.File;
 import java.text.ParseException;
@@ -48,7 +56,6 @@ import java.util.concurrent.Callable;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
-import static org.silverpeas.test.ShrinkWrapUtil.*;
 
 /**
  * The scheduling system is backed by an interface, Scheduler, and a factory on implementation of
@@ -82,22 +89,29 @@ public class SchedulerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    File[] quartzLib =
-        Maven.resolver().loadPomFromFile("pom.xml").resolve("org.quartz-scheduler:quartz")
-            .withTransitivity().asFile();
-    File[] awaitilityLib =
-        Maven.resolver().loadPomFromFile("pom.xml").resolve("com.jayway.awaitility:awaitility")
-            .withTransitivity().asFile();
-    JavaArchive testJar = getMinimalTestJar().addPackages(true, "com.silverpeas.scheduler");
+    File[] quartzLibs = Maven.resolver().loadPomFromFile("pom.xml")
+        .resolve("org.quartz-scheduler:quartz", "com.jayway.awaitility:awaitility")
+        .withTransitivity().asFile();
+    File[] warLib = Maven.resolver().loadPomFromFile("pom.xml")
+        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
+            "commons-codec:commons-codec", "commons-io:commons-io").withTransitivity().asFile();
+    JavaArchive testJar = ShrinkWrap.create(JavaArchive.class, "test.jar")
+        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
+        .addPackages(true, "com.silverpeas.scheduler");
+    // TODO only import the basic to make com.silverpeas.scheduler package works
+    testJar.addPackages(true, "org.silverpeas.initialization");
     testJar.addPackages(true, "com.stratelia.silverpeas.silvertrace");
+    testJar.addPackages(true, "com.stratelia.silverpeas.silverpeasinitialize");
     testJar.addPackages(true, "org.silverpeas.util");
-    applyBasicUtils(testJar);
-    applyPersistence(testJar);
-    applyBundle(testJar);
-    WebArchive testWar = getMinimalTestWar().addAsLibraries(testJar).addAsLibraries(quartzLib)
-        .addAsResource(
+    WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war").addAsLibraries(testJar)
+        .addAsLibraries(quartzLibs).addAsLibraries(warLib).addAsResource(
             "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings.properties");
-    return applyManualCDI(testWar);
+    testWar.addClass(ServiceProvider.class).addClass(BeanContainer.class)
+        .addClass(CDIContainer.class)
+        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+            "META-INF/services/org.silverpeas.util.BeanContainer")
+        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    return testWar;
   }
 
   @Before
@@ -151,7 +165,6 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    //TODO
     await().atMost(2, SECONDS).until(jobIsFired());
     assertTrue(eventHandler.isJobSucceeded());
   }
@@ -160,7 +173,6 @@ public class SchedulerTest {
   public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
-    //TODO
     await().atMost(2, SECONDS).until(jobIsFired());
     assertFalse(eventHandler.isJobSucceeded());
   }
@@ -180,7 +192,6 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertNull(job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    //TODO
     await().atMost(2, SECONDS).until(jobIsExecuted());
   }
 
@@ -194,7 +205,6 @@ public class SchedulerTest {
         throw new Error("Not supported yet.");
       }
     }, trigger, eventHandler);
-    //TODO
     await().atMost(2, SECONDS).until(jobIsFired());
     assertFalse(eventHandler.isJobSucceeded());
   }
@@ -213,7 +223,6 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    //TODO see how to import following classes into deployment jar
     await().atMost(2, SECONDS).until(jobIsExecuted());
     assertTrue(eventHandler.isJobSucceeded());
   }

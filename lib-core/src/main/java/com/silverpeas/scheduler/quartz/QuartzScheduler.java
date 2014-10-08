@@ -42,7 +42,6 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import javax.enterprise.inject.Default;
-import javax.inject.Named;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +54,6 @@ import static org.silverpeas.util.AssertArgument.assertNotNull;
  * delegates to it all of the call after transforming the parameters into their Quartz
  * counterparts.
  */
-@Named("scheduler")
 @Default
 public class QuartzScheduler implements Scheduler {
 
