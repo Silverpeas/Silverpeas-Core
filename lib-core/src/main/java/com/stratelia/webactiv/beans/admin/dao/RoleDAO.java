@@ -241,7 +241,7 @@ public class RoleDAO {
       + " and r.objecttype is null "
       + " and ur.userId = ? ";
 
-  private static List<UserRoleRow> getRoles(Connection con, int instanceId, int userId)
+  public static List<UserRoleRow> getRoles(Connection con, int instanceId, int userId)
       throws SQLException {
     List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
 
@@ -251,6 +251,36 @@ public class RoleDAO {
       stmt = con.prepareStatement(queryAllUserRolesOnComponent);
       stmt.setInt(1, instanceId);
       stmt.setInt(2, userId);
+
+      rs = stmt.executeQuery();
+
+      while (rs.next()) {
+        roles.add(fetchUserRole(rs));
+      }
+
+      return roles;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+  
+  private final static String queryAllRolesOfGroupOnComponent = "select " + USERROLE_COLUMNS
+      + " from st_userrole r, st_userrole_group_rel ur"
+      + " where r.id=ur.userroleid"
+      + " and r.instanceId = ? "
+      + " and r.objecttype is null "
+      + " and ur.groupId = ? ";
+
+  public static List<UserRoleRow> getRolesByGroup(Connection con, int instanceId, int groupId)
+      throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = con.prepareStatement(queryAllRolesOfGroupOnComponent);
+      stmt.setInt(1, instanceId);
+      stmt.setInt(2, groupId);
 
       rs = stmt.executeQuery();
 

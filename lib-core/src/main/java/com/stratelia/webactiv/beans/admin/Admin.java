@@ -2231,7 +2231,7 @@ public final class Admin {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
       }
-      profileManager.updateProfileInst(domainDriverManager, newProfile);
+      profileManager.updateProfileInst(groupManager, domainDriverManager, newProfile);
       if (StringUtil.isDefined(
           userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
         ComponentInst component = getComponentInst(newProfile.getComponentFatherId(), true, null);
@@ -5106,11 +5106,9 @@ public final class Admin {
    * Get all the profiles Id for the given group
    */
   public String[] getProfileIdsOfGroup(String sGroupId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory
-        .getCurrentDomainDriverManager();
     try {
       // retrieve value from database
-      return profileManager.getProfileIdsOfGroup(domainDriverManager, sGroupId);
+      return profileManager.getProfileIdsOfGroup(sGroupId);
     } catch (Exception e) {
       throw new AdminException("Admin.getProfileIdsOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",

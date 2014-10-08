@@ -34,7 +34,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProfileInstManager {
 
@@ -106,11 +108,11 @@ public class ProfileInstManager {
         profileInst = userRoleRow2ProfileInst(userRole);
         setUsersAndGroups(ddManager, profileInst);
       } else {
-        SilverTrace.error("admin", "ProfileInstManager.setProfileInst",
+        SilverTrace.error("admin", "ProfileInstManager.getProfileInst",
             "root.EX_RECORD_NOT_FOUND", "sProfileId = " + sProfileId);
       }
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.setProfileInst",
+      throw new AdminException("ProfileInstManager.getProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_PROFILE",
           "profile Id: '" + sProfileId + "', father component Id: '"
           + sFatherId + "'", e);
@@ -208,8 +210,140 @@ public class ProfileInstManager {
           "profile Id: '" + profileInst.getId() + "'", e);
     }
   }
+  
+  /**
+   * true if the group has access to the given component
+   * @param ddManager
+   * @param groupId
+   * @param instanceId
+   * @throws AdminException 
+   */
+  private boolean hasGroupRightsToComponent(DomainDriverManager ddManager, String groupId, int instanceId) 
+      throws AdminException {
+    String[] roleIds = getProfileIdsOfGroup(groupId, instanceId);
+    
+    //it is executed in a transaction, so we must ignore one response which corresponds to roleId
+    int size = roleIds.length;
+    if(size >= 1) {
+      size --;
+    }
+    
+    if(size > 0) {
+      return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Update group role in nodes of component
+   * @param groupManager
+   * @param ddManager
+   * @param profileInst
+   * @param groupeId
+   * @throws AdminException
+   * @throws AdminPersistenceException
+   */
+  private void updateGroupRoleInNodes(GroupManager groupManager, DomainDriverManager ddManager, ProfileInst profileInst,
+      String groupId) throws AdminException, AdminPersistenceException {
+    
+    //First : update role for the group
+    int componentId = Integer.parseInt(profileInst.getComponentFatherId());
+    boolean groupComponentAccess = hasGroupRightsToComponent(ddManager, groupId, componentId);
+    
+    if(!groupComponentAccess) {
+      //get all rights for this group to Nodes of this component
+      String[] tabUserRoleIds = ddManager.getOrganization().userRole.getAllObjectUserRoleIdsOfInstance(componentId);
+      
+      //delete rights for this group to Nodes of this component
+      for (String userRoleId : tabUserRoleIds) {
+        if(ddManager.getOrganization().userRole.isGroupDirectlyInRole(idAsInt(groupId), Integer.parseInt(userRoleId))) {
+          ddManager.getOrganization().userRole.removeGroupFromUserRole(idAsInt(groupId), Integer.parseInt(userRoleId));
+        }
+      }
+    }
+    
+    //Second : update role for the users of the group
+    //the set of unique user id
+    Set<String> users = new HashSet<String>();
 
-  public String updateProfileInst(DomainDriverManager ddManager, ProfileInst profileInstNew)
+    //users directly in group
+    List<String> listUsersGroup = groupManager.getUsersDirectlyInGroup(groupId);
+    for (String userId : listUsersGroup) {
+      users.add(userId);
+    }
+    
+    //users in sub groups
+    List<String> listSubGroupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
+    for (String subGroupId : listSubGroupIds) {
+      List<String> listUsersSubGroup = groupManager.getUsersDirectlyInGroup(subGroupId);
+      for (String userId : listUsersSubGroup) {
+        users.add(userId);
+      }
+    }
+    
+    //for any user : updateRoleInNodes
+    for(String userId : users) {
+      updateUserRoleInNodes(ddManager, profileInst, userId);
+    }
+  }
+  
+  /**
+   * true if the user has access to the given component
+   * @param ddManager
+   * @param userId
+   * @param instanceId
+   * @throws AdminException 
+   */
+  private boolean hasUserRightsToComponent(DomainDriverManager ddManager, String userId, int instanceId) 
+      throws AdminException {
+    List<String> roleIds = getProfileIdsOfUser(userId, instanceId);
+    
+    //it is executed in a transaction, so we must ignore one response which corresponds to roleId
+    int size = roleIds.size();
+    if(size >= 1) {
+      size --;
+    }
+    
+    if(size > 0) {
+      return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Update user role in nodes of component
+   * @param ddManager
+   * @param profileInst
+   * @param userId
+   * @throws AdminException
+   * @throws AdminPersistenceException
+   */
+  private void updateUserRoleInNodes(DomainDriverManager ddManager, ProfileInst profileInst,
+      String userId) throws AdminException, AdminPersistenceException {
+    
+    int componentId = Integer.parseInt(profileInst.getComponentFatherId());
+    boolean userComponentAccess = hasUserRightsToComponent(ddManager, userId, componentId);
+    
+    if(!userComponentAccess) {
+      //get all rights for this user to Nodes of this component
+      String[] tabUserRoleIds = ddManager.getOrganization().userRole.getAllObjectUserRoleIdsOfInstance(componentId);
+      
+      //delete rights for this user to Nodes of this component
+      for (String userRoleId : tabUserRoleIds) {
+        if(ddManager.getOrganization().userRole.isUserDirectlyInRole(idAsInt(userId), Integer.parseInt(userRoleId))) {
+          ddManager.getOrganization().userRole.removeUserFromUserRole(idAsInt(userId), Integer.parseInt(userRoleId));
+        }
+      }
+    }
+  }
+
+  /**
+   * Update profile instance
+   * @param ddManager
+   * @param profileInst
+   * @throws AdminException
+   */
+  public String updateProfileInst(GroupManager groupManager, DomainDriverManager ddManager, ProfileInst profileInstNew)
       throws AdminException {
 
     ProfileInst profileInst = getProfileInst(ddManager, profileInstNew.getId(), null);
@@ -266,6 +400,9 @@ public class ProfileInstManager {
         // delete the node link Profile_Group
         ddManager.getOrganization().userRole.removeGroupFromUserRole(
             idAsInt(groupId), idAsInt(profileInst.getId()));
+        
+        //update user role in nodes of component
+        updateGroupRoleInNodes(groupManager, ddManager, profileInst, groupId);
       }
 
       // Compute the Old profile User list
@@ -308,6 +445,9 @@ public class ProfileInstManager {
         // delete the node link Profile_User
         ddManager.getOrganization().userRole.removeUserFromUserRole(
             idAsInt(userId), idAsInt(profileInst.getId()));
+        
+        //update user role in nodes of component
+        updateUserRoleInNodes(ddManager, profileInst, userId);
       }
 
       // update the profile node
@@ -324,7 +464,7 @@ public class ProfileInstManager {
   }
 
   /**
-   * Get all the profiles Id for the given user
+   * Get all the profiles Id for the given user and groups
    * @param sUserId
    * @param groupIds
    * @return
@@ -345,7 +485,37 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getUserProfileNames",
+      throw new AdminException("ProfiledObjectManager.getProfileIdsOfUserAndGroups",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all the profiles Id for the given user and componentId
+   * @param sUserId
+   * @param componentId
+   * @return ids
+   * @throws AdminException
+   */
+  private List<String> getProfileIdsOfUser(String sUserId, int componentId)
+      throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserRoleRow> roles = RoleDAO.getRoles(con, componentId, idAsInt(sUserId));
+      List<String> roleIds = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleIds.add(Integer.toString(role.id));
+      }
+
+      return roleIds;
+
+    } catch (Exception e) {
+      throw new AdminException("ProfiledObjectManager.getProfileIdsOfUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
     } finally {
       DBUtil.close(con);
@@ -371,7 +541,37 @@ public class ProfileInstManager {
       return roleNames.toArray(new String[roleNames.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfileNamesOfUser",
+      throw new AdminException("ProfiledObjectManager.getProfileNamesOfUserAndGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all the profiles Id for the given group and componentId
+   * @param groupId
+   * @param componentId
+   * @return ids
+   * @throws AdminException
+   */
+  private String[] getProfileIdsOfGroup(String groupId, int componentId)
+      throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserRoleRow> roles = RoleDAO.getRolesByGroup(con, componentId, idAsInt(groupId));
+      List<String> roleIds = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleIds.add(Integer.toString(role.id));
+      }
+
+      return roleIds.toArray(new String[roleIds.size()]);
+
+    } catch (Exception e) {
+      throw new AdminException("ProfiledObjectManager.getProfileIdsOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
     } finally {
       DBUtil.close(con);
@@ -380,13 +580,11 @@ public class ProfileInstManager {
 
   /**
    * Get all the profiles Id for the given group
-   * @param ddManager
    * @param sGroupId
    * @return
    * @throws AdminException
    */
-  public String[] getProfileIdsOfGroup(DomainDriverManager ddManager,
-      String sGroupId) throws AdminException {
+  public String[] getProfileIdsOfGroup(String sGroupId) throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
