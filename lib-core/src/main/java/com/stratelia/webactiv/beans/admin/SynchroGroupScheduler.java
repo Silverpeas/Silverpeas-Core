@@ -27,7 +27,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -43,8 +43,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
     try {
       this.synchronizedGroupIds = synchronizedGroupIds;
 
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(ADMINSYNCHROGROUP_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);

@@ -25,6 +25,8 @@
 package com.silverpeas.scheduler;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
+
 import javax.inject.Inject;
 
 /**
@@ -33,40 +35,24 @@ import javax.inject.Inject;
  * that they have the capability to provide instances of the actual scheduler implementation. It is
  * the single entry point to the actual scheduling system for Silverpeas components.
  */
-public class SchedulerFactory {
+public class SchedulerProvider {
 
   /**
    * The name of the scheduling system in Silverpeas.
    */
   public static final String MODULE_NAME = "scheduler";
-  private static final SchedulerFactory instance = new SchedulerFactory();
-  @Inject
-  private Scheduler actualScheduler;
-
-  /**
-   * Gets a SchedulerFactory instance.
-   * @return a SchedulerFactory instance.
-   */
-  public static SchedulerFactory getFactory() {
-    return instance;
-  }
 
   /**
    * Gets a scheduler from the underlying scheduling backend.
    * @return an instance of the actual scheduler implementation.
    */
-  public Scheduler getScheduler() {
-    if (actualScheduler == null) {
-      SilverTrace.error(SchedulerFactory.MODULE_NAME, getClass().getSimpleName() +
-          ".getScheduler()",
-          "root.EX_NO_MESSAGE", "Unable to initialize the scheduling backend");
-    }
-    return actualScheduler;
+  public static Scheduler getScheduler() {
+    return ServiceProvider.getService(Scheduler.class);
   }
 
   /**
    * Boostraps a scheduling system.
    */
-  private SchedulerFactory() {
+  private SchedulerProvider() {
   }
 }

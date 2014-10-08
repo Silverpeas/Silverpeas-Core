@@ -23,7 +23,7 @@ package org.silverpeas.attachment;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -57,8 +57,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
       String cron = resources.getString("cronScheduledReservedFile");
       Logger.getLogger(getClass().getSimpleName())
           .log(Level.INFO, "Reserved File Processor scheduled with cron ''{0}''", cron);
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, this);

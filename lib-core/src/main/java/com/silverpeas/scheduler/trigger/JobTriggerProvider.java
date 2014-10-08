@@ -30,23 +30,12 @@ import java.text.ParseException;
  * A factory of job triggers. This factory creates the specific job triggers depending upons the
  * scheduling parameters.
  */
-public class JobTriggerFactory {
-
-  private static final JobTriggerFactory factory = new JobTriggerFactory();
+public class JobTriggerProvider {
 
   /**
    * Constructs a new job trigger factory.
    */
-  private JobTriggerFactory() {
-
-  }
-
-  /**
-   * Gets a factory of a job trigger.
-   * @return a JobTriggerFactory instance.
-   */
-  public static JobTriggerFactory getFactory() {
-    return factory;
+  private JobTriggerProvider() {
   }
 
   /**
@@ -55,7 +44,7 @@ public class JobTriggerFactory {
    * @param unit the unit in which the time is expressed.
    * @return a job trigger whose type depends upon the specified periodicity.
    */
-  public FixedPeriodJobTrigger getJobTriggerWithPeriodicity(int time, final TimeUnit unit) {
+  public static FixedPeriodJobTrigger getJobTriggerWithPeriodicity(int time, final TimeUnit unit) {
     FixedPeriodJobTrigger trigger = new FixedPeriodJobTrigger(time, unit);
     return trigger;
   }
@@ -64,11 +53,11 @@ public class JobTriggerFactory {
    * Creates a new job trigger that will fire a job exectution at given moments in the time, as
    * defined by the specified cron expression.
    * @param cron the Unix cron-like expression.
-   * @see SimpleCronJobTrigger
-   * @return a SimpleCronJobTrigger instance.
+   * @see CronJobTrigger
+   * @return a CronJobTrigger instance.
    * @throws ParseException if the specified cron expression is not valid.
    */
-  public CronJobTrigger getJobTriggerWithCronExpression(final String cron) throws ParseException {
+  public static CronJobTrigger getJobTriggerWithCronExpression(final String cron) throws ParseException {
     CronJobTrigger trigger = new CronJobTrigger(cron);
     return trigger;
   }

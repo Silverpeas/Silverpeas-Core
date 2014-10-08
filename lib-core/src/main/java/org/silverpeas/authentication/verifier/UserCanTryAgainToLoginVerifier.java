@@ -26,7 +26,7 @@ package org.silverpeas.authentication.verifier;
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.trigger.TimeUnit;
 import org.silverpeas.util.StringUtil;
@@ -80,11 +80,11 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
     super(user);
     if (isActivated && !isCacheCleanerInitialized) {
       synchronized (cache) {
-        if (!SchedulerFactory.getFactory().getScheduler()
+        if (!SchedulerProvider.getScheduler()
             .isJobScheduled(CacheCleanerJob.JOB_NAME)) {
           // Cache cleaner.
           try {
-            SchedulerFactory.getFactory().getScheduler()
+            SchedulerProvider.getScheduler()
                 .scheduleJob(new CacheCleanerJob(), JobTrigger.triggerEvery(10, TimeUnit.MINUTE));
             isCacheCleanerInitialized = true;
           } catch (SchedulerException e) {

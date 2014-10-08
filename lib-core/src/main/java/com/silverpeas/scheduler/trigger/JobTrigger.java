@@ -62,8 +62,7 @@ public abstract class JobTrigger {
    * @return a job trigger whose the triggering is scheduled periodically at a given time.
    */
   public static JobTrigger triggerEvery(int time, final TimeUnit unit) {
-    JobTriggerFactory triggerFactory = JobTriggerFactory.getFactory();
-    return triggerFactory.getJobTriggerWithPeriodicity(time, unit);
+    return JobTriggerProvider.getJobTriggerWithPeriodicity(time, unit);
   }
 
   /**
@@ -76,8 +75,7 @@ public abstract class JobTrigger {
    * @throws ParseException if the specified cron expression isn't valid.
    */
   public static JobTrigger triggerAt(final String cron) throws ParseException {
-    JobTriggerFactory triggerFactory = JobTriggerFactory.getFactory();
-    return triggerFactory.getJobTriggerWithCronExpression(cron);
+    return JobTriggerProvider.getJobTriggerWithCronExpression(cron);
   }
 
   /**

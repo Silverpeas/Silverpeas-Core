@@ -1,10 +1,5 @@
 package org.silverpeas.file;
 
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerFactory;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 

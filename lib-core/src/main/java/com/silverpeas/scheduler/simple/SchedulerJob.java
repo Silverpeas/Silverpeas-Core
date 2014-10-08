@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.commons.lang3.time.FastDateFormat;
-import static com.silverpeas.scheduler.SchedulerFactory.*;
+import static com.silverpeas.scheduler.SchedulerProvider.*;
 
 /**
  * This is the base class of all scheduler job classes. This class is abstract. If you will

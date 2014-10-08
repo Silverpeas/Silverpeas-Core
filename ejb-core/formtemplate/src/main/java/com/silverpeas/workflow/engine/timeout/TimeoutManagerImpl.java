@@ -27,7 +27,7 @@ package com.silverpeas.workflow.engine.timeout;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.workflow.api.TimeoutManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -61,8 +61,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
       ResourceLocator settings = new ResourceLocator(
           "com.silverpeas.workflow.engine.schedulerSettings", "");
       // List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       if (scheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {
         // Remove previous scheduled job
         scheduler.unscheduleJob(TIMEOUT_MANAGER_JOB_NAME);

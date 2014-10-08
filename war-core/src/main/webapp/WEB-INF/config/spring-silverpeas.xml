@@ -133,8 +133,8 @@
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
   the actual scheduling backend -->
-  <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerProvider"
+        factory-method="getFactory"/> -->
 
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"

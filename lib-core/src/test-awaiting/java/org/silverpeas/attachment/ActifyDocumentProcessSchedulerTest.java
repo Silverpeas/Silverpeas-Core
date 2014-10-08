@@ -29,7 +29,7 @@ import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
 import org.apache.commons.io.FileUtils;
@@ -156,7 +156,7 @@ public class ActifyDocumentProcessSchedulerTest {
     ActifyDocumentProcessScheduler actifyDocumentProcessor = new ActifyDocumentProcessScheduler();
     actifyDocumentProcessor.initialize();
 
-    Scheduler scheduler = SchedulerFactory.getFactory().getScheduler();
+    Scheduler scheduler = SchedulerProvider.getScheduler();
     Job importer = actifyDocumentProcessor.getActifyDocumentImporter();
     Job cleaner = actifyDocumentProcessor.getActifyDocumentCleaner();
     assertThat(scheduler.isJobScheduled(importer.getName()), is(true));

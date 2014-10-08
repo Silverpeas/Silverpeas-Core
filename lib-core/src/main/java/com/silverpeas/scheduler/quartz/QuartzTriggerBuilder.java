@@ -27,11 +27,14 @@ package com.silverpeas.scheduler.quartz;
 import com.silverpeas.scheduler.trigger.CronJobTrigger;
 import com.silverpeas.scheduler.trigger.FixedPeriodJobTrigger;
 import com.silverpeas.scheduler.trigger.JobTriggerVisitor;
-import java.text.ParseException;
-import java.util.Date;
-import org.quartz.CronTrigger;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerUtils;
+import org.quartz.TriggerBuilder;
+
+import java.util.Date;
+
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * A builder of a Quartz trigger from the data defined in a QuartzSchedulerJob instance. A
@@ -42,6 +45,7 @@ import org.quartz.TriggerUtils;
 public final class QuartzTriggerBuilder implements JobTriggerVisitor {
 
   private Trigger quartzTrigger = null;
+  private String jobName = null;
 
   /**
    * Builds a Quartz trigger from the specified QuartzSchedulerJob instance.
@@ -49,46 +53,50 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
    * @return a Quartz scheduler trigger.
    */
   public static Trigger buildFrom(final QuartzSchedulerJob job) {
-    QuartzTriggerBuilder visitor = new QuartzTriggerBuilder();
+    QuartzTriggerBuilder visitor = new QuartzTriggerBuilder(job.getName());
     job.getTrigger().accept(visitor);
-    visitor.quartzTrigger.setName(job.getName());
     return visitor.quartzTrigger;
   }
 
   @Override
   public void visit(FixedPeriodJobTrigger trigger) {
+    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName);
     switch (trigger.getTimeUnit()) {
       case SECOND:
-        quartzTrigger = TriggerUtils.makeSecondlyTrigger(trigger.getTimeInterval());
+        triggerBuilder.withSchedule(
+            SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(trigger.getTimeInterval())
+                .repeatForever());
         break;
       case MINUTE:
-        quartzTrigger = TriggerUtils.makeMinutelyTrigger(trigger.getTimeInterval());
+        triggerBuilder.withSchedule(
+            SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(trigger.getTimeInterval())
+                .repeatForever());
         break;
       case HOUR:
-        quartzTrigger = TriggerUtils.makeHourlyTrigger(trigger.getTimeInterval());
+        triggerBuilder.withSchedule(
+            SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(trigger.getTimeInterval())
+                .repeatForever());
         break;
     }
     if (trigger.getStartDate() != null) {
-      quartzTrigger.setStartTime(trigger.getStartDate());
+      triggerBuilder.startAt(trigger.getStartDate());
     } else {
-      quartzTrigger.setStartTime(quartzTrigger.getFireTimeAfter(new Date()));
+      triggerBuilder.startAt(quartzTrigger.getFireTimeAfter(new Date()));
     }
+    quartzTrigger = triggerBuilder.build();
   }
 
   @Override
   public void visit(CronJobTrigger trigger) {
-    try {
-      CronTrigger cronTrigger = new CronTrigger();
-      cronTrigger.setCronExpression("0 " + trigger.getCronExpression());
-      if (trigger.getStartDate() != null) {
-        cronTrigger.setStartTime(trigger.getStartDate());
-      }
-      quartzTrigger = cronTrigger;
-    } catch (ParseException ex) {
-      throw new RuntimeException(ex.getMessage(), ex);
+    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName)
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 " + trigger.getCronExpression()));
+    if (trigger.getStartDate() != null) {
+      triggerBuilder.startAt(trigger.getStartDate());
     }
+    quartzTrigger = triggerBuilder.build();
   }
 
-  private QuartzTriggerBuilder() {
+  private QuartzTriggerBuilder(String jobName) {
+    this.jobName = jobName;
   }
 }

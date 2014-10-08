@@ -35,12 +35,14 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.enterprise.inject.Alternative;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import static com.silverpeas.scheduler.SchedulerFactory.*;
+import static com.silverpeas.scheduler.SchedulerProvider.*;
 
 /**
  * A simple scheduler implementation. It provides a easy way to schedule jobs at given moments in
@@ -55,10 +57,10 @@ import static com.silverpeas.scheduler.SchedulerFactory.*;
  * </ul>
  */
 @Deprecated
+@Alternative
 public class SimpleScheduler implements Scheduler {
 
-  private final Map<String, SchedulerJob> jobs =
-      new HashMap<String, SchedulerJob>();
+  private final Map<String, SchedulerJob> jobs = new HashMap<>();
   private ExecutorService jobSchedulingExecutor = Executors.newCachedThreadPool();
 
   /**

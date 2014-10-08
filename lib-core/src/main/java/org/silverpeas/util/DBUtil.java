@@ -95,6 +95,11 @@ public class DBUtil {
    */
   private static final int dateFieldLength = 10;
 
+  @Override
+  public String toString() {
+    return super.toString();
+  }
+
   private static final Logger logger = Logger.getLogger(DBUtil.class.getSimpleName());
 
   /**

@@ -29,7 +29,7 @@ import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourcesWrapper;
@@ -60,8 +60,7 @@ public class ScheduledImport implements SchedulerEventListener {
             "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", "Repository '" + sDir
             + "' does not exists !");
       } else {
-        SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-        Scheduler scheduler = schedulerFactory.getScheduler();
+        Scheduler scheduler = SchedulerProvider.getScheduler();
         scheduler.unscheduleJob(IMPORTENGINE_JOB_NAME);
         JobTrigger trigger = JobTrigger.triggerAt(cron);
         scheduler.scheduleJob(IMPORTENGINE_JOB_NAME, trigger, this);

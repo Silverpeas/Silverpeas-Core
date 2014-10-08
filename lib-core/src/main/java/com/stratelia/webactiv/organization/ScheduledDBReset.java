@@ -27,7 +27,7 @@ package com.stratelia.webactiv.organization;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.simple.SimpleScheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.StringUtil;
@@ -46,8 +46,7 @@ public class ScheduledDBReset implements SchedulerEventListener {
    */
   public void initialize(String cronString) {
     try {
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       // Remove previous scheduled job
       scheduler.unscheduleJob(DBRESET_JOB_NAME);
       if (StringUtil.isDefined(cronString)) {

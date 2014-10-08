@@ -34,11 +34,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
  <ctx:annotation-config/>
- <ctx:component-scan base-package="com.silverpeas.scheduler"/>
+ <!-- ebo <ctx:component-scan base-package="com.silverpeas.scheduler"/> -->
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
        the actual scheduling backend -->
-  <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
+        factory-method="getFactory"/> -->
 
 </beans>

@@ -29,7 +29,7 @@ import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
@@ -68,8 +68,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener {
         String cronScheduleProcess = ActifyDocumentProcessor.getCRONForActifyImport();
         String cronSchedulePurge = ActifyDocumentProcessor.getCRONForActifyPurge();
 
-        SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-        Scheduler scheduler = schedulerFactory.getScheduler();
+        Scheduler scheduler = SchedulerProvider.getScheduler();
 
         Job actifyDocumentImporter = getActifyDocumentImporter();
         Job actifyDocumentCleaner = getActifyDocumentCleaner();
